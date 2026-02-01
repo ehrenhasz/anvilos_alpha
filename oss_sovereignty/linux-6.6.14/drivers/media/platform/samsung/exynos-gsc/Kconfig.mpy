@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "8a940c3c4a27aac7c53383ba04a9d90d7215162a4a184ae049b739ee67901111",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/platform/samsung/exynos-gsc/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig VIDEO_SAMSUNG_EXYNOS_GSC\n\ttristate \"Samsung Exynos G-Scaler driver\"\n\tdepends on V4L_MEM2MEM_DRIVERS\n\tdepends on VIDEO_DEV\n\tdepends on ARCH_EXYNOS || COMPILE_TEST\n\tselect VIDEOBUF2_DMA_CONTIG\n\tselect V4L2_MEM2MEM_DEV\n\thelp\n\t  This is a v4l2 driver for Samsung EXYNOS5 SoC G-Scaler.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

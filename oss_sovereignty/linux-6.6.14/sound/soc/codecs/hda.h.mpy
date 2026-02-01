@@ -1,0 +1,9 @@
+{
+  "module_name": "hda.h",
+  "hash_id": "1eedf02e13658d97d9fadd64ac6ab7397ca6bccf9bdd323f27545cba2a1300a1",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/codecs/hda.h",
+  "human_readable_source": " \n \n\n#ifndef SND_SOC_CODECS_HDA_H\n#define SND_SOC_CODECS_HDA_H\n\n#define hda_codec_is_display(codec) \\\n\t((((codec)->core.vendor_id >> 16) & 0xFFFF) == 0x8086)\n\nextern const struct snd_soc_dai_ops snd_soc_hda_codec_dai_ops;\n\nextern const struct hdac_ext_bus_ops soc_hda_ext_bus_ops;\nint hda_codec_probe_complete(struct hda_codec *codec);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

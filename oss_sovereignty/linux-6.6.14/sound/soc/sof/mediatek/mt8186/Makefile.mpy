@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "778cf27df8a68a74d8ae74ab495fd73aabd70a203581559ee88a05d6feed165c",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/sof/mediatek/mt8186/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause)\nsnd-sof-mt8186-objs := mt8186.o mt8186-clk.o mt8186-loader.o\nobj-$(CONFIG_SND_SOC_SOF_MT8186) += snd-sof-mt8186.o\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

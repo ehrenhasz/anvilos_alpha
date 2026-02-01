@@ -1,0 +1,9 @@
+{
+  "module_name": "bcm590xx.h",
+  "hash_id": "cf9faca2279aec093142762ed1c76231bf1c4a818bf0f792dc5a40d0b6c830cd",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/mfd/bcm590xx.h",
+  "human_readable_source": " \n \n\n#ifndef __LINUX_MFD_BCM590XX_H\n#define __LINUX_MFD_BCM590XX_H\n\n#include <linux/device.h>\n#include <linux/i2c.h>\n#include <linux/regmap.h>\n\n \n#define BCM590XX_MAX_REGISTER_PRI\t0xe7\n#define BCM590XX_MAX_REGISTER_SEC\t0xf0\n\nstruct bcm590xx {\n\tstruct device *dev;\n\tstruct i2c_client *i2c_pri;\n\tstruct i2c_client *i2c_sec;\n\tstruct regmap *regmap_pri;\n\tstruct regmap *regmap_sec;\n\tunsigned int id;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

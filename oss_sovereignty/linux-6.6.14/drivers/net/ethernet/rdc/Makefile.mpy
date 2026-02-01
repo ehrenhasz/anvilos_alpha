@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "54bc4c2c7da3af47cdb8e22dd08d1ae252df8ad37de91fdccbadbbfb0383b319",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/rdc/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Makefile for the RDC network device drivers.\n#\n\nobj-$(CONFIG_R6040) += r6040.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

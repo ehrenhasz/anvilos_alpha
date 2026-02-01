@@ -1,0 +1,9 @@
+{
+  "module_name": "byteswap.in.h",
+  "hash_id": "f57fb655ffe2a9c7a8f22ba3cb500f42e01103f8d66e290557491d7e3c32c83c",
+  "original_prompt": "Ingested from coreutils-9.4/lib/byteswap.in.h",
+  "human_readable_source": " \n#define bswap_16(x) ((((x) & 0x00FF) << 8) | \\\n                     (((x) & 0xFF00) >> 8))\n\n \n#define bswap_32(x) ((((x) & 0x000000FF) << 24) | \\\n                     (((x) & 0x0000FF00) << 8) | \\\n                     (((x) & 0x00FF0000) >> 8) | \\\n                     (((x) & 0xFF000000) >> 24))\n\n \n#define bswap_64(x) ((((x) & 0x00000000000000FFULL) << 56) | \\\n                     (((x) & 0x000000000000FF00ULL) << 40) | \\\n                     (((x) & 0x0000000000FF0000ULL) << 24) | \\\n                     (((x) & 0x00000000FF000000ULL) << 8) | \\\n                     (((x) & 0x000000FF00000000ULL) >> 8) | \\\n                     (((x) & 0x0000FF0000000000ULL) >> 24) | \\\n                     (((x) & 0x00FF000000000000ULL) >> 40) | \\\n                     (((x) & 0xFF00000000000000ULL) >> 56))\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

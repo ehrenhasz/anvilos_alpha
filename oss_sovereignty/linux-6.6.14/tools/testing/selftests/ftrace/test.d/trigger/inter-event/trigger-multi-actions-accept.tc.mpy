@@ -1,0 +1,9 @@
+{
+  "module_name": "trigger-multi-actions-accept.tc",
+  "hash_id": "6b084734e8df2b39d63d70c22bda53d8c5b32e7c3627c8a1b331c12b7bdf4e81",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/ftrace/test.d/trigger/inter-event/trigger-multi-actions-accept.tc",
+  "human_readable_source": "#!/bin/sh\n# SPDX-License-Identifier: GPL-2.0\n# description: event trigger - test multiple actions on hist trigger\n# requires: set_event synthetic_events events/sched/sched_process_fork/hist\n\nfail() { #msg\n    echo $1\n    exit_fail\n}\n\necho \"Test multiple actions on hist trigger\"\necho 'wakeup_latency u64 lat; pid_t pid' >> synthetic_events\nTRIGGER1=events/sched/sched_wakeup/trigger\nTRIGGER2=events/sched/sched_switch/trigger\n\necho 'hist:keys=pid:ts0=common_timestamp.usecs if comm==\"cyclictest\"' > $TRIGGER1\necho 'hist:keys=next_pid:wakeup_lat=common_timestamp.usecs-$ts0 if next_comm==\"cyclictest\"' >> $TRIGGER2\necho 'hist:keys=next_pid:onmatch(sched.sched_wakeup).wakeup_latency(sched.sched_switch.$wakeup_lat,next_pid) if next_comm==\"cyclictest\"' >> $TRIGGER2\necho 'hist:keys=next_pid:onmatch(sched.sched_wakeup).wakeup_latency(sched.sched_switch.$wakeup_lat,prev_pid) if next_comm==\"cyclictest\"' >> $TRIGGER2\necho 'hist:keys=next_pid if next_comm==\"cyclictest\"' >> $TRIGGER2\n\nexit 0\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

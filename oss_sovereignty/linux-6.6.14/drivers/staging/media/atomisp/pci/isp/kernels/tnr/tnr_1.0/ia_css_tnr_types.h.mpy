@@ -1,0 +1,9 @@
+{
+  "module_name": "ia_css_tnr_types.h",
+  "hash_id": "f9c855a45e9e4c7f0b1c9e8a8288b34b30951b5b9a936a6a7321b2d66ba0d1a6",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/isp/kernels/tnr/tnr_1.0/ia_css_tnr_types.h",
+  "human_readable_source": " \n \n\n#ifndef __IA_CSS_TNR_TYPES_H\n#define __IA_CSS_TNR_TYPES_H\n\n \n\n \n\nstruct ia_css_tnr_config {\n\tia_css_u0_16 gain;  \n\tia_css_u0_16 threshold_y;  \n\tia_css_u0_16 threshold_uv;  \n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

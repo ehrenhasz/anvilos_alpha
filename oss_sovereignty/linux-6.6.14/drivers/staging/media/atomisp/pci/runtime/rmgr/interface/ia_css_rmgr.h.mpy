@@ -1,0 +1,9 @@
+{
+  "module_name": "ia_css_rmgr.h",
+  "hash_id": "cde00ad96ba0233f85e7a5bcd73204dedbcee8ba393b163fea3cf08951c2e832",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/runtime/rmgr/interface/ia_css_rmgr.h",
+  "human_readable_source": " \n \n\n#ifndef _IA_CSS_RMGR_H\n#define _IA_CSS_RMGR_H\n\n#include <ia_css_err.h>\n\n#ifndef __INLINE_RMGR__\n#define STORAGE_CLASS_RMGR_H extern\n#define STORAGE_CLASS_RMGR_C\n#else\t\t\t\t \n#define STORAGE_CLASS_RMGR_H static inline\n#define STORAGE_CLASS_RMGR_C static inline\n#endif\t\t\t\t \n\n \nint ia_css_rmgr_init(void);\n\n \nvoid ia_css_rmgr_uninit(void);\n\n \n\n#include \"ia_css_rmgr_vbuf.h\"\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

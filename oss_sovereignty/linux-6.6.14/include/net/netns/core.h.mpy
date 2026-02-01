@@ -1,0 +1,9 @@
+{
+  "module_name": "core.h",
+  "hash_id": "704943faeeddfaf4eec84bb4742f49ff7b02bc89723339c050d072a05f5edbcc",
+  "original_prompt": "Ingested from linux-6.6.14/include/net/netns/core.h",
+  "human_readable_source": " \n#ifndef __NETNS_CORE_H__\n#define __NETNS_CORE_H__\n\n#include <linux/types.h>\n\nstruct ctl_table_header;\nstruct prot_inuse;\nstruct cpumask;\n\nstruct netns_core {\n\t \n\tstruct ctl_table_header\t*sysctl_hdr;\n\n\tint\tsysctl_somaxconn;\n\tu8\tsysctl_txrehash;\n\n#ifdef CONFIG_PROC_FS\n\tstruct prot_inuse __percpu *prot_inuse;\n#endif\n\n#if IS_ENABLED(CONFIG_RPS) && IS_ENABLED(CONFIG_SYSCTL)\n\tstruct cpumask *rps_default_mask;\n#endif\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

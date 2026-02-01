@@ -1,0 +1,9 @@
+{
+  "module_name": "test-version-etc.sh",
+  "hash_id": "9fc09102ec08eee96a0620d7d1541b54c44bddb8fa957ab98c838aeeecf84018",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-version-etc.sh",
+  "human_readable_source": "#! /bin/sh\n# Test suite for version-etc.\n# Copyright (C) 2009-2023 Free Software Foundation, Inc.\n# This file is part of the GNUlib Library.\n#\n# This program is free software: you can redistribute it and/or modify\n# it under the terms of the GNU General Public License as published by\n# the Free Software Foundation, either version 3 of the License, or\n# (at your option) any later version.\n#\n# This program is distributed in the hope that it will be useful,\n# but WITHOUT ANY WARRANTY; without even the implied warranty of\n# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n# GNU General Public License for more details.\n#\n# You should have received a copy of the GNU General Public License\n# along with this program.  If not, see <https://www.gnu.org/licenses/>.\n\n. \"${srcdir=.}/init.sh\"; path_prepend_ .\n\nTMP=ve-expected.tmp\nLC_ALL=C\nexport LC_ALL\nERR=0\n\ncat > $TMP <<EOT\ntest-version-etc (PROJECT) VERSION\nCOPYRIGHT Free Software Foundation, Inc.\nLicense GPLv3+: GNU GPL version 3 or later <https://gnu.org/licenses/gpl.html>.\nThis is free software: you are free to change and redistribute it.\nThere is NO WARRANTY, to the extent permitted by law.\n\nWritten by Sergey Poznyakoff and Eric Blake.\nEOT\n\n${CHECKER} test-version-etc${EXEEXT} --version |\n sed '1s/test-version-etc (.*) .*/test-version-etc (PROJECT) VERSION/\n      /^Packaged by/d\n      2,3 s/Copyright (C) [0-9]\\{4,4\\}/COPYRIGHT/' |\n tr -d '\\015' |\n compare $TMP - || ERR=1\n\nrm $TMP\n\nexit $ERR\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

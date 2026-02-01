@@ -1,0 +1,9 @@
+{
+  "module_name": "@@__@@__py__objstringio.c.qstr",
+  "hash_id": "f0fe441f6225e7ff1bb88b2bb652687cfe09ae64db22ff0e05b2a9134a4693c4",
+  "original_prompt": "Ingested from sys_09_Anvil/source/ports/unix/build-bicameral/genhdr/qstr/@@__@@__py__objstringio.c.qstr",
+  "human_readable_source": "Q(read)\nQ(readinto)\nQ(readline)\nQ(write)\nQ(seek)\nQ(tell)\nQ(flush)\nQ(close)\nQ(getvalue)\nQ(__enter__)\nQ(__exit__)\nQ(StringIO)\nQ(BytesIO)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

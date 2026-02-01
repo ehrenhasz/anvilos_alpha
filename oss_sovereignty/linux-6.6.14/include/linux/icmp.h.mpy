@@ -1,0 +1,9 @@
+{
+  "module_name": "icmp.h",
+  "hash_id": "bd17b089612e1d8851f3664f94ac640a5682a856feacb595949d08f0a39bfd90",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/icmp.h",
+  "human_readable_source": " \n \n#ifndef _LINUX_ICMP_H\n#define\t_LINUX_ICMP_H\n\n#include <linux/skbuff.h>\n#include <uapi/linux/icmp.h>\n#include <uapi/linux/errqueue.h>\n\nstatic inline struct icmphdr *icmp_hdr(const struct sk_buff *skb)\n{\n\treturn (struct icmphdr *)skb_transport_header(skb);\n}\n\nstatic inline bool icmp_is_err(int type)\n{\n\tswitch (type) {\n\tcase ICMP_DEST_UNREACH:\n\tcase ICMP_SOURCE_QUENCH:\n\tcase ICMP_REDIRECT:\n\tcase ICMP_TIME_EXCEEDED:\n\tcase ICMP_PARAMETERPROB:\n\t\treturn true;\n\t}\n\n\treturn false;\n}\n\nvoid ip_icmp_error_rfc4884(const struct sk_buff *skb,\n\t\t\t   struct sock_ee_data_rfc4884 *out,\n\t\t\t   int thlen, int off);\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

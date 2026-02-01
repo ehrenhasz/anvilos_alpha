@@ -1,0 +1,9 @@
+{
+  "module_name": "sppctl.h",
+  "hash_id": "c784529f12851b9b4315a31adb1af64583d1bb3a7405fcdace286ceee1c8dae4",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/pinctrl/sppctl.h",
+  "human_readable_source": " \n \n\n#ifndef __DT_BINDINGS_PINCTRL_SPPCTL_H__\n#define __DT_BINDINGS_PINCTRL_SPPCTL_H__\n\n#define IOP_G_MASTE\t\t(0x01 << 0)\n#define IOP_G_FIRST\t\t(0x01 << 1)\n\n#define SPPCTL_PCTL_G_PMUX\t(0x00        | IOP_G_MASTE)\n#define SPPCTL_PCTL_G_GPIO\t(IOP_G_FIRST | IOP_G_MASTE)\n#define SPPCTL_PCTL_G_IOPP\t(IOP_G_FIRST | 0x00)\n\n#define SPPCTL_PCTL_L_OUT\t(0x01 << 0)\t \n#define SPPCTL_PCTL_L_OU1\t(0x01 << 1)\t \n#define SPPCTL_PCTL_L_INV\t(0x01 << 2)\t \n#define SPPCTL_PCTL_L_ONV\t(0x01 << 3)\t \n#define SPPCTL_PCTL_L_ODR\t(0x01 << 4)\t \n\n \n#define SPPCTL_IOPAD(pin, typ, fun, flg)\t(((pin) << 24) | ((typ) << 16) | \\\n\t\t\t\t\t\t((fun) << 8) | (flg))\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

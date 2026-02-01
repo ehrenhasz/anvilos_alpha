@@ -1,0 +1,9 @@
+{
+  "module_name": "nv44.c",
+  "hash_id": "a32c7b3124c75d342f22cbdd610bf9fdbacb75a915e6fd2fda9701dc0ed1b7ba",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/subdev/mc/nv44.c",
+  "human_readable_source": " \n#include \"priv.h\"\n\nvoid\nnv44_mc_init(struct nvkm_mc *mc)\n{\n\tstruct nvkm_device *device = mc->subdev.device;\n\tu32 tmp = nvkm_rd32(device, 0x10020c);\n\n\tnvkm_wr32(device, 0x000200, 0xffffffff);  \n\n\tnvkm_wr32(device, 0x001700, tmp);\n\tnvkm_wr32(device, 0x001704, 0);\n\tnvkm_wr32(device, 0x001708, 0);\n\tnvkm_wr32(device, 0x00170c, tmp);\n}\n\nstatic const struct nvkm_mc_func\nnv44_mc = {\n\t.init = nv44_mc_init,\n\t.intr = &nv04_mc_intr,\n\t.intrs = nv17_mc_intrs,\n\t.device = &nv04_mc_device,\n\t.reset = nv17_mc_reset,\n};\n\nint\nnv44_mc_new(struct nvkm_device *device, enum nvkm_subdev_type type, int inst, struct nvkm_mc **pmc)\n{\n\treturn nvkm_mc_new_(&nv44_mc, device, type, inst, pmc);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

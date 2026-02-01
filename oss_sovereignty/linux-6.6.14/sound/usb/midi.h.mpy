@@ -1,0 +1,9 @@
+{
+  "module_name": "midi.h",
+  "hash_id": "001775e83b2a836b2d10efe924f1047584e41662fed25f931cd512de9e58d45a",
+  "original_prompt": "Ingested from linux-6.6.14/sound/usb/midi.h",
+  "human_readable_source": " \n#ifndef __USBMIDI_H\n#define __USBMIDI_H\n\n \n#define MIDI_MAX_ENDPOINTS 2\n\n \nstruct snd_usb_midi_endpoint_info {\n\tint8_t   out_ep;\t \n\tuint8_t  out_interval;\t \n\tint8_t   in_ep;\n\tuint8_t  in_interval;\n\tuint16_t out_cables;\t \n\tuint16_t in_cables;\t \n\tint16_t  assoc_in_jacks[16];\n\tint16_t  assoc_out_jacks[16];\n};\n\n \n\n \n\n \n\n \n\n \n\n \n\n \n\n \n\n \n\n \n\n \n\nint __snd_usbmidi_create(struct snd_card *card,\n\t\t\t struct usb_interface *iface,\n\t\t\t struct list_head *midi_list,\n\t\t\t const struct snd_usb_audio_quirk *quirk,\n\t\t\t unsigned int usb_id,\n\t\t\t unsigned int *num_rawmidis);\n\nstatic inline int snd_usbmidi_create(struct snd_card *card,\n\t\t       struct usb_interface *iface,\n\t\t       struct list_head *midi_list,\n\t\t       const struct snd_usb_audio_quirk *quirk)\n{\n\treturn __snd_usbmidi_create(card, iface, midi_list, quirk, 0, NULL);\n}\n\nvoid snd_usbmidi_input_stop(struct list_head *p);\nvoid snd_usbmidi_input_start(struct list_head *p);\nvoid snd_usbmidi_disconnect(struct list_head *p);\nvoid snd_usbmidi_suspend(struct list_head *p);\nvoid snd_usbmidi_resume(struct list_head *p);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

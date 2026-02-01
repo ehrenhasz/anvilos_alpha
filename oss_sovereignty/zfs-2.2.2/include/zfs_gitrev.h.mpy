@@ -1,0 +1,9 @@
+{
+  "module_name": "zfs_gitrev.h",
+  "hash_id": "a859712968d972eb1c48844b3d799a85d8e61d0421f0ef4c8c4d4d18c52761b1",
+  "original_prompt": "Ingested from zfs-2.2.2/include/zfs_gitrev.h",
+  "human_readable_source": "#define\tZFS_META_GITREV \"zfs-2.2.2-0-g494aaaed8-dist\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "max517.h",
+  "hash_id": "5101a662b0eb750be42a424e139ee66e2c6edb77d966018b72156f2fe8119b88",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/iio/dac/max517.h",
+  "human_readable_source": " \n \n#ifndef IIO_DAC_MAX517_H_\n#define IIO_DAC_MAX517_H_\n\nstruct max517_platform_data {\n\tu16\t\t\t\tvref_mv[8];\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

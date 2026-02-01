@@ -1,0 +1,9 @@
+{
+  "module_name": "phy-dp.h",
+  "hash_id": "1659a95eba847321fe43dfa3c0e95496e9206d44967b0ee9a4ae6119175ef69a",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/phy/phy-dp.h",
+  "human_readable_source": " \n \n\n#ifndef __PHY_DP_H_\n#define __PHY_DP_H_\n\n#include <linux/types.h>\n\n \nstruct phy_configure_opts_dp {\n\t \n\tunsigned int link_rate;\n\n\t \n\tunsigned int lanes;\n\n\t \n\tunsigned int voltage[4];\n\n\t \n\tunsigned int pre[4];\n\n\t \n\tu8 ssc : 1;\n\n\t \n\tu8 set_rate : 1;\n\n\t \n\tu8 set_lanes : 1;\n\n\t \n\tu8 set_voltages : 1;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

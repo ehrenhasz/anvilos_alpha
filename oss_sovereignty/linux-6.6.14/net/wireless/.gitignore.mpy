@@ -1,0 +1,9 @@
+{
+  "module_name": ".gitignore",
+  "hash_id": "9d41c40fb886d77031763b1e5d4f488468bcbfdb2b733c0b5fe0e217f82fbe81",
+  "original_prompt": "Ingested from linux-6.6.14/net/wireless/.gitignore",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nshipped-certs.c\nextra-certs.c\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

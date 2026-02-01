@@ -1,0 +1,9 @@
+{
+  "module_name": "test_strip_hyphen.log",
+  "hash_id": "b384136fe1a8b1ea0a15aa79d0f15969adbb8da067b25916091a1363f969fd58",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/kunit/test_data/test_strip_hyphen.log",
+  "human_readable_source": "KTAP version 1\n1..2\n\t# Subtest: sysctl_test\n\t1..1\n\t# sysctl_test_dointvec_null_tbl_data: sysctl_test_dointvec_null_tbl_data passed\n\tok 1 - sysctl_test_dointvec_null_tbl_data\nkunit sysctl_test: all tests passed\nok 1 - sysctl_test\n\t# Subtest: example\n\t1..1\ninit_suite\n\t# example_simple_test: initializing\n\t# example_simple_test: example_simple_test passed\n\tok 1 example_simple_test\nkunit example: all tests passed\nok 2 example\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

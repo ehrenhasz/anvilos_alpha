@@ -1,0 +1,9 @@
+{
+  "module_name": "revision.h",
+  "hash_id": "41a52d16c0e942dce5489ff866998cf7fc26ad29e4db56b601a5b6a44169c6de",
+  "original_prompt": "Ingested from linux-6.6.14/include/soc/imx/revision.h",
+  "human_readable_source": " \n \n\n#ifndef __SOC_IMX_REVISION_H__\n#define __SOC_IMX_REVISION_H__\n\n#define IMX_CHIP_REVISION_1_0\t\t0x10\n#define IMX_CHIP_REVISION_1_1\t\t0x11\n#define IMX_CHIP_REVISION_1_2\t\t0x12\n#define IMX_CHIP_REVISION_1_3\t\t0x13\n#define IMX_CHIP_REVISION_1_4\t\t0x14\n#define IMX_CHIP_REVISION_1_5\t\t0x15\n#define IMX_CHIP_REVISION_2_0\t\t0x20\n#define IMX_CHIP_REVISION_2_1\t\t0x21\n#define IMX_CHIP_REVISION_2_2\t\t0x22\n#define IMX_CHIP_REVISION_2_3\t\t0x23\n#define IMX_CHIP_REVISION_3_0\t\t0x30\n#define IMX_CHIP_REVISION_3_1\t\t0x31\n#define IMX_CHIP_REVISION_3_2\t\t0x32\n#define IMX_CHIP_REVISION_3_3\t\t0x33\n#define IMX_CHIP_REVISION_UNKNOWN\t0xff\n\nint mx25_revision(void);\nint mx27_revision(void);\nint mx31_revision(void);\nint mx35_revision(void);\nint mx51_revision(void);\nint mx53_revision(void);\n\nunsigned int imx_get_soc_revision(void);\nvoid imx_print_silicon_rev(const char *cpu, int srev);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

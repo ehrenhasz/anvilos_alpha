@@ -1,0 +1,9 @@
+{
+  "module_name": "STG4000Interface.h",
+  "hash_id": "842d3e748a887e48f4792e140850861e4ec508651640c4938433004c595b07a0",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/video/fbdev/kyro/STG4000Interface.h",
+  "human_readable_source": " \n\n#ifndef _STG4000INTERFACE_H\n#define _STG4000INTERFACE_H\n\n#include <linux/pci.h>\n#include <video/kyro.h>\n\n \nextern int InitialiseRamdac(volatile STG4000REG __iomem *pSTGReg, u32 displayDepth,\n\t\t\t    u32 displayWidth, u32 displayHeight,\n\t\t\t    s32 HSyncPolarity, s32 VSyncPolarity,\n\t\t\t    u32 *pixelClock);\n\nextern void DisableRamdacOutput(volatile STG4000REG __iomem *pSTGReg);\nextern void EnableRamdacOutput(volatile STG4000REG __iomem *pSTGReg);\n\n \nextern void DisableVGA(volatile STG4000REG __iomem *pSTGReg);\nextern void StopVTG(volatile STG4000REG __iomem *pSTGReg);\nextern void StartVTG(volatile STG4000REG __iomem *pSTGReg);\nextern void SetupVTG(volatile STG4000REG __iomem *pSTGReg,\n\t\t     const struct kyrofb_info * pTiming);\n\nextern u32 ProgramClock(u32 refClock, u32 coreClock, u32 *FOut, u32 *ROut, u32 *POut);\nextern int SetCoreClockPLL(volatile STG4000REG __iomem *pSTGReg, struct pci_dev *pDev);\n\n \nextern void ResetOverlayRegisters(volatile STG4000REG __iomem *pSTGReg);\n\nextern int CreateOverlaySurface(volatile STG4000REG __iomem *pSTGReg,\n\t\t\t\tu32 ulWidth, u32 ulHeight,\n\t\t\t\tint bLinear,\n\t\t\t\tu32 ulOverlayOffset,\n\t\t\t\tu32 * retStride, u32 * retUVStride);\n\nextern int SetOverlayBlendMode(volatile STG4000REG __iomem *pSTGReg,\n\t\t\t       OVRL_BLEND_MODE mode,\n\t\t\t       u32 ulAlpha, u32 ulColorKey);\n\nextern int SetOverlayViewPort(volatile STG4000REG __iomem *pSTGReg,\n\t\t\t      u32 left, u32 top,\n\t\t\t      u32 right, u32 bottom);\n\nextern void EnableOverlayPlane(volatile STG4000REG __iomem *pSTGReg);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

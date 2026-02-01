@@ -1,0 +1,9 @@
+{
+  "module_name": "dmub_srv_stat.h",
+  "hash_id": "98afc69ce81629e92bdbffd3a91869c6af7b398ee767a2f6d4b88a5917d6732a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/dmub/dmub_srv_stat.h",
+  "human_readable_source": " \n\n#ifndef _DMUB_SRV_STAT_H_\n#define _DMUB_SRV_STAT_H_\n\n \n#include \"dmub_srv.h\"\n\nenum dmub_status dmub_srv_stat_get_notification(struct dmub_srv *dmub,\n\t\t\t\t\t\tstruct dmub_notification *notify);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "asm_linkage.h",
+  "hash_id": "cbcb0d3bbddc1b524898a978668065c9f1dfa8974fcd38eff9320e6389b8c4e1",
+  "original_prompt": "Ingested from zfs-2.2.2/include/sys/asm_linkage.h",
+  "human_readable_source": " \n \n\n#ifndef _SYS_ASM_LINKAGE_H\n#define\t_SYS_ASM_LINKAGE_H\n\n#define\tASMABI\n\n#if defined(__i386) || defined(__amd64)\n\n#include <sys/ia32/asm_linkage.h>\t \n\n#endif\n\n#if defined(_KERNEL) && defined(HAVE_KERNEL_OBJTOOL)\n\n#include <asm/frame.h>\n\n#else  \n#define\tFRAME_BEGIN\n#define\tFRAME_END\n#endif\n\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

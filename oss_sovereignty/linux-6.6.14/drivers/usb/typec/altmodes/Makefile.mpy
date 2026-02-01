@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "ccb4d42b42fb5bf358e2acdebe80314308274660395af2536ff767a942ca4f2b",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/usb/typec/altmodes/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n\nobj-$(CONFIG_TYPEC_DP_ALTMODE)\t\t+= typec_displayport.o\ntypec_displayport-y\t\t\t:= displayport.o\nobj-$(CONFIG_TYPEC_NVIDIA_ALTMODE)\t+= typec_nvidia.o\ntypec_nvidia-y\t\t\t\t:= nvidia.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

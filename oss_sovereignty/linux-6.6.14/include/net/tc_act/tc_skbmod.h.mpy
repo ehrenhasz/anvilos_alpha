@@ -1,0 +1,9 @@
+{
+  "module_name": "tc_skbmod.h",
+  "hash_id": "aec40d0ba2e998ddb318582f684508827199c8cadb0a9e34d1a46fcd0ab1fa36",
+  "original_prompt": "Ingested from linux-6.6.14/include/net/tc_act/tc_skbmod.h",
+  "human_readable_source": " \n \n\n#ifndef __NET_TC_SKBMOD_H\n#define __NET_TC_SKBMOD_H\n\n#include <net/act_api.h>\n#include <linux/tc_act/tc_skbmod.h>\n\nstruct tcf_skbmod_params {\n\tstruct rcu_head\trcu;\n\tu64\tflags;  \n\tu8\teth_dst[ETH_ALEN];\n\tu16\teth_type;\n\tu8\teth_src[ETH_ALEN];\n};\n\nstruct tcf_skbmod {\n\tstruct tc_action\tcommon;\n\tstruct tcf_skbmod_params __rcu *skbmod_p;\n};\n#define to_skbmod(a) ((struct tcf_skbmod *)a)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

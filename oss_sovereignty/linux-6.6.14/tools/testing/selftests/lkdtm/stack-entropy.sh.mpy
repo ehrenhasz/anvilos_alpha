@@ -1,0 +1,9 @@
+{
+  "module_name": "stack-entropy.sh",
+  "hash_id": "01f95565a277c9bbceaeeacff74a84a8379bfe9f8fe8e4119edc4e1540abfc35",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/lkdtm/stack-entropy.sh",
+  "human_readable_source": "#!/bin/sh\n# SPDX-License-Identifier: GPL-2.0\n#\n# Measure kernel stack entropy by sampling via LKDTM's REPORT_STACK test.\nset -e\nsamples=\"${1:-1000}\"\nTRIGGER=/sys/kernel/debug/provoke-crash/DIRECT\nKSELFTEST_SKIP_TEST=4\n\n# Verify we have LKDTM available in the kernel.\nif [ ! -r $TRIGGER ] ; then\n\t/sbin/modprobe -q lkdtm || true\n\tif [ ! -r $TRIGGER ] ; then\n\t\techo \"Cannot find $TRIGGER (missing CONFIG_LKDTM?)\"\n\telse\n\t\techo \"Cannot write $TRIGGER (need to run as root?)\"\n\tfi\n\t# Skip this test\n\texit $KSELFTEST_SKIP_TEST\nfi\n\n# Capture dmesg continuously since it may fill up depending on sample size.\nlog=$(mktemp -t stack-entropy-XXXXXX)\ndmesg --follow >\"$log\" & pid=$!\nreport=-1\nfor i in $(seq 1 $samples); do\n        echo \"REPORT_STACK\" > $TRIGGER\n\tif [ -t 1 ]; then\n\t\tpercent=$(( 100 * $i / $samples ))\n\t\tif [ \"$percent\" -ne \"$report\" ]; then\n\t\t\t/bin/echo -en \"$percent%\\r\"\n\t\t\treport=\"$percent\"\n\t\tfi\n\tfi\ndone\nkill \"$pid\"\n\n# Count unique offsets since last run.\nseen=$(tac \"$log\" | grep -m1 -B\"$samples\"0 'Starting stack offset' | \\\n\tgrep 'Stack offset' | awk '{print $NF}' | sort | uniq -c | wc -l)\nbits=$(echo \"obase=2; $seen\" | bc | wc -L)\necho \"Bits of stack entropy: $bits\"\nrm -f \"$log\"\n\n# We would expect any functional stack randomization to be at least 5 bits.\nif [ \"$bits\" -lt 5 ]; then\n\techo \"Stack entropy is low! Booted without 'randomize_kstack_offset=y'?\"\n\texit 1\nelse\n\texit 0\nfi\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "pn_dev.h",
+  "hash_id": "6714673f213888bd458a532c749ed340a4e0896df4fa7ddeb88da2244e3643bf",
+  "original_prompt": "Ingested from linux-6.6.14/include/net/phonet/pn_dev.h",
+  "human_readable_source": " \n \n\n#ifndef PN_DEV_H\n#define PN_DEV_H\n\n#include <linux/list.h>\n#include <linux/mutex.h>\n\nstruct net;\n\nstruct phonet_device_list {\n\tstruct list_head list;\n\tstruct mutex lock;\n};\n\nstruct phonet_device_list *phonet_device_list(struct net *net);\n\nstruct phonet_device {\n\tstruct list_head list;\n\tstruct net_device *netdev;\n\tDECLARE_BITMAP(addrs, 64);\n\tstruct rcu_head\trcu;\n};\n\nint phonet_device_init(void);\nvoid phonet_device_exit(void);\nint phonet_netlink_register(void);\nstruct net_device *phonet_device_get(struct net *net);\n\nint phonet_address_add(struct net_device *dev, u8 addr);\nint phonet_address_del(struct net_device *dev, u8 addr);\nu8 phonet_address_get(struct net_device *dev, u8 addr);\nint phonet_address_lookup(struct net *net, u8 addr);\nvoid phonet_address_notify(int event, struct net_device *dev, u8 addr);\n\nint phonet_route_add(struct net_device *dev, u8 daddr);\nint phonet_route_del(struct net_device *dev, u8 daddr);\nvoid rtm_phonet_notify(int event, struct net_device *dev, u8 dst);\nstruct net_device *phonet_route_get_rcu(struct net *net, u8 daddr);\nstruct net_device *phonet_route_output(struct net *net, u8 daddr);\n\n#define PN_NO_ADDR\t0xff\n\nextern const struct seq_operations pn_sock_seq_ops;\nextern const struct seq_operations pn_res_seq_ops;\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

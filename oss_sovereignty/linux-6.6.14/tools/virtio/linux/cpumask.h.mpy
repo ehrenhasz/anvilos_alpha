@@ -1,0 +1,9 @@
+{
+  "module_name": "cpumask.h",
+  "hash_id": "1b9b1c79c3b0500d5b61b0444df9f0ec823976a961c97b4b7a7b4c75041c2643",
+  "original_prompt": "Ingested from linux-6.6.14/tools/virtio/linux/cpumask.h",
+  "human_readable_source": " \n#ifndef _LINUX_CPUMASK_H\n#define _LINUX_CPUMASK_H\n\n#include <linux/kernel.h>\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

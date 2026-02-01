@@ -1,0 +1,9 @@
+{
+  "module_name": "kernel-revalidate-disk-size.m4",
+  "hash_id": "9809502c6b088c7a6cf270847ffc21d3b1a72f942166298d565b71e3e80b6c5a",
+  "original_prompt": "Ingested from zfs-2.2.2/config/kernel-revalidate-disk-size.m4",
+  "human_readable_source": "dnl #\ndnl # 5.11 API change\ndnl # revalidate_disk_size() has been removed entirely.\ndnl #\ndnl # 5.10 API change\ndnl # revalidate_disk() was replaced by revalidate_disk_size()\ndnl #\nAC_DEFUN([ZFS_AC_KERNEL_SRC_REVALIDATE_DISK], [\n\n\tZFS_LINUX_TEST_SRC([revalidate_disk_size], [\n\t\t#include <linux/blkdev.h>\n\t], [\n\t\tstruct gendisk *disk = NULL;\n\t\t(void) revalidate_disk_size(disk, false);\n\t])\n\n\tZFS_LINUX_TEST_SRC([revalidate_disk], [\n\t\t#include <linux/blkdev.h>\n\t], [\n\t\tstruct gendisk *disk = NULL;\n\t\t(void) revalidate_disk(disk);\n\t])\n])\n\nAC_DEFUN([ZFS_AC_KERNEL_REVALIDATE_DISK], [\n\n\tAC_MSG_CHECKING([whether revalidate_disk_size() is available])\n\tZFS_LINUX_TEST_RESULT_SYMBOL([revalidate_disk_size],\n\t\t[revalidate_disk_size], [block/genhd.c], [\n\t\tAC_MSG_RESULT(yes)\n\t\tAC_DEFINE(HAVE_REVALIDATE_DISK_SIZE, 1,\n\t\t    [revalidate_disk_size() is available])\n\t], [\n\t\tAC_MSG_RESULT(no)\n\n\t\tAC_MSG_CHECKING([whether revalidate_disk() is available])\n\t\tZFS_LINUX_TEST_RESULT_SYMBOL([revalidate_disk],\n\t\t    [revalidate_disk], [block/genhd.c], [\n\t\t\tAC_MSG_RESULT(yes)\n\t\t\tAC_DEFINE(HAVE_REVALIDATE_DISK, 1,\n\t\t\t    [revalidate_disk() is available])\n\t\t], [\n\t\t\tAC_MSG_RESULT(no)\n\t\t])\n\t])\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

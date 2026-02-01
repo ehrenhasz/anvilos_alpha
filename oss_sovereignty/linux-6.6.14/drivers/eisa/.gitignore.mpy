@@ -1,0 +1,9 @@
+{
+  "module_name": ".gitignore",
+  "hash_id": "da61d69cd1e28ad7e07c8a0d7eb8be82da1e0bf1e84cc3c8ae834f5d4f6c537c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/eisa/.gitignore",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\ndevlist.h\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

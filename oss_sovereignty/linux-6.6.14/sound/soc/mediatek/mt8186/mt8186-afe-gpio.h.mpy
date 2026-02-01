@@ -1,0 +1,9 @@
+{
+  "module_name": "mt8186-afe-gpio.h",
+  "hash_id": "69d16780def468ea47f9e5eef37e95a1c5f179582ac75718530ebf3a2a4cd808",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/mediatek/mt8186/mt8186-afe-gpio.h",
+  "human_readable_source": " \n\n#ifndef _MT8186_AFE_GPIO_H_\n#define _MT8186_AFE_GPIO_H_\n\nstruct mtk_base_afe;\n\nint mt8186_afe_gpio_init(struct device *dev);\n\nint mt8186_afe_gpio_request(struct device *dev, bool enable,\n\t\t\t    int dai, int uplink);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

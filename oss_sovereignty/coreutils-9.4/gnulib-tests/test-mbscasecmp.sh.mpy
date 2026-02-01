@@ -1,0 +1,9 @@
+{
+  "module_name": "test-mbscasecmp.sh",
+  "hash_id": "c4f7a7e65eac92ad5946ea7099f0d8895eaec8f05a7b5ecee3b3ff7be0e4c68c",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-mbscasecmp.sh",
+  "human_readable_source": "#!/bin/sh\n\n# Test whether a specific Turkish locale is installed.\n: \"${LOCALE_TR_UTF8=tr_TR.UTF-8}\"\nif test $LOCALE_TR_UTF8 = none; then\n  if test -f /usr/bin/localedef; then\n    echo \"Skipping test: no turkish Unicode locale is installed\"\n  else\n    echo \"Skipping test: no turkish Unicode locale is supported\"\n  fi\n  exit 77\nfi\n\nLC_ALL=$LOCALE_TR_UTF8 \\\n${CHECKER} ./test-mbscasecmp${EXEEXT}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

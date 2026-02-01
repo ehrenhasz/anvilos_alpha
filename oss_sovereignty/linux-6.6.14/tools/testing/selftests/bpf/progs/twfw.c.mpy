@@ -1,0 +1,9 @@
+{
+  "module_name": "twfw.c",
+  "hash_id": "3f7409e4c406393582f1d8bcb95e8333c0e49f0379d7a6d80d9edcf48cec8201",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/twfw.c",
+  "human_readable_source": "\n \n#include <linux/types.h>\n#include <bpf/bpf_helpers.h>\n#include <linux/bpf.h>\n#include <stdint.h>\n\n#define TWFW_MAX_TIERS (64)\n \n\nstruct twfw_tier_value {\n\tunsigned long mask[1];\n};\n\nstruct rule {\n\tuint8_t seqnum;\n};\n\nstruct rules_map {\n\t__uint(type, BPF_MAP_TYPE_ARRAY);\n\t__type(key, __u32);\n\t__type(value, struct rule);\n\t__uint(max_entries, 1);\n};\n\nstruct tiers_map {\n\t__uint(type, BPF_MAP_TYPE_ARRAY);\n\t__type(key, __u32);\n\t__type(value, struct twfw_tier_value);\n\t__uint(max_entries, 1);\n};\n\nstruct rules_map rules SEC(\".maps\");\nstruct tiers_map tiers SEC(\".maps\");\n\nSEC(\"cgroup_skb/ingress\")\nint twfw_verifier(struct __sk_buff* skb)\n{\n\tconst uint32_t key = 0;\n\tconst struct twfw_tier_value* tier = bpf_map_lookup_elem(&tiers, &key);\n\tif (!tier)\n\t\treturn 1;\n\n\tstruct rule* rule = bpf_map_lookup_elem(&rules, &key);\n\tif (!rule)\n\t\treturn 1;\n\n\tif (rule && rule->seqnum < TWFW_MAX_TIERS) {\n\t\t \n\t\tunsigned long mask = tier->mask[rule->seqnum / 64];\n\t\tif (mask)\n\t\t\treturn 0;\n\t}\n\treturn 1;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

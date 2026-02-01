@@ -1,0 +1,9 @@
+{
+  "module_name": "kvm_page_track.h",
+  "hash_id": "9a03f0c8a8d8be17ff73ad817f77b12cf627bfc2f958f9ae2a1188769262dcfc",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/include/asm/kvm_page_track.h",
+  "human_readable_source": " \n#ifndef _ASM_X86_KVM_PAGE_TRACK_H\n#define _ASM_X86_KVM_PAGE_TRACK_H\n\n#include <linux/kvm_types.h>\n\n#ifdef CONFIG_KVM_EXTERNAL_WRITE_TRACKING\n \nstruct kvm_page_track_notifier_head {\n\tstruct srcu_struct track_srcu;\n\tstruct hlist_head track_notifier_list;\n};\n\nstruct kvm_page_track_notifier_node {\n\tstruct hlist_node node;\n\n\t \n\tvoid (*track_write)(gpa_t gpa, const u8 *new, int bytes,\n\t\t\t    struct kvm_page_track_notifier_node *node);\n\n\t \n\tvoid (*track_remove_region)(gfn_t gfn, unsigned long nr_pages,\n\t\t\t\t    struct kvm_page_track_notifier_node *node);\n};\n\nint kvm_page_track_register_notifier(struct kvm *kvm,\n\t\t\t\t     struct kvm_page_track_notifier_node *n);\nvoid kvm_page_track_unregister_notifier(struct kvm *kvm,\n\t\t\t\t\tstruct kvm_page_track_notifier_node *n);\n\nint kvm_write_track_add_gfn(struct kvm *kvm, gfn_t gfn);\nint kvm_write_track_remove_gfn(struct kvm *kvm, gfn_t gfn);\n#else\n \nstruct kvm_page_track_notifier_node {};\n#endif  \n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "hdp_v5_0.h",
+  "hash_id": "5b40c0c40cc8819b618c37ba6946ef4f4225306161c59e7b58e6b618cafe2f20",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/amdgpu/hdp_v5_0.h",
+  "human_readable_source": " \n\n#ifndef __HDP_V5_0_H__\n#define __HDP_V5_0_H__\n\n#include \"soc15_common.h\"\n\nextern const struct amdgpu_hdp_funcs hdp_v5_0_funcs;\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

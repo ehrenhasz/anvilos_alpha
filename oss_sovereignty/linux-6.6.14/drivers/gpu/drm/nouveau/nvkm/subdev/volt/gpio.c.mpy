@@ -1,0 +1,9 @@
+{
+  "module_name": "gpio.c",
+  "hash_id": "63b2241fc9952af5f27f2865e069cac70216d14833302e5c418897befeaaa276",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/subdev/volt/gpio.c",
+  "human_readable_source": " \n#include <subdev/volt.h>\n#include <subdev/bios.h>\n#include <subdev/bios/gpio.h>\n#include <subdev/gpio.h>\n#include \"priv.h\"\n\nstatic const u8 tags[] = {\n\tDCB_GPIO_VID0, DCB_GPIO_VID1, DCB_GPIO_VID2, DCB_GPIO_VID3,\n\tDCB_GPIO_VID4, DCB_GPIO_VID5, DCB_GPIO_VID6, DCB_GPIO_VID7,\n};\n\nint\nnvkm_voltgpio_get(struct nvkm_volt *volt)\n{\n\tstruct nvkm_gpio *gpio = volt->subdev.device->gpio;\n\tu8 vid = 0;\n\tint i;\n\n\tfor (i = 0; i < ARRAY_SIZE(tags); i++) {\n\t\tif (volt->vid_mask & (1 << i)) {\n\t\t\tint ret = nvkm_gpio_get(gpio, 0, tags[i], 0xff);\n\t\t\tif (ret < 0)\n\t\t\t\treturn ret;\n\t\t\tvid |= ret << i;\n\t\t}\n\t}\n\n\treturn vid;\n}\n\nint\nnvkm_voltgpio_set(struct nvkm_volt *volt, u8 vid)\n{\n\tstruct nvkm_gpio *gpio = volt->subdev.device->gpio;\n\tint i;\n\n\tfor (i = 0; i < ARRAY_SIZE(tags); i++, vid >>= 1) {\n\t\tif (volt->vid_mask & (1 << i)) {\n\t\t\tint ret = nvkm_gpio_set(gpio, 0, tags[i], 0xff, vid & 1);\n\t\t\tif (ret < 0)\n\t\t\t\treturn ret;\n\t\t}\n\t}\n\n\treturn 0;\n}\n\nint\nnvkm_voltgpio_init(struct nvkm_volt *volt)\n{\n\tstruct nvkm_subdev *subdev = &volt->subdev;\n\tstruct nvkm_gpio *gpio = subdev->device->gpio;\n\tstruct dcb_gpio_func func;\n\tint i;\n\n\t \n\tfor (i = 0; i < ARRAY_SIZE(tags); i++) {\n\t\tif (volt->vid_mask & (1 << i)) {\n\t\t\tint ret = nvkm_gpio_find(gpio, 0, tags[i], 0xff, &func);\n\t\t\tif (ret) {\n\t\t\t\tif (ret != -ENOENT)\n\t\t\t\t\treturn ret;\n\t\t\t\tnvkm_debug(subdev, \"VID bit %d has no GPIO\\n\", i);\n\t\t\t\tvolt->vid_mask &= ~(1 << i);\n\t\t\t}\n\t\t}\n\t}\n\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

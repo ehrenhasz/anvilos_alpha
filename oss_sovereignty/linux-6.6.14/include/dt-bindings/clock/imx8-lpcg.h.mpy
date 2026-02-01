@@ -1,0 +1,9 @@
+{
+  "module_name": "imx8-lpcg.h",
+  "hash_id": "44a43a780b7dee0a2d8de4d574d4f590174d1f40d69d30ab7689d71361da3461",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/clock/imx8-lpcg.h",
+  "human_readable_source": " \n \n\n#define IMX_LPCG_CLK_0\t0\n#define IMX_LPCG_CLK_1\t4\n#define IMX_LPCG_CLK_2\t8\n#define IMX_LPCG_CLK_3\t12\n#define IMX_LPCG_CLK_4\t16\n#define IMX_LPCG_CLK_5\t20\n#define IMX_LPCG_CLK_6\t24\n#define IMX_LPCG_CLK_7\t28\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

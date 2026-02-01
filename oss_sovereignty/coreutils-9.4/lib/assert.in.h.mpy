@@ -1,0 +1,9 @@
+{
+  "module_name": "assert.in.h",
+  "hash_id": "3bc6cfba115f8dfa6250968aeb12916f0ae54afa9238325c11c60e9d641a7cd3",
+  "original_prompt": "Ingested from coreutils-9.4/lib/assert.in.h",
+  "human_readable_source": " \n\n#if __GNUC__ >= 3\n@PRAGMA_SYSTEM_HEADER@\n#endif\n@PRAGMA_COLUMNS@\n\n#@INCLUDE_NEXT@ @NEXT_ASSERT_H@\n\n \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

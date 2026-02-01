@@ -1,0 +1,9 @@
+{
+  "module_name": "overlay_bad_add_dup_prop.dtso",
+  "hash_id": "4b6b2279d51776fe6affce3023d96ea9a0b501747efb67ee753445d342fef785",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/of/unittest-data/overlay_bad_add_dup_prop.dtso",
+  "human_readable_source": "// SPDX-License-Identifier: GPL-2.0\n/dts-v1/;\n/plugin/;\n\n/*\n * &electric_1/motor-1/electric and &spin_ctrl_1/electric are the same node:\n *   /testcase-data-2/substation@100/motor-1/electric\n *\n * Thus the property \"rpm_avail\" in each fragment will\n * result in an attempt to update the same property twice.\n * This will result in an error and the overlay apply\n * will fail.\n *\n * The previous version of this test did not include the extra\n * level of node 'electric'.  That resulted in the 'rpm_avail'\n * property being located in the pre-existing node 'motor-1'.\n * Modifying a property results in a WARNING that a memory leak\n * will occur if the overlay is removed.  Since the overlay apply\n * fails, the memory leak does actually occur, and kmemleak will\n * further report the memory leak if CONFIG_DEBUG_KMEMLEAK is\n * enabled.  Adding the overlay node 'electric' avoids the\n * memory leak and thus people who use kmemleak will not\n * have to debug this non-problem again.\n */\n\n&electric_1 {\n\tmotor-1 {\n\t\telectric {\n\t\t\trpm_avail = <100>;\n\t\t};\n\t};\n};\n\n&spin_ctrl_1 {\n\telectric {\n\t\trpm_avail = <100 200>;\n\t};\n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

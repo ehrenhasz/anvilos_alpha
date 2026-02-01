@@ -1,0 +1,9 @@
+{
+  "module_name": "rf.h",
+  "hash_id": "fe056f6529c4f24cfb616e27a219fed05df9ab08d826fbe994456811b2f2a9da",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/realtek/rtlwifi/rtl8192se/rf.h",
+  "human_readable_source": " \n \n\n#ifndef __INC_RTL92S_RF_H\n#define __INC_RTL92S_RF_H\n\n#define\tRF6052_MAX_TX_PWR\t0x3F\n\nvoid rtl92s_phy_rf6052_set_bandwidth(struct ieee80211_hw *hw,\n\t\t\t\t     u8 bandwidth);\nbool rtl92s_phy_rf6052_config(struct ieee80211_hw *hw) ;\nvoid rtl92s_phy_rf6052_set_ccktxpower(struct ieee80211_hw *hw,\n\t\t\t\t      u8 powerlevel);\nvoid rtl92s_phy_rf6052_set_ofdmtxpower(struct ieee80211_hw *hw,\n\t\t\t\t       u8 *p_pwrlevel, u8 chnl);\n\n#endif\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

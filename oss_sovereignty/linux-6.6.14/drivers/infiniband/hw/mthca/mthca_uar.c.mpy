@@ -1,0 +1,9 @@
+{
+  "module_name": "mthca_uar.c",
+  "hash_id": "9155cfd4cabb2807e5cba2393bcef8d07c12473b4edb9c697c1a3829a4cfd88e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/infiniband/hw/mthca/mthca_uar.c",
+  "human_readable_source": " \n\n#include <asm/page.h>\t\t \n\n#include \"mthca_dev.h\"\n#include \"mthca_memfree.h\"\n\nint mthca_uar_alloc(struct mthca_dev *dev, struct mthca_uar *uar)\n{\n\tuar->index = mthca_alloc(&dev->uar_table.alloc);\n\tif (uar->index == -1)\n\t\treturn -ENOMEM;\n\n\tuar->pfn = (pci_resource_start(dev->pdev, 2) >> PAGE_SHIFT) + uar->index;\n\n\treturn 0;\n}\n\nvoid mthca_uar_free(struct mthca_dev *dev, struct mthca_uar *uar)\n{\n\tmthca_free(&dev->uar_table.alloc, uar->index);\n}\n\nint mthca_init_uar_table(struct mthca_dev *dev)\n{\n\tint ret;\n\n\tret = mthca_alloc_init(&dev->uar_table.alloc,\n\t\t\t       dev->limits.num_uars,\n\t\t\t       dev->limits.num_uars - 1,\n\t\t\t       dev->limits.reserved_uars + 1);\n\tif (ret)\n\t\treturn ret;\n\n\tret = mthca_init_db_tab(dev);\n\tif (ret)\n\t\tmthca_alloc_cleanup(&dev->uar_table.alloc);\n\n\treturn ret;\n}\n\nvoid mthca_cleanup_uar_table(struct mthca_dev *dev)\n{\n\tmthca_cleanup_db_tab(dev);\n\n\t \n\tmthca_alloc_cleanup(&dev->uar_table.alloc);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

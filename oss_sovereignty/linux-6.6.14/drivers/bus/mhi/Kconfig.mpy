@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "2f390167b4ef46eab949de09eecc1e0295c76de707de9892ed2bc5678e5aaa5f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/bus/mhi/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# MHI bus\n#\n# Copyright (c) 2021, Linaro Ltd.\n#\n\nsource \"drivers/bus/mhi/host/Kconfig\"\nsource \"drivers/bus/mhi/ep/Kconfig\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

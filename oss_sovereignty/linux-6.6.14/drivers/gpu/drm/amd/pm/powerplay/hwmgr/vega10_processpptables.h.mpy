@@ -1,0 +1,9 @@
+{
+  "module_name": "vega10_processpptables.h",
+  "hash_id": "143d3a38c2123aa9466cb0330bf6ce60b2faa14a977b8b98b125ff2082fd8802",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/pm/powerplay/hwmgr/vega10_processpptables.h",
+  "human_readable_source": " \n\n#ifndef VEGA10_PROCESSPPTABLES_H\n#define VEGA10_PROCESSPPTABLES_H\n\n#include \"hwmgr.h\"\n\nenum Vega10_I2CLineID {\n\tVega10_I2CLineID_DDC1 = 0x90,\n\tVega10_I2CLineID_DDC2 = 0x91,\n\tVega10_I2CLineID_DDC3 = 0x92,\n\tVega10_I2CLineID_DDC4 = 0x93,\n\tVega10_I2CLineID_DDC5 = 0x94,\n\tVega10_I2CLineID_DDC6 = 0x95,\n\tVega10_I2CLineID_SCLSDA = 0x96,\n\tVega10_I2CLineID_DDCVGA = 0x97\n};\n\n#define Vega10_I2C_DDC1DATA          0\n#define Vega10_I2C_DDC1CLK           1\n#define Vega10_I2C_DDC2DATA          2\n#define Vega10_I2C_DDC2CLK           3\n#define Vega10_I2C_DDC3DATA          4\n#define Vega10_I2C_DDC3CLK           5\n#define Vega10_I2C_SDA               40\n#define Vega10_I2C_SCL               41\n#define Vega10_I2C_DDC4DATA          65\n#define Vega10_I2C_DDC4CLK           66\n#define Vega10_I2C_DDC5DATA          0x48\n#define Vega10_I2C_DDC5CLK           0x49\n#define Vega10_I2C_DDC6DATA          0x4a\n#define Vega10_I2C_DDC6CLK           0x4b\n#define Vega10_I2C_DDCVGADATA        0x4c\n#define Vega10_I2C_DDCVGACLK         0x4d\n\nextern const struct pp_table_func vega10_pptable_funcs;\nextern int vega10_get_number_of_powerplay_table_entries(struct pp_hwmgr *hwmgr);\nextern int vega10_get_powerplay_table_entry(struct pp_hwmgr *hwmgr, uint32_t entry_index,\n\t\tstruct pp_power_state *power_state, int (*call_back_func)(struct pp_hwmgr *, void *,\n\t\t\t\tstruct pp_power_state *, void *, uint32_t));\nextern int vega10_baco_set_cap(struct pp_hwmgr *hwmgr);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

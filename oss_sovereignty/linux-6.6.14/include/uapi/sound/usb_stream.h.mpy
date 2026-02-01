@@ -1,0 +1,9 @@
+{
+  "module_name": "usb_stream.h",
+  "hash_id": "3e8f3bafc735dcbeab264785d7b13fead5015700f0ed3e87bb2b495a30d57388",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/sound/usb_stream.h",
+  "human_readable_source": " \n \n\n#ifndef _UAPI__SOUND_USB_STREAM_H\n#define _UAPI__SOUND_USB_STREAM_H\n\n#define USB_STREAM_INTERFACE_VERSION 2\n\n#define SNDRV_USB_STREAM_IOCTL_SET_PARAMS \\\n\t_IOW('H', 0x90, struct usb_stream_config)\n\nstruct usb_stream_packet {\n\tunsigned offset;\n\tunsigned length;\n};\n\n\nstruct usb_stream_config {\n\tunsigned version;\n\tunsigned sample_rate;\n\tunsigned period_frames;\n\tunsigned frame_size;\n};\n\nstruct usb_stream {\n\tstruct usb_stream_config cfg;\n\tunsigned read_size;\n\tunsigned write_size;\n\n\tint period_size;\n\n\tunsigned state;\n\n\tint idle_insize;\n\tint idle_outsize;\n\tint sync_packet;\n\tunsigned insize_done;\n\tunsigned periods_done;\n\tunsigned periods_polled;\n\n\tstruct usb_stream_packet outpacket[2];\n\tunsigned\t\t inpackets;\n\tunsigned\t\t inpacket_head;\n\tunsigned\t\t inpacket_split;\n\tunsigned\t\t inpacket_split_at;\n\tunsigned\t\t next_inpacket_split;\n\tunsigned\t\t next_inpacket_split_at;\n\tstruct usb_stream_packet inpacket[];\n};\n\nenum usb_stream_state {\n\tusb_stream_invalid,\n\tusb_stream_stopped,\n\tusb_stream_sync0,\n\tusb_stream_sync1,\n\tusb_stream_ready,\n\tusb_stream_running,\n\tusb_stream_xrun,\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

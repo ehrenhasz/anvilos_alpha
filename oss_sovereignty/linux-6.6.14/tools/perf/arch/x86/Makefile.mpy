@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "8035c841e4360799f0135deaa0a3c176479cc9d356fb8b3001ee624ba3b4c7c3",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/arch/x86/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nifndef NO_DWARF\nPERF_HAVE_DWARF_REGS := 1\nendif\nHAVE_KVM_STAT_SUPPORT := 1\nPERF_HAVE_ARCH_REGS_QUERY_REGISTER_OFFSET := 1\nPERF_HAVE_JITDUMP := 1\n\n###\n# Syscall table generation\n#\n\ngenerated := $(OUTPUT)arch/x86/include/generated\nout       := $(generated)/asm\nheader    := $(out)/syscalls_64.c\nsys       := $(srctree)/tools/perf/arch/x86/entry/syscalls\nsystbl    := $(sys)/syscalltbl.sh\n\n# Create output directory if not already present\n_dummy := $(shell [ -d '$(out)' ] || mkdir -p '$(out)')\n\n$(header): $(sys)/syscall_64.tbl $(systbl)\n\t$(Q)$(SHELL) '$(systbl)' $(sys)/syscall_64.tbl 'x86_64' > $@\n\nclean::\n\t$(call QUIET_CLEAN, x86) $(RM) -r $(header) $(generated)\n\narchheaders: $(header)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

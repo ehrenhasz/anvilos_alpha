@@ -1,0 +1,9 @@
+{
+  "module_name": "page.h",
+  "hash_id": "1750513459448cb1127f26b11fde6dfb7d10f133b6d7b58fc7f917934600277b",
+  "original_prompt": "Ingested from linux-6.6.14/fs/nilfs2/page.h",
+  "human_readable_source": " \n \n\n#ifndef _NILFS_PAGE_H\n#define _NILFS_PAGE_H\n\n#include <linux/buffer_head.h>\n#include \"nilfs.h\"\n\n \nenum {\n\tBH_NILFS_Allocated = BH_PrivateStart,\n\tBH_NILFS_Node,\n\tBH_NILFS_Volatile,\n\tBH_NILFS_Checked,\n\tBH_NILFS_Redirected,\n};\n\nBUFFER_FNS(NILFS_Node, nilfs_node)\t\t \nBUFFER_FNS(NILFS_Volatile, nilfs_volatile)\nBUFFER_FNS(NILFS_Checked, nilfs_checked)\t \nBUFFER_FNS(NILFS_Redirected, nilfs_redirected)\t \n\n\nint __nilfs_clear_page_dirty(struct page *);\n\nstruct buffer_head *nilfs_grab_buffer(struct inode *, struct address_space *,\n\t\t\t\t      unsigned long, unsigned long);\nvoid nilfs_forget_buffer(struct buffer_head *);\nvoid nilfs_copy_buffer(struct buffer_head *, struct buffer_head *);\nint nilfs_page_buffers_clean(struct page *);\nvoid nilfs_page_bug(struct page *);\n\nint nilfs_copy_dirty_pages(struct address_space *, struct address_space *);\nvoid nilfs_copy_back_pages(struct address_space *, struct address_space *);\nvoid nilfs_clear_dirty_page(struct page *, bool);\nvoid nilfs_clear_dirty_pages(struct address_space *, bool);\nunsigned int nilfs_page_count_clean_buffers(struct page *, unsigned int,\n\t\t\t\t\t    unsigned int);\nunsigned long nilfs_find_uncommitted_extent(struct inode *inode,\n\t\t\t\t\t    sector_t start_blk,\n\t\t\t\t\t    sector_t *blkoff);\n\n#define NILFS_PAGE_BUG(page, m, a...) \\\n\tdo { nilfs_page_bug(page); BUG(); } while (0)\n\nstatic inline struct buffer_head *\nnilfs_page_get_nth_block(struct page *page, unsigned int count)\n{\n\tstruct buffer_head *bh = page_buffers(page);\n\n\twhile (count-- > 0)\n\t\tbh = bh->b_this_page;\n\tget_bh(bh);\n\treturn bh;\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

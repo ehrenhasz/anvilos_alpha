@@ -1,0 +1,9 @@
+{
+  "module_name": "qedi_sysfs.c",
+  "hash_id": "fe933bd300428f55136d47ea260dc459fff5dbc38120f59965cdb50b5206f50a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/scsi/qedi/qedi_sysfs.c",
+  "human_readable_source": "\n \n\n#include \"qedi.h\"\n#include \"qedi_gbl.h\"\n#include \"qedi_iscsi.h\"\n#include \"qedi_dbg.h\"\n\nstatic inline struct qedi_ctx *qedi_dev_to_hba(struct device *dev)\n{\n\tstruct Scsi_Host *shost = class_to_shost(dev);\n\n\treturn iscsi_host_priv(shost);\n}\n\nstatic ssize_t port_state_show(struct device *dev,\n\t\t\t       struct device_attribute *attr,\n\t\t\t       char *buf)\n{\n\tstruct qedi_ctx *qedi = qedi_dev_to_hba(dev);\n\n\tif (atomic_read(&qedi->link_state) == QEDI_LINK_UP)\n\t\treturn sprintf(buf, \"Online\\n\");\n\telse\n\t\treturn sprintf(buf, \"Linkdown\\n\");\n}\n\nstatic ssize_t speed_show(struct device *dev,\n\t\t\t  struct device_attribute *attr, char *buf)\n{\n\tstruct qedi_ctx *qedi = qedi_dev_to_hba(dev);\n\tstruct qed_link_output if_link;\n\n\tqedi_ops->common->get_link(qedi->cdev, &if_link);\n\n\treturn sprintf(buf, \"%d Gbit\\n\", if_link.speed / 1000);\n}\n\nstatic DEVICE_ATTR_RO(port_state);\nstatic DEVICE_ATTR_RO(speed);\n\nstatic struct attribute *qedi_shost_attrs[] = {\n\t&dev_attr_port_state.attr,\n\t&dev_attr_speed.attr,\n\tNULL\n};\n\nstatic const struct attribute_group qedi_shost_attr_group = {\n\t.attrs = qedi_shost_attrs\n};\n\nconst struct attribute_group *qedi_shost_groups[] = {\n\t&qedi_shost_attr_group,\n\tNULL\n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

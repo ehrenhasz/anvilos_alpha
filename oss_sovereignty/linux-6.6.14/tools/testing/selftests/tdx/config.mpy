@@ -1,0 +1,9 @@
+{
+  "module_name": "config",
+  "hash_id": "f39be8e564f49765864d54b503fc9b15227a402600178900c650ca5776d83e9f",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/tdx/config",
+  "human_readable_source": "CONFIG_TDX_GUEST_DRIVER=y\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

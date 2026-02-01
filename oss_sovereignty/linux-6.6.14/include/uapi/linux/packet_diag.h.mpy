@@ -1,0 +1,9 @@
+{
+  "module_name": "packet_diag.h",
+  "hash_id": "c0965dc054b1944fb950769fa58494a1b4253637a3986644220ff637fd9a50dc",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/packet_diag.h",
+  "human_readable_source": " \n#ifndef __PACKET_DIAG_H__\n#define __PACKET_DIAG_H__\n\n#include <linux/types.h>\n\nstruct packet_diag_req {\n\t__u8\tsdiag_family;\n\t__u8\tsdiag_protocol;\n\t__u16\tpad;\n\t__u32\tpdiag_ino;\n\t__u32\tpdiag_show;\n\t__u32\tpdiag_cookie[2];\n};\n\n#define PACKET_SHOW_INFO\t0x00000001  \n#define PACKET_SHOW_MCLIST\t0x00000002  \n#define PACKET_SHOW_RING_CFG\t0x00000004  \n#define PACKET_SHOW_FANOUT\t0x00000008\n#define PACKET_SHOW_MEMINFO\t0x00000010\n#define PACKET_SHOW_FILTER\t0x00000020\n\nstruct packet_diag_msg {\n\t__u8\tpdiag_family;\n\t__u8\tpdiag_type;\n\t__u16\tpdiag_num;\n\n\t__u32\tpdiag_ino;\n\t__u32\tpdiag_cookie[2];\n};\n\nenum {\n\t \n\tPACKET_DIAG_INFO,\n\tPACKET_DIAG_MCLIST,\n\tPACKET_DIAG_RX_RING,\n\tPACKET_DIAG_TX_RING,\n\tPACKET_DIAG_FANOUT,\n\tPACKET_DIAG_UID,\n\tPACKET_DIAG_MEMINFO,\n\tPACKET_DIAG_FILTER,\n\n\t__PACKET_DIAG_MAX,\n};\n\n#define PACKET_DIAG_MAX (__PACKET_DIAG_MAX - 1)\n\nstruct packet_diag_info {\n\t__u32\tpdi_index;\n\t__u32\tpdi_version;\n\t__u32\tpdi_reserve;\n\t__u32\tpdi_copy_thresh;\n\t__u32\tpdi_tstamp;\n\t__u32\tpdi_flags;\n\n#define PDI_RUNNING\t0x1\n#define PDI_AUXDATA\t0x2\n#define PDI_ORIGDEV\t0x4\n#define PDI_VNETHDR\t0x8\n#define PDI_LOSS\t0x10\n};\n\nstruct packet_diag_mclist {\n\t__u32\tpdmc_index;\n\t__u32\tpdmc_count;\n\t__u16\tpdmc_type;\n\t__u16\tpdmc_alen;\n\t__u8\tpdmc_addr[32];  \n};\n\nstruct packet_diag_ring {\n\t__u32\tpdr_block_size;\n\t__u32\tpdr_block_nr;\n\t__u32\tpdr_frame_size;\n\t__u32\tpdr_frame_nr;\n\t__u32\tpdr_retire_tmo;\n\t__u32\tpdr_sizeof_priv;\n\t__u32\tpdr_features;\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

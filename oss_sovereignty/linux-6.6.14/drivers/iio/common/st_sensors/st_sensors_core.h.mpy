@@ -1,0 +1,9 @@
+{
+  "module_name": "st_sensors_core.h",
+  "hash_id": "c9dd9be628f92b9ab650af9dac88e4195f35d867cb066f08c8b379186d6812f1",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/iio/common/st_sensors/st_sensors_core.h",
+  "human_readable_source": " \n \n#ifndef __ST_SENSORS_CORE_H\n#define __ST_SENSORS_CORE_H\nstruct iio_dev;\nint st_sensors_write_data_with_mask(struct iio_dev *indio_dev,\n\t\t\t\t    u8 reg_addr, u8 mask, u8 data);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

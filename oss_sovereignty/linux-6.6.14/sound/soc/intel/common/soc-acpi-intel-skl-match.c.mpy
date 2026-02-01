@@ -1,0 +1,9 @@
+{
+  "module_name": "soc-acpi-intel-skl-match.c",
+  "hash_id": "4856298ed6c65c72ac0e6c105d22b3cff3ceb7b2bc6301d1e2decdc362a5ba53",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/intel/common/soc-acpi-intel-skl-match.c",
+  "human_readable_source": "\n \n\n#include <sound/soc-acpi.h>\n#include <sound/soc-acpi-intel-match.h>\n#include \"../skylake/skl.h\"\n\nstatic struct skl_machine_pdata skl_dmic_data;\n\nstatic const struct snd_soc_acpi_codecs skl_codecs = {\n\t.num_codecs = 1,\n\t.codecs = {\"10508825\"}\n};\n\nstruct snd_soc_acpi_mach snd_soc_acpi_intel_skl_machines[] = {\n\t{\n\t\t.id = \"INT343A\",\n\t\t.drv_name = \"skl_alc286s_i2s\",\n\t\t.fw_filename = \"intel/dsp_fw_release.bin\",\n\t},\n\t{\n\t\t.id = \"INT343B\",\n\t\t.drv_name = \"skl_n88l25_s4567\",\n\t\t.fw_filename = \"intel/dsp_fw_release.bin\",\n\t\t.machine_quirk = snd_soc_acpi_codec_list,\n\t\t.quirk_data = &skl_codecs,\n\t\t.pdata = &skl_dmic_data,\n\t},\n\t{\n\t\t.id = \"MX98357A\",\n\t\t.drv_name = \"skl_n88l25_m98357a\",\n\t\t.fw_filename = \"intel/dsp_fw_release.bin\",\n\t\t.machine_quirk = snd_soc_acpi_codec_list,\n\t\t.quirk_data = &skl_codecs,\n\t\t.pdata = &skl_dmic_data,\n\t},\n\t{},\n};\nEXPORT_SYMBOL_GPL(snd_soc_acpi_intel_skl_machines);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

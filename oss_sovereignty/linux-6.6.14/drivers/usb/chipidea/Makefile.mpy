@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "40738b02c11708a574584c626a9af46acbfd8e44d0ba476bfc3439b2c91fbdbd",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/usb/chipidea/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n\n# define_trace.h needs to know how to find our header\nCFLAGS_trace.o\t\t\t:= -I$(src)\nobj-$(CONFIG_USB_CHIPIDEA)\t\t+= ci_hdrc.o\n\nci_hdrc-y\t\t\t\t:= core.o otg.o debug.o ulpi.o\nci_hdrc-$(CONFIG_USB_CHIPIDEA_UDC)\t+= udc.o trace.o\nci_hdrc-$(CONFIG_USB_CHIPIDEA_HOST)\t+= host.o\nci_hdrc-$(CONFIG_USB_OTG_FSM)\t\t+= otg_fsm.o\n\n# Glue/Bridge layers go here\n\nobj-$(CONFIG_USB_CHIPIDEA_GENERIC)\t+= ci_hdrc_usb2.o\nobj-$(CONFIG_USB_CHIPIDEA_MSM)\t\t+= ci_hdrc_msm.o\nobj-$(CONFIG_USB_CHIPIDEA_PCI)\t\t+= ci_hdrc_pci.o\nobj-$(CONFIG_USB_CHIPIDEA_IMX)\t\t+= usbmisc_imx.o ci_hdrc_imx.o\nobj-$(CONFIG_USB_CHIPIDEA_TEGRA)\t+= ci_hdrc_tegra.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

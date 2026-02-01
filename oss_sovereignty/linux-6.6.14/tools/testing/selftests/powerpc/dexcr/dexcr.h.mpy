@@ -1,0 +1,9 @@
+{
+  "module_name": "dexcr.h",
+  "hash_id": "e740385859725e0b43a838f47d87218a9a2c735048b84d465de65f75890186bc",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/powerpc/dexcr/dexcr.h",
+  "human_readable_source": " \n \n#ifndef _SELFTESTS_POWERPC_DEXCR_DEXCR_H\n#define _SELFTESTS_POWERPC_DEXCR_DEXCR_H\n\n#include <stdbool.h>\n#include <sys/types.h>\n\n#include \"reg.h\"\n\n#define DEXCR_PR_BIT(aspect)\t__MASK(63 - (32 + (aspect)))\n#define DEXCR_PR_SBHE\t\tDEXCR_PR_BIT(0)\n#define DEXCR_PR_IBRTPD\t\tDEXCR_PR_BIT(3)\n#define DEXCR_PR_SRAPD\t\tDEXCR_PR_BIT(4)\n#define DEXCR_PR_NPHIE\t\tDEXCR_PR_BIT(5)\n\n#define PPC_RAW_HASH_ARGS(b, i, a) \\\n\t((((i) >> 3) & 0x1F) << 21 | (a) << 16 | (b) << 11 | (((i) >> 8) & 0x1))\n#define PPC_RAW_HASHST(b, i, a) \\\n\tstr(.long (0x7C0005A4 | PPC_RAW_HASH_ARGS(b, i, a));)\n#define PPC_RAW_HASHCHK(b, i, a) \\\n\tstr(.long (0x7C0005E4 | PPC_RAW_HASH_ARGS(b, i, a));)\n\nbool dexcr_exists(void);\n\nbool hashchk_triggers(void);\n\nenum dexcr_source {\n\tDEXCR,\t\t \n\tHDEXCR,\t\t \n\tEFFECTIVE,\t \n};\n\nunsigned int get_dexcr(enum dexcr_source source);\n\nvoid await_child_success(pid_t pid);\n\nvoid hashst(unsigned long lr, void *sp);\n\nvoid hashchk(unsigned long lr, void *sp);\n\nvoid do_bad_hashchk(void);\n\n#endif   \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

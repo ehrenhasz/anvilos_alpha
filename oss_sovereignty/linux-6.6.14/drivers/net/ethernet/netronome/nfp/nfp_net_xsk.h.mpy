@@ -1,0 +1,9 @@
+{
+  "module_name": "nfp_net_xsk.h",
+  "hash_id": "808043f7f7ee036b111aaf0a39e4b355cf7f97841ad05a2327e9bbd7bcf55f50",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/netronome/nfp/nfp_net_xsk.h",
+  "human_readable_source": " \n \n \n\n#ifndef _NFP_XSK_H_\n#define _NFP_XSK_H_\n\n#include <net/xdp_sock_drv.h>\n\n#define NFP_NET_XSK_TX_BATCH 16\t\t \n\nstatic inline bool nfp_net_has_xsk_pool_slow(struct nfp_net_dp *dp,\n\t\t\t\t\t     unsigned int qid)\n{\n\treturn dp->xdp_prog && dp->xsk_pools[qid];\n}\n\nstatic inline int nfp_net_rx_space(struct nfp_net_rx_ring *rx_ring)\n{\n\treturn rx_ring->cnt - rx_ring->wr_p + rx_ring->rd_p - 1;\n}\n\nstatic inline int nfp_net_tx_space(struct nfp_net_tx_ring *tx_ring)\n{\n\treturn tx_ring->cnt - tx_ring->wr_p + tx_ring->rd_p - 1;\n}\n\nvoid nfp_net_xsk_rx_unstash(struct nfp_net_xsk_rx_buf *rxbuf);\nvoid nfp_net_xsk_rx_free(struct nfp_net_xsk_rx_buf *rxbuf);\nvoid nfp_net_xsk_rx_drop(struct nfp_net_r_vector *r_vec,\n\t\t\t struct nfp_net_xsk_rx_buf *xrxbuf);\nint nfp_net_xsk_setup_pool(struct net_device *netdev, struct xsk_buff_pool *pool,\n\t\t\t   u16 queue_id);\n\nvoid nfp_net_xsk_rx_bufs_free(struct nfp_net_rx_ring *rx_ring);\n\nvoid nfp_net_xsk_rx_ring_fill_freelist(struct nfp_net_rx_ring *rx_ring);\n\nint nfp_net_xsk_wakeup(struct net_device *netdev, u32 queue_id, u32 flags);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

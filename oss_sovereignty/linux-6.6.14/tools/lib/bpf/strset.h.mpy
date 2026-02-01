@@ -1,0 +1,9 @@
+{
+  "module_name": "strset.h",
+  "hash_id": "1b24257282ddc303a77fd229bee0929a7bae134b820c69d8502a9550c26a148f",
+  "original_prompt": "Ingested from linux-6.6.14/tools/lib/bpf/strset.h",
+  "human_readable_source": " \n\n \n#ifndef __LIBBPF_STRSET_H\n#define __LIBBPF_STRSET_H\n\n#include <stdbool.h>\n#include <stddef.h>\n\nstruct strset;\n\nstruct strset *strset__new(size_t max_data_sz, const char *init_data, size_t init_data_sz);\nvoid strset__free(struct strset *set);\n\nconst char *strset__data(const struct strset *set);\nsize_t strset__data_size(const struct strset *set);\n\nint strset__find_str(struct strset *set, const char *s);\nint strset__add_str(struct strset *set, const char *s);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

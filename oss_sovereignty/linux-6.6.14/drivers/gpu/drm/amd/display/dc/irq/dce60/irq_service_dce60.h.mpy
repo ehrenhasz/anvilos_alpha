@@ -1,0 +1,9 @@
+{
+  "module_name": "irq_service_dce60.h",
+  "hash_id": "4b2a4a73005d82e4ddf1c54d4bd76f65dae4e1f1ca15f49998818af74fa5b957",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/dc/irq/dce60/irq_service_dce60.h",
+  "human_readable_source": " \n\n#ifndef __DAL_IRQ_SERVICE_DCE60_H__\n#define __DAL_IRQ_SERVICE_DCE60_H__\n\n#include \"../irq_service.h\"\n\nenum dc_irq_source to_dal_irq_source_dce60(\n\t\tstruct irq_service *irq_service,\n\t\tuint32_t src_id,\n\t\tuint32_t ext_id);\n\nstruct irq_service *dal_irq_service_dce60_create(\n\tstruct irq_service_init_data *init_data);\n\n#endif\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

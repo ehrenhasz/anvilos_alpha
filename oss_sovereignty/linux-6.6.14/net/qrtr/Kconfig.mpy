@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "6cbec017bbe1b41503e459a13d98f4b2d2aff2a93041fecda43983409d1d3e18",
+  "original_prompt": "Ingested from linux-6.6.14/net/qrtr/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n# Qualcomm IPC Router configuration\n#\n\nconfig QRTR\n\ttristate \"Qualcomm IPC Router support\"\n\thelp\n\t  Say Y if you intend to use Qualcomm IPC router protocol.  The\n\t  protocol is used to communicate with services provided by other\n\t  hardware blocks in the system.\n\n\t  In order to do service lookups, a userspace daemon is required to\n\t  maintain a service listing.\n\nif QRTR\n\nconfig QRTR_SMD\n\ttristate \"SMD IPC Router channels\"\n\tdepends on RPMSG || (COMPILE_TEST && RPMSG=n)\n\thelp\n\t  Say Y here to support SMD based ipcrouter channels.  SMD is the\n\t  most common transport for IPC Router.\n\nconfig QRTR_TUN\n\ttristate \"TUN device for Qualcomm IPC Router\"\n\thelp\n\t  Say Y here to expose a character device that allows user space to\n\t  implement endpoints of QRTR, for purpose of tunneling data to other\n\t  hosts or testing purposes.\n\nconfig QRTR_MHI\n\ttristate \"MHI IPC Router channels\"\n\tdepends on MHI_BUS\n\thelp\n\t  Say Y here to support MHI based ipcrouter channels. MHI is the\n\t  transport used for communicating to external modems.\n\nendif # QRTR\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

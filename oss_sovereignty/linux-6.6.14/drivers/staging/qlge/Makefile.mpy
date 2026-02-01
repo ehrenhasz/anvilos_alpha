@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "6e395ea5613659c1f33025999a24147f69c23e6c6aea657800f5b508cde3c745",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/qlge/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Makefile for the Qlogic 10GbE PCI Express ethernet driver\n#\n\nobj-$(CONFIG_QLGE) += qlge.o\n\nqlge-objs := qlge_main.o qlge_dbg.o qlge_mpi.o qlge_ethtool.o qlge_devlink.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

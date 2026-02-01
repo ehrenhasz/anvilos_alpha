@@ -1,0 +1,9 @@
+{
+  "module_name": "mock_gem_object.h",
+  "hash_id": "bf8ecbcf3b7c4c353afc0047ced4c7e0ffa1ed218c86be459878097f53ce6563",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/gem/selftests/mock_gem_object.h",
+  "human_readable_source": " \n\n#ifndef __MOCK_GEM_OBJECT_H__\n#define __MOCK_GEM_OBJECT_H__\n\n#include \"gem/i915_gem_object_types.h\"\n\nstruct mock_object {\n\tstruct drm_i915_gem_object base;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

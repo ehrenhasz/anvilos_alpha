@@ -1,0 +1,9 @@
+{
+  "module_name": "bcma_soc.h",
+  "hash_id": "c4ae42877a5feb0db5e75c5188290f8b6fa779dc38932136e9eff4ce8407bd89",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/bcma/bcma_soc.h",
+  "human_readable_source": " \n#ifndef LINUX_BCMA_SOC_H_\n#define LINUX_BCMA_SOC_H_\n\n#include <linux/bcma/bcma.h>\n\nstruct bcma_soc {\n\tstruct bcma_bus bus;\n\tstruct device *dev;\n};\n\nint __init bcma_host_soc_register(struct bcma_soc *soc);\nint __init bcma_host_soc_init(struct bcma_soc *soc);\n\nint bcma_bus_register(struct bcma_bus *bus);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "dma-buf.h",
+  "hash_id": "0c0d9160c21734b169eb638ff1eb82211bdc5390e29ba9f6b675e97529220a7e",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/dma-buf.h",
+  "human_readable_source": " \n \n\n#ifndef _DMA_BUF_UAPI_H_\n#define _DMA_BUF_UAPI_H_\n\n#include <linux/types.h>\n\n \nstruct dma_buf_sync {\n\t \n\t__u64 flags;\n};\n\n#define DMA_BUF_SYNC_READ      (1 << 0)\n#define DMA_BUF_SYNC_WRITE     (2 << 0)\n#define DMA_BUF_SYNC_RW        (DMA_BUF_SYNC_READ | DMA_BUF_SYNC_WRITE)\n#define DMA_BUF_SYNC_START     (0 << 2)\n#define DMA_BUF_SYNC_END       (1 << 2)\n#define DMA_BUF_SYNC_VALID_FLAGS_MASK \\\n\t(DMA_BUF_SYNC_RW | DMA_BUF_SYNC_END)\n\n#define DMA_BUF_NAME_LEN\t32\n\n \nstruct dma_buf_export_sync_file {\n\t \n\t__u32 flags;\n\t \n\t__s32 fd;\n};\n\n \nstruct dma_buf_import_sync_file {\n\t \n\t__u32 flags;\n\t \n\t__s32 fd;\n};\n\n#define DMA_BUF_BASE\t\t'b'\n#define DMA_BUF_IOCTL_SYNC\t_IOW(DMA_BUF_BASE, 0, struct dma_buf_sync)\n\n \n#define DMA_BUF_SET_NAME\t_IOW(DMA_BUF_BASE, 1, const char *)\n#define DMA_BUF_SET_NAME_A\t_IOW(DMA_BUF_BASE, 1, __u32)\n#define DMA_BUF_SET_NAME_B\t_IOW(DMA_BUF_BASE, 1, __u64)\n#define DMA_BUF_IOCTL_EXPORT_SYNC_FILE\t_IOWR(DMA_BUF_BASE, 2, struct dma_buf_export_sync_file)\n#define DMA_BUF_IOCTL_IMPORT_SYNC_FILE\t_IOW(DMA_BUF_BASE, 3, struct dma_buf_import_sync_file)\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

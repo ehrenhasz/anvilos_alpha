@@ -1,0 +1,9 @@
+{
+  "module_name": "midibuf.h",
+  "hash_id": "e0f272f218077319f977b2bf3d8e7f9ea8fb7d606715bd75dee9b648f83008f3",
+  "original_prompt": "Ingested from linux-6.6.14/sound/usb/line6/midibuf.h",
+  "human_readable_source": " \n \n\n#ifndef MIDIBUF_H\n#define MIDIBUF_H\n\n#define LINE6_MIDIBUF_READ_TX 0\n#define LINE6_MIDIBUF_READ_RX 1\n\nstruct midi_buffer {\n\tunsigned char *buf;\n\tint size;\n\tint split;\n\tint pos_read, pos_write;\n\tint full;\n\tint command_prev;\n};\n\nextern int line6_midibuf_bytes_used(struct midi_buffer *mb);\nextern int line6_midibuf_bytes_free(struct midi_buffer *mb);\nextern void line6_midibuf_destroy(struct midi_buffer *mb);\nextern int line6_midibuf_ignore(struct midi_buffer *mb, int length);\nextern int line6_midibuf_init(struct midi_buffer *mb, int size, int split);\nextern int line6_midibuf_read(struct midi_buffer *mb, unsigned char *data,\n\t\t\t      int length, int read_type);\nextern void line6_midibuf_reset(struct midi_buffer *mb);\nextern int line6_midibuf_write(struct midi_buffer *mb, unsigned char *data,\n\t\t\t       int length);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

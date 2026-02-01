@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile.am",
+  "hash_id": "dc638a5eba0c3b8a6cb1cfc202bafc7088497d4754af710ce3792994b395743f",
+  "original_prompt": "Ingested from linux-6.6.14/tools/usb/usbip/Makefile.am",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nSUBDIRS := libsrc src\nincludedir = @includedir@/usbip\ninclude_HEADERS := $(addprefix libsrc/, \\\n\t\t     usbip_common.h vhci_driver.h usbip_host_driver.h \\\n\t\t     list.h sysfs_utils.h usbip_host_common.h)\n\ndist_man_MANS := $(addprefix doc/, usbip.8 usbipd.8)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

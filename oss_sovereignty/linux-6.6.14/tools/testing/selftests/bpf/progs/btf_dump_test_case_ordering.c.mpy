@@ -1,0 +1,9 @@
+{
+  "module_name": "btf_dump_test_case_ordering.c",
+  "hash_id": "ba4eb7f1d9a66cc60fe7fe67ad55710b7c58aa3ddbc5dc2c71f22ce340431f4b",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/btf_dump_test_case_ordering.c",
+  "human_readable_source": "\n\n \n \nstruct s1 {};\n\nstruct s3;\n\nstruct s4;\n\nstruct s2 {\n\tstruct s2 *s2;\n\tstruct s3 *s3;\n\tstruct s4 *s4;\n};\n\nstruct s3 {\n\tstruct s1 s1;\n\tstruct s2 s2;\n};\n\nstruct s4 {\n\tstruct s1 s1;\n\tstruct s3 s3;\n};\n\nstruct list_head {\n\tstruct list_head *next;\n\tstruct list_head *prev;\n};\n\nstruct hlist_node {\n\tstruct hlist_node *next;\n\tstruct hlist_node **pprev;\n};\n\nstruct hlist_head {\n\tstruct hlist_node *first;\n};\n\nstruct callback_head {\n\tstruct callback_head *next;\n\tvoid (*func)(struct callback_head *);\n};\n\nstruct root_struct {\n\tstruct s4 s4;\n\tstruct list_head l;\n\tstruct hlist_node n;\n\tstruct hlist_head h;\n\tstruct callback_head cb;\n};\n\n \n\nint f(struct root_struct *root)\n{\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "libertas_spi.h",
+  "hash_id": "4894f23545ccbf63e5036873ff13f32147e16873aa78041c5883440d05ff0ee6",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/spi/libertas_spi.h",
+  "human_readable_source": " \n \n#ifndef _LIBERTAS_SPI_H_\n#define _LIBERTAS_SPI_H_\n\nstruct spi_device;\n\nstruct libertas_spi_platform_data {\n\t \n\tu16 use_dummy_writes;\n\n\t \n\tint (*setup)(struct spi_device *spi);\n\tint (*teardown)(struct spi_device *spi);\n};\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

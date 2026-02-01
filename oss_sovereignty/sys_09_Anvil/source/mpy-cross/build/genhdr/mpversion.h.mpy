@@ -1,0 +1,9 @@
+{
+  "module_name": "mpversion.h",
+  "hash_id": "ec3b9443430467569d8192e470ca7366d0df404e365161be9e6510d10a47d6c9",
+  "original_prompt": "Ingested from sys_09_Anvil/source/mpy-cross/build/genhdr/mpversion.h",
+  "human_readable_source": "\n#define MICROPY_GIT_TAG \"61f9e1de0-dirty\"\n#define MICROPY_GIT_HASH \"61f9e1de0\"\n#define MICROPY_BUILD_DATE \"2026-01-30\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

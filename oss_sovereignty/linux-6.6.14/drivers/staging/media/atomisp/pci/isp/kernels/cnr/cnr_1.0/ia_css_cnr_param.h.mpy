@@ -1,0 +1,9 @@
+{
+  "module_name": "ia_css_cnr_param.h",
+  "hash_id": "4e43cde243426a0340429ca07ce23ea3b6f1ae5509be8916eb5a314bb33423a4",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/isp/kernels/cnr/cnr_1.0/ia_css_cnr_param.h",
+  "human_readable_source": " \n \n\n#ifndef __IA_CSS_CNR_PARAM_H\n#define __IA_CSS_CNR_PARAM_H\n\n#include \"type_support.h\"\n\n \n \n#include  \"../../ynr/ynr_1.0/ia_css_ynr_param.h\"\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

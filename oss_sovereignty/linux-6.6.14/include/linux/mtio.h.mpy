@@ -1,0 +1,9 @@
+{
+  "module_name": "mtio.h",
+  "hash_id": "eb336b962d21b89fe6f202eb4c379f60eabae922a71da58cc0109c910142e423",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/mtio.h",
+  "human_readable_source": " \n#ifndef _LINUX_MTIO_COMPAT_H\n#define _LINUX_MTIO_COMPAT_H\n\n#include <linux/compat.h>\n#include <uapi/linux/mtio.h>\n#include <linux/uaccess.h>\n\n \n\nstruct\tmtget32 {\n\ts32\tmt_type;\n\ts32\tmt_resid;\n\ts32\tmt_dsreg;\n\ts32\tmt_gstat;\n\ts32\tmt_erreg;\n\ts32\tmt_fileno;\n\ts32\tmt_blkno;\n};\n#define\tMTIOCGET32\t_IOR('m', 2, struct mtget32)\n\nstruct\tmtpos32 {\n\ts32 \tmt_blkno;\n};\n#define\tMTIOCPOS32\t_IOR('m', 3, struct mtpos32)\n\nstatic inline int put_user_mtget(void __user *u, struct mtget *k)\n{\n\tstruct mtget32 k32 = {\n\t\t.mt_type   = k->mt_type,\n\t\t.mt_resid  = k->mt_resid,\n\t\t.mt_dsreg  = k->mt_dsreg,\n\t\t.mt_gstat  = k->mt_gstat,\n\t\t.mt_erreg  = k->mt_erreg,\n\t\t.mt_fileno = k->mt_fileno,\n\t\t.mt_blkno  = k->mt_blkno,\n\t};\n\tint ret;\n\n\tif (in_compat_syscall())\n\t\tret = copy_to_user(u, &k32, sizeof(k32));\n\telse\n\t\tret = copy_to_user(u, k, sizeof(*k));\n\n\treturn ret ? -EFAULT : 0;\n}\n\nstatic inline int put_user_mtpos(void __user *u, struct mtpos *k)\n{\n\tif (in_compat_syscall())\n\t\treturn put_user(k->mt_blkno, (u32 __user *)u);\n\telse\n\t\treturn put_user(k->mt_blkno, (long __user *)u);\n}\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "77b58558dc12a23216c2f0a519b8746e06f7f1015b1d83477da8103248a9f8a2",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/platform/x86/x86-android-tablets/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-or-later\n#\n# X86 Android tablet support Makefile\n#\n\nobj-$(CONFIG_X86_ANDROID_TABLETS) += x86-android-tablets.o\n\nx86-android-tablets-y := core.o dmi.o shared-psy-info.o \\\n\t\t\t asus.o lenovo.o other.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

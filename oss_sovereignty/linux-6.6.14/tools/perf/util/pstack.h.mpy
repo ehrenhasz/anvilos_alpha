@@ -1,0 +1,9 @@
+{
+  "module_name": "pstack.h",
+  "hash_id": "51d64ad14be990fad335cb216432b9152812eca753d9952755946536d43b85c5",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/util/pstack.h",
+  "human_readable_source": " \n#ifndef _PERF_PSTACK_\n#define _PERF_PSTACK_\n\n#include <stdbool.h>\n\nstruct pstack;\nstruct pstack *pstack__new(unsigned short max_nr_entries);\nvoid pstack__delete(struct pstack *pstack);\nbool pstack__empty(const struct pstack *pstack);\nvoid pstack__remove(struct pstack *pstack, void *key);\nvoid pstack__push(struct pstack *pstack, void *key);\nvoid *pstack__pop(struct pstack *pstack);\nvoid *pstack__peek(struct pstack *pstack);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "be_roce.h",
+  "hash_id": "8341c0279306bf8fe9a1ae0774f198a0891be9dc479344d6f2f4c80e2de9bf31",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/emulex/benet/be_roce.h",
+  "human_readable_source": " \n \n\n#ifndef BE_ROCE_H\n#define BE_ROCE_H\n\n#include <linux/pci.h>\n#include <linux/netdevice.h>\n\n#define BE_ROCE_ABI_VERSION\t1\n\nstruct ocrdma_dev;\n\nenum be_interrupt_mode {\n\tBE_INTERRUPT_MODE_MSIX\t= 0,\n\tBE_INTERRUPT_MODE_INTX\t= 1,\n\tBE_INTERRUPT_MODE_MSI\t= 2,\n};\n\n#define MAX_MSIX_VECTORS\t\t32\nstruct be_dev_info {\n\tu8 __iomem *db;\n\tu64 unmapped_db;\n\tu32 db_page_size;\n\tu32 db_total_size;\n\tu64 dpp_unmapped_addr;\n\tu32 dpp_unmapped_len;\n\tstruct pci_dev *pdev;\n\tstruct net_device *netdev;\n\tu8 mac_addr[ETH_ALEN];\n\tu32 dev_family;\n\tenum be_interrupt_mode intr_mode;\n\tstruct {\n\t\tint num_vectors;\n\t\tint start_vector;\n\t\tu32 vector_list[MAX_MSIX_VECTORS];\n\t} msix;\n};\n\n \nstruct ocrdma_driver {\n\tunsigned char name[32];\n\tu32 be_abi_version;\n\tstruct ocrdma_dev *(*add) (struct be_dev_info *dev_info);\n\tvoid (*remove) (struct ocrdma_dev *);\n\tvoid (*state_change_handler) (struct ocrdma_dev *, u32 new_state);\n};\n\nenum be_roce_event {\n\tBE_DEV_SHUTDOWN = 2\n};\n\n \nint be_roce_register_driver(struct ocrdma_driver *drv);\nvoid be_roce_unregister_driver(struct ocrdma_driver *drv);\n\n \nint be_roce_mcc_cmd(void *netdev_handle, void *wrb_payload,\n\t\t    int wrb_payload_size, u16 *cmd_status, u16 *ext_status);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

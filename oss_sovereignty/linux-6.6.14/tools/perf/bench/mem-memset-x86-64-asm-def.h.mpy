@@ -1,0 +1,9 @@
+{
+  "module_name": "mem-memset-x86-64-asm-def.h",
+  "hash_id": "7f304f6b59e6759115883179df4f7cd7fce2631149142017783d8f48a1c565ae",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/bench/mem-memset-x86-64-asm-def.h",
+  "human_readable_source": " \n\nMEMSET_FN(memset_orig,\n\t\"x86-64-unrolled\",\n\t\"unrolled memset() in arch/x86/lib/memset_64.S\")\n\nMEMSET_FN(__memset,\n\t\"x86-64-stosq\",\n\t\"movsq-based memset() in arch/x86/lib/memset_64.S\")\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

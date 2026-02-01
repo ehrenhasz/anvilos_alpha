@@ -1,0 +1,9 @@
+{
+  "module_name": "mediatek,mt6360-regulator.h",
+  "hash_id": "9b5a83f24c4a0d54fca9fc06c38ee7caa70cdc77d021501011e843da62e2eae7",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/regulator/mediatek,mt6360-regulator.h",
+  "human_readable_source": " \n\n#ifndef __DT_BINDINGS_MEDIATEK_MT6360_REGULATOR_H__\n#define __DT_BINDINGS_MEDIATEK_MT6360_REGULATOR_H__\n\n \n\n#define MT6360_OPMODE_LP\t\t2\n#define MT6360_OPMODE_ULP\t\t3\n#define MT6360_OPMODE_NORMAL\t\t0\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

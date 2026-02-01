@@ -1,0 +1,9 @@
+{
+  "module_name": "thinkpad_helper.c",
+  "hash_id": "01bd0ee668c18cb8ea494252434ec6e8b90d4d078024dad045ad9ce4dd62a933",
+  "original_prompt": "Ingested from linux-6.6.14/sound/pci/hda/thinkpad_helper.c",
+  "human_readable_source": "\n \n\n#if IS_ENABLED(CONFIG_THINKPAD_ACPI)\n\n#include <linux/acpi.h>\n#include <linux/leds.h>\n\nstatic bool is_thinkpad(struct hda_codec *codec)\n{\n\treturn (codec->core.subsystem_id >> 16 == 0x17aa) &&\n\t       (acpi_dev_found(\"LEN0068\") || acpi_dev_found(\"LEN0268\") ||\n\t\tacpi_dev_found(\"IBM0068\"));\n}\n\nstatic void hda_fixup_thinkpad_acpi(struct hda_codec *codec,\n\t\t\t\t    const struct hda_fixup *fix, int action)\n{\n\tif (action == HDA_FIXUP_ACT_PRE_PROBE) {\n\t\tif (!is_thinkpad(codec))\n\t\t\treturn;\n\t\tsnd_hda_gen_add_mute_led_cdev(codec, NULL);\n\t\tsnd_hda_gen_add_micmute_led_cdev(codec, NULL);\n\t}\n}\n\n#else  \n\nstatic void hda_fixup_thinkpad_acpi(struct hda_codec *codec,\n\t\t\t\t    const struct hda_fixup *fix, int action)\n{\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

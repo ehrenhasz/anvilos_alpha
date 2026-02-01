@@ -1,0 +1,9 @@
+{
+  "module_name": ".gitignore",
+  "hash_id": "fbb4e087edee11b57de924d42694b726df81eae1182f0f5d9e80a5c765c0b8e3",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/arm64/mte/.gitignore",
+  "human_readable_source": "check_buffer_fill\ncheck_gcr_el1_cswitch\ncheck_tags_inclusion\ncheck_child_memory\ncheck_mmap_options\ncheck_prctl\ncheck_ksm_options\ncheck_user_mem\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

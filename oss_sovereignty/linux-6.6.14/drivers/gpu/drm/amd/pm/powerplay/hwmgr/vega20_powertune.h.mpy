@@ -1,0 +1,9 @@
+{
+  "module_name": "vega20_powertune.h",
+  "hash_id": "52d220d26af0df87592437388c719761f4a183b8bccc0244314bcfec3c2d6946",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/pm/powerplay/hwmgr/vega20_powertune.h",
+  "human_readable_source": " \n#ifndef _VEGA20_POWERTUNE_H_\n#define _VEGA20_POWERTUNE_H_\n\nint vega20_set_power_limit(struct pp_hwmgr *hwmgr, uint32_t n);\nint vega20_power_control_set_level(struct pp_hwmgr *hwmgr);\nint vega20_validate_power_level_request(struct pp_hwmgr *hwmgr,\n\t\tuint32_t tdp_percentage_adjustment,\n\t\tuint32_t tdp_absolute_value_adjustment);\n#endif   \n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

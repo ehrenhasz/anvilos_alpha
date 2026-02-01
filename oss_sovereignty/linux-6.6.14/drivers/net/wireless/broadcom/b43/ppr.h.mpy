@@ -1,0 +1,9 @@
+{
+  "module_name": "ppr.h",
+  "hash_id": "28f31b710645c830cb5420a54f1dba2571cbb22f71f7178727badf5edfa37c1b",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/broadcom/b43/ppr.h",
+  "human_readable_source": " \n#ifndef LINUX_B43_PPR_H_\n#define LINUX_B43_PPR_H_\n\n#include <linux/types.h>\n\n#define B43_PPR_CCK_RATES_NUM\t\t4\n#define B43_PPR_OFDM_RATES_NUM\t\t8\n#define B43_PPR_MCS_RATES_NUM\t\t8\n\n#define B43_PPR_RATES_NUM\t(B43_PPR_CCK_RATES_NUM +\t\\\n\t\t\t\t B43_PPR_OFDM_RATES_NUM * 2 +\t\\\n\t\t\t\t B43_PPR_MCS_RATES_NUM * 4)\n\nstruct b43_ppr_rates {\n\tu8 cck[B43_PPR_CCK_RATES_NUM];\n\tu8 ofdm[B43_PPR_OFDM_RATES_NUM];\n\tu8 ofdm_20_cdd[B43_PPR_OFDM_RATES_NUM];\n\tu8 mcs_20[B43_PPR_MCS_RATES_NUM];  \n\tu8 mcs_20_cdd[B43_PPR_MCS_RATES_NUM];\n\tu8 mcs_20_stbc[B43_PPR_MCS_RATES_NUM];\n\tu8 mcs_20_sdm[B43_PPR_MCS_RATES_NUM];\n};\n\nstruct b43_ppr {\n\t \n\tunion {\n\t\tu8 __all_rates[B43_PPR_RATES_NUM];\n\t\tstruct b43_ppr_rates rates;\n\t};\n};\n\nstruct b43_wldev;\nenum b43_band;\n\nvoid b43_ppr_clear(struct b43_wldev *dev, struct b43_ppr *ppr);\n\nvoid b43_ppr_add(struct b43_wldev *dev, struct b43_ppr *ppr, int diff);\nvoid b43_ppr_apply_max(struct b43_wldev *dev, struct b43_ppr *ppr, u8 max);\nvoid b43_ppr_apply_min(struct b43_wldev *dev, struct b43_ppr *ppr, u8 min);\nu8 b43_ppr_get_max(struct b43_wldev *dev, struct b43_ppr *ppr);\n\nbool b43_ppr_load_max_from_sprom(struct b43_wldev *dev, struct b43_ppr *ppr,\n\t\t\t\t enum b43_band band);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

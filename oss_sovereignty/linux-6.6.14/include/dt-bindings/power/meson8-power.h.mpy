@@ -1,0 +1,9 @@
+{
+  "module_name": "meson8-power.h",
+  "hash_id": "eb138d9b18584c899358f1bbcc1c8daa86b4558a88bfcbd85eebdf1b70098ef4",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/power/meson8-power.h",
+  "human_readable_source": " \n \n\n#ifndef _DT_BINDINGS_MESON8_POWER_H\n#define _DT_BINDINGS_MESON8_POWER_H\n\n#define PWRC_MESON8_VPU_ID\t\t\t0\n#define PWRC_MESON8_ETHERNET_MEM_ID\t\t1\n#define PWRC_MESON8_AUDIO_DSP_MEM_ID\t\t2\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

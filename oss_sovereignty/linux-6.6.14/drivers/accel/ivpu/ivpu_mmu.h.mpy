@@ -1,0 +1,9 @@
+{
+  "module_name": "ivpu_mmu.h",
+  "hash_id": "0645c88b1a7e886b87c41105aaa7133673b39b39513bc0b81908299b8becd204",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/accel/ivpu/ivpu_mmu.h",
+  "human_readable_source": " \n \n\n#ifndef __IVPU_MMU_H__\n#define __IVPU_MMU_H__\n\nstruct ivpu_device;\n\nstruct ivpu_mmu_cdtab {\n\tvoid *base;\n\tdma_addr_t dma;\n};\n\nstruct ivpu_mmu_strtab {\n\tvoid *base;\n\tdma_addr_t dma;\n\tu64 dma_q;\n\tu32 base_cfg;\n};\n\nstruct ivpu_mmu_queue {\n\tvoid *base;\n\tdma_addr_t dma;\n\tu64 dma_q;\n\tu32 prod;\n\tu32 cons;\n};\n\nstruct ivpu_mmu_info {\n\tstruct mutex lock;  \n\tstruct ivpu_mmu_cdtab cdtab;\n\tstruct ivpu_mmu_strtab strtab;\n\tstruct ivpu_mmu_queue cmdq;\n\tstruct ivpu_mmu_queue evtq;\n\tbool on;\n};\n\nint ivpu_mmu_init(struct ivpu_device *vdev);\nvoid ivpu_mmu_disable(struct ivpu_device *vdev);\nint ivpu_mmu_enable(struct ivpu_device *vdev);\nint ivpu_mmu_set_pgtable(struct ivpu_device *vdev, int ssid, struct ivpu_mmu_pgtable *pgtable);\nvoid ivpu_mmu_clear_pgtable(struct ivpu_device *vdev, int ssid);\nint ivpu_mmu_invalidate_tlb(struct ivpu_device *vdev, u16 ssid);\n\nvoid ivpu_mmu_irq_evtq_handler(struct ivpu_device *vdev);\nvoid ivpu_mmu_irq_gerr_handler(struct ivpu_device *vdev);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "timer_failure.c",
+  "hash_id": "392b05ef9cbc1d3c4a0007906fb09a1c53386d58ffa97a80e17e2945fc976d1b",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/timer_failure.c",
+  "human_readable_source": "\n \n\n#include <linux/bpf.h>\n#include <time.h>\n#include <errno.h>\n#include <bpf/bpf_helpers.h>\n#include \"bpf_misc.h\"\n#include \"bpf_tcp_helpers.h\"\n\nchar _license[] SEC(\"license\") = \"GPL\";\n\nstruct elem {\n\tstruct bpf_timer t;\n};\n\nstruct {\n\t__uint(type, BPF_MAP_TYPE_ARRAY);\n\t__uint(max_entries, 1);\n\t__type(key, int);\n\t__type(value, struct elem);\n} timer_map SEC(\".maps\");\n\nstatic int timer_cb_ret1(void *map, int *key, struct bpf_timer *timer)\n{\n\tif (bpf_get_smp_processor_id() % 2)\n\t\treturn 1;\n\telse\n\t\treturn 0;\n}\n\nSEC(\"fentry/bpf_fentry_test1\")\n__failure __msg(\"should have been in (0x0; 0x0)\")\nint BPF_PROG2(test_ret_1, int, a)\n{\n\tint key = 0;\n\tstruct bpf_timer *timer;\n\n\ttimer = bpf_map_lookup_elem(&timer_map, &key);\n\tif (timer) {\n\t\tbpf_timer_init(timer, &timer_map, CLOCK_BOOTTIME);\n\t\tbpf_timer_set_callback(timer, timer_cb_ret1);\n\t\tbpf_timer_start(timer, 1000, 0);\n\t}\n\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "aef297aee5ad043046f7a8b895722bc6278f92564541bf538f12b151cd4c470d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/phy/sunplus/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n\nconfig PHY_SUNPLUS_USB\n\ttristate \"Sunplus SP7021 USB 2.0 PHY driver\"\n\tdepends on OF && (SOC_SP7021 || COMPILE_TEST)\n\tselect GENERIC_PHY\n\thelp\n\t  Enable this to support the USB 2.0 PHY on Sunplus SP7021\n\t  SoC. The USB 2.0 PHY controller supports battery charger\n\t  and synchronous signals, various power down modes including\n\t  operating, partial and suspend modes, and high-speed,\n\t  full-speed and low-speed data transfer.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

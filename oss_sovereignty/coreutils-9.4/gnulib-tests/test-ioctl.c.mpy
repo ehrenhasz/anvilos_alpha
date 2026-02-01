@@ -1,0 +1,9 @@
+{
+  "module_name": "test-ioctl.c",
+  "hash_id": "758a1521f0754f8a7f32db783c72cb5916c55f86071f0bfed445cad8d54756b7",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-ioctl.c",
+  "human_readable_source": " \n#include <sys/ioctl.h>\n\n#include \"signature.h\"\nSIGNATURE_CHECK (ioctl, int, (int, int, ...));\n\n#include <errno.h>\n#include <unistd.h>\n\n#include \"macros.h\"\n\nint\nmain (void)\n{\n#ifdef FIONREAD\n   \n  {\n    int value;\n    errno = 0;\n    ASSERT (ioctl (-1, FIONREAD, &value) == -1);\n    ASSERT (errno == EBADF);\n  }\n  {\n    int value;\n    close (99);\n    errno = 0;\n    ASSERT (ioctl (99, FIONREAD, &value) == -1);\n    ASSERT (errno == EBADF);\n  }\n#endif\n\n  return 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

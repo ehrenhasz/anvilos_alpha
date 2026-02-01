@@ -1,0 +1,9 @@
+{
+  "module_name": "hid-sony.sh",
+  "hash_id": "496b32e7986f7e2be4e0d32c5b56203d870bcdca09ed43558452f8a7c5c2e123",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/hid/hid-sony.sh",
+  "human_readable_source": "#!/bin/sh\n# SPDX-License-Identifier: GPL-2.0\n# Runs tests for the HID subsystem\n\nexport TARGET=test_sony.py\n\nbash ./run-hid-tools-tests.sh\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

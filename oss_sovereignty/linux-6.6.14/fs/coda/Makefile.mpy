@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "bcd1a44137ecd143e466ade2b57880edb3f04e0ef8d9416e30c4a87d4e2db87b",
+  "original_prompt": "Ingested from linux-6.6.14/fs/coda/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Makefile for the Linux Coda filesystem routines.\n#\n\nobj-$(CONFIG_CODA_FS) += coda.o\n\ncoda-objs := psdev.o cache.o cnode.o inode.o dir.o file.o upcall.o \\\n\t     coda_linux.o symlink.o pioctl.o\ncoda-$(CONFIG_SYSCTL) += sysctl.o\n\n# If you want debugging output, please uncomment the following line.\n\n# ccflags-y := -DDEBUG -DDEBUG_SMB_MALLOC=1\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

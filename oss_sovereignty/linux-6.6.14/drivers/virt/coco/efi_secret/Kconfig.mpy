@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "e99fafa6b682fb4c16a16bfdd028e003dfdc05dd0fa9dc6b5f98da966ee4d998",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/virt/coco/efi_secret/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig EFI_SECRET\n\ttristate \"EFI secret area securityfs support\"\n\tdepends on EFI && X86_64\n\tselect EFI_COCO_SECRET\n\tselect SECURITYFS\n\thelp\n\t  This is a driver for accessing the EFI secret area via securityfs.\n\t  The EFI secret area is a memory area designated by the firmware for\n\t  confidential computing secret injection (for example for AMD SEV\n\t  guests).  The driver exposes the secrets as files in\n\t  <securityfs>/secrets/coco.  Files can be read and deleted (deleting\n\t  a file wipes the secret from memory).\n\n\t  To compile this driver as a module, choose M here.\n\t  The module will be called efi_secret.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "ipsec.h",
+  "hash_id": "7bc0a5b64bab3fa9763e4e71bff9940d1d088dc53763c829d98b30833abdaecf",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/intel/ixgbevf/ipsec.h",
+  "human_readable_source": " \n \n\n#ifndef _IXGBEVF_IPSEC_H_\n#define _IXGBEVF_IPSEC_H_\n\n#define IXGBE_IPSEC_MAX_SA_COUNT\t1024\n#define IXGBE_IPSEC_BASE_RX_INDEX\t0\n#define IXGBE_IPSEC_BASE_TX_INDEX\tIXGBE_IPSEC_MAX_SA_COUNT\n#define IXGBE_IPSEC_AUTH_BITS\t\t128\n\n#define IXGBE_RXMOD_VALID\t\t0x00000001\n#define IXGBE_RXMOD_PROTO_ESP\t\t0x00000004\n#define IXGBE_RXMOD_DECRYPT\t\t0x00000008\n#define IXGBE_RXMOD_IPV6\t\t0x00000010\n\nstruct rx_sa {\n\tstruct hlist_node hlist;\n\tstruct xfrm_state *xs;\n\t__be32 ipaddr[4];\n\tu32 key[4];\n\tu32 salt;\n\tu32 mode;\n\tu32 pfsa;\n\tbool used;\n\tbool decrypt;\n};\n\nstruct rx_ip_sa {\n\t__be32 ipaddr[4];\n\tu32 ref_cnt;\n\tbool used;\n};\n\nstruct tx_sa {\n\tstruct xfrm_state *xs;\n\tu32 key[4];\n\tu32 salt;\n\tu32 pfsa;\n\tbool encrypt;\n\tbool used;\n};\n\nstruct ixgbevf_ipsec_tx_data {\n\tu32 flags;\n\tu16 trailer_len;\n\tu16 pfsa;\n};\n\nstruct ixgbevf_ipsec {\n\tu16 num_rx_sa;\n\tu16 num_tx_sa;\n\tstruct rx_sa *rx_tbl;\n\tstruct tx_sa *tx_tbl;\n\tDECLARE_HASHTABLE(rx_sa_list, 10);\n};\n\nstruct sa_mbx_msg {\n\t__be32 spi;\n\tu8 dir;\n\tu8 proto;\n\tu16 family;\n\t__be32 addr[4];\n\tu32 key[5];\n};\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

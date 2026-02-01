@@ -1,0 +1,9 @@
+{
+  "module_name": "versaclock.h",
+  "hash_id": "0af8db54b6a721540b9067597e3085a3fdeed1d58456639f250b506e5b1e6582",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/clock/versaclock.h",
+  "human_readable_source": " \n\n \n\n#define VC5_LVPECL\t0\n#define VC5_CMOS\t1\n#define VC5_HCSL33\t2\n#define VC5_LVDS\t3\n#define VC5_CMOS2\t4\n#define VC5_CMOSD\t5\n#define VC5_HCSL25\t6\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

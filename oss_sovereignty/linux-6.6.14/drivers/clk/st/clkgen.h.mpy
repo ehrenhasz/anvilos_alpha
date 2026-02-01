@@ -1,0 +1,9 @@
+{
+  "module_name": "clkgen.h",
+  "hash_id": "6f4d9a6729122d2d1b214956ccc88a6bbeb97be848126a2ec61713805b7b6250",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/clk/st/clkgen.h",
+  "human_readable_source": " \n \n\n#ifndef __CLKGEN_INFO_H\n#define __CLKGEN_INFO_H\n\nextern spinlock_t clkgen_a9_lock;\n\nstruct clkgen_field {\n\tunsigned int offset;\n\tunsigned int mask;\n\tunsigned int shift;\n};\n\nstatic inline unsigned long clkgen_read(void __iomem\t*base,\n\t\t\t\t\t  struct clkgen_field *field)\n{\n\treturn (readl(base + field->offset) >> field->shift) & field->mask;\n}\n\n\nstatic inline void clkgen_write(void __iomem *base, struct clkgen_field *field,\n\t\t\t\t  unsigned long val)\n{\n\twritel((readl(base + field->offset) &\n\t       ~(field->mask << field->shift)) | (val << field->shift),\n\t       base + field->offset);\n\n\treturn;\n}\n\n#define CLKGEN_FIELD(_offset, _mask, _shift) {\t\t\\\n\t\t\t\t.offset\t= _offset,\t\\\n\t\t\t\t.mask\t= _mask,\t\\\n\t\t\t\t.shift\t= _shift,\t\\\n\t\t\t\t}\n\n#define CLKGEN_READ(pll, field) clkgen_read(pll->regs_base, \\\n\t\t&pll->data->field)\n\n#define CLKGEN_WRITE(pll, field, val) clkgen_write(pll->regs_base, \\\n\t\t&pll->data->field, val)\n\n#endif  \n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

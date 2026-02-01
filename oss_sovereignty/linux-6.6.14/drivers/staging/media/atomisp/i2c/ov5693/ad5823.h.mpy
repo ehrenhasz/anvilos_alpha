@@ -1,0 +1,9 @@
+{
+  "module_name": "ad5823.h",
+  "hash_id": "20ed2bf65539f518c1d2c9d54ff5e31fcc9ab60400f1c408595531a233436fcf",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/i2c/ov5693/ad5823.h",
+  "human_readable_source": " \n \n\n#ifndef __AD5823_H__\n#define __AD5823_H__\n\n#include <linux/types.h>\n\n#define AD5823_VCM_ADDR\t0x0c\n\n#define AD5823_REG_RESET\t\t0x01\n#define AD5823_REG_MODE\t\t\t0x02\n#define AD5823_REG_VCM_MOVE_TIME\t0x03\n#define AD5823_REG_VCM_CODE_MSB\t\t0x04\n#define AD5823_REG_VCM_CODE_LSB\t\t0x05\n#define AD5823_REG_VCM_THRESHOLD_MSB\t0x06\n#define AD5823_REG_VCM_THRESHOLD_LSB\t0x07\n\n#define AD5823_REG_LENGTH\t\t0x1\n\n#define AD5823_RING_CTRL_ENABLE\t\t0x04\n#define AD5823_RING_CTRL_DISABLE\t0x00\n\n#define AD5823_RESONANCE_PERIOD\t\t100000\n#define AD5823_RESONANCE_COEF\t\t512\n#define AD5823_HIGH_FREQ_RANGE\t\t0x80\n\n#define VCM_CODE_MSB_MASK\t\t0xfc\n#define AD5823_INIT_FOCUS_POS           350\n\nenum ad5823_tok_type {\n\tAD5823_8BIT  = 0x1,\n\tAD5823_16BIT = 0x2,\n};\n\nenum ad5823_vcm_mode {\n\tAD5823_ARC_RES0 = 0x0,\t \n\tAD5823_ARC_RES1 = 0x1,\t \n\tAD5823_ARC_RES2 = 0x2,\t \n\tAD5823_ESRC = 0x3,\t \n\tAD5823_DIRECT = 0x4,\t \n};\n\n#define AD5823_INVALID_CONFIG\t0xffffffff\n#define AD5823_MAX_FOCUS_POS\t1023\n#define DELAY_PER_STEP_NS\t1000000\n#define DELAY_MAX_PER_STEP_NS\t(1000000 * 1023)\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

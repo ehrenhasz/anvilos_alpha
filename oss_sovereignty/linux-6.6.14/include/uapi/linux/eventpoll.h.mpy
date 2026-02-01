@@ -1,0 +1,9 @@
+{
+  "module_name": "eventpoll.h",
+  "hash_id": "8861ff49f53e3c677068e147a785e592112178842440f3902ca51228a53d6521",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/eventpoll.h",
+  "human_readable_source": " \n \n\n#ifndef _UAPI_LINUX_EVENTPOLL_H\n#define _UAPI_LINUX_EVENTPOLL_H\n\n \n#include <linux/fcntl.h>\n#include <linux/types.h>\n\n \n#define EPOLL_CLOEXEC O_CLOEXEC\n\n \n#define EPOLL_CTL_ADD 1\n#define EPOLL_CTL_DEL 2\n#define EPOLL_CTL_MOD 3\n\n \n#define EPOLLIN\t\t(__force __poll_t)0x00000001\n#define EPOLLPRI\t(__force __poll_t)0x00000002\n#define EPOLLOUT\t(__force __poll_t)0x00000004\n#define EPOLLERR\t(__force __poll_t)0x00000008\n#define EPOLLHUP\t(__force __poll_t)0x00000010\n#define EPOLLNVAL\t(__force __poll_t)0x00000020\n#define EPOLLRDNORM\t(__force __poll_t)0x00000040\n#define EPOLLRDBAND\t(__force __poll_t)0x00000080\n#define EPOLLWRNORM\t(__force __poll_t)0x00000100\n#define EPOLLWRBAND\t(__force __poll_t)0x00000200\n#define EPOLLMSG\t(__force __poll_t)0x00000400\n#define EPOLLRDHUP\t(__force __poll_t)0x00002000\n\n \n#define EPOLL_URING_WAKE\t((__force __poll_t)(1U << 27))\n\n \n#define EPOLLEXCLUSIVE\t((__force __poll_t)(1U << 28))\n\n \n#define EPOLLWAKEUP\t((__force __poll_t)(1U << 29))\n\n \n#define EPOLLONESHOT\t((__force __poll_t)(1U << 30))\n\n \n#define EPOLLET\t\t((__force __poll_t)(1U << 31))\n\n \n#ifdef __x86_64__\n#define EPOLL_PACKED __attribute__((packed))\n#else\n#define EPOLL_PACKED\n#endif\n\nstruct epoll_event {\n\t__poll_t events;\n\t__u64 data;\n} EPOLL_PACKED;\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

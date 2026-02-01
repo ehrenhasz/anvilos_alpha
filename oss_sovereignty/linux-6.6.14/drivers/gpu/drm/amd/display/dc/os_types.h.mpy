@@ -1,0 +1,9 @@
+{
+  "module_name": "os_types.h",
+  "hash_id": "8c8dedacb94e2f701286d7cf8dcd649d509b38c267c3e4897867677e2ddadac5",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/dc/os_types.h",
+  "human_readable_source": " \n\n#ifndef _OS_TYPES_H_\n#define _OS_TYPES_H_\n\n#include <linux/slab.h>\n#include <linux/kgdb.h>\n#include <linux/kref.h>\n#include <linux/types.h>\n#include <linux/delay.h>\n#include <linux/mm.h>\n\n#include <asm/byteorder.h>\n\n#include <drm/display/drm_dp_helper.h>\n#include <drm/drm_print.h>\n\n#include \"cgs_common.h\"\n\n#if defined(__BIG_ENDIAN) && !defined(BIGENDIAN_CPU)\n#define BIGENDIAN_CPU\n#elif defined(__LITTLE_ENDIAN) && !defined(LITTLEENDIAN_CPU)\n#define LITTLEENDIAN_CPU\n#endif\n\n#undef FRAME_SIZE\n\n#define dm_output_to_console(fmt, ...) DRM_DEBUG_KMS(fmt, ##__VA_ARGS__)\n\n#define dm_error(fmt, ...) DRM_ERROR(fmt, ##__VA_ARGS__)\n\n#if defined(CONFIG_DRM_AMD_DC_FP)\n#include \"amdgpu_dm/dc_fpu.h\"\n#define DC_FP_START() dc_fpu_begin(__func__, __LINE__)\n#define DC_FP_END() dc_fpu_end(__func__, __LINE__)\n#endif  \n\n \n#ifdef CONFIG_DEBUG_KERNEL_DC\n#define dc_breakpoint()\t\tkgdb_breakpoint()\n#else\n#define dc_breakpoint()\t\tdo {} while (0)\n#endif\n\n#define ASSERT_CRITICAL(expr) do {\t\t\\\n\t\tif (WARN_ON(!(expr)))\t\t\\\n\t\t\tdc_breakpoint();\t\\\n\t} while (0)\n\n#define ASSERT(expr) do {\t\t\t\\\n\t\tif (WARN_ON_ONCE(!(expr)))\t\\\n\t\t\tdc_breakpoint();\t\\\n\t} while (0)\n\n#define BREAK_TO_DEBUGGER() \\\n\tdo { \\\n\t\tDRM_DEBUG_DRIVER(\"%s():%d\\n\", __func__, __LINE__); \\\n\t\tdc_breakpoint(); \\\n\t} while (0)\n\n#define DC_ERR(...)  do { \\\n\tdm_error(__VA_ARGS__); \\\n\tBREAK_TO_DEBUGGER(); \\\n} while (0)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

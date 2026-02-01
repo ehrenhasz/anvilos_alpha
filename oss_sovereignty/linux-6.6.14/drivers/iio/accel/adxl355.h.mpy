@@ -1,0 +1,9 @@
+{
+  "module_name": "adxl355.h",
+  "hash_id": "31bddbf811eac9a4bf36ad4cbdecbae9b98e28b1680a731742419ac836a4c596",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/iio/accel/adxl355.h",
+  "human_readable_source": " \n \n\n#ifndef _ADXL355_H_\n#define _ADXL355_H_\n\n#include <linux/regmap.h>\n\nenum adxl355_device_type {\n\tADXL355,\n\tADXL359,\n};\n\nstruct adxl355_fractional_type {\n\tint integer;\n\tint decimal;\n};\n\nstruct device;\n\nstruct adxl355_chip_info {\n\tconst char\t\t\t*name;\n\tu8\t\t\t\tpart_id;\n\tstruct adxl355_fractional_type\taccel_scale;\n\tstruct adxl355_fractional_type\ttemp_offset;\n};\n\nextern const struct regmap_access_table adxl355_readable_regs_tbl;\nextern const struct regmap_access_table adxl355_writeable_regs_tbl;\nextern const struct adxl355_chip_info adxl35x_chip_info[];\n\nint adxl355_core_probe(struct device *dev, struct regmap *regmap,\n\t\t       const struct adxl355_chip_info *chip_info);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

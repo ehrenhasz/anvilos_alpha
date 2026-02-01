@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "5f0783f998dd1af450358aebbbee746fc57cc86f369c96869b0e91546c2fdcda",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/powerpc/pmu/ebb/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\ninclude ../../../../../build/Build.include\n\nnoarg:\n\t$(MAKE) -C ../../\n\n# The EBB handler is 64-bit code and everything links against it\nCFLAGS += -m64\n\nTMPOUT = $(OUTPUT)/TMPDIR/\n# Toolchains may build PIE by default which breaks the assembly\nno-pie-option := $(call try-run, echo 'int main() { return 0; }' | \\\n        $(CC) -Werror $(KBUILD_CPPFLAGS) $(CC_OPTION_CFLAGS) -no-pie -x c - -o \"$$TMP\", -no-pie)\n\nLDFLAGS += $(no-pie-option)\n\nTEST_GEN_PROGS := reg_access_test event_attributes_test cycles_test\t\\\n\t cycles_with_freeze_test pmc56_overflow_test\t\t\\\n\t ebb_vs_cpu_event_test cpu_event_vs_ebb_test\t\t\\\n\t cpu_event_pinned_vs_ebb_test task_event_vs_ebb_test\t\\\n\t task_event_pinned_vs_ebb_test multi_ebb_procs_test\t\\\n\t multi_counter_test pmae_handling_test\t\t\t\\\n\t close_clears_pmcc_test instruction_count_test\t\t\\\n\t fork_cleanup_test ebb_on_child_test\t\t\t\\\n\t ebb_on_willing_child_test back_to_back_ebbs_test\t\\\n\t lost_exception_test no_handler_test\t\t\t\\\n\t cycles_with_mmcr2_test regs_access_pmccext_test\n\ntop_srcdir = ../../../../../..\ninclude ../../../lib.mk\n\n$(TEST_GEN_PROGS): ../../harness.c ../../utils.c ../event.c ../lib.c \\\n\t       ebb.c ebb_handler.S trace.c busy_loop.S\n\n$(OUTPUT)/instruction_count_test: ../loop.S\n\n$(OUTPUT)/lost_exception_test: ../lib.c\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

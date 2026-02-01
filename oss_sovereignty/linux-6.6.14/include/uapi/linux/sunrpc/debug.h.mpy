@@ -1,0 +1,9 @@
+{
+  "module_name": "debug.h",
+  "hash_id": "f04648fd47525f13482df4735e1f26bcce5d173381839619b8514430215a1294",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/sunrpc/debug.h",
+  "human_readable_source": " \n \n\n#ifndef _UAPI_LINUX_SUNRPC_DEBUG_H_\n#define _UAPI_LINUX_SUNRPC_DEBUG_H_\n\n \n#define RPCDBG_XPRT\t\t0x0001\n#define RPCDBG_CALL\t\t0x0002\n#define RPCDBG_DEBUG\t\t0x0004\n#define RPCDBG_NFS\t\t0x0008\n#define RPCDBG_AUTH\t\t0x0010\n#define RPCDBG_BIND\t\t0x0020\n#define RPCDBG_SCHED\t\t0x0040\n#define RPCDBG_TRANS\t\t0x0080\n#define RPCDBG_SVCXPRT\t\t0x0100\n#define RPCDBG_SVCDSP\t\t0x0200\n#define RPCDBG_MISC\t\t0x0400\n#define RPCDBG_CACHE\t\t0x0800\n#define RPCDBG_ALL\t\t0x7fff\n\n\n \n\nenum {\n\tCTL_RPCDEBUG = 1,\n\tCTL_NFSDEBUG,\n\tCTL_NFSDDEBUG,\n\tCTL_NLMDEBUG,\n\tCTL_SLOTTABLE_UDP,\n\tCTL_SLOTTABLE_TCP,\n\tCTL_MIN_RESVPORT,\n\tCTL_MAX_RESVPORT,\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "dm-space-map-metadata.h",
+  "hash_id": "e49768888eb489e38eee1791ccee848e5e59eb0f00b44baebf670205e697f3ee",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/md/persistent-data/dm-space-map-metadata.h",
+  "human_readable_source": " \n \n\n#ifndef DM_SPACE_MAP_METADATA_H\n#define DM_SPACE_MAP_METADATA_H\n\n#include \"dm-transaction-manager.h\"\n\n#define DM_SM_METADATA_BLOCK_SIZE (4096 >> SECTOR_SHIFT)\n\n \n#define DM_SM_METADATA_MAX_BLOCKS (255 * ((1 << 14) - 64))\n#define DM_SM_METADATA_MAX_SECTORS (DM_SM_METADATA_MAX_BLOCKS * DM_SM_METADATA_BLOCK_SIZE)\n\n \nstruct dm_space_map *dm_sm_metadata_init(void);\n\n \nint dm_sm_metadata_create(struct dm_space_map *sm,\n\t\t\t  struct dm_transaction_manager *tm,\n\t\t\t  dm_block_t nr_blocks,\n\t\t\t  dm_block_t superblock);\n\n \nint dm_sm_metadata_open(struct dm_space_map *sm,\n\t\t\tstruct dm_transaction_manager *tm,\n\t\t\tvoid *root_le, size_t len);\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

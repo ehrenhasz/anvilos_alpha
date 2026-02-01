@@ -1,0 +1,9 @@
+{
+  "module_name": "pac_common.h",
+  "hash_id": "2d1989cb75caba8fa3901c255ebf8576177249505bb1cb67214d79e69a7fb615",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/usb/gspca/pac_common.h",
+  "human_readable_source": " \n \n\n \n#define PAC_AUTOGAIN_IGNORE_FRAMES\t2\n\nstatic const unsigned char pac_sof_marker[5] =\n\t\t{ 0xff, 0xff, 0x00, 0xff, 0x96 };\n\n \n\nstatic unsigned char *pac_find_sof(struct gspca_dev *gspca_dev, u8 *sof_read,\n\t\t\t\t\tunsigned char *m, int len)\n{\n\tint i;\n\n\t \n\tfor (i = 0; i < len; i++) {\n\t\tswitch (*sof_read) {\n\t\tcase 0:\n\t\t\tif (m[i] == 0xff)\n\t\t\t\t*sof_read = 1;\n\t\t\tbreak;\n\t\tcase 1:\n\t\t\tif (m[i] == 0xff)\n\t\t\t\t*sof_read = 2;\n\t\t\telse\n\t\t\t\t*sof_read = 0;\n\t\t\tbreak;\n\t\tcase 2:\n\t\t\tswitch (m[i]) {\n\t\t\tcase 0x00:\n\t\t\t\t*sof_read = 3;\n\t\t\t\tbreak;\n\t\t\tcase 0xff:\n\t\t\t\t \n\t\t\t\tbreak;\n\t\t\tdefault:\n\t\t\t\t*sof_read = 0;\n\t\t\t}\n\t\t\tbreak;\n\t\tcase 3:\n\t\t\tif (m[i] == 0xff)\n\t\t\t\t*sof_read = 4;\n\t\t\telse\n\t\t\t\t*sof_read = 0;\n\t\t\tbreak;\n\t\tcase 4:\n\t\t\tswitch (m[i]) {\n\t\t\tcase 0x96:\n\t\t\t\t \n\t\t\t\tgspca_dbg(gspca_dev, D_FRAM,\n\t\t\t\t\t  \"SOF found, bytes to analyze: %u - Frame starts at byte #%u\\n\",\n\t\t\t\t\t  len, i + 1);\n\t\t\t\t*sof_read = 0;\n\t\t\t\treturn m + i + 1;\n\t\t\t\tbreak;\n\t\t\tcase 0xff:\n\t\t\t\t*sof_read = 2;\n\t\t\t\tbreak;\n\t\t\tdefault:\n\t\t\t\t*sof_read = 0;\n\t\t\t}\n\t\t\tbreak;\n\t\tdefault:\n\t\t\t*sof_read = 0;\n\t\t}\n\t}\n\n\treturn NULL;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

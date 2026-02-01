@@ -1,0 +1,9 @@
+{
+  "module_name": "pvpanic.h",
+  "hash_id": "3a0895426a019ad0cc98085510e232ff3a229f53cd1af138f117a81a0ed76c01",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/misc/pvpanic.h",
+  "human_readable_source": " \n\n#ifndef __PVPANIC_H__\n#define __PVPANIC_H__\n\n#define PVPANIC_PANICKED\t(1 << 0)\n#define PVPANIC_CRASH_LOADED\t(1 << 1)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "b9081b8a73f715c22aeec0fc8b5e95cd10d9fac65ca446eda2cec65b17c01727",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/soc/rockchip/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nif ARCH_ROCKCHIP || COMPILE_TEST\n\n#\n# Rockchip Soc drivers\n#\n\nconfig ROCKCHIP_GRF\n\tbool \"Rockchip General Register Files support\" if COMPILE_TEST\n\tdefault y if ARCH_ROCKCHIP\n\thelp\n\t  The General Register Files are a central component providing\n\t  special additional settings registers for a lot of soc-components.\n\t  In a lot of cases there also need to be default settings initialized\n\t  to make some of them conform to expectations of the kernel.\n\nconfig ROCKCHIP_IODOMAIN\n\ttristate \"Rockchip IO domain support\"\n\tdepends on OF\n\thelp\n\t  Say y here to enable support io domains on Rockchip SoCs. It is\n\t  necessary for the io domain setting of the SoC to match the\n\t  voltage supplied by the regulators.\n\nconfig ROCKCHIP_PM_DOMAINS\n\tbool \"Rockchip generic power domain\"\n\tdepends on PM\n\tselect PM_GENERIC_DOMAINS\n\thelp\n\t  Say y here to enable power domain support.\n\t  In order to meet high performance and low power requirements, a power\n\t  management unit is designed or saving power when RK3288 in low power\n\t  mode. The RK3288 PMU is dedicated for managing the power of the whole chip.\n\n\t  If unsure, say N.\n\nconfig ROCKCHIP_DTPM\n\ttristate \"Rockchip DTPM hierarchy\"\n\tdepends on DTPM && m\n\thelp\n\t  Describe the hierarchy for the Dynamic Thermal Power Management tree\n\t  on this platform. That will create all the power capping capable\n\t  devices.\n\nendif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

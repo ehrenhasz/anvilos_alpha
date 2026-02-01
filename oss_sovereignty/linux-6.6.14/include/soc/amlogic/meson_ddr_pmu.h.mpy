@@ -1,0 +1,9 @@
+{
+  "module_name": "meson_ddr_pmu.h",
+  "hash_id": "e77045aaeb5f7f3eb4853c930e2fda164806e8da7da87032aadb61f7d128d0a9",
+  "original_prompt": "Ingested from linux-6.6.14/include/soc/amlogic/meson_ddr_pmu.h",
+  "human_readable_source": " \n \n\n#ifndef __MESON_DDR_PMU_H__\n#define __MESON_DDR_PMU_H__\n\n#define MAX_CHANNEL_NUM\t\t8\n\nenum {\n\tALL_CHAN_COUNTER_ID,\n\tCHAN1_COUNTER_ID,\n\tCHAN2_COUNTER_ID,\n\tCHAN3_COUNTER_ID,\n\tCHAN4_COUNTER_ID,\n\tCHAN5_COUNTER_ID,\n\tCHAN6_COUNTER_ID,\n\tCHAN7_COUNTER_ID,\n\tCHAN8_COUNTER_ID,\n\tCOUNTER_MAX_ID,\n};\n\nstruct dmc_info;\n\nstruct dmc_counter {\n\tu64 all_cnt;\t \n\tunion {\n\t\tu64 all_req;\n\t\tstruct {\n\t\t\tu64 all_idle_cnt;\n\t\t\tu64 all_16bit_cnt;\n\t\t};\n\t};\n\tu64 channel_cnt[MAX_CHANNEL_NUM];  \n};\n\nstruct dmc_hw_info {\n\tvoid (*enable)(struct dmc_info *info);\n\tvoid (*disable)(struct dmc_info *info);\n\t \n\tvoid (*set_axi_filter)(struct dmc_info *info, int axi_id, int chann);\n\tint (*irq_handler)(struct dmc_info *info,\n\t\t\t   struct dmc_counter *counter);\n\tvoid (*get_counters)(struct dmc_info *info,\n\t\t\t     struct dmc_counter *counter);\n\n\tint dmc_nr;\t\t\t \n\tint chann_nr;\t\t\t \n\tstruct attribute **fmt_attr;\n\tconst u64 capability[2];\n};\n\nstruct dmc_info {\n\tconst struct dmc_hw_info *hw_info;\n\n\tvoid __iomem *ddr_reg[4];\n\tunsigned long timer_value;\t \n\tvoid __iomem *pll_reg;\n\tint irq_num;\t\t\t \n};\n\nint meson_ddr_pmu_create(struct platform_device *pdev);\nint meson_ddr_pmu_remove(struct platform_device *pdev);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

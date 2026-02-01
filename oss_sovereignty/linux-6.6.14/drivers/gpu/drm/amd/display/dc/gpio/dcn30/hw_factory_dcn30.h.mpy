@@ -1,0 +1,9 @@
+{
+  "module_name": "hw_factory_dcn30.h",
+  "hash_id": "ede8fc91856041d7bd59833847b53edf44654e0faeaa5571c0ba983adbdb3b6f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/dc/gpio/dcn30/hw_factory_dcn30.h",
+  "human_readable_source": " \n#ifndef __DAL_HW_FACTORY_DCN30_H__\n#define __DAL_HW_FACTORY_DCN30_H__\n\n \nvoid dal_hw_factory_dcn30_init(struct hw_factory *factory);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

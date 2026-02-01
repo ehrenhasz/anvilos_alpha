@@ -1,0 +1,9 @@
+{
+  "module_name": "cmfsize.c",
+  "hash_id": "09b7301ffdf8411257b1b7d18c6aa2c718befc6161eee135f48f8829960715e2",
+  "original_prompt": "Ingested from linux-6.6.14/tools/power/acpi/common/cmfsize.c",
+  "human_readable_source": "\n \n\n#include <acpi/acpi.h>\n#include \"accommon.h\"\n#include \"acapps.h\"\n\n#define _COMPONENT          ACPI_TOOLS\nACPI_MODULE_NAME(\"cmfsize\")\n\n \nu32 cm_get_file_size(ACPI_FILE file)\n{\n\tlong file_size;\n\tlong current_offset;\n\tacpi_status status;\n\n\t \n\n\tcurrent_offset = ftell(file);\n\tif (current_offset < 0) {\n\t\tgoto offset_error;\n\t}\n\n\tstatus = fseek(file, 0, SEEK_END);\n\tif (ACPI_FAILURE(status)) {\n\t\tgoto seek_error;\n\t}\n\n\tfile_size = ftell(file);\n\tif (file_size < 0) {\n\t\tgoto offset_error;\n\t}\n\n\t \n\n\tstatus = fseek(file, current_offset, SEEK_SET);\n\tif (ACPI_FAILURE(status)) {\n\t\tgoto seek_error;\n\t}\n\n\treturn ((u32)file_size);\n\noffset_error:\n\tfprintf(stderr, \"Could not get file offset\\n\");\n\treturn (ACPI_UINT32_MAX);\n\nseek_error:\n\tfprintf(stderr, \"Could not set file offset\\n\");\n\treturn (ACPI_UINT32_MAX);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "cfi.h",
+  "hash_id": "d23f9a4b67069c81ab9cc8e6efce7535e031c4bf3162f88a9f141d65d32928a3",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/cfi.h",
+  "human_readable_source": " \n \n#ifndef _LINUX_CFI_H\n#define _LINUX_CFI_H\n\n#include <linux/bug.h>\n#include <linux/module.h>\n\n#ifdef CONFIG_CFI_CLANG\nenum bug_trap_type report_cfi_failure(struct pt_regs *regs, unsigned long addr,\n\t\t\t\t      unsigned long *target, u32 type);\n\nstatic inline enum bug_trap_type report_cfi_failure_noaddr(struct pt_regs *regs,\n\t\t\t\t\t\t\t   unsigned long addr)\n{\n\treturn report_cfi_failure(regs, addr, NULL, 0);\n}\n#endif  \n\n#ifdef CONFIG_ARCH_USES_CFI_TRAPS\nbool is_cfi_trap(unsigned long addr);\n#else\nstatic inline bool is_cfi_trap(unsigned long addr) { return false; }\n#endif\n\n#ifdef CONFIG_MODULES\n#ifdef CONFIG_ARCH_USES_CFI_TRAPS\nvoid module_cfi_finalize(const Elf_Ehdr *hdr, const Elf_Shdr *sechdrs,\n\t\t\t struct module *mod);\n#else\nstatic inline void module_cfi_finalize(const Elf_Ehdr *hdr,\n\t\t\t\t       const Elf_Shdr *sechdrs,\n\t\t\t\t       struct module *mod) {}\n#endif  \n#endif  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

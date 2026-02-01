@@ -1,0 +1,9 @@
+{
+  "module_name": "samsung-keypad.h",
+  "hash_id": "d06b9e69329ea64f3ce02b4b42f2105138f95cbe17e086569953ad1358334210",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/input/samsung-keypad.h",
+  "human_readable_source": " \n \n\n#ifndef __SAMSUNG_KEYPAD_H\n#define __SAMSUNG_KEYPAD_H\n\n#include <linux/input/matrix_keypad.h>\n\n#define SAMSUNG_MAX_ROWS\t8\n#define SAMSUNG_MAX_COLS\t8\n\n \nstruct samsung_keypad_platdata {\n\tconst struct matrix_keymap_data\t*keymap_data;\n\tunsigned int rows;\n\tunsigned int cols;\n\tbool no_autorepeat;\n\tbool wakeup;\n\n\tvoid (*cfg_gpio)(unsigned int rows, unsigned int cols);\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

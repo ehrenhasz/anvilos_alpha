@@ -1,0 +1,9 @@
+{
+  "module_name": "ipt_ah.h",
+  "hash_id": "9ec63ee9c6dc5184807a607cfe94034a03efe53875d411d287346831e516f9d2",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/netfilter_ipv4/ipt_ah.h",
+  "human_readable_source": " \n#ifndef _IPT_AH_H\n#define _IPT_AH_H\n\n#include <linux/types.h>\n\nstruct ipt_ah {\n\t__u32 spis[2];\t\t\t \n\t__u8  invflags;\t\t\t \n};\n\n\n\n \n#define IPT_AH_INV_SPI\t\t0x01\t \n#define IPT_AH_INV_MASK\t0x01\t \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

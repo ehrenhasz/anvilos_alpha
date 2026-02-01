@@ -1,0 +1,9 @@
+{
+  "module_name": "general.json",
+  "hash_id": "21098331408e50116419b81cdf67c25158a05d6a7f57dabd89751eb3fdcc11b7",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/pmu-events/arch/arm64/arm/neoverse-n1/general.json",
+  "human_readable_source": "[\n    {\n        \"ArchStdEvent\": \"CPU_CYCLES\",\n        \"PublicDescription\": \"Counts CPU clock cycles (not timer cycles). The clock measured by this event is defined as the physical clock driving the CPU logic.\"\n    }\n]\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

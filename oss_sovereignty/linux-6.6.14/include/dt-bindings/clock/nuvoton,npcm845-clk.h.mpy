@@ -1,0 +1,9 @@
+{
+  "module_name": "nuvoton,npcm845-clk.h",
+  "hash_id": "6070253927c9eb9a73bb368468646c48eba4966a1e439629a98c4e5348c99191",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/clock/nuvoton,npcm845-clk.h",
+  "human_readable_source": " \n \n\n#ifndef __DT_BINDINGS_CLOCK_NPCM8XX_H\n#define __DT_BINDINGS_CLOCK_NPCM8XX_H\n\n#define NPCM8XX_CLK_CPU\t\t0\n#define NPCM8XX_CLK_GFX_PIXEL\t1\n#define NPCM8XX_CLK_MC\t\t2\n#define NPCM8XX_CLK_ADC\t\t3\n#define NPCM8XX_CLK_AHB\t\t4\n#define NPCM8XX_CLK_TIMER\t5\n#define NPCM8XX_CLK_UART\t6\n#define NPCM8XX_CLK_UART2\t7\n#define NPCM8XX_CLK_MMC\t\t8\n#define NPCM8XX_CLK_SPI3\t9\n#define NPCM8XX_CLK_PCI\t\t10\n#define NPCM8XX_CLK_AXI\t\t11\n#define NPCM8XX_CLK_APB4\t12\n#define NPCM8XX_CLK_APB3\t13\n#define NPCM8XX_CLK_APB2\t14\n#define NPCM8XX_CLK_APB1\t15\n#define NPCM8XX_CLK_APB5\t16\n#define NPCM8XX_CLK_CLKOUT\t17\n#define NPCM8XX_CLK_GFX\t\t18\n#define NPCM8XX_CLK_SU\t\t19\n#define NPCM8XX_CLK_SU48\t20\n#define NPCM8XX_CLK_SDHC\t21\n#define NPCM8XX_CLK_SPI0\t22\n#define NPCM8XX_CLK_SPI1\t23\n#define NPCM8XX_CLK_SPIX\t24\n#define NPCM8XX_CLK_RG\t\t25\n#define NPCM8XX_CLK_RCP\t\t26\n#define NPCM8XX_CLK_PRE_ADC\t27\n#define NPCM8XX_CLK_ATB\t\t28\n#define NPCM8XX_CLK_PRE_CLK\t29\n#define NPCM8XX_CLK_TH\t\t30\n#define NPCM8XX_CLK_REFCLK\t31\n#define NPCM8XX_CLK_SYSBYPCK\t32\n#define NPCM8XX_CLK_MCBYPCK\t33\n\n#define NPCM8XX_NUM_CLOCKS\t(NPCM8XX_CLK_MCBYPCK + 1)\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

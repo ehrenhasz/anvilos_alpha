@@ -1,0 +1,9 @@
+{
+  "module_name": "mmzone.h",
+  "hash_id": "824b8a506327caa2ca805d6d0050ca103669dc81950c85f069a76a754489efb2",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/include/asm/mmzone.h",
+  "human_readable_source": " \n#ifdef CONFIG_X86_32\n# include <asm/mmzone_32.h>\n#else\n# include <asm/mmzone_64.h>\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "63192061a9597cb53dc17b567c3cfde20f1060805fdbb6180e5942dab6cc9dee",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/amazon/ena/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Makefile for the Elastic Network Adapter (ENA) device drivers.\n#\n\nobj-$(CONFIG_ENA_ETHERNET) += ena.o\n\nena-y := ena_netdev.o ena_com.o ena_eth_com.o ena_ethtool.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

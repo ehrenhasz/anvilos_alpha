@@ -1,0 +1,9 @@
+{
+  "module_name": "protocol.h",
+  "hash_id": "8d36c70bc653936d498aa2f252097bcfd7b00b1bef3842143f43f4a80ad2f0a3",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/usb/storage/protocol.h",
+  "human_readable_source": " \n \n\n#ifndef _PROTOCOL_H_\n#define _PROTOCOL_H_\n\n \nextern void usb_stor_pad12_command(struct scsi_cmnd*, struct us_data*);\nextern void usb_stor_ufi_command(struct scsi_cmnd*, struct us_data*);\nextern void usb_stor_transparent_scsi_command(struct scsi_cmnd*,\n\t\tstruct us_data*);\n\n \nenum xfer_buf_dir\t{TO_XFER_BUF, FROM_XFER_BUF};\n\nextern unsigned int usb_stor_access_xfer_buf(unsigned char *buffer,\n\tunsigned int buflen, struct scsi_cmnd *srb, struct scatterlist **,\n\tunsigned int *offset, enum xfer_buf_dir dir);\n\nextern void usb_stor_set_xfer_buf(unsigned char *buffer,\n\tunsigned int buflen, struct scsi_cmnd *srb);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

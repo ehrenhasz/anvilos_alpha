@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "49ead434366466f63591add94b6977fe5b51517039fd9a73cf748c73aa44f4ac",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/scsi/be2iscsi/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig BE2ISCSI\n\ttristate \"Emulex 10Gbps iSCSI - BladeEngine 2\"\n\tdepends on PCI && SCSI && NET\n\tselect SCSI_ISCSI_ATTRS\n\tselect ISCSI_BOOT_SYSFS\n\tselect IRQ_POLL\n\n\thelp\n\tThis driver implements the iSCSI functionality for Emulex\n\t10Gbps Storage adapter - BladeEngine 2.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

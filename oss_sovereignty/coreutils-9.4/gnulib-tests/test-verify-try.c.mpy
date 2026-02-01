@@ -1,0 +1,9 @@
+{
+  "module_name": "test-verify-try.c",
+  "hash_id": "0c06b1f80033a7d4bc27e1266e77ea48458aa4b4623bdbe1565b587ea10dd413",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-verify-try.c",
+  "human_readable_source": " \n\n#include \"test-verify.c\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

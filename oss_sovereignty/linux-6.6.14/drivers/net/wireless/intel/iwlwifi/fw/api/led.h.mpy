@@ -1,0 +1,9 @@
+{
+  "module_name": "led.h",
+  "hash_id": "afd8dd07578395eaa912b0926689425d0e5afcb101cc753fd1c964c58e825655",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/intel/iwlwifi/fw/api/led.h",
+  "human_readable_source": " \n \n#ifndef __iwl_fw_api_led_h__\n#define __iwl_fw_api_led_h__\n\n \nstruct iwl_led_cmd {\n\t__le32 status;\n} __packed;  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

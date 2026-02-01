@@ -1,0 +1,9 @@
+{
+  "module_name": "parse-datetime.h",
+  "hash_id": "66d6df6a28d098b97d8016080e0b149b4999a736d3e5a027d62f6526a9d225b0",
+  "original_prompt": "Ingested from coreutils-9.4/lib/parse-datetime.h",
+  "human_readable_source": " \n#define PARSE_DATETIME_DEBUG 1\n\n \nbool parse_datetime2 (struct timespec *restrict,\n                      char const *, struct timespec const *,\n                      unsigned int flags, timezone_t, char const *);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

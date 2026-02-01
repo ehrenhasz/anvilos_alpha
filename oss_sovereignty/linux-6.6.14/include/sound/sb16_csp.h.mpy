@@ -1,0 +1,9 @@
+{
+  "module_name": "sb16_csp.h",
+  "hash_id": "f4a69d248288dd43de4183b8a63ed97df982bba3eeddb67ac3a22f705e033d90",
+  "original_prompt": "Ingested from linux-6.6.14/include/sound/sb16_csp.h",
+  "human_readable_source": " \n \n#ifndef __SOUND_SB16_CSP_H\n#define __SOUND_SB16_CSP_H\n\n#include <sound/sb.h>\n#include <sound/hwdep.h>\n#include <linux/firmware.h>\n#include <uapi/sound/sb16_csp.h>\n\nstruct snd_sb_csp;\n\n \nenum {\n\tCSP_PROGRAM_MULAW,\n\tCSP_PROGRAM_ALAW,\n\tCSP_PROGRAM_ADPCM_INIT,\n\tCSP_PROGRAM_ADPCM_PLAYBACK,\n\tCSP_PROGRAM_ADPCM_CAPTURE,\n\n\tCSP_PROGRAM_COUNT\n};\n\n \nstruct snd_sb_csp_ops {\n\tint (*csp_use) (struct snd_sb_csp * p);\n\tint (*csp_unuse) (struct snd_sb_csp * p);\n\tint (*csp_autoload) (struct snd_sb_csp * p, snd_pcm_format_t pcm_sfmt, int play_rec_mode);\n\tint (*csp_start) (struct snd_sb_csp * p, int sample_width, int channels);\n\tint (*csp_stop) (struct snd_sb_csp * p);\n\tint (*csp_qsound_transfer) (struct snd_sb_csp * p);\n};\n\n \nstruct snd_sb_csp {\n\tstruct snd_sb *chip;\t\t \n\tint used;\t\t \n\tchar codec_name[16];\t \n\tunsigned short func_nr;\t \n\tunsigned int acc_format;\t \n\tint acc_channels;\t \n\tint acc_width;\t\t \n\tint acc_rates;\t\t \n\tint mode;\t\t \n\tint run_channels;\t \n\tint run_width;\t\t \n\tint version;\t\t \n\tint running;\t\t \n\n\tstruct snd_sb_csp_ops ops;\t \n\n\tspinlock_t q_lock;\t \n\tint q_enabled;\t\t \n\tint qpos_left;\t\t \n\tint qpos_right;\t\t \n\tint qpos_changed;\t \n\n\tstruct snd_kcontrol *qsound_switch;\n\tstruct snd_kcontrol *qsound_space;\n\n\tstruct mutex access_mutex;\t \n\n\tconst struct firmware *csp_programs[CSP_PROGRAM_COUNT];\n};\n\nint snd_sb_csp_new(struct snd_sb *chip, int device, struct snd_hwdep ** rhwdep);\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

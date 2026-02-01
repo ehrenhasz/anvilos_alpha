@@ -1,0 +1,9 @@
+{
+  "module_name": "pool.h",
+  "hash_id": "9240dec4f3092c023917c157dabc231db0b75d815069070f2df9a2c1d38ae748",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/pool.h",
+  "human_readable_source": " \n \n\n#ifndef __MLX5_EN_XSK_POOL_H__\n#define __MLX5_EN_XSK_POOL_H__\n\n#include \"en.h\"\n\nstatic inline struct xsk_buff_pool *mlx5e_xsk_get_pool(struct mlx5e_params *params,\n\t\t\t\t\t\t       struct mlx5e_xsk *xsk, u16 ix)\n{\n\tif (!xsk || !xsk->pools)\n\t\treturn NULL;\n\n\tif (unlikely(ix >= params->num_channels))\n\t\treturn NULL;\n\n\treturn xsk->pools[ix];\n}\n\nstruct mlx5e_xsk_param;\nvoid mlx5e_build_xsk_param(struct xsk_buff_pool *pool, struct mlx5e_xsk_param *xsk);\n\n \nint mlx5e_xsk_setup_pool(struct net_device *dev, struct xsk_buff_pool *pool, u16 qid);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

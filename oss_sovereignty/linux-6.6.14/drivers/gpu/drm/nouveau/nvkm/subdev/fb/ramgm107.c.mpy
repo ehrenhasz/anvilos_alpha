@@ -1,0 +1,9 @@
+{
+  "module_name": "ramgm107.c",
+  "hash_id": "1e2f9226b00801811e82fc65929fe0acb2a4d13ea78722712af4d5701284ac1c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/subdev/fb/ramgm107.c",
+  "human_readable_source": " \n#include \"ram.h\"\n\nu32\ngm107_ram_probe_fbp(const struct nvkm_ram_func *func,\n\t\t    struct nvkm_device *device, int fbp, int *pltcs)\n{\n\tu32 fbpao = nvkm_rd32(device, 0x021c14);\n\treturn func->probe_fbp_amount(func, fbpao, device, fbp, pltcs);\n}\n\nstatic const struct nvkm_ram_func\ngm107_ram = {\n\t.upper = 0x1000000000ULL,\n\t.probe_fbp = gm107_ram_probe_fbp,\n\t.probe_fbp_amount = gf108_ram_probe_fbp_amount,\n\t.probe_fbpa_amount = gf100_ram_probe_fbpa_amount,\n\t.dtor = gk104_ram_dtor,\n\t.init = gk104_ram_init,\n\t.calc = gk104_ram_calc,\n\t.prog = gk104_ram_prog,\n\t.tidy = gk104_ram_tidy,\n};\n\nint\ngm107_ram_new(struct nvkm_fb *fb, struct nvkm_ram **pram)\n{\n\treturn gk104_ram_new_(&gm107_ram, fb, pram);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

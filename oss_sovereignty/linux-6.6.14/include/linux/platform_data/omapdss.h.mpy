@@ -1,0 +1,9 @@
+{
+  "module_name": "omapdss.h",
+  "hash_id": "e75a4c3c3240360c7472a8b6241f03d78d51766b1d581135a9a9b3dbe3b09610",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/platform_data/omapdss.h",
+  "human_readable_source": " \n \n\n#ifndef __OMAPDSS_PDATA_H\n#define __OMAPDSS_PDATA_H\n\nenum omapdss_version {\n\tOMAPDSS_VER_UNKNOWN = 0,\n\tOMAPDSS_VER_OMAP24xx,\n\tOMAPDSS_VER_OMAP34xx_ES1,\t \n\tOMAPDSS_VER_OMAP34xx_ES3,\t \n\tOMAPDSS_VER_OMAP3630,\n\tOMAPDSS_VER_AM35xx,\n\tOMAPDSS_VER_OMAP4430_ES1,\t \n\tOMAPDSS_VER_OMAP4430_ES2,\t \n\tOMAPDSS_VER_OMAP4,\t\t \n\tOMAPDSS_VER_OMAP5,\n\tOMAPDSS_VER_AM43xx,\n\tOMAPDSS_VER_DRA7xx,\n};\n\n \nstruct omap_dss_board_info {\n\tint (*dsi_enable_pads)(int dsi_id, unsigned int lane_mask);\n\tvoid (*dsi_disable_pads)(int dsi_id, unsigned int lane_mask);\n\tint (*set_min_bus_tput)(struct device *dev, unsigned long r);\n\tenum omapdss_version version;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

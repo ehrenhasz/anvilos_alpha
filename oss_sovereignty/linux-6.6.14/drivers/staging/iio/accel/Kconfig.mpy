@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "8032aa52ae1ab4ceb9584c5f2d3299af659091fe2e1a98dae2250630aa05ca3a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/iio/accel/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Accelerometer drivers\n#\nmenu \"Accelerometers\"\n\nconfig ADIS16203\n\ttristate \"Analog Devices ADIS16203 Programmable 360 Degrees Inclinometer\"\n\tdepends on SPI\n\tselect IIO_ADIS_LIB\n\tselect IIO_ADIS_LIB_BUFFER if IIO_BUFFER\n\thelp\n\t  Say Y here to build support for Analog Devices adis16203 Programmable\n\t  360 Degrees Inclinometer.\n\n\t  To compile this driver as a module, say M here: the module will be\n\t  called adis16203.\n\nconfig ADIS16240\n\ttristate \"Analog Devices ADIS16240 Programmable Impact Sensor and Recorder\"\n\tdepends on SPI\n\tselect IIO_ADIS_LIB\n\tselect IIO_ADIS_LIB_BUFFER if IIO_BUFFER\n\thelp\n\t  Say Y here to build support for Analog Devices adis16240 programmable\n\t  impact Sensor and recorder.\n\n\t  To compile this driver as a module, say M here: the module will be\n\t  called adis16240.\n\nendmenu\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

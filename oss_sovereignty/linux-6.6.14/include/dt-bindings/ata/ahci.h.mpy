@@ -1,0 +1,9 @@
+{
+  "module_name": "ahci.h",
+  "hash_id": "aa2ce5ea0c15060cc554152a49c916b65531d13e0c44b24a962ce475079675d4",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/ata/ahci.h",
+  "human_readable_source": " \n \n\n#ifndef _DT_BINDINGS_ATA_AHCI_H\n#define _DT_BINDINGS_ATA_AHCI_H\n\n \n#define HBA_SSS\t\t(1 << 27)\n#define HBA_SMPS\t(1 << 28)\n\n \n#define HBA_PORT_HPCP\t(1 << 18)\n#define HBA_PORT_MPSP\t(1 << 19)\n#define HBA_PORT_CPD\t(1 << 20)\n#define HBA_PORT_ESP\t(1 << 21)\n#define HBA_PORT_FBSCP\t(1 << 22)\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

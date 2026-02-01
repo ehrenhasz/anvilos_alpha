@@ -1,0 +1,9 @@
+{
+  "module_name": "ia_css_ynr_param.h",
+  "hash_id": "12c800ffb9c2af5945d56b59a08a7dbd62165f23464dd7c24577d0666737b36c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/isp/kernels/ynr/ynr_1.0/ia_css_ynr_param.h",
+  "human_readable_source": " \n \n\n#ifndef __IA_CSS_YNR_PARAM_H\n#define __IA_CSS_YNR_PARAM_H\n\n#include \"type_support.h\"\n\n \nstruct sh_css_isp_ynr_params {\n\ts32 threshold;\n\ts32 gain_all;\n\ts32 gain_dir;\n\ts32 threshold_cb;\n\ts32 threshold_cr;\n};\n\n \nstruct sh_css_isp_yee_params {\n\ts32 dirthreshold_s;\n\ts32 dirthreshold_g;\n\ts32 dirthreshold_width_log2;\n\ts32 dirthreshold_width;\n\ts32 detailgain;\n\ts32 coring_s;\n\ts32 coring_g;\n\ts32 scale_plus_s;\n\ts32 scale_plus_g;\n\ts32 scale_minus_s;\n\ts32 scale_minus_g;\n\ts32 clip_plus_s;\n\ts32 clip_plus_g;\n\ts32 clip_minus_s;\n\ts32 clip_minus_g;\n\ts32 Yclip;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "ccu-sun4i-a10.h",
+  "hash_id": "c2ae5770327b4ed0ba7a9b0084549f747864ee31f109f6a8ed50deca91b61c4e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/clk/sunxi-ng/ccu-sun4i-a10.h",
+  "human_readable_source": " \n \n\n#ifndef _CCU_SUN4I_A10_H_\n#define _CCU_SUN4I_A10_H_\n\n#include <dt-bindings/clock/sun4i-a10-ccu.h>\n#include <dt-bindings/clock/sun7i-a20-ccu.h>\n#include <dt-bindings/reset/sun4i-a10-ccu.h>\n\n \n#define CLK_PLL_CORE\t\t2\n#define CLK_PLL_AUDIO_BASE\t3\n#define CLK_PLL_AUDIO\t\t4\n#define CLK_PLL_AUDIO_2X\t5\n#define CLK_PLL_AUDIO_4X\t6\n#define CLK_PLL_AUDIO_8X\t7\n#define CLK_PLL_VIDEO0\t\t8\n \n#define CLK_PLL_VE\t\t10\n#define CLK_PLL_DDR_BASE\t11\n#define CLK_PLL_DDR\t\t12\n#define CLK_PLL_DDR_OTHER\t13\n#define CLK_PLL_PERIPH_BASE\t14\n#define CLK_PLL_PERIPH\t\t15\n#define CLK_PLL_PERIPH_SATA\t16\n#define CLK_PLL_VIDEO1\t\t17\n \n#define CLK_PLL_GPU\t\t19\n\n \n#define CLK_AXI\t\t\t21\n#define CLK_AXI_DRAM\t\t22\n#define CLK_AHB\t\t\t23\n#define CLK_APB0\t\t24\n#define CLK_APB1\t\t25\n\n \n \n \n \n \n \n\n#define CLK_NUMBER_SUN4I\t(CLK_MBUS + 1)\n#define CLK_NUMBER_SUN7I\t(CLK_OUT_B + 1)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

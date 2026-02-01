@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "52bc8d5b8522f5ae94d0dca92d96146bee327f58ae5c02195dd33956a91997be",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/ingenic/Makefile",
+  "human_readable_source": "obj-$(CONFIG_DRM_INGENIC) += ingenic-drm.o\ningenic-drm-y = ingenic-drm-drv.o\ningenic-drm-$(CONFIG_DRM_INGENIC_IPU) += ingenic-ipu.o\nobj-$(CONFIG_DRM_INGENIC_DW_HDMI) += ingenic-dw-hdmi.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

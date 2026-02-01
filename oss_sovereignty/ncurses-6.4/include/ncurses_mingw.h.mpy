@@ -1,0 +1,9 @@
+{
+  "module_name": "ncurses_mingw.h",
+  "hash_id": "077d1bdcd3ad22c1bb438e87236aaa8dc454957c99eca6ed5227f1ef219328d2",
+  "original_prompt": "Ingested from ncurses-6.4/include/ncurses_mingw.h",
+  "human_readable_source": " \n\n \n\n \n\n \n\n#ifdef _WIN32\n#ifndef _NC_MINGWH\n#define _NC_MINGWH\n\n#define USE_CONSOLE_DRIVER 1\n\n#undef  TERMIOS\n#define TERMIOS 1\n\ntypedef unsigned char cc_t;\ntypedef unsigned int  tcflag_t;\ntypedef unsigned int  speed_t;\ntypedef unsigned short otcflag_t;\ntypedef unsigned char ospeed_t;\n\n#define NCCS 18\nstruct termios\n{\n  tcflag_t\tc_iflag;\n  tcflag_t\tc_oflag;\n  tcflag_t\tc_cflag;\n  tcflag_t\tc_lflag;\n  char\t\tc_line;\n  cc_t\t\tc_cc[NCCS];\n  speed_t\tc_ispeed;\n  speed_t\tc_ospeed;\n};\n\nextern NCURSES_EXPORT(int)  _nc_mingw_tcsetattr(\n    int fd,\n    int optional_actions,\n    const struct termios* arg);\nextern NCURSES_EXPORT(int)  _nc_mingw_tcgetattr(\n    int fd,\n    struct termios* arg);\nextern NCURSES_EXPORT(int)  _nc_mingw_tcflush(\n    int fd,\n    int queue);\nextern NCURSES_EXPORT(void) _nc_set_term_driver(void* term);\n\n#endif  \n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": ".gitignore",
+  "hash_id": "14a01fe642abacbb4ca29b6888d44d878eb28956d8e5f7faf3bd76f6c255fa17",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/.gitignore",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\ngpiogpio-event-mon\ngpiogpio-hammer\ngpioinclude/\ngpiolsgpio\nkselftest_install/\ntpm2/SpaceTest.log\n\n# Python bytecode and cache\n__pycache__/\n*.py[cod]\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

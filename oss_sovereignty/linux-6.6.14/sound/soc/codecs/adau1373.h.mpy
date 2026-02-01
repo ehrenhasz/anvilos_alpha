@@ -1,0 +1,9 @@
+{
+  "module_name": "adau1373.h",
+  "hash_id": "8e7ff211b2af79e9242a426003d254525d17fc8f22c27faa1479a7fb409aef47",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/codecs/adau1373.h",
+  "human_readable_source": " \n#ifndef __ADAU1373_H__\n#define __ADAU1373_H__\n\nenum adau1373_pll_src {\n\tADAU1373_PLL_SRC_MCLK1 = 0,\n\tADAU1373_PLL_SRC_BCLK1 = 1,\n\tADAU1373_PLL_SRC_BCLK2 = 2,\n\tADAU1373_PLL_SRC_BCLK3 = 3,\n\tADAU1373_PLL_SRC_LRCLK1 = 4,\n\tADAU1373_PLL_SRC_LRCLK2 = 5,\n\tADAU1373_PLL_SRC_LRCLK3 = 6,\n\tADAU1373_PLL_SRC_GPIO1 = 7,\n\tADAU1373_PLL_SRC_GPIO2 = 8,\n\tADAU1373_PLL_SRC_GPIO3 = 9,\n\tADAU1373_PLL_SRC_GPIO4 = 10,\n\tADAU1373_PLL_SRC_MCLK2 = 11,\n};\n\nenum adau1373_pll {\n\tADAU1373_PLL1 = 0,\n\tADAU1373_PLL2 = 1,\n};\n\nenum adau1373_clk_src {\n\tADAU1373_CLK_SRC_PLL1 = 0,\n\tADAU1373_CLK_SRC_PLL2 = 1,\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

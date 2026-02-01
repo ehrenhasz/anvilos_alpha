@@ -1,0 +1,9 @@
+{
+  "module_name": "odm_DynamicTxPower.h",
+  "hash_id": "51a65a7f7ffeb2a034ad6d9d271e3771ba105695ac4a0c2604487815f4ade3f4",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/rtl8723bs/hal/odm_DynamicTxPower.h",
+  "human_readable_source": " \n \n\n#ifndef\t__ODMDYNAMICTXPOWER_H__\n#define    __ODMDYNAMICTXPOWER_H__\n\n#define\t\tTX_POWER_NEAR_FIELD_THRESH_LVL2\t74\n#define\t\tTX_POWER_NEAR_FIELD_THRESH_LVL1\t67\n#define\t\tTX_POWER_NEAR_FIELD_THRESH_AP\t\t0x3F\n#define\t\tTX_POWER_NEAR_FIELD_THRESH_8812\t60\n\n#define\t\tTxHighPwrLevel_Normal\t\t0\n#define\t\tTxHighPwrLevel_Level1\t\t1\n#define\t\tTxHighPwrLevel_Level2\t\t2\n#define\t\tTxHighPwrLevel_BT1\t\t\t3\n#define\t\tTxHighPwrLevel_BT2\t\t\t4\n#define\t\tTxHighPwrLevel_15\t\t\t5\n#define\t\tTxHighPwrLevel_35\t\t\t6\n#define\t\tTxHighPwrLevel_50\t\t\t7\n#define\t\tTxHighPwrLevel_70\t\t\t8\n#define\t\tTxHighPwrLevel_100\t\t\t9\n\nvoid odm_DynamicTxPowerInit(void *pDM_VOID);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "sdw.h",
+  "hash_id": "e952e399717daf489cb71a4bb0be9f94e86d6661d24478deb00380f59dbfec4c",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/qcom/sdw.h",
+  "human_readable_source": " \n\n\n#ifndef __QCOM_SND_SDW_H__\n#define __QCOM_SND_SDW_H__\n\n#include <linux/soundwire/sdw.h>\n\nint qcom_snd_sdw_prepare(struct snd_pcm_substream *substream,\n\t\t\t struct sdw_stream_runtime *runtime,\n\t\t\t bool *stream_prepared);\nint qcom_snd_sdw_hw_params(struct snd_pcm_substream *substream,\n\t\t\t   struct snd_pcm_hw_params *params,\n\t\t\t   struct sdw_stream_runtime **psruntime);\nint qcom_snd_sdw_hw_free(struct snd_pcm_substream *substream,\n\t\t\t struct sdw_stream_runtime *sruntime,\n\t\t\t bool *stream_prepared);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "473e9b2c94a076e105c7d0357da6e9cbf65c03e10bd35dd549f2f8a222efc09a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/mtd/nand/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n\nnandcore-objs := core.o bbt.o\nobj-$(CONFIG_MTD_NAND_CORE) += nandcore.o\nobj-$(CONFIG_MTD_NAND_ECC_MEDIATEK) += ecc-mtk.o\n\nobj-y\t+= onenand/\nobj-y\t+= raw/\nobj-y\t+= spi/\n\nnandcore-$(CONFIG_MTD_NAND_ECC) += ecc.o\nnandcore-$(CONFIG_MTD_NAND_ECC_SW_HAMMING) += ecc-sw-hamming.o\nnandcore-$(CONFIG_MTD_NAND_ECC_SW_BCH) += ecc-sw-bch.o\nnandcore-$(CONFIG_MTD_NAND_ECC_MXIC) += ecc-mxic.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

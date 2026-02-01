@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "ae1696ef562590e0eb5792740a3450b337a827b9e7199485cb723644dfbd2618",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/mtd/nand/raw/brcmnand/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n# link order matters; don't link the more generic brcmstb_nand.o before the\n# more specific iproc_nand.o, for instance\nobj-$(CONFIG_MTD_NAND_BRCMNAND_IPROC)\t+= iproc_nand.o\nobj-$(CONFIG_MTD_NAND_BRCMNAND_BCMBCA)\t+= bcm63138_nand.o\nobj-$(CONFIG_MTD_NAND_BRCMNAND_BCM63XX)\t+= bcm6368_nand.o\nobj-$(CONFIG_MTD_NAND_BRCMNAND_BRCMSTB)\t+= brcmstb_nand.o\nobj-$(CONFIG_MTD_NAND_BRCMNAND)\t\t+= brcmnand.o\n\nobj-$(CONFIG_MTD_NAND_BRCMNAND_BCMA)\t+= bcma_nand.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

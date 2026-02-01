@@ -1,0 +1,9 @@
+{
+  "module_name": "sha3.h",
+  "hash_id": "00b883464a5e9c8d784afba42c626ad2438acaecc29992ccafc2c5ee39277783",
+  "original_prompt": "Ingested from linux-6.6.14/include/crypto/sha3.h",
+  "human_readable_source": " \n \n#ifndef __CRYPTO_SHA3_H__\n#define __CRYPTO_SHA3_H__\n\n#define SHA3_224_DIGEST_SIZE\t(224 / 8)\n#define SHA3_224_BLOCK_SIZE\t(200 - 2 * SHA3_224_DIGEST_SIZE)\n\n#define SHA3_256_DIGEST_SIZE\t(256 / 8)\n#define SHA3_256_BLOCK_SIZE\t(200 - 2 * SHA3_256_DIGEST_SIZE)\n\n#define SHA3_384_DIGEST_SIZE\t(384 / 8)\n#define SHA3_384_BLOCK_SIZE\t(200 - 2 * SHA3_384_DIGEST_SIZE)\n\n#define SHA3_512_DIGEST_SIZE\t(512 / 8)\n#define SHA3_512_BLOCK_SIZE\t(200 - 2 * SHA3_512_DIGEST_SIZE)\n\nstruct sha3_state {\n\tu64\t\tst[25];\n\tunsigned int\trsiz;\n\tunsigned int\trsizw;\n\n\tunsigned int\tpartial;\n\tu8\t\tbuf[SHA3_224_BLOCK_SIZE];\n};\n\nint crypto_sha3_init(struct shash_desc *desc);\nint crypto_sha3_update(struct shash_desc *desc, const u8 *data,\n\t\t       unsigned int len);\nint crypto_sha3_final(struct shash_desc *desc, u8 *out);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

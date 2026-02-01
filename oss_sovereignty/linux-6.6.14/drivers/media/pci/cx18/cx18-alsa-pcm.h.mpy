@@ -1,0 +1,9 @@
+{
+  "module_name": "cx18-alsa-pcm.h",
+  "hash_id": "152004e3d0d09cc153cdd99acc667e72087bb81f763d6b839e984bd28f477fa2",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/pci/cx18/cx18-alsa-pcm.h",
+  "human_readable_source": " \n \n\nint snd_cx18_pcm_create(struct snd_cx18_card *cxsc);\n\n \nvoid cx18_alsa_announce_pcm_data(struct snd_cx18_card *card, u8 *pcm_data,\n\t\t\t\t size_t num_bytes);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

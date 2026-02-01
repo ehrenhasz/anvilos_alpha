@@ -1,0 +1,9 @@
+{
+  "module_name": "icp_qat_fw_pke.h",
+  "hash_id": "fdbc88caecbc67df4d7ff1bd31329bbe8ab2743b815666f1c218ad00eafc8ba1",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/crypto/intel/qat/qat_common/icp_qat_fw_pke.h",
+  "human_readable_source": " \n \n#ifndef _ICP_QAT_FW_PKE_\n#define _ICP_QAT_FW_PKE_\n\n#include \"icp_qat_fw.h\"\n\nstruct icp_qat_fw_req_hdr_pke_cd_pars {\n\t__u64 content_desc_addr;\n\t__u32 content_desc_resrvd;\n\t__u32 func_id;\n};\n\nstruct icp_qat_fw_req_pke_mid {\n\t__u64 opaque;\n\t__u64 src_data_addr;\n\t__u64 dest_data_addr;\n};\n\nstruct icp_qat_fw_req_pke_hdr {\n\t__u8 resrvd1;\n\t__u8 resrvd2;\n\t__u8 service_type;\n\t__u8 hdr_flags;\n\t__u16 comn_req_flags;\n\t__u16 resrvd4;\n\tstruct icp_qat_fw_req_hdr_pke_cd_pars cd_pars;\n};\n\nstruct icp_qat_fw_pke_request {\n\tstruct icp_qat_fw_req_pke_hdr pke_hdr;\n\tstruct icp_qat_fw_req_pke_mid pke_mid;\n\t__u8 output_param_count;\n\t__u8 input_param_count;\n\t__u16 resrvd1;\n\t__u32 resrvd2;\n\t__u64 next_req_adr;\n};\n\nstruct icp_qat_fw_resp_pke_hdr {\n\t__u8 resrvd1;\n\t__u8 resrvd2;\n\t__u8 response_type;\n\t__u8 hdr_flags;\n\t__u16 comn_resp_flags;\n\t__u16 resrvd4;\n};\n\nstruct icp_qat_fw_pke_resp {\n\tstruct icp_qat_fw_resp_pke_hdr pke_resp_hdr;\n\t__u64 opaque;\n\t__u64 src_data_addr;\n\t__u64 dest_data_addr;\n};\n\n#define ICP_QAT_FW_PKE_HDR_VALID_FLAG_BITPOS              7\n#define ICP_QAT_FW_PKE_HDR_VALID_FLAG_MASK                0x1\n#define ICP_QAT_FW_PKE_RESP_PKE_STAT_GET(status_word) \\\n\tQAT_FIELD_GET(((status_word >> ICP_QAT_FW_COMN_ONE_BYTE_SHIFT) & \\\n\t\tICP_QAT_FW_COMN_SINGLE_BYTE_MASK), \\\n\t\tQAT_COMN_RESP_PKE_STATUS_BITPOS, \\\n\t\tQAT_COMN_RESP_PKE_STATUS_MASK)\n\n#define ICP_QAT_FW_PKE_HDR_VALID_FLAG_SET(hdr_t, val) \\\n\tQAT_FIELD_SET((hdr_t.hdr_flags), (val), \\\n\t\tICP_QAT_FW_PKE_HDR_VALID_FLAG_BITPOS, \\\n\t\tICP_QAT_FW_PKE_HDR_VALID_FLAG_MASK)\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

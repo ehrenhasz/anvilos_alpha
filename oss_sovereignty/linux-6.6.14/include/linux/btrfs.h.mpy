@@ -1,0 +1,9 @@
+{
+  "module_name": "btrfs.h",
+  "hash_id": "58500b5e6e4c4f9fbf8a44f5ec1f0476143486136583a7ef57b47476ceda15c5",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/btrfs.h",
+  "human_readable_source": " \n#ifndef _LINUX_BTRFS_H\n#define _LINUX_BTRFS_H\n\n#include <uapi/linux/btrfs.h>\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

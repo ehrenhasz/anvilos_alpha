@@ -1,0 +1,9 @@
+{
+  "module_name": "dce110_resource.h",
+  "hash_id": "6dec1e9ad763f5606b6fb7fc2d59500fe8b1d622160152f1757a8f4092a1b195",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/dc/dce110/dce110_resource.h",
+  "human_readable_source": " \n\n#ifndef __DC_RESOURCE_DCE110_H__\n#define __DC_RESOURCE_DCE110_H__\n\n#include \"core_types.h\"\n\nstruct dc;\nstruct resource_pool;\n\n#define TO_DCE110_RES_POOL(pool)\\\n\tcontainer_of(pool, struct dce110_resource_pool, base)\n\nstruct dce110_resource_pool {\n\tstruct resource_pool base;\n};\n\nvoid dce110_resource_build_pipe_hw_param(struct pipe_ctx *pipe_ctx);\n\nstruct resource_pool *dce110_create_resource_pool(\n\tuint8_t num_virtual_links,\n\tstruct dc *dc,\n\tstruct hw_asic_id asic_id);\n\nstruct stream_encoder *dce110_find_first_free_match_stream_enc_for_link(\n\t\tstruct resource_context *res_ctx,\n\t\tconst struct resource_pool *pool,\n\t\tstruct dc_stream_state *stream);\n\n#endif  \n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

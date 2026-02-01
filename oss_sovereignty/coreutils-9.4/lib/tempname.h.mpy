@@ -1,0 +1,9 @@
+{
+  "module_name": "tempname.h",
+  "hash_id": "a8005d5e5e8561e6e99ee99adfa0e7a5db8fe20e9ab9ee4b18100b8460e5e331",
+  "original_prompt": "Ingested from coreutils-9.4/lib/tempname.h",
+  "human_readable_source": " \n\n#ifndef GL_TEMPNAME_H\n# define GL_TEMPNAME_H\n\n# include <stdio.h>\n\n# ifdef __GT_FILE\n#  define GT_FILE     __GT_FILE\n#  define GT_DIR      __GT_DIR\n#  define GT_NOCREATE __GT_NOCREATE\n# else\n#  define GT_FILE     0\n#  define GT_DIR      1\n#  define GT_NOCREATE 2\n# endif\n\n#ifdef __cplusplus\nextern \"C\" {\n#endif\n\n \nextern int gen_tempname (char *tmpl, int suffixlen, int flags, int kind);\n \nextern int gen_tempname_len (char *tmpl, int suffixlen, int flags, int kind,\n                             size_t x_suffix_len);\n\n \nextern int try_tempname (char *tmpl, int suffixlen, void *args,\n                         int (*tryfunc) (char *, void *));\n \nextern int try_tempname_len (char *tmpl, int suffixlen, void *args,\n                             int (*tryfunc) (char *, void *),\n                             size_t x_suffix_len);\n\n#ifdef __cplusplus\n}\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

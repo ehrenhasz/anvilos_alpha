@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "5c5ea713c1cd3ebead2b1bf4d379fdab18f5259de8b6fceb4f5722da348fa4d8",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/can/c_can/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n#  Makefile for the Bosch C_CAN controller drivers.\n#\n\nobj-$(CONFIG_CAN_C_CAN) += c_can.o\n\nc_can-objs :=\nc_can-objs += c_can_ethtool.o\nc_can-objs += c_can_main.o\n\nobj-$(CONFIG_CAN_C_CAN_PLATFORM) += c_can_platform.o\nobj-$(CONFIG_CAN_C_CAN_PCI) += c_can_pci.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

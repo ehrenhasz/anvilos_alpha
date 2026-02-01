@@ -1,0 +1,9 @@
+{
+  "module_name": "bench-sha1.c",
+  "hash_id": "ac7d49e99a802c448200a02bfffeb8a55df82eaac34a56c6cf02f1c8a62af782",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/bench-sha1.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#include \"sha1.h\"\n\n#define FUNC sha1_buffer\n#include \"bench-digest.h\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "ecadbcbc337bf092c90aeb4bbef611c24f932ee01c8406a5eb2de6dae2f80478",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/hwtracing/coresight/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for CoreSight drivers.\n#\nobj-$(CONFIG_CORESIGHT) += coresight.o\ncoresight-y := coresight-core.o  coresight-etm-perf.o coresight-platform.o \\\n\t\tcoresight-sysfs.o coresight-syscfg.o coresight-config.o \\\n\t\tcoresight-cfg-preload.o coresight-cfg-afdo.o \\\n\t\tcoresight-syscfg-configfs.o coresight-trace-id.o\nobj-$(CONFIG_CORESIGHT_LINK_AND_SINK_TMC) += coresight-tmc.o\ncoresight-tmc-y := coresight-tmc-core.o coresight-tmc-etf.o \\\n\t\t      coresight-tmc-etr.o\nobj-$(CONFIG_CORESIGHT_SINK_TPIU) += coresight-tpiu.o\nobj-$(CONFIG_CORESIGHT_SINK_ETBV10) += coresight-etb10.o\nobj-$(CONFIG_CORESIGHT_LINKS_AND_SINKS) += coresight-funnel.o \\\n\t\t\t\t\t   coresight-replicator.o\nobj-$(CONFIG_CORESIGHT_SOURCE_ETM3X) += coresight-etm3x.o\ncoresight-etm3x-y := coresight-etm3x-core.o coresight-etm-cp14.o \\\n\t\t     coresight-etm3x-sysfs.o\nobj-$(CONFIG_CORESIGHT_SOURCE_ETM4X) += coresight-etm4x.o\ncoresight-etm4x-y := coresight-etm4x-core.o coresight-etm4x-sysfs.o \\\n\t\t\tcoresight-etm4x-cfg.o\nobj-$(CONFIG_CORESIGHT_STM) += coresight-stm.o\nobj-$(CONFIG_CORESIGHT_CPU_DEBUG) += coresight-cpu-debug.o\nobj-$(CONFIG_CORESIGHT_CATU) += coresight-catu.o\nobj-$(CONFIG_CORESIGHT_CTI) += coresight-cti.o\nobj-$(CONFIG_CORESIGHT_TRBE) += coresight-trbe.o\nobj-$(CONFIG_CORESIGHT_TPDM) += coresight-tpdm.o\nobj-$(CONFIG_CORESIGHT_TPDA) += coresight-tpda.o\ncoresight-cti-y := coresight-cti-core.o\tcoresight-cti-platform.o \\\n\t\t   coresight-cti-sysfs.o\nobj-$(CONFIG_ULTRASOC_SMB) += ultrasoc-smb.o\nobj-$(CONFIG_CORESIGHT_DUMMY) += coresight-dummy.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

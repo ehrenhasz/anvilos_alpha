@@ -1,0 +1,9 @@
+{
+  "module_name": "vamem_local.h",
+  "hash_id": "457108b5967bdf15a80541b013df474d55e84fcd4c3a3a9626f37bd27977e48f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/hive_isp_css_common/host/vamem_local.h",
+  "human_readable_source": " \n \n\n#ifndef __VAMEM_LOCAL_H_INCLUDED__\n#define __VAMEM_LOCAL_H_INCLUDED__\n\n#include \"vamem_global.h\"\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

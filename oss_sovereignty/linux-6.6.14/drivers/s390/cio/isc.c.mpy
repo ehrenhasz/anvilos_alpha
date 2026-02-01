@@ -1,0 +1,9 @@
+{
+  "module_name": "isc.c",
+  "hash_id": "8043f46e05ec0232590b59f5785e72e2751ef88e9a7737540f5e71b53f4ddb1c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/s390/cio/isc.c",
+  "human_readable_source": "\n \n\n#include <linux/spinlock.h>\n#include <linux/module.h>\n#include <asm/isc.h>\n\nstatic unsigned int isc_refs[MAX_ISC + 1];\nstatic DEFINE_SPINLOCK(isc_ref_lock);\n\n\n \nvoid isc_register(unsigned int isc)\n{\n\tif (isc > MAX_ISC) {\n\t\tWARN_ON(1);\n\t\treturn;\n\t}\n\n\tspin_lock(&isc_ref_lock);\n\tif (isc_refs[isc] == 0)\n\t\tctl_set_bit(6, 31 - isc);\n\tisc_refs[isc]++;\n\tspin_unlock(&isc_ref_lock);\n}\nEXPORT_SYMBOL_GPL(isc_register);\n\n \nvoid isc_unregister(unsigned int isc)\n{\n\tspin_lock(&isc_ref_lock);\n\t \n\tif (isc > MAX_ISC || isc_refs[isc] == 0) {\n\t\tWARN_ON(1);\n\t\tgoto out_unlock;\n\t}\n\tif (isc_refs[isc] == 1)\n\t\tctl_clear_bit(6, 31 - isc);\n\tisc_refs[isc]--;\nout_unlock:\n\tspin_unlock(&isc_ref_lock);\n}\nEXPORT_SYMBOL_GPL(isc_unregister);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

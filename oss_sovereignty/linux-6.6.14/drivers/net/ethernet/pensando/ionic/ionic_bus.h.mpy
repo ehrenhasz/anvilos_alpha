@@ -1,0 +1,9 @@
+{
+  "module_name": "ionic_bus.h",
+  "hash_id": "bfb02bf393da2f4cc198dde7db30edd6622da3cf735341012d38827dc9ba55c0",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/pensando/ionic/ionic_bus.h",
+  "human_readable_source": " \n \n\n#ifndef _IONIC_BUS_H_\n#define _IONIC_BUS_H_\n\nint ionic_bus_get_irq(struct ionic *ionic, unsigned int num);\nconst char *ionic_bus_info(struct ionic *ionic);\nint ionic_bus_alloc_irq_vectors(struct ionic *ionic, unsigned int nintrs);\nvoid ionic_bus_free_irq_vectors(struct ionic *ionic);\nint ionic_bus_register_driver(void);\nvoid ionic_bus_unregister_driver(void);\nvoid __iomem *ionic_bus_map_dbpage(struct ionic *ionic, int page_num);\nvoid ionic_bus_unmap_dbpage(struct ionic *ionic, void __iomem *page);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

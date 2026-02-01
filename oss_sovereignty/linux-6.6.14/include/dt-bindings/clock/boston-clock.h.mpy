@@ -1,0 +1,9 @@
+{
+  "module_name": "boston-clock.h",
+  "hash_id": "658e067ea29485e8e507291c95d73cbeb5d0b69e84143c0692ef13baa77aef62",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/clock/boston-clock.h",
+  "human_readable_source": " \n \n\n#ifndef __DT_BINDINGS_CLOCK_BOSTON_CLOCK_H__\n#define __DT_BINDINGS_CLOCK_BOSTON_CLOCK_H__\n\n#define BOSTON_CLK_INPUT 0\n#define BOSTON_CLK_SYS 1\n#define BOSTON_CLK_CPU 2\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

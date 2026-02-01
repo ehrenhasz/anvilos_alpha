@@ -1,0 +1,9 @@
+{
+  "module_name": "11ac.h",
+  "hash_id": "f5dd1a69b857740d524c49bb72b6b3acb4bc160584eb07d39d4c36ebd4ba32b6",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/marvell/mwifiex/11ac.h",
+  "human_readable_source": " \n \n\n#ifndef _MWIFIEX_11AC_H_\n#define _MWIFIEX_11AC_H_\n\n#define VHT_CFG_2GHZ BIT(0)\n#define VHT_CFG_5GHZ BIT(1)\n\nenum vht_cfg_misc_config {\n\tVHT_CAP_TX_OPERATION = 1,\n\tVHT_CAP_ASSOCIATION,\n\tVHT_CAP_UAP_ONLY\n};\n\n#define DEFAULT_VHT_MCS_SET 0xfffa\n#define DISABLE_VHT_MCS_SET 0xffff\n\n#define VHT_BW_80_160_80P80 BIT(2)\n\nint mwifiex_cmd_append_11ac_tlv(struct mwifiex_private *priv,\n\t\t\t\tstruct mwifiex_bssdescriptor *bss_desc,\n\t\t\t\tu8 **buffer);\nint mwifiex_cmd_11ac_cfg(struct mwifiex_private *priv,\n\t\t\t struct host_cmd_ds_command *cmd, u16 cmd_action,\n\t\t\t struct mwifiex_11ac_vht_cfg *cfg);\nvoid mwifiex_fill_vht_cap_tlv(struct mwifiex_private *priv,\n\t\t\t      struct ieee80211_vht_cap *vht_cap, u8 bands);\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

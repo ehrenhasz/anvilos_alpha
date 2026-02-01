@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "7f321654b7cee5e01d1195a3b4efd7a89fce2554d8d4a76c15a75c76f4f634be",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/amd-pstate/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n# Makefile for amd-pstate/ function selftests\n\n# No binaries, but make sure arg-less \"make\" doesn't trigger \"run_tests\"\nall:\n\nARCH ?= $(shell uname -m 2>/dev/null || echo not)\nARCH := $(shell echo $(ARCH) | sed -e s/i.86/x86/ -e s/x86_64/x86/)\n\nifeq (x86,$(ARCH))\nTEST_FILES += ../../../power/x86/amd_pstate_tracer/amd_pstate_trace.py\nTEST_FILES += ../../../power/x86/intel_pstate_tracer/intel_pstate_tracer.py\nendif\n\nTEST_PROGS += run.sh\nTEST_FILES += basic.sh tbench.sh gitsource.sh\n\ninclude ../lib.mk\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

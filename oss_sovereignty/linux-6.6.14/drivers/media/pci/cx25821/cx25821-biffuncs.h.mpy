@@ -1,0 +1,9 @@
+{
+  "module_name": "cx25821-biffuncs.h",
+  "hash_id": "8b52ed4dcd96a4d6b99408d196dd3f5b0c779f44a98cc2640dc983196559b4e4",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/pci/cx25821/cx25821-biffuncs.h",
+  "human_readable_source": " \n \n\n#ifndef _BITFUNCS_H\n#define _BITFUNCS_H\n\n#define SetBit(Bit)  (1 << Bit)\n\nstatic inline u8 getBit(u32 sample, u8 index)\n{\n\treturn (u8) ((sample >> index) & 1);\n}\n\nstatic inline u32 clearBitAtPos(u32 value, u8 bit)\n{\n\treturn value & ~(1 << bit);\n}\n\nstatic inline u32 setBitAtPos(u32 sample, u8 bit)\n{\n\tsample |= (1 << bit);\n\treturn sample;\n\n}\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

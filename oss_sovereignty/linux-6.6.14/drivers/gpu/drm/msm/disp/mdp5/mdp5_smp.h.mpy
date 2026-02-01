@@ -1,0 +1,9 @@
+{
+  "module_name": "mdp5_smp.h",
+  "hash_id": "ece505f7d779bde1e7be0b3a527da7324de4e8a9b08a3580fc55f21295367064",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/msm/disp/mdp5/mdp5_smp.h",
+  "human_readable_source": " \n \n\n#ifndef __MDP5_SMP_H__\n#define __MDP5_SMP_H__\n\n#include <drm/drm_print.h>\n\n#include \"msm_drv.h\"\n\n \nstruct mdp5_smp_state {\n\t \n\tmdp5_smp_state_t state;\n\n\t \n\tmdp5_smp_state_t client_state[MAX_CLIENTS];\n\n\t \n\tunsigned long assigned;\n\n\t \n\tunsigned long released;\n};\n\nstruct mdp5_kms;\nstruct mdp5_smp;\n\n \n\nstruct mdp5_smp *mdp5_smp_init(struct mdp5_kms *mdp5_kms,\n\t\tconst struct mdp5_smp_block *cfg);\nvoid  mdp5_smp_destroy(struct mdp5_smp *smp);\n\nvoid mdp5_smp_dump(struct mdp5_smp *smp, struct drm_printer *p);\n\nuint32_t mdp5_smp_calculate(struct mdp5_smp *smp,\n\t\tconst struct mdp_format *format,\n\t\tu32 width, bool hdecim);\n\nint mdp5_smp_assign(struct mdp5_smp *smp, struct mdp5_smp_state *state,\n\t\tenum mdp5_pipe pipe, uint32_t blkcfg);\nvoid mdp5_smp_release(struct mdp5_smp *smp, struct mdp5_smp_state *state,\n\t\tenum mdp5_pipe pipe);\n\nvoid mdp5_smp_prepare_commit(struct mdp5_smp *smp, struct mdp5_smp_state *state);\nvoid mdp5_smp_complete_commit(struct mdp5_smp *smp, struct mdp5_smp_state *state);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

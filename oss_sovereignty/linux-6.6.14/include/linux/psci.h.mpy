@@ -1,0 +1,9 @@
+{
+  "module_name": "psci.h",
+  "hash_id": "9661afa2ede5a3e8b75af961f47b341546e53e09f9adf028331d8d631e9ccf35",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/psci.h",
+  "human_readable_source": " \n \n\n#ifndef __LINUX_PSCI_H\n#define __LINUX_PSCI_H\n\n#include <linux/arm-smccc.h>\n#include <linux/init.h>\n#include <linux/types.h>\n\n#define PSCI_POWER_STATE_TYPE_STANDBY\t\t0\n#define PSCI_POWER_STATE_TYPE_POWER_DOWN\t1\n\nbool psci_tos_resident_on(int cpu);\n\nint psci_cpu_suspend_enter(u32 state);\nbool psci_power_state_is_valid(u32 state);\nint psci_set_osi_mode(bool enable);\nbool psci_has_osi_support(void);\n\nstruct psci_operations {\n\tu32 (*get_version)(void);\n\tint (*cpu_suspend)(u32 state, unsigned long entry_point);\n\tint (*cpu_off)(u32 state);\n\tint (*cpu_on)(unsigned long cpuid, unsigned long entry_point);\n\tint (*migrate)(unsigned long cpuid);\n\tint (*affinity_info)(unsigned long target_affinity,\n\t\t\tunsigned long lowest_affinity_level);\n\tint (*migrate_info_type)(void);\n};\n\nextern struct psci_operations psci_ops;\n\nstruct psci_0_1_function_ids {\n\tu32 cpu_suspend;\n\tu32 cpu_on;\n\tu32 cpu_off;\n\tu32 migrate;\n};\n\nstruct psci_0_1_function_ids get_psci_0_1_function_ids(void);\n\n#if defined(CONFIG_ARM_PSCI_FW)\nint __init psci_dt_init(void);\n#else\nstatic inline int psci_dt_init(void) { return 0; }\n#endif\n\n#if defined(CONFIG_ARM_PSCI_FW) && defined(CONFIG_ACPI)\nint __init psci_acpi_init(void);\nbool __init acpi_psci_present(void);\nbool acpi_psci_use_hvc(void);\n#else\nstatic inline int psci_acpi_init(void) { return 0; }\nstatic inline bool acpi_psci_present(void) { return false; }\nstatic inline bool acpi_psci_use_hvc(void) {return false; }\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

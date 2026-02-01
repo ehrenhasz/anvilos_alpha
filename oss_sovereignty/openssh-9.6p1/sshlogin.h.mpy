@@ -1,0 +1,9 @@
+{
+  "module_name": "sshlogin.h",
+  "hash_id": "01b4f399e1f3844216aeb07700b2270b78468e20420cfd61c6c3d28f14489e06",
+  "original_prompt": "Ingested from openssh-9.6p1/sshlogin.h",
+  "human_readable_source": " \n\n \n\nvoid\trecord_login(pid_t, const char *, const char *, uid_t,\n    const char *, struct sockaddr *, socklen_t);\nvoid   record_logout(pid_t, const char *, const char *);\ntime_t\tget_last_login_time(uid_t, const char *, char *, size_t);\n\n#ifdef LOGIN_NEEDS_UTMPX\nvoid\trecord_utmp_only(pid_t, const char *, const char *, const char *,\n\t\tstruct sockaddr *, socklen_t);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

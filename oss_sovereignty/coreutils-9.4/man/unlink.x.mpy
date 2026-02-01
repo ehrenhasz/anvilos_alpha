@@ -1,0 +1,9 @@
+{
+  "module_name": "unlink.x",
+  "hash_id": "47b2a0afba90917562130944c8a6ec0aa8566a6a12f021fa6136edf61b044ee6",
+  "original_prompt": "Ingested from coreutils-9.4/man/unlink.x",
+  "human_readable_source": "[NAME]\nunlink \\- call the unlink function to remove the specified file\n[DESCRIPTION]\n.\\\" Add any additional description here\n[SEE ALSO]\nunlink(2)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

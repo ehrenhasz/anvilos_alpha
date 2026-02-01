@@ -1,0 +1,9 @@
+{
+  "module_name": "Build",
+  "hash_id": "4acdedaf7d0ee0459d3a2f5e223a1062723f72698c4846da5b251d8da24c81c3",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/scripts/python/Perf-Trace-Util/Build",
+  "human_readable_source": "perf-y += Context.o\n\n# -Wno-declaration-after-statement: The python headers have mixed code with declarations (decls after asserts, for instance)\nCFLAGS_Context.o += $(PYTHON_EMBED_CCOPTS) -Wno-redundant-decls -Wno-strict-prototypes -Wno-unused-parameter -Wno-nested-externs -Wno-declaration-after-statement\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

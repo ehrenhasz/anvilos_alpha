@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "8902301b096acb8ea668db098514bd2b17fdea4de1bd8c83c3fe31abf17af37c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/thermal/broadcom/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-$(CONFIG_BCM2711_THERMAL)\t\t+= bcm2711_thermal.o\nobj-$(CONFIG_BCM2835_THERMAL)\t\t+= bcm2835_thermal.o\nobj-$(CONFIG_BRCMSTB_THERMAL)\t\t+= brcmstb_thermal.o\nobj-$(CONFIG_BCM_NS_THERMAL)\t\t+= ns-thermal.o\nobj-$(CONFIG_BCM_SR_THERMAL)\t\t+= sr-thermal.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

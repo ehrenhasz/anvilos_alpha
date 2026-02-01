@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "e88ce4c5ad189167ff35d114657ae5a1291f6e067fdc3b39bf2821b0ef37f2ef",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/iio/common/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for the IIO common modules.\n# Common modules contains modules, which can be shared among multiple\n# IIO modules. For example if the trigger processing is common for\n# multiple IIO modules then this can be moved to a common module\n# instead of duplicating in each module.\n#\n\n# When adding new entries keep the list in alphabetical order\nobj-y += cros_ec_sensors/\nobj-y += hid-sensors/\nobj-y += inv_sensors/\nobj-y += ms_sensors/\nobj-y += scmi_sensors/\nobj-y += ssp_sensors/\nobj-y += st_sensors/\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

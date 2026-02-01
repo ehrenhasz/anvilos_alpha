@@ -1,0 +1,9 @@
+{
+  "module_name": "ixgbe_fcoe.h",
+  "hash_id": "984b827ca76b370cd160da3de0bb608ef03b778f2c32c990feaed3a9b3c69e68",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/intel/ixgbe/ixgbe_fcoe.h",
+  "human_readable_source": " \n \n\n#ifndef _IXGBE_FCOE_H\n#define _IXGBE_FCOE_H\n\n#include <scsi/fc/fc_fs.h>\n#include <scsi/fc/fc_fcoe.h>\n\n \n#define IXGBE_RXDADV_FCSTAT_SHIFT\t4\n\n \n#define IXGBE_BUFFCNT_MAX\t256\t \n#define IXGBE_FCPTR_ALIGN\t16\n#define IXGBE_FCPTR_MAX\t(IXGBE_BUFFCNT_MAX * sizeof(dma_addr_t))\n#define IXGBE_FCBUFF_4KB\t0x0\n#define IXGBE_FCBUFF_8KB\t0x1\n#define IXGBE_FCBUFF_16KB\t0x2\n#define IXGBE_FCBUFF_64KB\t0x3\n#define IXGBE_FCBUFF_MAX\t65536\t \n#define IXGBE_FCBUFF_MIN\t4096\t \n#define IXGBE_FCOE_DDP_MAX\t512\t \n#define IXGBE_FCOE_DDP_MAX_X550\t2048\t \n\n \n#define IXGBE_FCOE_DEFTC\t3\n\n \n#define IXGBE_FCERR_BADCRC       0x00100000\n\n \n#define __IXGBE_FCOE_TARGET\t1\n\nstruct ixgbe_fcoe_ddp {\n\tint len;\n\tu32 err;\n\tunsigned int sgc;\n\tstruct scatterlist *sgl;\n\tdma_addr_t udp;\n\tu64 *udl;\n\tstruct dma_pool *pool;\n};\n\n \nstruct ixgbe_fcoe_ddp_pool {\n\tstruct dma_pool *pool;\n\tu64 noddp;\n\tu64 noddp_ext_buff;\n};\n\nstruct ixgbe_fcoe {\n\tstruct ixgbe_fcoe_ddp_pool __percpu *ddp_pool;\n\tatomic_t refcnt;\n\tspinlock_t lock;\n\tstruct ixgbe_fcoe_ddp ddp[IXGBE_FCOE_DDP_MAX_X550];\n\tvoid *extra_ddp_buffer;\n\tdma_addr_t extra_ddp_buffer_dma;\n\tunsigned long mode;\n\tu8 up;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

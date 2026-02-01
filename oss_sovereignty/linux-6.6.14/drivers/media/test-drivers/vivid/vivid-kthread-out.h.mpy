@@ -1,0 +1,9 @@
+{
+  "module_name": "vivid-kthread-out.h",
+  "hash_id": "35bfe4dcf1ec87e005ced694b57b2f5b33745735f97feb269c5ea37d02fd9af9",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/test-drivers/vivid/vivid-kthread-out.h",
+  "human_readable_source": " \n \n\n#ifndef _VIVID_KTHREAD_OUT_H_\n#define _VIVID_KTHREAD_OUT_H_\n\nint vivid_start_generating_vid_out(struct vivid_dev *dev, bool *pstreaming);\nvoid vivid_stop_generating_vid_out(struct vivid_dev *dev, bool *pstreaming);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "close_range.h",
+  "hash_id": "e4ae7db93f860d4b2af80b8e1b6522c2117a5d29c0ebc1014be351c8ab0e9449",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/close_range.h",
+  "human_readable_source": " \n#ifndef _UAPI_LINUX_CLOSE_RANGE_H\n#define _UAPI_LINUX_CLOSE_RANGE_H\n\n \n#define CLOSE_RANGE_UNSHARE\t(1U << 1)\n\n \n#define CLOSE_RANGE_CLOEXEC\t(1U << 2)\n\n#endif  \n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

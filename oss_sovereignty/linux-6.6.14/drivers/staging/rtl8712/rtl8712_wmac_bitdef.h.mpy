@@ -1,0 +1,9 @@
+{
+  "module_name": "rtl8712_wmac_bitdef.h",
+  "hash_id": "6ff2ec437be9cc987e8606493378f8378902d171c51184bcef9dd0f3fba2424a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/rtl8712/rtl8712_wmac_bitdef.h",
+  "human_readable_source": " \n \n#ifndef __RTL8712_WMAC_BITDEF_H__\n#define __RTL8712_WMAC_BITDEF_H__\n\n \n#define\t_NAV_UPPER_EN\t\t\tBIT(18)\n#define\t_NAV_MTO_EN\t\t\t\tBIT(17)\n#define\t_NAV_UPPER\t\t\t\tBIT(16)\n#define\t_NAV_MTO_MSK\t\t\t0xFF00\n#define\t_NAV_MTO_SHT\t\t\t8\n#define\t_RTSRST_MSK\t\t\t\t0x00FF\n#define\t_RTSRST_SHT\t\t\t\t0\n\n \n#define\t_20MHZBW\t\t\t\tBIT(2)\n\n \n#define\t_BACAM_POLL\t\t\t\tBIT(31)\n#define\t_BACAM_RST\t\t\t\tBIT(17)\n#define\t_BACAM_RW\t\t\t\tBIT(16)\n#define\t_BACAM_ADDR_MSK\t\t\t0x0000007F\n#define\t_BACAM_ADDR_SHT\t\t\t0\n\n \n#define\t_LBDLY_MSK\t\t\t\t0x1F\n\n \n#define\t_FWDLY_MSK\t\t\t\t0x0F\n\n \n#define\t_RXERR_RPT_SEL_MSK\t\t0xF0000000\n#define\t_RXERR_RPT_SEL_SHT\t\t28\n#define\t_RPT_CNT_MSK\t\t\t0x000FFFFF\n#define\t_RPT_CNT_SHT\t\t\t0\n\n#endif\t \n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "riscv-stub.c",
+  "hash_id": "c1f65f34f09ac89b5c9ec2b8fe01ce787af0cdad10a542f75bde1220032bb6a4",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/firmware/efi/libstub/riscv-stub.c",
+  "human_readable_source": "\n \n\n#include <linux/efi.h>\n\n#include <asm/efi.h>\n#include <asm/sections.h>\n#include <asm/unaligned.h>\n\n#include \"efistub.h\"\n\nunsigned long stext_offset(void)\n{\n\t \n\treturn _start_kernel - _start;\n}\n\nefi_status_t handle_kernel_image(unsigned long *image_addr,\n\t\t\t\t unsigned long *image_size,\n\t\t\t\t unsigned long *reserve_addr,\n\t\t\t\t unsigned long *reserve_size,\n\t\t\t\t efi_loaded_image_t *image,\n\t\t\t\t efi_handle_t image_handle)\n{\n\tunsigned long kernel_size, kernel_codesize, kernel_memsize;\n\tefi_status_t status;\n\n\tkernel_size = _edata - _start;\n\tkernel_codesize = __init_text_end - _start;\n\tkernel_memsize = kernel_size + (_end - _edata);\n\t*image_addr = (unsigned long)_start;\n\t*image_size = kernel_memsize;\n\t*reserve_size = *image_size;\n\n\tstatus = efi_kaslr_relocate_kernel(image_addr,\n\t\t\t\t\t   reserve_addr, reserve_size,\n\t\t\t\t\t   kernel_size, kernel_codesize, kernel_memsize,\n\t\t\t\t\t   efi_kaslr_get_phys_seed(image_handle));\n\tif (status != EFI_SUCCESS) {\n\t\tefi_err(\"Failed to relocate kernel\\n\");\n\t\t*image_size = 0;\n\t}\n\n\treturn status;\n}\n\nvoid efi_icache_sync(unsigned long start, unsigned long end)\n{\n\tasm volatile (\"fence.i\" ::: \"memory\");\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

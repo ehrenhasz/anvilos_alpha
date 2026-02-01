@@ -1,0 +1,9 @@
+{
+  "module_name": "uncore-cache.json",
+  "hash_id": "a700c06d87f5c6a161b2f73f498068c29d64f6af3ba4c960ac915bd5429aac26",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/pmu-events/arch/x86/meteorlake/uncore-cache.json",
+  "human_readable_source": "[\n    {\n        \"BriefDescription\": \"Number of all entries allocated. Includes also retries.\",\n        \"EventCode\": \"0x35\",\n        \"EventName\": \"UNC_HAC_CBO_TOR_ALLOCATION.ALL\",\n        \"PerPkg\": \"1\",\n        \"UMask\": \"0x8\",\n        \"Unit\": \"HAC_CBO\"\n    },\n    {\n        \"BriefDescription\": \"Asserted on coherent DRD + DRdPref  allocations into the queue. Cacheable only\",\n        \"EventCode\": \"0x35\",\n        \"EventName\": \"UNC_HAC_CBO_TOR_ALLOCATION.DRD\",\n        \"PerPkg\": \"1\",\n        \"UMask\": \"0x1\",\n        \"Unit\": \"HAC_CBO\"\n    }\n]\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "0f89d7afcae67bff9501672dbc77067806a6a26ab7a467f9dc3e14e1749ca08f",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/xilinx/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nsnd-soc-xlnx-i2s-objs      := xlnx_i2s.o\nobj-$(CONFIG_SND_SOC_XILINX_I2S) += snd-soc-xlnx-i2s.o\nsnd-soc-xlnx-formatter-pcm-objs := xlnx_formatter_pcm.o\nobj-$(CONFIG_SND_SOC_XILINX_AUDIO_FORMATTER) += snd-soc-xlnx-formatter-pcm.o\nsnd-soc-xlnx-spdif-objs := xlnx_spdif.o\nobj-$(CONFIG_SND_SOC_XILINX_SPDIF) += snd-soc-xlnx-spdif.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

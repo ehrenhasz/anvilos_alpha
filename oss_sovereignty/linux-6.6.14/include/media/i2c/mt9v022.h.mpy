@@ -1,0 +1,9 @@
+{
+  "module_name": "mt9v022.h",
+  "hash_id": "05f5ab520d687318b3e4de874180facaafeffa869e04ba5620b4dae053ce4012",
+  "original_prompt": "Ingested from linux-6.6.14/include/media/i2c/mt9v022.h",
+  "human_readable_source": " \n \n\n#ifndef __MT9V022_H__\n#define __MT9V022_H__\n\nstruct mt9v022_platform_data {\n\tunsigned short y_skip_top;\t \n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

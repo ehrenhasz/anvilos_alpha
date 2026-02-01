@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "9b2f0438efd435d41d0bbc28c7006b25214a45f9a9037941e1825b2a5b18e5ca",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/clk/imgtec/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig COMMON_CLK_BOSTON\n\tbool \"Clock driver for MIPS Boston boards\"\n\tdepends on MIPS || COMPILE_TEST\n\tselect MFD_SYSCON\n\thelp\n\t  Enable this to support the system & CPU clocks on the MIPS Boston\n\t  development board from Imagination Technologies. These are simple\n\t  fixed rate clocks whose rate is determined by reading a platform\n\t  provided register.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

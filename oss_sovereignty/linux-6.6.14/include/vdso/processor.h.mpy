@@ -1,0 +1,9 @@
+{
+  "module_name": "processor.h",
+  "hash_id": "b6e964412de136472a8912f36568b3160cb6b93c72c8d4c0790966ac82f0c211",
+  "original_prompt": "Ingested from linux-6.6.14/include/vdso/processor.h",
+  "human_readable_source": " \n \n#ifndef __VDSO_PROCESSOR_H\n#define __VDSO_PROCESSOR_H\n\n#ifndef __ASSEMBLY__\n\n#include <asm/vdso/processor.h>\n\n#endif  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

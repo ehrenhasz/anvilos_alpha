@@ -1,0 +1,9 @@
+{
+  "module_name": "llc_sap.h",
+  "hash_id": "a527dfad74a88408a4a4f700b1db02dc012448dcdfca8497bb789ccc34f91466",
+  "original_prompt": "Ingested from linux-6.6.14/include/net/llc_sap.h",
+  "human_readable_source": "#ifndef LLC_SAP_H\n#define LLC_SAP_H\n\n#include <asm/types.h>\n\n \nstruct llc_sap;\nstruct net_device;\nstruct sk_buff;\nstruct sock;\n\nvoid llc_sap_rtn_pdu(struct llc_sap *sap, struct sk_buff *skb);\nvoid llc_save_primitive(struct sock *sk, struct sk_buff *skb,\n\t\t\tunsigned char prim);\nstruct sk_buff *llc_alloc_frame(struct sock *sk, struct net_device *dev,\n\t\t\t\tu8 type, u32 data_size);\n\nvoid llc_build_and_send_test_pkt(struct llc_sap *sap, struct sk_buff *skb,\n\t\t\t\t unsigned char *dmac, unsigned char dsap);\nvoid llc_build_and_send_xid_pkt(struct llc_sap *sap, struct sk_buff *skb,\n\t\t\t\tunsigned char *dmac, unsigned char dsap);\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

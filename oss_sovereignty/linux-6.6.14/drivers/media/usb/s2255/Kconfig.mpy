@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "67de9010cf9762af40cdd613ede97b900adfcad040a93b59a0ebc97e4b17426d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/usb/s2255/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig USB_S2255\n\ttristate \"USB Sensoray 2255 video capture device\"\n\tdepends on VIDEO_DEV\n\tselect VIDEOBUF2_VMALLOC\n\thelp\n\t  Say Y here if you want support for the Sensoray 2255 USB device.\n\t  This driver can be compiled as a module, called s2255drv.\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

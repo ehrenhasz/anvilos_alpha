@@ -1,0 +1,9 @@
+{
+  "module_name": "cxgb4_filter.h",
+  "hash_id": "50bff1bf4008d66ae27b793812691803805ae1770336941905c3dd3ac49d30ce",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/chelsio/cxgb4/cxgb4_filter.h",
+  "human_readable_source": " \n\n#ifndef __CXGB4_FILTER_H\n#define __CXGB4_FILTER_H\n\n#include \"t4_msg.h\"\n\n#define WORD_MASK\t0xffffffff\n\nvoid filter_rpl(struct adapter *adap, const struct cpl_set_tcb_rpl *rpl);\nvoid hash_filter_rpl(struct adapter *adap, const struct cpl_act_open_rpl *rpl);\nvoid hash_del_filter_rpl(struct adapter *adap,\n\t\t\t const struct cpl_abort_rpl_rss *rpl);\nvoid clear_filter(struct adapter *adap, struct filter_entry *f);\n\nint set_filter_wr(struct adapter *adapter, int fidx);\nint delete_filter(struct adapter *adapter, unsigned int fidx);\n\nint writable_filter(struct filter_entry *f);\nvoid clear_all_filters(struct adapter *adapter);\nvoid init_hash_filter(struct adapter *adap);\nbool is_filter_exact_match(struct adapter *adap,\n\t\t\t   struct ch_filter_specification *fs);\nvoid cxgb4_cleanup_ethtool_filters(struct adapter *adap);\nint cxgb4_init_ethtool_filters(struct adapter *adap);\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

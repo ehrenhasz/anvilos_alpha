@@ -1,0 +1,9 @@
+{
+  "module_name": "eventq.c",
+  "hash_id": "09de33638f9bf26c64f7e1e258d1c94226dc52831bf75fe92d3b5dd2800a518c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/runtime/eventq/src/eventq.c",
+  "human_readable_source": "\n \n\n#include \"ia_css_types.h\"\n#include \"assert_support.h\"\n#include \"ia_css_queue.h\"  \n#include \"ia_css_eventq.h\"\n#include \"ia_css_event.h\"\t \nint ia_css_eventq_recv(\n    ia_css_queue_t *eventq_handle,\n    uint8_t *payload)\n{\n\tu32 sp_event;\n\tint error;\n\n\t \n\terror = ia_css_queue_dequeue(eventq_handle, &sp_event);\n\n\t \n\tif (!error)\n\t\tia_css_event_decode(sp_event, payload);\n\treturn error;\n}\n\n \nint ia_css_eventq_send(\n    ia_css_queue_t *eventq_handle,\n    u8 evt_id,\n    u8 evt_payload_0,\n    u8 evt_payload_1,\n    uint8_t evt_payload_2)\n{\n\tu8 tmp[4];\n\tu32 sw_event;\n\tint error = -ENOSYS;\n\n\t \n\ttmp[0] = evt_id;\n\ttmp[1] = evt_payload_0;\n\ttmp[2] = evt_payload_1;\n\ttmp[3] = evt_payload_2;\n\tia_css_event_encode(tmp, 4, &sw_event);\n\n\t \n\tfor ( ; ; ) {\n\t\terror = ia_css_queue_enqueue(eventq_handle, sw_event);\n\t\tif (error != -ENOBUFS) {\n\t\t\t \n\t\t\tbreak;\n\t\t}\n\t\t \n\t\tudelay(1);\n\t}\n\treturn error;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

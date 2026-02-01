@@ -1,0 +1,9 @@
+{
+  "module_name": "nfs2.h",
+  "hash_id": "f08019975eef83fb1320a7997e61ec456a79a0eb4d9630f3b41cc64cb714429a",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/nfs2.h",
+  "human_readable_source": " \n \n#ifndef _LINUX_NFS2_H\n#define _LINUX_NFS2_H\n\n#define NFS2_PORT\t2049\n#define NFS2_MAXDATA\t8192\n#define NFS2_MAXPATHLEN\t1024\n#define NFS2_MAXNAMLEN\t255\n#define NFS2_MAXGROUPS\t16\n#define NFS2_FHSIZE\t32\n#define NFS2_COOKIESIZE\t4\n#define NFS2_FIFO_DEV\t(-1)\n#define NFS2MODE_FMT\t0170000\n#define NFS2MODE_DIR\t0040000\n#define NFS2MODE_CHR\t0020000\n#define NFS2MODE_BLK\t0060000\n#define NFS2MODE_REG\t0100000\n#define NFS2MODE_LNK\t0120000\n#define NFS2MODE_SOCK\t0140000\n#define NFS2MODE_FIFO\t0010000\n\n\n \nenum nfs2_ftype {\n\tNF2NON = 0,\n\tNF2REG = 1,\n\tNF2DIR = 2,\n\tNF2BLK = 3,\n\tNF2CHR = 4,\n\tNF2LNK = 5,\n\tNF2SOCK = 6,\n\tNF2BAD = 7,\n\tNF2FIFO = 8\n};\n\nstruct nfs2_fh {\n\tchar\t\t\tdata[NFS2_FHSIZE];\n};\n\n \n#define NFS2_VERSION\t\t2\n#define NFSPROC_NULL\t\t0\n#define NFSPROC_GETATTR\t\t1\n#define NFSPROC_SETATTR\t\t2\n#define NFSPROC_ROOT\t\t3\n#define NFSPROC_LOOKUP\t\t4\n#define NFSPROC_READLINK\t5\n#define NFSPROC_READ\t\t6\n#define NFSPROC_WRITECACHE\t7\n#define NFSPROC_WRITE\t\t8\n#define NFSPROC_CREATE\t\t9\n#define NFSPROC_REMOVE\t\t10\n#define NFSPROC_RENAME\t\t11\n#define NFSPROC_LINK\t\t12\n#define NFSPROC_SYMLINK\t\t13\n#define NFSPROC_MKDIR\t\t14\n#define NFSPROC_RMDIR\t\t15\n#define NFSPROC_READDIR\t\t16\n#define NFSPROC_STATFS\t\t17\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

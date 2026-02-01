@@ -1,0 +1,9 @@
+{
+  "module_name": "ioam6.h",
+  "hash_id": "78d093ddcbe938fbe49811837dc305c85fe8a765d261a2a312f3111d4547e462",
+  "original_prompt": "Ingested from linux-6.6.14/include/net/ioam6.h",
+  "human_readable_source": " \n \n\n#ifndef _NET_IOAM6_H\n#define _NET_IOAM6_H\n\n#include <linux/net.h>\n#include <linux/ipv6.h>\n#include <linux/ioam6.h>\n#include <linux/rhashtable-types.h>\n\nstruct ioam6_namespace {\n\tstruct rhash_head head;\n\tstruct rcu_head rcu;\n\n\tstruct ioam6_schema __rcu *schema;\n\n\t__be16 id;\n\t__be32 data;\n\t__be64 data_wide;\n};\n\nstruct ioam6_schema {\n\tstruct rhash_head head;\n\tstruct rcu_head rcu;\n\n\tstruct ioam6_namespace __rcu *ns;\n\n\tu32 id;\n\tint len;\n\t__be32 hdr;\n\n\tu8 data[];\n};\n\nstruct ioam6_pernet_data {\n\tstruct mutex lock;\n\tstruct rhashtable namespaces;\n\tstruct rhashtable schemas;\n};\n\nstatic inline struct ioam6_pernet_data *ioam6_pernet(struct net *net)\n{\n#if IS_ENABLED(CONFIG_IPV6)\n\treturn net->ipv6.ioam6_data;\n#else\n\treturn NULL;\n#endif\n}\n\nstruct ioam6_namespace *ioam6_namespace(struct net *net, __be16 id);\nvoid ioam6_fill_trace_data(struct sk_buff *skb,\n\t\t\t   struct ioam6_namespace *ns,\n\t\t\t   struct ioam6_trace_hdr *trace,\n\t\t\t   bool is_input);\n\nint ioam6_init(void);\nvoid ioam6_exit(void);\n\nint ioam6_iptunnel_init(void);\nvoid ioam6_iptunnel_exit(void);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

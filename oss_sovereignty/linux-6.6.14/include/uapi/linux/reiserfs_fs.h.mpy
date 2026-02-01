@@ -1,0 +1,9 @@
+{
+  "module_name": "reiserfs_fs.h",
+  "hash_id": "bb1ed9e7c394364e63c10cf5cd95f796588ad15cf625efdb9aaf2937e5727c5f",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/reiserfs_fs.h",
+  "human_readable_source": " \n \n#ifndef _LINUX_REISER_FS_H\n#define _LINUX_REISER_FS_H\n\n#include <linux/types.h>\n#include <linux/magic.h>\n\n \n\n \n#define REISERFS_IOC_UNPACK\t\t_IOW(0xCD,1,long)\n \n#define REISERFS_IOC_GETFLAGS\t\tFS_IOC_GETFLAGS\n#define REISERFS_IOC_SETFLAGS\t\tFS_IOC_SETFLAGS\n#define REISERFS_IOC_GETVERSION\t\tFS_IOC_GETVERSION\n#define REISERFS_IOC_SETVERSION\t\tFS_IOC_SETVERSION\n\n#endif\t\t\t\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

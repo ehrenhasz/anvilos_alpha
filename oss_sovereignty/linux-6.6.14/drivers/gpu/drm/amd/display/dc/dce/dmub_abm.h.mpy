@@ -1,0 +1,9 @@
+{
+  "module_name": "dmub_abm.h",
+  "hash_id": "547b8fedf35947e47ec2ff72992f1088786785180ed579a10cf26b7c9178e02b",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/dc/dce/dmub_abm.h",
+  "human_readable_source": " \n\n#ifndef __DMUB_ABM_H__\n#define __DMUB_ABM_H__\n\n#include \"abm.h\"\n#include \"dce_abm.h\"\n\nstruct abm *dmub_abm_create(\n\tstruct dc_context *ctx,\n\tconst struct dce_abm_registers *regs,\n\tconst struct dce_abm_shift *abm_shift,\n\tconst struct dce_abm_mask *abm_mask);\n\nvoid dmub_abm_destroy(struct abm **abm);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

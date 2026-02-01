@@ -1,0 +1,9 @@
+{
+  "module_name": "tlv320adc3xxx.h",
+  "hash_id": "b40b18f655f69a7d1a3372fd0b36003c07351b0b6aeaac5a11a448908823c293",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/sound/tlv320adc3xxx.h",
+  "human_readable_source": " \n \n#ifndef __DT_TLV320ADC3XXX_H\n#define __DT_TLV320ADC3XXX_H\n\n#define ADC3XXX_GPIO_DISABLED\t\t0  \n#define ADC3XXX_GPIO_INPUT\t\t1  \n#define ADC3XXX_GPIO_GPI\t\t2  \n#define ADC3XXX_GPIO_GPO\t\t3  \n#define ADC3XXX_GPIO_CLKOUT\t\t4  \n#define ADC3XXX_GPIO_INT1\t\t5  \n#define ADC3XXX_GPIO_INT2\t\t6  \n \n#define ADC3XXX_GPIO_SECONDARY_BCLK\t8  \n#define ADC3XXX_GPIO_SECONDARY_WCLK\t9  \n#define ADC3XXX_GPIO_ADC_MOD_CLK\t10  \n \n\n#define ADC3XXX_MICBIAS_OFF\t\t0  \n#define ADC3XXX_MICBIAS_2_0V\t\t1  \n#define ADC3XXX_MICBIAS_2_5V\t\t2  \n#define ADC3XXX_MICBIAS_AVDD\t\t3  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

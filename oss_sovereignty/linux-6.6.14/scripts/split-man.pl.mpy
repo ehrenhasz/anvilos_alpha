@@ -1,0 +1,9 @@
+{
+  "module_name": "split-man.pl",
+  "hash_id": "7011b78da38c68febd006fba53ab2b33f047d12ba9d5a152633dfeccb29fd6f2",
+  "original_prompt": "Ingested from linux-6.6.14/scripts/split-man.pl",
+  "human_readable_source": "#!/usr/bin/env perl\n# SPDX-License-Identifier: GPL-2.0\n#\n# Author: Mauro Carvalho Chehab <mchehab+samsung@kernel.org>\n#\n# Produce manpages from kernel-doc.\n# See Documentation/doc-guide/kernel-doc.rst for instructions\n\nif ($#ARGV < 0) {\n   die \"where do I put the results?\\n\";\n}\n\nmkdir $ARGV[0],0777;\n$state = 0;\nwhile (<STDIN>) {\n    if (/^\\.TH \\\"[^\\\"]*\\\" 9 \\\"([^\\\"]*)\\\"/) {\n\tif ($state == 1) { close OUT }\n\t$state = 1;\n\t$fn = \"$ARGV[0]/$1.9\";\n\tprint STDERR \"Creating $fn\\n\";\n\topen OUT, \">$fn\" or die \"can't open $fn: $!\\n\";\n\tprint OUT $_;\n    } elsif ($state != 0) {\n\tprint OUT $_;\n    }\n}\n\nclose OUT;\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

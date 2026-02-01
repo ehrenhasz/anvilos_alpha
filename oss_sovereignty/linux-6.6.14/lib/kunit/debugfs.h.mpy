@@ -1,0 +1,9 @@
+{
+  "module_name": "debugfs.h",
+  "hash_id": "5ea00c36dc9c605908343545c1b25a1ef79e228e5816194e5e1c9ee3e0181c89",
+  "original_prompt": "Ingested from linux-6.6.14/lib/kunit/debugfs.h",
+  "human_readable_source": " \n \n\n#ifndef _KUNIT_DEBUGFS_H\n#define _KUNIT_DEBUGFS_H\n\n#include <kunit/test.h>\n\n#ifdef CONFIG_KUNIT_DEBUGFS\n\nvoid kunit_debugfs_create_suite(struct kunit_suite *suite);\nvoid kunit_debugfs_destroy_suite(struct kunit_suite *suite);\nvoid kunit_debugfs_init(void);\nvoid kunit_debugfs_cleanup(void);\n\n#else\n\nstatic inline void kunit_debugfs_create_suite(struct kunit_suite *suite) { }\n\nstatic inline void kunit_debugfs_destroy_suite(struct kunit_suite *suite) { }\n\nstatic inline void kunit_debugfs_init(void) { }\n\nstatic inline void kunit_debugfs_cleanup(void) { }\n\n#endif  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

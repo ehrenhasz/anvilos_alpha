@@ -1,0 +1,9 @@
+{
+  "module_name": "lib.c",
+  "hash_id": "f5ae1cfeac46be9a71b3bf2f75c6f61e4538a5c5f6449b4cf1965bdcbf6d238e",
+  "original_prompt": "Ingested from linux-6.6.14/net/nfc/nci/lib.c",
+  "human_readable_source": "\n \n\n#include <linux/module.h>\n#include <linux/kernel.h>\n#include <linux/types.h>\n#include <linux/errno.h>\n\n#include <net/nfc/nci.h>\n#include <net/nfc/nci_core.h>\n\n \nint nci_to_errno(__u8 code)\n{\n\tswitch (code) {\n\tcase NCI_STATUS_OK:\n\t\treturn 0;\n\n\tcase NCI_STATUS_REJECTED:\n\t\treturn -EBUSY;\n\n\tcase NCI_STATUS_RF_FRAME_CORRUPTED:\n\t\treturn -EBADMSG;\n\n\tcase NCI_STATUS_NOT_INITIALIZED:\n\t\treturn -EHOSTDOWN;\n\n\tcase NCI_STATUS_SYNTAX_ERROR:\n\tcase NCI_STATUS_SEMANTIC_ERROR:\n\tcase NCI_STATUS_INVALID_PARAM:\n\tcase NCI_STATUS_RF_PROTOCOL_ERROR:\n\tcase NCI_STATUS_NFCEE_PROTOCOL_ERROR:\n\t\treturn -EPROTO;\n\n\tcase NCI_STATUS_UNKNOWN_GID:\n\tcase NCI_STATUS_UNKNOWN_OID:\n\t\treturn -EBADRQC;\n\n\tcase NCI_STATUS_MESSAGE_SIZE_EXCEEDED:\n\t\treturn -EMSGSIZE;\n\n\tcase NCI_STATUS_DISCOVERY_ALREADY_STARTED:\n\t\treturn -EALREADY;\n\n\tcase NCI_STATUS_DISCOVERY_TARGET_ACTIVATION_FAILED:\n\tcase NCI_STATUS_NFCEE_INTERFACE_ACTIVATION_FAILED:\n\t\treturn -ECONNREFUSED;\n\n\tcase NCI_STATUS_RF_TRANSMISSION_ERROR:\n\tcase NCI_STATUS_NFCEE_TRANSMISSION_ERROR:\n\t\treturn -ECOMM;\n\n\tcase NCI_STATUS_RF_TIMEOUT_ERROR:\n\tcase NCI_STATUS_NFCEE_TIMEOUT_ERROR:\n\t\treturn -ETIMEDOUT;\n\n\tcase NCI_STATUS_FAILED:\n\tdefault:\n\t\treturn -ENOSYS;\n\t}\n}\nEXPORT_SYMBOL(nci_to_errno);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

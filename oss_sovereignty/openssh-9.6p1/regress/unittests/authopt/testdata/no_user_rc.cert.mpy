@@ -1,0 +1,9 @@
+{
+  "module_name": "no_user_rc.cert",
+  "hash_id": "0b0aa92a0a20b3a73dbfdadbac16e34390a4345b489f6bab13366f6d3fc3267a",
+  "original_prompt": "Ingested from openssh-9.6p1/regress/unittests/authopt/testdata/no_user_rc.cert",
+  "human_readable_source": "ssh-ed25519-cert-v01@openssh.com AAAAIHNzaC1lZDI1NTE5LWNlcnQtdjAxQG9wZW5zc2guY29tAAAAIFUM0VLATkYh05QeS5uuhB1X50NMom3jTWeQUmrPQ1FwAAAAICeF4LbtRqwIRhewXifa5PKpbSU9P/K8CzeVYj8J/iBoAAAAAAAAAAEAAAABAAAABHVzZXIAAAAIAAAABHVzZXIAAAAANouDYAAAAAA4a2VgAAAAAAAAAGwAAAAVcGVybWl0LVgxMS1mb3J3YXJkaW5nAAAAAAAAABdwZXJtaXQtYWdlbnQtZm9yd2FyZGluZwAAAAAAAAAWcGVybWl0LXBvcnQtZm9yd2FyZGluZwAAAAAAAAAKcGVybWl0LXB0eQAAAAAAAAAAAAAAMwAAAAtzc2gtZWQyNTUxOQAAACAoVYLMLNBOH1SSgemFuDBprzpDXop6ufRSOo6vtD4mTwAAAFMAAAALc3NoLWVkMjU1MTkAAABAcmJ3c2FCKJL9BCLv1Ij+uN1N+NWZmMXYionsSkv42Go4pMZiH3g8UfTd+OKq9Q7GAcCzGXa///6Dr/wqFssoDA== user key\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

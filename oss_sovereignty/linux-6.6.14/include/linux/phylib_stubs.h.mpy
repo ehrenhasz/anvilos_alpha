@@ -1,0 +1,9 @@
+{
+  "module_name": "phylib_stubs.h",
+  "hash_id": "81a6b9de4c3e1ea71134150af52cf0b528c06ad76e3bbe1b389f2f583c52b6d0",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/phylib_stubs.h",
+  "human_readable_source": " \n \n\n#include <linux/rtnetlink.h>\n\nstruct kernel_hwtstamp_config;\nstruct netlink_ext_ack;\nstruct phy_device;\n\n#if IS_ENABLED(CONFIG_PHYLIB)\n\nextern const struct phylib_stubs *phylib_stubs;\n\nstruct phylib_stubs {\n\tint (*hwtstamp_get)(struct phy_device *phydev,\n\t\t\t    struct kernel_hwtstamp_config *config);\n\tint (*hwtstamp_set)(struct phy_device *phydev,\n\t\t\t    struct kernel_hwtstamp_config *config,\n\t\t\t    struct netlink_ext_ack *extack);\n};\n\nstatic inline int phy_hwtstamp_get(struct phy_device *phydev,\n\t\t\t\t   struct kernel_hwtstamp_config *config)\n{\n\t \n\tASSERT_RTNL();\n\n\tif (!phylib_stubs)\n\t\treturn -EOPNOTSUPP;\n\n\treturn phylib_stubs->hwtstamp_get(phydev, config);\n}\n\nstatic inline int phy_hwtstamp_set(struct phy_device *phydev,\n\t\t\t\t   struct kernel_hwtstamp_config *config,\n\t\t\t\t   struct netlink_ext_ack *extack)\n{\n\t \n\tASSERT_RTNL();\n\n\tif (!phylib_stubs)\n\t\treturn -EOPNOTSUPP;\n\n\treturn phylib_stubs->hwtstamp_set(phydev, config, extack);\n}\n\n#else\n\nstatic inline int phy_hwtstamp_get(struct phy_device *phydev,\n\t\t\t\t   struct kernel_hwtstamp_config *config)\n{\n\treturn -EOPNOTSUPP;\n}\n\nstatic inline int phy_hwtstamp_set(struct phy_device *phydev,\n\t\t\t\t   struct kernel_hwtstamp_config *config,\n\t\t\t\t   struct netlink_ext_ack *extack)\n{\n\treturn -EOPNOTSUPP;\n}\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

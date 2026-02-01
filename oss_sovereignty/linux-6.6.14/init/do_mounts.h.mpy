@@ -1,0 +1,9 @@
+{
+  "module_name": "do_mounts.h",
+  "hash_id": "4083e537078322a7f7485fd6c876c5d735cdd62fa08e2d94f3b18f673d187353",
+  "original_prompt": "Ingested from linux-6.6.14/init/do_mounts.h",
+  "human_readable_source": " \n#include <linux/kernel.h>\n#include <linux/blkdev.h>\n#include <linux/init.h>\n#include <linux/syscalls.h>\n#include <linux/unistd.h>\n#include <linux/slab.h>\n#include <linux/mount.h>\n#include <linux/major.h>\n#include <linux/root_dev.h>\n#include <linux/init_syscalls.h>\n\nvoid  mount_root_generic(char *name, char *pretty_name, int flags);\nvoid  mount_root(char *root_device_name);\nextern int root_mountflags;\n\nstatic inline __init int create_dev(char *name, dev_t dev)\n{\n\tinit_unlink(name);\n\treturn init_mknod(name, S_IFBLK | 0600, new_encode_dev(dev));\n}\n\n#ifdef CONFIG_BLK_DEV_RAM\n\nint __init rd_load_disk(int n);\nint __init rd_load_image(char *from);\n\n#else\n\nstatic inline int rd_load_disk(int n) { return 0; }\nstatic inline int rd_load_image(char *from) { return 0; }\n\n#endif\n\n#ifdef CONFIG_BLK_DEV_INITRD\nbool __init initrd_load(char *root_device_name);\n#else\nstatic inline bool initrd_load(char *root_device_name)\n{\n\treturn false;\n\t}\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

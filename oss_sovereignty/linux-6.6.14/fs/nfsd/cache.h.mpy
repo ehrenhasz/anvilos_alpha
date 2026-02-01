@@ -1,0 +1,9 @@
+{
+  "module_name": "cache.h",
+  "hash_id": "a61f5dee2bdda037daf83cbf46cdf8c1bdb8261339d4c57a17eda0bc767f5392",
+  "original_prompt": "Ingested from linux-6.6.14/fs/nfsd/cache.h",
+  "human_readable_source": " \n \n\n#ifndef NFSCACHE_H\n#define NFSCACHE_H\n\n#include <linux/sunrpc/svc.h>\n#include \"netns.h\"\n\n \nstruct nfsd_cacherep {\n\tstruct {\n\t\t \n\t\t__be32\t\t\tk_xid;\n\t\t__wsum\t\t\tk_csum;\n\t\tu32\t\t\tk_proc;\n\t\tu32\t\t\tk_prot;\n\t\tu32\t\t\tk_vers;\n\t\tunsigned int\t\tk_len;\n\t\tstruct sockaddr_in6\tk_addr;\n\t} c_key;\n\n\tstruct rb_node\t\tc_node;\n\tstruct list_head\tc_lru;\n\tunsigned char\t\tc_state,\t \n\t\t\t\tc_type,\t\t \n\t\t\t\tc_secure : 1;\t \n\tunsigned long\t\tc_timestamp;\n\tunion {\n\t\tstruct kvec\tu_vec;\n\t\t__be32\t\tu_status;\n\t}\t\t\tc_u;\n};\n\n#define c_replvec\t\tc_u.u_vec\n#define c_replstat\t\tc_u.u_status\n\n \nenum {\n\tRC_UNUSED,\n\tRC_INPROG,\n\tRC_DONE\n};\n\n \nenum {\n\tRC_DROPIT,\n\tRC_REPLY,\n\tRC_DOIT\n};\n\n \nenum {\n\tRC_NOCACHE,\n\tRC_REPLSTAT,\n\tRC_REPLBUFF,\n};\n\n \n#define RC_EXPIRE\t\t(120 * HZ)\n\n \n#define RC_CSUMLEN\t\t(256U)\n\nint\tnfsd_drc_slab_create(void);\nvoid\tnfsd_drc_slab_free(void);\nint\tnfsd_net_reply_cache_init(struct nfsd_net *nn);\nvoid\tnfsd_net_reply_cache_destroy(struct nfsd_net *nn);\nint\tnfsd_reply_cache_init(struct nfsd_net *);\nvoid\tnfsd_reply_cache_shutdown(struct nfsd_net *);\nint\tnfsd_cache_lookup(struct svc_rqst *rqstp, unsigned int start,\n\t\t\t  unsigned int len, struct nfsd_cacherep **cacherep);\nvoid\tnfsd_cache_update(struct svc_rqst *rqstp, struct nfsd_cacherep *rp,\n\t\t\t  int cachetype, __be32 *statp);\nint\tnfsd_reply_cache_stats_show(struct seq_file *m, void *v);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

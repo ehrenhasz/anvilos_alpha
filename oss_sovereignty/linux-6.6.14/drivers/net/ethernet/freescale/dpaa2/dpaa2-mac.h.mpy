@@ -1,0 +1,9 @@
+{
+  "module_name": "dpaa2-mac.h",
+  "hash_id": "037c647daadeedc93af7566aaf2d2541b3fb9ec457d4f47d1abb371f8b346edf",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.h",
+  "human_readable_source": " \n \n#ifndef DPAA2_MAC_H\n#define DPAA2_MAC_H\n\n#include <linux/of.h>\n#include <linux/of_mdio.h>\n#include <linux/of_net.h>\n#include <linux/phylink.h>\n\n#include \"dpmac.h\"\n#include \"dpmac-cmd.h\"\n\nstruct dpaa2_mac {\n\tstruct fsl_mc_device *mc_dev;\n\tstruct dpmac_link_state state;\n\tstruct net_device *net_dev;\n\tstruct fsl_mc_io *mc_io;\n\tstruct dpmac_attr attr;\n\tu16 ver_major, ver_minor;\n\tunsigned long features;\n\n\tstruct phylink_config phylink_config;\n\tstruct phylink *phylink;\n\tphy_interface_t if_mode;\n\tenum dpmac_link_type if_link_type;\n\tstruct phylink_pcs *pcs;\n\tstruct fwnode_handle *fw_node;\n\n\tstruct phy *serdes_phy;\n};\n\nstatic inline bool dpaa2_mac_is_type_phy(struct dpaa2_mac *mac)\n{\n\tif (!mac)\n\t\treturn false;\n\n\treturn mac->attr.link_type == DPMAC_LINK_TYPE_PHY ||\n\t       mac->attr.link_type == DPMAC_LINK_TYPE_BACKPLANE;\n}\n\nint dpaa2_mac_open(struct dpaa2_mac *mac);\n\nvoid dpaa2_mac_close(struct dpaa2_mac *mac);\n\nint dpaa2_mac_connect(struct dpaa2_mac *mac);\n\nvoid dpaa2_mac_disconnect(struct dpaa2_mac *mac);\n\nint dpaa2_mac_get_sset_count(void);\n\nvoid dpaa2_mac_get_strings(u8 *data);\n\nvoid dpaa2_mac_get_ethtool_stats(struct dpaa2_mac *mac, u64 *data);\n\nvoid dpaa2_mac_start(struct dpaa2_mac *mac);\n\nvoid dpaa2_mac_stop(struct dpaa2_mac *mac);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

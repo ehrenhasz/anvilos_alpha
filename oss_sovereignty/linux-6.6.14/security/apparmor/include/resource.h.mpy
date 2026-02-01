@@ -1,0 +1,9 @@
+{
+  "module_name": "resource.h",
+  "hash_id": "33603f6e30f470b67357e9761c35b3b88faca2a503a1238e26d8f5030d794b6d",
+  "original_prompt": "Ingested from linux-6.6.14/security/apparmor/include/resource.h",
+  "human_readable_source": " \n \n\n#ifndef __AA_RESOURCE_H\n#define __AA_RESOURCE_H\n\n#include <linux/resource.h>\n#include <linux/sched.h>\n\n#include \"apparmorfs.h\"\n\nstruct aa_profile;\n\n \nstruct aa_rlimit {\n\tunsigned int mask;\n\tstruct rlimit limits[RLIM_NLIMITS];\n};\n\nextern struct aa_sfs_entry aa_sfs_entry_rlimit[];\n\nint aa_map_resource(int resource);\nint aa_task_setrlimit(const struct cred *subj_cred, struct aa_label *label,\n\t\t      struct task_struct *task,\n\t\t      unsigned int resource, struct rlimit *new_rlim);\n\nvoid __aa_transition_rlimits(struct aa_label *old, struct aa_label *new);\n\nstatic inline void aa_free_rlimit_rules(struct aa_rlimit *rlims)\n{\n\t \n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

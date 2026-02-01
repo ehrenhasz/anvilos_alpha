@@ -1,0 +1,9 @@
+{
+  "module_name": "cipher-aesctr.h",
+  "hash_id": "d1c44f746eeb51ea153d63e753299584866056c04194a55db237c0583021709e",
+  "original_prompt": "Ingested from openssh-9.6p1/cipher-aesctr.h",
+  "human_readable_source": " \n \n\n#ifndef OPENSSH_AESCTR_H\n#define OPENSSH_AESCTR_H\n\n#include \"rijndael.h\"\n\n#define AES_BLOCK_SIZE 16\n\ntypedef struct aesctr_ctx {\n\tint\trounds;\t\t\t\t \n\tu32\tek[4*(AES_MAXROUNDS + 1)];\t \n\tu8\tctr[AES_BLOCK_SIZE];\t\t \n} aesctr_ctx;\n\nvoid aesctr_keysetup(aesctr_ctx *x,const u8 *k,u32 kbits,u32 ivbits);\nvoid aesctr_ivsetup(aesctr_ctx *x,const u8 *iv);\nvoid aesctr_encrypt_bytes(aesctr_ctx *x,const u8 *m,u8 *c,u32 bytes);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

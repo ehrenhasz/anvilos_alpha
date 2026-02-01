@@ -1,0 +1,9 @@
+{
+  "module_name": "xen_snd_front_alsa.h",
+  "hash_id": "e0235b641753305721621716ff7fbc4fca31521d7d26703ca46125f452b68262",
+  "original_prompt": "Ingested from linux-6.6.14/sound/xen/xen_snd_front_alsa.h",
+  "human_readable_source": " \n\n \n\n#ifndef __XEN_SND_FRONT_ALSA_H\n#define __XEN_SND_FRONT_ALSA_H\n\nstruct xen_snd_front_info;\n\nint xen_snd_front_alsa_init(struct xen_snd_front_info *front_info);\n\nvoid xen_snd_front_alsa_fini(struct xen_snd_front_info *front_info);\n\nvoid xen_snd_front_alsa_handle_cur_pos(struct xen_snd_front_evtchnl *evtchnl,\n\t\t\t\t       u64 pos_bytes);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

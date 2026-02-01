@@ -1,0 +1,9 @@
+{
+  "module_name": "sh_css_frac.h",
+  "hash_id": "94fced89a03a9f7b2c4a79fbc602714596818bd915e4d3cd85ca88e48e09e695",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/sh_css_frac.h",
+  "human_readable_source": " \n \n\n#ifndef __SH_CSS_FRAC_H\n#define __SH_CSS_FRAC_H\n\n#include <math_support.h>\n\n#define sISP_REG_BIT\t\t      ISP_VEC_ELEMBITS\n#define uISP_REG_BIT\t\t      ((unsigned int)(sISP_REG_BIT - 1))\n#define sSHIFT\t\t\t\t    (16 - sISP_REG_BIT)\n#define uSHIFT\t\t\t\t    ((unsigned int)(16 - uISP_REG_BIT))\n#define sFRACTION_BITS_FITTING(a) (a - sSHIFT)\n#define uFRACTION_BITS_FITTING(a) ((unsigned int)(a - uSHIFT))\n#define sISP_VAL_MIN\t\t      (-(1 << uISP_REG_BIT))\n#define sISP_VAL_MAX\t\t      ((1 << uISP_REG_BIT) - 1)\n#define uISP_VAL_MIN\t\t      (0U)\n#define uISP_VAL_MAX\t\t      ((unsigned int)((1 << uISP_REG_BIT) - 1))\n\n \n#define sDIGIT_FITTING(v, a, b) \\\n\tmin_t(int, max_t(int, (((v) >> sSHIFT) >> max(sFRACTION_BITS_FITTING(a) - (b), 0)), \\\n\t  sISP_VAL_MIN), sISP_VAL_MAX)\n#define uDIGIT_FITTING(v, a, b) \\\n\tmin((unsigned int)max((unsigned)(((v) >> uSHIFT) \\\n\t>> max((int)(uFRACTION_BITS_FITTING(a) - (b)), 0)), \\\n\t  uISP_VAL_MIN), uISP_VAL_MAX)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

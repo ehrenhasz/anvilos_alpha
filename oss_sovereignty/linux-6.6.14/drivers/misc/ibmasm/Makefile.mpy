@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "9a428c0c5fb71aaafebea65836c951d27555be8966b98e2cd3d3bcdf7c0ffc75",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/misc/ibmasm/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n\nobj-$(CONFIG_IBM_ASM) := ibmasm.o\n\nibmasm-y :=\tmodule.o      \\\n\t\tibmasmfs.o    \\\n\t\tevent.o       \\\n\t\tcommand.o     \\\n\t\tremote.o      \\\n\t\theartbeat.o   \\\n\t\tr_heartbeat.o \\\n\t\tdot_command.o \\\n\t\tlowlevel.o\n\nibmasm-$(CONFIG_SERIAL_8250) += uart.o\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "vma.c",
+  "hash_id": "a37e72c2fd4634e45f5ecfa18ce4a64cb3c2de847626d72a0779876b9699a432",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/um/vdso/vma.c",
+  "human_readable_source": "\n \n\n#include <linux/slab.h>\n#include <linux/sched.h>\n#include <linux/mm.h>\n#include <asm/page.h>\n#include <asm/elf.h>\n#include <linux/init.h>\n\nstatic unsigned int __read_mostly vdso_enabled = 1;\nunsigned long um_vdso_addr;\n\nextern unsigned long task_size;\nextern char vdso_start[], vdso_end[];\n\nstatic struct page **vdsop;\n\nstatic int __init init_vdso(void)\n{\n\tstruct page *um_vdso;\n\n\tBUG_ON(vdso_end - vdso_start > PAGE_SIZE);\n\n\tum_vdso_addr = task_size - PAGE_SIZE;\n\n\tvdsop = kmalloc(sizeof(struct page *), GFP_KERNEL);\n\tif (!vdsop)\n\t\tgoto oom;\n\n\tum_vdso = alloc_page(GFP_KERNEL);\n\tif (!um_vdso) {\n\t\tkfree(vdsop);\n\n\t\tgoto oom;\n\t}\n\n\tcopy_page(page_address(um_vdso), vdso_start);\n\t*vdsop = um_vdso;\n\n\treturn 0;\n\noom:\n\tprintk(KERN_ERR \"Cannot allocate vdso\\n\");\n\tvdso_enabled = 0;\n\n\treturn -ENOMEM;\n}\nsubsys_initcall(init_vdso);\n\nint arch_setup_additional_pages(struct linux_binprm *bprm, int uses_interp)\n{\n\tint err;\n\tstruct mm_struct *mm = current->mm;\n\n\tif (!vdso_enabled)\n\t\treturn 0;\n\n\tif (mmap_write_lock_killable(mm))\n\t\treturn -EINTR;\n\n\terr = install_special_mapping(mm, um_vdso_addr, PAGE_SIZE,\n\t\tVM_READ|VM_EXEC|\n\t\tVM_MAYREAD|VM_MAYWRITE|VM_MAYEXEC,\n\t\tvdsop);\n\n\tmmap_write_unlock(mm);\n\n\treturn err;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

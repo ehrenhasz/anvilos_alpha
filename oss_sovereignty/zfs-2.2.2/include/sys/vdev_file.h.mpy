@@ -1,0 +1,9 @@
+{
+  "module_name": "vdev_file.h",
+  "hash_id": "790b988ea51c88bfb8673ace29bcc73599d4c4cad2eda0d0858e6ae591c13e36",
+  "original_prompt": "Ingested from zfs-2.2.2/include/sys/vdev_file.h",
+  "human_readable_source": " \n \n\n#ifndef _SYS_VDEV_FILE_H\n#define\t_SYS_VDEV_FILE_H\n\n#include <sys/vdev.h>\n\n#ifdef\t__cplusplus\nextern \"C\" {\n#endif\n\ntypedef struct vdev_file {\n\tzfs_file_t\t*vf_file;\n} vdev_file_t;\n\nextern void vdev_file_init(void);\nextern void vdev_file_fini(void);\n\n#ifdef\t__cplusplus\n}\n#endif\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

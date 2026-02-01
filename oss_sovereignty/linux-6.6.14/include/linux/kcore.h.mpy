@@ -1,0 +1,9 @@
+{
+  "module_name": "kcore.h",
+  "hash_id": "fbba0317162fe699b31e190c20e919c63bcc363bc4b75622214dccad6e902d0e",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/kcore.h",
+  "human_readable_source": " \n \n#ifndef _LINUX_KCORE_H\n#define _LINUX_KCORE_H\n\nenum kcore_type {\n\tKCORE_TEXT,\n\tKCORE_VMALLOC,\n\tKCORE_RAM,\n\tKCORE_VMEMMAP,\n\tKCORE_USER,\n};\n\nstruct kcore_list {\n\tstruct list_head list;\n\tunsigned long addr;\n\tsize_t size;\n\tint type;\n};\n\nstruct vmcore {\n\tstruct list_head list;\n\tunsigned long long paddr;\n\tunsigned long long size;\n\tloff_t offset;\n};\n\nstruct vmcoredd_node {\n\tstruct list_head list;\t \n\tvoid *buf;\t\t \n\tunsigned int size;\t \n};\n\n#ifdef CONFIG_PROC_KCORE\nvoid __init kclist_add(struct kcore_list *, void *, size_t, int type);\n\nextern int __init register_mem_pfn_is_ram(int (*fn)(unsigned long pfn));\n#else\nstatic inline\nvoid kclist_add(struct kcore_list *new, void *addr, size_t size, int type)\n{\n}\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

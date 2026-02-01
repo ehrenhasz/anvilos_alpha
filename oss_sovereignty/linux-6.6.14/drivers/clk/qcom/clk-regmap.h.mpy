@@ -1,0 +1,9 @@
+{
+  "module_name": "clk-regmap.h",
+  "hash_id": "cd3992bb67f486c2996cea978e570d70a1a2877aaaa27e2381f5209e05b677de",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/clk/qcom/clk-regmap.h",
+  "human_readable_source": " \n \n\n#ifndef __QCOM_CLK_REGMAP_H__\n#define __QCOM_CLK_REGMAP_H__\n\n#include <linux/clk-provider.h>\n\nstruct regmap;\n\n \nstruct clk_regmap {\n\tstruct clk_hw hw;\n\tstruct regmap *regmap;\n\tunsigned int enable_reg;\n\tunsigned int enable_mask;\n\tbool enable_is_inverted;\n};\n\nstatic inline struct clk_regmap *to_clk_regmap(struct clk_hw *hw)\n{\n\treturn container_of(hw, struct clk_regmap, hw);\n}\n\nint clk_is_enabled_regmap(struct clk_hw *hw);\nint clk_enable_regmap(struct clk_hw *hw);\nvoid clk_disable_regmap(struct clk_hw *hw);\nint devm_clk_register_regmap(struct device *dev, struct clk_regmap *rclk);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "scratch_buffer_grow.c",
+  "hash_id": "cc70c6a502531a684b8731841d70d2252fbe0ec5332b49ae8d5e691bec0a7c64",
+  "original_prompt": "Ingested from coreutils-9.4/lib/malloc/scratch_buffer_grow.c",
+  "human_readable_source": " \n  scratch_buffer_free (buffer);\n\n   \n  if (__glibc_likely (new_length >= buffer->length))\n    new_ptr = malloc (new_length);\n  else\n    {\n      __set_errno (ENOMEM);\n      new_ptr = NULL;\n    }\n\n  if (__glibc_unlikely (new_ptr == NULL))\n    {\n       \n      scratch_buffer_init (buffer);\n      return false;\n    }\n\n   \n  buffer->data = new_ptr;\n  buffer->length = new_length;\n  return true;\n}\nlibc_hidden_def (__libc_scratch_buffer_grow)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

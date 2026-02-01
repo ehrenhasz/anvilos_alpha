@@ -1,0 +1,9 @@
+{
+  "module_name": "v4l2-h264.h",
+  "hash_id": "0403e704b1eb1498fef1488a18ec5113d8ef72807f3a9992338734ebf28ad60a",
+  "original_prompt": "Ingested from linux-6.6.14/include/media/v4l2-h264.h",
+  "human_readable_source": " \n \n\n#ifndef _MEDIA_V4L2_H264_H\n#define _MEDIA_V4L2_H264_H\n\n#include <media/v4l2-ctrls.h>\n\n \nstruct v4l2_h264_reflist_builder {\n\tstruct {\n\t\ts32 top_field_order_cnt;\n\t\ts32 bottom_field_order_cnt;\n\t\tint frame_num;\n\t\tu16 longterm : 1;\n\t} refs[V4L2_H264_NUM_DPB_ENTRIES];\n\n\ts32 cur_pic_order_count;\n\tu8 cur_pic_fields;\n\n\tstruct v4l2_h264_reference unordered_reflist[V4L2_H264_REF_LIST_LEN];\n\tu8 num_valid;\n};\n\nvoid\nv4l2_h264_init_reflist_builder(struct v4l2_h264_reflist_builder *b,\n\t\tconst struct v4l2_ctrl_h264_decode_params *dec_params,\n\t\tconst struct v4l2_ctrl_h264_sps *sps,\n\t\tconst struct v4l2_h264_dpb_entry dpb[V4L2_H264_NUM_DPB_ENTRIES]);\n\n \nvoid\nv4l2_h264_build_b_ref_lists(const struct v4l2_h264_reflist_builder *builder,\n\t\t\t    struct v4l2_h264_reference *b0_reflist,\n\t\t\t    struct v4l2_h264_reference *b1_reflist);\n\n \nvoid\nv4l2_h264_build_p_ref_list(const struct v4l2_h264_reflist_builder *builder,\n\t\t\t   struct v4l2_h264_reference *reflist);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "intel_plane_initial.h",
+  "hash_id": "b904e0f34bd914a17e4f1854d8eb55a110b74611e1d203e8d6464a6d48ad2c9a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/display/intel_plane_initial.h",
+  "human_readable_source": " \n \n\n#ifndef __INTEL_PLANE_INITIAL_H__\n#define __INTEL_PLANE_INITIAL_H__\n\nstruct intel_crtc;\n\nvoid intel_crtc_initial_plane_config(struct intel_crtc *crtc);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

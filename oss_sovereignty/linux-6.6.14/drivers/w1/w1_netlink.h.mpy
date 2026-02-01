@@ -1,0 +1,9 @@
+{
+  "module_name": "w1_netlink.h",
+  "hash_id": "b5de6df25438043004b2b118c95ac7fd5aa5526204e749d398ffe34253305d8d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/w1/w1_netlink.h",
+  "human_readable_source": " \n \n\n#ifndef __W1_NETLINK_H\n#define __W1_NETLINK_H\n\n#include <asm/types.h>\n#include <linux/connector.h>\n\n#include \"w1_internal.h\"\n\n \nenum w1_cn_msg_flags {\n\tW1_CN_BUNDLE = 1,\n};\n\n \nenum w1_netlink_message_types {\n\tW1_SLAVE_ADD = 0,\n\tW1_SLAVE_REMOVE,\n\tW1_MASTER_ADD,\n\tW1_MASTER_REMOVE,\n\tW1_MASTER_CMD,\n\tW1_SLAVE_CMD,\n\tW1_LIST_MASTERS,\n};\n\n \nstruct w1_netlink_msg\n{\n\t__u8\t\t\t\ttype;\n\t__u8\t\t\t\tstatus;\n\t__u16\t\t\t\tlen;\n\tunion {\n\t\t__u8\t\t\tid[8];\n\t\tstruct w1_mst {\n\t\t\t__u32\t\tid;\n\t\t\t__u32\t\tres;\n\t\t} mst;\n\t} id;\n\t__u8\t\t\t\tdata[];\n};\n\n \nenum w1_commands {\n\tW1_CMD_READ = 0,\n\tW1_CMD_WRITE,\n\tW1_CMD_SEARCH,\n\tW1_CMD_ALARM_SEARCH,\n\tW1_CMD_TOUCH,\n\tW1_CMD_RESET,\n\tW1_CMD_SLAVE_ADD,\n\tW1_CMD_SLAVE_REMOVE,\n\tW1_CMD_LIST_SLAVES,\n\tW1_CMD_MAX\n};\n\n \nstruct w1_netlink_cmd\n{\n\t__u8\t\t\t\tcmd;\n\t__u8\t\t\t\tres;\n\t__u16\t\t\t\tlen;\n\t__u8\t\t\t\tdata[];\n};\n\n#ifdef __KERNEL__\n\nvoid w1_netlink_send(struct w1_master *, struct w1_netlink_msg *);\nint w1_init_netlink(void);\nvoid w1_fini_netlink(void);\n\n#endif  \n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

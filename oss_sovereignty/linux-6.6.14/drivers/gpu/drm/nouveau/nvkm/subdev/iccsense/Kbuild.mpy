@@ -1,0 +1,9 @@
+{
+  "module_name": "Kbuild",
+  "hash_id": "1644569cb21e0b4f8e5972760d76c54ce82f9837aaba5746c1520d9d4d77999f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/subdev/iccsense/Kbuild",
+  "human_readable_source": "# SPDX-License-Identifier: MIT\nnvkm-y += nvkm/subdev/iccsense/base.o\nnvkm-y += nvkm/subdev/iccsense/gf100.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

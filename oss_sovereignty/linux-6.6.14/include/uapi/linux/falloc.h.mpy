@@ -1,0 +1,9 @@
+{
+  "module_name": "falloc.h",
+  "hash_id": "f372a789a91a6fe41c4458ae98a16d031b231a46ba225b364b96e9ef0f0e94ca",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/falloc.h",
+  "human_readable_source": " \n#ifndef _UAPI_FALLOC_H_\n#define _UAPI_FALLOC_H_\n\n#define FALLOC_FL_KEEP_SIZE\t0x01  \n#define FALLOC_FL_PUNCH_HOLE\t0x02  \n#define FALLOC_FL_NO_HIDE_STALE\t0x04  \n\n \n#define FALLOC_FL_COLLAPSE_RANGE\t0x08\n\n \n#define FALLOC_FL_ZERO_RANGE\t\t0x10\n\n \n#define FALLOC_FL_INSERT_RANGE\t\t0x20\n\n \n#define FALLOC_FL_UNSHARE_RANGE\t\t0x40\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

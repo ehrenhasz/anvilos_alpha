@@ -1,0 +1,9 @@
+{
+  "module_name": "pac_corruptor.S",
+  "hash_id": "f3402cbc56f9df35ea34157cfef87fb2176e7e53ee89eac6953d9087d6b070d5",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/arm64/pauth/pac_corruptor.S",
+  "human_readable_source": " \n \n\n.global pac_corruptor\n\n.text\n \n pac_corruptor:\n\tpaciasp\n\n\t \n\teor lr, lr, #1 << 53\n\n\tautiasp\n\tret\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

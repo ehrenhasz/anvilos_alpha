@@ -1,0 +1,9 @@
+{
+  "module_name": "thermal.h",
+  "hash_id": "887f62c319e0b41fc38f5048820d1af5907e56f5ed2b3f077300f9d693fde905",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/include/asm/thermal.h",
+  "human_readable_source": " \n#ifndef _ASM_X86_THERMAL_H\n#define _ASM_X86_THERMAL_H\n\n#ifdef CONFIG_X86_THERMAL_VECTOR\nvoid therm_lvt_init(void);\nvoid intel_init_thermal(struct cpuinfo_x86 *c);\nbool x86_thermal_enabled(void);\nvoid intel_thermal_interrupt(void);\n#else\nstatic inline void therm_lvt_init(void)\t\t\t\t{ }\nstatic inline void intel_init_thermal(struct cpuinfo_x86 *c)\t{ }\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

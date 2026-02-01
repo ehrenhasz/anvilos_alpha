@@ -1,0 +1,9 @@
+{
+  "module_name": "linked_vars.c",
+  "hash_id": "a1b05bd6769aae587712072c1834d2172ab9307465947fc878eb2ccbe0a5eba5",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/prog_tests/linked_vars.c",
+  "human_readable_source": "\n \n\n#include <test_progs.h>\n#include <sys/syscall.h>\n#include \"linked_vars.skel.h\"\n\nvoid test_linked_vars(void)\n{\n\tint err;\n\tstruct linked_vars *skel;\n\n\tskel = linked_vars__open();\n\tif (!ASSERT_OK_PTR(skel, \"skel_open\"))\n\t\treturn;\n\n\tskel->bss->input_bss1 = 1000;\n\tskel->bss->input_bss2 = 2000;\n\tskel->bss->input_bss_weak = 3000;\n\n\terr = linked_vars__load(skel);\n\tif (!ASSERT_OK(err, \"skel_load\"))\n\t\tgoto cleanup;\n\n\terr = linked_vars__attach(skel);\n\tif (!ASSERT_OK(err, \"skel_attach\"))\n\t\tgoto cleanup;\n\n\t \n\tsyscall(SYS_getpgid);\n\n\tASSERT_EQ(skel->bss->output_bss1, 1000 + 2000 + 3000, \"output_bss1\");\n\tASSERT_EQ(skel->bss->output_bss2, 1000 + 2000 + 3000, \"output_bss2\");\n\t \n\tASSERT_EQ(skel->bss->output_data1, 1 + 2 + 10, \"output_bss1\");\n\tASSERT_EQ(skel->bss->output_data2, 1 + 2 + 10, \"output_bss2\");\n\t \n\tASSERT_EQ(skel->bss->output_rodata1, 11 + 22 + 100, \"output_weak1\");\n\tASSERT_EQ(skel->bss->output_rodata2, 11 + 22 + 100, \"output_weak2\");\n\ncleanup:\n\tlinked_vars__destroy(skel);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

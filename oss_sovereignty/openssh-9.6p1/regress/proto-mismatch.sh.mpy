@@ -1,0 +1,9 @@
+{
+  "module_name": "proto-mismatch.sh",
+  "hash_id": "4ae0c15cf791efd20a1765ef6e6995cbf4b5ef63fc6a5db83defd2f93d81b5ed",
+  "original_prompt": "Ingested from openssh-9.6p1/regress/proto-mismatch.sh",
+  "human_readable_source": "#\t$OpenBSD: proto-mismatch.sh,v 1.5 2017/04/30 23:34:55 djm Exp $\n#\tPlaced in the Public Domain.\n\ntid=\"protocol version mismatch\"\n\nmismatch ()\n{\n\tclient=$2\n\tbanner=`echo ${client} | ${SSHD} -i -f ${OBJ}/sshd_proxy`\n\tr=$?\n\ttrace \"sshd prints ${banner}\"\n\tif [ $r -ne 255 ]; then\n\t\tfail \"sshd prints ${banner} but accepts version ${client}\"\n\tfi\n}\n\nmismatch\tSSH-1.5-HALLO\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

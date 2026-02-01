@@ -1,0 +1,9 @@
+{
+  "module_name": "dp_display.h",
+  "hash_id": "7fb473f24225454da5a88b0314283eb33b3ecc8d58c6f847a5a108fa8de3e878",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/msm/dp/dp_display.h",
+  "human_readable_source": " \n \n\n#ifndef _DP_DISPLAY_H_\n#define _DP_DISPLAY_H_\n\n#include \"dp_panel.h\"\n#include <sound/hdmi-codec.h>\n#include \"disp/msm_disp_snapshot.h\"\n\nstruct msm_dp {\n\tstruct drm_device *drm_dev;\n\tstruct device *codec_dev;\n\tstruct drm_bridge *bridge;\n\tstruct drm_connector *connector;\n\tstruct drm_bridge *next_bridge;\n\tbool is_connected;\n\tbool audio_enabled;\n\tbool power_on;\n\tunsigned int connector_type;\n\tbool is_edp;\n\tbool internal_hpd;\n\n\thdmi_codec_plugged_cb plugged_cb;\n\n\tbool wide_bus_en;\n\n\tu32 max_dp_lanes;\n\tstruct dp_audio *dp_audio;\n\tbool psr_supported;\n};\n\nint dp_display_set_plugged_cb(struct msm_dp *dp_display,\n\t\thdmi_codec_plugged_cb fn, struct device *codec_dev);\nint dp_display_get_modes(struct msm_dp *dp_display);\nint dp_display_request_irq(struct msm_dp *dp_display);\nbool dp_display_check_video_test(struct msm_dp *dp_display);\nint dp_display_get_test_bpp(struct msm_dp *dp_display);\nvoid dp_display_signal_audio_start(struct msm_dp *dp_display);\nvoid dp_display_signal_audio_complete(struct msm_dp *dp_display);\nvoid dp_display_set_psr(struct msm_dp *dp, bool enter);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

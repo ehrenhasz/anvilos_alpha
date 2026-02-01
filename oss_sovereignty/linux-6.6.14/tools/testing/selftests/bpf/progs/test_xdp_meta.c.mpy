@@ -1,0 +1,9 @@
+{
+  "module_name": "test_xdp_meta.c",
+  "hash_id": "4f399d698e01244b50d918905f1ee9f0e00f0a0aa0d2d8e99d5999509446d070",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/test_xdp_meta.c",
+  "human_readable_source": "#include <linux/bpf.h>\n#include <linux/if_ether.h>\n#include <linux/pkt_cls.h>\n\n#include <bpf/bpf_helpers.h>\n\n#define __round_mask(x, y) ((__typeof__(x))((y) - 1))\n#define round_up(x, y) ((((x) - 1) | __round_mask(x, y)) + 1)\n#define ctx_ptr(ctx, mem) (void *)(unsigned long)ctx->mem\n\nSEC(\"t\")\nint ing_cls(struct __sk_buff *ctx)\n{\n\t__u8 *data, *data_meta, *data_end;\n\t__u32 diff = 0;\n\n\tdata_meta = ctx_ptr(ctx, data_meta);\n\tdata_end  = ctx_ptr(ctx, data_end);\n\tdata      = ctx_ptr(ctx, data);\n\n\tif (data + ETH_ALEN > data_end ||\n\t    data_meta + round_up(ETH_ALEN, 4) > data)\n\t\treturn TC_ACT_SHOT;\n\n\tdiff |= ((__u32 *)data_meta)[0] ^ ((__u32 *)data)[0];\n\tdiff |= ((__u16 *)data_meta)[2] ^ ((__u16 *)data)[2];\n\n\treturn diff ? TC_ACT_SHOT : TC_ACT_OK;\n}\n\nSEC(\"x\")\nint ing_xdp(struct xdp_md *ctx)\n{\n\t__u8 *data, *data_meta, *data_end;\n\tint ret;\n\n\tret = bpf_xdp_adjust_meta(ctx, -round_up(ETH_ALEN, 4));\n\tif (ret < 0)\n\t\treturn XDP_DROP;\n\n\tdata_meta = ctx_ptr(ctx, data_meta);\n\tdata_end  = ctx_ptr(ctx, data_end);\n\tdata      = ctx_ptr(ctx, data);\n\n\tif (data + ETH_ALEN > data_end ||\n\t    data_meta + round_up(ETH_ALEN, 4) > data)\n\t\treturn XDP_DROP;\n\n\t__builtin_memcpy(data_meta, data, ETH_ALEN);\n\treturn XDP_PASS;\n}\n\nchar _license[] SEC(\"license\") = \"GPL\";\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

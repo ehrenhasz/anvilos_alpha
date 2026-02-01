@@ -1,0 +1,9 @@
+{
+  "module_name": "rio_cm_cdev.h",
+  "hash_id": "bcea5d24361365d479492443913c219eb5a2643199583188311be7207a0965c1",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/rio_cm_cdev.h",
+  "human_readable_source": " \n \n\n#ifndef _RIO_CM_CDEV_H_\n#define _RIO_CM_CDEV_H_\n\n#include <linux/types.h>\n\nstruct rio_cm_channel {\n\t__u16 id;\n\t__u16 remote_channel;\n\t__u16 remote_destid;\n\t__u8 mport_id;\n};\n\nstruct rio_cm_msg {\n\t__u16 ch_num;\n\t__u16 size;\n\t__u32 rxto;\t \n\t__u64 msg;\n};\n\nstruct rio_cm_accept {\n\t__u16 ch_num;\n\t__u16 pad0;\n\t__u32 wait_to;\t \n};\n\n \n#define RIO_CM_IOC_MAGIC\t'c'\n\n#define RIO_CM_EP_GET_LIST_SIZE\t_IOWR(RIO_CM_IOC_MAGIC, 1, __u32)\n#define RIO_CM_EP_GET_LIST\t_IOWR(RIO_CM_IOC_MAGIC, 2, __u32)\n#define RIO_CM_CHAN_CREATE\t_IOWR(RIO_CM_IOC_MAGIC, 3, __u16)\n#define RIO_CM_CHAN_CLOSE\t_IOW(RIO_CM_IOC_MAGIC, 4, __u16)\n#define RIO_CM_CHAN_BIND\t_IOW(RIO_CM_IOC_MAGIC, 5, struct rio_cm_channel)\n#define RIO_CM_CHAN_LISTEN\t_IOW(RIO_CM_IOC_MAGIC, 6, __u16)\n#define RIO_CM_CHAN_ACCEPT\t_IOWR(RIO_CM_IOC_MAGIC, 7, struct rio_cm_accept)\n#define RIO_CM_CHAN_CONNECT\t_IOW(RIO_CM_IOC_MAGIC, 8, struct rio_cm_channel)\n#define RIO_CM_CHAN_SEND\t_IOW(RIO_CM_IOC_MAGIC, 9, struct rio_cm_msg)\n#define RIO_CM_CHAN_RECEIVE\t_IOWR(RIO_CM_IOC_MAGIC, 10, struct rio_cm_msg)\n#define RIO_CM_MPORT_GET_LIST\t_IOWR(RIO_CM_IOC_MAGIC, 11, __u32)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

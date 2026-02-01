@@ -1,0 +1,9 @@
+{
+  "module_name": "integrity.h",
+  "hash_id": "510677bdcc1794d7f8ef96db51183aa41442116da120bb3da0b545075e0badf6",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/integrity.h",
+  "human_readable_source": " \n \n\n#ifndef _LINUX_INTEGRITY_H\n#define _LINUX_INTEGRITY_H\n\n#include <linux/fs.h>\n\nenum integrity_status {\n\tINTEGRITY_PASS = 0,\n\tINTEGRITY_PASS_IMMUTABLE,\n\tINTEGRITY_FAIL,\n\tINTEGRITY_FAIL_IMMUTABLE,\n\tINTEGRITY_NOLABEL,\n\tINTEGRITY_NOXATTRS,\n\tINTEGRITY_UNKNOWN,\n};\n\n \n#ifdef CONFIG_INTEGRITY\nextern struct integrity_iint_cache *integrity_inode_get(struct inode *inode);\nextern void integrity_inode_free(struct inode *inode);\nextern void __init integrity_load_keys(void);\n\n#else\nstatic inline struct integrity_iint_cache *\n\t\t\t\tintegrity_inode_get(struct inode *inode)\n{\n\treturn NULL;\n}\n\nstatic inline void integrity_inode_free(struct inode *inode)\n{\n\treturn;\n}\n\nstatic inline void integrity_load_keys(void)\n{\n}\n#endif  \n\n#ifdef CONFIG_INTEGRITY_ASYMMETRIC_KEYS\n\nextern int integrity_kernel_module_request(char *kmod_name);\n\n#else\n\nstatic inline int integrity_kernel_module_request(char *kmod_name)\n{\n\treturn 0;\n}\n\n#endif  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

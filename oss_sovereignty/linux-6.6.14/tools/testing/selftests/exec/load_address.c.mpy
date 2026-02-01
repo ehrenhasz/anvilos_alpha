@@ -1,0 +1,9 @@
+{
+  "module_name": "load_address.c",
+  "hash_id": "2fed58e504f1b3b7e7a189480efe4760d12f194b171c7e9421ff0cdbdc10ced1",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/exec/load_address.c",
+  "human_readable_source": "\n#ifndef _GNU_SOURCE\n#define _GNU_SOURCE\n#endif\n#include <link.h>\n#include <stdio.h>\n#include <stdlib.h>\n\nstruct Statistics {\n\tunsigned long long load_address;\n\tunsigned long long alignment;\n};\n\nint ExtractStatistics(struct dl_phdr_info *info, size_t size, void *data)\n{\n\tstruct Statistics *stats = (struct Statistics *) data;\n\tint i;\n\n\tif (info->dlpi_name != NULL && info->dlpi_name[0] != '\\0') {\n\t\t\n\t\treturn 2;\n\t}\n\n\tstats->load_address = (unsigned long long) info->dlpi_addr;\n\tstats->alignment = 0;\n\n\tfor (i = 0; i < info->dlpi_phnum; i++) {\n\t\tif (info->dlpi_phdr[i].p_type != PT_LOAD)\n\t\t\tcontinue;\n\n\t\tif (info->dlpi_phdr[i].p_align > stats->alignment)\n\t\t\tstats->alignment = info->dlpi_phdr[i].p_align;\n\t}\n\n\treturn 1;  \n}\n\nint main(int argc, char **argv)\n{\n\tstruct Statistics extracted;\n\tunsigned long long misalign;\n\tint ret;\n\n\tret = dl_iterate_phdr(ExtractStatistics, &extracted);\n\tif (ret != 1) {\n\t\tfprintf(stderr, \"FAILED\\n\");\n\t\treturn 1;\n\t}\n\n\tif (extracted.alignment == 0) {\n\t\tfprintf(stderr, \"No alignment found\\n\");\n\t\treturn 1;\n\t} else if (extracted.alignment & (extracted.alignment - 1)) {\n\t\tfprintf(stderr, \"Alignment is not a power of 2\\n\");\n\t\treturn 1;\n\t}\n\n\tmisalign = extracted.load_address & (extracted.alignment - 1);\n\tif (misalign) {\n\t\tprintf(\"alignment = %llu, load_address = %llu\\n\",\n\t\t\textracted.alignment, extracted.load_address);\n\t\tfprintf(stderr, \"FAILED\\n\");\n\t\treturn 1;\n\t}\n\n\tfprintf(stderr, \"PASS\\n\");\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

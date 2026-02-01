@@ -1,0 +1,9 @@
+{
+  "module_name": "rcu.h",
+  "hash_id": "c8972692b84f059276d112e8b5ade91188c5f4683e1946b6f4f71150e1401250",
+  "original_prompt": "Ingested from linux-6.6.14/tools/include/linux/rcu.h",
+  "human_readable_source": " \n#ifndef _LIBLOCKDEP_RCU_H_\n#define _LIBLOCKDEP_RCU_H_\n\nint rcu_scheduler_active;\n\nstatic inline int rcu_lockdep_current_cpu_online(void)\n{\n\treturn 1;\n}\n\nstatic inline int rcu_is_cpu_idle(void)\n{\n\treturn 1;\n}\n\nstatic inline bool rcu_is_watching(void)\n{\n\treturn false;\n}\n\n#define rcu_assign_pointer(p, v)\tdo { (p) = (v); } while (0)\n#define RCU_INIT_POINTER(p, v)\tdo { (p) = (v); } while (0)\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

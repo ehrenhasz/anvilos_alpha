@@ -1,0 +1,9 @@
+{
+  "module_name": "iodev.h",
+  "hash_id": "2495f9e6b687a0339bc0ba9b36c9b68bb179123f0ef355dbe7648d1ff5a95302",
+  "original_prompt": "Ingested from linux-6.6.14/include/kvm/iodev.h",
+  "human_readable_source": " \n\n#ifndef __KVM_IODEV_H__\n#define __KVM_IODEV_H__\n\n#include <linux/kvm_types.h>\n#include <linux/errno.h>\n\nstruct kvm_io_device;\nstruct kvm_vcpu;\n\n \nstruct kvm_io_device_ops {\n\tint (*read)(struct kvm_vcpu *vcpu,\n\t\t    struct kvm_io_device *this,\n\t\t    gpa_t addr,\n\t\t    int len,\n\t\t    void *val);\n\tint (*write)(struct kvm_vcpu *vcpu,\n\t\t     struct kvm_io_device *this,\n\t\t     gpa_t addr,\n\t\t     int len,\n\t\t     const void *val);\n\tvoid (*destructor)(struct kvm_io_device *this);\n};\n\n\nstruct kvm_io_device {\n\tconst struct kvm_io_device_ops *ops;\n};\n\nstatic inline void kvm_iodevice_init(struct kvm_io_device *dev,\n\t\t\t\t     const struct kvm_io_device_ops *ops)\n{\n\tdev->ops = ops;\n}\n\nstatic inline int kvm_iodevice_read(struct kvm_vcpu *vcpu,\n\t\t\t\t    struct kvm_io_device *dev, gpa_t addr,\n\t\t\t\t    int l, void *v)\n{\n\treturn dev->ops->read ? dev->ops->read(vcpu, dev, addr, l, v)\n\t\t\t\t: -EOPNOTSUPP;\n}\n\nstatic inline int kvm_iodevice_write(struct kvm_vcpu *vcpu,\n\t\t\t\t     struct kvm_io_device *dev, gpa_t addr,\n\t\t\t\t     int l, const void *v)\n{\n\treturn dev->ops->write ? dev->ops->write(vcpu, dev, addr, l, v)\n\t\t\t\t : -EOPNOTSUPP;\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

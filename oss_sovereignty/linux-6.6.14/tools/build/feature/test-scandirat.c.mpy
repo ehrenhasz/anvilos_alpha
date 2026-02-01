@@ -1,0 +1,9 @@
+{
+  "module_name": "test-scandirat.c",
+  "hash_id": "b40e5f8e466692e59ab17311d4e95f56ebfc2a650c931b3c7b916e3c87d8f451",
+  "original_prompt": "Ingested from linux-6.6.14/tools/build/feature/test-scandirat.c",
+  "human_readable_source": "\n#ifndef _GNU_SOURCE\n#define _GNU_SOURCE\n#endif\n#include <dirent.h>\n\nint main(void)\n{\n\t\n\treturn scandirat(  0,   (void *)1,   (void *)2,   (void *)3,   (void *)4);\n}\n\n#undef _GNU_SOURCE\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

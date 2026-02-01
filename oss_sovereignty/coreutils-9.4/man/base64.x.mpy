@@ -1,0 +1,9 @@
+{
+  "module_name": "base64.x",
+  "hash_id": "1aaeb7681a5b633dfce132f9f6e3e26deaa9a9f3511d9811073d5912ab774bff",
+  "original_prompt": "Ingested from coreutils-9.4/man/base64.x",
+  "human_readable_source": "[NAME]\nbase64 \\- base64 encode/decode data and print to standard output\n[DESCRIPTION]\n.\\\" Add any additional description here\n[SEE ALSO]\nbasenc(1)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

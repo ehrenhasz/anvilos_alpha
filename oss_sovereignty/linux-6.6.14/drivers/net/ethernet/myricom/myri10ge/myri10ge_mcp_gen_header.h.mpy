@@ -1,0 +1,9 @@
+{
+  "module_name": "myri10ge_mcp_gen_header.h",
+  "hash_id": "d78838200f5b629a25b9302d23172890a807fa875ab36e3345a0b6e652ec5bfe",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/myricom/myri10ge/myri10ge_mcp_gen_header.h",
+  "human_readable_source": " \n#ifndef __MYRI10GE_MCP_GEN_HEADER_H__\n#define __MYRI10GE_MCP_GEN_HEADER_H__\n\n\n#define MCP_HEADER_PTR_OFFSET  0x3c\n\n#define MCP_TYPE_MX 0x4d582020\t \n#define MCP_TYPE_PCIE 0x70636965\t \n#define MCP_TYPE_ETH 0x45544820\t \n#define MCP_TYPE_MCP0 0x4d435030\t \n#define MCP_TYPE_DFLT 0x20202020\t \n#define MCP_TYPE_ETHZ 0x4554485a\t \n\nstruct mcp_gen_header {\n\t \n\tunsigned header_length;\n\t__be32 mcp_type;\n\tchar version[128];\n\tunsigned mcp_private;\t \n\n\t \n\tunsigned sram_size;\n\tunsigned string_specs;\t \n\tunsigned string_specs_len;\n\n\t \n\n\t \n\tunsigned char mcp_index;\n\tunsigned char disable_rabbit;\n\tunsigned char unaligned_tlp;\n\tunsigned char pcie_link_algo;\n\tunsigned counters_addr;\n\tunsigned copy_block_info;\t \n\tunsigned short handoff_id_major;\t \n\tunsigned short handoff_id_caps;\t \n\tunsigned msix_table_addr;\t \n\tunsigned bss_addr;\t \n\tunsigned features;\n\tunsigned ee_hdr_addr;\n\tunsigned led_pattern;\n\tunsigned led_pattern_dflt;\n\t \n};\n\nstruct zmcp_info {\n\tunsigned info_len;\n\tunsigned zmcp_addr;\n\tunsigned zmcp_len;\n\tunsigned mcp_edata;\n};\n\n#endif\t\t\t\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

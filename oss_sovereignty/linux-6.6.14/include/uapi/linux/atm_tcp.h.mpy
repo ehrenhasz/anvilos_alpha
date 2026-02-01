@@ -1,0 +1,9 @@
+{
+  "module_name": "atm_tcp.h",
+  "hash_id": "aea3df7ddf63bf94f4739fe4fb06af15874e8214abf774d5a8fb3226c158d7df",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/atm_tcp.h",
+  "human_readable_source": " \n \n\n \n\n\n#ifndef _UAPILINUX_ATM_TCP_H\n#define _UAPILINUX_ATM_TCP_H\n\n#include <linux/atmapi.h>\n#include <linux/atm.h>\n#include <linux/atmioc.h>\n#include <linux/types.h>\n\n\n \n\nstruct atmtcp_hdr {\n\t__u16\tvpi;\n\t__u16\tvci;\n\t__u32\tlength;\t\t \n};\n\n \n\n#define ATMTCP_HDR_MAGIC\t(~0)\t \n#define ATMTCP_CTRL_OPEN\t1\t \n#define ATMTCP_CTRL_CLOSE\t2\t \n\nstruct atmtcp_control {\n\tstruct atmtcp_hdr hdr;\t \n\tint type;\t\t \n\tatm_kptr_t vcc;\t\t \n\tstruct sockaddr_atmpvc addr;  \n\tstruct atm_qos\tqos;\t \n\tint result;\t\t \n} __ATM_API_ALIGN;\n\n \n\n#define SIOCSIFATMTCP\t_IO('a',ATMIOC_ITF)\t \n#define ATMTCP_CREATE\t_IO('a',ATMIOC_ITF+14)\t \n#define ATMTCP_REMOVE\t_IO('a',ATMIOC_ITF+15)\t \n\n\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

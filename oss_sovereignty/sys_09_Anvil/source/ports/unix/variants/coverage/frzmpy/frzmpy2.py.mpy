@@ -1,0 +1,9 @@
+{
+  "module_name": "frzmpy2.py",
+  "hash_id": "d674d6e1b9b91568909065083f81c81221482eda189e3ce2ec5f105db369b780",
+  "original_prompt": "Ingested from sys_09_Anvil/source/ports/unix/variants/coverage/frzmpy/frzmpy2.py",
+  "human_readable_source": "raise ZeroDivisionError\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

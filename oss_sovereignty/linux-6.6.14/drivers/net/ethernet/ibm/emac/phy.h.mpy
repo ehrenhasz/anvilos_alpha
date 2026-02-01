@@ -1,0 +1,9 @@
+{
+  "module_name": "phy.h",
+  "hash_id": "4383fc2f22f1aecd4aceb54a04f89a6f1eae11cb8cce1735fe0b94ba9372152e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/ibm/emac/phy.h",
+  "human_readable_source": " \n \n\n#ifndef __IBM_NEWEMAC_PHY_H\n#define __IBM_NEWEMAC_PHY_H\n\nstruct mii_phy;\n\n \nstruct mii_phy_ops {\n\tint (*init) (struct mii_phy * phy);\n\tint (*suspend) (struct mii_phy * phy, int wol_options);\n\tint (*setup_aneg) (struct mii_phy * phy, u32 advertise);\n\tint (*setup_forced) (struct mii_phy * phy, int speed, int fd);\n\tint (*poll_link) (struct mii_phy * phy);\n\tint (*read_link) (struct mii_phy * phy);\n};\n\n \nstruct mii_phy_def {\n\tu32 phy_id;\t\t \n\tu32 phy_id_mask;\t \n\tu32 features;\t\t \n\tint magic_aneg;\t\t \n\tconst char *name;\n\tconst struct mii_phy_ops *ops;\n};\n\n \nstruct mii_phy {\n\tstruct mii_phy_def *def;\n\tu32 advertising;\t \n\tu32 features;\t\t \n\tint address;\t\t \n\tint mode;\t\t \n\tint gpcs_address;\t \n\n\t \n\tint autoneg;\n\n\t \n\tint speed;\n\tint duplex;\n\tint pause;\n\tint asym_pause;\n\n\t \n\tstruct net_device *dev;\n\tint (*mdio_read) (struct net_device * dev, int addr, int reg);\n\tvoid (*mdio_write) (struct net_device * dev, int addr, int reg,\n\t\t\t    int val);\n};\n\n \nint emac_mii_phy_probe(struct mii_phy *phy, int address);\nint emac_mii_reset_phy(struct mii_phy *phy);\nint emac_mii_reset_gpcs(struct mii_phy *phy);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

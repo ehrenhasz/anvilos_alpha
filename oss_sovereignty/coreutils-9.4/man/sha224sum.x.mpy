@@ -1,0 +1,9 @@
+{
+  "module_name": "sha224sum.x",
+  "hash_id": "f0ccc0f3a1f3620f9e0ad7f25c29c9d9bbfdd3ba9407b6023b5895b4487bf1aa",
+  "original_prompt": "Ingested from coreutils-9.4/man/sha224sum.x",
+  "human_readable_source": "[NAME]\nsha224sum \\- compute and check SHA224 message digest\n[DESCRIPTION]\n.\\\" Add any additional description here\n[SEE ALSO]\ncksum(1)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

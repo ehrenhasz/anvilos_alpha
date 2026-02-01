@@ -1,0 +1,9 @@
+{
+  "module_name": "rcar_du_crtc.h",
+  "hash_id": "947a9dcd0a1fb53521e0d727b5d145536102958fe2326df299d081783439d26a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/renesas/rcar-du/rcar_du_crtc.h",
+  "human_readable_source": " \n \n\n#ifndef __RCAR_DU_CRTC_H__\n#define __RCAR_DU_CRTC_H__\n\n#include <linux/mutex.h>\n#include <linux/spinlock.h>\n#include <linux/wait.h>\n\n#include <drm/drm_crtc.h>\n#include <drm/drm_writeback.h>\n\n#include <media/vsp1.h>\n\nstruct rcar_du_group;\nstruct rcar_du_vsp;\n\n \nstruct rcar_du_crtc {\n\tstruct drm_crtc crtc;\n\n\tstruct rcar_du_device *dev;\n\tstruct clk *clock;\n\tstruct clk *extclock;\n\tunsigned int mmio_offset;\n\tunsigned int index;\n\tbool initialized;\n\n\tu32 dsysr;\n\n\tbool vblank_enable;\n\tstruct drm_pending_vblank_event *event;\n\twait_queue_head_t flip_wait;\n\n\tspinlock_t vblank_lock;\n\twait_queue_head_t vblank_wait;\n\tunsigned int vblank_count;\n\n\tstruct rcar_du_group *group;\n\tstruct platform_device *cmm;\n\tstruct rcar_du_vsp *vsp;\n\tunsigned int vsp_pipe;\n\n\tconst char *const *sources;\n\tunsigned int sources_count;\n\n\tstruct drm_writeback_connector writeback;\n};\n\n#define to_rcar_crtc(c)\t\tcontainer_of(c, struct rcar_du_crtc, crtc)\n#define wb_to_rcar_crtc(c)\tcontainer_of(c, struct rcar_du_crtc, writeback)\n\n \nstruct rcar_du_crtc_state {\n\tstruct drm_crtc_state state;\n\n\tstruct vsp1_du_crc_config crc;\n\tunsigned int outputs;\n};\n\n#define to_rcar_crtc_state(s) container_of(s, struct rcar_du_crtc_state, state)\n\nint rcar_du_crtc_create(struct rcar_du_group *rgrp, unsigned int swindex,\n\t\t\tunsigned int hwindex);\n\nvoid rcar_du_crtc_finish_page_flip(struct rcar_du_crtc *rcrtc);\n\nvoid rcar_du_crtc_dsysr_clr_set(struct rcar_du_crtc *rcrtc, u32 clr, u32 set);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

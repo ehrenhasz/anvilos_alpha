@@ -1,0 +1,9 @@
+{
+  "module_name": "clk-utils.c",
+  "hash_id": "69fbd04a14d3f703d32f803b34916d8a5ce29d9c9aea69d2497655eb862c51ca",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/clk/tegra/clk-utils.c",
+  "human_readable_source": "\n \n\n#include <asm/div64.h>\n\n#include \"clk.h\"\n\n#define div_mask(w) ((1 << (w)) - 1)\n\nint div_frac_get(unsigned long rate, unsigned parent_rate, u8 width,\n\t\t u8 frac_width, u8 flags)\n{\n\tu64 divider_ux1 = parent_rate;\n\tint mul;\n\n\tif (!rate)\n\t\treturn 0;\n\n\tmul = 1 << frac_width;\n\n\tif (!(flags & TEGRA_DIVIDER_INT))\n\t\tdivider_ux1 *= mul;\n\n\tif (flags & TEGRA_DIVIDER_ROUND_UP)\n\t\tdivider_ux1 += rate - 1;\n\n\tdo_div(divider_ux1, rate);\n\n\tif (flags & TEGRA_DIVIDER_INT)\n\t\tdivider_ux1 *= mul;\n\n\tif (divider_ux1 < mul)\n\t\treturn 0;\n\n\tdivider_ux1 -= mul;\n\n\tif (divider_ux1 > div_mask(width))\n\t\treturn div_mask(width);\n\n\treturn divider_ux1;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

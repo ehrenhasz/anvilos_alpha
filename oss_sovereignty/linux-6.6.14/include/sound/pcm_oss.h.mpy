@@ -1,0 +1,9 @@
+{
+  "module_name": "pcm_oss.h",
+  "hash_id": "73de3abe7141216609f3481e4fd9808a31b7df930788b77f54323823b8938af1",
+  "original_prompt": "Ingested from linux-6.6.14/include/sound/pcm_oss.h",
+  "human_readable_source": " \n#ifndef __SOUND_PCM_OSS_H\n#define __SOUND_PCM_OSS_H\n\n \n\nstruct snd_pcm_oss_setup {\n\tchar *task_name;\n\tunsigned int disable:1,\n\t\t     direct:1,\n\t\t     block:1,\n\t\t     nonblock:1,\n\t\t     partialfrag:1,\n\t\t     nosilence:1,\n\t\t     buggyptr:1;\n\tunsigned int periods;\n\tunsigned int period_size;\n\tstruct snd_pcm_oss_setup *next;\n};\n\nstruct snd_pcm_oss_runtime {\n\tunsigned params: 1,\t\t\t \n\t\t prepare: 1,\t\t\t \n\t\t trigger: 1,\t\t\t \n\t\t sync_trigger: 1;\t\t \n\tint rate;\t\t\t\t \n\tint format;\t\t\t\t \n\tunsigned int channels;\t\t\t \n\tunsigned int fragshift;\n\tunsigned int maxfrags;\n\tunsigned int subdivision;\t\t \n\tsize_t period_bytes;\t\t\t \n\tsize_t period_frames;\t\t\t \n\tsize_t period_ptr;\t\t\t \n\tunsigned int periods;\n\tsize_t buffer_bytes;\t\t\t \n\tsize_t bytes;\t\t\t\t \n\tsize_t mmap_bytes;\n\tchar *buffer;\t\t\t\t \n\tsize_t buffer_used;\t\t\t \n\tstruct mutex params_lock;\n\tatomic_t rw_ref;\t\t \n#ifdef CONFIG_SND_PCM_OSS_PLUGINS\n\tstruct snd_pcm_plugin *plugin_first;\n\tstruct snd_pcm_plugin *plugin_last;\n#endif\n\tunsigned int prev_hw_ptr_period;\n};\n\nstruct snd_pcm_oss_file {\n\tstruct snd_pcm_substream *streams[2];\n};\n\nstruct snd_pcm_oss_substream {\n\tunsigned oss: 1;\t\t\t \n\tstruct snd_pcm_oss_setup setup;\t\t \n};\n\nstruct snd_pcm_oss_stream {\n\tstruct snd_pcm_oss_setup *setup_list;\t \n\tstruct mutex setup_mutex;\n#ifdef CONFIG_SND_VERBOSE_PROCFS\n\tstruct snd_info_entry *proc_entry;\n#endif\n};\n\nstruct snd_pcm_oss {\n\tint reg;\n\tunsigned int reg_mask;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

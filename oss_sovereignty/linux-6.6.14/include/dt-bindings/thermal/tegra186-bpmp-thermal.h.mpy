@@ -1,0 +1,9 @@
+{
+  "module_name": "tegra186-bpmp-thermal.h",
+  "hash_id": "deb8d531f86124b472b651ac2f6aafc3b18a029b68a101e9c9574e6964f891fe",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/thermal/tegra186-bpmp-thermal.h",
+  "human_readable_source": " \n\n#ifndef _DT_BINDINGS_THERMAL_TEGRA186_BPMP_THERMAL_H\n#define _DT_BINDINGS_THERMAL_TEGRA186_BPMP_THERMAL_H\n\n#define TEGRA186_BPMP_THERMAL_ZONE_CPU 2\n#define TEGRA186_BPMP_THERMAL_ZONE_GPU 3\n#define TEGRA186_BPMP_THERMAL_ZONE_AUX 4\n#define TEGRA186_BPMP_THERMAL_ZONE_PLLX 5\n#define TEGRA186_BPMP_THERMAL_ZONE_AO 6\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

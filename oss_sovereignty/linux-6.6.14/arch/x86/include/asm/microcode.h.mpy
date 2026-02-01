@@ -1,0 +1,9 @@
+{
+  "module_name": "microcode.h",
+  "hash_id": "cbbf6114c37879264a54102f2cce2fe0b304267755f735891a976ebce548dd9e",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/include/asm/microcode.h",
+  "human_readable_source": " \n#ifndef _ASM_X86_MICROCODE_H\n#define _ASM_X86_MICROCODE_H\n\nstruct cpu_signature {\n\tunsigned int sig;\n\tunsigned int pf;\n\tunsigned int rev;\n};\n\nstruct ucode_cpu_info {\n\tstruct cpu_signature\tcpu_sig;\n\tvoid\t\t\t*mc;\n};\n\n#ifdef CONFIG_MICROCODE\nvoid load_ucode_bsp(void);\nvoid load_ucode_ap(void);\nvoid microcode_bsp_resume(void);\n#else\nstatic inline void load_ucode_bsp(void)\t{ }\nstatic inline void load_ucode_ap(void) { }\nstatic inline void microcode_bsp_resume(void) { }\n#endif\n\n#ifdef CONFIG_CPU_SUP_INTEL\n \nstruct microcode_header_intel {\n\tunsigned int\thdrver;\n\tunsigned int\trev;\n\tunsigned int\tdate;\n\tunsigned int\tsig;\n\tunsigned int\tcksum;\n\tunsigned int\tldrver;\n\tunsigned int\tpf;\n\tunsigned int\tdatasize;\n\tunsigned int\ttotalsize;\n\tunsigned int\tmetasize;\n\tunsigned int\treserved[2];\n};\n\nstruct microcode_intel {\n\tstruct microcode_header_intel\thdr;\n\tunsigned int\t\t\tbits[];\n};\n\n#define DEFAULT_UCODE_DATASIZE\t\t(2000)\n#define MC_HEADER_SIZE\t\t\t(sizeof(struct microcode_header_intel))\n#define MC_HEADER_TYPE_MICROCODE\t1\n#define MC_HEADER_TYPE_IFS\t\t2\n\nstatic inline int intel_microcode_get_datasize(struct microcode_header_intel *hdr)\n{\n\treturn hdr->datasize ? : DEFAULT_UCODE_DATASIZE;\n}\n\nstatic inline u32 intel_get_microcode_revision(void)\n{\n\tu32 rev, dummy;\n\n\tnative_wrmsrl(MSR_IA32_UCODE_REV, 0);\n\n\t \n\tnative_cpuid_eax(1);\n\n\t \n\tnative_rdmsr(MSR_IA32_UCODE_REV, dummy, rev);\n\n\treturn rev;\n}\n\nvoid show_ucode_info_early(void);\n\n#else  \nstatic inline void show_ucode_info_early(void) { }\n#endif  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

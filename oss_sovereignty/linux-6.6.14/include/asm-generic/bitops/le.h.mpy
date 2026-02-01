@@ -1,0 +1,9 @@
+{
+  "module_name": "le.h",
+  "hash_id": "6e0f76a200b1383e851ae4bb9d360190dfb73e5e8778e6b8f0551a00344a2140",
+  "original_prompt": "Ingested from linux-6.6.14/include/asm-generic/bitops/le.h",
+  "human_readable_source": " \n#ifndef _ASM_GENERIC_BITOPS_LE_H_\n#define _ASM_GENERIC_BITOPS_LE_H_\n\n#include <asm/types.h>\n#include <asm/byteorder.h>\n\n#if defined(__LITTLE_ENDIAN)\n\n#define BITOP_LE_SWIZZLE\t0\n\n#elif defined(__BIG_ENDIAN)\n\n#define BITOP_LE_SWIZZLE\t((BITS_PER_LONG-1) & ~0x7)\n\n#endif\n\n\nstatic inline int test_bit_le(int nr, const void *addr)\n{\n\treturn test_bit(nr ^ BITOP_LE_SWIZZLE, addr);\n}\n\nstatic inline void set_bit_le(int nr, void *addr)\n{\n\tset_bit(nr ^ BITOP_LE_SWIZZLE, addr);\n}\n\nstatic inline void clear_bit_le(int nr, void *addr)\n{\n\tclear_bit(nr ^ BITOP_LE_SWIZZLE, addr);\n}\n\nstatic inline void __set_bit_le(int nr, void *addr)\n{\n\t__set_bit(nr ^ BITOP_LE_SWIZZLE, addr);\n}\n\nstatic inline void __clear_bit_le(int nr, void *addr)\n{\n\t__clear_bit(nr ^ BITOP_LE_SWIZZLE, addr);\n}\n\nstatic inline int test_and_set_bit_le(int nr, void *addr)\n{\n\treturn test_and_set_bit(nr ^ BITOP_LE_SWIZZLE, addr);\n}\n\nstatic inline int test_and_clear_bit_le(int nr, void *addr)\n{\n\treturn test_and_clear_bit(nr ^ BITOP_LE_SWIZZLE, addr);\n}\n\nstatic inline int __test_and_set_bit_le(int nr, void *addr)\n{\n\treturn __test_and_set_bit(nr ^ BITOP_LE_SWIZZLE, addr);\n}\n\nstatic inline int __test_and_clear_bit_le(int nr, void *addr)\n{\n\treturn __test_and_clear_bit(nr ^ BITOP_LE_SWIZZLE, addr);\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "xattr_user.c",
+  "hash_id": "acce415917304176ce46adca60c2ccdd13c8978788287904a364fc85cdfb3c2f",
+  "original_prompt": "Ingested from linux-6.6.14/fs/jffs2/xattr_user.c",
+  "human_readable_source": " \n\n#include <linux/kernel.h>\n#include <linux/fs.h>\n#include <linux/jffs2.h>\n#include <linux/xattr.h>\n#include <linux/mtd/mtd.h>\n#include \"nodelist.h\"\n\nstatic int jffs2_user_getxattr(const struct xattr_handler *handler,\n\t\t\t       struct dentry *unused, struct inode *inode,\n\t\t\t       const char *name, void *buffer, size_t size)\n{\n\treturn do_jffs2_getxattr(inode, JFFS2_XPREFIX_USER,\n\t\t\t\t name, buffer, size);\n}\n\nstatic int jffs2_user_setxattr(const struct xattr_handler *handler,\n\t\t\t       struct mnt_idmap *idmap,\n\t\t\t       struct dentry *unused, struct inode *inode,\n\t\t\t       const char *name, const void *buffer,\n\t\t\t       size_t size, int flags)\n{\n\treturn do_jffs2_setxattr(inode, JFFS2_XPREFIX_USER,\n\t\t\t\t name, buffer, size, flags);\n}\n\nconst struct xattr_handler jffs2_user_xattr_handler = {\n\t.prefix = XATTR_USER_PREFIX,\n\t.set = jffs2_user_setxattr,\n\t.get = jffs2_user_getxattr\n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

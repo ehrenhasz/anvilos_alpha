@@ -1,0 +1,9 @@
+{
+  "module_name": "fp_operation.json",
+  "hash_id": "d05aefa258dfe3558002ebb74ef8505d06118c81275272256db8c34e9bc42a03",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/pmu-events/arch/arm64/arm/neoverse-n2-v2/fp_operation.json",
+  "human_readable_source": "[\n    {\n        \"ArchStdEvent\": \"FP_HP_SPEC\",\n        \"PublicDescription\": \"Counts speculatively executed half precision floating point operations.\"\n    },\n    {\n        \"ArchStdEvent\": \"FP_SP_SPEC\",\n        \"PublicDescription\": \"Counts speculatively executed single precision floating point operations.\"\n    },\n    {\n        \"ArchStdEvent\": \"FP_DP_SPEC\",\n        \"PublicDescription\": \"Counts speculatively executed double precision floating point operations.\"\n    },\n    {\n        \"ArchStdEvent\": \"FP_SCALE_OPS_SPEC\",\n        \"PublicDescription\": \"Counts speculatively executed scalable single precision floating point operations.\"\n    },\n    {\n        \"ArchStdEvent\": \"FP_FIXED_OPS_SPEC\",\n        \"PublicDescription\": \"Counts speculatively executed non-scalable single precision floating point operations.\"\n    }\n]\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

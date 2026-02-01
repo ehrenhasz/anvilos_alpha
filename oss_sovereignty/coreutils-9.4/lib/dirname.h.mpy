@@ -1,0 +1,9 @@
+{
+  "module_name": "dirname.h",
+  "hash_id": "413baee79f9b1d6866753329bd648299639e4212b633600c3f326397dcdc27dc",
+  "original_prompt": "Ingested from coreutils-9.4/lib/dirname.h",
+  "human_readable_source": " \n#if !_GL_CONFIG_H_INCLUDED\n #error \"Please include config.h first.\"\n#endif\n\n# include <stdlib.h>\n# include \"filename.h\"\n# include \"basename-lgpl.h\"\n\n# ifndef DIRECTORY_SEPARATOR\n#  define DIRECTORY_SEPARATOR '/'\n# endif\n\n#ifdef __cplusplus\nextern \"C\" {\n#endif\n\n# if GNULIB_DIRNAME\nchar *base_name (char const *file)\n  _GL_ATTRIBUTE_MALLOC _GL_ATTRIBUTE_DEALLOC_FREE\n  _GL_ATTRIBUTE_RETURNS_NONNULL;\nchar *dir_name (char const *file)\n  _GL_ATTRIBUTE_MALLOC _GL_ATTRIBUTE_DEALLOC_FREE\n  _GL_ATTRIBUTE_RETURNS_NONNULL;\n# endif\n\nchar *mdir_name (char const *file)\n  _GL_ATTRIBUTE_MALLOC _GL_ATTRIBUTE_DEALLOC_FREE;\nsize_t dir_len (char const *file) _GL_ATTRIBUTE_PURE;\n\nbool strip_trailing_slashes (char *file);\n\n#ifdef __cplusplus\n}  \n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

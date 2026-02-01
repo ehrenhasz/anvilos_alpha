@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "c3abdbc29ffb396ff53732bc881d67d735904fdcd2d66985a3bff44939b62969",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/platform/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for the video capture/playback device drivers.\n#\n\n# Place here, alphabetically sorted by directory\n# (e. g. LC_ALL=C sort Makefile)\nobj-y += allegro-dvt/\nobj-y += amlogic/\nobj-y += amphion/\nobj-y += aspeed/\nobj-y += atmel/\nobj-y += cadence/\nobj-y += chips-media/\nobj-y += intel/\nobj-y += marvell/\nobj-y += mediatek/\nobj-y += microchip/\nobj-y += nvidia/\nobj-y += nxp/\nobj-y += qcom/\nobj-y += renesas/\nobj-y += rockchip/\nobj-y += samsung/\nobj-y += st/\nobj-y += sunxi/\nobj-y += ti/\nobj-y += verisilicon/\nobj-y += via/\nobj-y += xilinx/\n\n# Please place here only ancillary drivers that aren't SoC-specific\n# Please keep it alphabetically sorted by Kconfig name\n# (e. g. LC_ALL=C sort Makefile)\nobj-$(CONFIG_VIDEO_MEM2MEM_DEINTERLACE)\t+= m2m-deinterlace.o\nobj-$(CONFIG_VIDEO_MUX)\t\t\t+= video-mux.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

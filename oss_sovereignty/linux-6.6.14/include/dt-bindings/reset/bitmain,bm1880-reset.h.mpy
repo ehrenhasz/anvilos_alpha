@@ -1,0 +1,9 @@
+{
+  "module_name": "bitmain,bm1880-reset.h",
+  "hash_id": "d58a162a2ec5bb0092bfcdd73bb48ba4dcf34524cea2cd5e29b8c4afcbecd81e",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/reset/bitmain,bm1880-reset.h",
+  "human_readable_source": " \n \n\n#ifndef _DT_BINDINGS_BM1880_RESET_H\n#define _DT_BINDINGS_BM1880_RESET_H\n\n#define BM1880_RST_MAIN_AP\t\t0\n#define BM1880_RST_SECOND_AP\t\t1\n#define BM1880_RST_DDR\t\t\t2\n#define BM1880_RST_VIDEO\t\t3\n#define BM1880_RST_JPEG\t\t\t4\n#define BM1880_RST_VPP\t\t\t5\n#define BM1880_RST_GDMA\t\t\t6\n#define BM1880_RST_AXI_SRAM\t\t7\n#define BM1880_RST_TPU\t\t\t8\n#define BM1880_RST_USB\t\t\t9\n#define BM1880_RST_ETH0\t\t\t10\n#define BM1880_RST_ETH1\t\t\t11\n#define BM1880_RST_NAND\t\t\t12\n#define BM1880_RST_EMMC\t\t\t13\n#define BM1880_RST_SD\t\t\t14\n#define BM1880_RST_SDMA\t\t\t15\n#define BM1880_RST_I2S0\t\t\t16\n#define BM1880_RST_I2S1\t\t\t17\n#define BM1880_RST_UART0_1_CLK\t\t18\n#define BM1880_RST_UART0_1_ACLK\t\t19\n#define BM1880_RST_UART2_3_CLK\t\t20\n#define BM1880_RST_UART2_3_ACLK\t\t21\n#define BM1880_RST_MINER\t\t22\n#define BM1880_RST_I2C0\t\t\t23\n#define BM1880_RST_I2C1\t\t\t24\n#define BM1880_RST_I2C2\t\t\t25\n#define BM1880_RST_I2C3\t\t\t26\n#define BM1880_RST_I2C4\t\t\t27\n#define BM1880_RST_PWM0\t\t\t28\n#define BM1880_RST_PWM1\t\t\t29\n#define BM1880_RST_PWM2\t\t\t30\n#define BM1880_RST_PWM3\t\t\t31\n#define BM1880_RST_SPI\t\t\t32\n#define BM1880_RST_GPIO0\t\t33\n#define BM1880_RST_GPIO1\t\t34\n#define BM1880_RST_GPIO2\t\t35\n#define BM1880_RST_EFUSE\t\t36\n#define BM1880_RST_WDT\t\t\t37\n#define BM1880_RST_AHB_ROM\t\t38\n#define BM1880_RST_SPIC\t\t\t39\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

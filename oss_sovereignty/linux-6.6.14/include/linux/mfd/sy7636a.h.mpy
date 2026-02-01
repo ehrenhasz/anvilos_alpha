@@ -1,0 +1,9 @@
+{
+  "module_name": "sy7636a.h",
+  "hash_id": "4d7028ae27bc7688cb4edac9b4475d4ea7d75c0eda9e3797ddb1aeda96312413",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/mfd/sy7636a.h",
+  "human_readable_source": " \n \n\n#ifndef __MFD_SY7636A_H\n#define __MFD_SY7636A_H\n\n#define SY7636A_REG_OPERATION_MODE_CRL\t\t0x00\n \n#define SY7636A_OPERATION_MODE_CRL_VCOMCTL\tBIT(6)\n#define SY7636A_OPERATION_MODE_CRL_ONOFF\tBIT(7)\n#define SY7636A_REG_VCOM_ADJUST_CTRL_L\t\t0x01\n#define SY7636A_REG_VCOM_ADJUST_CTRL_H\t\t0x02\n#define SY7636A_REG_VCOM_ADJUST_CTRL_MASK\t0x01ff\n#define SY7636A_REG_VLDO_VOLTAGE_ADJULST_CTRL\t0x03\n#define SY7636A_REG_POWER_ON_DELAY_TIME\t\t0x06\n#define SY7636A_REG_FAULT_FLAG\t\t\t0x07\n#define SY7636A_FAULT_FLAG_PG\t\t\tBIT(0)\n#define SY7636A_REG_TERMISTOR_READOUT\t\t0x08\n\n#define SY7636A_REG_MAX\t\t\t\t0x08\n\n#define VCOM_ADJUST_CTRL_MASK\t0x1ff\n\n#define VCOM_ADJUST_CTRL_SHIFT\t8\n\n#define VCOM_ADJUST_CTRL_SCAL\t10000\n\n#define FAULT_FLAG_SHIFT\t1\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

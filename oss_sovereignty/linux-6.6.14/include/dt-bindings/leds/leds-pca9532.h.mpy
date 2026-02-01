@@ -1,0 +1,9 @@
+{
+  "module_name": "leds-pca9532.h",
+  "hash_id": "38e28c9e2bb6be2327dab536eacdbec4eab8c9e6677ca469d58767d14887a9cc",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/leds/leds-pca9532.h",
+  "human_readable_source": " \n\n#ifndef _DT_BINDINGS_LEDS_PCA9532_H\n#define _DT_BINDINGS_LEDS_PCA9532_H\n\n#define PCA9532_TYPE_NONE         0\n#define PCA9532_TYPE_LED          1\n#define PCA9532_TYPE_N2100_BEEP   2\n#define PCA9532_TYPE_GPIO         3\n#define PCA9532_LED_TIMER2        4\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

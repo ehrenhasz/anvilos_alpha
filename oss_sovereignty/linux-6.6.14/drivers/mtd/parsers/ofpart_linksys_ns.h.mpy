@@ -1,0 +1,9 @@
+{
+  "module_name": "ofpart_linksys_ns.h",
+  "hash_id": "9ab1755fd0961de3353ac8aa02ae92b6605da54a33d0e31b462553b6caf21310",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/mtd/parsers/ofpart_linksys_ns.h",
+  "human_readable_source": " \n#ifndef __OFPART_LINKSYS_NS_H\n#define __OFPART_LINKSYS_NS_H\n\n#ifdef CONFIG_MTD_OF_PARTS_LINKSYS_NS\nint linksys_ns_partitions_post_parse(struct mtd_info *mtd,\n\t\t\t\t     struct mtd_partition *parts,\n\t\t\t\t     int nr_parts);\n#else\nstatic inline int linksys_ns_partitions_post_parse(struct mtd_info *mtd,\n\t\t\t\t\t\t   struct mtd_partition *parts,\n\t\t\t\t\t\t   int nr_parts)\n{\n\treturn -EOPNOTSUPP;\n}\n#endif\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

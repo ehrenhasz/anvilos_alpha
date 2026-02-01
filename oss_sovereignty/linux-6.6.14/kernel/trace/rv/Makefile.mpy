@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "9f2b6ae5f7abd70e23ac472d8017d830d89b07bde686578a1667dc715fa4734a",
+  "original_prompt": "Ingested from linux-6.6.14/kernel/trace/rv/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n\nobj-$(CONFIG_RV) += rv.o\nobj-$(CONFIG_RV_MON_WIP) += monitors/wip/wip.o\nobj-$(CONFIG_RV_MON_WWNR) += monitors/wwnr/wwnr.o\nobj-$(CONFIG_RV_REACTORS) += rv_reactors.o\nobj-$(CONFIG_RV_REACT_PRINTK) += reactor_printk.o\nobj-$(CONFIG_RV_REACT_PANIC) += reactor_panic.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

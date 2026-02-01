@@ -1,0 +1,9 @@
+{
+  "module_name": "nouveau_vmm.h",
+  "hash_id": "22363800d63526426dc5b22ef4777c66ed5bb914b2873591beaa73a90ac4d0fd",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nouveau_vmm.h",
+  "human_readable_source": "#ifndef __NOUVEAU_VMA_H__\n#define __NOUVEAU_VMA_H__\n#include <nvif/vmm.h>\nstruct nouveau_bo;\nstruct nouveau_mem;\n\nstruct nouveau_vma {\n\tstruct nouveau_vmm *vmm;\n\tint refs;\n\tstruct list_head head;\n\tu64 addr;\n\n\tstruct nouveau_mem *mem;\n\n\tstruct nouveau_fence *fence;\n};\n\nstruct nouveau_vma *nouveau_vma_find(struct nouveau_bo *, struct nouveau_vmm *);\nint nouveau_vma_new(struct nouveau_bo *, struct nouveau_vmm *,\n\t\t    struct nouveau_vma **);\nvoid nouveau_vma_del(struct nouveau_vma **);\nint nouveau_vma_map(struct nouveau_vma *, struct nouveau_mem *);\nvoid nouveau_vma_unmap(struct nouveau_vma *);\n\nstruct nouveau_vmm {\n\tstruct nouveau_cli *cli;\n\tstruct nvif_vmm vmm;\n\tstruct nouveau_svmm *svmm;\n};\n\nint nouveau_vmm_init(struct nouveau_cli *, s32 oclass, struct nouveau_vmm *);\nvoid nouveau_vmm_fini(struct nouveau_vmm *);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

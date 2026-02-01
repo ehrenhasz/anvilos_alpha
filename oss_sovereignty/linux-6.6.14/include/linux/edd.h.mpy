@@ -1,0 +1,9 @@
+{
+  "module_name": "edd.h",
+  "hash_id": "67c3cf5d2da54aa546147036c5845752a7b9aafbdad4f98b2ca96e6081c951be",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/edd.h",
+  "human_readable_source": " \n \n#ifndef _LINUX_EDD_H\n#define _LINUX_EDD_H\n\n#include <uapi/linux/edd.h>\n\n#ifndef __ASSEMBLY__\nextern struct edd edd;\n#endif\t\t\t\t \n#endif\t\t\t\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "sh_css_hrt.h",
+  "hash_id": "802ac28e375451804f2bdd3f2857ca2b5fde6d20db44bb450fa1eaa4fb7faab7",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/sh_css_hrt.h",
+  "human_readable_source": " \n \n\n#ifndef _SH_CSS_HRT_H_\n#define _SH_CSS_HRT_H_\n\n#include <sp.h>\n#include <isp.h>\n\n#include <ia_css_err.h>\n\n \nvoid sh_css_hrt_sp_start_si(void);\n\nvoid sh_css_hrt_sp_start_copy_frame(void);\n\nvoid sh_css_hrt_sp_start_isp(void);\n\nint sh_css_hrt_sp_wait(void);\n\nbool sh_css_hrt_system_is_idle(void);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

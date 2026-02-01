@@ -1,0 +1,9 @@
+{
+  "module_name": "services.h",
+  "hash_id": "6d532b3053181e0f893b17c0532c209b50ab740ce839150d36fd343c793a6868",
+  "original_prompt": "Ingested from linux-6.6.14/security/selinux/ss/services.h",
+  "human_readable_source": " \n \n#ifndef _SS_SERVICES_H_\n#define _SS_SERVICES_H_\n\n#include \"policydb.h\"\n\n \nstruct selinux_mapping {\n\tu16 value;  \n\tu16 num_perms;  \n\tu32 perms[sizeof(u32) * 8];  \n};\n\n \nstruct selinux_map {\n\tstruct selinux_mapping *mapping;  \n\tu16 size;  \n};\n\nstruct selinux_policy {\n\tstruct sidtab *sidtab;\n\tstruct policydb policydb;\n\tstruct selinux_map map;\n\tu32 latest_granting;\n} __randomize_layout;\n\nstruct convert_context_args {\n\tstruct policydb *oldp;\n\tstruct policydb *newp;\n};\n\nvoid services_compute_xperms_drivers(struct extended_perms *xperms,\n\t\t\t\t     struct avtab_node *node);\nvoid services_compute_xperms_decision(struct extended_perms_decision *xpermd,\n\t\t\t\t      struct avtab_node *node);\n\nint services_convert_context(struct convert_context_args *args,\n\t\t\t     struct context *oldc, struct context *newc,\n\t\t\t     gfp_t gfp_flags);\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

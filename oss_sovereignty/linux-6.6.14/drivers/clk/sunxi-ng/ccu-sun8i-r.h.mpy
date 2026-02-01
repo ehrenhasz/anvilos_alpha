@@ -1,0 +1,9 @@
+{
+  "module_name": "ccu-sun8i-r.h",
+  "hash_id": "b5d1b43ea46f88e8e21cd5c0bf0e0b474c85f28564714af79c35cf93d2551d02",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/clk/sunxi-ng/ccu-sun8i-r.h",
+  "human_readable_source": " \n \n\n#ifndef _CCU_SUN8I_R_H\n#define _CCU_SUN8I_R_H\n\n#include <dt-bindings/clock/sun8i-r-ccu.h>\n#include <dt-bindings/reset/sun8i-r-ccu.h>\n\n \n#define CLK_AHB0\t1\n#define CLK_APB0\t2\n\n#define CLK_NUMBER\t(CLK_IR + 1)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "settings",
+  "hash_id": "cc47dea3f68bf024e15473a2cbce0da624f7d254ad0b0686395a7f82782d57d5",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/tpm2/settings",
+  "human_readable_source": "timeout=600\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

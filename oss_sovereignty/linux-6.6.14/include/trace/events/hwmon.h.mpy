@@ -1,0 +1,9 @@
+{
+  "module_name": "hwmon.h",
+  "hash_id": "0248962ae2d301fd2a13ea2747152ff0ca2ade3b54185ae82bd0828dda03b338",
+  "original_prompt": "Ingested from linux-6.6.14/include/trace/events/hwmon.h",
+  "human_readable_source": " \n#undef TRACE_SYSTEM\n#define TRACE_SYSTEM hwmon\n\n#if !defined(_TRACE_HWMON_H) || defined(TRACE_HEADER_MULTI_READ)\n#define _TRACE_HWMON_H\n\n#include <linux/tracepoint.h>\n\nDECLARE_EVENT_CLASS(hwmon_attr_class,\n\n\tTP_PROTO(int index, const char *attr_name, long val),\n\n\tTP_ARGS(index, attr_name, val),\n\n\tTP_STRUCT__entry(\n\t\t__field(int, index)\n\t\t__string(attr_name, attr_name)\n\t\t__field(long, val)\n\t),\n\n\tTP_fast_assign(\n\t\t__entry->index = index;\n\t\t__assign_str(attr_name, attr_name);\n\t\t__entry->val = val;\n\t),\n\n\tTP_printk(\"index=%d, attr_name=%s, val=%ld\",\n\t\t  __entry->index,  __get_str(attr_name), __entry->val)\n);\n\nDEFINE_EVENT(hwmon_attr_class, hwmon_attr_show,\n\n\tTP_PROTO(int index, const char *attr_name, long val),\n\n\tTP_ARGS(index, attr_name, val)\n);\n\nDEFINE_EVENT(hwmon_attr_class, hwmon_attr_store,\n\n\tTP_PROTO(int index, const char *attr_name, long val),\n\n\tTP_ARGS(index, attr_name, val)\n);\n\nTRACE_EVENT(hwmon_attr_show_string,\n\n\tTP_PROTO(int index, const char *attr_name, const char *s),\n\n\tTP_ARGS(index, attr_name, s),\n\n\tTP_STRUCT__entry(\n\t\t__field(int, index)\n\t\t__string(attr_name, attr_name)\n\t\t__string(label, s)\n\t),\n\n\tTP_fast_assign(\n\t\t__entry->index = index;\n\t\t__assign_str(attr_name, attr_name);\n\t\t__assign_str(label, s);\n\t),\n\n\tTP_printk(\"index=%d, attr_name=%s, val=%s\",\n\t\t  __entry->index, __get_str(attr_name), __get_str(label))\n);\n\n#endif  \n\n \n#include <trace/define_trace.h>\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

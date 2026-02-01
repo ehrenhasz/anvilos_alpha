@@ -1,0 +1,9 @@
+{
+  "module_name": "flow_dissector_load.h",
+  "hash_id": "4bb6d250a6077098a2f521035eb20ea40ef14aabd6a6eb8bb2a51f7d87be8492",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/flow_dissector_load.h",
+  "human_readable_source": " \n#ifndef FLOW_DISSECTOR_LOAD\n#define FLOW_DISSECTOR_LOAD\n\n#include <bpf/bpf.h>\n#include <bpf/libbpf.h>\n#include \"testing_helpers.h\"\n\nstatic inline int bpf_flow_load(struct bpf_object **obj,\n\t\t\t\tconst char *path,\n\t\t\t\tconst char *prog_name,\n\t\t\t\tconst char *map_name,\n\t\t\t\tconst char *keys_map_name,\n\t\t\t\tint *prog_fd,\n\t\t\t\tint *keys_fd)\n{\n\tstruct bpf_program *prog, *main_prog;\n\tstruct bpf_map *prog_array, *keys;\n\tint prog_array_fd;\n\tint ret, fd, i;\n\n\tret = bpf_prog_test_load(path, BPF_PROG_TYPE_FLOW_DISSECTOR, obj,\n\t\t\t    prog_fd);\n\tif (ret)\n\t\treturn ret;\n\n\tmain_prog = bpf_object__find_program_by_name(*obj, prog_name);\n\tif (!main_prog)\n\t\treturn -1;\n\n\t*prog_fd = bpf_program__fd(main_prog);\n\tif (*prog_fd < 0)\n\t\treturn -1;\n\n\tprog_array = bpf_object__find_map_by_name(*obj, map_name);\n\tif (!prog_array)\n\t\treturn -1;\n\n\tprog_array_fd = bpf_map__fd(prog_array);\n\tif (prog_array_fd < 0)\n\t\treturn -1;\n\n\tif (keys_map_name && keys_fd) {\n\t\tkeys = bpf_object__find_map_by_name(*obj, keys_map_name);\n\t\tif (!keys)\n\t\t\treturn -1;\n\n\t\t*keys_fd = bpf_map__fd(keys);\n\t\tif (*keys_fd < 0)\n\t\t\treturn -1;\n\t}\n\n\ti = 0;\n\tbpf_object__for_each_program(prog, *obj) {\n\t\tfd = bpf_program__fd(prog);\n\t\tif (fd < 0)\n\t\t\treturn fd;\n\n\t\tif (fd != *prog_fd) {\n\t\t\tbpf_map_update_elem(prog_array_fd, &i, &fd, BPF_ANY);\n\t\t\t++i;\n\t\t}\n\t}\n\n\treturn 0;\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

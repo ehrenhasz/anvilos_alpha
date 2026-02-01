@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "6d30511111dbb1fe0a1525f1098b6cf4163825b9c2eaebd5563f87900faf2b20",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/dc/dcn301/Makefile",
+  "human_readable_source": "#\n# (c) Copyright 2020 Advanced Micro Devices, Inc. All the rights reserved\n#\n#  All rights reserved.  This notice is intended as a precaution against\n#  inadvertent publication and does not imply publication or any waiver\n#  of confidentiality.  The year included in the foregoing notice is the\n#  year of creation of the work.\n#\n#  Authors: AMD\n#\n# Makefile for dcn30.\n\nDCN301 = dcn301_init.o dcn301_resource.o dcn301_dccg.o \\\n\t\tdcn301_dio_link_encoder.o dcn301_hwseq.o dcn301_panel_cntl.o dcn301_hubbub.o \\\n\t\tdcn301_optc.o\n\nAMD_DAL_DCN301 = $(addprefix $(AMDDALPATH)/dc/dcn301/,$(DCN301))\n\nAMD_DISPLAY_FILES += $(AMD_DAL_DCN301)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

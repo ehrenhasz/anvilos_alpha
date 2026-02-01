@@ -1,0 +1,9 @@
+{
+  "module_name": "drm_plane_helper.h",
+  "hash_id": "7fc3245e12ad683dc26e9fa6e67a7510b725ac2261cbe328a1a5becf8c18c882",
+  "original_prompt": "Ingested from linux-6.6.14/include/drm/drm_plane_helper.h",
+  "human_readable_source": " \n\n#ifndef DRM_PLANE_HELPER_H\n#define DRM_PLANE_HELPER_H\n\n#include <linux/types.h>\n\nstruct drm_atomic_state;\nstruct drm_crtc;\nstruct drm_framebuffer;\nstruct drm_modeset_acquire_ctx;\nstruct drm_plane;\n\nint drm_plane_helper_update_primary(struct drm_plane *plane, struct drm_crtc *crtc,\n\t\t\t\t    struct drm_framebuffer *fb,\n\t\t\t\t    int crtc_x, int crtc_y,\n\t\t\t\t    unsigned int crtc_w, unsigned int crtc_h,\n\t\t\t\t    uint32_t src_x, uint32_t src_y,\n\t\t\t\t    uint32_t src_w, uint32_t src_h,\n\t\t\t\t    struct drm_modeset_acquire_ctx *ctx);\nint drm_plane_helper_disable_primary(struct drm_plane *plane,\n\t\t\t\t     struct drm_modeset_acquire_ctx *ctx);\nvoid drm_plane_helper_destroy(struct drm_plane *plane);\nint drm_plane_helper_atomic_check(struct drm_plane *plane, struct drm_atomic_state *state);\n\n \n#define DRM_PLANE_NON_ATOMIC_FUNCS \\\n\t.update_plane = drm_plane_helper_update_primary, \\\n\t.disable_plane = drm_plane_helper_disable_primary, \\\n\t.destroy = drm_plane_helper_destroy\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

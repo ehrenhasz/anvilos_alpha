@@ -1,0 +1,9 @@
+{
+  "module_name": "test-vprintf-posix.sh",
+  "hash_id": "4fa78f1f0bcc80a3c411a0b5f64ff554832a4bfeb33fdfe1a9b44d379f748d5d",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-vprintf-posix.sh",
+  "human_readable_source": "#!/bin/sh\n\ntmpfiles=\"\"\ntrap 'rm -fr $tmpfiles' HUP INT QUIT TERM\n\ntmpfiles=\"$tmpfiles t-vprintf-posix.tmp t-vprintf-posix.out\"\n${CHECKER} ./test-vprintf-posix${EXEEXT} > t-vprintf-posix.tmp || exit 1\nLC_ALL=C tr -d '\\r' < t-vprintf-posix.tmp > t-vprintf-posix.out || exit 1\n\n: \"${DIFF=diff}\"\n${DIFF} \"${srcdir}/test-printf-posix.output\" t-vprintf-posix.out\nresult=$?\n\nrm -fr $tmpfiles\n\nexit $result\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

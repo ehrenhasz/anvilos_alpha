@@ -1,0 +1,9 @@
+{
+  "module_name": "errno.h",
+  "hash_id": "a47fb2f49bce0546a1e88805cec954338abb1b2ac87de042166e8e3a74b23261",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/errno.h",
+  "human_readable_source": "#include <asm/errno.h>\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

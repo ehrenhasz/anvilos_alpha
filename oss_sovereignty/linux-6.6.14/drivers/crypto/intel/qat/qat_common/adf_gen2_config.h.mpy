@@ -1,0 +1,9 @@
+{
+  "module_name": "adf_gen2_config.h",
+  "hash_id": "a8352e4768ffbf0cc6c5df9ef67eeca9fd84b53b2f44fe92ffb490f599ec4a4a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/crypto/intel/qat/qat_common/adf_gen2_config.h",
+  "human_readable_source": " \n \n#ifndef ADF_GEN2_CONFIG_H_\n#define ADF_GEN2_CONFIG_H_\n\n#include \"adf_accel_devices.h\"\n\nint adf_gen2_dev_config(struct adf_accel_dev *accel_dev);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

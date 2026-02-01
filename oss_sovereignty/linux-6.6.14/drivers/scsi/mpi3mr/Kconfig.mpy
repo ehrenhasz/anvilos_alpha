@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "12e30de7e268c28e7a03502ff5bdb97002b3f04871841e251564527494b3dce8",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/scsi/mpi3mr/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-or-later\n\nconfig SCSI_MPI3MR\n\ttristate \"Broadcom MPI3 Storage Controller Device Driver\"\n\tdepends on PCI && SCSI\n\tselect BLK_DEV_BSGLIB\n\tselect SCSI_SAS_ATTRS\n\thelp\n\tMPI3 based Storage & RAID Controllers Driver.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "ioctl.c",
+  "hash_id": "d8f3210e2c371610ae87696361794f34014795256d02afc7bf6015b963e72533",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/ioctl.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#include <sys/ioctl.h>\n\n#include <stdarg.h>\n\n#if HAVE_IOCTL\n\n \n# undef ioctl\nint\nrpl_ioctl (int fd, int request, ...  )\n{\n  void *buf;\n  va_list args;\n\n  va_start (args, request);\n  buf = va_arg (args, void *);\n  va_end (args);\n\n   \n  return ioctl (fd, (unsigned int) request, buf);\n}\n\n#else  \n\n# include <errno.h>\n\n \n# define WIN32_LEAN_AND_MEAN\n# include <windows.h>\n\n# include \"fd-hook.h\"\n \n# if GNULIB_MSVC_NOTHROW\n#  include \"msvc-nothrow.h\"\n# else\n#  include <io.h>\n# endif\n\nstatic int\nprimary_ioctl (int fd, int request, void *arg)\n{\n   \n\n  if ((HANDLE) _get_osfhandle (fd) != INVALID_HANDLE_VALUE)\n    errno = ENOSYS;\n  else\n    errno = EBADF;\n  return -1;\n}\n\nint\nioctl (int fd, int request, ...  )\n{\n  void *arg;\n  va_list args;\n\n  va_start (args, request);\n  arg = va_arg (args, void *);\n  va_end (args);\n\n# if WINDOWS_SOCKETS\n  return execute_all_ioctl_hooks (primary_ioctl, fd, request, arg);\n# else\n  return primary_ioctl (fd, request, arg);\n# endif\n}\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

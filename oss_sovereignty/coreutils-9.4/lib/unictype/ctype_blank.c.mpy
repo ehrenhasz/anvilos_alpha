@@ -1,0 +1,9 @@
+{
+  "module_name": "ctype_blank.c",
+  "hash_id": "0b91d20e862d84b5f8ab7cc41d632fc4d2bc87c8b66e901abda00782ef4d3bac",
+  "original_prompt": "Ingested from coreutils-9.4/lib/unictype/ctype_blank.c",
+  "human_readable_source": " \n#include \"unictype.h\"\n\n#include \"bitmap.h\"\n\n \n#include \"ctype_blank.h\"\n\nbool\nuc_is_blank (ucs4_t uc)\n{\n  return bitmap_lookup (&u_is_blank, uc);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

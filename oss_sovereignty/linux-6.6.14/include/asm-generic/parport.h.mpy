@@ -1,0 +1,9 @@
+{
+  "module_name": "parport.h",
+  "hash_id": "7435610987afb91e6def8baa14c236c8890c9c15600b11383df85103de358137",
+  "original_prompt": "Ingested from linux-6.6.14/include/asm-generic/parport.h",
+  "human_readable_source": " \n#ifndef __ASM_GENERIC_PARPORT_H\n#define __ASM_GENERIC_PARPORT_H\n\n \n\nstatic int parport_pc_find_isa_ports(int autoirq, int autodma);\nstatic int parport_pc_find_nonpci_ports(int autoirq, int autodma)\n{\n#ifdef CONFIG_ISA\n\treturn parport_pc_find_isa_ports(autoirq, autodma);\n#else\n\treturn 0;\n#endif\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

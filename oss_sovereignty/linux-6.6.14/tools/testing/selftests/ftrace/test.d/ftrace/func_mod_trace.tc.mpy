@@ -1,0 +1,9 @@
+{
+  "module_name": "func_mod_trace.tc",
+  "hash_id": "743389d7f64dbf7c5faa92602c89c2aa8bb248618beebb69b1156709130e1051",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/ftrace/test.d/ftrace/func_mod_trace.tc",
+  "human_readable_source": "#!/bin/sh\n# SPDX-License-Identifier: GPL-2.0\n# description: ftrace - function trace on module\n# requires: set_ftrace_filter\n\n: \"mod: allows to filter a non exist function\"\necho 'non_exist_func:mod:non_exist_module' > set_ftrace_filter\ngrep -q \"non_exist_func\" set_ftrace_filter\n\n: \"mod: on exist module\"\necho '*:mod:trace_printk' > set_ftrace_filter\nif ! modprobe trace-printk ; then\n  echo \"No trace-printk sample module - please make CONFIG_SAMPLE_TRACE_PRINTK=\nm\"\n  exit_unresolved;\nfi\n\n: \"Wildcard should be resolved after loading module\"\ngrep -q \"trace_printk_irq_work\" set_ftrace_filter\n\n: \"After removing the filter becomes empty\"\nrmmod trace_printk\ntest `cat set_ftrace_filter | wc -l` -eq 0\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

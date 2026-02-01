@@ -1,0 +1,9 @@
+{
+  "module_name": "lgdt3305.h",
+  "hash_id": "2fd4ac9421425c5dd9e3ebfc895394d38b08760e3208ab81eb7bde6c99ab2122",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/dvb-frontends/lgdt3305.h",
+  "human_readable_source": " \n \n\n#ifndef _LGDT3305_H_\n#define _LGDT3305_H_\n\n#include <linux/i2c.h>\n#include <media/dvb_frontend.h>\n\n\nenum lgdt3305_mpeg_mode {\n\tLGDT3305_MPEG_PARALLEL = 0,\n\tLGDT3305_MPEG_SERIAL = 1,\n};\n\nenum lgdt3305_tp_clock_edge {\n\tLGDT3305_TPCLK_RISING_EDGE = 0,\n\tLGDT3305_TPCLK_FALLING_EDGE = 1,\n};\n\nenum lgdt3305_tp_clock_mode {\n\tLGDT3305_TPCLK_GATED = 0,\n\tLGDT3305_TPCLK_FIXED = 1,\n};\n\nenum lgdt3305_tp_valid_polarity {\n\tLGDT3305_TP_VALID_LOW = 0,\n\tLGDT3305_TP_VALID_HIGH = 1,\n};\n\nenum lgdt_demod_chip_type {\n\tLGDT3305 = 0,\n\tLGDT3304 = 1,\n};\n\nstruct lgdt3305_config {\n\tu8 i2c_addr;\n\n\t \n\tu16 qam_if_khz;\n\tu16 vsb_if_khz;\n\n\t \n\tu16 usref_8vsb;    \n\tu16 usref_qam64;   \n\tu16 usref_qam256;  \n\n\t \n\tunsigned int deny_i2c_rptr:1;\n\n\t \n\tunsigned int spectral_inversion:1;\n\n\t \n\tunsigned int rf_agc_loop:1;\n\n\tenum lgdt3305_mpeg_mode mpeg_mode;\n\tenum lgdt3305_tp_clock_edge tpclk_edge;\n\tenum lgdt3305_tp_clock_mode tpclk_mode;\n\tenum lgdt3305_tp_valid_polarity tpvalid_polarity;\n\tenum lgdt_demod_chip_type demod_chip;\n};\n\n#if IS_REACHABLE(CONFIG_DVB_LGDT3305)\nextern\nstruct dvb_frontend *lgdt3305_attach(const struct lgdt3305_config *config,\n\t\t\t\t     struct i2c_adapter *i2c_adap);\n#else\nstatic inline\nstruct dvb_frontend *lgdt3305_attach(const struct lgdt3305_config *config,\n\t\t\t\t     struct i2c_adapter *i2c_adap)\n{\n\tprintk(KERN_WARNING \"%s: driver disabled by Kconfig\\n\", __func__);\n\treturn NULL;\n}\n#endif  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

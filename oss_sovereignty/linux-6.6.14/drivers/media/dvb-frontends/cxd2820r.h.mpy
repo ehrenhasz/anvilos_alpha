@@ -1,0 +1,9 @@
+{
+  "module_name": "cxd2820r.h",
+  "hash_id": "3b227361923a2e8f2cd481c37828ff27551d446502f8634890850c45842af567",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/dvb-frontends/cxd2820r.h",
+  "human_readable_source": " \n \n\n\n#ifndef CXD2820R_H\n#define CXD2820R_H\n\n#include <linux/dvb/frontend.h>\n\n#define CXD2820R_GPIO_D (0 << 0)  \n#define CXD2820R_GPIO_E (1 << 0)  \n#define CXD2820R_GPIO_O (0 << 1)  \n#define CXD2820R_GPIO_I (1 << 1)  \n#define CXD2820R_GPIO_L (0 << 2)  \n#define CXD2820R_GPIO_H (1 << 2)  \n\n#define CXD2820R_TS_SERIAL        0x08\n#define CXD2820R_TS_SERIAL_MSB    0x28\n#define CXD2820R_TS_PARALLEL      0x30\n#define CXD2820R_TS_PARALLEL_MSB  0x70\n\n \n\n \nstruct cxd2820r_platform_data {\n\tu8 ts_mode;\n\tbool ts_clk_inv;\n\tbool if_agc_polarity;\n\tbool spec_inv;\n\tint **gpio_chip_base;\n\n\tstruct dvb_frontend* (*get_dvb_frontend)(struct i2c_client *);\n \n\tbool attach_in_use;\n};\n\n \nstruct cxd2820r_config {\n\t \n\tu8 i2c_address;\n\n\t \n\tu8 ts_mode;\n\n\t \n\tbool ts_clock_inv;\n\n\t \n\tbool if_agc_polarity;\n\n\t \n\tbool spec_inv;\n};\n\n\n#if IS_REACHABLE(CONFIG_DVB_CXD2820R)\n \nextern struct dvb_frontend *cxd2820r_attach(\n\tconst struct cxd2820r_config *config,\n\tstruct i2c_adapter *i2c,\n\tint *gpio_chip_base\n);\n#else\nstatic inline struct dvb_frontend *cxd2820r_attach(\n\tconst struct cxd2820r_config *config,\n\tstruct i2c_adapter *i2c,\n\tint *gpio_chip_base\n)\n{\n\tprintk(KERN_WARNING \"%s: driver disabled by Kconfig\\n\", __func__);\n\treturn NULL;\n}\n\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

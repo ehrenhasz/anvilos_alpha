@@ -1,0 +1,9 @@
+{
+  "module_name": "tc_ctinfo.h",
+  "hash_id": "d2031c12626f74fee4fb0ed54d6e668ec97c47518c981ae71f23b05ac1ea8a2d",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/tc_act/tc_ctinfo.h",
+  "human_readable_source": " \n#ifndef __UAPI_TC_CTINFO_H\n#define __UAPI_TC_CTINFO_H\n\n#include <linux/types.h>\n#include <linux/pkt_cls.h>\n\nstruct tc_ctinfo {\n\ttc_gen;\n};\n\nenum {\n\tTCA_CTINFO_UNSPEC,\n\tTCA_CTINFO_PAD,\n\tTCA_CTINFO_TM,\n\tTCA_CTINFO_ACT,\n\tTCA_CTINFO_ZONE,\n\tTCA_CTINFO_PARMS_DSCP_MASK,\n\tTCA_CTINFO_PARMS_DSCP_STATEMASK,\n\tTCA_CTINFO_PARMS_CPMARK_MASK,\n\tTCA_CTINFO_STATS_DSCP_SET,\n\tTCA_CTINFO_STATS_DSCP_ERROR,\n\tTCA_CTINFO_STATS_CPMARK_SET,\n\t__TCA_CTINFO_MAX\n};\n\n#define TCA_CTINFO_MAX (__TCA_CTINFO_MAX - 1)\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

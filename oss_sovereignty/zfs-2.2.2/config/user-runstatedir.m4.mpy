@@ -1,0 +1,9 @@
+{
+  "module_name": "user-runstatedir.m4",
+  "hash_id": "c63d9c0788312eeea01f9e4bf09f28b459c5a21848c88d1721d9d2267d4b4215",
+  "original_prompt": "Ingested from zfs-2.2.2/config/user-runstatedir.m4",
+  "human_readable_source": "dnl For backwards compatibility; runstatedir added in autoconf 2.70.\nAC_DEFUN([ZFS_AC_CONFIG_USER_RUNSTATEDIR], [\n\tif test \"x$runstatedir\" = x; then\n\t\tAC_SUBST([runstatedir], ['${localstatedir}/run'])\n\tfi\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

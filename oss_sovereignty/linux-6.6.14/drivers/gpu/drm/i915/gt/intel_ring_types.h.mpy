@@ -1,0 +1,9 @@
+{
+  "module_name": "intel_ring_types.h",
+  "hash_id": "4da7a344e10adb4c726bd189c3f499547e206077ec3b9fad895c22ab73dac344",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/gt/intel_ring_types.h",
+  "human_readable_source": " \n \n\n#ifndef INTEL_RING_TYPES_H\n#define INTEL_RING_TYPES_H\n\n#include <linux/atomic.h>\n#include <linux/kref.h>\n#include <linux/types.h>\n\n \n#define CACHELINE_BYTES 64\n#define CACHELINE_DWORDS (CACHELINE_BYTES / sizeof(u32))\n\nstruct i915_vma;\n\nstruct intel_ring {\n\tstruct kref ref;\n\tstruct i915_vma *vma;\n\tvoid *vaddr;\n\n\t \n\tatomic_t pin_count;\n\n\tu32 head;  \n\tu32 tail;  \n\tu32 emit;  \n\n\tu32 space;\n\tu32 size;\n\tu32 wrap;\n\tu32 effective_size;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

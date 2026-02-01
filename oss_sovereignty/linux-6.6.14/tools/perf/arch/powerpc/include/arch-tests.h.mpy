@@ -1,0 +1,9 @@
+{
+  "module_name": "arch-tests.h",
+  "hash_id": "16f576555f523ee266951bbdc7643891bb4597b72cacb422d6efa57a627645ec",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/arch/powerpc/include/arch-tests.h",
+  "human_readable_source": " \n#ifndef ARCH_TESTS_H\n#define ARCH_TESTS_H\n\nextern struct test_suite *arch_tests[];\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

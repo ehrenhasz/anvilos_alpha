@@ -1,0 +1,9 @@
+{
+  "module_name": "cleanup.c",
+  "hash_id": "be2a65294bcbcd6a0ef023ecdd3f667d4393d6b82269d4239096cc106e753293",
+  "original_prompt": "Ingested from openssh-9.6p1/cleanup.c",
+  "human_readable_source": " \n \n\n#include \"includes.h\"\n\n#include <sys/types.h>\n\n#include <unistd.h>\n#include <stdarg.h>\n\n#include \"log.h\"\n\n \nvoid\ncleanup_exit(int i)\n{\n\t_exit(i);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

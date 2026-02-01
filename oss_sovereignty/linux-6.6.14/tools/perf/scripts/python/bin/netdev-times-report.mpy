@@ -1,0 +1,9 @@
+{
+  "module_name": "netdev-times-report",
+  "hash_id": "c5704a8b38ed3e5952d1b8bf777fc41e74c6c0db467e22149f768a8a74e58781",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/scripts/python/bin/netdev-times-report",
+  "human_readable_source": "#!/bin/bash\n# description: display a process of packet and processing time\n# args: [tx] [rx] [dev=] [debug]\n\nperf script -s \"$PERF_EXEC_PATH\"/scripts/python/netdev-times.py $@\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

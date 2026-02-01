@@ -1,0 +1,9 @@
+{
+  "module_name": "rc-tanix-tx5max.c",
+  "hash_id": "37fa6ef735662dc05ebe38dfa29fd06c2bb5b9dc47ff16ca35fdbb6ce1cc6901",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/rc/keymaps/rc-tanix-tx5max.c",
+  "human_readable_source": "\n\n\n#include <media/rc-map.h>\n#include <linux/module.h>\n\n \n\nstatic struct rc_map_table tanix_tx5max[] = {\n\t{ 0x40404d, KEY_POWER },\n\t{ 0x404043, KEY_MUTE },\n\n\t{ 0x404017, KEY_VOLUMEDOWN },\n\t{ 0x404018, KEY_VOLUMEUP },\n\n\t{ 0x40400b, KEY_UP },\n\t{ 0x404010, KEY_LEFT },\n\t{ 0x404011, KEY_RIGHT },\n\t{ 0x40400e, KEY_DOWN },\n\t{ 0x40400d, KEY_OK },\n\n\t{ 0x40401a, KEY_HOME },\n\t{ 0x404045, KEY_MENU },\n\t{ 0x404042, KEY_BACK },\n\n\t{ 0x404001, KEY_1 },\n\t{ 0x404002, KEY_2 },\n\t{ 0x404003, KEY_3 },\n\n\t{ 0x404004, KEY_4 },\n\t{ 0x404005, KEY_5 },\n\t{ 0x404006, KEY_6 },\n\n\t{ 0x404007, KEY_7 },\n\t{ 0x404008, KEY_8 },\n\t{ 0x404009, KEY_9 },\n\n\t{ 0x404047, KEY_SUBTITLE }, \n\t{ 0x404000, KEY_0 },\n\t{ 0x40400c, KEY_DELETE },\n};\n\nstatic struct rc_map_list tanix_tx5max_map = {\n\t.map = {\n\t\t.scan     = tanix_tx5max,\n\t\t.size     = ARRAY_SIZE(tanix_tx5max),\n\t\t.rc_proto = RC_PROTO_NECX,\n\t\t.name     = RC_MAP_TANIX_TX5MAX,\n\t}\n};\n\nstatic int __init init_rc_map_tanix_tx5max(void)\n{\n\treturn rc_map_register(&tanix_tx5max_map);\n}\n\nstatic void __exit exit_rc_map_tanix_tx5max(void)\n{\n\trc_map_unregister(&tanix_tx5max_map);\n}\n\nmodule_init(init_rc_map_tanix_tx5max)\nmodule_exit(exit_rc_map_tanix_tx5max)\n\nMODULE_LICENSE(\"GPL\");\nMODULE_AUTHOR(\"Christian Hewitt <christianshewitt@gmail.com>\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

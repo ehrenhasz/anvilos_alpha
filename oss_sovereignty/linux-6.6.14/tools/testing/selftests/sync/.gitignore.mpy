@@ -1,0 +1,9 @@
+{
+  "module_name": ".gitignore",
+  "hash_id": "727aef8f1babb91a361d082f6e584e87879c916579c2c183582cac761bbce356",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/sync/.gitignore",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nsync_test\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

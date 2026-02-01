@@ -1,0 +1,9 @@
+{
+  "module_name": "dht.h",
+  "hash_id": "5035d05fa425465ada4e39c0e2da445554fa9b7e9355a2c3fafc889896f38427",
+  "original_prompt": "Ingested from sys_09_Anvil/source/drivers/dht/dht.h",
+  "human_readable_source": "#ifndef MICROPY_INCLUDED_DRIVERS_DHT_DHT_H\n#define MICROPY_INCLUDED_DRIVERS_DHT_DHT_H\n\n#include \"py/obj.h\"\n\nMP_DECLARE_CONST_FUN_OBJ_2(dht_readinto_obj);\n\n#endif \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

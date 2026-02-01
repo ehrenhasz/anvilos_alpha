@@ -1,0 +1,9 @@
+{
+  "module_name": "led.h",
+  "hash_id": "5322173c6d7f2d916f733fa52f45528dcd25e3daeb96cef5ca3b76f5525b3e97",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/realtek/rtlwifi/rtl8723ae/led.h",
+  "human_readable_source": " \n \n\n#ifndef __RTL92CE_LED_H__\n#define __RTL92CE_LED_H__\n\nvoid rtl8723e_sw_led_on(struct ieee80211_hw *hw, enum rtl_led_pin pin);\nvoid rtl8723e_sw_led_off(struct ieee80211_hw *hw, enum rtl_led_pin pin);\nvoid rtl8723e_led_control(struct ieee80211_hw *hw, enum led_ctl_mode ledaction);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

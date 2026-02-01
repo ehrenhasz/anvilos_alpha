@@ -1,0 +1,9 @@
+{
+  "module_name": "zstream.c",
+  "hash_id": "260d149747db07ccb3b9b557671907cf375a48a58d7043c286d058854ef7e820",
+  "original_prompt": "Ingested from zfs-2.2.2/cmd/zstream/zstream.c",
+  "human_readable_source": " \n\n \n#include <sys/types.h>\n#include <sys/stat.h>\n#include <fcntl.h>\n#include <ctype.h>\n#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\n#include <unistd.h>\n#include <libintl.h>\n#include <stddef.h>\n#include <libzfs.h>\n#include \"zstream.h\"\n\nvoid\nzstream_usage(void)\n{\n\t(void) fprintf(stderr,\n\t    \"usage: zstream command args ...\\n\"\n\t    \"Available commands are:\\n\"\n\t    \"\\n\"\n\t    \"\\tzstream dump [-vCd] FILE\\n\"\n\t    \"\\t... | zstream dump [-vCd]\\n\"\n\t    \"\\n\"\n\t    \"\\tzstream decompress [-v] [OBJECT,OFFSET[,TYPE]] ...\\n\"\n\t    \"\\n\"\n\t    \"\\tzstream recompress [ -l level] TYPE\\n\"\n\t    \"\\n\"\n\t    \"\\tzstream token resume_token\\n\"\n\t    \"\\n\"\n\t    \"\\tzstream redup [-v] FILE | ...\\n\");\n\texit(1);\n}\n\nint\nmain(int argc, char *argv[])\n{\n\tchar *basename = strrchr(argv[0], '/');\n\tbasename = basename ? (basename + 1) : argv[0];\n\tif (argc >= 1 && strcmp(basename, \"zstreamdump\") == 0)\n\t\treturn (zstream_do_dump(argc, argv));\n\n\tif (argc < 2)\n\t\tzstream_usage();\n\n\tchar *subcommand = argv[1];\n\n\tif (strcmp(subcommand, \"dump\") == 0) {\n\t\treturn (zstream_do_dump(argc - 1, argv + 1));\n\t} else if (strcmp(subcommand, \"decompress\") == 0) {\n\t\treturn (zstream_do_decompress(argc - 1, argv + 1));\n\t} else if (strcmp(subcommand, \"recompress\") == 0) {\n\t\treturn (zstream_do_recompress(argc - 1, argv + 1));\n\t} else if (strcmp(subcommand, \"token\") == 0) {\n\t\treturn (zstream_do_token(argc - 1, argv + 1));\n\t} else if (strcmp(subcommand, \"redup\") == 0) {\n\t\treturn (zstream_do_redup(argc - 1, argv + 1));\n\t} else {\n\t\tzstream_usage();\n\t}\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

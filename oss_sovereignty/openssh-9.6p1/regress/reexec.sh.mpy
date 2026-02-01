@@ -1,0 +1,9 @@
+{
+  "module_name": "reexec.sh",
+  "hash_id": "cdc034152169f9aeaaf12de9a246e947f8f75ad3514f658429a08eea449c6c38",
+  "original_prompt": "Ingested from openssh-9.6p1/regress/reexec.sh",
+  "human_readable_source": "#\t$OpenBSD: reexec.sh,v 1.13 2023/01/19 07:53:45 dtucker Exp $\n#\tPlaced in the Public Domain.\n\ntid=\"reexec tests\"\n\nSSHD_ORIG=$SSHD\nSSHD_COPY=$OBJ/sshd\n\n# Start a sshd and then delete it\nstart_sshd_copy ()\n{\n\t# NB. prefer ln to cp here. On some OSX 19.4 configurations,\n\t# djm has seen failure after fork() when the executable image\n\t# has been removed from the filesystem.\n\tln $SSHD_ORIG $SSHD_COPY || cp $SSHD_ORIG $SSHD_COPY\n\tSSHD=$SSHD_COPY\n\tstart_sshd\n\tSSHD=$SSHD_ORIG\n}\n\n# Do basic copy tests\ncopy_tests ()\n{\n\trm -f ${COPY}\n\t${SSH} -nq -F $OBJ/ssh_config somehost \\\n\t    cat ${DATA} > ${COPY}\n\tif [ $? -ne 0 ]; then\n\t\tfail \"ssh cat $DATA failed\"\n\tfi\n\tcmp ${DATA} ${COPY}\t\t|| fail \"corrupted copy\"\n\trm -f ${COPY}\n}\n\nverbose \"test config passing\"\n\ncp $OBJ/sshd_config $OBJ/sshd_config.orig\nstart_sshd\necho \"InvalidXXX=no\" >> $OBJ/sshd_config\n\ncopy_tests\n\nstop_sshd\n\ncp $OBJ/sshd_config.orig $OBJ/sshd_config\n\n# cygwin can't fork a deleted binary\nif [ \"$os\" != \"cygwin\" ]; then\n\nverbose \"test reexec fallback\"\n\nstart_sshd_copy\n$SUDO rm -f $SSHD_COPY\n\ncopy_tests\n\nstop_sshd\nfi\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

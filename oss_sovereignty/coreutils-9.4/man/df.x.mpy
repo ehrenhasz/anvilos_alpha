@@ -1,0 +1,9 @@
+{
+  "module_name": "df.x",
+  "hash_id": "75f4e6794c0eb440ed4645c179c6c102c26bb61aa1794cf0de484ea9e53320de",
+  "original_prompt": "Ingested from coreutils-9.4/man/df.x",
+  "human_readable_source": "'\\\" Copyright (C) 1998-2023 Free Software Foundation, Inc.\n'\\\"\n'\\\" This is free software.  You may redistribute copies of it under the terms\n'\\\" of the GNU General Public License <https://www.gnu.org/licenses/gpl.html>.\n'\\\" There is NO WARRANTY, to the extent permitted by law.\n[NAME]\ndf \\- report file system space usage\n[DESCRIPTION]\nThis manual page\ndocuments the GNU version of\n.BR df .\n.B df\ndisplays the amount of space available on the file system\ncontaining each file name argument.  If no file name is given, the\nspace available on all currently mounted file systems is shown.\nSpace is shown in 1K blocks by default, unless the environment\nvariable POSIXLY_CORRECT is set, in which case 512-byte blocks are\nused.\n.PP\nIf an argument is the absolute file name of a device node containing a\nmounted file system,\n.B df\nshows the space available on that file system rather than on the\nfile system containing the device node.  This version of\n.B df\ncannot show the space available on unmounted file systems, because on\nmost kinds of systems doing so requires non-portable intimate\nknowledge of file system structures.\n.SH OPTIONS\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "f8ce0474b60096cd1d8e21d6d84bb0db0968f2c249162042128a127b7b27981c",
+  "original_prompt": "Ingested from linux-6.6.14/fs/erofs/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n\nobj-$(CONFIG_EROFS_FS) += erofs.o\nerofs-objs := super.o inode.o data.o namei.o dir.o utils.o sysfs.o\nerofs-$(CONFIG_EROFS_FS_XATTR) += xattr.o\nerofs-$(CONFIG_EROFS_FS_ZIP) += decompressor.o zmap.o zdata.o pcpubuf.o\nerofs-$(CONFIG_EROFS_FS_ZIP_LZMA) += decompressor_lzma.o\nerofs-$(CONFIG_EROFS_FS_ZIP_DEFLATE) += decompressor_deflate.o\nerofs-$(CONFIG_EROFS_FS_ONDEMAND) += fscache.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "exception_policy.conf.default",
+  "hash_id": "a65e69cc12d4dccfa8e07fb4f7da8143d4ffdd2865332118bed9e85c500cd312",
+  "original_prompt": "Ingested from linux-6.6.14/security/tomoyo/policy/exception_policy.conf.default",
+  "human_readable_source": "initialize_domain /sbin/modprobe from any\ninitialize_domain /sbin/hotplug from any\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

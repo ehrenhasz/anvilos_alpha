@@ -1,0 +1,9 @@
+{
+  "module_name": "t10-pi.h",
+  "hash_id": "aa67ab5113cd8ac41fc48750dfae80a1f7b8968b948a5c851fd24e2d6fdc2fd7",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/t10-pi.h",
+  "human_readable_source": " \n#ifndef _LINUX_T10_PI_H\n#define _LINUX_T10_PI_H\n\n#include <linux/types.h>\n#include <linux/blk-mq.h>\n\n \nenum t10_dif_type {\n\tT10_PI_TYPE0_PROTECTION = 0x0,\n\tT10_PI_TYPE1_PROTECTION = 0x1,\n\tT10_PI_TYPE2_PROTECTION = 0x2,\n\tT10_PI_TYPE3_PROTECTION = 0x3,\n};\n\n \nstruct t10_pi_tuple {\n\t__be16 guard_tag;\t \n\t__be16 app_tag;\t\t \n\t__be32 ref_tag;\t\t \n};\n\n#define T10_PI_APP_ESCAPE cpu_to_be16(0xffff)\n#define T10_PI_REF_ESCAPE cpu_to_be32(0xffffffff)\n\nstatic inline u32 t10_pi_ref_tag(struct request *rq)\n{\n\tunsigned int shift = ilog2(queue_logical_block_size(rq->q));\n\n#ifdef CONFIG_BLK_DEV_INTEGRITY\n\tif (rq->q->integrity.interval_exp)\n\t\tshift = rq->q->integrity.interval_exp;\n#endif\n\treturn blk_rq_pos(rq) >> (shift - SECTOR_SHIFT) & 0xffffffff;\n}\n\nextern const struct blk_integrity_profile t10_pi_type1_crc;\nextern const struct blk_integrity_profile t10_pi_type1_ip;\nextern const struct blk_integrity_profile t10_pi_type3_crc;\nextern const struct blk_integrity_profile t10_pi_type3_ip;\n\nstruct crc64_pi_tuple {\n\t__be64 guard_tag;\n\t__be16 app_tag;\n\t__u8   ref_tag[6];\n};\n\n \nstatic inline u64 lower_48_bits(u64 n)\n{\n\treturn n & ((1ull << 48) - 1);\n}\n\nstatic inline u64 ext_pi_ref_tag(struct request *rq)\n{\n\tunsigned int shift = ilog2(queue_logical_block_size(rq->q));\n\n#ifdef CONFIG_BLK_DEV_INTEGRITY\n\tif (rq->q->integrity.interval_exp)\n\t\tshift = rq->q->integrity.interval_exp;\n#endif\n\treturn lower_48_bits(blk_rq_pos(rq) >> (shift - SECTOR_SHIFT));\n}\n\nextern const struct blk_integrity_profile ext_pi_type1_crc64;\nextern const struct blk_integrity_profile ext_pi_type3_crc64;\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

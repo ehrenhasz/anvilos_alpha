@@ -1,0 +1,9 @@
+{
+  "module_name": "scrub.h",
+  "hash_id": "30d4228722030680afb8ddc857e69361da7f72d6b9fde58639b37fd7ab4319ec",
+  "original_prompt": "Ingested from linux-6.6.14/fs/btrfs/scrub.h",
+  "human_readable_source": " \n\n#ifndef BTRFS_SCRUB_H\n#define BTRFS_SCRUB_H\n\nint btrfs_scrub_dev(struct btrfs_fs_info *fs_info, u64 devid, u64 start,\n\t\t    u64 end, struct btrfs_scrub_progress *progress,\n\t\t    int readonly, int is_dev_replace);\nvoid btrfs_scrub_pause(struct btrfs_fs_info *fs_info);\nvoid btrfs_scrub_continue(struct btrfs_fs_info *fs_info);\nint btrfs_scrub_cancel(struct btrfs_fs_info *info);\nint btrfs_scrub_cancel_dev(struct btrfs_device *dev);\nint btrfs_scrub_progress(struct btrfs_fs_info *fs_info, u64 devid,\n\t\t\t struct btrfs_scrub_progress *progress);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

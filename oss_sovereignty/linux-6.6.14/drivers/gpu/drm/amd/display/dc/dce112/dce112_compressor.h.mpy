@@ -1,0 +1,9 @@
+{
+  "module_name": "dce112_compressor.h",
+  "hash_id": "eb8ac1594bc75010ac96a3cdc6ea7a20808587c63c2f00e628ef1b8fcefaf41d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/dc/dce112/dce112_compressor.h",
+  "human_readable_source": " \n\n#ifndef __DC_COMPRESSOR_DCE112_H__\n#define __DC_COMPRESSOR_DCE112_H__\n\n#include \"../inc/compressor.h\"\n\n#define TO_DCE112_COMPRESSOR(compressor)\\\n\tcontainer_of(compressor, struct dce112_compressor, base)\n\nstruct dce112_compressor_reg_offsets {\n\tuint32_t dcp_offset;\n\tuint32_t dmif_offset;\n};\n\nstruct dce112_compressor {\n\tstruct compressor base;\n\tstruct dce112_compressor_reg_offsets offsets;\n};\n\nstruct compressor *dce112_compressor_create(struct dc_context *ctx);\n\nvoid dce112_compressor_construct(struct dce112_compressor *cp110,\n\tstruct dc_context *ctx);\n\nvoid dce112_compressor_destroy(struct compressor **cp);\n\n \nvoid dce112_compressor_power_up_fbc(struct compressor *cp);\n\nvoid dce112_compressor_enable_fbc(struct compressor *cp, uint32_t paths_num,\n\tstruct compr_addr_and_pitch_params *params);\n\nvoid dce112_compressor_disable_fbc(struct compressor *cp);\n\nvoid dce112_compressor_set_fbc_invalidation_triggers(struct compressor *cp,\n\tuint32_t fbc_trigger);\n\nvoid dce112_compressor_program_compressed_surface_address_and_pitch(\n\tstruct compressor *cp,\n\tstruct compr_addr_and_pitch_params *params);\n\nbool dce112_compressor_is_fbc_enabled_in_hw(struct compressor *cp,\n\tuint32_t *fbc_mapped_crtc_id);\n\n \nvoid dce112_compressor_enable_lpt(struct compressor *cp);\n\nvoid dce112_compressor_disable_lpt(struct compressor *cp);\n\nvoid dce112_compressor_program_lpt_control(struct compressor *cp,\n\tstruct compr_addr_and_pitch_params *params);\n\nbool dce112_compressor_is_lpt_enabled_in_hw(struct compressor *cp);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

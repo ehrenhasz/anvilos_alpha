@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "07fa735b61815831acf51c27f36a57a3a70192e5990f556bc92a87843c5bb456",
+  "original_prompt": "Ingested from linux-6.6.14/fs/notify/dnotify/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig DNOTIFY\n\tbool \"Dnotify support\"\n\tselect FSNOTIFY\n\tdefault y\n\thelp\n\t  Dnotify is a directory-based per-fd file change notification system\n\t  that uses signals to communicate events to user-space.  There exist\n\t  superior alternatives, but some applications may still rely on\n\t  dnotify.\n\n\t  If unsure, say Y.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

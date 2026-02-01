@@ -1,0 +1,9 @@
+{
+  "module_name": "symlink.c",
+  "hash_id": "779c05eb972ce33a5565c71e75d8eef85dab115a6eafd28033b1557d7b5a540d",
+  "original_prompt": "Ingested from linux-6.6.14/fs/coda/symlink.c",
+  "human_readable_source": "\n \n\n#include <linux/types.h>\n#include <linux/kernel.h>\n#include <linux/time.h>\n#include <linux/fs.h>\n#include <linux/stat.h>\n#include <linux/errno.h>\n#include <linux/pagemap.h>\n\n#include <linux/coda.h>\n#include \"coda_psdev.h\"\n#include \"coda_linux.h\"\n\nstatic int coda_symlink_filler(struct file *file, struct folio *folio)\n{\n\tstruct inode *inode = folio->mapping->host;\n\tint error;\n\tstruct coda_inode_info *cii;\n\tunsigned int len = PAGE_SIZE;\n\tchar *p = folio_address(folio);\n\n\tcii = ITOC(inode);\n\n\terror = venus_readlink(inode->i_sb, &cii->c_fid, p, &len);\n\tif (error)\n\t\tgoto fail;\n\tfolio_mark_uptodate(folio);\n\tfolio_unlock(folio);\n\treturn 0;\n\nfail:\n\tfolio_set_error(folio);\n\tfolio_unlock(folio);\n\treturn error;\n}\n\nconst struct address_space_operations coda_symlink_aops = {\n\t.read_folio\t= coda_symlink_filler,\n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

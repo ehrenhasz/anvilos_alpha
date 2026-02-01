@@ -1,0 +1,9 @@
+{
+  "module_name": "mpls.h",
+  "hash_id": "9cc34fd59257e228f99e349d299d854c6a7b7c0281de9fd451b2785265367996",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/mpls.h",
+  "human_readable_source": " \n#ifndef _UAPI_MPLS_H\n#define _UAPI_MPLS_H\n\n#include <linux/types.h>\n#include <asm/byteorder.h>\n\n \n\nstruct mpls_label {\n\t__be32 entry;\n};\n\n#define MPLS_LS_LABEL_MASK      0xFFFFF000\n#define MPLS_LS_LABEL_SHIFT     12\n#define MPLS_LS_TC_MASK         0x00000E00\n#define MPLS_LS_TC_SHIFT        9\n#define MPLS_LS_S_MASK          0x00000100\n#define MPLS_LS_S_SHIFT         8\n#define MPLS_LS_TTL_MASK        0x000000FF\n#define MPLS_LS_TTL_SHIFT       0\n\n \n#define MPLS_LABEL_IPV4NULL\t\t0  \n#define MPLS_LABEL_RTALERT\t\t1  \n#define MPLS_LABEL_IPV6NULL\t\t2  \n#define MPLS_LABEL_IMPLNULL\t\t3  \n#define MPLS_LABEL_ENTROPY\t\t7  \n#define MPLS_LABEL_GAL\t\t\t13  \n#define MPLS_LABEL_OAMALERT\t\t14  \n#define MPLS_LABEL_EXTENSION\t\t15  \n\n#define MPLS_LABEL_FIRST_UNRESERVED\t16  \n\n \nenum {\n\tMPLS_STATS_UNSPEC,  \n\tMPLS_STATS_LINK,\n\t__MPLS_STATS_MAX,\n};\n\n#define MPLS_STATS_MAX (__MPLS_STATS_MAX - 1)\n\nstruct mpls_link_stats {\n\t__u64\trx_packets;\t\t \n\t__u64\ttx_packets;\t\t \n\t__u64\trx_bytes;\t\t \n\t__u64\ttx_bytes;\t\t \n\t__u64\trx_errors;\t\t \n\t__u64\ttx_errors;\t\t \n\t__u64\trx_dropped;\t\t \n\t__u64\ttx_dropped;\t\t \n\t__u64\trx_noroute;\t\t \n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

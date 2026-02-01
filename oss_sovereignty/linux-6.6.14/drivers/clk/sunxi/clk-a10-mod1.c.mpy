@@ -1,0 +1,9 @@
+{
+  "module_name": "clk-a10-mod1.c",
+  "hash_id": "aab975add2ab28beee77ab942ad4971facbbed24cef96cd1ab3541c1f0c7c1ce",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/clk/sunxi/clk-a10-mod1.c",
+  "human_readable_source": "\n \n\n#include <linux/clk-provider.h>\n#include <linux/io.h>\n#include <linux/of.h>\n#include <linux/of_address.h>\n#include <linux/slab.h>\n\nstatic DEFINE_SPINLOCK(mod1_lock);\n\n#define SUN4I_MOD1_ENABLE\t31\n#define SUN4I_MOD1_MUX\t\t16\n#define SUN4I_MOD1_MUX_WIDTH\t2\n#define SUN4I_MOD1_MAX_PARENTS\t4\n\nstatic void __init sun4i_mod1_clk_setup(struct device_node *node)\n{\n\tstruct clk *clk;\n\tstruct clk_mux *mux;\n\tstruct clk_gate *gate;\n\tconst char *parents[4];\n\tconst char *clk_name = node->name;\n\tvoid __iomem *reg;\n\tint i;\n\n\treg = of_io_request_and_map(node, 0, of_node_full_name(node));\n\tif (IS_ERR(reg))\n\t\treturn;\n\n\tmux = kzalloc(sizeof(*mux), GFP_KERNEL);\n\tif (!mux)\n\t\tgoto err_unmap;\n\n\tgate = kzalloc(sizeof(*gate), GFP_KERNEL);\n\tif (!gate)\n\t\tgoto err_free_mux;\n\n\tof_property_read_string(node, \"clock-output-names\", &clk_name);\n\ti = of_clk_parent_fill(node, parents, SUN4I_MOD1_MAX_PARENTS);\n\n\tgate->reg = reg;\n\tgate->bit_idx = SUN4I_MOD1_ENABLE;\n\tgate->lock = &mod1_lock;\n\tmux->reg = reg;\n\tmux->shift = SUN4I_MOD1_MUX;\n\tmux->mask = BIT(SUN4I_MOD1_MUX_WIDTH) - 1;\n\tmux->lock = &mod1_lock;\n\n\tclk = clk_register_composite(NULL, clk_name, parents, i,\n\t\t\t\t     &mux->hw, &clk_mux_ops,\n\t\t\t\t     NULL, NULL,\n\t\t\t\t     &gate->hw, &clk_gate_ops, CLK_SET_RATE_PARENT);\n\tif (IS_ERR(clk))\n\t\tgoto err_free_gate;\n\n\tof_clk_add_provider(node, of_clk_src_simple_get, clk);\n\n\treturn;\n\nerr_free_gate:\n\tkfree(gate);\nerr_free_mux:\n\tkfree(mux);\nerr_unmap:\n\tiounmap(reg);\n}\nCLK_OF_DECLARE(sun4i_mod1, \"allwinner,sun4i-a10-mod1-clk\",\n\t       sun4i_mod1_clk_setup);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

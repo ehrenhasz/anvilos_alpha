@@ -1,0 +1,9 @@
+{
+  "module_name": "config",
+  "hash_id": "e279c95a7b131d42710f30e824a1f6d30a60ff3e162fd7b9dd79ca53ca14aa00",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/ftrace/config",
+  "human_readable_source": "CONFIG_KPROBES=y\nCONFIG_FTRACE=y\nCONFIG_FUNCTION_PROFILER=y\nCONFIG_TRACER_SNAPSHOT=y\nCONFIG_STACK_TRACER=y\nCONFIG_HIST_TRIGGERS=y\nCONFIG_SCHED_TRACER=y\nCONFIG_PREEMPT_TRACER=y\nCONFIG_IRQSOFF_TRACER=y\nCONFIG_PREEMPTIRQ_DELAY_TEST=m\nCONFIG_MODULES=y\nCONFIG_MODULE_UNLOAD=y\nCONFIG_SAMPLES=y\nCONFIG_SAMPLE_FTRACE_DIRECT=m\nCONFIG_SAMPLE_TRACE_PRINTK=m\nCONFIG_KALLSYMS_ALL=y\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "priv.h",
+  "hash_id": "5adf749496e87a95704dcefa86b2f859772ab3ff66193b77fa778caf29c45bcd",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/mellanox/mlx5/core/sf/priv.h",
+  "human_readable_source": " \n \n\n#ifndef __MLX5_SF_PRIV_H__\n#define __MLX5_SF_PRIV_H__\n\n#include <linux/mlx5/driver.h>\n\nint mlx5_cmd_alloc_sf(struct mlx5_core_dev *dev, u16 function_id);\nint mlx5_cmd_dealloc_sf(struct mlx5_core_dev *dev, u16 function_id);\n\nint mlx5_cmd_sf_enable_hca(struct mlx5_core_dev *dev, u16 func_id);\nint mlx5_cmd_sf_disable_hca(struct mlx5_core_dev *dev, u16 func_id);\n\nu16 mlx5_sf_sw_to_hw_id(struct mlx5_core_dev *dev, u32 controller, u16 sw_id);\n\nint mlx5_sf_hw_table_sf_alloc(struct mlx5_core_dev *dev, u32 controller, u32 usr_sfnum);\nvoid mlx5_sf_hw_table_sf_free(struct mlx5_core_dev *dev, u32 controller, u16 id);\nvoid mlx5_sf_hw_table_sf_deferred_free(struct mlx5_core_dev *dev, u32 controller, u16 id);\nbool mlx5_sf_hw_table_supported(const struct mlx5_core_dev *dev);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

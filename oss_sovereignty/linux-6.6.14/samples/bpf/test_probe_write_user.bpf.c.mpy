@@ -1,0 +1,9 @@
+{
+  "module_name": "test_probe_write_user.bpf.c",
+  "hash_id": "f64f6d8355b90cacad128de90308badb18ab177f48c842f5686dfe595c7b1a88",
+  "original_prompt": "Ingested from linux-6.6.14/samples/bpf/test_probe_write_user.bpf.c",
+  "human_readable_source": " \n#include \"vmlinux.h\"\n#include <string.h>\n#include <linux/version.h>\n#include <bpf/bpf_helpers.h>\n#include <bpf/bpf_tracing.h>\n#include <bpf/bpf_core_read.h>\n\nstruct {\n\t__uint(type, BPF_MAP_TYPE_HASH);\n\t__type(key, struct sockaddr_in);\n\t__type(value, struct sockaddr_in);\n\t__uint(max_entries, 256);\n} dnat_map SEC(\".maps\");\n\n \nSEC(\"ksyscall/connect\")\nint BPF_KSYSCALL(bpf_prog1, int fd, struct sockaddr_in *uservaddr,\n\t\t int addrlen)\n{\n\tstruct sockaddr_in new_addr, orig_addr = {};\n\tstruct sockaddr_in *mapped_addr;\n\n\tif (addrlen > sizeof(orig_addr))\n\t\treturn 0;\n\n\tif (bpf_probe_read_user(&orig_addr, sizeof(orig_addr), uservaddr) != 0)\n\t\treturn 0;\n\n\tmapped_addr = bpf_map_lookup_elem(&dnat_map, &orig_addr);\n\tif (mapped_addr != NULL) {\n\t\tmemcpy(&new_addr, mapped_addr, sizeof(new_addr));\n\t\tbpf_probe_write_user(uservaddr, &new_addr,\n\t\t\t\t     sizeof(new_addr));\n\t}\n\treturn 0;\n}\n\nchar _license[] SEC(\"license\") = \"GPL\";\nu32 _version SEC(\"version\") = LINUX_VERSION_CODE;\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

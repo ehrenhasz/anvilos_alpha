@@ -1,0 +1,9 @@
+{
+  "module_name": "rkisp1-csi.h",
+  "hash_id": "5163c1f5fc2bf0c859558f9b77d3e6ebd3e24a65a95d505825e09e993ca4b336",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/platform/rockchip/rkisp1/rkisp1-csi.h",
+  "human_readable_source": " \n \n#ifndef _RKISP1_CSI_H\n#define _RKISP1_CSI_H\n\nstruct rkisp1_csi;\nstruct rkisp1_device;\nstruct rkisp1_sensor_async;\n\nint rkisp1_csi_init(struct rkisp1_device *rkisp1);\nvoid rkisp1_csi_cleanup(struct rkisp1_device *rkisp1);\n\nint rkisp1_csi_register(struct rkisp1_device *rkisp1);\nvoid rkisp1_csi_unregister(struct rkisp1_device *rkisp1);\n\nint rkisp1_csi_link_sensor(struct rkisp1_device *rkisp1, struct v4l2_subdev *sd,\n\t\t\t   struct rkisp1_sensor_async *s_asd,\n\t\t\t   unsigned int source_pad);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

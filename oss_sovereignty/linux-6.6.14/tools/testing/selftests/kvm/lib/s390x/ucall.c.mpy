@@ -1,0 +1,9 @@
+{
+  "module_name": "ucall.c",
+  "hash_id": "2f75db0b23525bca23cdbff3c3a1f709353bc08c690136ef022c08e300c783dd",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/kvm/lib/s390x/ucall.c",
+  "human_readable_source": "\n \n#include \"kvm_util.h\"\n\nvoid *ucall_arch_get_ucall(struct kvm_vcpu *vcpu)\n{\n\tstruct kvm_run *run = vcpu->run;\n\n\tif (run->exit_reason == KVM_EXIT_S390_SIEIC &&\n\t    run->s390_sieic.icptcode == 4 &&\n\t    (run->s390_sieic.ipa >> 8) == 0x83 &&     \n\t    (run->s390_sieic.ipb >> 16) == 0x501) {\n\t\tint reg = run->s390_sieic.ipa & 0xf;\n\n\t\treturn (void *)run->s.regs.gprs[reg];\n\t}\n\treturn NULL;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

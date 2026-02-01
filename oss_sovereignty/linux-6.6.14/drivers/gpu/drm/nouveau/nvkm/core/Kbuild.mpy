@@ -1,0 +1,9 @@
+{
+  "module_name": "Kbuild",
+  "hash_id": "7d69a407cf887b21fad992f860feb26a275ffc5b381acedb1c6c6331ab524a5f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/core/Kbuild",
+  "human_readable_source": "# SPDX-License-Identifier: MIT\nnvkm-y := nvkm/core/client.o\nnvkm-y += nvkm/core/engine.o\nnvkm-y += nvkm/core/enum.o\nnvkm-y += nvkm/core/event.o\nnvkm-y += nvkm/core/firmware.o\nnvkm-y += nvkm/core/gpuobj.o\nnvkm-y += nvkm/core/intr.o\nnvkm-y += nvkm/core/ioctl.o\nnvkm-y += nvkm/core/memory.o\nnvkm-y += nvkm/core/mm.o\nnvkm-y += nvkm/core/object.o\nnvkm-y += nvkm/core/oproxy.o\nnvkm-y += nvkm/core/option.o\nnvkm-y += nvkm/core/ramht.o\nnvkm-y += nvkm/core/subdev.o\nnvkm-y += nvkm/core/uevent.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

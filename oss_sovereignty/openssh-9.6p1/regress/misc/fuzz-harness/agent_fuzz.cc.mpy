@@ -1,0 +1,9 @@
+{
+  "module_name": "agent_fuzz.cc",
+  "hash_id": "6cf752c03777f4d64526e238000ba10c0402898a85d7d773cb26fb1d094c332e",
+  "original_prompt": "Ingested from openssh-9.6p1/regress/misc/fuzz-harness/agent_fuzz.cc",
+  "human_readable_source": "\nextern \"C\" {\n\n#include <stdint.h>\n#include <sys/types.h>\n\nextern void test_one(const uint8_t* s, size_t slen);\n\nint LLVMFuzzerTestOneInput(const uint8_t* s, size_t slen)\n{\n\ttest_one(s, slen);\n\treturn 0;\n}\n\n} \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

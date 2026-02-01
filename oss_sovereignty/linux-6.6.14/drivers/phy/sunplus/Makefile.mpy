@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "43a328c8854334dbc0bc7624683bc77cf21ee03d91decec1973fbc2b1d7e6f36",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/phy/sunplus/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-$(CONFIG_PHY_SUNPLUS_USB)\t+= phy-sunplus-usb2.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "b0bf45a44dbaff9a1a61e99e9f0f65954ac38f840f4233a0baa4243f167d9bac",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/realtek/rtlwifi/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nobj-$(CONFIG_RTLWIFI) \t\t+= rtlwifi.o\nrtlwifi-objs\t:=\t\t\\\n\t\tbase.o\t\t\\\n\t\tcam.o\t\t\\\n\t\tcore.o\t\t\\\n\t\tdebug.o\t\t\\\n\t\tefuse.o\t\t\\\n\t\tps.o\t\t\\\n\t\trc.o\t\t\\\n\t\tregd.o\t\t\\\n\t\tstats.o\n\nrtl8192c_common-objs +=\t\t\\\n\nobj-$(CONFIG_RTLWIFI_PCI)\t+= rtl_pci.o\nrtl_pci-objs\t:=\t\tpci.o\n\nobj-$(CONFIG_RTLWIFI_USB)\t+= rtl_usb.o\nrtl_usb-objs\t:=\t\tusb.o\n\nobj-$(CONFIG_RTL8192C_COMMON)\t+= rtl8192c/\nobj-$(CONFIG_RTL8192CE)\t\t+= rtl8192ce/\nobj-$(CONFIG_RTL8192CU)\t\t+= rtl8192cu/\nobj-$(CONFIG_RTL8192SE)\t\t+= rtl8192se/\nobj-$(CONFIG_RTL8192DE)\t\t+= rtl8192de/\nobj-$(CONFIG_RTL8723AE)\t\t+= rtl8723ae/\nobj-$(CONFIG_RTL8723BE)\t\t+= rtl8723be/\nobj-$(CONFIG_RTL8188EE)\t\t+= rtl8188ee/\nobj-$(CONFIG_RTLBTCOEXIST)\t+= btcoexist/\nobj-$(CONFIG_RTL8723_COMMON)\t+= rtl8723com/\nobj-$(CONFIG_RTL8821AE)\t\t+= rtl8821ae/\nobj-$(CONFIG_RTL8192EE)\t\t+= rtl8192ee/\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

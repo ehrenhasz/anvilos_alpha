@@ -1,0 +1,9 @@
+{
+  "module_name": "trace_events_filter_test.h",
+  "hash_id": "cae3adb63405ea4495fa277df319bf81deba0b1def3d734e1251de889e7ce9a2",
+  "original_prompt": "Ingested from linux-6.6.14/kernel/trace/trace_events_filter_test.h",
+  "human_readable_source": "\n#undef TRACE_SYSTEM\n#define TRACE_SYSTEM test\n\n#if !defined(_TRACE_TEST_H) || defined(TRACE_HEADER_MULTI_READ)\n#define _TRACE_TEST_H\n\n#include <linux/tracepoint.h>\n\nTRACE_EVENT(ftrace_test_filter,\n\n\tTP_PROTO(int a, int b, int c, int d, int e, int f, int g, int h),\n\n\tTP_ARGS(a, b, c, d, e, f, g, h),\n\n\tTP_STRUCT__entry(\n\t\t__field(int, a)\n\t\t__field(int, b)\n\t\t__field(int, c)\n\t\t__field(int, d)\n\t\t__field(int, e)\n\t\t__field(int, f)\n\t\t__field(int, g)\n\t\t__field(int, h)\n\t),\n\n\tTP_fast_assign(\n\t\t__entry->a = a;\n\t\t__entry->b = b;\n\t\t__entry->c = c;\n\t\t__entry->d = d;\n\t\t__entry->e = e;\n\t\t__entry->f = f;\n\t\t__entry->g = g;\n\t\t__entry->h = h;\n\t),\n\n\tTP_printk(\"a %d, b %d, c %d, d %d, e %d, f %d, g %d, h %d\",\n\t\t  __entry->a, __entry->b, __entry->c, __entry->d,\n\t\t  __entry->e, __entry->f, __entry->g, __entry->h)\n);\n\n#endif  \n\n#undef TRACE_INCLUDE_PATH\n#undef TRACE_INCLUDE_FILE\n#define TRACE_INCLUDE_PATH .\n#define TRACE_INCLUDE_FILE trace_events_filter_test\n\n \n#include <trace/define_trace.h>\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

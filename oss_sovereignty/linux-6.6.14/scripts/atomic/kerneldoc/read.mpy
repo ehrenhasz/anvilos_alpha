@@ -1,0 +1,9 @@
+{
+  "module_name": "read",
+  "hash_id": "7fead73b62a0e8392ebf70510c5b50d4856f002fa280199e8dbac878e6f094a9",
+  "original_prompt": "Ingested from linux-6.6.14/scripts/atomic/kerneldoc/read",
+  "human_readable_source": "cat <<EOF\n/**\n * ${class}${atomicname}() - atomic load with ${desc_order} ordering\n * @v: pointer to ${atomic}_t\n *\n * Atomically loads the value of @v with ${desc_order} ordering.\n *\n * ${desc_noinstr}\n *\n * Return: The value loaded from @v.\n */\nEOF\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

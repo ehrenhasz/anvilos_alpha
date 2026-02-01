@@ -1,0 +1,9 @@
+{
+  "module_name": "ltable.h",
+  "hash_id": "f8f4038a2bc839fc7b752026b073ff25d28290a9fb9a51d0a910ab350d711ed3",
+  "original_prompt": "Ingested from zfs-2.2.2/module/lua/ltable.h",
+  "human_readable_source": " \n\n#ifndef ltable_h\n#define ltable_h\n\n#include \"lobject.h\"\n\n\n#define gnode(t,i)\t((Node *)&(t)->node[i])\n#define gkey(n)\t\t(&(n)->i_key.tvk)\n#define gval(n)\t\t(&(n)->i_val)\n#define gnext(n)\t((n)->i_key.nk.next)\n\n#define invalidateTMcache(t)\t((t)->flags = 0)\n\n \n#define keyfromval(v) \\\n  (gkey(cast(Node *, cast(char *, (v)) - offsetof(Node, i_val))))\n\n\nLUAI_FUNC const TValue *luaH_getint (Table *t, int key);\nLUAI_FUNC void luaH_setint (lua_State *L, Table *t, int key, TValue *value);\nLUAI_FUNC const TValue *luaH_getstr (Table *t, TString *key);\nLUAI_FUNC const TValue *luaH_get (Table *t, const TValue *key);\nLUAI_FUNC TValue *luaH_newkey (lua_State *L, Table *t, const TValue *key);\nLUAI_FUNC TValue *luaH_set (lua_State *L, Table *t, const TValue *key);\nLUAI_FUNC Table *luaH_new (lua_State *L);\nLUAI_FUNC void luaH_resize (lua_State *L, Table *t, int nasize, int nhsize);\nLUAI_FUNC void luaH_resizearray (lua_State *L, Table *t, int nasize);\nLUAI_FUNC void luaH_free (lua_State *L, Table *t);\nLUAI_FUNC int luaH_next (lua_State *L, Table *t, StkId key);\nLUAI_FUNC int luaH_getn (Table *t);\n\n\n#if defined(LUA_DEBUG)\nLUAI_FUNC Node *luaH_mainposition (const Table *t, const TValue *key);\nLUAI_FUNC int luaH_isdummy (Node *n);\n#endif\n\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

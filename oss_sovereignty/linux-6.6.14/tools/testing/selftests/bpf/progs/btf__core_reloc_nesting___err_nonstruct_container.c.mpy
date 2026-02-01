@@ -1,0 +1,9 @@
+{
+  "module_name": "btf__core_reloc_nesting___err_nonstruct_container.c",
+  "hash_id": "1a55ea9aa26b03f5ff7c2865745f0b29b16b6139445b21f9ba02ac1dc6505e38",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/btf__core_reloc_nesting___err_nonstruct_container.c",
+  "human_readable_source": "#include \"core_reloc_types.h\"\n\nvoid f(struct core_reloc_nesting___err_nonstruct_container x) {}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

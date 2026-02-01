@@ -1,0 +1,9 @@
+{
+  "module_name": "intel_acpi.h",
+  "hash_id": "ad7371663927a7705b88503a687b2462f659888bb22b65a38a8683854075e417",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/display/intel_acpi.h",
+  "human_readable_source": " \n \n\n#ifndef __INTEL_ACPI_H__\n#define __INTEL_ACPI_H__\n\nstruct drm_i915_private;\n\n#ifdef CONFIG_ACPI\nvoid intel_register_dsm_handler(void);\nvoid intel_unregister_dsm_handler(void);\nvoid intel_dsm_get_bios_data_funcs_supported(struct drm_i915_private *i915);\nvoid intel_acpi_device_id_update(struct drm_i915_private *i915);\nvoid intel_acpi_assign_connector_fwnodes(struct drm_i915_private *i915);\nvoid intel_acpi_video_register(struct drm_i915_private *i915);\n#else\nstatic inline void intel_register_dsm_handler(void) { return; }\nstatic inline void intel_unregister_dsm_handler(void) { return; }\nstatic inline\nvoid intel_dsm_get_bios_data_funcs_supported(struct drm_i915_private *i915) { return; }\nstatic inline\nvoid intel_acpi_device_id_update(struct drm_i915_private *i915) { return; }\nstatic inline\nvoid intel_acpi_assign_connector_fwnodes(struct drm_i915_private *i915) { return; }\nstatic inline\nvoid intel_acpi_video_register(struct drm_i915_private *i915) { return; }\n#endif  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

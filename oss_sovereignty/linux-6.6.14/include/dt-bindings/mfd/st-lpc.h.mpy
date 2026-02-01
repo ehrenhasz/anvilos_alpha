@@ -1,0 +1,9 @@
+{
+  "module_name": "st-lpc.h",
+  "hash_id": "7e206fa62a0d8a3c8d94f849ec7e52c488c7bd9193a5635a0a7b66f03682c712",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/mfd/st-lpc.h",
+  "human_readable_source": " \n \n\n#ifndef __DT_BINDINGS_ST_LPC_H__\n#define __DT_BINDINGS_ST_LPC_H__\n\n#define ST_LPC_MODE_RTC\t\t0\n#define ST_LPC_MODE_WDT\t\t1\n#define ST_LPC_MODE_CLKSRC\t2\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

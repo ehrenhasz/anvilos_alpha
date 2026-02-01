@@ -1,0 +1,9 @@
+{
+  "module_name": "rseq-x86-thread-pointer.h",
+  "hash_id": "785013cc034985310d96052f45edb70974266444ef0750f6571acc89c9778bbe",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/rseq/rseq-x86-thread-pointer.h",
+  "human_readable_source": " \n \n\n#ifndef _RSEQ_X86_THREAD_POINTER\n#define _RSEQ_X86_THREAD_POINTER\n\n#include <features.h>\n\n#ifdef __cplusplus\nextern \"C\" {\n#endif\n\n#if __GNUC_PREREQ (11, 1)\nstatic inline void *rseq_thread_pointer(void)\n{\n\treturn __builtin_thread_pointer();\n}\n#else\nstatic inline void *rseq_thread_pointer(void)\n{\n\tvoid *__result;\n\n# ifdef __x86_64__\n\t__asm__ (\"mov %%fs:0, %0\" : \"=r\" (__result));\n# else\n\t__asm__ (\"mov %%gs:0, %0\" : \"=r\" (__result));\n# endif\n\treturn __result;\n}\n#endif  \n\n#ifdef __cplusplus\n}\n#endif\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

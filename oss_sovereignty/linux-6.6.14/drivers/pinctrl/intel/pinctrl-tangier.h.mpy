@@ -1,0 +1,9 @@
+{
+  "module_name": "pinctrl-tangier.h",
+  "hash_id": "2cea8463e98d6d0970ec82089388aefb5c4fcd38512aa14a8bb21e3e0490c599",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/pinctrl/intel/pinctrl-tangier.h",
+  "human_readable_source": " \n \n\n#ifndef PINCTRL_TANGIER_H\n#define PINCTRL_TANGIER_H\n\n#include <linux/spinlock_types.h>\n#include <linux/types.h>\n\n#include <linux/pinctrl/pinctrl.h>\n\n#include \"pinctrl-intel.h\"\n\nstruct device;\nstruct platform_device;\n\n#define TNG_FAMILY_NR\t\t\t64\n#define TNG_FAMILY_LEN\t\t\t0x400\n\n \nstruct tng_family {\n\tunsigned int barno;\n\tunsigned int pin_base;\n\tsize_t npins;\n\tbool protected;\n\tvoid __iomem *regs;\n};\n\n#define TNG_FAMILY(b, s, e)\t\t\t\t\\\n\t{\t\t\t\t\t\t\\\n\t\t.barno = (b),\t\t\t\t\\\n\t\t.pin_base = (s),\t\t\t\\\n\t\t.npins = (e) - (s) + 1,\t\t\t\\\n\t}\n\n#define TNG_FAMILY_PROTECTED(b, s, e)\t\t\t\\\n\t{\t\t\t\t\t\t\\\n\t\t.barno = (b),\t\t\t\t\\\n\t\t.pin_base = (s),\t\t\t\\\n\t\t.npins = (e) - (s) + 1,\t\t\t\\\n\t\t.protected = true,\t\t\t\\\n\t}\n\n \nstruct tng_pinctrl {\n\tstruct device *dev;\n\traw_spinlock_t lock;\n\tstruct pinctrl_desc pctldesc;\n\tstruct pinctrl_dev *pctldev;\n\n\t \n\tconst struct tng_family *families;\n\tsize_t nfamilies;\n\tconst struct intel_function *functions;\n\tsize_t nfunctions;\n\tconst struct intel_pingroup *groups;\n\tsize_t ngroups;\n\tconst struct pinctrl_pin_desc *pins;\n\tsize_t npins;\n};\n\nint devm_tng_pinctrl_probe(struct platform_device *pdev);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "get_current_dir_name.c",
+  "hash_id": "41d292291b76456587352e2aaea6670d216923507d05274df62d25a31497e439",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/util/get_current_dir_name.c",
+  "human_readable_source": "\n\n\n#ifndef HAVE_GET_CURRENT_DIR_NAME\n#include \"get_current_dir_name.h\"\n#include <limits.h>\n#include <string.h>\n#include <unistd.h>\n\n \n\nchar *get_current_dir_name(void)\n{\n\tchar pwd[PATH_MAX];\n\n\treturn getcwd(pwd, sizeof(pwd)) == NULL ? NULL : strdup(pwd);\n}\n#endif \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

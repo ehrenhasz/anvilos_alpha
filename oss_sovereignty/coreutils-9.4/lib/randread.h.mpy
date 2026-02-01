@@ -1,0 +1,9 @@
+{
+  "module_name": "randread.h",
+  "hash_id": "d5a6ab50df5828fa2feb8026a5c5768f448eff522bca72cdfe0c6ed1b7631f99",
+  "original_prompt": "Ingested from coreutils-9.4/lib/randread.h",
+  "human_readable_source": " \n\n#ifndef RANDREAD_H\n# define RANDREAD_H 1\n\n# include <stddef.h>\n\nstruct randread_source;\n\nint randread_free (struct randread_source *) _GL_ATTRIBUTE_NONNULL ();\nstruct randread_source *randread_new (char const *, size_t)\n  _GL_ATTRIBUTE_MALLOC _GL_ATTRIBUTE_DEALLOC (randread_free, 1);\nvoid randread (struct randread_source *, void *, size_t)\n  _GL_ATTRIBUTE_NONNULL ();\nvoid randread_set_handler (struct randread_source *, void (*) (void const *))\n  _GL_ATTRIBUTE_NONNULL ();\nvoid randread_set_handler_arg (struct randread_source *, void const *)\n  _GL_ATTRIBUTE_NONNULL ((1));\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "6a1fcbee7943d45f30d39a5bcb2829427baf57530c3f5109e669386ab346876c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/ipu3/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for the IPU3 ImgU drivers\n#\n\nipu3-imgu-objs += \\\n\t\tipu3-mmu.o ipu3-dmamap.o \\\n\t\tipu3-tables.o ipu3-css-pool.o \\\n\t\tipu3-css-fw.o ipu3-css-params.o \\\n\t\tipu3-css.o ipu3-v4l2.o ipu3.o\n\nobj-$(CONFIG_VIDEO_IPU3_IMGU) += ipu3-imgu.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

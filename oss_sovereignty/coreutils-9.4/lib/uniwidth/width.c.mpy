@@ -1,0 +1,9 @@
+{
+  "module_name": "width.c",
+  "hash_id": "1342737bd4fea78c5cb499b5ad1e03456886c2a5aa65077fd87d5c8a4212829f",
+  "original_prompt": "Ingested from coreutils-9.4/lib/uniwidth/width.c",
+  "human_readable_source": " \n#include \"uniwidth.h\"\n\n#include \"cjk.h\"\n\n \n#include \"uniwidth/width0.h\"\n\n#include \"uniwidth/width2.h\"\n#include \"unictype/bitmap.h\"\n\n#define SIZEOF(a) (sizeof(a) / sizeof(a[0]))\n\n\n \nint\nuc_width (ucs4_t uc, const char *encoding)\n{\n   \n  if ((uc >> 9) < SIZEOF (nonspacing_table_ind))\n    {\n      int ind = nonspacing_table_ind[uc >> 9];\n      if (ind >= 0)\n        if ((nonspacing_table_data[64*ind + ((uc >> 3) & 63)] >> (uc & 7)) & 1)\n          {\n            if (uc > 0 && uc < 0xa0)\n              return -1;\n            else\n              return 0;\n          }\n    }\n  else if ((uc >> 9) == (0xe0000 >> 9))\n    {\n      if (uc >= 0xe0100)\n        {\n          if (uc <= 0xe01ef)\n            return 0;\n        }\n      else\n        {\n          if (uc >= 0xe0020 ? uc <= 0xe007f : uc == 0xe0001)\n            return 0;\n        }\n    }\n   \n  if (bitmap_lookup (&u_width2, uc))\n    return 2;\n   \n  if (uc >= 0x00A1 && uc < 0xFF61 && uc != 0x20A9\n      && is_cjk_encoding (encoding))\n    return 2;\n  return 1;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

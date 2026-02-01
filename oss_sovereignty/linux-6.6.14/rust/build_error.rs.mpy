@@ -1,0 +1,9 @@
+{
+  "module_name": "build_error.rs",
+  "hash_id": "380f6beff0fe43a383b8ee69db5017aa3a3e6a351c72d0b9a7fe8a5b69b4fc47",
+  "original_prompt": "Ingested from linux-6.6.14/rust/build_error.rs",
+  "human_readable_source": "// SPDX-License-Identifier: GPL-2.0\n\n//! Build-time error.\n//!\n//! This crate provides a [const function][const-functions] `build_error`, which will panic in\n//! compile-time if executed in [const context][const-context], and will cause a build error\n//! if not executed at compile time and the optimizer does not optimise away the call.\n//!\n//! It is used by `build_assert!` in the kernel crate, allowing checking of\n//! conditions that could be checked statically, but could not be enforced in\n//! Rust yet (e.g. perform some checks in [const functions][const-functions], but those\n//! functions could still be called in the runtime).\n//!\n//! For details on constant evaluation in Rust, please see the [Reference][const-eval].\n//!\n//! [const-eval]: https://doc.rust-lang.org/reference/const_eval.html\n//! [const-functions]: https://doc.rust-lang.org/reference/const_eval.html#const-functions\n//! [const-context]: https://doc.rust-lang.org/reference/const_eval.html#const-context\n\n#![no_std]\n\n/// Panics if executed in [const context][const-context], or triggers a build error if not.\n///\n/// [const-context]: https://doc.rust-lang.org/reference/const_eval.html#const-context\n#[inline(never)]\n#[cold]\n#[export_name = \"rust_build_error\"]\n#[track_caller]\npub const fn build_error(msg: &'static str) -> ! {\n    panic!(\"{}\", msg);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

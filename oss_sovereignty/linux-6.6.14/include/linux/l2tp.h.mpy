@@ -1,0 +1,9 @@
+{
+  "module_name": "l2tp.h",
+  "hash_id": "7d379a631e79f872bbb416305b97fe3359dcd8693f8f8b6d9e3c20ee33d65904",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/l2tp.h",
+  "human_readable_source": " \n \n#ifndef _LINUX_L2TP_H_\n#define _LINUX_L2TP_H_\n\n#include <linux/in.h>\n#include <linux/in6.h>\n#include <uapi/linux/l2tp.h>\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

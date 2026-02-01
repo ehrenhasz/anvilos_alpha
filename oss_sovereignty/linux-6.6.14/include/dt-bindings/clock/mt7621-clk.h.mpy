@@ -1,0 +1,9 @@
+{
+  "module_name": "mt7621-clk.h",
+  "hash_id": "b55c52749da7f411a64070e5a6686ac38d42c04acb356a421601b50742ea4eec",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/clock/mt7621-clk.h",
+  "human_readable_source": " \n \n\n#ifndef _DT_BINDINGS_CLK_MT7621_H\n#define _DT_BINDINGS_CLK_MT7621_H\n\n#define MT7621_CLK_XTAL\t\t0\n#define MT7621_CLK_CPU\t\t1\n#define MT7621_CLK_BUS\t\t2\n#define MT7621_CLK_50M\t\t3\n#define MT7621_CLK_125M\t\t4\n#define MT7621_CLK_150M\t\t5\n#define MT7621_CLK_250M\t\t6\n#define MT7621_CLK_270M\t\t7\n\n#define MT7621_CLK_HSDMA\t8\n#define MT7621_CLK_FE\t\t9\n#define MT7621_CLK_SP_DIVTX\t10\n#define MT7621_CLK_TIMER\t11\n#define MT7621_CLK_PCM\t\t12\n#define MT7621_CLK_PIO\t\t13\n#define MT7621_CLK_GDMA\t\t14\n#define MT7621_CLK_NAND\t\t15\n#define MT7621_CLK_I2C\t\t16\n#define MT7621_CLK_I2S\t\t17\n#define MT7621_CLK_SPI\t\t18\n#define MT7621_CLK_UART1\t19\n#define MT7621_CLK_UART2\t20\n#define MT7621_CLK_UART3\t21\n#define MT7621_CLK_ETH\t\t22\n#define MT7621_CLK_PCIE0\t23\n#define MT7621_CLK_PCIE1\t24\n#define MT7621_CLK_PCIE2\t25\n#define MT7621_CLK_CRYPTO\t26\n#define MT7621_CLK_SHXC\t\t27\n\n#define MT7621_CLK_MAX\t\t28\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

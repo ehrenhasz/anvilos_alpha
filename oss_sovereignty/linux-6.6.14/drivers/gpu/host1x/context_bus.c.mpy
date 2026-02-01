@@ -1,0 +1,9 @@
+{
+  "module_name": "context_bus.c",
+  "hash_id": "5bbd4194e0badd17871303bb1b1768d6500f0d0fa9896c2af02acf7d9ea23655",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/host1x/context_bus.c",
+  "human_readable_source": "\n \n\n#include <linux/device.h>\n#include <linux/of.h>\n\nstruct bus_type host1x_context_device_bus_type = {\n\t.name = \"host1x-context\",\n};\nEXPORT_SYMBOL_GPL(host1x_context_device_bus_type);\n\nstatic int __init host1x_context_device_bus_init(void)\n{\n\tint err;\n\n\terr = bus_register(&host1x_context_device_bus_type);\n\tif (err < 0) {\n\t\tpr_err(\"bus type registration failed: %d\\n\", err);\n\t\treturn err;\n\t}\n\n\treturn 0;\n}\npostcore_initcall(host1x_context_device_bus_init);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

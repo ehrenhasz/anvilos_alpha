@@ -1,0 +1,9 @@
+{
+  "module_name": "hpd_regs.h",
+  "hash_id": "33ed41442170adb3fb7a50d1dccc9eb5311bc17c035140f18996c9900d36e318",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/dc/gpio/hpd_regs.h",
+  "human_readable_source": " \n\n#ifndef DRIVERS_GPU_DRM_AMD_DC_DEV_DC_GPIO_HPD_REGS_H_\n#define DRIVERS_GPU_DRM_AMD_DC_DEV_DC_GPIO_HPD_REGS_H_\n\n#include \"gpio_regs.h\"\n\n#define ONE_MORE_0 1\n#define ONE_MORE_1 2\n#define ONE_MORE_2 3\n#define ONE_MORE_3 4\n#define ONE_MORE_4 5\n#define ONE_MORE_5 6\n\n\n#define HPD_GPIO_REG_LIST_ENTRY(type, cd, id) \\\n\t.type ## _reg =  REG(DC_GPIO_HPD_## type),\\\n\t.type ## _mask =  DC_GPIO_HPD_ ## type ## __DC_GPIO_HPD ## id ## _ ## type ## _MASK,\\\n\t.type ## _shift = DC_GPIO_HPD_ ## type ## __DC_GPIO_HPD ## id ## _ ## type ## __SHIFT\n\n#define HPD_GPIO_REG_LIST(id) \\\n\t{\\\n\tHPD_GPIO_REG_LIST_ENTRY(MASK, cd, id),\\\n\tHPD_GPIO_REG_LIST_ENTRY(A, cd, id),\\\n\tHPD_GPIO_REG_LIST_ENTRY(EN, cd, id),\\\n\tHPD_GPIO_REG_LIST_ENTRY(Y, cd, id)\\\n\t}\n\n#define HPD_REG_LIST(id) \\\n\tHPD_GPIO_REG_LIST(ONE_MORE_ ## id), \\\n\t.int_status = REGI(DC_HPD_INT_STATUS, HPD, id),\\\n\t.toggle_filt_cntl = REGI(DC_HPD_TOGGLE_FILT_CNTL, HPD, id)\n\n #define HPD_MASK_SH_LIST(mask_sh) \\\n\t\tSF_HPD(DC_HPD_INT_STATUS, DC_HPD_SENSE_DELAYED, mask_sh),\\\n\t\tSF_HPD(DC_HPD_INT_STATUS, DC_HPD_SENSE, mask_sh),\\\n\t\tSF_HPD(DC_HPD_TOGGLE_FILT_CNTL, DC_HPD_CONNECT_INT_DELAY, mask_sh),\\\n\t\tSF_HPD(DC_HPD_TOGGLE_FILT_CNTL, DC_HPD_DISCONNECT_INT_DELAY, mask_sh)\n\nstruct hpd_registers {\n\tstruct gpio_registers gpio;\n\tuint32_t int_status;\n\tuint32_t toggle_filt_cntl;\n};\n\nstruct hpd_sh_mask {\n\t \n\tuint32_t DC_HPD_SENSE_DELAYED;\n\tuint32_t DC_HPD_SENSE;\n\t \n\tuint32_t DC_HPD_CONNECT_INT_DELAY;\n\tuint32_t DC_HPD_DISCONNECT_INT_DELAY;\n};\n\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

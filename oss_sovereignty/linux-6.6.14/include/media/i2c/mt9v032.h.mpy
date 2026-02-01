@@ -1,0 +1,9 @@
+{
+  "module_name": "mt9v032.h",
+  "hash_id": "21795e6ec5fe00851c1f0bfbc0075572ec662086e85571752db9fb7dff543a75",
+  "original_prompt": "Ingested from linux-6.6.14/include/media/i2c/mt9v032.h",
+  "human_readable_source": " \n#ifndef _MEDIA_MT9V032_H\n#define _MEDIA_MT9V032_H\n\nstruct mt9v032_platform_data {\n\tunsigned int clk_pol:1;\n\n\tconst s64 *link_freqs;\n\ts64 link_def_freq;\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "xstrtol-error.h",
+  "hash_id": "244e25f1bacef139d94bd0f631528ccd6b3c9078632771948b09b9f013f84df8",
+  "original_prompt": "Ingested from coreutils-9.4/lib/xstrtol-error.h",
+  "human_readable_source": " \n# if !_GL_CONFIG_H_INCLUDED\n#  error \"Please include config.h first.\"\n# endif\n\n# include \"xstrtol.h\"\n\n# include <getopt.h>\n\n \n\n_Noreturn void xstrtol_fatal (enum strtol_error  ,\n                              int  , char  ,\n                              struct option const *  ,\n                              char const *  );\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

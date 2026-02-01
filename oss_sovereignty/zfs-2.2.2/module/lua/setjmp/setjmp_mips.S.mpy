@@ -1,0 +1,9 @@
+{
+  "module_name": "setjmp_mips.S",
+  "hash_id": "833979a006fcca35bd816b80df868238b7529a3b03469167ab80f640151669f6",
+  "original_prompt": "Ingested from zfs-2.2.2/module/lua/setjmp/setjmp_mips.S",
+  "human_readable_source": " \n\n#include <asm/asm.h>\n#include <asm/regdef.h>\n\n \n\n   .text\n   .set noreorder\n\n    \nLEAF(setjmp)\n    \n\n   REG_S sp, 0(a0)\t\t \n   REG_S ra, 1*SZREG(a0)\n   REG_S gp, 2*SZREG(a0)\n   REG_S s0, 3*SZREG(a0)\n   REG_S s1, 4*SZREG(a0)\n   REG_S s2, 5*SZREG(a0)\n   REG_S s3, 6*SZREG(a0)\n   REG_S s4, 7*SZREG(a0)\n   REG_S s5, 8*SZREG(a0)\n   REG_S s6, 9*SZREG(a0)\n   REG_S s7, 10*SZREG(a0)\n   REG_S s8, 11*SZREG(a0)\n\n   jr ra\t\t \n    move v0, zero\t \nEND(setjmp)\n\n\n    \nLEAF(longjmp)\n    \n\n   sltiu t0, a1, 1\t \n   addu a1, a1, t0\t \n\n   REG_L sp, 0(a0)\t\t \n   REG_L ra, 1*SZREG(a0)\n   REG_L gp, 2*SZREG(a0)\n   REG_L s0, 3*SZREG(a0)\n   REG_L s1, 4*SZREG(a0)\n   REG_L s2, 5*SZREG(a0)\n   REG_L s3, 6*SZREG(a0)\n   REG_L s4, 7*SZREG(a0)\n   REG_L s5, 8*SZREG(a0)\n   REG_L s6, 9*SZREG(a0)\n   REG_L s7, 10*SZREG(a0)\n   REG_L s8, 11*SZREG(a0)\n\n   jr ra\t\t \n    move v0, a1\t\t \nEND(longjmp)\n\n#ifdef __ELF__\n.section .note.GNU-stack,\"\",%progbits\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

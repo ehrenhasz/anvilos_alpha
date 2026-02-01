@@ -1,0 +1,9 @@
+{
+  "module_name": "pxa2xx_spi.h",
+  "hash_id": "67bbb6f0105971c3c81cb17c624a84c0fe5e995ca061c836b70c6dd682b72c0c",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/spi/pxa2xx_spi.h",
+  "human_readable_source": " \n \n#ifndef __LINUX_SPI_PXA2XX_SPI_H\n#define __LINUX_SPI_PXA2XX_SPI_H\n\n#include <linux/types.h>\n\n#include <linux/pxa2xx_ssp.h>\n\nstruct dma_chan;\n\n \nstruct pxa2xx_spi_controller {\n\tu16 num_chipselect;\n\tu8 enable_dma;\n\tu8 dma_burst_size;\n\tbool is_target;\n\n\t \n\tbool (*dma_filter)(struct dma_chan *chan, void *param);\n\tvoid *tx_param;\n\tvoid *rx_param;\n\n\t \n\tstruct ssp_device ssp;\n};\n\n \nstruct pxa2xx_spi_chip {\n\tu8 tx_threshold;\n\tu8 tx_hi_threshold;\n\tu8 rx_threshold;\n\tu8 dma_burst_size;\n\tu32 timeout;\n};\n\n#if defined(CONFIG_ARCH_PXA) || defined(CONFIG_ARCH_MMP)\n\n#include <linux/clk.h>\n\nextern void pxa2xx_set_spi_info(unsigned id, struct pxa2xx_spi_controller *info);\n\n#endif\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

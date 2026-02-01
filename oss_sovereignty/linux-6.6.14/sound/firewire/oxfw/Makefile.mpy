@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "7adf4cd762bbef6e50eaa6799408579368461599ac0721f1b6202b1da0388446",
+  "original_prompt": "Ingested from linux-6.6.14/sound/firewire/oxfw/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nsnd-oxfw-objs := oxfw-command.o oxfw-stream.o oxfw-pcm.o oxfw-proc.o \\\n\t\t oxfw-midi.o oxfw-hwdep.o oxfw-spkr.o oxfw-scs1x.o oxfw.o\nobj-$(CONFIG_SND_OXFW) += snd-oxfw.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

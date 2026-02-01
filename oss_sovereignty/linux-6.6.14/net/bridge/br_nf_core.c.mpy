@@ -1,0 +1,9 @@
+{
+  "module_name": "br_nf_core.c",
+  "hash_id": "b4de40420353008e26680ff35efe0b57992c101958231c10d4740282f34dfce7",
+  "original_prompt": "Ingested from linux-6.6.14/net/bridge/br_nf_core.c",
+  "human_readable_source": "\n \n\n#include <linux/module.h>\n#include <linux/kernel.h>\n#include <linux/in_route.h>\n#include <linux/inetdevice.h>\n#include <net/route.h>\n\n#include \"br_private.h\"\n#ifdef CONFIG_SYSCTL\n#include <linux/sysctl.h>\n#endif\n\nstatic void fake_update_pmtu(struct dst_entry *dst, struct sock *sk,\n\t\t\t     struct sk_buff *skb, u32 mtu,\n\t\t\t     bool confirm_neigh)\n{\n}\n\nstatic void fake_redirect(struct dst_entry *dst, struct sock *sk,\n\t\t\t  struct sk_buff *skb)\n{\n}\n\nstatic u32 *fake_cow_metrics(struct dst_entry *dst, unsigned long old)\n{\n\treturn NULL;\n}\n\nstatic struct neighbour *fake_neigh_lookup(const struct dst_entry *dst,\n\t\t\t\t\t   struct sk_buff *skb,\n\t\t\t\t\t   const void *daddr)\n{\n\treturn NULL;\n}\n\nstatic unsigned int fake_mtu(const struct dst_entry *dst)\n{\n\treturn dst->dev->mtu;\n}\n\nstatic struct dst_ops fake_dst_ops = {\n\t.family\t\t= AF_INET,\n\t.update_pmtu\t= fake_update_pmtu,\n\t.redirect\t= fake_redirect,\n\t.cow_metrics\t= fake_cow_metrics,\n\t.neigh_lookup\t= fake_neigh_lookup,\n\t.mtu\t\t= fake_mtu,\n};\n\n \nstatic const u32 br_dst_default_metrics[RTAX_MAX] = {\n\t[RTAX_MTU - 1] = 1500,\n};\n\nvoid br_netfilter_rtable_init(struct net_bridge *br)\n{\n\tstruct rtable *rt = &br->fake_rtable;\n\n\trcuref_init(&rt->dst.__rcuref, 1);\n\trt->dst.dev = br->dev;\n\tdst_init_metrics(&rt->dst, br_dst_default_metrics, true);\n\trt->dst.flags\t= DST_NOXFRM | DST_FAKE_RTABLE;\n\trt->dst.ops = &fake_dst_ops;\n}\n\nint __init br_nf_core_init(void)\n{\n\treturn dst_entries_init(&fake_dst_ops);\n}\n\nvoid br_nf_core_fini(void)\n{\n\tdst_entries_destroy(&fake_dst_ops);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

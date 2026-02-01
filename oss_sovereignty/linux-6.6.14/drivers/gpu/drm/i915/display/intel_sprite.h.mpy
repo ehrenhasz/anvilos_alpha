@@ -1,0 +1,9 @@
+{
+  "module_name": "intel_sprite.h",
+  "hash_id": "361b373d87ba9a95d4368dfb382313386ec23a37af461167c56407ca54c96822",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/display/intel_sprite.h",
+  "human_readable_source": " \n \n\n#ifndef __INTEL_SPRITE_H__\n#define __INTEL_SPRITE_H__\n\n#include <linux/types.h>\n\nstruct drm_device;\nstruct drm_display_mode;\nstruct drm_file;\nstruct drm_i915_private;\nstruct intel_crtc_state;\nstruct intel_plane_state;\nenum pipe;\n\nstruct intel_plane *intel_sprite_plane_create(struct drm_i915_private *dev_priv,\n\t\t\t\t\t      enum pipe pipe, int plane);\nint intel_sprite_set_colorkey_ioctl(struct drm_device *dev, void *data,\n\t\t\t\t    struct drm_file *file_priv);\nint intel_plane_check_src_coordinates(struct intel_plane_state *plane_state);\nint chv_plane_check_rotation(const struct intel_plane_state *plane_state);\n\nint ivb_plane_min_cdclk(const struct intel_crtc_state *crtc_state,\n\t\t\tconst struct intel_plane_state *plane_state);\nint hsw_plane_min_cdclk(const struct intel_crtc_state *crtc_state,\n\t\t\tconst struct intel_plane_state *plane_state);\nint vlv_plane_min_cdclk(const struct intel_crtc_state *crtc_state,\n\t\t\tconst struct intel_plane_state *plane_state);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "23ca879b3d4aa50507352a39bc1678b5b931768271a7442c74d60073255e1592",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/kernel/cpu/mce/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nobj-y\t\t\t\t=  core.o severity.o genpool.o\n\nobj-$(CONFIG_X86_ANCIENT_MCE)\t+= winchip.o p5.o\nobj-$(CONFIG_X86_MCE_INTEL)\t+= intel.o\nobj-$(CONFIG_X86_MCE_AMD)\t+= amd.o\nobj-$(CONFIG_X86_MCE_THRESHOLD) += threshold.o\n\nmce-inject-y\t\t\t:= inject.o\nobj-$(CONFIG_X86_MCE_INJECT)\t+= mce-inject.o\n\nobj-$(CONFIG_ACPI_APEI)\t\t+= apei.o\n\nobj-$(CONFIG_X86_MCELOG_LEGACY)\t+= dev-mcelog.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

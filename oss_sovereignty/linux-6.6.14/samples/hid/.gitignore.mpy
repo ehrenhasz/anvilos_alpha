@@ -1,0 +1,9 @@
+{
+  "module_name": ".gitignore",
+  "hash_id": "2e236b861268b2ac7398e8aaa57e965587207d873ba7c608463051ec8d3b4edd",
+  "original_prompt": "Ingested from linux-6.6.14/samples/hid/.gitignore",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nhid_mouse\nhid_surface_dial\n*.out\n*.skel.h\n/vmlinux.h\n/bpftool/\n/libbpf/\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

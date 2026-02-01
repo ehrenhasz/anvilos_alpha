@@ -1,0 +1,9 @@
+{
+  "module_name": "ice_idc_int.h",
+  "hash_id": "65e3111e16141317b2538738773c88f6b3c61fb8cd32fdb5f22b7f0443a2e817",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/intel/ice/ice_idc_int.h",
+  "human_readable_source": " \n \n\n#ifndef _ICE_IDC_INT_H_\n#define _ICE_IDC_INT_H_\n\n#include <linux/net/intel/iidc.h>\n\nstruct ice_pf;\n\nvoid ice_send_event_to_aux(struct ice_pf *pf, struct iidc_event *event);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

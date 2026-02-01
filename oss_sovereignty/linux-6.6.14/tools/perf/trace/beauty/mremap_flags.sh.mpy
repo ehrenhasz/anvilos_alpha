@@ -1,0 +1,9 @@
+{
+  "module_name": "mremap_flags.sh",
+  "hash_id": "0964560110df2a13371980c52cd3dcedaf9fb5479bac93281f0a460ac30edef2",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/trace/beauty/mremap_flags.sh",
+  "human_readable_source": "#!/bin/sh\n# SPDX-License-Identifier: LGPL-2.1\n\nif [ $# -ne 1 ] ; then\n\tlinux_header_dir=tools/include/uapi/linux\nelse\n\tlinux_header_dir=$1\nfi\n\nlinux_mman=${linux_header_dir}/mman.h\n\nprintf \"static const char *mremap_flags[] = {\\n\"\nregex='^[[:space:]]*#[[:space:]]*define[[:space:]]+MREMAP_([[:alnum:]_]+)[[:space:]]+((0x)?[[:xdigit:]]+)[[:space:]]*.*'\ngrep -E -q $regex ${linux_mman} && \\\n(grep -E $regex ${linux_mman} | \\\n\tsed -r \"s/$regex/\\2 \\1 \\1 \\1 \\2/g\"\t| \\\n\txargs printf \"\\t[ilog2(%s) + 1] = \\\"%s\\\",\\n#ifndef MREMAP_%s\\n#define MREMAP_%s %s\\n#endif\\n\")\nprintf \"};\\n\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "devices.c",
+  "hash_id": "d8d68672b6f36f43dd730fcea51e8b9d12588a527e3e9838db793924bfbc39df",
+  "original_prompt": "Ingested from linux-6.6.14/fs/proc/devices.c",
+  "human_readable_source": "\n#include <linux/fs.h>\n#include <linux/init.h>\n#include <linux/proc_fs.h>\n#include <linux/seq_file.h>\n#include <linux/blkdev.h>\n#include \"internal.h\"\n\nstatic int devinfo_show(struct seq_file *f, void *v)\n{\n\tint i = *(loff_t *) v;\n\n\tif (i < CHRDEV_MAJOR_MAX) {\n\t\tif (i == 0)\n\t\t\tseq_puts(f, \"Character devices:\\n\");\n\t\tchrdev_show(f, i);\n\t}\n#ifdef CONFIG_BLOCK\n\telse {\n\t\ti -= CHRDEV_MAJOR_MAX;\n\t\tif (i == 0)\n\t\t\tseq_puts(f, \"\\nBlock devices:\\n\");\n\t\tblkdev_show(f, i);\n\t}\n#endif\n\treturn 0;\n}\n\nstatic void *devinfo_start(struct seq_file *f, loff_t *pos)\n{\n\tif (*pos < (BLKDEV_MAJOR_MAX + CHRDEV_MAJOR_MAX))\n\t\treturn pos;\n\treturn NULL;\n}\n\nstatic void *devinfo_next(struct seq_file *f, void *v, loff_t *pos)\n{\n\t(*pos)++;\n\tif (*pos >= (BLKDEV_MAJOR_MAX + CHRDEV_MAJOR_MAX))\n\t\treturn NULL;\n\treturn pos;\n}\n\nstatic void devinfo_stop(struct seq_file *f, void *v)\n{\n\t \n}\n\nstatic const struct seq_operations devinfo_ops = {\n\t.start = devinfo_start,\n\t.next  = devinfo_next,\n\t.stop  = devinfo_stop,\n\t.show  = devinfo_show\n};\n\nstatic int __init proc_devices_init(void)\n{\n\tstruct proc_dir_entry *pde;\n\n\tpde = proc_create_seq(\"devices\", 0, NULL, &devinfo_ops);\n\tpde_make_permanent(pde);\n\treturn 0;\n}\nfs_initcall(proc_devices_init);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

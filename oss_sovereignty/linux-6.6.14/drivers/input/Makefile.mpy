@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "1b920b7f5234e0444c3e1cf53eefbc4064404fff388dbf63cb226757a98a562f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/input/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for the input core drivers.\n#\n\n# Each configuration option enables a list of files.\n\nobj-$(CONFIG_INPUT)\t\t+= input-core.o\ninput-core-y := input.o input-compat.o input-mt.o input-poller.o ff-core.o\ninput-core-y += touchscreen.o\n\nobj-$(CONFIG_INPUT_FF_MEMLESS)\t+= ff-memless.o\nobj-$(CONFIG_INPUT_SPARSEKMAP)\t+= sparse-keymap.o\nobj-$(CONFIG_INPUT_MATRIXKMAP)\t+= matrix-keymap.o\nobj-$(CONFIG_INPUT_VIVALDIFMAP)\t+= vivaldi-fmap.o\n\nobj-$(CONFIG_INPUT_LEDS)\t+= input-leds.o\nobj-$(CONFIG_INPUT_MOUSEDEV)\t+= mousedev.o\nobj-$(CONFIG_INPUT_JOYDEV)\t+= joydev.o\nobj-$(CONFIG_INPUT_EVDEV)\t+= evdev.o\nobj-$(CONFIG_INPUT_EVBUG)\t+= evbug.o\n\nobj-$(CONFIG_INPUT_KEYBOARD)\t+= keyboard/\nobj-$(CONFIG_INPUT_MOUSE)\t+= mouse/\nobj-$(CONFIG_INPUT_JOYSTICK)\t+= joystick/\nobj-$(CONFIG_INPUT_TABLET)\t+= tablet/\nobj-$(CONFIG_INPUT_TOUCHSCREEN)\t+= touchscreen/\nobj-$(CONFIG_INPUT_MISC)\t+= misc/\nobj-$(CONFIG_INPUT_KUNIT_TEST)\t+= tests/\n\nobj-$(CONFIG_INPUT_APMPOWER)\t+= apm-power.o\n\nobj-$(CONFIG_RMI4_CORE)\t\t+= rmi4/\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

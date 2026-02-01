@@ -1,0 +1,9 @@
+{
+  "module_name": "hantro_v4l2.h",
+  "hash_id": "7523800ed563e11b691df46ceec4f8298ccedd5aa5848b82b7cb53b856967547",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/platform/verisilicon/hantro_v4l2.h",
+  "human_readable_source": " \n \n\n#ifndef HANTRO_V4L2_H_\n#define HANTRO_V4L2_H_\n\n#include \"hantro.h\"\n\n#define HANTRO_FORCE_POSTPROC\ttrue\n#define HANTRO_AUTO_POSTPROC\tfalse\n\nextern const struct v4l2_ioctl_ops hantro_ioctl_ops;\nextern const struct vb2_ops hantro_queue_ops;\n\nint hantro_reset_raw_fmt(struct hantro_ctx *ctx, int bit_depth, bool need_postproc);\nvoid hantro_reset_fmts(struct hantro_ctx *ctx);\nint hantro_get_format_depth(u32 fourcc);\nconst struct hantro_fmt *\nhantro_get_default_fmt(const struct hantro_ctx *ctx, bool bitstream,\n\t\t       int bit_depth, bool need_postproc);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "kzm9d.c",
+  "hash_id": "ae96a68b1f8974f50471b576e75a21b01186906193d5fb1398e32f6d3ac47a81",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/board/kzm9d.c",
+  "human_readable_source": "\n \n\n#include <linux/kernel.h>\n#include <linux/platform_device.h>\n#include \"board.h\"\n\nstatic struct resource usbs1_res[] __initdata = {\n\tDEFINE_RES_MEM(0xe2800000, 0x2000),\n\tDEFINE_RES_IRQ(159),\n};\n\nstatic void __init kzm9d_init(void)\n{\n\tboard_staging_gic_setup_xlate(\"arm,pl390\", 32);\n\n\tif (!board_staging_dt_node_available(usbs1_res,\n\t\t\t\t\t     ARRAY_SIZE(usbs1_res))) {\n\t\tboard_staging_gic_fixup_resources(usbs1_res,\n\t\t\t\t\t\t  ARRAY_SIZE(usbs1_res));\n\t\tplatform_device_register_simple(\"emxx_udc\", -1, usbs1_res,\n\t\t\t\t\t\tARRAY_SIZE(usbs1_res));\n\t}\n}\n\nboard_staging(\"renesas,kzm9d\", kzm9d_init);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

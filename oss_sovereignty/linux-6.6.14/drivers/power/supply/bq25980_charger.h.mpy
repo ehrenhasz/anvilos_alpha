@@ -1,0 +1,9 @@
+{
+  "module_name": "bq25980_charger.h",
+  "hash_id": "402da4330a8ac77d0b250fe35c43a98b76c7876cbc00bba8df95832cefac1c4d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/power/supply/bq25980_charger.h",
+  "human_readable_source": " \n \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "kernel-dentry-alias.m4",
+  "hash_id": "63858e6a29738b3f9669ce125887ccfda074474469db33b63074ed4c50db0e96",
+  "original_prompt": "Ingested from zfs-2.2.2/config/kernel-dentry-alias.m4",
+  "human_readable_source": "dnl #\ndnl # 3.18 API change\ndnl # Dentry aliases are in d_u struct dentry member\ndnl #\nAC_DEFUN([ZFS_AC_KERNEL_SRC_DENTRY_ALIAS_D_U], [\n\tZFS_LINUX_TEST_SRC([dentry_alias_d_u], [\n\t\t#include <linux/fs.h>\n\t\t#include <linux/dcache.h>\n\t\t#include <linux/list.h>\n\t], [\n\t\tstruct inode *inode __attribute__ ((unused)) = NULL;\n\t\tstruct dentry *dentry __attribute__ ((unused)) = NULL;\n\t\thlist_for_each_entry(dentry, &inode->i_dentry,\n\t\t    d_u.d_alias) {\n\t\t\td_drop(dentry);\n\t\t}\n\t])\n])\n\nAC_DEFUN([ZFS_AC_KERNEL_DENTRY_ALIAS_D_U], [\n\tAC_MSG_CHECKING([whether dentry aliases are in d_u member])\n\tZFS_LINUX_TEST_RESULT([dentry_alias_d_u], [\n\t\tAC_MSG_RESULT(yes)\n\t\tAC_DEFINE(HAVE_DENTRY_D_U_ALIASES, 1,\n\t\t    [dentry aliases are in d_u member])\n\t],[\n\t\tAC_MSG_RESULT(no)\n\t])\n])\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

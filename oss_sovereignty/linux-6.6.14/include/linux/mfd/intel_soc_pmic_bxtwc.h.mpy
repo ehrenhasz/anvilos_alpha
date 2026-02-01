@@ -1,0 +1,9 @@
+{
+  "module_name": "intel_soc_pmic_bxtwc.h",
+  "hash_id": "5cb2c32c12e7125ac1774c2ac0b382986c5f800ec76a033245b1586c43ad26ec",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/mfd/intel_soc_pmic_bxtwc.h",
+  "human_readable_source": " \n \n\n#ifndef __INTEL_BXTWC_H__\n#define __INTEL_BXTWC_H__\n\n \n#define BXTWC_DEVICE1_ADDR\t\t0x4E\n#define BXTWC_DEVICE2_ADDR\t\t0x4F\n#define BXTWC_DEVICE3_ADDR\t\t0x5E\n\n \n#define BXTWC_CHIPID\t\t\t0x4E00\n#define BXTWC_CHIPVER\t\t\t0x4E01\n\n#define BXTWC_SCHGRIRQ0_ADDR\t\t0x5E1A\n#define BXTWC_CHGRCTRL0_ADDR\t\t0x5E16\n#define BXTWC_CHGRCTRL1_ADDR\t\t0x5E17\n#define BXTWC_CHGRCTRL2_ADDR\t\t0x5E18\n#define BXTWC_CHGRSTATUS_ADDR\t\t0x5E19\n#define BXTWC_THRMBATZONE_ADDR\t\t0x4F22\n\n#define BXTWC_USBPATH_ADDR\t\t0x5E19\n#define BXTWC_USBPHYCTRL_ADDR\t\t0x5E07\n#define BXTWC_USBIDCTRL_ADDR\t\t0x5E05\n#define BXTWC_USBIDEN_MASK\t\t0x01\n#define BXTWC_USBIDSTAT_ADDR\t\t0x00FF\n#define BXTWC_USBSRCDETSTATUS_ADDR\t0x5E29\n\n#define BXTWC_DBGUSBBC1_ADDR\t\t0x5FE0\n#define BXTWC_DBGUSBBC2_ADDR\t\t0x5FE1\n#define BXTWC_DBGUSBBCSTAT_ADDR\t\t0x5FE2\n\n#define BXTWC_WAKESRC_ADDR\t\t0x4E22\n#define BXTWC_WAKESRC2_ADDR\t\t0x4EE5\n#define BXTWC_CHRTTADDR_ADDR\t\t0x5E22\n#define BXTWC_CHRTTDATA_ADDR\t\t0x5E23\n\n#define BXTWC_STHRMIRQ0_ADDR\t\t0x4F19\n#define WC_MTHRMIRQ1_ADDR\t\t0x4E12\n#define WC_STHRMIRQ1_ADDR\t\t0x4F1A\n#define WC_STHRMIRQ2_ADDR\t\t0x4F1B\n\n#define BXTWC_THRMZN0H_ADDR\t\t0x4F44\n#define BXTWC_THRMZN0L_ADDR\t\t0x4F45\n#define BXTWC_THRMZN1H_ADDR\t\t0x4F46\n#define BXTWC_THRMZN1L_ADDR\t\t0x4F47\n#define BXTWC_THRMZN2H_ADDR\t\t0x4F48\n#define BXTWC_THRMZN2L_ADDR\t\t0x4F49\n#define BXTWC_THRMZN3H_ADDR\t\t0x4F4A\n#define BXTWC_THRMZN3L_ADDR\t\t0x4F4B\n#define BXTWC_THRMZN4H_ADDR\t\t0x4F4C\n#define BXTWC_THRMZN4L_ADDR\t\t0x4F4D\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

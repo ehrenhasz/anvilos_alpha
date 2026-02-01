@@ -1,0 +1,9 @@
+{
+  "module_name": "kernel-user-ns-inum.m4",
+  "hash_id": "a7a2ee96b99afbdd4bacde854da92980d2db44df0caa066af30f4d6ce6cdbf66",
+  "original_prompt": "Ingested from zfs-2.2.2/config/kernel-user-ns-inum.m4",
+  "human_readable_source": "dnl #\ndnl # 3.18 API change\ndnl # struct user_namespace inum moved from .proc_inum to .ns.inum.\ndnl #\nAC_DEFUN([ZFS_AC_KERNEL_SRC_USER_NS_COMMON_INUM], [\n\tZFS_LINUX_TEST_SRC([user_ns_common_inum], [\n\t\t#include <linux/user_namespace.h>\n\t], [\n\t\tstruct user_namespace uns;\n\t\tuns.ns.inum = 0;\n\t])\n])\n\nAC_DEFUN([ZFS_AC_KERNEL_USER_NS_COMMON_INUM], [\n\tAC_MSG_CHECKING([whether user_namespace->ns.inum exists])\n\tZFS_LINUX_TEST_RESULT([user_ns_common_inum], [\n\t\tAC_MSG_RESULT(yes)\n\t\tAC_DEFINE(HAVE_USER_NS_COMMON_INUM, 1,\n\t\t    [user_namespace->ns.inum exists])\n\t],[\n\t\tAC_MSG_RESULT(no)\n\t])\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

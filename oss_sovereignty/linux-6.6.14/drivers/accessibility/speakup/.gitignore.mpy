@@ -1,0 +1,9 @@
+{
+  "module_name": ".gitignore",
+  "hash_id": "3925f0ace21490225d26985b13eb955c1b51631fab2e4065543605a4920774ae",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/accessibility/speakup/.gitignore",
+  "human_readable_source": "/makemapdata\n/mapdata.h\n/genmap\n/speakupmap.h\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

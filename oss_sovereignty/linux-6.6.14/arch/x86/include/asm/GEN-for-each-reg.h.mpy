@@ -1,0 +1,9 @@
+{
+  "module_name": "GEN-for-each-reg.h",
+  "hash_id": "a2e842e7a0797a5d9a7fdb2df7c7a68095aa8f7f610b257e0980b5e669e7e9b1",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/include/asm/GEN-for-each-reg.h",
+  "human_readable_source": " \n \n#ifdef CONFIG_64BIT\nGEN(rax)\nGEN(rcx)\nGEN(rdx)\nGEN(rbx)\nGEN(rsp)\nGEN(rbp)\nGEN(rsi)\nGEN(rdi)\nGEN(r8)\nGEN(r9)\nGEN(r10)\nGEN(r11)\nGEN(r12)\nGEN(r13)\nGEN(r14)\nGEN(r15)\n#else\nGEN(eax)\nGEN(ecx)\nGEN(edx)\nGEN(ebx)\nGEN(esp)\nGEN(ebp)\nGEN(esi)\nGEN(edi)\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

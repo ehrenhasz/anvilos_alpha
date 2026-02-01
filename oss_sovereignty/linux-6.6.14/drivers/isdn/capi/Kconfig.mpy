@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "4b52c5b23c09b1ce6454b46013aef80fd50d6928d3bc5eebe1088b20faf0a2ea",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/isdn/capi/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig ISDN_CAPI\n\tdef_bool ISDN && BT\n\thelp\n\t  This provides CAPI (the Common ISDN Application Programming\n\t  Interface) Version 2.0, a standard making it easy for programs to\n\t  access ISDN hardware in a device independent way. (For details see\n\t  <https://www.capi.org/>.)  CAPI supports making and accepting voice\n\t  and data connections, controlling call options and protocols,\n\t  as well as ISDN supplementary services like call forwarding or\n\t  three-party conferences (if supported by the specific hardware\n\t  driver).\n\n\t  This subsystem requires a hardware specific driver.\n\t  See CONFIG_BT_CMTP for the last remaining regular driver\n\t  in the kernel that uses the CAPI subsystem.\n\nconfig CAPI_TRACE\n\tdef_bool BT_CMTP\n\thelp\n\t  If you say Y here, the kernelcapi driver can make verbose traces\n\t  of CAPI messages. This feature can be enabled/disabled via IOCTL for\n\t  every controller (default disabled).\n\nconfig ISDN_CAPI_MIDDLEWARE\n\tdef_bool BT_CMTP && TTY\n\thelp\n\t  This option will enhance the capabilities of the /dev/capi20\n\t  interface.  It will provide a means of moving a data connection,\n\t  established via the usual /dev/capi20 interface to a special tty\n\t  device.  If you want to use pppd with pppdcapiplugin to dial up to\n\t  your ISP, say Y here.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

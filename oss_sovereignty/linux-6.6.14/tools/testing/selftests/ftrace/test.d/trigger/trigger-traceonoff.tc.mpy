@@ -1,0 +1,9 @@
+{
+  "module_name": "trigger-traceonoff.tc",
+  "hash_id": "813813ef8511ecd35de66fad6e7f0d04a71a4b78b3d23074b969e52a28895999",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/ftrace/test.d/trigger/trigger-traceonoff.tc",
+  "human_readable_source": "#!/bin/sh\n# SPDX-License-Identifier: GPL-2.0\n# description: event trigger - test traceon/off trigger\n# requires: set_event events/sched/sched_process_fork/trigger\n\nfail() { #msg\n    echo $1\n    exit_fail\n}\n\necho \"Test traceoff trigger\"\necho 1 > tracing_on\necho 'traceoff' > events/sched/sched_process_fork/trigger\n( echo \"forked\")\nif [ `cat tracing_on` -ne 0 ]; then\n    fail \"traceoff trigger on sched_process_fork did not work\"\nfi\n\nreset_trigger\n\necho \"Test traceon trigger\"\necho 0 > tracing_on\necho 'traceon' > events/sched/sched_process_fork/trigger\n( echo \"forked\")\nif [ `cat tracing_on` -ne 1 ]; then\n    fail \"traceoff trigger on sched_process_fork did not work\"\nfi\n\nreset_trigger\n\necho \"Test semantic error for traceoff/on trigger\"\n! echo 'traceoff:badparam' > events/sched/sched_process_fork/trigger\n! echo 'traceoff+0' > events/sched/sched_process_fork/trigger\necho 'traceon' > events/sched/sched_process_fork/trigger\n! echo 'traceon' > events/sched/sched_process_fork/trigger\n! echo 'traceoff' > events/sched/sched_process_fork/trigger\n\nexit 0\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

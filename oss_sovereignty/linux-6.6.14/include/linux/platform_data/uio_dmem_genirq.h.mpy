@@ -1,0 +1,9 @@
+{
+  "module_name": "uio_dmem_genirq.h",
+  "hash_id": "e0f156e64c591ba3a8ddfed4eebb4bdd94092c3d2d9e2d0c2010c8b6ac0e77ed",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/platform_data/uio_dmem_genirq.h",
+  "human_readable_source": " \n \n\n#ifndef _UIO_DMEM_GENIRQ_H\n#define _UIO_DMEM_GENIRQ_H\n\n#include <linux/uio_driver.h>\n\nstruct uio_dmem_genirq_pdata {\n\tstruct uio_info\tuioinfo;\n\tunsigned int *dynamic_region_sizes;\n\tunsigned int num_dynamic_regions;\n};\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

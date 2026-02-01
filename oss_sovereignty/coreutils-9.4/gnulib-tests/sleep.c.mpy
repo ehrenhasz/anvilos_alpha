@@ -1,0 +1,9 @@
+{
+  "module_name": "sleep.c",
+  "hash_id": "c78f4f7f8fc2d8abebfcec41eb69f89fed9646f4931265ca9f4aa962cb909552",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/sleep.c",
+  "human_readable_source": " \n#include <unistd.h>\n\n#include <limits.h>\n\n#if defined _WIN32 && ! defined __CYGWIN__\n\n# define WIN32_LEAN_AND_MEAN   \n# include <windows.h>\n\nunsigned int\nsleep (unsigned int seconds)\n{\n  unsigned int remaining;\n\n   \n  for (remaining = seconds; remaining > 0; remaining--)\n    Sleep (1000);\n\n  return remaining;\n}\n\n#elif HAVE_SLEEP\n\n# undef sleep\n\n \nunsigned int\nrpl_sleep (unsigned int seconds)\n{\n   \n  static_assert (UINT_MAX / 24 / 24 / 60 / 60);\n  const unsigned int limit = 24 * 24 * 60 * 60;\n  while (limit < seconds)\n    {\n      unsigned int result;\n      seconds -= limit;\n      result = sleep (limit);\n      if (result)\n        return seconds + result;\n    }\n  return sleep (seconds);\n}\n\n#else  \n\n #error \"Please port gnulib sleep.c to your platform, possibly using usleep() or select(), then report this to bug-gnulib.\"\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

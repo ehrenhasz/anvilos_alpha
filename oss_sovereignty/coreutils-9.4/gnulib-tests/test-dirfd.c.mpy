@@ -1,0 +1,9 @@
+{
+  "module_name": "test-dirfd.c",
+  "hash_id": "82cb7c37f2c8cf30775f3237b904a8c608577808e55e03389818ea488bb5334a",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-dirfd.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#include <dirent.h>\n\n#include <stdio.h>\n\n#include \"macros.h\"\n\nint\nmain ()\n{\n#if defined _WIN32 && !defined __CYGWIN__\n  fprintf (stderr, \"Skipping test: The DIR type does not contain a file descriptor.\\n\");\n  return 77;\n#else\n   \n  DIR *d = opendir (\".\");\n  int fd = dirfd (d);\n  ASSERT (fd >= 0);\n\n  return 0;\n#endif\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

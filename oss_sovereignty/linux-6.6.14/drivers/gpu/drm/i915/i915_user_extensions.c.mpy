@@ -1,0 +1,9 @@
+{
+  "module_name": "i915_user_extensions.c",
+  "hash_id": "072d982aac6eea8fa4c36c7d2cbc37e26a6ebe50de1a316e00ba34a64808a4d3",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/i915_user_extensions.c",
+  "human_readable_source": " \n\n#include <linux/nospec.h>\n#include <linux/sched/signal.h>\n#include <linux/uaccess.h>\n\n#include <uapi/drm/i915_drm.h>\n\n#include \"i915_user_extensions.h\"\n#include \"i915_utils.h\"\n\nint i915_user_extensions(struct i915_user_extension __user *ext,\n\t\t\t const i915_user_extension_fn *tbl,\n\t\t\t unsigned int count,\n\t\t\t void *data)\n{\n\tunsigned int stackdepth = 512;\n\n\twhile (ext) {\n\t\tint i, err;\n\t\tu32 name;\n\t\tu64 next;\n\n\t\tif (!stackdepth--)  \n\t\t\treturn -E2BIG;\n\n\t\terr = check_user_mbz(&ext->flags);\n\t\tif (err)\n\t\t\treturn err;\n\n\t\tfor (i = 0; i < ARRAY_SIZE(ext->rsvd); i++) {\n\t\t\terr = check_user_mbz(&ext->rsvd[i]);\n\t\t\tif (err)\n\t\t\t\treturn err;\n\t\t}\n\n\t\tif (get_user(name, &ext->name))\n\t\t\treturn -EFAULT;\n\n\t\terr = -EINVAL;\n\t\tif (name < count) {\n\t\t\tname = array_index_nospec(name, count);\n\t\t\tif (tbl[name])\n\t\t\t\terr = tbl[name](ext, data);\n\t\t}\n\t\tif (err)\n\t\t\treturn err;\n\n\t\tif (get_user(next, &ext->next_extension) ||\n\t\t    overflows_type(next, uintptr_t))\n\t\t\treturn -EFAULT;\n\n\t\text = u64_to_user_ptr(next);\n\t}\n\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

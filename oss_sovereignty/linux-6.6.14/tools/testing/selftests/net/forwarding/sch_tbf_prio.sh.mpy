@@ -1,0 +1,9 @@
+{
+  "module_name": "sch_tbf_prio.sh",
+  "hash_id": "d48bd9fb267f8ec3c3e022b76b13e73112038a615f30be6253b953fcdc42ae7d",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/net/forwarding/sch_tbf_prio.sh",
+  "human_readable_source": "#!/bin/bash\n# SPDX-License-Identifier: GPL-2.0\n\nQDISC=\"prio bands\"\n: ${lib_dir:=.}\nsource $lib_dir/sch_tbf_etsprio.sh\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

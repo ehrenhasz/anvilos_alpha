@@ -1,0 +1,9 @@
+{
+  "module_name": "cl-strtold.c",
+  "hash_id": "ee41aa028b21b4fbb2dd43e2573d089333d76b978374c0cc12c3284edbe3558f",
+  "original_prompt": "Ingested from coreutils-9.4/lib/cl-strtold.c",
+  "human_readable_source": "#define LONG 1\n#include \"cl-strtod.c\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

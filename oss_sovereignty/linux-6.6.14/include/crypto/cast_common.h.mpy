@@ -1,0 +1,9 @@
+{
+  "module_name": "cast_common.h",
+  "hash_id": "3c1ef71de39a64da829a4faaf5d9f96d5b88549e1150d07dc3d7cb1c0ab90345",
+  "original_prompt": "Ingested from linux-6.6.14/include/crypto/cast_common.h",
+  "human_readable_source": " \n#ifndef _CRYPTO_CAST_COMMON_H\n#define _CRYPTO_CAST_COMMON_H\n\nextern const u32 cast_s1[256];\nextern const u32 cast_s2[256];\nextern const u32 cast_s3[256];\nextern const u32 cast_s4[256];\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "rtw_btcoex.h",
+  "hash_id": "e7d4f63aa59c53cc802d7817fd2f8877471ceb98bbfc57cc2ec649c03ed546d2",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/rtl8723bs/include/rtw_btcoex.h",
+  "human_readable_source": " \n \n#ifndef __RTW_BTCOEX_H__\n#define __RTW_BTCOEX_H__\n\n#include <drv_types.h>\n\n\n#define\tPACKET_NORMAL\t\t\t0\n#define\tPACKET_DHCP\t\t\t\t1\n#define\tPACKET_ARP\t\t\t\t2\n#define\tPACKET_EAPOL\t\t\t3\n\nvoid rtw_btcoex_MediaStatusNotify(struct adapter *, u8 mediaStatus);\nvoid rtw_btcoex_HaltNotify(struct adapter *);\n\n \n \n \nvoid rtw_btcoex_RejectApAggregatedPacket(struct adapter *, u8 enable);\nvoid rtw_btcoex_LPS_Enter(struct adapter *);\nvoid rtw_btcoex_LPS_Leave(struct adapter *);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

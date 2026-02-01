@@ -1,0 +1,9 @@
+{
+  "module_name": "dentry.c",
+  "hash_id": "37fbc109018ccc0f896b690bfac4cde096a60700e286ad5058121fe8945a3f03",
+  "original_prompt": "Ingested from linux-6.6.14/fs/ecryptfs/dentry.c",
+  "human_readable_source": "\n \n\n#include <linux/dcache.h>\n#include <linux/namei.h>\n#include <linux/mount.h>\n#include <linux/fs_stack.h>\n#include <linux/slab.h>\n#include \"ecryptfs_kernel.h\"\n\n \nstatic int ecryptfs_d_revalidate(struct dentry *dentry, unsigned int flags)\n{\n\tstruct dentry *lower_dentry = ecryptfs_dentry_to_lower(dentry);\n\tint rc = 1;\n\n\tif (flags & LOOKUP_RCU)\n\t\treturn -ECHILD;\n\n\tif (lower_dentry->d_flags & DCACHE_OP_REVALIDATE)\n\t\trc = lower_dentry->d_op->d_revalidate(lower_dentry, flags);\n\n\tif (d_really_is_positive(dentry)) {\n\t\tstruct inode *inode = d_inode(dentry);\n\n\t\tfsstack_copy_attr_all(inode, ecryptfs_inode_to_lower(inode));\n\t\tif (!inode->i_nlink)\n\t\t\treturn 0;\n\t}\n\treturn rc;\n}\n\nstruct kmem_cache *ecryptfs_dentry_info_cache;\n\nstatic void ecryptfs_dentry_free_rcu(struct rcu_head *head)\n{\n\tkmem_cache_free(ecryptfs_dentry_info_cache,\n\t\tcontainer_of(head, struct ecryptfs_dentry_info, rcu));\n}\n\n \nstatic void ecryptfs_d_release(struct dentry *dentry)\n{\n\tstruct ecryptfs_dentry_info *p = dentry->d_fsdata;\n\tif (p) {\n\t\tpath_put(&p->lower_path);\n\t\tcall_rcu(&p->rcu, ecryptfs_dentry_free_rcu);\n\t}\n}\n\nconst struct dentry_operations ecryptfs_dops = {\n\t.d_revalidate = ecryptfs_d_revalidate,\n\t.d_release = ecryptfs_d_release,\n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

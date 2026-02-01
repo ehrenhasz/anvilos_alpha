@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "6e2be8f85b2d275f0f94bb07a6a36b14e29807bd9ab0772001b9246467695e63",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/infiniband/hw/hfi1/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# HFI driver\n#\n#\n#\n# Called from the kernel module build system.\n#\nobj-$(CONFIG_INFINIBAND_HFI1) += hfi1.o\n\nhfi1-y := \\\n\taffinity.o \\\n\taspm.o \\\n\tchip.o \\\n\tdevice.o \\\n\tdriver.o \\\n\tefivar.o \\\n\teprom.o \\\n\texp_rcv.o \\\n\tfile_ops.o \\\n\tfirmware.o \\\n\tinit.o \\\n\tintr.o \\\n\tiowait.o \\\n\tipoib_main.o \\\n\tipoib_rx.o \\\n\tipoib_tx.o \\\n\tmad.o \\\n\tmmu_rb.o \\\n\tmsix.o \\\n\tnetdev_rx.o \\\n\topfn.o \\\n\tpcie.o \\\n\tpin_system.o \\\n\tpio.o \\\n\tpio_copy.o \\\n\tplatform.o \\\n\tqp.o \\\n\tqsfp.o \\\n\trc.o \\\n\truc.o \\\n\tsdma.o \\\n\tsysfs.o \\\n\ttid_rdma.o \\\n\ttrace.o \\\n\tuc.o \\\n\tud.o \\\n\tuser_exp_rcv.o \\\n\tuser_pages.o \\\n\tuser_sdma.o \\\n\tverbs.o \\\n\tverbs_txreq.o \\\n\tvnic_main.o \\\n\tvnic_sdma.o\n\nifdef CONFIG_DEBUG_FS\nhfi1-y += debugfs.o\nifdef CONFIG_FAULT_INJECTION\nifdef CONFIG_FAULT_INJECTION_DEBUG_FS\nhfi1-y += fault.o\nendif\nendif\nendif\n\nCFLAGS_trace.o = -I$(src)\nifdef MVERSION\nCFLAGS_driver.o = -DHFI_DRIVER_VERSION_BASE=\\\"$(MVERSION)\\\"\nendif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

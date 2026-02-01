@@ -1,0 +1,9 @@
+{
+  "module_name": "sxgbe_dma.h",
+  "hash_id": "ec545d6123b8a1bcd0ee9cb591e38d54eeee7f245ea7600a0a98b38f20a4c973",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/samsung/sxgbe/sxgbe_dma.h",
+  "human_readable_source": " \n \n#ifndef __SXGBE_DMA_H__\n#define __SXGBE_DMA_H__\n\n \nstruct sxgbe_extra_stats;\n\n#define SXGBE_DMA_BLENMAP_LSHIFT\t1\n#define SXGBE_DMA_TXPBL_LSHIFT\t\t16\n#define SXGBE_DMA_RXPBL_LSHIFT\t\t16\n#define DEFAULT_DMA_PBL\t\t\t8\n\nstruct sxgbe_dma_ops {\n\t \n\tint (*init)(void __iomem *ioaddr, int fix_burst, int burst_map);\n\tvoid (*cha_init)(void __iomem *ioaddr, int cha_num, int fix_burst,\n\t\t\t int pbl, dma_addr_t dma_tx, dma_addr_t dma_rx,\n\t\t\t int t_rzie, int r_rsize);\n\tvoid (*enable_dma_transmission)(void __iomem *ioaddr, int dma_cnum);\n\tvoid (*enable_dma_irq)(void __iomem *ioaddr, int dma_cnum);\n\tvoid (*disable_dma_irq)(void __iomem *ioaddr, int dma_cnum);\n\tvoid (*start_tx)(void __iomem *ioaddr, int tchannels);\n\tvoid (*start_tx_queue)(void __iomem *ioaddr, int dma_cnum);\n\tvoid (*stop_tx)(void __iomem *ioaddr, int tchannels);\n\tvoid (*stop_tx_queue)(void __iomem *ioaddr, int dma_cnum);\n\tvoid (*start_rx)(void __iomem *ioaddr, int rchannels);\n\tvoid (*stop_rx)(void __iomem *ioaddr, int rchannels);\n\tint (*tx_dma_int_status)(void __iomem *ioaddr, int channel_no,\n\t\t\t\t struct sxgbe_extra_stats *x);\n\tint (*rx_dma_int_status)(void __iomem *ioaddr, int channel_no,\n\t\t\t\t struct sxgbe_extra_stats *x);\n\t \n\tvoid (*rx_watchdog)(void __iomem *ioaddr, u32 riwt);\n\t \n\tvoid (*enable_tso)(void __iomem *ioaddr, u8 chan_num);\n};\n\nconst struct sxgbe_dma_ops *sxgbe_get_dma_ops(void);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

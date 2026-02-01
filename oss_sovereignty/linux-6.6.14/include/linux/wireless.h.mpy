@@ -1,0 +1,9 @@
+{
+  "module_name": "wireless.h",
+  "hash_id": "53a108a186232c98f1674e0509de0281243a9e241d080f25299f06ae7e321ff4",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/wireless.h",
+  "human_readable_source": " \n \n#ifndef _LINUX_WIRELESS_H\n#define _LINUX_WIRELESS_H\n\n#include <uapi/linux/wireless.h>\n\n#ifdef CONFIG_COMPAT\n\n#include <linux/compat.h>\n\nstruct compat_iw_point {\n\tcompat_caddr_t pointer;\n\t__u16 length;\n\t__u16 flags;\n};\n#endif\n#ifdef CONFIG_COMPAT\nstruct __compat_iw_event {\n\t__u16\t\tlen;\t\t\t \n\t__u16\t\tcmd;\t\t\t \n\n\tunion {\n\t\tcompat_caddr_t\tpointer;\n\n\t\t \n\t\tDECLARE_FLEX_ARRAY(__u8, ptr_bytes);\n\t};\n};\n#define IW_EV_COMPAT_LCP_LEN offsetof(struct __compat_iw_event, pointer)\n#define IW_EV_COMPAT_POINT_OFF offsetof(struct compat_iw_point, length)\n\n \n#define IW_EV_COMPAT_CHAR_LEN\t(IW_EV_COMPAT_LCP_LEN + IFNAMSIZ)\n#define IW_EV_COMPAT_UINT_LEN\t(IW_EV_COMPAT_LCP_LEN + sizeof(__u32))\n#define IW_EV_COMPAT_FREQ_LEN\t(IW_EV_COMPAT_LCP_LEN + sizeof(struct iw_freq))\n#define IW_EV_COMPAT_PARAM_LEN\t(IW_EV_COMPAT_LCP_LEN + sizeof(struct iw_param))\n#define IW_EV_COMPAT_ADDR_LEN\t(IW_EV_COMPAT_LCP_LEN + sizeof(struct sockaddr))\n#define IW_EV_COMPAT_QUAL_LEN\t(IW_EV_COMPAT_LCP_LEN + sizeof(struct iw_quality))\n#define IW_EV_COMPAT_POINT_LEN\t\\\n\t(IW_EV_COMPAT_LCP_LEN + sizeof(struct compat_iw_point) - \\\n\t IW_EV_COMPAT_POINT_OFF)\n#endif\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

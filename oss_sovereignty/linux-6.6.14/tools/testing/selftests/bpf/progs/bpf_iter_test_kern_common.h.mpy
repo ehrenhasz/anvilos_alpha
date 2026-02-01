@@ -1,0 +1,9 @@
+{
+  "module_name": "bpf_iter_test_kern_common.h",
+  "hash_id": "eb92dc42b37c9be6f91a006f310d494ffed9c96dc77fbd8dc740f648391f748c",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/bpf_iter_test_kern_common.h",
+  "human_readable_source": " \n \n#include \"bpf_iter.h\"\n#include <bpf/bpf_helpers.h>\n\nchar _license[] SEC(\"license\") = \"GPL\";\nint count = 0;\n\nSEC(\"iter/task\")\nint dump_task(struct bpf_iter__task *ctx)\n{\n\tstruct seq_file *seq = ctx->meta->seq;\n\tchar c;\n\n\tif (count < 4) {\n\t\tc = START_CHAR + count;\n\t\tbpf_seq_write(seq, &c, sizeof(c));\n\t\tcount++;\n\t}\n\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

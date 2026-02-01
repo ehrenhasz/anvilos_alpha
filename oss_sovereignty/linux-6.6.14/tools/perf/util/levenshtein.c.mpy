@@ -1,0 +1,9 @@
+{
+  "module_name": "levenshtein.c",
+  "hash_id": "1a0f8ebf49a4d81b4b0aaa2b4dd3576f3df15c2466bf4f922b5df1dfb971b2e7",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/util/levenshtein.c",
+  "human_readable_source": "\n#include \"levenshtein.h\"\n#include <errno.h>\n#include <stdlib.h>\n#include <string.h>\n\n \nint levenshtein(const char *string1, const char *string2,\n\t\tint w, int s, int a, int d)\n{\n\tint len1 = strlen(string1), len2 = strlen(string2);\n\tint *row0 = malloc(sizeof(int) * (len2 + 1));\n\tint *row1 = malloc(sizeof(int) * (len2 + 1));\n\tint *row2 = malloc(sizeof(int) * (len2 + 1));\n\tint i, j;\n\n\tfor (j = 0; j <= len2; j++)\n\t\trow1[j] = j * a;\n\tfor (i = 0; i < len1; i++) {\n\t\tint *dummy;\n\n\t\trow2[0] = (i + 1) * d;\n\t\tfor (j = 0; j < len2; j++) {\n\t\t\t \n\t\t\trow2[j + 1] = row1[j] + s * (string1[i] != string2[j]);\n\t\t\t \n\t\t\tif (i > 0 && j > 0 && string1[i - 1] == string2[j] &&\n\t\t\t\t\tstring1[i] == string2[j - 1] &&\n\t\t\t\t\trow2[j + 1] > row0[j - 1] + w)\n\t\t\t\trow2[j + 1] = row0[j - 1] + w;\n\t\t\t \n\t\t\tif (row2[j + 1] > row1[j + 1] + d)\n\t\t\t\trow2[j + 1] = row1[j + 1] + d;\n\t\t\t \n\t\t\tif (row2[j + 1] > row2[j] + a)\n\t\t\t\trow2[j + 1] = row2[j] + a;\n\t\t}\n\n\t\tdummy = row0;\n\t\trow0 = row1;\n\t\trow1 = row2;\n\t\trow2 = dummy;\n\t}\n\n\ti = row1[len2];\n\tfree(row0);\n\tfree(row1);\n\tfree(row2);\n\n\treturn i;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "tdx.h",
+  "hash_id": "b18a3389e08d4d52d1917d3693c9e7e140b4dd27f831d093900d0de7226dfcde",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/boot/compressed/tdx.h",
+  "human_readable_source": " \n#ifndef BOOT_COMPRESSED_TDX_H\n#define BOOT_COMPRESSED_TDX_H\n\n#include <linux/types.h>\n\n#ifdef CONFIG_INTEL_TDX_GUEST\nvoid early_tdx_detect(void);\n#else\nstatic inline void early_tdx_detect(void) { };\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

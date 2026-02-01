@@ -1,0 +1,9 @@
+{
+  "module_name": "mtk_vcodec_dbgfs.h",
+  "hash_id": "f984c8749743f828120cfed9803253d01f3905432e95ebdc5dbfb2a30c953973",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/platform/mediatek/vcodec/common/mtk_vcodec_dbgfs.h",
+  "human_readable_source": " \n \n\n#ifndef __MTK_VCODEC_DBGFS_H__\n#define __MTK_VCODEC_DBGFS_H__\n\nstruct mtk_vcodec_dec_dev;\nstruct mtk_vcodec_dec_ctx;\n\n \nenum mtk_vdec_dbgfs_log_index {\n\tMTK_VDEC_DBGFS_PICINFO,\n\tMTK_VDEC_DBGFS_FORMAT,\n\tMTK_VDEC_DBGFS_MAX,\n};\n\n \nstruct mtk_vcodec_dbgfs_inst {\n\tstruct list_head node;\n\tstruct mtk_vcodec_dec_ctx *vcodec_ctx;\n\tint inst_id;\n};\n\n \nstruct mtk_vcodec_dbgfs {\n\tstruct list_head dbgfs_head;\n\tstruct dentry *vcodec_root;\n\tstruct mutex dbgfs_lock;\n\tchar dbgfs_buf[1024];\n\tint buf_size;\n\tint inst_count;\n};\n\n#if defined(CONFIG_DEBUG_FS)\nvoid mtk_vcodec_dbgfs_create(struct mtk_vcodec_dec_ctx *ctx);\nvoid mtk_vcodec_dbgfs_remove(struct mtk_vcodec_dec_dev *vcodec_dev, int ctx_id);\nvoid mtk_vcodec_dbgfs_init(void *vcodec_dev, bool is_encode);\nvoid mtk_vcodec_dbgfs_deinit(struct mtk_vcodec_dbgfs *dbgfs);\n#else\nstatic inline void mtk_vcodec_dbgfs_create(struct mtk_vcodec_dec_ctx *ctx)\n{\n}\n\nstatic inline void mtk_vcodec_dbgfs_remove(struct mtk_vcodec_dec_dev *vcodec_dev, int ctx_id)\n{\n}\n\nstatic inline void mtk_vcodec_dbgfs_init(void *vcodec_dev, bool is_encode)\n{\n}\n\nstatic inline void mtk_vcodec_dbgfs_deinit(struct mtk_vcodec_dbgfs *dbgfs)\n{\n}\n#endif\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

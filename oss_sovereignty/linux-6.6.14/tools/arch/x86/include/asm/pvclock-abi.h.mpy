@@ -1,0 +1,9 @@
+{
+  "module_name": "pvclock-abi.h",
+  "hash_id": "d892920972792d6f651879c5213082e19f32106eb874cc0dabd2377e9d02245f",
+  "original_prompt": "Ingested from linux-6.6.14/tools/arch/x86/include/asm/pvclock-abi.h",
+  "human_readable_source": " \n#ifndef _ASM_X86_PVCLOCK_ABI_H\n#define _ASM_X86_PVCLOCK_ABI_H\n#ifndef __ASSEMBLY__\n\n \n\nstruct pvclock_vcpu_time_info {\n\tu32   version;\n\tu32   pad0;\n\tu64   tsc_timestamp;\n\tu64   system_time;\n\tu32   tsc_to_system_mul;\n\ts8    tsc_shift;\n\tu8    flags;\n\tu8    pad[2];\n} __attribute__((__packed__));  \n\nstruct pvclock_wall_clock {\n\tu32   version;\n\tu32   sec;\n\tu32   nsec;\n} __attribute__((__packed__));\n\n#define PVCLOCK_TSC_STABLE_BIT\t(1 << 0)\n#define PVCLOCK_GUEST_STOPPED\t(1 << 1)\n \n#define PVCLOCK_COUNTS_FROM_ZERO (1 << 2)\n#endif  \n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

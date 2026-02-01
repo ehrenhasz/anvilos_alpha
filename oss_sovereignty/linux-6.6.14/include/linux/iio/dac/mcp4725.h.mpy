@@ -1,0 +1,9 @@
+{
+  "module_name": "mcp4725.h",
+  "hash_id": "fc0ac827362ad212851688f7fb6ad5b2318ee227a044576c3754059358760bfe",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/iio/dac/mcp4725.h",
+  "human_readable_source": " \n \n\n#ifndef IIO_DAC_MCP4725_H_\n#define IIO_DAC_MCP4725_H_\n\n \nstruct mcp4725_platform_data {\n\tbool use_vref;\n\tbool vref_buffered;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

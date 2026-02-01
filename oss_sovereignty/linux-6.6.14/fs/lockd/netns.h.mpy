@@ -1,0 +1,9 @@
+{
+  "module_name": "netns.h",
+  "hash_id": "bc24bb9435bcda484c25a1f9279e9ea1616fff354882feded3767e1cb536f1e0",
+  "original_prompt": "Ingested from linux-6.6.14/fs/lockd/netns.h",
+  "human_readable_source": " \n#ifndef __LOCKD_NETNS_H__\n#define __LOCKD_NETNS_H__\n\n#include <linux/fs.h>\n#include <linux/filelock.h>\n#include <net/netns/generic.h>\n\nstruct lockd_net {\n\tunsigned int nlmsvc_users;\n\tunsigned long next_gc;\n\tunsigned long nrhosts;\n\n\tstruct delayed_work grace_period_end;\n\tstruct lock_manager lockd_manager;\n\n\tstruct list_head nsm_handles;\n};\n\nextern unsigned int lockd_net_id;\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

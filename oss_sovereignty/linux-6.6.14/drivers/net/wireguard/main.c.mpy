@@ -1,0 +1,9 @@
+{
+  "module_name": "main.c",
+  "hash_id": "3cb56edd51158006e645156d17776975ca8a53aaa545372076db595be9ce5c02",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireguard/main.c",
+  "human_readable_source": "\n \n\n#include \"version.h\"\n#include \"device.h\"\n#include \"noise.h\"\n#include \"queueing.h\"\n#include \"ratelimiter.h\"\n#include \"netlink.h\"\n\n#include <uapi/linux/wireguard.h>\n\n#include <linux/init.h>\n#include <linux/module.h>\n#include <linux/genetlink.h>\n#include <net/rtnetlink.h>\n\nstatic int __init wg_mod_init(void)\n{\n\tint ret;\n\n\tret = wg_allowedips_slab_init();\n\tif (ret < 0)\n\t\tgoto err_allowedips;\n\n#ifdef DEBUG\n\tret = -ENOTRECOVERABLE;\n\tif (!wg_allowedips_selftest() || !wg_packet_counter_selftest() ||\n\t    !wg_ratelimiter_selftest())\n\t\tgoto err_peer;\n#endif\n\twg_noise_init();\n\n\tret = wg_peer_init();\n\tif (ret < 0)\n\t\tgoto err_peer;\n\n\tret = wg_device_init();\n\tif (ret < 0)\n\t\tgoto err_device;\n\n\tret = wg_genetlink_init();\n\tif (ret < 0)\n\t\tgoto err_netlink;\n\n\tpr_info(\"WireGuard \" WIREGUARD_VERSION \" loaded. See www.wireguard.com for information.\\n\");\n\tpr_info(\"Copyright (C) 2015-2019 Jason A. Donenfeld <Jason@zx2c4.com>. All Rights Reserved.\\n\");\n\n\treturn 0;\n\nerr_netlink:\n\twg_device_uninit();\nerr_device:\n\twg_peer_uninit();\nerr_peer:\n\twg_allowedips_slab_uninit();\nerr_allowedips:\n\treturn ret;\n}\n\nstatic void __exit wg_mod_exit(void)\n{\n\twg_genetlink_uninit();\n\twg_device_uninit();\n\twg_peer_uninit();\n\twg_allowedips_slab_uninit();\n}\n\nmodule_init(wg_mod_init);\nmodule_exit(wg_mod_exit);\nMODULE_LICENSE(\"GPL v2\");\nMODULE_DESCRIPTION(\"WireGuard secure network tunnel\");\nMODULE_AUTHOR(\"Jason A. Donenfeld <Jason@zx2c4.com>\");\nMODULE_VERSION(WIREGUARD_VERSION);\nMODULE_ALIAS_RTNL_LINK(KBUILD_MODNAME);\nMODULE_ALIAS_GENL_FAMILY(WG_GENL_NAME);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

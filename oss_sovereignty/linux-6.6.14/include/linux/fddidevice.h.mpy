@@ -1,0 +1,9 @@
+{
+  "module_name": "fddidevice.h",
+  "hash_id": "c293e7c032ea715066d2b063b0eabf4d54491fd668ffceeba2fee4816cf58611",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/fddidevice.h",
+  "human_readable_source": " \n \n#ifndef _LINUX_FDDIDEVICE_H\n#define _LINUX_FDDIDEVICE_H\n\n#include <linux/if_fddi.h>\n\n#ifdef __KERNEL__\n__be16 fddi_type_trans(struct sk_buff *skb, struct net_device *dev);\nstruct net_device *alloc_fddidev(int sizeof_priv);\n#endif\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

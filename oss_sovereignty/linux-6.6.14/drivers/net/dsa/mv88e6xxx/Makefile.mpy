@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "a8fbac5ef52d61afed12212e120b6c5436fd64225943745a76920437f5d5ff68",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/dsa/mv88e6xxx/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nobj-$(CONFIG_NET_DSA_MV88E6XXX) += mv88e6xxx.o\nmv88e6xxx-objs := chip.o\nmv88e6xxx-objs += devlink.o\nmv88e6xxx-objs += global1.o\nmv88e6xxx-objs += global1_atu.o\nmv88e6xxx-objs += global1_vtu.o\nmv88e6xxx-objs += global2.o\nmv88e6xxx-objs += global2_avb.o\nmv88e6xxx-objs += global2_scratch.o\nmv88e6xxx-$(CONFIG_NET_DSA_MV88E6XXX_PTP) += hwtstamp.o\nmv88e6xxx-objs += pcs-6185.o\nmv88e6xxx-objs += pcs-6352.o\nmv88e6xxx-objs += pcs-639x.o\nmv88e6xxx-objs += phy.o\nmv88e6xxx-objs += port.o\nmv88e6xxx-objs += port_hidden.o\nmv88e6xxx-$(CONFIG_NET_DSA_MV88E6XXX_PTP) += ptp.o\nmv88e6xxx-objs += serdes.o\nmv88e6xxx-objs += smi.o\nmv88e6xxx-objs += switchdev.o\nmv88e6xxx-objs += trace.o\n\n# for tracing framework to find trace.h\nCFLAGS_trace.o := -I$(src)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "round.c",
+  "hash_id": "e1bfa04ae501b2b66f465e67cb66c4768b6d875422e7bab4988f5fa655bd98cb",
+  "original_prompt": "Ingested from sys_09_Anvil/source/lib/libm_dbl/round.c",
+  "human_readable_source": "#include \"libm.h\"\n\n#if FLT_EVAL_METHOD==0 || FLT_EVAL_METHOD==1\n#define EPS DBL_EPSILON\n#elif FLT_EVAL_METHOD==2\n#define EPS LDBL_EPSILON\n#endif\nstatic const double_t toint = 1/EPS;\n\ndouble round(double x)\n{\n\tunion {double f; uint64_t i;} u = {x};\n\tint e = u.i >> 52 & 0x7ff;\n\tdouble_t y;\n\n\tif (e >= 0x3ff+52)\n\t\treturn x;\n\tif (u.i >> 63)\n\t\tx = -x;\n\tif (e < 0x3ff-1) {\n\t\t \n\t\tFORCE_EVAL(x + toint);\n\t\treturn 0*u.f;\n\t}\n\ty = x + toint - toint - x;\n\tif (y > 0.5)\n\t\ty = y + x - 1;\n\telse if (y <= -0.5)\n\t\ty = y + x + 1;\n\telse\n\t\ty = y + x;\n\tif (u.i >> 63)\n\t\ty = -y;\n\treturn y;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "snapshot.c",
+  "hash_id": "d4ddabeb49e7c11a3ec9514ef56ceeb59e2c6d5d10a5fe3d175e1f2b19552141",
+  "original_prompt": "Ingested from linux-6.6.14/net/ceph/snapshot.c",
+  "human_readable_source": "\n \n\n#include <linux/types.h>\n#include <linux/export.h>\n#include <linux/ceph/libceph.h>\n\n \n\n \nstruct ceph_snap_context *ceph_create_snap_context(u32 snap_count,\n\t\t\t\t\t\tgfp_t gfp_flags)\n{\n\tstruct ceph_snap_context *snapc;\n\tsize_t size;\n\n\tsize = sizeof (struct ceph_snap_context);\n\tsize += snap_count * sizeof (snapc->snaps[0]);\n\tsnapc = kzalloc(size, gfp_flags);\n\tif (!snapc)\n\t\treturn NULL;\n\n\trefcount_set(&snapc->nref, 1);\n\tsnapc->num_snaps = snap_count;\n\n\treturn snapc;\n}\nEXPORT_SYMBOL(ceph_create_snap_context);\n\nstruct ceph_snap_context *ceph_get_snap_context(struct ceph_snap_context *sc)\n{\n\tif (sc)\n\t\trefcount_inc(&sc->nref);\n\treturn sc;\n}\nEXPORT_SYMBOL(ceph_get_snap_context);\n\nvoid ceph_put_snap_context(struct ceph_snap_context *sc)\n{\n\tif (!sc)\n\t\treturn;\n\tif (refcount_dec_and_test(&sc->nref)) {\n\t\t \n\t\tkfree(sc);\n\t}\n}\nEXPORT_SYMBOL(ceph_put_snap_context);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

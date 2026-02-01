@@ -1,0 +1,9 @@
+{
+  "module_name": "all.h",
+  "hash_id": "d4a512e01b084a94f6ba20e2eaf6a3bd984e746b27139677844f8398af7ea1f5",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/comedi/drivers/ni_routing/ni_route_values/all.h",
+  "human_readable_source": " \n \n\n \n\n#ifndef _COMEDI_DRIVERS_NI_ROUTING_NI_ROUTE_VALUES_EXTERN_H\n#define _COMEDI_DRIVERS_NI_ROUTING_NI_ROUTE_VALUES_EXTERN_H\n\n#include \"../ni_route_values.h\"\n\nextern const struct family_route_values ni_660x_route_values;\nextern const struct family_route_values ni_eseries_route_values;\nextern const struct family_route_values ni_mseries_route_values;\n\n#endif \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

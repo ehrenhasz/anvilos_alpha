@@ -1,0 +1,9 @@
+{
+  "module_name": "mdp_reg_wdma.h",
+  "hash_id": "4bee46d0b69d734c3ca714eb700f481f3f4f7ed8df95b9a50a37699c40190ed2",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/platform/mediatek/mdp3/mdp_reg_wdma.h",
+  "human_readable_source": " \n \n\n#ifndef __MDP_REG_WDMA_H__\n#define __MDP_REG_WDMA_H__\n\n#define WDMA_EN                 0x008\n#define WDMA_RST                0x00c\n#define WDMA_CFG                0x014\n#define WDMA_SRC_SIZE           0x018\n#define WDMA_CLIP_SIZE          0x01c\n#define WDMA_CLIP_COORD         0x020\n#define WDMA_DST_W_IN_BYTE      0x028\n#define WDMA_ALPHA              0x02c\n#define WDMA_BUF_CON2           0x03c\n#define WDMA_DST_UV_PITCH       0x078\n#define WDMA_DST_ADDR_OFFSET    0x080\n#define WDMA_DST_U_ADDR_OFFSET  0x084\n#define WDMA_DST_V_ADDR_OFFSET  0x088\n#define WDMA_FLOW_CTRL_DBG      0x0a0\n#define WDMA_DST_ADDR           0xf00\n#define WDMA_DST_U_ADDR         0xf04\n#define WDMA_DST_V_ADDR         0xf08\n\n \n#define WDMA_EN_MASK                0x00000001\n#define WDMA_RST_MASK               0x00000001\n#define WDMA_CFG_MASK               0xff03bff0\n#define WDMA_SRC_SIZE_MASK          0x3fff3fff\n#define WDMA_CLIP_SIZE_MASK         0x3fff3fff\n#define WDMA_CLIP_COORD_MASK        0x3fff3fff\n#define WDMA_DST_W_IN_BYTE_MASK     0x0000ffff\n#define WDMA_ALPHA_MASK             0x800000ff\n#define WDMA_BUF_CON2_MASK          0xffffffff\n#define WDMA_DST_UV_PITCH_MASK      0x0000ffff\n#define WDMA_DST_ADDR_OFFSET_MASK   0x0fffffff\n#define WDMA_DST_U_ADDR_OFFSET_MASK 0x0fffffff\n#define WDMA_DST_V_ADDR_OFFSET_MASK 0x0fffffff\n#define WDMA_FLOW_CTRL_DBG_MASK     0x0000f3ff\n#define WDMA_DST_ADDR_MASK          0xffffffff\n#define WDMA_DST_U_ADDR_MASK        0xffffffff\n#define WDMA_DST_V_ADDR_MASK        0xffffffff\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

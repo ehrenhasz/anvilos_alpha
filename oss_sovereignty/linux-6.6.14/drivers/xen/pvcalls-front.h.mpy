@@ -1,0 +1,9 @@
+{
+  "module_name": "pvcalls-front.h",
+  "hash_id": "c3de6594d092c0f28cce56f03ea048fc03751e36237865c68461a83ce24af83e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/xen/pvcalls-front.h",
+  "human_readable_source": "#ifndef __PVCALLS_FRONT_H__\n#define __PVCALLS_FRONT_H__\n\n#include <linux/net.h>\n\nint pvcalls_front_socket(struct socket *sock);\nint pvcalls_front_connect(struct socket *sock, struct sockaddr *addr,\n\t\t\t  int addr_len, int flags);\nint pvcalls_front_bind(struct socket *sock,\n\t\t       struct sockaddr *addr,\n\t\t       int addr_len);\nint pvcalls_front_listen(struct socket *sock, int backlog);\nint pvcalls_front_accept(struct socket *sock,\n\t\t\t struct socket *newsock,\n\t\t\t int flags);\nint pvcalls_front_sendmsg(struct socket *sock,\n\t\t\t  struct msghdr *msg,\n\t\t\t  size_t len);\nint pvcalls_front_recvmsg(struct socket *sock,\n\t\t\t  struct msghdr *msg,\n\t\t\t  size_t len,\n\t\t\t  int flags);\n__poll_t pvcalls_front_poll(struct file *file,\n\t\t\t\tstruct socket *sock,\n\t\t\t\tpoll_table *wait);\nint pvcalls_front_release(struct socket *sock);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

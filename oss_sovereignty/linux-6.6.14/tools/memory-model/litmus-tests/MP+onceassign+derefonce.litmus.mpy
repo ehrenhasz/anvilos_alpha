@@ -1,0 +1,9 @@
+{
+  "module_name": "MP+onceassign+derefonce.litmus",
+  "hash_id": "d44fdb8a9db390da7bbed6a5ee2001e53aa3614406c80619f84f0172d4533dac",
+  "original_prompt": "Ingested from linux-6.6.14/tools/memory-model/litmus-tests/MP+onceassign+derefonce.litmus",
+  "human_readable_source": "C MP+onceassign+derefonce\n\n(*\n * Result: Never\n *\n * This litmus test demonstrates that rcu_assign_pointer() and\n * rcu_dereference() suffice to ensure that an RCU reader will not see\n * pre-initialization garbage when it traverses an RCU-protected data\n * structure containing a newly inserted element.\n *)\n\n{\np=y;\n}\n\nP0(int *x, int **p) // Producer\n{\n\tWRITE_ONCE(*x, 1);\n\trcu_assign_pointer(*p, x);\n}\n\nP1(int *x, int **p) // Consumer\n{\n\tint *r0;\n\tint r1;\n\n\trcu_read_lock();\n\tr0 = rcu_dereference(*p);\n\tr1 = READ_ONCE(*r0);\n\trcu_read_unlock();\n}\n\nexists (1:r0=x /\\ 1:r1=0) (* Bad outcome. *)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

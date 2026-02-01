@@ -1,0 +1,9 @@
+{
+  "module_name": "random.h",
+  "hash_id": "b577537afd3d67316b32aa70b8c9c283cb30920ba37d66ac45389ab6a8f9947b",
+  "original_prompt": "Ingested from zfs-2.2.2/include/os/freebsd/spl/sys/random.h",
+  "human_readable_source": " \n\n#ifndef _OPENSOLARIS_SYS_RANDOM_H_\n#define\t_OPENSOLARIS_SYS_RANDOM_H_\n\n#include_next <sys/random.h>\n#if  __FreeBSD_version >= 1300108\n#include <sys/prng.h>\n#endif\n\nstatic inline int\nrandom_get_bytes(uint8_t *p, size_t s)\n{\n\tarc4rand(p, (int)s, 0);\n\treturn (0);\n}\n\nstatic inline int\nrandom_get_pseudo_bytes(uint8_t *p, size_t s)\n{\n\tarc4rand(p, (int)s, 0);\n\treturn (0);\n}\n\nstatic inline uint32_t\nrandom_in_range(uint32_t range)\n{\n#if defined(_KERNEL) && __FreeBSD_version >= 1300108\n\treturn (prng32_bounded(range));\n#else\n\tuint32_t r;\n\n\tASSERT(range != 0);\n\n\tif (range == 1)\n\t\treturn (0);\n\n\t(void) random_get_pseudo_bytes((uint8_t *)&r, sizeof (r));\n\n\treturn (r % range);\n#endif\n}\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

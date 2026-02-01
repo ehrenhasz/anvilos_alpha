@@ -1,0 +1,9 @@
+{
+  "module_name": "vm_helper.h",
+  "hash_id": "36604d00bbae2bd21d51a112fdc1814be4be5267dea492fcbeffa99821c85e98",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/dc/inc/vm_helper.h",
+  "human_readable_source": " \n\n#ifndef DC_INC_VM_HELPER_H_\n#define DC_INC_VM_HELPER_H_\n\n#include \"dc_types.h\"\n\n#define MAX_HUBP 6\n\nstruct vmid_usage {\n\tint vmid_usage[2];\n};\n\nstruct vm_helper {\n\tunsigned int num_vmid;\n\tstruct vmid_usage hubp_vmid_usage[MAX_HUBP];\n};\n\nvoid vm_helper_mark_vmid_used(struct vm_helper *vm_helper, unsigned int pos, uint8_t hubp_idx);\n\nvoid vm_helper_init(\n\tstruct vm_helper *vm_helper,\n\tunsigned int num_vmid);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

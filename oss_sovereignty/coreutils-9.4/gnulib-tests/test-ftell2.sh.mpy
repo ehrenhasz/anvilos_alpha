@@ -1,0 +1,9 @@
+{
+  "module_name": "test-ftell2.sh",
+  "hash_id": "79ee1fba28812d4019f805ec9043aea4bb15061f0b1710013bf65b2de7a46574",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-ftell2.sh",
+  "human_readable_source": "#!/bin/sh\n\nexec ${CHECKER} ./test-ftell${EXEEXT} 1 2 < \"$srcdir/test-ftell2.sh\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "mtu3_qmu.h",
+  "hash_id": "a030e63410eac5fe2af05ffcb7495db868f83e4d94edb6cd46072ef54022e489",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/usb/mtu3/mtu3_qmu.h",
+  "human_readable_source": " \n \n\n#ifndef __MTK_QMU_H__\n#define __MTK_QMU_H__\n\n#define MAX_GPD_NUM\t\t64\n#define QMU_GPD_SIZE\t\t(sizeof(struct qmu_gpd))\n#define QMU_GPD_RING_SIZE\t(MAX_GPD_NUM * QMU_GPD_SIZE)\n\n#define GPD_BUF_SIZE\t\t65532\n#define GPD_BUF_SIZE_EL\t\t1048572\n\nvoid mtu3_qmu_stop(struct mtu3_ep *mep);\nint mtu3_qmu_start(struct mtu3_ep *mep);\nvoid mtu3_qmu_resume(struct mtu3_ep *mep);\nvoid mtu3_qmu_flush(struct mtu3_ep *mep);\n\nvoid mtu3_insert_gpd(struct mtu3_ep *mep, struct mtu3_request *mreq);\nint mtu3_prepare_transfer(struct mtu3_ep *mep);\n\nint mtu3_gpd_ring_alloc(struct mtu3_ep *mep);\nvoid mtu3_gpd_ring_free(struct mtu3_ep *mep);\n\nirqreturn_t mtu3_qmu_isr(struct mtu3 *mtu);\nint mtu3_qmu_init(struct mtu3 *mtu);\nvoid mtu3_qmu_exit(struct mtu3 *mtu);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

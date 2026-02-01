@@ -1,0 +1,9 @@
+{
+  "module_name": "kernel-evict-inode.m4",
+  "hash_id": "8d381346f75bcdb3dd25443999bc43f3911b412c44c9800b5bcb0483780c63c0",
+  "original_prompt": "Ingested from zfs-2.2.2/config/kernel-evict-inode.m4",
+  "human_readable_source": "dnl #\ndnl # 2.6.36 API change\ndnl # The sops->delete_inode() and sops->clear_inode() callbacks have\ndnl # replaced by a single sops->evict_inode() callback.\ndnl #\nAC_DEFUN([ZFS_AC_KERNEL_SRC_EVICT_INODE], [\n\tZFS_LINUX_TEST_SRC([evict_inode], [\n\t\t#include <linux/fs.h>\n\t\tvoid evict_inode (struct inode * t) { return; }\n\t\tstatic struct super_operations sops __attribute__ ((unused)) = {\n\t\t\t.evict_inode = evict_inode,\n\t\t};\n\t],[])\n])\n\nAC_DEFUN([ZFS_AC_KERNEL_EVICT_INODE], [\n\tAC_MSG_CHECKING([whether sops->evict_inode() exists])\n\tZFS_LINUX_TEST_RESULT([evict_inode], [\n\t\tAC_MSG_RESULT(yes)\n\t\tAC_DEFINE(HAVE_EVICT_INODE, 1, [sops->evict_inode() exists])\n\t],[\n\t\tZFS_LINUX_TEST_ERROR([evict_inode])\n\t])\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

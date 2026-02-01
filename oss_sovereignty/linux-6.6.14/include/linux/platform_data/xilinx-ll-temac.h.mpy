@@ -1,0 +1,9 @@
+{
+  "module_name": "xilinx-ll-temac.h",
+  "hash_id": "dda59c764eb6d4af4fe5b0e62a2fdb12e09cbdb70789aea3cb384ffab9a880b5",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/platform_data/xilinx-ll-temac.h",
+  "human_readable_source": " \n#ifndef __LINUX_XILINX_LL_TEMAC_H\n#define __LINUX_XILINX_LL_TEMAC_H\n\n#include <linux/if_ether.h>\n#include <linux/phy.h>\n#include <linux/spinlock.h>\n\nstruct ll_temac_platform_data {\n\tbool txcsum;\t\t \n\tbool rxcsum;\t\t \n\tu8 mac_addr[ETH_ALEN];\t \n\t \n\tu32 mdio_clk_freq;\n\tunsigned long long mdio_bus_id;  \n\tint phy_addr;\t\t \n\tphy_interface_t phy_interface;  \n\tbool reg_little_endian;\t \n\tbool dma_little_endian;\t \n\t \n\tspinlock_t *indirect_lock;\n\t \n\tu8 tx_irq_timeout;\t \n\tu8 tx_irq_count;\t \n\tu8 rx_irq_timeout;\t \n\tu8 rx_irq_count;\t \n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

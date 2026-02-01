@@ -1,0 +1,9 @@
+{
+  "module_name": "pm-notifier-error-inject.c",
+  "hash_id": "e2a47b801bd87c2a1a5b91edae9f2da010b9ec980f7370f4aa5ec4b8cd9c6386",
+  "original_prompt": "Ingested from linux-6.6.14/lib/pm-notifier-error-inject.c",
+  "human_readable_source": "\n#include <linux/kernel.h>\n#include <linux/module.h>\n#include <linux/suspend.h>\n\n#include \"notifier-error-inject.h\"\n\nstatic int priority;\nmodule_param(priority, int, 0);\nMODULE_PARM_DESC(priority, \"specify PM notifier priority\");\n\nstatic struct notifier_err_inject pm_notifier_err_inject = {\n\t.actions = {\n\t\t{ NOTIFIER_ERR_INJECT_ACTION(PM_HIBERNATION_PREPARE) },\n\t\t{ NOTIFIER_ERR_INJECT_ACTION(PM_SUSPEND_PREPARE) },\n\t\t{ NOTIFIER_ERR_INJECT_ACTION(PM_RESTORE_PREPARE) },\n\t\t{}\n\t}\n};\n\nstatic struct dentry *dir;\n\nstatic int err_inject_init(void)\n{\n\tint err;\n\n\tdir = notifier_err_inject_init(\"pm\", notifier_err_inject_dir,\n\t\t\t\t\t&pm_notifier_err_inject, priority);\n\tif (IS_ERR(dir))\n\t\treturn PTR_ERR(dir);\n\n\terr = register_pm_notifier(&pm_notifier_err_inject.nb);\n\tif (err)\n\t\tdebugfs_remove_recursive(dir);\n\n\treturn err;\n}\n\nstatic void err_inject_exit(void)\n{\n\tunregister_pm_notifier(&pm_notifier_err_inject.nb);\n\tdebugfs_remove_recursive(dir);\n}\n\nmodule_init(err_inject_init);\nmodule_exit(err_inject_exit);\n\nMODULE_DESCRIPTION(\"PM notifier error injection module\");\nMODULE_LICENSE(\"GPL\");\nMODULE_AUTHOR(\"Akinobu Mita <akinobu.mita@gmail.com>\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

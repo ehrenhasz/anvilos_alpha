@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "d1503e231c787bb0040b75ae8da8a8f61578986fd07dd040db4aace4ea946c44",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/mediatek/mt76/mt7603/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-$(CONFIG_MT7603E) += mt7603e.o\n\nmt7603e-y := \\\n\tpci.o soc.o main.o init.o mcu.o \\\n\tcore.o dma.o mac.o eeprom.o \\\n\tbeacon.o debugfs.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

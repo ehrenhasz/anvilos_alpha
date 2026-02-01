@@ -1,0 +1,9 @@
+{
+  "module_name": "yield.m4",
+  "hash_id": "e795eae159083dc0c7d7c164ab0c5153b33f8bf06a202e75f950900f30365bd3",
+  "original_prompt": "Ingested from coreutils-9.4/m4/yield.m4",
+  "human_readable_source": "# yield.m4 serial 5\ndnl Copyright (C) 2005-2023 Free Software Foundation, Inc.\ndnl This file is free software; the Free Software Foundation\ndnl gives unlimited permission to copy and/or distribute it,\ndnl with or without modifications, as long as this notice is preserved.\n\nAC_DEFUN([gl_YIELD],\n[\n  AC_REQUIRE([gl_PTHREADLIB])\n  AC_REQUIRE([gl_THREADLIB])\n\n  if test $gl_threads_api = posix; then\n    YIELD_LIB=\"$SCHED_YIELD_LIB\"\n  else\n    YIELD_LIB=\n  fi\n  AC_SUBST([YIELD_LIB])\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

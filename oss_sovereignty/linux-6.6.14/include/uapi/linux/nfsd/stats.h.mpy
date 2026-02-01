@@ -1,0 +1,9 @@
+{
+  "module_name": "stats.h",
+  "hash_id": "7370308f85f3a42770b776eab164200efb284c4f338e8bdc6ef866cf7f8dd5ac",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/nfsd/stats.h",
+  "human_readable_source": " \n \n\n#ifndef _UAPILINUX_NFSD_STATS_H\n#define _UAPILINUX_NFSD_STATS_H\n\n#include <linux/nfs4.h>\n\n \n#define\tNFSD_USAGE_WRAP\t(HZ*1000000)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

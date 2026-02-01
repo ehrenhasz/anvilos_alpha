@@ -1,0 +1,9 @@
+{
+  "module_name": "physmap-bt1-rom.h",
+  "hash_id": "b0ff80c858e84de4aeda3666425d654012da8ee74e6667ac283ab5bdec075cb1",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/mtd/maps/physmap-bt1-rom.h",
+  "human_readable_source": " \n#include <linux/mtd/map.h>\n#include <linux/of.h>\n\n#ifdef CONFIG_MTD_PHYSMAP_BT1_ROM\nint of_flash_probe_bt1_rom(struct platform_device *pdev,\n\t\t\t   struct device_node *np,\n\t\t\t   struct map_info *map);\n#else\nstatic inline\nint of_flash_probe_bt1_rom(struct platform_device *pdev,\n\t\t\t   struct device_node *np,\n\t\t\t   struct map_info *map)\n{\n\treturn 0;\n}\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

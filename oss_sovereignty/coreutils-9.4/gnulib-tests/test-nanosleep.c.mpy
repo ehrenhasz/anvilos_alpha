@@ -1,0 +1,9 @@
+{
+  "module_name": "test-nanosleep.c",
+  "hash_id": "9073cd11bb54ffce9d05394867fcea572f76dbe9a94a3363296dcd848f1aef2b",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-nanosleep.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#include <time.h>\n\n#include \"signature.h\"\nSIGNATURE_CHECK (nanosleep, int, (struct timespec const *, struct timespec *));\n\n#include <errno.h>\n#include <signal.h>\n#include <unistd.h>\n\n#include \"macros.h\"\n\n#if HAVE_DECL_ALARM\nstatic void\nhandle_alarm (int sig)\n{\n  if (sig != SIGALRM)\n    _exit (1);\n}\n#endif\n\nint\nmain (void)\n{\n  struct timespec ts;\n\n   \n  ts.tv_sec = 1;\n  ts.tv_nsec = -1;\n  errno = 0;\n  ASSERT (nanosleep (&ts, NULL) == -1);\n  ASSERT (errno == EINVAL);\n\n  ts.tv_sec = 1000;\n  ts.tv_nsec = -1;\n  errno = 0;\n  ASSERT (nanosleep (&ts, NULL) == -1);\n  ASSERT (errno == EINVAL);\n\n   \n  ts.tv_sec = 1000;\n  ts.tv_nsec = 1000000000;\n  errno = 0;\n  ASSERT (nanosleep (&ts, NULL) == -1);\n  ASSERT (errno == EINVAL);\n\n   \n  ts.tv_sec = 0;\n  ts.tv_nsec = 1;\n  ASSERT (nanosleep (&ts, &ts) == 0);\n   \n  ASSERT (ts.tv_sec == 0);\n  ASSERT (ts.tv_nsec == 0 || ts.tv_nsec == 1);\n  ts.tv_nsec = 0;\n  ASSERT (nanosleep (&ts, NULL) == 0);\n\n#if HAVE_DECL_ALARM\n  {\n    const time_t pentecost = 50 * 24 * 60 * 60;  \n    signal (SIGALRM, handle_alarm);\n    alarm (1);\n    ts.tv_sec = pentecost;\n    ts.tv_nsec = 999999999;\n    errno = 0;\n    ASSERT (nanosleep (&ts, &ts) == -1);\n    ASSERT (errno == EINTR);\n    ASSERT (pentecost - 10 < ts.tv_sec && ts.tv_sec <= pentecost);\n    ASSERT (0 <= ts.tv_nsec && ts.tv_nsec <= 999999999);\n  }\n#endif\n\n  return 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

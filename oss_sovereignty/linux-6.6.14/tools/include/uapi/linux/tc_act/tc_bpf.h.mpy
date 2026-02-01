@@ -1,0 +1,9 @@
+{
+  "module_name": "tc_bpf.h",
+  "hash_id": "87791370b93bcc8a2958f9e92a7092becbdc05bcf53f2cae7b9e358dfef7860e",
+  "original_prompt": "Ingested from linux-6.6.14/tools/include/uapi/linux/tc_act/tc_bpf.h",
+  "human_readable_source": " \n \n\n#ifndef __LINUX_TC_BPF_H\n#define __LINUX_TC_BPF_H\n\n#include <linux/pkt_cls.h>\n\nstruct tc_act_bpf {\n\ttc_gen;\n};\n\nenum {\n\tTCA_ACT_BPF_UNSPEC,\n\tTCA_ACT_BPF_TM,\n\tTCA_ACT_BPF_PARMS,\n\tTCA_ACT_BPF_OPS_LEN,\n\tTCA_ACT_BPF_OPS,\n\tTCA_ACT_BPF_FD,\n\tTCA_ACT_BPF_NAME,\n\tTCA_ACT_BPF_PAD,\n\tTCA_ACT_BPF_TAG,\n\tTCA_ACT_BPF_ID,\n\t__TCA_ACT_BPF_MAX,\n};\n#define TCA_ACT_BPF_MAX (__TCA_ACT_BPF_MAX - 1)\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

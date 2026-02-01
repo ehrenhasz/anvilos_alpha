@@ -1,0 +1,9 @@
+{
+  "module_name": "ifnullfree.cocci",
+  "hash_id": "d1cd071dffb1c5c7efe5d5d67fe325363d8ee3614fdfa6db29c02bfc4ef7e640",
+  "original_prompt": "Ingested from linux-6.6.14/scripts/coccinelle/free/ifnullfree.cocci",
+  "human_readable_source": "// SPDX-License-Identifier: GPL-2.0-only\n/// NULL check before some freeing functions is not needed.\n///\n/// Based on checkpatch warning\n/// \"kfree(NULL) is safe this check is probably not required\"\n/// and kfreeaddr.cocci by Julia Lawall.\n///\n// Copyright: (C) 2014 Fabian Frederick.\n// Comments: -\n// Options: --no-includes --include-headers\n\nvirtual patch\nvirtual org\nvirtual report\nvirtual context\n\n@r2 depends on patch@\nexpression E;\n@@\n- if (E != NULL)\n(\n  kfree(E);\n|\n  kvfree(E);\n|\n  kfree_sensitive(E);\n|\n  kvfree_sensitive(E, ...);\n|\n  vfree(E);\n|\n  debugfs_remove(E);\n|\n  debugfs_remove_recursive(E);\n|\n  usb_free_urb(E);\n|\n  kmem_cache_destroy(E);\n|\n  mempool_destroy(E);\n|\n  dma_pool_destroy(E);\n)\n\n@r depends on context || report || org @\nexpression E;\nposition p;\n@@\n\n* if (E != NULL)\n*\t\\(kfree@p\\|kvfree@p\\|kfree_sensitive@p\\|kvfree_sensitive@p\\|vfree@p\\|\n*         debugfs_remove@p\\|debugfs_remove_recursive@p\\|\n*         usb_free_urb@p\\|kmem_cache_destroy@p\\|mempool_destroy@p\\|\n*         dma_pool_destroy@p\\)(E, ...);\n\n@script:python depends on org@\np << r.p;\n@@\n\ncocci.print_main(\"NULL check before that freeing function is not needed\", p)\n\n@script:python depends on report@\np << r.p;\n@@\n\nmsg = \"WARNING: NULL check before some freeing functions is not needed.\"\ncoccilib.report.print_report(p[0], msg)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

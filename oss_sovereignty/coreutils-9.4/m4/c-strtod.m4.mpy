@@ -1,0 +1,9 @@
+{
+  "module_name": "c-strtod.m4",
+  "hash_id": "226dd48622c20c7e1544c581af1e04480ca79831a1bca6da768756e71aaa0bb7",
+  "original_prompt": "Ingested from coreutils-9.4/m4/c-strtod.m4",
+  "human_readable_source": "# c-strtod.m4 serial 19\n\n# Copyright (C) 2004-2006, 2009-2023 Free Software Foundation, Inc.\n# This file is free software; the Free Software Foundation\n# gives unlimited permission to copy and/or distribute it,\n# with or without modifications, as long as this notice is preserved.\n\n# Written by Paul Eggert.\n\ndnl Prerequisites of lib/c-strtod.c.\nAC_DEFUN([gl_C_STRTOD],\n[\n  AC_REQUIRE([gl_USE_SYSTEM_EXTENSIONS])\n  AC_REQUIRE([gt_FUNC_USELOCALE])\n\n  AC_CHECK_HEADERS_ONCE([xlocale.h])\n  dnl We can't use AC_CHECK_FUNC here, because strtod_l() is defined as a\n  dnl static inline function when compiling for Android 7.1 or older.\n  AC_CACHE_CHECK([for strtod_l], [gl_cv_func_strtod_l],\n    [AC_LINK_IFELSE(\n       [AC_LANG_PROGRAM(\n          [[#include <stdlib.h>\n            #include <locale.h>\n            #if HAVE_XLOCALE_H\n            # include <xlocale.h>\n            #endif\n            locale_t loc;\n          ]],\n          [[char *end;\n            return strtod_l(\"0\",&end,loc) < 0.0;\n          ]])\n       ],\n       [gl_cv_func_strtod_l=yes],\n       [gl_cv_func_strtod_l=no])\n    ])\n  if test $gl_cv_func_strtod_l = yes; then\n    HAVE_STRTOD_L=1\n  else\n    HAVE_STRTOD_L=0\n  fi\n  AC_DEFINE_UNQUOTED([HAVE_STRTOD_L], [$HAVE_STRTOD_L],\n    [Define to 1 if the system has the 'strtod_l' function.])\n])\n\ndnl Prerequisites of lib/c-strtold.c.\nAC_DEFUN([gl_C_STRTOLD],\n[\n  AC_REQUIRE([gl_USE_SYSTEM_EXTENSIONS])\n  AC_REQUIRE([gt_FUNC_USELOCALE])\n  gl_CHECK_FUNCS_ANDROID([strtold_l], [[#include <stdlib.h>]])\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

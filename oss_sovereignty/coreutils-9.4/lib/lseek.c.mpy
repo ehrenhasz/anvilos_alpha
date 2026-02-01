@@ -1,0 +1,9 @@
+{
+  "module_name": "lseek.c",
+  "hash_id": "16f60dd936a815f13d78dde802c7ebd16eb485351470d730c76d9b4eee26fbcd",
+  "original_prompt": "Ingested from coreutils-9.4/lib/lseek.c",
+  "human_readable_source": " \n#include <unistd.h>\n\n#if defined _WIN32 && ! defined __CYGWIN__\n \n \n# include <windows.h>\n \n# if GNULIB_MSVC_NOTHROW\n#  include \"msvc-nothrow.h\"\n# else\n#  include <io.h>\n# endif\n#else\n# include <sys/stat.h>\n#endif\n#include <errno.h>\n\n#undef lseek\n\noff_t\nrpl_lseek (int fd, off_t offset, int whence)\n{\n#if defined _WIN32 && ! defined __CYGWIN__\n   \n  HANDLE h = (HANDLE) _get_osfhandle (fd);\n  if (h == INVALID_HANDLE_VALUE)\n    {\n      errno = EBADF;\n      return -1;\n    }\n  if (GetFileType (h) != FILE_TYPE_DISK)\n    {\n      errno = ESPIPE;\n      return -1;\n    }\n#elif defined __APPLE__ && defined __MACH__ && defined SEEK_DATA\n  if (whence == SEEK_DATA)\n    {\n       \n      off_t next_hole = lseek (fd, offset, SEEK_HOLE);\n      if (next_hole < 0)\n        return errno == ENXIO ? offset : next_hole;\n      if (next_hole != offset)\n        whence = SEEK_SET;\n    }\n#else\n   \n  struct stat statbuf;\n  if (fstat (fd, &statbuf) < 0)\n    return -1;\n  if (!S_ISREG (statbuf.st_mode))\n    {\n      errno = ESPIPE;\n      return -1;\n    }\n#endif\n#if _GL_WINDOWS_64_BIT_OFF_T || (defined __MINGW32__ && defined _FILE_OFFSET_BITS && (_FILE_OFFSET_BITS == 64))\n  return _lseeki64 (fd, offset, whence);\n#else\n  return lseek (fd, offset, whence);\n#endif\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

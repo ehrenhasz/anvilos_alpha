@@ -1,0 +1,9 @@
+{
+  "module_name": "util.c",
+  "hash_id": "f4b1a6de248579bd396d0b53ff9d61126ed05609e185315dbdaad67d4b8f0d09",
+  "original_prompt": "Ingested from linux-6.6.14/fs/isofs/util.c",
+  "human_readable_source": "\n \n\n#include <linux/time.h>\n#include \"isofs.h\"\n\n \n\nint iso_date(u8 *p, int flag)\n{\n\tint year, month, day, hour, minute, second, tz;\n\tint crtime;\n\n\tyear = p[0];\n\tmonth = p[1];\n\tday = p[2];\n\thour = p[3];\n\tminute = p[4];\n\tsecond = p[5];\n\tif (flag == 0) tz = p[6];  \n\telse tz = 0;\n\t\n\tif (year < 0) {\n\t\tcrtime = 0;\n\t} else {\n\t\tcrtime = mktime64(year+1900, month, day, hour, minute, second);\n\n\t\t \n\t\tif (tz & 0x80)\n\t\t\ttz |= (-1 << 8);\n\t\t\n\t\t \n\t\tif (-52 <= tz && tz <= 52)\n\t\t\tcrtime -= tz * 15 * 60;\n\t}\n\treturn crtime;\n}\t\t\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

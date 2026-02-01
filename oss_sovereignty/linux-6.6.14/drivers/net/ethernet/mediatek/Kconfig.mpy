@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "c89783539bf47edcf7b8ac9976b15eba6cb8bb29563bc461b6dad2f24d940362",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/mediatek/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig NET_VENDOR_MEDIATEK\n\tbool \"MediaTek devices\"\n\tdepends on ARCH_MEDIATEK || SOC_MT7621 || SOC_MT7620 || COMPILE_TEST\n\thelp\n\t  If you have a Mediatek SoC with ethernet, say Y.\n\nif NET_VENDOR_MEDIATEK\n\nconfig NET_MEDIATEK_SOC_WED\n\tdepends on ARCH_MEDIATEK || COMPILE_TEST\n\tdef_bool NET_MEDIATEK_SOC != n\n\nconfig NET_MEDIATEK_SOC\n\ttristate \"MediaTek SoC Gigabit Ethernet support\"\n\tdepends on NET_DSA || !NET_DSA\n\tselect PINCTRL\n\tselect PHYLINK\n\tselect DIMLIB\n\tselect PAGE_POOL\n\tselect PAGE_POOL_STATS\n\tselect PCS_MTK_LYNXI\n\tselect REGMAP_MMIO\n\thelp\n\t  This driver supports the gigabit ethernet MACs in the\n\t  MediaTek SoC family.\n\nconfig NET_MEDIATEK_STAR_EMAC\n\ttristate \"MediaTek STAR Ethernet MAC support\"\n\tselect PHYLIB\n\tselect REGMAP_MMIO\n\thelp\n\t  This driver supports the ethernet MAC IP first used on\n\t  MediaTek MT85** SoCs.\n\nendif #NET_VENDOR_MEDIATEK\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

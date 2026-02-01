@@ -1,0 +1,9 @@
+{
+  "module_name": "test-memcoll.c",
+  "hash_id": "f927653067d2520196fa3d27c66150a0b58f20bb0c143e35b8e46957f92cd7df",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-memcoll.c",
+  "human_readable_source": " \n  ASSERT (memcoll0 (\"\", 1, \"\", 1) == 0);\n  ASSERT (memcoll0 (\"fo\", 3, \"fo\", 3) == 0);\n  ASSERT (memcoll0 (\"foo\", 4, \"foo\", 4) == 0);\n  ASSERT (memcoll0 (\"foo\\0\", 5, \"foob\", 5) != 0);\n  ASSERT (memcoll0 (\"f\", 2, \"b\", 2) != 0);\n  ASSERT (memcoll0 (\"foo\", 4, \"bar\", 4) != 0);\n\n   \n  ASSERT (memcoll0 (\"foo\\0\", 5, \"moo\\0\", 5) < 0);\n  ASSERT (memcoll0 (\"moo\\0\", 5, \"foo\\0\", 5) > 0);\n  ASSERT (memcoll0 (\"oom\", 4, \"oop\", 4) < 0);\n  ASSERT (memcoll0 (\"oop\", 4, \"oom\", 4) > 0);\n  ASSERT (memcoll0 (\"foo\\0\", 5, \"foob\", 5) < 0);\n  ASSERT (memcoll0 (\"foob\", 5, \"foo\\0\", 5) > 0);\n\n   \n  ASSERT (memcoll0 (\"1\\0\", 3, \"2\\0\", 3) < 0);\n  ASSERT (memcoll0 (\"2\\0\", 3, \"1\\0\", 3) > 0);\n  ASSERT (memcoll0 (\"x\\0\"\"1\", 4, \"x\\0\"\"2\", 4) < 0);\n  ASSERT (memcoll0 (\"x\\0\"\"2\", 4, \"x\\0\"\"1\", 4) > 0);\n\n  return 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

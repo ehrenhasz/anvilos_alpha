@@ -1,0 +1,9 @@
+{
+  "module_name": "cgroup_getset_retval_hooks.c",
+  "hash_id": "1ba49d9f41917a6bd8ee6d8955861d6c5d7e51fb5cedb95e1d676fd0fc437c5c",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/cgroup_getset_retval_hooks.c",
+  "human_readable_source": "\n\n#include <linux/bpf.h>\n#include <bpf/bpf_helpers.h>\n\n#define BPF_RETVAL_HOOK(name, section, ctx, expected_err) \\\n\t__attribute__((__section__(\"?\" section))) \\\n\tint name(struct ctx *_ctx) \\\n\t{ \\\n\t\tbpf_set_retval(bpf_get_retval()); \\\n\t\treturn 1; \\\n\t}\n\n#include \"cgroup_getset_retval_hooks.h\"\n\n#undef BPF_RETVAL_HOOK\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

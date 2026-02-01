@@ -1,0 +1,9 @@
+{
+  "module_name": "ed25519_sk.sig",
+  "hash_id": "7493ac6f4492828783623d892ae4b25230b59a0b2e07d070a26357c2bd66ef59",
+  "original_prompt": "Ingested from openssh-9.6p1/regress/unittests/sshsig/testdata/ed25519_sk.sig",
+  "human_readable_source": "-----BEGIN SSH SIGNATURE-----\nU1NIU0lHAAAAAQAAAEoAAAAac2stc3NoLWVkMjU1MTlAb3BlbnNzaC5jb20AAAAgmxoNhd\nBiu5zpuKUJgMgrhhI54b7OatE7Yz23Tf//sscAAAAEc3NoOgAAAAh1bml0dGVzdAAAAAAA\nAAAGc2hhNTEyAAAAZwAAABpzay1zc2gtZWQyNTUxOUBvcGVuc3NoLmNvbQAAAEAi+7eTjW\n/+LQ2M+sCD+KFtH1n7VFFJon/SZFsxODyV8cWTlFKj617Ys1Ur5TV6uaEXQhck8rBA2oQI\nHTPANLIPARI0Vng=\n-----END SSH SIGNATURE-----\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

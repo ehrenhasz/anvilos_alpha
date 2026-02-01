@@ -1,0 +1,9 @@
+{
+  "module_name": "ipmi_si_parisc.c",
+  "hash_id": "b5651961d665e65b7492d80d9c9ebc1205f92a305899d3e926a515a58c7b01bb",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/char/ipmi/ipmi_si_parisc.c",
+  "human_readable_source": "\n\n#include <linux/module.h>\n#include <asm/hardware.h>\t \n#include <asm/parisc-device.h>\n#include \"ipmi_si.h\"\n\nstatic bool parisc_registered;\n\nstatic int __init ipmi_parisc_probe(struct parisc_device *dev)\n{\n\tstruct si_sm_io io;\n\n\tmemset(&io, 0, sizeof(io));\n\n\tio.si_type\t= SI_KCS;\n\tio.addr_source\t= SI_DEVICETREE;\n\tio.addr_space\t= IPMI_MEM_ADDR_SPACE;\n\tio.addr_data\t= dev->hpa.start;\n\tio.regsize\t= 1;\n\tio.regspacing\t= 1;\n\tio.regshift\t= 0;\n\tio.irq\t\t= 0;  \n\tio.irq_setup\t= NULL;\n\tio.dev\t\t= &dev->dev;\n\n\tdev_dbg(&dev->dev, \"addr 0x%lx\\n\", io.addr_data);\n\n\treturn ipmi_si_add_smi(&io);\n}\n\nstatic void __exit ipmi_parisc_remove(struct parisc_device *dev)\n{\n\tipmi_si_remove_by_dev(&dev->dev);\n}\n\nstatic const struct parisc_device_id ipmi_parisc_tbl[] __initconst = {\n\t{ HPHW_MC, HVERSION_REV_ANY_ID, 0x004, 0xC0 },\n\t{ 0, }\n};\n\nMODULE_DEVICE_TABLE(parisc, ipmi_parisc_tbl);\n\nstatic struct parisc_driver ipmi_parisc_driver __refdata = {\n\t.name =\t\t\"ipmi\",\n\t.id_table =\tipmi_parisc_tbl,\n\t.probe =\tipmi_parisc_probe,\n\t.remove =\t__exit_p(ipmi_parisc_remove),\n};\n\nvoid ipmi_si_parisc_init(void)\n{\n\tregister_parisc_driver(&ipmi_parisc_driver);\n\tparisc_registered = true;\n}\n\nvoid ipmi_si_parisc_shutdown(void)\n{\n\tif (parisc_registered)\n\t\tunregister_parisc_driver(&ipmi_parisc_driver);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

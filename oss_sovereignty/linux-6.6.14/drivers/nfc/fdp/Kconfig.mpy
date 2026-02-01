@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "cf9a81ffcd9192e250eb4d7b37f152551c756003eac7098ce99f879580a144a4",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/nfc/fdp/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig NFC_FDP\n\ttristate \"Intel FDP NFC driver\"\n\tdepends on NFC_NCI\n\tselect CRC_CCITT\n\tdefault n\n\thelp\n\t  Intel Fields Peak NFC controller core driver.\n\t  This is a driver based on the NCI NFC kernel layers.\n\n\t  To compile this driver as a module, choose m here. The module will\n\t  be called fdp.\n\t  Say N if unsure.\n\nconfig NFC_FDP_I2C\n\ttristate \"NFC FDP i2c support\"\n\tdepends on NFC_FDP && I2C\n\thelp\n\t  This module adds support for the Intel Fields Peak NFC controller\n\t  i2c interface.\n\t  Select this if your platform is using the i2c bus.\n\n\t  If you choose to build a module, it'll be called fdp_i2c.\n\t  Say N if unsure.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

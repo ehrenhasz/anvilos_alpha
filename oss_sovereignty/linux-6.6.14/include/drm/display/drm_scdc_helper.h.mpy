@@ -1,0 +1,9 @@
+{
+  "module_name": "drm_scdc_helper.h",
+  "hash_id": "c69d6590ff0b669108b40556f8a50385f57ff51392e00194e6b26c6f752cc532",
+  "original_prompt": "Ingested from linux-6.6.14/include/drm/display/drm_scdc_helper.h",
+  "human_readable_source": " \n\n#ifndef DRM_SCDC_HELPER_H\n#define DRM_SCDC_HELPER_H\n\n#include <linux/types.h>\n\n#include <drm/display/drm_scdc.h>\n\nstruct drm_connector;\nstruct i2c_adapter;\n\nssize_t drm_scdc_read(struct i2c_adapter *adapter, u8 offset, void *buffer,\n\t\t      size_t size);\nssize_t drm_scdc_write(struct i2c_adapter *adapter, u8 offset,\n\t\t       const void *buffer, size_t size);\n\n \nstatic inline int drm_scdc_readb(struct i2c_adapter *adapter, u8 offset,\n\t\t\t\t u8 *value)\n{\n\treturn drm_scdc_read(adapter, offset, value, sizeof(*value));\n}\n\n \nstatic inline int drm_scdc_writeb(struct i2c_adapter *adapter, u8 offset,\n\t\t\t\t  u8 value)\n{\n\treturn drm_scdc_write(adapter, offset, &value, sizeof(value));\n}\n\nbool drm_scdc_get_scrambling_status(struct drm_connector *connector);\n\nbool drm_scdc_set_scrambling(struct drm_connector *connector, bool enable);\nbool drm_scdc_set_high_tmds_clock_ratio(struct drm_connector *connector, bool set);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

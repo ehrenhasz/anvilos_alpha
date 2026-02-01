@@ -1,0 +1,9 @@
+{
+  "module_name": "spi-loongson-pci.c",
+  "hash_id": "674d36983e494cb76fa85e6c81802ce34e559fafe1fb3ee87d24311fa8218181",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/spi/spi-loongson-pci.c",
+  "human_readable_source": "\n\n\n\n#include <linux/mod_devicetable.h>\n#include <linux/pci.h>\n\n#include \"spi-loongson.h\"\n\nstatic int loongson_spi_pci_register(struct pci_dev *pdev,\n\t\t\tconst struct pci_device_id *ent)\n{\n\tint ret;\n\tvoid __iomem *reg_base;\n\tstruct device *dev = &pdev->dev;\n\tint pci_bar = 0;\n\n\tret = pcim_enable_device(pdev);\n\tif (ret < 0)\n\t\treturn dev_err_probe(dev, ret, \"cannot enable pci device\\n\");\n\n\tret = pcim_iomap_regions(pdev, BIT(pci_bar), pci_name(pdev));\n\tif (ret)\n\t\treturn dev_err_probe(dev, ret, \"failed to request and remap memory\\n\");\n\n\treg_base = pcim_iomap_table(pdev)[pci_bar];\n\n\tret = loongson_spi_init_controller(dev, reg_base);\n\tif (ret)\n\t\treturn dev_err_probe(dev, ret, \"failed to initialize controller\\n\");\n\n\treturn 0;\n}\n\nstatic struct pci_device_id loongson_spi_devices[] = {\n\t{ PCI_DEVICE(PCI_VENDOR_ID_LOONGSON, 0x7a0b) },\n\t{ PCI_DEVICE(PCI_VENDOR_ID_LOONGSON, 0x7a1b) },\n\t{ }\n};\nMODULE_DEVICE_TABLE(pci, loongson_spi_devices);\n\nstatic struct pci_driver loongson_spi_pci_driver = {\n\t.name       = \"loongson-spi-pci\",\n\t.id_table   = loongson_spi_devices,\n\t.probe      = loongson_spi_pci_register,\n\t.driver\t= {\n\t\t.bus = &pci_bus_type,\n\t\t.pm = &loongson_spi_dev_pm_ops,\n\t},\n};\nmodule_pci_driver(loongson_spi_pci_driver);\n\nMODULE_DESCRIPTION(\"Loongson spi pci driver\");\nMODULE_LICENSE(\"GPL\");\nMODULE_IMPORT_NS(SPI_LOONGSON_CORE);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

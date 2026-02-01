@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "1a46c2375d0a21f0f5dab8a87da9dd5a5e77f0340756300f092ff6c1364a3a7c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/test-drivers/vicodec/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nvicodec-objs := vicodec-core.o codec-fwht.o codec-v4l2-fwht.o\n\nobj-$(CONFIG_VIDEO_VICODEC) += vicodec.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

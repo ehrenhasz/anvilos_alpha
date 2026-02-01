@@ -1,0 +1,9 @@
+{
+  "module_name": "trace_dummy_st_ops.c",
+  "hash_id": "787e034d7773ea8e401860acf2c73c9d004f7ec81176031874b3a184c308e552",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/trace_dummy_st_ops.c",
+  "human_readable_source": "\n#include <linux/bpf.h>\n#include <bpf/bpf_helpers.h>\n#include <bpf/bpf_tracing.h>\n\nint val = 0;\n\nSEC(\"fentry/test_1\")\nint BPF_PROG(fentry_test_1, __u64 *st_ops_ctx)\n{\n\t__u64 state;\n\n\t \n\tbpf_probe_read_kernel(&state, sizeof(__u64), (void *)st_ops_ctx);\n\t \n\tbpf_probe_read_kernel(&val, sizeof(__u32), (void *)state);\n\n\treturn 0;\n}\n\nchar _license[] SEC(\"license\") = \"GPL\";\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

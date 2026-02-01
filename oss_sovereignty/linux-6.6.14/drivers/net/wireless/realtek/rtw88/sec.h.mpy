@@ -1,0 +1,9 @@
+{
+  "module_name": "sec.h",
+  "hash_id": "08354f5ae5e1e86c8bea4a53543ac6aac3ae1db7a720079a768b1fa48d6d88fc",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/realtek/rtw88/sec.h",
+  "human_readable_source": " \n \n\n#ifndef __RTW_SEC_H_\n#define __RTW_SEC_H_\n\n#define RTW_SEC_CMD_REG\t\t\t0x670\n#define RTW_SEC_WRITE_REG\t\t0x674\n#define RTW_SEC_READ_REG\t\t0x678\n#define RTW_SEC_CONFIG\t\t\t0x680\n\n#define RTW_SEC_CAM_ENTRY_SHIFT\t\t3\n#define RTW_SEC_DEFAULT_KEY_NUM\t\t4\n#define RTW_SEC_CMD_WRITE_ENABLE\tBIT(16)\n#define RTW_SEC_CMD_CLEAR\t\tBIT(30)\n#define RTW_SEC_CMD_POLLING\t\tBIT(31)\n\n#define RTW_SEC_TX_UNI_USE_DK\t\tBIT(0)\n#define RTW_SEC_RX_UNI_USE_DK\t\tBIT(1)\n#define RTW_SEC_TX_DEC_EN\t\tBIT(2)\n#define RTW_SEC_RX_DEC_EN\t\tBIT(3)\n#define RTW_SEC_TX_BC_USE_DK\t\tBIT(6)\n#define RTW_SEC_RX_BC_USE_DK\t\tBIT(7)\n\n#define RTW_SEC_ENGINE_EN\t\tBIT(9)\n\nint rtw_sec_get_free_cam(struct rtw_sec_desc *sec);\nvoid rtw_sec_write_cam(struct rtw_dev *rtwdev,\n\t\t       struct rtw_sec_desc *sec,\n\t\t       struct ieee80211_sta *sta,\n\t\t       struct ieee80211_key_conf *key,\n\t\t       u8 hw_key_type, u8 hw_key_idx);\nvoid rtw_sec_clear_cam(struct rtw_dev *rtwdev,\n\t\t       struct rtw_sec_desc *sec,\n\t\t       u8 hw_key_idx);\nu8 rtw_sec_cam_pg_backup(struct rtw_dev *rtwdev, u8 *used_cam);\nvoid rtw_sec_enable_sec_engine(struct rtw_dev *rtwdev);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

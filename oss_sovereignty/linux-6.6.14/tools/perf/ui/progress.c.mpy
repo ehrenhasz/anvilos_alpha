@@ -1,0 +1,9 @@
+{
+  "module_name": "progress.c",
+  "hash_id": "1fd573e1f970aac3686dd7ed9866d16fbb5e1c3b93cab26f360c10fffefd67df",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/ui/progress.c",
+  "human_readable_source": "\n#include <linux/kernel.h>\n#include \"progress.h\"\n\nstatic void null_progress__update(struct ui_progress *p __maybe_unused)\n{\n}\n\nstatic struct ui_progress_ops null_progress__ops =\n{\n\t.update = null_progress__update,\n};\n\nstruct ui_progress_ops *ui_progress__ops = &null_progress__ops;\n\nvoid ui_progress__update(struct ui_progress *p, u64 adv)\n{\n\tu64 last = p->curr;\n\n\tp->curr += adv;\n\n\tif (p->curr >= p->next) {\n\t\tu64 nr = DIV_ROUND_UP(p->curr - last, p->step);\n\n\t\tp->next += nr * p->step;\n\t\tui_progress__ops->update(p);\n\t}\n}\n\nvoid __ui_progress__init(struct ui_progress *p, u64 total,\n\t\t\t const char *title, bool size)\n{\n\tp->curr = 0;\n\tp->next = p->step = total / 16 ?: 1;\n\tp->total = total;\n\tp->title = title;\n\tp->size  = size;\n\n\tif (ui_progress__ops->init)\n\t\tui_progress__ops->init(p);\n}\n\nvoid ui_progress__finish(void)\n{\n\tif (ui_progress__ops->finish)\n\t\tui_progress__ops->finish();\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

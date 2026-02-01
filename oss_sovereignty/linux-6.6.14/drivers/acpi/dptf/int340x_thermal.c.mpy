@@ -1,0 +1,9 @@
+{
+  "module_name": "int340x_thermal.c",
+  "hash_id": "f42f21bc010b8ce81b148479526f8d43a9409c05aa2568009a0f210be530ce8b",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/acpi/dptf/int340x_thermal.c",
+  "human_readable_source": "\n \n\n#include <linux/acpi.h>\n#include <linux/module.h>\n\n#include \"../internal.h\"\n\n#define INT3401_DEVICE 0X01\nstatic const struct acpi_device_id int340x_thermal_device_ids[] = {\n\t{\"INT3400\"},\n\t{\"INT3401\", INT3401_DEVICE},\n\t{\"INT3402\"},\n\t{\"INT3403\"},\n\t{\"INT3404\"},\n\t{\"INT3406\"},\n\t{\"INT3407\"},\n\t{\"INT3408\"},\n\t{\"INT3409\"},\n\t{\"INT340A\"},\n\t{\"INT340B\"},\n\t{\"INT3532\"},\n\t{\"INTC1040\"},\n\t{\"INTC1041\"},\n\t{\"INTC1042\"},\n\t{\"INTC1043\"},\n\t{\"INTC1044\"},\n\t{\"INTC1045\"},\n\t{\"INTC1046\"},\n\t{\"INTC1047\"},\n\t{\"INTC1048\"},\n\t{\"INTC1049\"},\n\t{\"INTC1050\"},\n\t{\"INTC1060\"},\n\t{\"INTC1061\"},\n\t{\"INTC1062\"},\n\t{\"INTC1063\"},\n\t{\"INTC1064\"},\n\t{\"INTC1065\"},\n\t{\"INTC1066\"},\n\t{\"INTC10A0\"},\n\t{\"INTC10A1\"},\n\t{\"INTC10A2\"},\n\t{\"INTC10A3\"},\n\t{\"INTC10A4\"},\n\t{\"INTC10A5\"},\n\t{\"\"},\n};\n\nstatic int int340x_thermal_handler_attach(struct acpi_device *adev,\n\t\t\t\t\tconst struct acpi_device_id *id)\n{\n\tif (IS_ENABLED(CONFIG_INT340X_THERMAL))\n\t\tacpi_create_platform_device(adev, NULL);\n\t \n\telse if (IS_ENABLED(CONFIG_INTEL_SOC_DTS_THERMAL) &&\n\t\t id->driver_data == INT3401_DEVICE)\n\t\tacpi_create_platform_device(adev, NULL);\n\treturn 1;\n}\n\nstatic struct acpi_scan_handler int340x_thermal_handler = {\n\t.ids = int340x_thermal_device_ids,\n\t.attach = int340x_thermal_handler_attach,\n};\n\nvoid __init acpi_int340x_thermal_init(void)\n{\n\tacpi_scan_add_handler(&int340x_thermal_handler);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

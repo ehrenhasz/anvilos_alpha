@@ -1,0 +1,9 @@
+{
+  "module_name": "config.h",
+  "hash_id": "39d316f5619679d3f9f25cb5f3b2ad131bbfe1aab364792fe5f91fb3562138d2",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/intel/iwlwifi/fw/api/config.h",
+  "human_readable_source": " \n \n#ifndef __iwl_fw_api_config_h__\n#define __iwl_fw_api_config_h__\n\n \nstruct iwl_dqa_enable_cmd {\n\t__le32 cmd_queue;\n} __packed;  \n\n \nstruct iwl_tx_ant_cfg_cmd {\n\t__le32 valid;\n} __packed;\n\n \nstruct iwl_calib_ctrl {\n\t__le32 flow_trigger;\n\t__le32 event_trigger;\n} __packed;\n\n \nenum iwl_calib_cfg {\n\tIWL_CALIB_CFG_XTAL_IDX\t\t\t= BIT(0),\n\tIWL_CALIB_CFG_TEMPERATURE_IDX\t\t= BIT(1),\n\tIWL_CALIB_CFG_VOLTAGE_READ_IDX\t\t= BIT(2),\n\tIWL_CALIB_CFG_PAPD_IDX\t\t\t= BIT(3),\n\tIWL_CALIB_CFG_TX_PWR_IDX\t\t= BIT(4),\n\tIWL_CALIB_CFG_DC_IDX\t\t\t= BIT(5),\n\tIWL_CALIB_CFG_BB_FILTER_IDX\t\t= BIT(6),\n\tIWL_CALIB_CFG_LO_LEAKAGE_IDX\t\t= BIT(7),\n\tIWL_CALIB_CFG_TX_IQ_IDX\t\t\t= BIT(8),\n\tIWL_CALIB_CFG_TX_IQ_SKEW_IDX\t\t= BIT(9),\n\tIWL_CALIB_CFG_RX_IQ_IDX\t\t\t= BIT(10),\n\tIWL_CALIB_CFG_RX_IQ_SKEW_IDX\t\t= BIT(11),\n\tIWL_CALIB_CFG_SENSITIVITY_IDX\t\t= BIT(12),\n\tIWL_CALIB_CFG_CHAIN_NOISE_IDX\t\t= BIT(13),\n\tIWL_CALIB_CFG_DISCONNECTED_ANT_IDX\t= BIT(14),\n\tIWL_CALIB_CFG_ANT_COUPLING_IDX\t\t= BIT(15),\n\tIWL_CALIB_CFG_DAC_IDX\t\t\t= BIT(16),\n\tIWL_CALIB_CFG_ABS_IDX\t\t\t= BIT(17),\n\tIWL_CALIB_CFG_AGC_IDX\t\t\t= BIT(18),\n};\n\n \nstruct iwl_phy_specific_cfg {\n\t__le32 filter_cfg_chains[4];\n} __packed;  \n\n \nstruct iwl_phy_cfg_cmd_v1 {\n\t__le32\tphy_cfg;\n\tstruct iwl_calib_ctrl calib_control;\n} __packed;\n\n \nstruct iwl_phy_cfg_cmd_v3 {\n\t__le32\tphy_cfg;\n\tstruct iwl_calib_ctrl calib_control;\n\tstruct iwl_phy_specific_cfg phy_specific_cfg;\n} __packed;  \n\n \nenum iwl_dc2dc_config_id {\n\tDCDC_LOW_POWER_MODE_MSK_SET  = 0x1,  \n\tDCDC_FREQ_TUNE_SET = 0x2,\n};  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "1bf8b1a866bd7d7aa2a9fa05de5869755374dcc445b22fd9508b7ad5b0589b3c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/infiniband/sw/siw/Kconfig",
+  "human_readable_source": "config RDMA_SIW\n\ttristate \"Software RDMA over TCP/IP (iWARP) driver\"\n\tdepends on INET && INFINIBAND\n\tdepends on INFINIBAND_VIRT_DMA\n\tselect LIBCRC32C\n\tselect CRYPTO\n\tselect CRYPTO_CRC32C\n\thelp\n\tThis driver implements the iWARP RDMA transport over\n\tthe Linux TCP/IP network stack. It enables a system with a\n\tstandard Ethernet adapter to interoperate with a iWARP\n\tadapter or with another system running the SIW driver.\n\t(See also RXE which is a similar software driver for RoCE.)\n\n\tThe driver interfaces with the Linux RDMA stack and\n\timplements both a kernel and user space RDMA verbs API.\n\tThe user space verbs API requires a support\n\tlibrary named libsiw which is loaded by the generic user\n\tspace verbs API, libibverbs. To implement RDMA over\n\tTCP/IP, the driver further interfaces with the Linux\n\tin-kernel TCP socket layer.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

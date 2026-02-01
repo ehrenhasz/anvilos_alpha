@@ -1,0 +1,9 @@
+{
+  "module_name": "sun6i_mipi_csi2.h",
+  "hash_id": "e1ed042a3c3649a0f467dc16b210e9b5345afa134bc3f16a8446b95354f1418e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/platform/sunxi/sun6i-mipi-csi2/sun6i_mipi_csi2.h",
+  "human_readable_source": " \n \n\n#ifndef _SUN6I_MIPI_CSI2_H_\n#define _SUN6I_MIPI_CSI2_H_\n\n#include <linux/phy/phy.h>\n#include <linux/regmap.h>\n#include <linux/reset.h>\n#include <media/v4l2-device.h>\n#include <media/v4l2-fwnode.h>\n\n#define SUN6I_MIPI_CSI2_NAME\t\"sun6i-mipi-csi2\"\n\nenum sun6i_mipi_csi2_pad {\n\tSUN6I_MIPI_CSI2_PAD_SINK\t= 0,\n\tSUN6I_MIPI_CSI2_PAD_SOURCE\t= 1,\n\tSUN6I_MIPI_CSI2_PAD_COUNT\t= 2,\n};\n\nstruct sun6i_mipi_csi2_format {\n\tu32\tmbus_code;\n\tu8\tdata_type;\n\tu32\tbpp;\n};\n\nstruct sun6i_mipi_csi2_bridge {\n\tstruct v4l2_subdev\t\tsubdev;\n\tstruct media_pad\t\tpads[SUN6I_MIPI_CSI2_PAD_COUNT];\n\tstruct v4l2_fwnode_endpoint\tendpoint;\n\tstruct v4l2_async_notifier\tnotifier;\n\tstruct v4l2_mbus_framefmt\tmbus_format;\n\tstruct mutex\t\t\tlock;  \n\n\tstruct v4l2_subdev\t\t*source_subdev;\n};\n\nstruct sun6i_mipi_csi2_device {\n\tstruct device\t\t\t*dev;\n\n\tstruct regmap\t\t\t*regmap;\n\tstruct clk\t\t\t*clock_mod;\n\tstruct reset_control\t\t*reset;\n\tstruct phy\t\t\t*dphy;\n\n\tstruct sun6i_mipi_csi2_bridge\tbridge;\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

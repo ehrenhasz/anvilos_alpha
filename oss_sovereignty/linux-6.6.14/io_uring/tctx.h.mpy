@@ -1,0 +1,9 @@
+{
+  "module_name": "tctx.h",
+  "hash_id": "afaff1efc66dab037300c4985379851ade28470cddac3fcdb138044ad9eff064",
+  "original_prompt": "Ingested from linux-6.6.14/io_uring/tctx.h",
+  "human_readable_source": "\n\nstruct io_tctx_node {\n\tstruct list_head\tctx_node;\n\tstruct task_struct\t*task;\n\tstruct io_ring_ctx\t*ctx;\n};\n\nint io_uring_alloc_task_context(struct task_struct *task,\n\t\t\t\tstruct io_ring_ctx *ctx);\nvoid io_uring_del_tctx_node(unsigned long index);\nint __io_uring_add_tctx_node(struct io_ring_ctx *ctx);\nint __io_uring_add_tctx_node_from_submit(struct io_ring_ctx *ctx);\nvoid io_uring_clean_tctx(struct io_uring_task *tctx);\n\nvoid io_uring_unreg_ringfd(void);\nint io_ringfd_register(struct io_ring_ctx *ctx, void __user *__arg,\n\t\t       unsigned nr_args);\nint io_ringfd_unregister(struct io_ring_ctx *ctx, void __user *__arg,\n\t\t\t unsigned nr_args);\n\n \nstatic inline int io_uring_add_tctx_node(struct io_ring_ctx *ctx)\n{\n\tstruct io_uring_task *tctx = current->io_uring;\n\n\tif (likely(tctx && tctx->last == ctx))\n\t\treturn 0;\n\n\treturn __io_uring_add_tctx_node_from_submit(ctx);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

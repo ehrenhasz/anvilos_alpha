@@ -1,0 +1,9 @@
+{
+  "module_name": "rpmh.h",
+  "hash_id": "0e0a98b6fa66d132244623c6db276d3585f47ca23171d2f3843aa1f45c410731",
+  "original_prompt": "Ingested from linux-6.6.14/include/soc/qcom/rpmh.h",
+  "human_readable_source": " \n \n\n#ifndef __SOC_QCOM_RPMH_H__\n#define __SOC_QCOM_RPMH_H__\n\n#include <soc/qcom/tcs.h>\n#include <linux/platform_device.h>\n\n\n#if IS_ENABLED(CONFIG_QCOM_RPMH)\nint rpmh_write(const struct device *dev, enum rpmh_state state,\n\t       const struct tcs_cmd *cmd, u32 n);\n\nint rpmh_write_async(const struct device *dev, enum rpmh_state state,\n\t\t     const struct tcs_cmd *cmd, u32 n);\n\nint rpmh_write_batch(const struct device *dev, enum rpmh_state state,\n\t\t     const struct tcs_cmd *cmd, u32 *n);\n\nvoid rpmh_invalidate(const struct device *dev);\n\n#else\n\nstatic inline int rpmh_write(const struct device *dev, enum rpmh_state state,\n\t\t\t     const struct tcs_cmd *cmd, u32 n)\n{ return -ENODEV; }\n\nstatic inline int rpmh_write_async(const struct device *dev,\n\t\t\t\t   enum rpmh_state state,\n\t\t\t\t   const struct tcs_cmd *cmd, u32 n)\n{ return -ENODEV; }\n\nstatic inline int rpmh_write_batch(const struct device *dev,\n\t\t\t\t   enum rpmh_state state,\n\t\t\t\t   const struct tcs_cmd *cmd, u32 *n)\n{ return -ENODEV; }\n\nstatic inline void rpmh_invalidate(const struct device *dev)\n{\n}\n\n#endif  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "freplace_cls_redirect.c",
+  "hash_id": "3d907ca19b64528ecfb72de33880fc7a4a67155b32ce3dff68dad7402b3e380c",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/freplace_cls_redirect.c",
+  "human_readable_source": "\n\n\n#include <linux/stddef.h>\n#include <linux/bpf.h>\n#include <linux/pkt_cls.h>\n#include <bpf/bpf_endian.h>\n#include <bpf/bpf_helpers.h>\n\nstruct {\n\t__uint(type, BPF_MAP_TYPE_SOCKMAP);\n\t__type(key, int);\n\t__type(value, int);\n\t__uint(max_entries, 2);\n} sock_map SEC(\".maps\");\n\nSEC(\"freplace/cls_redirect\")\nint freplace_cls_redirect_test(struct __sk_buff *skb)\n{\n\tint ret = 0;\n\tconst int zero = 0;\n\tstruct bpf_sock *sk;\n\n\tsk = bpf_map_lookup_elem(&sock_map, &zero);\n\tif (!sk)\n\t\treturn TC_ACT_SHOT;\n\n\tret = bpf_map_update_elem(&sock_map, &zero, sk, 0);\n\tbpf_sk_release(sk);\n\n\treturn ret == 0 ? TC_ACT_OK : TC_ACT_SHOT;\n}\n\nchar _license[] SEC(\"license\") = \"GPL\";\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

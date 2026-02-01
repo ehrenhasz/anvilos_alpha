@@ -1,0 +1,9 @@
+{
+  "module_name": "qla.h",
+  "hash_id": "7ecf8f38f29a7af34feae5385113402d36177ccfe5059124541a435ce5669e44",
+  "original_prompt": "Ingested from linux-6.6.14/include/trace/events/qla.h",
+  "human_readable_source": " \n#if !defined(_TRACE_QLA_H_) || defined(TRACE_HEADER_MULTI_READ)\n#define _TRACE_QLA_H_\n\n#include <linux/tracepoint.h>\n\n#undef TRACE_SYSTEM\n#define TRACE_SYSTEM qla\n\n#define QLA_MSG_MAX 256\n\n#pragma GCC diagnostic push\n#ifndef __clang__\n#pragma GCC diagnostic ignored \"-Wsuggest-attribute=format\"\n#endif\n\nDECLARE_EVENT_CLASS(qla_log_event,\n\tTP_PROTO(const char *buf,\n\t\tstruct va_format *vaf),\n\n\tTP_ARGS(buf, vaf),\n\n\tTP_STRUCT__entry(\n\t\t__string(buf, buf)\n\t\t__vstring(msg, vaf->fmt, vaf->va)\n\t),\n\tTP_fast_assign(\n\t\t__assign_str(buf, buf);\n\t\t__assign_vstr(msg, vaf->fmt, vaf->va);\n\t),\n\n\tTP_printk(\"%s %s\", __get_str(buf), __get_str(msg))\n);\n\n#pragma GCC diagnostic pop\n\nDEFINE_EVENT(qla_log_event, ql_dbg_log,\n\tTP_PROTO(const char *buf, struct va_format *vaf),\n\tTP_ARGS(buf, vaf)\n);\n\n#endif  \n\n#define TRACE_INCLUDE_FILE qla\n\n#include <trace/define_trace.h>\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

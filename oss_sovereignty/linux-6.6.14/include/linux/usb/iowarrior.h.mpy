@@ -1,0 +1,9 @@
+{
+  "module_name": "iowarrior.h",
+  "hash_id": "235a11e987a13f0142a558ddcd3a40d07b68db539898b55749f80a21fb3b2e57",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/usb/iowarrior.h",
+  "human_readable_source": " \n#ifndef __LINUX_USB_IOWARRIOR_H\n#define __LINUX_USB_IOWARRIOR_H\n\n#define CODEMERCS_MAGIC_NUMBER\t0xC0\t \n\n \n#define IOW_WRITE\t_IOW(CODEMERCS_MAGIC_NUMBER, 1, __u8 *)\n#define IOW_READ\t_IOW(CODEMERCS_MAGIC_NUMBER, 2, __u8 *)\n\n \nstruct iowarrior_info {\n\t \n\t__u32 vendor;\n\t \n\t__u32 product;\n\t \n\t__u8 serial[9];\n\t \n\t__u32 revision;\n\t \n\t__u32 speed;\n\t \n\t__u32 power;\n\t \n\t__u32 if_num;\n\t \n\t__u32 report_size;\n};\n\n \n#define IOW_GETINFO _IOR(CODEMERCS_MAGIC_NUMBER, 3, struct iowarrior_info)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

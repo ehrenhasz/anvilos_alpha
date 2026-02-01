@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "997684aae4d007ff7d3c7f357816f2343d6b460bcdaec21644246ee6813fbbed",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/emulex/benet/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig BE2NET\n\ttristate \"ServerEngines' 10Gbps NIC - BladeEngine\"\n\tdepends on PCI\n\thelp\n\t  This driver implements the NIC functionality for ServerEngines'\n\t  10Gbps network adapter - BladeEngine.\n\nconfig BE2NET_HWMON\n\tbool \"HWMON support for be2net driver\"\n\tdepends on BE2NET && HWMON\n\tdepends on !(BE2NET=y && HWMON=m)\n\tdefault y\n\thelp\n\t  Say Y here if you want to expose thermal sensor data on\n\t  be2net network adapter.\n\nconfig BE2NET_BE2\n\tbool \"Support for BE2 chipsets\"\n\tdepends on BE2NET\n\tdefault y\n\thelp\n\t  Say Y here if you want to use devices based on BE2\n\t  chipsets. (e.g. OneConnect OCe10xxx)\n\nconfig BE2NET_BE3\n\tbool \"Support for BE3 chipsets\"\n\tdepends on BE2NET\n\tdefault y\n\thelp\n\t  Say Y here if you want to use devices based on BE3\n\t  chipsets. (e.g. OneConnect OCe11xxx)\n\nconfig BE2NET_LANCER\n\tbool \"Support for Lancer chipsets\"\n\tdepends on BE2NET\n\tdefault y\n\thelp\n\t  Say Y here if you want to use devices based on Lancer\n\t  chipsets. (e.g LightPulse LPe12xxx)\n\nconfig BE2NET_SKYHAWK\n\tbool \"Support for Skyhawk chipsets\"\n\tdepends on BE2NET\n\tdefault y\n\thelp\n\t  Say Y here if you want to use devices based on Skyhawk\n\t  chipsets. (e.g. OneConnect OCe14xxx)\n\ncomment \"WARNING: be2net is useless without any enabled chip\"\n\tdepends on BE2NET_BE2=n && BE2NET_BE3=n && BE2NET_LANCER=n && \\\n\t\tBE2NET_SKYHAWK=n && BE2NET\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

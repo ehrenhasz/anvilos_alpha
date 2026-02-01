@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "6b69b2642c16d8c2acb7f3ae18d7e83b695d32a6a9b817eecbbd0b8efd6e42da",
+  "original_prompt": "Ingested from linux-6.6.14/virt/lib/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-$(CONFIG_IRQ_BYPASS_MANAGER) += irqbypass.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

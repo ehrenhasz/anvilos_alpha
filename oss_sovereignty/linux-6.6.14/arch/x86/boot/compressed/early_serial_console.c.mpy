@@ -1,0 +1,9 @@
+{
+  "module_name": "early_serial_console.c",
+  "hash_id": "00d3ba66047fcd1578df15f43ee52c54a2c94ed902ad15df2dd940dd3a0c6bbf",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/boot/compressed/early_serial_console.c",
+  "human_readable_source": "#include \"misc.h\"\n\n \nint early_serial_base __section(\".data\");\n\n#include \"../early_serial_console.c\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

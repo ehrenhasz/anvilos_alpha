@@ -1,0 +1,9 @@
+{
+  "module_name": "core.h",
+  "hash_id": "e40b81e390beaf01cae377e08b2d1e0624593dd1fbe32b03c73d59a2ee114c89",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/pinctrl/renesas/core.h",
+  "human_readable_source": " \n#ifndef __SH_PFC_CORE_H__\n#define __SH_PFC_CORE_H__\n\n#include <linux/types.h>\n\n#include \"sh_pfc.h\"\n\nstruct sh_pfc_pin_range {\n\tu16 start;\n\tu16 end;\n};\n\nint sh_pfc_register_gpiochip(struct sh_pfc *pfc);\n\nint sh_pfc_register_pinctrl(struct sh_pfc *pfc);\n\nu32 sh_pfc_read_raw_reg(void __iomem *mapped_reg, unsigned int reg_width);\nvoid sh_pfc_write_raw_reg(void __iomem *mapped_reg, unsigned int reg_width,\n\t\t\t  u32 data);\nu32 sh_pfc_read(struct sh_pfc *pfc, u32 reg);\nvoid sh_pfc_write(struct sh_pfc *pfc, u32 reg, u32 data);\n\nint sh_pfc_get_pin_index(struct sh_pfc *pfc, unsigned int pin);\nint sh_pfc_config_mux(struct sh_pfc *pfc, unsigned mark, int pinmux_type);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

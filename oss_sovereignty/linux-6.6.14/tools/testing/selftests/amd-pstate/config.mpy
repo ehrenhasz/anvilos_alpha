@@ -1,0 +1,9 @@
+{
+  "module_name": "config",
+  "hash_id": "cc8b4eb257cc5406d1ad758d1db68d495cab1986027bce2fb89477f6dea332a7",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/amd-pstate/config",
+  "human_readable_source": "CONFIG_X86_AMD_PSTATE_UT=m\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

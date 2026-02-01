@@ -1,0 +1,9 @@
+{
+  "module_name": "cmpxchg8b_emu.S",
+  "hash_id": "5391f2933864163455cedf91306aaea479d96df6e2ed94860b0bed560ab8ddaa",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/lib/cmpxchg8b_emu.S",
+  "human_readable_source": " \n\n#include <linux/linkage.h>\n#include <asm/export.h>\n#include <asm/percpu.h>\n#include <asm/processor-flags.h>\n\n.text\n\n#ifndef CONFIG_X86_CMPXCHG64\n\n \nSYM_FUNC_START(cmpxchg8b_emu)\n\n\tpushfl\n\tcli\n\n\tcmpl\t0(%esi), %eax\n\tjne\t.Lnot_same\n\tcmpl\t4(%esi), %edx\n\tjne\t.Lnot_same\n\n\tmovl\t%ebx, 0(%esi)\n\tmovl\t%ecx, 4(%esi)\n\n\torl\t$X86_EFLAGS_ZF, (%esp)\n\n\tpopfl\n\tRET\n\n.Lnot_same:\n\tmovl\t0(%esi), %eax\n\tmovl\t4(%esi), %edx\n\n\tandl\t$(~X86_EFLAGS_ZF), (%esp)\n\n\tpopfl\n\tRET\n\nSYM_FUNC_END(cmpxchg8b_emu)\nEXPORT_SYMBOL(cmpxchg8b_emu)\n\n#endif\n\n#ifndef CONFIG_UML\n\nSYM_FUNC_START(this_cpu_cmpxchg8b_emu)\n\n\tpushfl\n\tcli\n\n\tcmpl\tPER_CPU_VAR(0(%esi)), %eax\n\tjne\t.Lnot_same2\n\tcmpl\tPER_CPU_VAR(4(%esi)), %edx\n\tjne\t.Lnot_same2\n\n\tmovl\t%ebx, PER_CPU_VAR(0(%esi))\n\tmovl\t%ecx, PER_CPU_VAR(4(%esi))\n\n\torl\t$X86_EFLAGS_ZF, (%esp)\n\n\tpopfl\n\tRET\n\n.Lnot_same2:\n\tmovl\tPER_CPU_VAR(0(%esi)), %eax\n\tmovl\tPER_CPU_VAR(4(%esi)), %edx\n\n\tandl\t$(~X86_EFLAGS_ZF), (%esp)\n\n\tpopfl\n\tRET\n\nSYM_FUNC_END(this_cpu_cmpxchg8b_emu)\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

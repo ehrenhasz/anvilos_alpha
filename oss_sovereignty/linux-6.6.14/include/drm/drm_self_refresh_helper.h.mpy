@@ -1,0 +1,9 @@
+{
+  "module_name": "drm_self_refresh_helper.h",
+  "hash_id": "aa56a6bc1e9a7ce6bb17420ff8168154e444bc9cf69019a3546d5fa0fa242f38",
+  "original_prompt": "Ingested from linux-6.6.14/include/drm/drm_self_refresh_helper.h",
+  "human_readable_source": "\n \n#ifndef DRM_SELF_REFRESH_HELPER_H_\n#define DRM_SELF_REFRESH_HELPER_H_\n\nstruct drm_atomic_state;\nstruct drm_crtc;\n\nvoid drm_self_refresh_helper_alter_state(struct drm_atomic_state *state);\nvoid drm_self_refresh_helper_update_avg_times(struct drm_atomic_state *state,\n\t\t\t\t\tunsigned int commit_time_ms,\n\t\t\t\t\tunsigned int new_self_refresh_mask);\n\nint drm_self_refresh_helper_init(struct drm_crtc *crtc);\nvoid drm_self_refresh_helper_cleanup(struct drm_crtc *crtc);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

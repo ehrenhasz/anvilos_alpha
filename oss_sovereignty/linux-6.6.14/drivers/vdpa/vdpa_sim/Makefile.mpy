@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "5c1c0b61e8f2fed2b948461672b9de6ca78efea46b4a6a1b26caf8a74c4a4994",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/vdpa/vdpa_sim/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nobj-$(CONFIG_VDPA_SIM) += vdpa_sim.o\nobj-$(CONFIG_VDPA_SIM_NET) += vdpa_sim_net.o\nobj-$(CONFIG_VDPA_SIM_BLOCK) += vdpa_sim_blk.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

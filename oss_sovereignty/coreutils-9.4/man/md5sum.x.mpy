@@ -1,0 +1,9 @@
+{
+  "module_name": "md5sum.x",
+  "hash_id": "0f2588b77c4077ce1713ecc1d442aab0b0eec31bbd10e849c03fe150b0631fff",
+  "original_prompt": "Ingested from coreutils-9.4/man/md5sum.x",
+  "human_readable_source": "[NAME]\nmd5sum \\- compute and check MD5 message digest\n[DESCRIPTION]\n.\\\" Add any additional description here\n[BUGS]\nDo not use the MD5 algorithm for security related purposes.\nInstead, use an SHA\\-2 algorithm, implemented in the programs\nsha224sum(1), sha256sum(1), sha384sum(1), sha512sum(1),\nor the BLAKE2 algorithm, implemented in b2sum(1)\n[SEE ALSO]\ncksum(1)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

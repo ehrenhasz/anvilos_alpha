@@ -1,0 +1,9 @@
+{
+  "module_name": "ip6t_REJECT.h",
+  "hash_id": "794ff473ba689faa8c469420463765c5c3701d3b777c0e2338b8a41e51d6b30a",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/netfilter_ipv6/ip6t_REJECT.h",
+  "human_readable_source": " \n#ifndef _IP6T_REJECT_H\n#define _IP6T_REJECT_H\n\n#include <linux/types.h>\n\nenum ip6t_reject_with {\n\tIP6T_ICMP6_NO_ROUTE,\n\tIP6T_ICMP6_ADM_PROHIBITED,\n\tIP6T_ICMP6_NOT_NEIGHBOUR,\n\tIP6T_ICMP6_ADDR_UNREACH,\n\tIP6T_ICMP6_PORT_UNREACH,\n\tIP6T_ICMP6_ECHOREPLY,\n\tIP6T_TCP_RESET,\n\tIP6T_ICMP6_POLICY_FAIL,\n\tIP6T_ICMP6_REJECT_ROUTE\n};\n\nstruct ip6t_reject_info {\n\t__u32\twith;\t \n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

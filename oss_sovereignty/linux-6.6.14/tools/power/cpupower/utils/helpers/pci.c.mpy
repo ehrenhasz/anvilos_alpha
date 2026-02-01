@@ -1,0 +1,9 @@
+{
+  "module_name": "pci.c",
+  "hash_id": "b4b873b474e5a4e071e26521fcc3a328bff47b4a49f77a97bc24803442ed0644",
+  "original_prompt": "Ingested from linux-6.6.14/tools/power/cpupower/utils/helpers/pci.c",
+  "human_readable_source": "\n#if defined(__i386__) || defined(__x86_64__)\n\n#include <helpers/helpers.h>\n\n \nstruct pci_dev *pci_acc_init(struct pci_access **pacc, int domain, int bus,\n\t\t\t     int slot, int func, int vendor, int dev)\n{\n\tstruct pci_filter filter_nb_link;\n\tstruct pci_dev *device;\n\n\t*pacc = pci_alloc();\n\tif (*pacc == NULL)\n\t\treturn NULL;\n\n\tpci_filter_init(*pacc, &filter_nb_link);\n\tfilter_nb_link.domain\t= domain;\n\tfilter_nb_link.bus\t= bus;\n\tfilter_nb_link.slot\t= slot;\n\tfilter_nb_link.func\t= func;\n\tfilter_nb_link.vendor\t= vendor;\n\tfilter_nb_link.device\t= dev;\n\n\tpci_init(*pacc);\n\tpci_scan_bus(*pacc);\n\n\tfor (device = (*pacc)->devices; device; device = device->next) {\n\t\tif (pci_filter_match(&filter_nb_link, device))\n\t\t\treturn device;\n\t}\n\tpci_cleanup(*pacc);\n\treturn NULL;\n}\n\n \nstruct pci_dev *pci_slot_func_init(struct pci_access **pacc, int slot,\n\t\t\t\t       int func)\n{\n\treturn pci_acc_init(pacc, 0, 0, slot, func, -1, -1);\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "test-u32-strlen.c",
+  "hash_id": "5fb46d320da3091312f78c84f36b448e60191895a2858fc3c56482606bbe223c",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/unistr/test-u32-strlen.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#include \"unistr.h\"\n\n#include \"macros.h\"\n\nint\nmain ()\n{\n   \n  {\n    static const uint32_t input[] = { 0 };\n    ASSERT (u32_strlen (input) == 0);\n  }\n\n   \n  {  \n    static const uint32_t input[] =\n      { 'G', 'r', 0x00FC, 0x00DF, ' ', 'G', 'o', 't', 't', '.', ' ',\n        0x0417, 0x0434, 0x0440, 0x0430, 0x0432, 0x0441, 0x0442, 0x0432, 0x0443,\n        0x0439, 0x0442, 0x0435, '!', ' ',\n        'x', '=', '(', '-', 'b', 0x00B1, 's', 'q', 'r', 't', '(', 'b', 0x00B2,\n        '-', '4', 'a', 'c', ')', ')', '/', '(', '2', 'a', ')', ' ', ' ',\n        0x65E5, 0x672C, 0x8A9E, ',', 0x4E2D, 0x6587, ',', 0xD55C, 0xAE00, 0\n      };\n    ASSERT (u32_strlen (input) == SIZEOF (input) - 1);\n  }\n\n   \n  {\n    static const uint32_t input[] =\n      { '-', '(', 0x1D51E, 0x00D7, 0x1D51F, ')', '=',\n        0x1D51F, 0x00D7, 0x1D51E, 0\n      };\n    ASSERT (u32_strlen (input) == SIZEOF (input) - 1);\n  }\n\n  return 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

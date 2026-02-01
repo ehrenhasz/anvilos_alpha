@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "97be35e81c19c469c8539545d5dda9d72656088492a65aa19b0fb9c29a69e7a0",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/xilinx/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig SND_SOC_XILINX_I2S\n\ttristate \"Audio support for the Xilinx I2S\"\n\thelp\n\t  Select this option to enable Xilinx I2S Audio. This enables\n\t  I2S playback and capture using xilinx soft IP. In transmitter\n\t  mode, IP receives audio in AES format, extracts PCM and sends\n\t  PCM data. In receiver mode, IP receives PCM audio and\n\t  encapsulates PCM in AES format and sends AES data.\n\nconfig SND_SOC_XILINX_AUDIO_FORMATTER\n\ttristate \"Audio support for the Xilinx audio formatter\"\n\thelp\n\t  Select this option to enable Xilinx audio formatter\n\t  support. This provides DMA platform device support for\n\t  audio functionality.\n\nconfig SND_SOC_XILINX_SPDIF\n\ttristate \"Audio support for the Xilinx SPDIF\"\n\thelp\n\t  Select this option to enable Xilinx SPDIF Audio.\n\t  This provides playback and capture of SPDIF audio in\n\t  AES format.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

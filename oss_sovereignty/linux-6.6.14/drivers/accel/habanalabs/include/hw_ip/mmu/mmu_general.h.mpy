@@ -1,0 +1,9 @@
+{
+  "module_name": "mmu_general.h",
+  "hash_id": "88a012e52366f443daf9272e588c0af0808584bee90f78e18f8227a3a8bfe995",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/accel/habanalabs/include/hw_ip/mmu/mmu_general.h",
+  "human_readable_source": " \n\n#ifndef INCLUDE_MMU_GENERAL_H_\n#define INCLUDE_MMU_GENERAL_H_\n\n#define PAGE_SHIFT_4KB\t\t\t12\n#define PAGE_SHIFT_64KB\t\t\t16\n#define PAGE_SHIFT_2MB\t\t\t21\n#define PAGE_SHIFT_16MB\t\t\t24\n#define PAGE_SHIFT_64MB\t\t\t26\n#define PAGE_SHIFT_1GB\t\t\t30\n#define PAGE_SIZE_4KB\t\t\t_BITUL(PAGE_SHIFT_4KB)\n#define PAGE_SIZE_64KB\t\t\t_BITUL(PAGE_SHIFT_64KB)\n#define PAGE_SIZE_2MB\t\t\t_BITUL(PAGE_SHIFT_2MB)\n#define PAGE_SIZE_16MB\t\t\t_BITUL(PAGE_SHIFT_16MB)\n#define PAGE_SIZE_64MB\t\t\t_BITUL(PAGE_SHIFT_64MB)\n#define PAGE_SIZE_1GB\t\t\t_BITUL(PAGE_SHIFT_1GB)\n\n#define PAGE_PRESENT_MASK\t\t0x0000000000001ull\n#define SWAP_OUT_MASK\t\t\t0x0000000000004ull\n#define LAST_MASK\t\t\t0x0000000000800ull\n#define FLAGS_MASK\t\t\t0x0000000000FFFull\n\n#define MMU_ARCH_5_HOPS\t\t\t5\n#define MMU_ARCH_6_HOPS\t\t\t6\n\n#define HOP_PHYS_ADDR_MASK\t\t(~FLAGS_MASK)\n\n#define HL_PTE_SIZE\t\t\tsizeof(u64)\n\n \n#define HOP_PTE_ENTRIES_512\t\t512\n#define HOP_TABLE_SIZE_512_PTE\t\t(HOP_PTE_ENTRIES_512 * HL_PTE_SIZE)\n#define HOP0_512_PTE_TABLES_TOTAL_SIZE\t(HOP_TABLE_SIZE_512_PTE * MAX_ASID)\n\n#define MMU_HOP0_PA43_12_SHIFT\t\t12\n#define MMU_HOP0_PA49_44_SHIFT\t\t(12 + 32)\n#define MMU_HOP0_PA63_44_SHIFT\t\t(12 + 32)\n\n#define MMU_CONFIG_TIMEOUT_USEC\t\t2000  \n\nenum mmu_hop_num {\n\tMMU_HOP0,\n\tMMU_HOP1,\n\tMMU_HOP2,\n\tMMU_HOP3,\n\tMMU_HOP4,\n\tMMU_HOP5,\n\tMMU_HOP_MAX,\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

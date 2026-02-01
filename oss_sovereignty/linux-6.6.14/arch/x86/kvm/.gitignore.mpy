@@ -1,0 +1,9 @@
+{
+  "module_name": ".gitignore",
+  "hash_id": "5eaa5578eeab8b75291f02478a6a477c4d7196f6941a29a0d039f1e668b9508f",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/kvm/.gitignore",
+  "human_readable_source": "/kvm-asm-offsets.s\n/kvm-asm-offsets.h\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

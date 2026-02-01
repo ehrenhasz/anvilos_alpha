@@ -1,0 +1,9 @@
+{
+  "module_name": "zfs_bootenv_os.h",
+  "hash_id": "884029d8eac2c8b567e3d777d8c9aaaaf3c7db0569929c9198a14a8783dba789",
+  "original_prompt": "Ingested from zfs-2.2.2/include/os/linux/zfs/sys/zfs_bootenv_os.h",
+  "human_readable_source": " \n\n \n\n#ifndef _ZFS_BOOTENV_OS_H\n#define\t_ZFS_BOOTENV_OS_H\n\n#ifdef __cplusplus\nextern \"C\" {\n#endif\n\n#define\tBOOTENV_OS\t\tBE_LINUX_VENDOR\n\n#ifdef __cplusplus\n}\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

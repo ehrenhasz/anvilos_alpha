@@ -1,0 +1,9 @@
+{
+  "module_name": "mmci.h",
+  "hash_id": "e3bc7fb29f44c1bb985e664582f4efb5fe48e6c3a84bbe9f45fc7948e9d1ae10",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/amba/mmci.h",
+  "human_readable_source": " \n \n#ifndef AMBA_MMCI_H\n#define AMBA_MMCI_H\n\n#include <linux/mmc/host.h>\n\n \nstruct mmci_platform_data {\n\tunsigned int ocr_mask;\n\tunsigned int (*status)(struct device *);\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

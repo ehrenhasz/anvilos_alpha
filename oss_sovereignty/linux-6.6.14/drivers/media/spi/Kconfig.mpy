@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "acf920aa657c910b1c4561192a2039b15391b8c539a9a8376f97b2637c183c1d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/spi/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nif VIDEO_DEV && SPI\n\ncomment \"SPI I2C drivers auto-selected by 'Autoselect ancillary drivers'\"\n\tdepends on MEDIA_HIDE_ANCILLARY_SUBDRV && SPI\n\nmenu \"Media SPI Adapters\"\n\nconfig CXD2880_SPI_DRV\n\ttristate \"Sony CXD2880 SPI support\"\n\tdepends on DVB_CORE && SPI\n\tdefault m if !MEDIA_SUBDRV_AUTOSELECT\n\thelp\n\t  Choose if you would like to have SPI interface support for Sony CXD2880.\n\nconfig VIDEO_GS1662\n\ttristate \"Gennum Serializers video\"\n\tdepends on SPI && VIDEO_DEV\n\tselect MEDIA_CONTROLLER\n\tselect VIDEO_V4L2_SUBDEV_API\n\thelp\n\t  Enable the GS1662 driver which serializes video streams.\n\nendmenu\n\nendif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

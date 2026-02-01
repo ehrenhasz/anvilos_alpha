@@ -1,0 +1,9 @@
+{
+  "module_name": "illumos-crypto.c",
+  "hash_id": "c3e5b69d487629439c6ac2b6b80f3717bd43cff5fdf130d5e7fd23e5d4e99b4c",
+  "original_prompt": "Ingested from zfs-2.2.2/module/icp/illumos-crypto.c",
+  "human_readable_source": " \n \n\n#ifdef _KERNEL\n#include <linux/module.h>\n#include <linux/kernel.h>\n#include <linux/init.h>\n#else\n#define\t__exit\n#define\t__init\n#endif\n\n#include <sys/crypto/common.h>\n#include <sys/crypto/api.h>\n#include <sys/crypto/impl.h>\n#include <sys/crypto/sched_impl.h>\n#include <sys/crypto/icp.h>\n\n \n\nvoid\nicp_fini(void)\n{\n\tskein_mod_fini();\n\tsha2_mod_fini();\n\taes_mod_fini();\n\tkcf_sched_destroy();\n\tkcf_prov_tab_destroy();\n\tkcf_destroy_mech_tabs();\n}\n\n \nint __init\nicp_init(void)\n{\n\t \n\tkcf_init_mech_tabs();\n\n\t \n\tkcf_prov_tab_init();\n\n\t \n\tkcf_sched_init();\n\n\t \n\taes_mod_init();\n\tsha2_mod_init();\n\tskein_mod_init();\n\n\treturn (0);\n}\n\n#if defined(_KERNEL) && defined(__FreeBSD__)\nmodule_exit(icp_fini);\nmodule_init(icp_init);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

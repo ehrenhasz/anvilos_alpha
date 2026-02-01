@@ -1,0 +1,9 @@
+{
+  "module_name": "u64_stats_sync_api.h",
+  "hash_id": "15ce39a4ac7f8b7fddcdd78590de61f8aa082aff520570f6d2f7512b20219207",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/u64_stats_sync_api.h",
+  "human_readable_source": "#include <linux/u64_stats_sync.h>\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

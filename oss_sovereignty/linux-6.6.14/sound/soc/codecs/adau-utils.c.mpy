@@ -1,0 +1,9 @@
+{
+  "module_name": "adau-utils.c",
+  "hash_id": "dd08d142ea4d30206245accc38c615fa38e2c9f0c4571a424a69fe92eb7ea710",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/codecs/adau-utils.c",
+  "human_readable_source": "\n \n\n#include <linux/gcd.h>\n#include <linux/kernel.h>\n#include <linux/module.h>\n\n#include \"adau-utils.h\"\n\nint adau_calc_pll_cfg(unsigned int freq_in, unsigned int freq_out,\n\tuint8_t regs[5])\n{\n\tunsigned int r, n, m, i, j;\n\tunsigned int div;\n\n\tif (!freq_out) {\n\t\tr = 0;\n\t\tn = 0;\n\t\tm = 0;\n\t\tdiv = 0;\n\t} else {\n\t\tif (freq_out % freq_in != 0) {\n\t\t\tdiv = DIV_ROUND_UP(freq_in, 13500000);\n\t\t\tfreq_in /= div;\n\t\t\tr = freq_out / freq_in;\n\t\t\ti = freq_out % freq_in;\n\t\t\tj = gcd(i, freq_in);\n\t\t\tn = i / j;\n\t\t\tm = freq_in / j;\n\t\t\tdiv--;\n\t\t} else {\n\t\t\tr = freq_out / freq_in;\n\t\t\tn = 0;\n\t\t\tm = 0;\n\t\t\tdiv = 0;\n\t\t}\n\t\tif (n > 0xffff || m > 0xffff || div > 3 || r > 8 || r < 2)\n\t\t\treturn -EINVAL;\n\t}\n\n\tregs[0] = m >> 8;\n\tregs[1] = m & 0xff;\n\tregs[2] = n >> 8;\n\tregs[3] = n & 0xff;\n\tregs[4] = (r << 3) | (div << 1);\n\tif (m != 0)\n\t\tregs[4] |= 1;  \n\n\treturn 0;\n}\nEXPORT_SYMBOL_GPL(adau_calc_pll_cfg);\n\nMODULE_DESCRIPTION(\"ASoC ADAU audio CODECs shared helper functions\");\nMODULE_AUTHOR(\"Lars-Peter Clausen <lars@metafoo.de>\");\nMODULE_LICENSE(\"GPL v2\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

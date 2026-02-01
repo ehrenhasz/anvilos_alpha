@@ -1,0 +1,9 @@
+{
+  "module_name": "i2c-xiic.h",
+  "hash_id": "4ceb434e1323b4dd19650aa4760a008e985ae161e3db98ab6d5ac19f66525445",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/platform_data/i2c-xiic.h",
+  "human_readable_source": " \n \n\n \n\n#ifndef _LINUX_I2C_XIIC_H\n#define _LINUX_I2C_XIIC_H\n\n \nstruct xiic_i2c_platform_data {\n\tu8\t\t\t\tnum_devices;\n\tstruct i2c_board_info const\t*devices;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

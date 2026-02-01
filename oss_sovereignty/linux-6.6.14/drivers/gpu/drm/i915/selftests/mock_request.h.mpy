@@ -1,0 +1,9 @@
+{
+  "module_name": "mock_request.h",
+  "hash_id": "7e1acaa1a852b8e95d6d27ed2a2365da0c415e63e4cde1b80ad3efc7352b12bf",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/selftests/mock_request.h",
+  "human_readable_source": " \n\n#ifndef __MOCK_REQUEST__\n#define __MOCK_REQUEST__\n\n#include <linux/list.h>\n\n#include \"../i915_request.h\"\n\nstruct i915_request *\nmock_request(struct intel_context *ce, unsigned long delay);\n\nbool mock_cancel_request(struct i915_request *request);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "virtio_config.h",
+  "hash_id": "de5e5e94e8f1482ef4967e803c6a63c551191bf7459f0d855f5c0017699c4c37",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/virtio_config.h",
+  "human_readable_source": "#ifndef _UAPI_LINUX_VIRTIO_CONFIG_H\n#define _UAPI_LINUX_VIRTIO_CONFIG_H\n \n\n \n#include <linux/types.h>\n\n \n \n#define VIRTIO_CONFIG_S_ACKNOWLEDGE\t1\n \n#define VIRTIO_CONFIG_S_DRIVER\t\t2\n \n#define VIRTIO_CONFIG_S_DRIVER_OK\t4\n \n#define VIRTIO_CONFIG_S_FEATURES_OK\t8\n \n#define VIRTIO_CONFIG_S_NEEDS_RESET\t0x40\n \n#define VIRTIO_CONFIG_S_FAILED\t\t0x80\n\n \n#define VIRTIO_TRANSPORT_F_START\t28\n#define VIRTIO_TRANSPORT_F_END\t\t41\n\n#ifndef VIRTIO_CONFIG_NO_LEGACY\n \n#define VIRTIO_F_NOTIFY_ON_EMPTY\t24\n\n \n#define VIRTIO_F_ANY_LAYOUT\t\t27\n#endif  \n\n \n#define VIRTIO_F_VERSION_1\t\t32\n\n \n#define VIRTIO_F_ACCESS_PLATFORM\t33\n#ifndef __KERNEL__\n \n#define VIRTIO_F_IOMMU_PLATFORM\t\tVIRTIO_F_ACCESS_PLATFORM\n#endif  \n\n \n#define VIRTIO_F_RING_PACKED\t\t34\n\n \n#define VIRTIO_F_IN_ORDER\t\t35\n\n \n#define VIRTIO_F_ORDER_PLATFORM\t\t36\n\n \n#define VIRTIO_F_SR_IOV\t\t\t37\n\n \n#define VIRTIO_F_NOTIFICATION_DATA\t38\n\n \n#define VIRTIO_F_RING_RESET\t\t40\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

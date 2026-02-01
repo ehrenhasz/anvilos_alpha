@@ -1,0 +1,9 @@
+{
+  "module_name": "const.h",
+  "hash_id": "e25f717784e6d8c90950a30b7ee5bac4c66830ae55c25b1246c9320c2679f6a8",
+  "original_prompt": "Ingested from linux-6.6.14/tools/include/linux/const.h",
+  "human_readable_source": "#ifndef _LINUX_CONST_H\n#define _LINUX_CONST_H\n\n#include <vdso/const.h>\n\n \n#define __is_constexpr(x) \\\n\t(sizeof(int) == sizeof(*(8 ? ((void *)((long)(x) * 0l)) : (int *)8)))\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "multiface.h",
+  "hash_id": "d7af89271eac587deeb8825eb780325c7b63c96258418d5e3aa4dde9375b99f5",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/parport/multiface.h",
+  "human_readable_source": " \n#ifndef _MULTIFACE_H_\n#define _MULTIFACE_H_\n\n \n\n#define PIA_REG_PADWIDTH 255\n\n#define DUARTBASE 0x0000\n#define PITBASE   0x0100\n#define ROMBASE   0x0200\n#define PIABASE   0x4000\n\n#endif\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

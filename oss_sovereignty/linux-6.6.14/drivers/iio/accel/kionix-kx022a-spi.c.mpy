@@ -1,0 +1,9 @@
+{
+  "module_name": "kionix-kx022a-spi.c",
+  "hash_id": "384b86c63a5d805469b7a6d05628f0b7b9972e0d90bd1543cfc46d2f57e82fd7",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/iio/accel/kionix-kx022a-spi.c",
+  "human_readable_source": "\n \n\n#include <linux/interrupt.h>\n#include <linux/module.h>\n#include <linux/regmap.h>\n#include <linux/spi/spi.h>\n\n#include \"kionix-kx022a.h\"\n\nstatic int kx022a_spi_probe(struct spi_device *spi)\n{\n\tstruct device *dev = &spi->dev;\n\tstruct regmap *regmap;\n\n\tif (!spi->irq) {\n\t\tdev_err(dev, \"No IRQ configured\\n\");\n\t\treturn -EINVAL;\n\t}\n\n\tregmap = devm_regmap_init_spi(spi, &kx022a_regmap);\n\tif (IS_ERR(regmap))\n\t\treturn dev_err_probe(dev, PTR_ERR(regmap),\n\t\t\t\t     \"Failed to initialize Regmap\\n\");\n\n\treturn kx022a_probe_internal(dev);\n}\n\nstatic const struct spi_device_id kx022a_id[] = {\n\t{ \"kx022a\" },\n\t{ }\n};\nMODULE_DEVICE_TABLE(spi, kx022a_id);\n\nstatic const struct of_device_id kx022a_of_match[] = {\n\t{ .compatible = \"kionix,kx022a\", },\n\t{ }\n};\nMODULE_DEVICE_TABLE(of, kx022a_of_match);\n\nstatic struct spi_driver kx022a_spi_driver = {\n\t.driver = {\n\t\t.name   = \"kx022a-spi\",\n\t\t.of_match_table = kx022a_of_match,\n\t\t.probe_type = PROBE_PREFER_ASYNCHRONOUS,\n\t},\n\t.probe = kx022a_spi_probe,\n\t.id_table = kx022a_id,\n};\nmodule_spi_driver(kx022a_spi_driver);\n\nMODULE_DESCRIPTION(\"ROHM/Kionix kx022A accelerometer driver\");\nMODULE_AUTHOR(\"Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>\");\nMODULE_LICENSE(\"GPL\");\nMODULE_IMPORT_NS(IIO_KX022A);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

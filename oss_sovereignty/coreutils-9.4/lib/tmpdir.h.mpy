@@ -1,0 +1,9 @@
+{
+  "module_name": "tmpdir.h",
+  "hash_id": "92ca40abaf1ee1c90f8dc9fed1213f149c0d54bd75dcf9de88b595b9e9a3bacf",
+  "original_prompt": "Ingested from coreutils-9.4/lib/tmpdir.h",
+  "human_readable_source": " \nextern int path_search (char *tmpl, size_t tmpl_len, const char *dir, const char *pfx, bool try_tmpdir);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

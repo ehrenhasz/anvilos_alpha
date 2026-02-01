@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "b4e14f8ac6d0435b7ca8bdcfba549ccdbdcc6aad7596cf49a2c2e8c217d0ba69",
+  "original_prompt": "Ingested from linux-6.6.14/tools/net/ynl/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n\nSUBDIRS = lib generated samples\n\nall: $(SUBDIRS)\n\t./ynl-regen.sh -f -p $(PWD)/../../../\n\n$(SUBDIRS):\n\t@if [ -f \"$@/Makefile\" ] ; then \\\n\t\t$(MAKE) -C $@ ; \\\n\tfi\n\nclean hardclean:\n\t@for dir in $(SUBDIRS) ; do \\\n\t\tif [ -f \"$$dir/Makefile\" ] ; then \\\n\t\t\t$(MAKE) -C $$dir $@; \\\n\t\tfi \\\n\tdone\n\n.PHONY: clean all $(SUBDIRS)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

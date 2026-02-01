@@ -1,0 +1,9 @@
+{
+  "module_name": "pvrusb2-v4l2.h",
+  "hash_id": "5fa402450b873a10a6da96291d06b897a1f931eac4584e320f5e65abdd161257",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/usb/pvrusb2/pvrusb2-v4l2.h",
+  "human_readable_source": " \n \n#ifndef __PVRUSB2_V4L2_H\n#define __PVRUSB2_V4L2_H\n\n#include \"pvrusb2-context.h\"\n\nstruct pvr2_v4l2;\n\nstruct pvr2_v4l2 *pvr2_v4l2_create(struct pvr2_context *);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "tc_pedit.h",
+  "hash_id": "907d29c697f3b74dc841af2209499bb3ce33c39cc2fd73908032b6be110cdb1c",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/tc_act/tc_pedit.h",
+  "human_readable_source": " \n#ifndef __LINUX_TC_PED_H\n#define __LINUX_TC_PED_H\n\n#include <linux/types.h>\n#include <linux/pkt_cls.h>\n\nenum {\n\tTCA_PEDIT_UNSPEC,\n\tTCA_PEDIT_TM,\n\tTCA_PEDIT_PARMS,\n\tTCA_PEDIT_PAD,\n\tTCA_PEDIT_PARMS_EX,\n\tTCA_PEDIT_KEYS_EX,\n\tTCA_PEDIT_KEY_EX,\n\t__TCA_PEDIT_MAX\n};\n\n#define TCA_PEDIT_MAX (__TCA_PEDIT_MAX - 1)\n\nenum {\n\tTCA_PEDIT_KEY_EX_HTYPE = 1,\n\tTCA_PEDIT_KEY_EX_CMD = 2,\n\t__TCA_PEDIT_KEY_EX_MAX\n};\n\n#define TCA_PEDIT_KEY_EX_MAX (__TCA_PEDIT_KEY_EX_MAX - 1)\n\n  \nenum pedit_header_type {\n\tTCA_PEDIT_KEY_EX_HDR_TYPE_NETWORK = 0,\n\tTCA_PEDIT_KEY_EX_HDR_TYPE_ETH = 1,\n\tTCA_PEDIT_KEY_EX_HDR_TYPE_IP4 = 2,\n\tTCA_PEDIT_KEY_EX_HDR_TYPE_IP6 = 3,\n\tTCA_PEDIT_KEY_EX_HDR_TYPE_TCP = 4,\n\tTCA_PEDIT_KEY_EX_HDR_TYPE_UDP = 5,\n\t__PEDIT_HDR_TYPE_MAX,\n};\n\n#define TCA_PEDIT_HDR_TYPE_MAX (__PEDIT_HDR_TYPE_MAX - 1)\n\nenum pedit_cmd {\n\tTCA_PEDIT_KEY_EX_CMD_SET = 0,\n\tTCA_PEDIT_KEY_EX_CMD_ADD = 1,\n\t__PEDIT_CMD_MAX,\n};\n\n#define TCA_PEDIT_CMD_MAX (__PEDIT_CMD_MAX - 1)\n\nstruct tc_pedit_key {\n\t__u32           mask;   \n\t__u32           val;    \n\t__u32           off;   \n\t__u32           at;\n\t__u32           offmask;\n\t__u32           shift;\n};\n\nstruct tc_pedit_sel {\n\ttc_gen;\n\tunsigned char           nkeys;\n\tunsigned char           flags;\n\tstruct tc_pedit_key     keys[0];\n};\n\n#define tc_pedit tc_pedit_sel\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

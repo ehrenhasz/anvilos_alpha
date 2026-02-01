@@ -1,0 +1,9 @@
+{
+  "module_name": "xt_CLASSIFY.h",
+  "hash_id": "2394d0f89d492eb37d3481e3b25c0524d4b778d581bfd630cc2a6aebb8cc657d",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/netfilter/xt_CLASSIFY.h",
+  "human_readable_source": " \n#ifndef _XT_CLASSIFY_H\n#define _XT_CLASSIFY_H\n\n#include <linux/types.h>\n\nstruct xt_classify_target_info {\n\t__u32 priority;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

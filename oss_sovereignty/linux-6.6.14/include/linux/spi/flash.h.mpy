@@ -1,0 +1,9 @@
+{
+  "module_name": "flash.h",
+  "hash_id": "31a3f3981ac5c17423f0e187f7e96ea141b621b3eb94d54f35f4b2a9b3ade8df",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/spi/flash.h",
+  "human_readable_source": " \n#ifndef LINUX_SPI_FLASH_H\n#define LINUX_SPI_FLASH_H\n\nstruct mtd_partition;\n\n \nstruct flash_platform_data {\n\tchar\t\t*name;\n\tstruct mtd_partition *parts;\n\tunsigned int\tnr_parts;\n\n\tchar\t\t*type;\n\n\t \n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

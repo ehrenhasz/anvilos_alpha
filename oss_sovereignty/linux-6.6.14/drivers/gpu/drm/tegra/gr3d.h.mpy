@@ -1,0 +1,9 @@
+{
+  "module_name": "gr3d.h",
+  "hash_id": "6920f9940ea1001aa8409e13baae1a807ae7632fde83587674ec12d640b89c0e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/tegra/gr3d.h",
+  "human_readable_source": " \n \n\n#ifndef TEGRA_GR3D_H\n#define TEGRA_GR3D_H\n\n#define GR3D_IDX_ATTRIBUTE(x)\t\t(0x100 + (x) * 2)\n#define GR3D_IDX_INDEX_BASE\t\t0x121\n#define GR3D_QR_ZTAG_ADDR\t\t0x415\n#define GR3D_QR_CTAG_ADDR\t\t0x417\n#define GR3D_QR_CZ_ADDR\t\t\t0x419\n#define GR3D_TEX_TEX_ADDR(x)\t\t(0x710 + (x))\n#define GR3D_DW_MEMORY_OUTPUT_ADDRESS\t0x904\n#define GR3D_GLOBAL_SURFADDR(x)\t\t(0xe00 + (x))\n#define GR3D_GLOBAL_SPILLSURFADDR\t0xe2a\n#define GR3D_GLOBAL_SURFOVERADDR(x)\t(0xe30 + (x))\n#define GR3D_GLOBAL_SAMP01SURFADDR(x)\t(0xe50 + (x))\n#define GR3D_GLOBAL_SAMP23SURFADDR(x)\t(0xe60 + (x))\n\n#define GR3D_NUM_REGS\t\t\t0xe88\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

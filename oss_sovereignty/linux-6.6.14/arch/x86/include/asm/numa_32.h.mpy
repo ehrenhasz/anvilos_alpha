@@ -1,0 +1,9 @@
+{
+  "module_name": "numa_32.h",
+  "hash_id": "6d5e213ff0fadb68daf9205ecc9d6b27a7a201926ae137c200fdcb77281b320a",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/include/asm/numa_32.h",
+  "human_readable_source": " \n#ifndef _ASM_X86_NUMA_32_H\n#define _ASM_X86_NUMA_32_H\n\n#ifdef CONFIG_HIGHMEM\nextern void set_highmem_pages_init(void);\n#else\nstatic inline void set_highmem_pages_init(void)\n{\n}\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

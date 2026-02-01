@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "08d03d1ce9f152a4fc0e893bb4e8c4d90af3249c06894e063b0aa5a84d240b02",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/sof/mediatek/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause)\nobj-$(CONFIG_SND_SOC_SOF_MTK_COMMON) += mtk-adsp-common.o\nobj-$(CONFIG_SND_SOC_SOF_MT8195) += mt8195/\nobj-$(CONFIG_SND_SOC_SOF_MT8186) += mt8186/\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

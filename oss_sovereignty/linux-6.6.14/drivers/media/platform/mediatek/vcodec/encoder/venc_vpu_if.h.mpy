@@ -1,0 +1,9 @@
+{
+  "module_name": "venc_vpu_if.h",
+  "hash_id": "583e3794b14aa8b3c34e4861f0613cd2ddbadfab184aac87f94893f39d453660",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/platform/mediatek/vcodec/encoder/venc_vpu_if.h",
+  "human_readable_source": " \n \n\n#ifndef _VENC_VPU_IF_H_\n#define _VENC_VPU_IF_H_\n\n#include \"venc_drv_if.h\"\n\n \nstruct venc_vpu_inst {\n\twait_queue_head_t wq_hd;\n\tint signaled;\n\tint failure;\n\tint state;\n\tint bs_size;\n\tint is_key_frm;\n\tunsigned int inst_addr;\n\tvoid *vsi;\n\tint id;\n\tstruct mtk_vcodec_enc_ctx *ctx;\n};\n\nint vpu_enc_init(struct venc_vpu_inst *vpu);\nint vpu_enc_set_param(struct venc_vpu_inst *vpu,\n\t\t      enum venc_set_param_type id,\n\t\t      struct venc_enc_param *param);\nint vpu_enc_encode(struct venc_vpu_inst *vpu, unsigned int bs_mode,\n\t\t   struct venc_frm_buf *frm_buf,\n\t\t   struct mtk_vcodec_mem *bs_buf,\n\t\t   struct venc_frame_info *frame_info);\nint vpu_enc_deinit(struct venc_vpu_inst *vpu);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

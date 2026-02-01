@@ -1,0 +1,9 @@
+{
+  "module_name": "vfs.py",
+  "hash_id": "743d6594ef893cb349fbdf18d6493ec2223390f1d478b0c8cccd25009e0a9556",
+  "original_prompt": "Ingested from linux-6.6.14/scripts/gdb/linux/vfs.py",
+  "human_readable_source": "#\n# gdb helper commands and functions for Linux kernel debugging\n#\n#  VFS tools\n#\n# Copyright (c) 2023 Glenn Washburn\n# Copyright (c) 2016 Linaro Ltd\n#\n# Authors:\n#  Glenn Washburn <development@efficientek.com>\n#  Kieran Bingham <kieran.bingham@linaro.org>\n#\n# This work is licensed under the terms of the GNU GPL version 2.\n#\n\nimport gdb\nfrom linux import utils\n\n\ndef dentry_name(d):\n    parent = d['d_parent']\n    if parent == d or parent == 0:\n        return \"\"\n    p = dentry_name(d['d_parent']) + \"/\"\n    return p + d['d_iname'].string()\n\nclass DentryName(gdb.Function):\n    \"\"\"Return string of the full path of a dentry.\n\n$lx_dentry_name(PTR): Given PTR to a dentry struct, return a string\nof the full path of the dentry.\"\"\"\n\n    def __init__(self):\n        super(DentryName, self).__init__(\"lx_dentry_name\")\n\n    def invoke(self, dentry_ptr):\n        return dentry_name(dentry_ptr)\n\nDentryName()\n\n\ndentry_type = utils.CachedType(\"struct dentry\")\n\nclass InodeDentry(gdb.Function):\n    \"\"\"Return dentry pointer for inode.\n\n$lx_i_dentry(PTR): Given PTR to an inode struct, return a pointer to\nthe associated dentry struct, if there is one.\"\"\"\n\n    def __init__(self):\n        super(InodeDentry, self).__init__(\"lx_i_dentry\")\n\n    def invoke(self, inode_ptr):\n        d_u = inode_ptr[\"i_dentry\"][\"first\"]\n        if d_u == 0:\n            return \"\"\n        return utils.container_of(d_u, dentry_type.get_type().pointer(), \"d_u\")\n\nInodeDentry()\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "hns_dsaf_misc.h",
+  "hash_id": "5519aa6571c0bce8c667475e471aed678618f2f43dca22542af4cba1c031658b",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/hisilicon/hns/hns_dsaf_misc.h",
+  "human_readable_source": " \n \n\n#ifndef _HNS_DSAF_MISC_H\n#define _HNS_DSAF_MISC_H\n\n#include <linux/of.h>\n#include <linux/of_address.h>\n#include <linux/platform_device.h>\n\n#include \"hns_dsaf_mac.h\"\n\n#define CPLD_ADDR_PORT_OFFSET\t0x4\n\n#define HS_LED_ON\t\t0xE\n#define HS_LED_OFF\t\t0xF\n\n#define CPLD_LED_ON_VALUE\t1\n#define CPLD_LED_DEFAULT_VALUE\t0\n\n#define MAC_SFP_PORT_OFFSET\t0x2\n\n#define DSAF_LED_SPEED_S 0\n#define DSAF_LED_SPEED_M (0x3 << DSAF_LED_SPEED_S)\n\n#define DSAF_LED_LINK_B 2\n#define DSAF_LED_DATA_B 4\n#define DSAF_LED_ANCHOR_B 5\n\nstruct dsaf_misc_op *hns_misc_op_get(struct dsaf_device *dsaf_dev);\nstruct\nplatform_device *hns_dsaf_find_platform_device(struct fwnode_handle *fwnode);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "5a1c5ab7c86f4bccc77103d6aca98afd198497d8066ae6ae129863bf0c02c5a7",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/misc/cxl/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nccflags-y\t\t\t:= $(call cc-disable-warning, unused-const-variable)\nccflags-$(CONFIG_PPC_WERROR)\t+= -Werror\n\ncxl-y\t\t\t\t+= main.o file.o irq.o fault.o native.o\ncxl-y\t\t\t\t+= context.o sysfs.o pci.o trace.o\ncxl-y\t\t\t\t+= vphb.o api.o cxllib.o\ncxl-$(CONFIG_PPC_PSERIES)\t+= flash.o guest.o of.o hcalls.o\ncxl-$(CONFIG_DEBUG_FS)\t\t+= debugfs.o\nobj-$(CONFIG_CXL)\t\t+= cxl.o\nobj-$(CONFIG_CXL_BASE)\t\t+= base.o\n\n# For tracepoints to include our trace.h from tracepoint infrastructure:\nCFLAGS_trace.o := -I$(src)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

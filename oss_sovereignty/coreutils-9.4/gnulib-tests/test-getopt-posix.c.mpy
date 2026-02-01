@@ -1,0 +1,9 @@
+{
+  "module_name": "test-getopt-posix.c",
+  "hash_id": "4ee7d3e8e03665f7e71cb6770be9342c8612f90e4c0c7c88bf6f3ed6151695db",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-getopt-posix.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n \n#define _GL_NO_LARGE_FILES\n\n \n#include <unistd.h>\n\n#define TEST_GETOPT_GNU 0\n#define TEST_GETOPT_TMP_NAME \"test-getopt-posix.tmp\"\n#include \"test-getopt-main.h\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

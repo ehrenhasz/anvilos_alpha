@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "95cc0cac97d6dea79f8e51bc445051e3cb2e58eed446a0a8772c4162d609a2da",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/vfio/platform/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nmenu \"VFIO support for platform devices\"\n\tdepends on ARM || ARM64 || COMPILE_TEST\n\nconfig VFIO_PLATFORM_BASE\n\ttristate\n\tselect VFIO_VIRQFD\n\nconfig VFIO_PLATFORM\n\ttristate \"Generic VFIO support for any platform device\"\n\tselect VFIO_PLATFORM_BASE\n\thelp\n\t  Support for platform devices with VFIO. This is required to make\n\t  use of platform devices present on the system using the VFIO\n\t  framework.\n\n\t  If you don't know what to do here, say N.\n\nconfig VFIO_AMBA\n\ttristate \"VFIO support for AMBA devices\"\n\tdepends on ARM_AMBA || COMPILE_TEST\n\tselect VFIO_PLATFORM_BASE\n\thelp\n\t  Support for ARM AMBA devices with VFIO. This is required to make\n\t  use of ARM AMBA devices present on the system using the VFIO\n\t  framework.\n\n\t  If you don't know what to do here, say N.\n\nmenu \"VFIO platform reset drivers\"\n\tdepends on VFIO_PLATFORM_BASE\n\nsource \"drivers/vfio/platform/reset/Kconfig\"\nendmenu\nendmenu\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

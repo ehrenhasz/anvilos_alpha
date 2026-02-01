@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "e718598f1e90421586c27c8c7e8d9d8356c959e302e1c2048f42323b7a156b6e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/macintosh/ams/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Makefile for Apple Motion Sensor driver\n#\n\nams-y\t\t\t\t\t:= ams-core.o ams-input.o\nams-$(CONFIG_SENSORS_AMS_PMU)\t\t+= ams-pmu.o\nams-$(CONFIG_SENSORS_AMS_I2C)\t\t+= ams-i2c.o\nobj-$(CONFIG_SENSORS_AMS)\t\t+= ams.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

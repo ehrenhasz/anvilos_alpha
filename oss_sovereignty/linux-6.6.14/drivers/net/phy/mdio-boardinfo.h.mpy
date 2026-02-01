@@ -1,0 +1,9 @@
+{
+  "module_name": "mdio-boardinfo.h",
+  "hash_id": "46957fc3314c2bd17d22bd9ad3591acf661343618f77dcd65194c7d18b7a21e3",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/phy/mdio-boardinfo.h",
+  "human_readable_source": " \n \n\n#ifndef __MDIO_BOARD_INFO_H\n#define __MDIO_BOARD_INFO_H\n\n#include <linux/phy.h>\n#include <linux/mutex.h>\n\nstruct mdio_board_entry {\n\tstruct list_head\tlist;\n\tstruct mdio_board_info\tboard_info;\n};\n\nvoid mdiobus_setup_mdiodev_from_board_info(struct mii_bus *bus,\n\t\t\t\t\t   int (*cb)\n\t\t\t\t\t   (struct mii_bus *bus,\n\t\t\t\t\t    struct mdio_board_info *bi));\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

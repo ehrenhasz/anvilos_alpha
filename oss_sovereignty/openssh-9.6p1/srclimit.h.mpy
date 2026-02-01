@@ -1,0 +1,9 @@
+{
+  "module_name": "srclimit.h",
+  "hash_id": "f61b3ddff6a381624517ba6161717bf070e3fe89655281b172596116db509435",
+  "original_prompt": "Ingested from openssh-9.6p1/srclimit.h",
+  "human_readable_source": " \nvoid\tsrclimit_init(int, int, int, int);\nint\tsrclimit_check_allow(int, int);\nvoid\tsrclimit_done(int);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

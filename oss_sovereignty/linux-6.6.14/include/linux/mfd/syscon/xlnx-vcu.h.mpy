@@ -1,0 +1,9 @@
+{
+  "module_name": "xlnx-vcu.h",
+  "hash_id": "138020cc2019d374362c2cefeee9e31f223a963e5256e52b51560aca0831c2c3",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/mfd/syscon/xlnx-vcu.h",
+  "human_readable_source": " \n \n\n#ifndef __XLNX_VCU_H\n#define __XLNX_VCU_H\n\n#define VCU_ECODER_ENABLE\t\t0x00\n#define VCU_DECODER_ENABLE\t\t0x04\n#define VCU_MEMORY_DEPTH\t\t0x08\n#define VCU_ENC_COLOR_DEPTH\t\t0x0c\n#define VCU_ENC_VERTICAL_RANGE\t\t0x10\n#define VCU_ENC_FRAME_SIZE_X\t\t0x14\n#define VCU_ENC_FRAME_SIZE_Y\t\t0x18\n#define VCU_ENC_COLOR_FORMAT\t\t0x1c\n#define VCU_ENC_FPS\t\t\t0x20\n#define VCU_MCU_CLK\t\t\t0x24\n#define VCU_CORE_CLK\t\t\t0x28\n#define VCU_PLL_BYPASS\t\t\t0x2c\n#define VCU_ENC_CLK\t\t\t0x30\n#define VCU_PLL_CLK\t\t\t0x34\n#define VCU_ENC_VIDEO_STANDARD\t\t0x38\n#define VCU_STATUS\t\t\t0x3c\n#define VCU_AXI_ENC_CLK\t\t\t0x40\n#define VCU_AXI_DEC_CLK\t\t\t0x44\n#define VCU_AXI_MCU_CLK\t\t\t0x48\n#define VCU_DEC_VIDEO_STANDARD\t\t0x4c\n#define VCU_DEC_FRAME_SIZE_X\t\t0x50\n#define VCU_DEC_FRAME_SIZE_Y\t\t0x54\n#define VCU_DEC_FPS\t\t\t0x58\n#define VCU_BUFFER_B_FRAME\t\t0x5c\n#define VCU_WPP_EN\t\t\t0x60\n#define VCU_PLL_CLK_DEC\t\t\t0x64\n#define VCU_NUM_CORE\t\t\t0x6c\n#define VCU_GASKET_INIT\t\t\t0x74\n#define VCU_GASKET_VALUE\t\t0x03\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

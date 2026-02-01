@@ -1,0 +1,9 @@
+{
+  "module_name": "ia_css_output_param.h",
+  "hash_id": "01f9c5335519feb83395dfca8e6b8fbe905e5574e5ab888277d65da2fe5be3be",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/isp/kernels/output/output_1.0/ia_css_output_param.h",
+  "human_readable_source": " \n \n\n#ifndef __IA_CSS_OUTPUT_PARAM_H\n#define __IA_CSS_OUTPUT_PARAM_H\n\n#include <type_support.h>\n#include \"dma.h\"\n#include \"ia_css_frame_comm.h\"  \n\n \nstruct sh_css_isp_output_isp_config {\n\tu32 width_a_over_b;\n\tu32 height;\n\tu32 enable;\n\tstruct ia_css_frame_sp_info info;\n\tstruct dma_port_config port_b;\n};\n\nstruct sh_css_isp_output_params {\n\tu8 enable_hflip;\n\tu8 enable_vflip;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

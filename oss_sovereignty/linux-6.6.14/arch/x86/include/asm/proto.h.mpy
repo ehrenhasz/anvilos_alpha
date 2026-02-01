@@ -1,0 +1,9 @@
+{
+  "module_name": "proto.h",
+  "hash_id": "7087d66b0ddee1cd4b885e4363caeac73218182deb3631c1fae7342d292549ef",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/include/asm/proto.h",
+  "human_readable_source": " \n#ifndef _ASM_X86_PROTO_H\n#define _ASM_X86_PROTO_H\n\n#include <asm/ldt.h>\n\nstruct task_struct;\n\n \n\nvoid syscall_init(void);\n\n#ifdef CONFIG_X86_64\nvoid entry_SYSCALL_64(void);\nvoid entry_SYSCALL_64_safe_stack(void);\nvoid entry_SYSRETQ_unsafe_stack(void);\nvoid entry_SYSRETQ_end(void);\nlong do_arch_prctl_64(struct task_struct *task, int option, unsigned long arg2);\n#endif\n\n#ifdef CONFIG_X86_32\nvoid entry_INT80_32(void);\nvoid entry_SYSENTER_32(void);\nvoid __begin_SYSENTER_singlestep_region(void);\nvoid __end_SYSENTER_singlestep_region(void);\n#endif\n\n#ifdef CONFIG_IA32_EMULATION\nvoid entry_SYSENTER_compat(void);\nvoid __end_entry_SYSENTER_compat(void);\nvoid entry_SYSCALL_compat(void);\nvoid entry_SYSCALL_compat_safe_stack(void);\nvoid entry_SYSRETL_compat_unsafe_stack(void);\nvoid entry_SYSRETL_compat_end(void);\n#endif\n\nvoid x86_configure_nx(void);\n\nextern int reboot_force;\n\nlong do_arch_prctl_common(int option, unsigned long arg2);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

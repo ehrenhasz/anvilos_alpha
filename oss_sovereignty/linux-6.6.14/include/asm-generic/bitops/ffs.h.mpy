@@ -1,0 +1,9 @@
+{
+  "module_name": "ffs.h",
+  "hash_id": "a841a1302903fe6456d19c6f5e67a22408dc6540afa7ff4e4e6adec70324c696",
+  "original_prompt": "Ingested from linux-6.6.14/include/asm-generic/bitops/ffs.h",
+  "human_readable_source": " \n#ifndef _ASM_GENERIC_BITOPS_FFS_H_\n#define _ASM_GENERIC_BITOPS_FFS_H_\n\n \nstatic inline int ffs(int x)\n{\n\tint r = 1;\n\n\tif (!x)\n\t\treturn 0;\n\tif (!(x & 0xffff)) {\n\t\tx >>= 16;\n\t\tr += 16;\n\t}\n\tif (!(x & 0xff)) {\n\t\tx >>= 8;\n\t\tr += 8;\n\t}\n\tif (!(x & 0xf)) {\n\t\tx >>= 4;\n\t\tr += 4;\n\t}\n\tif (!(x & 3)) {\n\t\tx >>= 2;\n\t\tr += 2;\n\t}\n\tif (!(x & 1)) {\n\t\tx >>= 1;\n\t\tr += 1;\n\t}\n\treturn r;\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "fw_qos.h",
+  "hash_id": "e4c03a5582eb43ce747e068a1171acd6d4f4fe833de044b137ebf67bcbd569c3",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/mellanox/mlx4/fw_qos.h",
+  "human_readable_source": " \n\n#ifndef MLX4_FW_QOS_H\n#define MLX4_FW_QOS_H\n\n#include <linux/mlx4/cmd.h>\n#include <linux/mlx4/device.h>\n\n#define MLX4_NUM_UP 8\n#define MLX4_NUM_TC 8\n\n \n#define MLX4_DEFAULT_QOS_PRIO (0)\n\n \n#define MLX4_VPP_DEFAULT_VPORT (0)\n\nstruct mlx4_vport_qos_param {\n\tu32 bw_share;\n\tu32 max_avg_bw;\n\tu8 enable;\n};\n\n \nint mlx4_SET_PORT_PRIO2TC(struct mlx4_dev *dev, u8 port, u8 *prio2tc);\n\n \nint mlx4_SET_PORT_SCHEDULER(struct mlx4_dev *dev, u8 port, u8 *tc_tx_bw,\n\t\t\t    u8 *pg, u16 *ratelimit);\n \nint mlx4_ALLOCATE_VPP_get(struct mlx4_dev *dev, u8 port,\n\t\t\t  u16 *available_vpp, u8 *vpp_p_up);\n \nint mlx4_ALLOCATE_VPP_set(struct mlx4_dev *dev, u8 port, u8 *vpp_p_up);\n\n \nint mlx4_SET_VPORT_QOS_get(struct mlx4_dev *dev, u8 port, u8 vport,\n\t\t\t   struct mlx4_vport_qos_param *out_param);\n\n \nint mlx4_SET_VPORT_QOS_set(struct mlx4_dev *dev, u8 port, u8 vport,\n\t\t\t   struct mlx4_vport_qos_param *in_param);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

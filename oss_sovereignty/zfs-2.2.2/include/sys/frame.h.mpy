@@ -1,0 +1,9 @@
+{
+  "module_name": "frame.h",
+  "hash_id": "9b091f685abda46cce317ee52aaab73c67a684a16523d32cc5d0ee59191508fe",
+  "original_prompt": "Ingested from zfs-2.2.2/include/sys/frame.h",
+  "human_readable_source": " \n \n\n#ifndef _SYS_FRAME_H\n#define\t_SYS_FRAME_H\n\n#ifdef\t__cplusplus\nextern \"C\" {\n#endif\n\n#if defined(__KERNEL__) && defined(HAVE_KERNEL_OBJTOOL) && \\\n    defined(HAVE_STACK_FRAME_NON_STANDARD)\n#if defined(HAVE_KERNEL_OBJTOOL_HEADER)\n#include <linux/objtool.h>\n#else\n#include <linux/frame.h>\n#endif\n#else\n#define\tSTACK_FRAME_NON_STANDARD(func)\n#endif\n\n#ifdef\t__cplusplus\n}\n#endif\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

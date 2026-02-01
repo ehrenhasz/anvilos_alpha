@@ -1,0 +1,9 @@
+{
+  "module_name": "intel_gt_irq.h",
+  "hash_id": "934768527f8401e09796be8c797037ed23ca4292c2957c62f00ee0206efd768d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/gt/intel_gt_irq.h",
+  "human_readable_source": " \n \n\n#ifndef INTEL_GT_IRQ_H\n#define INTEL_GT_IRQ_H\n\n#include <linux/types.h>\n\n#include \"intel_engine_types.h\"\n\nstruct intel_gt;\n\n#define GEN8_GT_IRQS (GEN8_GT_RCS_IRQ | \\\n\t\t      GEN8_GT_BCS_IRQ | \\\n\t\t      GEN8_GT_VCS0_IRQ | \\\n\t\t      GEN8_GT_VCS1_IRQ | \\\n\t\t      GEN8_GT_VECS_IRQ | \\\n\t\t      GEN8_GT_PM_IRQ | \\\n\t\t      GEN8_GT_GUC_IRQ)\n\nvoid gen11_gt_irq_reset(struct intel_gt *gt);\nvoid gen11_gt_irq_postinstall(struct intel_gt *gt);\nvoid gen11_gt_irq_handler(struct intel_gt *gt, const u32 master_ctl);\n\nbool gen11_gt_reset_one_iir(struct intel_gt *gt,\n\t\t\t    const unsigned int bank,\n\t\t\t    const unsigned int bit);\n\nvoid gen5_gt_irq_handler(struct intel_gt *gt, u32 gt_iir);\n\nvoid gen5_gt_irq_postinstall(struct intel_gt *gt);\nvoid gen5_gt_irq_reset(struct intel_gt *gt);\nvoid gen5_gt_disable_irq(struct intel_gt *gt, u32 mask);\nvoid gen5_gt_enable_irq(struct intel_gt *gt, u32 mask);\n\nvoid gen6_gt_irq_handler(struct intel_gt *gt, u32 gt_iir);\n\nvoid gen8_gt_irq_handler(struct intel_gt *gt, u32 master_ctl);\nvoid gen8_gt_irq_reset(struct intel_gt *gt);\nvoid gen8_gt_irq_postinstall(struct intel_gt *gt);\n\nstatic inline void intel_engine_cs_irq(struct intel_engine_cs *engine, u16 iir)\n{\n\tif (iir)\n\t\tengine->irq_handler(engine, iir);\n}\n\nstatic inline void\nintel_engine_set_irq_handler(struct intel_engine_cs *engine,\n\t\t\t     void (*fn)(struct intel_engine_cs *engine,\n\t\t\t\t\tu16 iir))\n{\n\t \n\tsmp_store_mb(engine->irq_handler, fn);\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

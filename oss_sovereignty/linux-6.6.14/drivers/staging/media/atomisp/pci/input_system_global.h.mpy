@@ -1,0 +1,9 @@
+{
+  "module_name": "input_system_global.h",
+  "hash_id": "d514c0ba0418fdcaad2327f75bbd1502ad34c5ed14278d411127deae8f78942c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/input_system_global.h",
+  "human_readable_source": " \n\n \n\n\n#ifndef __INPUT_SYSTEM_GLOBAL_H_INCLUDED__\n#define __INPUT_SYSTEM_GLOBAL_H_INCLUDED__\ntypedef enum {\n\tINPUT_SYSTEM_ERR_NO_ERROR = 0,\n\t \n\tINPUT_SYSTEM_ERR_CREATE_CHANNEL_FAIL,\n\tINPUT_SYSTEM_ERR_CONFIGURE_CHANNEL_FAIL,\n\tINPUT_SYSTEM_ERR_OPEN_CHANNEL_FAIL,\n\tINPUT_SYSTEM_ERR_TRANSFER_FAIL,\n\tINPUT_SYSTEM_ERR_CREATE_INPUT_PORT_FAIL,\n\tINPUT_SYSTEM_ERR_CONFIGURE_INPUT_PORT_FAIL,\n\tINPUT_SYSTEM_ERR_OPEN_INPUT_PORT_FAIL,\n\t \n\tINPUT_SYSTEM_ERR_GENERIC,\n\tINPUT_SYSTEM_ERR_CHANNEL_ALREADY_SET,\n\tINPUT_SYSTEM_ERR_CONFLICT_ON_RESOURCE,\n\tINPUT_SYSTEM_ERR_PARAMETER_NOT_SUPPORTED,\n} input_system_err_t;\n\n#include \"isp2401_input_system_global.h\"\n#include \"isp2400_input_system_global.h\"\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

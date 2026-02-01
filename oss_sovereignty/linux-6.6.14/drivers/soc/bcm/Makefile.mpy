@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "15d8fede966a1debe83647ca581107b1202956f7e93ba28301cb11b1b77c614d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/soc/bcm/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-$(CONFIG_SOC_BRCMSTB)\t+= brcmstb/\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "d3da4cb2b8beaabc47c63b1ba7edfbe5e557ba4444c6541b056f898cd8676ae6",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/bridge/adv7511/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig DRM_I2C_ADV7511\n\ttristate \"ADV7511 encoder\"\n\tdepends on OF\n\tselect DRM_KMS_HELPER\n\tselect REGMAP_I2C\n\tselect DRM_MIPI_DSI\n\thelp\n\t  Support for the Analog Devices ADV7511(W)/13/33/35 HDMI encoders.\n\nconfig DRM_I2C_ADV7511_AUDIO\n\tbool \"ADV7511 HDMI Audio driver\"\n\tdepends on DRM_I2C_ADV7511 && SND_SOC\n\tselect SND_SOC_HDMI_CODEC\n\thelp\n\t  Support the ADV7511 HDMI Audio interface. This is used in\n\t  conjunction with the AV7511  HDMI driver.\n\nconfig DRM_I2C_ADV7511_CEC\n\tbool \"ADV7511/33/35 HDMI CEC driver\"\n\tdepends on DRM_I2C_ADV7511\n\tselect CEC_CORE\n\tdefault y\n\thelp\n\t  When selected the HDMI transmitter will support the CEC feature.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

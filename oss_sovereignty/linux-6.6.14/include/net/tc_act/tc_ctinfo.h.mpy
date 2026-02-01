@@ -1,0 +1,9 @@
+{
+  "module_name": "tc_ctinfo.h",
+  "hash_id": "1e3d2fb1a028579e84c15c285e4fef6b00c446bafaf5a2812a0cbaff69c04a6c",
+  "original_prompt": "Ingested from linux-6.6.14/include/net/tc_act/tc_ctinfo.h",
+  "human_readable_source": " \n#ifndef __NET_TC_CTINFO_H\n#define __NET_TC_CTINFO_H\n\n#include <net/act_api.h>\n\nstruct tcf_ctinfo_params {\n\tstruct rcu_head rcu;\n\tstruct net *net;\n\tu32 dscpmask;\n\tu32 dscpstatemask;\n\tu32 cpmarkmask;\n\tu16 zone;\n\tu8 mode;\n\tu8 dscpmaskshift;\n};\n\nstruct tcf_ctinfo {\n\tstruct tc_action common;\n\tstruct tcf_ctinfo_params __rcu *params;\n\tu64 stats_dscp_set;\n\tu64 stats_dscp_error;\n\tu64 stats_cpmark_set;\n};\n\nenum {\n\tCTINFO_MODE_DSCP\t= BIT(0),\n\tCTINFO_MODE_CPMARK\t= BIT(1)\n};\n\n#define to_ctinfo(a) ((struct tcf_ctinfo *)a)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

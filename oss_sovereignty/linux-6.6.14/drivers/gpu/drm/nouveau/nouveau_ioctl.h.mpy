@@ -1,0 +1,9 @@
+{
+  "module_name": "nouveau_ioctl.h",
+  "hash_id": "00cc352084308afbc70d10fc46c6e8eeba04f88119f7b3d49de16368127f94f4",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nouveau_ioctl.h",
+  "human_readable_source": " \n#ifndef __NOUVEAU_IOCTL_H__\n#define __NOUVEAU_IOCTL_H__\n\nlong nouveau_compat_ioctl(struct file *, unsigned int cmd, unsigned long arg);\nlong nouveau_drm_ioctl(struct file *, unsigned int cmd, unsigned long arg);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

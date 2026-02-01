@@ -1,0 +1,9 @@
+{
+  "module_name": "xchg",
+  "hash_id": "137215975dc4f286423662c7f5adfa504b98a41a01f2d81419e4bc8b6d882167",
+  "original_prompt": "Ingested from linux-6.6.14/scripts/atomic/kerneldoc/xchg",
+  "human_readable_source": "cat <<EOF\n/**\n * ${class}${atomicname}() - atomic exchange with ${desc_order} ordering\n * @v: pointer to ${atomic}_t\n * @new: ${int} value to assign\n *\n * Atomically updates @v to @new with ${desc_order} ordering.\n *\n * ${desc_noinstr}\n *\n * Return: The original value of @v.\n */\nEOF\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

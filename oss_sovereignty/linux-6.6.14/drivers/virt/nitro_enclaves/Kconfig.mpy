@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "3800745c575e850ca1ec74d8e496b28163f6f3c922572f31e0eb3859feb49466",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/virt/nitro_enclaves/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Copyright 2020-2021 Amazon.com, Inc. or its affiliates. All Rights Reserved.\n\n# Amazon Nitro Enclaves (NE) support.\n# Nitro is a hypervisor that has been developed by Amazon.\n\nconfig NITRO_ENCLAVES\n\ttristate \"Nitro Enclaves Support\"\n\tdepends on (ARM64 || X86) && HOTPLUG_CPU && PCI && SMP\n\thelp\n\t  This driver consists of support for enclave lifetime management\n\t  for Nitro Enclaves (NE).\n\n\t  To compile this driver as a module, choose M here.\n\t  The module will be called nitro_enclaves.\n\nconfig NITRO_ENCLAVES_MISC_DEV_TEST\n\tbool \"Tests for the misc device functionality of the Nitro Enclaves\" if !KUNIT_ALL_TESTS\n\tdepends on NITRO_ENCLAVES && KUNIT=y\n\tdefault KUNIT_ALL_TESTS\n\thelp\n\t  Enable KUnit tests for the misc device functionality of the Nitro\n\t  Enclaves. Select this option only if you will boot the kernel for\n\t  the purpose of running unit tests (e.g. under UML or qemu). If\n\t  unsure, say N.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "xasprintf.c",
+  "hash_id": "65bc5308bb489908714732d2e42c825ca7cdd46b996a59022737534daaca513d",
+  "original_prompt": "Ingested from coreutils-9.4/lib/xasprintf.c",
+  "human_readable_source": " \n#include \"xvasprintf.h\"\n\nchar *\nxasprintf (const char *format, ...)\n{\n  va_list args;\n  char *result;\n\n  va_start (args, format);\n  result = xvasprintf (format, args);\n  va_end (args);\n\n  return result;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

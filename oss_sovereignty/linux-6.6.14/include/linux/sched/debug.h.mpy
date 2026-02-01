@@ -1,0 +1,9 @@
+{
+  "module_name": "debug.h",
+  "hash_id": "7e676547b1505eb5fcf685c475d70b82e02195b2aeabc31dd0cc64d9b1499f42",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/sched/debug.h",
+  "human_readable_source": " \n#ifndef _LINUX_SCHED_DEBUG_H\n#define _LINUX_SCHED_DEBUG_H\n\n \n\nstruct task_struct;\nstruct pid_namespace;\n\nextern void dump_cpu_task(int cpu);\n\n \nextern void show_state_filter(unsigned int state_filter);\n\nstatic inline void show_state(void)\n{\n\tshow_state_filter(0);\n}\n\nstruct pt_regs;\n\nextern void show_regs(struct pt_regs *);\n\n \nextern void show_stack(struct task_struct *task, unsigned long *sp,\n\t\t       const char *loglvl);\n\nextern void sched_show_task(struct task_struct *p);\n\n#ifdef CONFIG_SCHED_DEBUG\nstruct seq_file;\nextern void proc_sched_show_task(struct task_struct *p,\n\t\t\t\t struct pid_namespace *ns, struct seq_file *m);\nextern void proc_sched_set_task(struct task_struct *p);\n#endif\n\n \n#define __sched\t\t__section(\".sched.text\")\n\n \nextern char __sched_text_start[], __sched_text_end[];\n\n \nextern int in_sched_functions(unsigned long addr);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

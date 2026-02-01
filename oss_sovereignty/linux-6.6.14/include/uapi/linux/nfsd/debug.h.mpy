@@ -1,0 +1,9 @@
+{
+  "module_name": "debug.h",
+  "hash_id": "4da31d39b047fc32b5dd04175c31a6007922429f91735b98769f090923d8a16b",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/nfsd/debug.h",
+  "human_readable_source": " \n \n\n#ifndef _UAPILINUX_NFSD_DEBUG_H\n#define _UAPILINUX_NFSD_DEBUG_H\n\n#include <linux/sunrpc/debug.h>\n\n \n#define NFSDDBG_SOCK\t\t0x0001\n#define NFSDDBG_FH\t\t0x0002\n#define NFSDDBG_EXPORT\t\t0x0004\n#define NFSDDBG_SVC\t\t0x0008\n#define NFSDDBG_PROC\t\t0x0010\n#define NFSDDBG_FILEOP\t\t0x0020\n#define NFSDDBG_AUTH\t\t0x0040\n#define NFSDDBG_REPCACHE\t0x0080\n#define NFSDDBG_XDR\t\t0x0100\n#define NFSDDBG_LOCKD\t\t0x0200\n#define NFSDDBG_PNFS\t\t0x0400\n#define NFSDDBG_ALL\t\t0x7FFF\n#define NFSDDBG_NOCHANGE\t0xFFFF\n\n\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

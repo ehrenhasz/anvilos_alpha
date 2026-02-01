@@ -1,0 +1,9 @@
+{
+  "module_name": "clk-fractional-divider.h",
+  "hash_id": "66d44677e5abcc9a49135dc033062b8fd84f9c7214164bee41c9426bd3d85492",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/clk/clk-fractional-divider.h",
+  "human_readable_source": " \n#ifndef _CLK_FRACTIONAL_DIV_H\n#define _CLK_FRACTIONAL_DIV_H\n\nstruct clk_hw;\n\nextern const struct clk_ops clk_fractional_divider_ops;\n\nvoid clk_fractional_divider_general_approximation(struct clk_hw *hw,\n\t\t\t\t\t\t  unsigned long rate,\n\t\t\t\t\t\t  unsigned long *parent_rate,\n\t\t\t\t\t\t  unsigned long *m,\n\t\t\t\t\t\t  unsigned long *n);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "q_in_vni_veto.sh",
+  "hash_id": "23a64e6e5baa236339ea88b259f585aef9566e2aff4a616e595fc3a89536a9f3",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/drivers/net/mlxsw/spectrum/q_in_vni_veto.sh",
+  "human_readable_source": "#!/bin/bash\n# SPDX-License-Identifier: GPL-2.0\n\nlib_dir=$(dirname $0)/../../../../net/forwarding\n\nVXPORT=4789\n\nALL_TESTS=\"\n\tcreate_vxlan_on_top_of_8021ad_bridge\n\"\nNUM_NETIFS=2\nsource $lib_dir/lib.sh\n\nsetup_prepare()\n{\n\tswp1=${NETIFS[p1]}\n\tswp2=${NETIFS[p2]}\n\n\tip link set dev $swp1 up\n\tip link set dev $swp2 up\n}\n\ncleanup()\n{\n\tpre_cleanup\n\n\tip link set dev $swp2 down\n\tip link set dev $swp1 down\n}\n\ncreate_vxlan_on_top_of_8021ad_bridge()\n{\n\tRET=0\n\n\tip link add dev br0 type bridge vlan_filtering 1 vlan_protocol 802.1ad \\\n\t\tvlan_default_pvid 0 mcast_snooping 0\n\tip link set dev br0 addrgenmode none\n\tip link set dev br0 up\n\n\tip link add name vx100 type vxlan id 1000 local 192.0.2.17 dstport \\\n\t\t\"$VXPORT\" nolearning noudpcsum tos inherit ttl 100\n\tip link set dev vx100 up\n\n\tip link set dev $swp1 master br0\n\tip link set dev vx100 master br0\n\n\tbridge vlan add vid 100 dev vx100 pvid untagged 2>/dev/null\n\tcheck_fail $? \"802.1ad bridge with VxLAN in Spectrum-1 not rejected\"\n\n\tbridge vlan add vid 100 dev vx100 pvid untagged 2>&1 >/dev/null \\\n\t\t| grep -q mlxsw_spectrum\n\tcheck_err $? \"802.1ad bridge with VxLAN in Spectrum-1 rejected without extack\"\n\n\tlog_test \"create VxLAN on top of 802.1ad bridge\"\n\n\tip link del dev vx100\n\tip link del dev br0\n}\n\ntrap cleanup EXIT\n\nsetup_prepare\nsetup_wait\n\ntests_run\n\nexit $EXIT_STATUS\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

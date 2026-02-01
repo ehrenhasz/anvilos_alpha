@@ -1,0 +1,9 @@
+{
+  "module_name": "speakup_acnt.h",
+  "hash_id": "e052e76d213b8d55737ae57fdc3561db81436e507b957af42323434aaeb8e1e3",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/accessibility/speakup/speakup_acnt.h",
+  "human_readable_source": " \n \n\n#define SYNTH_IO_EXTENT\t0x02\n\n#define SYNTH_CLEAR\t0x18\t\t \n\n\t \n#define SYNTH_READABLE\t0x01\t \n#define SYNTH_WRITABLE\t0x02\t \n#define SYNTH_QUIET\t'S'  \n#define SYNTH_FULL\t'F'  \n#define SYNTH_ALMOST_EMPTY 'M'  \n#define SYNTH_SPEAKING\t's'  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "tparm_type.h",
+  "hash_id": "1359d08ce84fc1479a0bfc0c8b6cf28c57fe7d84dda374eb686edf3c0d8426e3",
+  "original_prompt": "Ingested from ncurses-6.4/progs/tparm_type.h",
+  "human_readable_source": " \n\n \n\n \n#ifndef TPARM_TYPE_H\n#define TPARM_TYPE_H 1\n\n#define USE_LIBTINFO\n#include <progs.priv.h>\n\ntypedef enum {\n    Other = -1\n    ,Numbers = 0\n    ,Num_Str\n    ,Num_Str_Str\n} TParams;\n\nextern TParams tparm_type(const char *name);\nextern TParams guess_tparm_type(int nparam, char **p_is_s);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

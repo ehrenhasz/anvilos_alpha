@@ -1,0 +1,9 @@
+{
+  "module_name": "keyspan_usa28msg.h",
+  "hash_id": "17596ab7fc48cd367f85df85d2e32e36be221a283a4a5f21b0e7418ac80ad031",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/usb/serial/keyspan_usa28msg.h",
+  "human_readable_source": " \n \n\n#ifndef\t__USA28MSG__\n#define\t__USA28MSG__\n\n\nstruct keyspan_usa28_portControlMessage\n{\n\t \n\tu8\tsetBaudRate,\t \n\t\tbaudLo,\t\t\t\n\t\tbaudHi;\t\t\t\n\n\t \n\tu8\tparity,\t\t\t \n\t\tctsFlowControl,\t        \n\t\t\t\t\t\n\t\txonFlowControl,\t\n\t\trts,\t\t\t\n\t\tdtr;\t\t\t\n\n\t \n\tu8\tforwardingLength,  \n\t\tforwardMs,\t\t\n\t\tbreakThreshold,\t\n\t\txonChar,\t\t\n\t\txoffChar;\t\t\n\n\t \n\tu8\t_txOn,\t\t\t\n\t\t_txOff,\t\t\t\n\t\ttxFlush,\t\t\n\t\ttxForceXoff,\t\n\t\ttxBreak,\t\t\n\t\trxOn,\t\t\t\n\t\trxOff,\t\t\t\n\t\trxFlush,\t\t\n\t\trxForward,\t\t\n\t\treturnStatus,\t\n\t\tresetDataToggle;\n\t\n};\n\nstruct keyspan_usa28_portStatusMessage\n{\n\tu8\tport,\t\t\t\n\t\tcts,\n\t\tdsr,\t\t\t\n\t\tdcd,\n\n\t\tri,\t\t\t\t\n\t\t_txOff,\t\t\t\n\t\t_txXoff,\t\t\n\t\tdataLost,\t\t\n\n\t\trxEnabled,\t\t\n\t\trxBreak,\t\t\n\t\trs232invalid,\t\n\t\tcontrolResponse;\n};\n\n\n#define\tTX_OFF\t\t\t0x01\t\n#define\tTX_XOFF\t\t\t0x02\t\n\nstruct keyspan_usa28_globalControlMessage\n{\n\tu8\tsendGlobalStatus,\t\n\t\tresetStatusToggle,\t\n\t\tresetStatusCount;\t\n};\n\nstruct keyspan_usa28_globalStatusMessage\n{\n\tu8\tport,\t\t\t\t\n\t\tsendGlobalStatus,\t\n\t\tresetStatusCount;\t\n};\n\nstruct keyspan_usa28_globalDebugMessage\n{\n\tu8\tport,\t\t\t\t\n\t\tn,\t\t\t\t\t\n\t\tb;\t\t\t\t\t\n};\n\n\n#define\tMAX_DATA_LEN\t\t\t64\n\n\n#define\tRX_PARITY_BIT\t\t\t0x04\n#define\tTX_PARITY_BIT\t\t\t0x01\n\n\n#define\tSTATUS_UPDATE_INTERVAL\t16\n\n#endif\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

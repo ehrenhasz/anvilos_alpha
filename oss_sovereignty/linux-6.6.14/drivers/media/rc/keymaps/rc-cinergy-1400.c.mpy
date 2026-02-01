@@ -1,0 +1,9 @@
+{
+  "module_name": "rc-cinergy-1400.c",
+  "hash_id": "ad3255dccfdcd85ca51ed94f9efb863b5e25e3bc6efa839490e17b01a9cb1244",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/rc/keymaps/rc-cinergy-1400.c",
+  "human_readable_source": "\n\n\n\n\n\n\n#include <media/rc-map.h>\n#include <linux/module.h>\n\n \n\nstatic struct rc_map_table cinergy_1400[] = {\n\t{ 0x01, KEY_POWER },\n\t{ 0x02, KEY_NUMERIC_1 },\n\t{ 0x03, KEY_NUMERIC_2 },\n\t{ 0x04, KEY_NUMERIC_3 },\n\t{ 0x05, KEY_NUMERIC_4 },\n\t{ 0x06, KEY_NUMERIC_5 },\n\t{ 0x07, KEY_NUMERIC_6 },\n\t{ 0x08, KEY_NUMERIC_7 },\n\t{ 0x09, KEY_NUMERIC_8 },\n\t{ 0x0a, KEY_NUMERIC_9 },\n\t{ 0x0c, KEY_NUMERIC_0 },\n\n\t{ 0x0b, KEY_VIDEO },\n\t{ 0x0d, KEY_REFRESH },\n\t{ 0x0e, KEY_SELECT },\n\t{ 0x0f, KEY_EPG },\n\t{ 0x10, KEY_UP },\n\t{ 0x11, KEY_LEFT },\n\t{ 0x12, KEY_OK },\n\t{ 0x13, KEY_RIGHT },\n\t{ 0x14, KEY_DOWN },\n\t{ 0x15, KEY_TEXT },\n\t{ 0x16, KEY_INFO },\n\n\t{ 0x17, KEY_RED },\n\t{ 0x18, KEY_GREEN },\n\t{ 0x19, KEY_YELLOW },\n\t{ 0x1a, KEY_BLUE },\n\n\t{ 0x1b, KEY_CHANNELUP },\n\t{ 0x1c, KEY_VOLUMEUP },\n\t{ 0x1d, KEY_MUTE },\n\t{ 0x1e, KEY_VOLUMEDOWN },\n\t{ 0x1f, KEY_CHANNELDOWN },\n\n\t{ 0x40, KEY_PAUSE },\n\t{ 0x4c, KEY_PLAY },\n\t{ 0x58, KEY_RECORD },\n\t{ 0x54, KEY_PREVIOUS },\n\t{ 0x48, KEY_STOP },\n\t{ 0x5c, KEY_NEXT },\n};\n\nstatic struct rc_map_list cinergy_1400_map = {\n\t.map = {\n\t\t.scan     = cinergy_1400,\n\t\t.size     = ARRAY_SIZE(cinergy_1400),\n\t\t.rc_proto = RC_PROTO_UNKNOWN,\t \n\t\t.name     = RC_MAP_CINERGY_1400,\n\t}\n};\n\nstatic int __init init_rc_map_cinergy_1400(void)\n{\n\treturn rc_map_register(&cinergy_1400_map);\n}\n\nstatic void __exit exit_rc_map_cinergy_1400(void)\n{\n\trc_map_unregister(&cinergy_1400_map);\n}\n\nmodule_init(init_rc_map_cinergy_1400)\nmodule_exit(exit_rc_map_cinergy_1400)\n\nMODULE_LICENSE(\"GPL\");\nMODULE_AUTHOR(\"Mauro Carvalho Chehab\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

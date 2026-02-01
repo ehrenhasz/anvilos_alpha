@@ -1,0 +1,9 @@
+{
+  "module_name": "mksyscalltbl",
+  "hash_id": "fbfdbef43fbd9732e8280842532780c5ff334d3e4802d3d813ee788b665cb83a",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/arch/arm64/entry/syscalls/mksyscalltbl",
+  "human_readable_source": "#!/bin/sh\n# SPDX-License-Identifier: GPL-2.0\n#\n# Generate system call table for perf. Derived from\n# powerpc script.\n#\n# Copyright IBM Corp. 2017\n# Author(s):  Hendrik Brueckner <brueckner@linux.vnet.ibm.com>\n# Changed by: Ravi Bangoria <ravi.bangoria@linux.vnet.ibm.com>\n# Changed by: Kim Phillips <kim.phillips@arm.com>\n\ngcc=$1\nhostcc=$2\nincpath=$3\ninput=$4\n\nif ! test -r $input; then\n\techo \"Could not read input file\" >&2\n\texit 1\nfi\n\ncreate_sc_table()\n{\n\tlocal sc nr max_nr\n\n\twhile read sc nr; do\n\t\tprintf \"%s\\n\" \"\t[$nr] = \\\"$sc\\\",\"\n\t\tmax_nr=$nr\n\tdone\n\n\techo \"#define SYSCALLTBL_ARM64_MAX_ID $max_nr\"\n}\n\ncreate_table()\n{\n\techo \"#include \\\"$input\\\"\"\n\techo \"static const char *const syscalltbl_arm64[] = {\"\n\tcreate_sc_table\n\techo \"};\"\n}\n\n$gcc -E -dM -x c -I $incpath/include/uapi $input \\\n\t|awk '$2 ~ \"__NR\" && $3 !~ \"__NR3264_\" {\n\t\tsub(\"^#define __NR(3264)?_\", \"\");\n\t\tprint | \"sort -k2 -n\"}' \\\n\t|create_table\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

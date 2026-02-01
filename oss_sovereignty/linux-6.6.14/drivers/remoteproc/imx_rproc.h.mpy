@@ -1,0 +1,9 @@
+{
+  "module_name": "imx_rproc.h",
+  "hash_id": "9046bf1b751a7d72958b1dfe282be0deabc670ae9eb60d6fe07149d711337bf7",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/remoteproc/imx_rproc.h",
+  "human_readable_source": " \n \n\n#ifndef _IMX_RPROC_H\n#define _IMX_RPROC_H\n\n \nstruct imx_rproc_att {\n\tu32 da;\t \n\tu32 sa;\t \n\tu32 size;  \n\tint flags;\n};\n\n \nenum imx_rproc_method {\n\tIMX_RPROC_NONE,\n\t \n\tIMX_RPROC_MMIO,\n\t \n\tIMX_RPROC_SMC,\n\t \n\tIMX_RPROC_SCU_API,\n};\n\nstruct imx_rproc_dcfg {\n\tu32\t\t\t\tsrc_reg;\n\tu32\t\t\t\tsrc_mask;\n\tu32\t\t\t\tsrc_start;\n\tu32\t\t\t\tsrc_stop;\n\tu32\t\t\t\tgpr_reg;\n\tu32\t\t\t\tgpr_wait;\n\tconst struct imx_rproc_att\t*att;\n\tsize_t\t\t\t\tatt_size;\n\tenum imx_rproc_method\t\tmethod;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

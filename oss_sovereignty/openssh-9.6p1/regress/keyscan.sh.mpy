@@ -1,0 +1,9 @@
+{
+  "module_name": "keyscan.sh",
+  "hash_id": "8fdd59660fa6b39312fdfb8773b7690f9b8c09b5729f0f167f2f96c4823c5824",
+  "original_prompt": "Ingested from openssh-9.6p1/regress/keyscan.sh",
+  "human_readable_source": "#\t$OpenBSD: keyscan.sh,v 1.13 2020/01/22 07:31:27 dtucker Exp $\n#\tPlaced in the Public Domain.\n\ntid=\"keyscan\"\n\nfor i in $SSH_KEYTYPES; do\n\tif [ -z \"$algs\" ]; then\n\t\talgs=\"$i\"\n\telse\n\t\talgs=\"$algs,$i\"\n\tfi\ndone\necho \"HostKeyAlgorithms $algs\" >> $OBJ/sshd_config\n\nstart_sshd\n\nfor t in $SSH_KEYTYPES; do\n\ttrace \"keyscan type $t\"\n\t${SSHKEYSCAN} -t $t -T 15 -p $PORT 127.0.0.1 127.0.0.1 127.0.0.1 \\\n\t\t> /dev/null 2>&1\n\tr=$?\n\tif [ $r -ne 0 ]; then\n\t\tfail \"ssh-keyscan -t $t failed with: $r\"\n\tfi\ndone\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

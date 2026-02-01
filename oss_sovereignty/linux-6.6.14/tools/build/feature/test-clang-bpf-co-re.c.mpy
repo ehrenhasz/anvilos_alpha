@@ -1,0 +1,9 @@
+{
+  "module_name": "test-clang-bpf-co-re.c",
+  "hash_id": "4bd2ec442a50f8f2aaac05c25e4fe274521b6fe0b3ff4766de37bdb316d9e0ef",
+  "original_prompt": "Ingested from linux-6.6.14/tools/build/feature/test-clang-bpf-co-re.c",
+  "human_readable_source": "\n\n\nstruct test {\n\tint a;\n\tint b;\n} __attribute__((preserve_access_index));\n\nvolatile struct test global_value_for_test = {};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

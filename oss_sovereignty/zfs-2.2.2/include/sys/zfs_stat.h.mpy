@@ -1,0 +1,9 @@
+{
+  "module_name": "zfs_stat.h",
+  "hash_id": "ef3a8c361e8e9b1e2c67561f89d1803f2a8e986cbccce93286e81a917bda01e1",
+  "original_prompt": "Ingested from zfs-2.2.2/include/sys/zfs_stat.h",
+  "human_readable_source": " \n \n\n#ifndef\t_SYS_FS_ZFS_STAT_H\n#define\t_SYS_FS_ZFS_STAT_H\n\n#ifdef _KERNEL\n#include <sys/isa_defs.h>\n#include <sys/types32.h>\n#include <sys/dmu.h>\n#endif\n\n#ifdef\t__cplusplus\nextern \"C\" {\n#endif\n\n \ntypedef struct zfs_stat {\n\tuint64_t\tzs_gen;\n\tuint64_t\tzs_mode;\n\tuint64_t\tzs_links;\n\tuint64_t\tzs_ctime[2];\n} zfs_stat_t;\n\nextern int zfs_obj_to_stats(objset_t *osp, uint64_t obj, zfs_stat_t *sb,\n    char *buf, int len);\n\n#ifdef\t__cplusplus\n}\n#endif\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

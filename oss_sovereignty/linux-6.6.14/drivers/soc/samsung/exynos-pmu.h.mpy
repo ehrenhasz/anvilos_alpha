@@ -1,0 +1,9 @@
+{
+  "module_name": "exynos-pmu.h",
+  "hash_id": "4b4f71d3447c81622f06931a875d5acdb4b0f0913643ebc65b5d1bfbcfb08627",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/soc/samsung/exynos-pmu.h",
+  "human_readable_source": " \n \n\n#ifndef __EXYNOS_PMU_H\n#define __EXYNOS_PMU_H\n\n#include <linux/io.h>\n\n#define PMU_TABLE_END\t(-1U)\n\nstruct exynos_pmu_conf {\n\tunsigned int offset;\n\tu8 val[NUM_SYS_POWERDOWN];\n};\n\nstruct exynos_pmu_data {\n\tconst struct exynos_pmu_conf *pmu_config;\n\tconst struct exynos_pmu_conf *pmu_config_extra;\n\n\tvoid (*pmu_init)(void);\n\tvoid (*powerdown_conf)(enum sys_powerdown);\n\tvoid (*powerdown_conf_extra)(enum sys_powerdown);\n};\n\nextern void __iomem *pmu_base_addr;\n\n#ifdef CONFIG_EXYNOS_PMU_ARM_DRIVERS\n \nextern const struct exynos_pmu_data exynos3250_pmu_data;\nextern const struct exynos_pmu_data exynos4210_pmu_data;\nextern const struct exynos_pmu_data exynos4212_pmu_data;\nextern const struct exynos_pmu_data exynos4412_pmu_data;\nextern const struct exynos_pmu_data exynos5250_pmu_data;\nextern const struct exynos_pmu_data exynos5420_pmu_data;\n#endif\n\nextern void pmu_raw_writel(u32 val, u32 offset);\nextern u32 pmu_raw_readl(u32 offset);\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

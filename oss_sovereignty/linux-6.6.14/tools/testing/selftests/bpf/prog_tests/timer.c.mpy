@@ -1,0 +1,9 @@
+{
+  "module_name": "timer.c",
+  "hash_id": "931c19fe628189a657041c526d12d48b86649f74b961d8a8bb7f9ff65bd3898b",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/prog_tests/timer.c",
+  "human_readable_source": "\n \n#include <test_progs.h>\n#include \"timer.skel.h\"\n#include \"timer_failure.skel.h\"\n\nstatic int timer(struct timer *timer_skel)\n{\n\tint err, prog_fd;\n\tLIBBPF_OPTS(bpf_test_run_opts, topts);\n\n\terr = timer__attach(timer_skel);\n\tif (!ASSERT_OK(err, \"timer_attach\"))\n\t\treturn err;\n\n\tASSERT_EQ(timer_skel->data->callback_check, 52, \"callback_check1\");\n\tASSERT_EQ(timer_skel->data->callback2_check, 52, \"callback2_check1\");\n\n\tprog_fd = bpf_program__fd(timer_skel->progs.test1);\n\terr = bpf_prog_test_run_opts(prog_fd, &topts);\n\tASSERT_OK(err, \"test_run\");\n\tASSERT_EQ(topts.retval, 0, \"test_run\");\n\ttimer__detach(timer_skel);\n\n\tusleep(50);  \n\t \n\tASSERT_EQ(timer_skel->data->callback_check, 42, \"callback_check2\");\n\tASSERT_EQ(timer_skel->data->callback2_check, 42, \"callback2_check2\");\n\n\t \n\tASSERT_EQ(timer_skel->bss->bss_data, 10, \"bss_data\");\n\n\t \n\tASSERT_EQ(timer_skel->bss->abs_data, 12, \"abs_data\");\n\n\t \n\tASSERT_EQ(timer_skel->bss->err, 0, \"err\");\n\n\t \n\tASSERT_EQ(timer_skel->bss->ok, 1 | 2 | 4, \"ok\");\n\n\treturn 0;\n}\n\n \nvoid serial_test_timer(void)\n{\n\tstruct timer *timer_skel = NULL;\n\tint err;\n\n\ttimer_skel = timer__open_and_load();\n\tif (!ASSERT_OK_PTR(timer_skel, \"timer_skel_load\"))\n\t\treturn;\n\n\terr = timer(timer_skel);\n\tASSERT_OK(err, \"timer\");\n\ttimer__destroy(timer_skel);\n\n\tRUN_TESTS(timer_failure);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

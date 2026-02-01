@@ -1,0 +1,9 @@
+{
+  "module_name": "perf-version.txt",
+  "hash_id": "8d4f5c0d17f3338488a3e61fed553546d1b2789838aeb1b46a044b174f679a8a",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/Documentation/perf-version.txt",
+  "human_readable_source": "perf-version(1)\n===============\n\nNAME\n----\nperf-version - display the version of perf binary\n\nSYNOPSIS\n--------\n'perf version' [--build-options]\n\nDESCRIPTION\n-----------\nWith no options given, the 'perf version' prints the perf version\non the standard output.\n\nIf the option '--build-options' is given, then the status of\ncompiled-in libraries are printed on the standard output.\n\nOPTIONS\n-------\n--build-options::\n        Prints the status of compiled-in libraries on the\n        standard output.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

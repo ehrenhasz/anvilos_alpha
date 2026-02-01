@@ -1,0 +1,9 @@
+{
+  "module_name": "xsk.h",
+  "hash_id": "b74dff475b1918299ab2273c87e7e3b0fb1d6d8abb651e5070d47ce8098ab555",
+  "original_prompt": "Ingested from linux-6.6.14/net/xdp/xsk.h",
+  "human_readable_source": " \n \n\n#ifndef XSK_H_\n#define XSK_H_\n\n \n#define XSK_NEXT_PG_CONTIG_SHIFT 0\n#define XSK_NEXT_PG_CONTIG_MASK BIT_ULL(XSK_NEXT_PG_CONTIG_SHIFT)\n\nstruct xdp_ring_offset_v1 {\n\t__u64 producer;\n\t__u64 consumer;\n\t__u64 desc;\n};\n\nstruct xdp_mmap_offsets_v1 {\n\tstruct xdp_ring_offset_v1 rx;\n\tstruct xdp_ring_offset_v1 tx;\n\tstruct xdp_ring_offset_v1 fr;\n\tstruct xdp_ring_offset_v1 cr;\n};\n\n \n\nstruct xsk_map_node {\n\tstruct list_head node;\n\tstruct xsk_map *map;\n\tstruct xdp_sock __rcu **map_entry;\n};\n\nstatic inline struct xdp_sock *xdp_sk(struct sock *sk)\n{\n\treturn (struct xdp_sock *)sk;\n}\n\nvoid xsk_map_try_sock_delete(struct xsk_map *map, struct xdp_sock *xs,\n\t\t\t     struct xdp_sock __rcu **map_entry);\nvoid xsk_clear_pool_at_qid(struct net_device *dev, u16 queue_id);\nint xsk_reg_pool_at_qid(struct net_device *dev, struct xsk_buff_pool *pool,\n\t\t\tu16 queue_id);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "ia_css_xnr.host.h",
+  "hash_id": "c69fe49a1e2627cf83d0e97d7b8edee04c079dcdb5713738e6c63edef6ddf360",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/isp/kernels/xnr/xnr_1.0/ia_css_xnr.host.h",
+  "human_readable_source": " \n \n\n#ifndef __IA_CSS_XNR_HOST_H\n#define __IA_CSS_XNR_HOST_H\n\n#include \"sh_css_params.h\"\n\n#include \"ia_css_xnr_param.h\"\n#include \"ia_css_xnr_table.host.h\"\n\nextern const struct ia_css_xnr_config default_xnr_config;\n\nvoid\nia_css_xnr_table_vamem_encode(\n    struct sh_css_isp_xnr_vamem_params *to,\n    const struct ia_css_xnr_table *from,\n    unsigned int size);\n\nvoid\nia_css_xnr_encode(\n    struct sh_css_isp_xnr_params *to,\n    const struct ia_css_xnr_config *from,\n    unsigned int size);\n\nvoid\nia_css_xnr_table_debug_dtrace(\n    const struct ia_css_xnr_table *s3a,\n    unsigned int level);\n\nvoid\nia_css_xnr_debug_dtrace(\n    const struct ia_css_xnr_config *config,\n    unsigned int level);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "sch_red_root.sh",
+  "hash_id": "4bff0fcc54097614a5bc7e59a4de2d2abc838641c7233cefd1f5c9f1d0bb5d29",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/drivers/net/mlxsw/sch_red_root.sh",
+  "human_readable_source": "#!/bin/bash\n# SPDX-License-Identifier: GPL-2.0\n\nALL_TESTS=\"\n\tping_ipv4\n\tecn_test\n\tecn_test_perband\n\tecn_nodrop_test\n\tred_test\n\tmc_backlog_test\n\tred_mirror_test\n\"\nsource sch_red_core.sh\n\nBACKLOG=300000\n\ninstall_qdisc()\n{\n\tlocal -a args=(\"$@\")\n\n\ttc qdisc add dev $swp3 parent 1: handle 108: red \\\n\t   limit 1000000 min $BACKLOG max $((BACKLOG + 1)) \\\n\t   probability 1.0 avpkt 8000 burst 38 \"${args[@]}\"\n\tsleep 1\n}\n\nuninstall_qdisc()\n{\n\ttc qdisc del dev $swp3 parent 1:\n}\n\necn_test()\n{\n\tinstall_qdisc ecn\n\tdo_ecn_test 10 $BACKLOG\n\tuninstall_qdisc\n}\n\necn_test_perband()\n{\n\tinstall_qdisc ecn\n\tdo_ecn_test_perband 10 $BACKLOG\n\tuninstall_qdisc\n}\n\necn_nodrop_test()\n{\n\tinstall_qdisc ecn nodrop\n\tdo_ecn_nodrop_test 10 $BACKLOG\n\tuninstall_qdisc\n}\n\nred_test()\n{\n\tinstall_qdisc\n\tdo_red_test 10 $BACKLOG\n\tuninstall_qdisc\n}\n\nmc_backlog_test()\n{\n\tinstall_qdisc\n\t# Note that the backlog value here does not correspond to RED\n\t# configuration, but is arbitrary.\n\tdo_mc_backlog_test 10 $BACKLOG\n\tuninstall_qdisc\n}\n\nred_mirror_test()\n{\n\tinstall_qdisc qevent early_drop block 10\n\tdo_drop_mirror_test 10 $BACKLOG\n\tuninstall_qdisc\n}\n\nbail_on_lldpad \"configure DCB\" \"configure Qdiscs\"\n\ntrap cleanup EXIT\nsetup_prepare\nsetup_wait\ntests_run\n\nexit $EXIT_STATUS\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "cudbg_common.c",
+  "hash_id": "c6acbf853a61f65932b835fe159c3ad8d2f474941f0a1775ce22b4b0fb272173",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/chelsio/cxgb4/cudbg_common.c",
+  "human_readable_source": "\n \n\n#include \"cxgb4.h\"\n#include \"cudbg_if.h\"\n#include \"cudbg_lib_common.h\"\n\nint cudbg_get_buff(struct cudbg_init *pdbg_init,\n\t\t   struct cudbg_buffer *pdbg_buff, u32 size,\n\t\t   struct cudbg_buffer *pin_buff)\n{\n\tu32 offset;\n\n\toffset = pdbg_buff->offset;\n\tif (offset + size > pdbg_buff->size)\n\t\treturn CUDBG_STATUS_NO_MEM;\n\n\tif (pdbg_init->compress_type != CUDBG_COMPRESSION_NONE) {\n\t\tif (size > pdbg_init->compress_buff_size)\n\t\t\treturn CUDBG_STATUS_NO_MEM;\n\n\t\tpin_buff->data = (char *)pdbg_init->compress_buff;\n\t\tpin_buff->offset = 0;\n\t\tpin_buff->size = size;\n\t\treturn 0;\n\t}\n\n\tpin_buff->data = (char *)pdbg_buff->data + offset;\n\tpin_buff->offset = offset;\n\tpin_buff->size = size;\n\treturn 0;\n}\n\nvoid cudbg_put_buff(struct cudbg_init *pdbg_init,\n\t\t    struct cudbg_buffer *pin_buff)\n{\n\t \n\tif (pdbg_init->compress_type != CUDBG_COMPRESSION_NONE)\n\t\tmemset(pdbg_init->compress_buff, 0,\n\t\t       pdbg_init->compress_buff_size);\n\n\tpin_buff->data = NULL;\n\tpin_buff->offset = 0;\n\tpin_buff->size = 0;\n}\n\nvoid cudbg_update_buff(struct cudbg_buffer *pin_buff,\n\t\t       struct cudbg_buffer *pout_buff)\n{\n\t \n\tpout_buff->offset += pin_buff->size;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

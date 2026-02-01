@@ -1,0 +1,9 @@
+{
+  "module_name": "gf100.c",
+  "hash_id": "c8a570fa6ef75c44061977d005111722d30ab775c5ebd9f761c28101657f9930",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/subdev/fuse/gf100.c",
+  "human_readable_source": " \n#include \"priv.h\"\n\nstatic u32\ngf100_fuse_read(struct nvkm_fuse *fuse, u32 addr)\n{\n\tstruct nvkm_device *device = fuse->subdev.device;\n\tunsigned long flags;\n\tu32 fuse_enable, unk, val;\n\n\t \n\tspin_lock_irqsave(&fuse->lock, flags);\n\tfuse_enable = nvkm_mask(device, 0x022400, 0x800, 0x800);\n\tunk = nvkm_mask(device, 0x021000, 0x1, 0x1);\n\tval = nvkm_rd32(device, 0x021100 + addr);\n\tnvkm_wr32(device, 0x021000, unk);\n\tnvkm_wr32(device, 0x022400, fuse_enable);\n\tspin_unlock_irqrestore(&fuse->lock, flags);\n\treturn val;\n}\n\nstatic const struct nvkm_fuse_func\ngf100_fuse = {\n\t.read = gf100_fuse_read,\n};\n\nint\ngf100_fuse_new(struct nvkm_device *device, enum nvkm_subdev_type type, int inst,\n\t       struct nvkm_fuse **pfuse)\n{\n\treturn nvkm_fuse_new_(&gf100_fuse, device, type, inst, pfuse);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

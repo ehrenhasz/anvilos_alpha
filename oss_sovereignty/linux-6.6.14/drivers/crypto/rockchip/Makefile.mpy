@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "d11f63bc0940523de2d6d7189b09d4d4ec9525695e170b547e9e3426e20a1fbd",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/crypto/rockchip/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-$(CONFIG_CRYPTO_DEV_ROCKCHIP) += rk_crypto.o\nrk_crypto-objs := rk3288_crypto.o \\\n\t\t  rk3288_crypto_skcipher.o \\\n\t\t  rk3288_crypto_ahash.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

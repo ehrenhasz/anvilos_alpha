@@ -1,0 +1,9 @@
+{
+  "module_name": "bashansi.h",
+  "hash_id": "2c841e96932e401d9f78533fdf56ca4d05f39256b896a3bab0f9690fbe669302",
+  "original_prompt": "Ingested from bash-5.2.21/bashansi.h",
+  "human_readable_source": " \n\n \n\n#if !defined (_BASHANSI_H_)\n#define _BASHANSI_H_\n\n#if defined (HAVE_STRING_H)\n#  include <string.h>\n#endif  \n\n#if defined (HAVE_STRINGS_H)\n#  include <strings.h>\n#endif  \n\n#if defined (HAVE_STDLIB_H)\n#  include <stdlib.h>\n#else\n#  include \"ansi_stdlib.h\"\n#endif  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "cmdhdr.h",
+  "hash_id": "74be70495a9e41b074d1c393519a7c2b7de8fbbce9fac81f041b94d128efe8f1",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/intel/iwlwifi/fw/api/cmdhdr.h",
+  "human_readable_source": " \n \n#ifndef __iwl_fw_api_cmdhdr_h__\n#define __iwl_fw_api_cmdhdr_h__\n\n \n#define SEQ_TO_QUEUE(s)\t(((s) >> 8) & 0x1f)\n#define QUEUE_TO_SEQ(q)\t(((q) & 0x1f) << 8)\n#define SEQ_TO_INDEX(s)\t((s) & 0xff)\n#define INDEX_TO_SEQ(i)\t((i) & 0xff)\n#define SEQ_RX_FRAME\tcpu_to_le16(0x8000)\n\n \nstatic inline u8 iwl_cmd_opcode(u32 cmdid)\n{\n\treturn cmdid & 0xFF;\n}\n\nstatic inline u8 iwl_cmd_groupid(u32 cmdid)\n{\n\treturn ((cmdid & 0xFF00) >> 8);\n}\n\nstatic inline u8 iwl_cmd_version(u32 cmdid)\n{\n\treturn ((cmdid & 0xFF0000) >> 16);\n}\n\nstatic inline u32 iwl_cmd_id(u8 opcode, u8 groupid, u8 version)\n{\n\treturn opcode + (groupid << 8) + (version << 16);\n}\n\n \n#define WIDE_ID(grp, opcode) (((grp) << 8) | (opcode))\n#define DEF_ID(opcode) ((1 << 8) | (opcode))\n\n \n#define IWL_ALWAYS_LONG_GROUP\t1\n\n \nstruct iwl_cmd_header {\n\t \n\tu8 cmd;\n\t \n\tu8 group_id;\n\t \n\t__le16 sequence;\n} __packed;\n\n \nstruct iwl_cmd_header_wide {\n\tu8 cmd;\n\tu8 group_id;\n\t__le16 sequence;\n\t__le16 length;\n\tu8 reserved;\n\tu8 version;\n} __packed;\n\n \nstruct iwl_calib_res_notif_phy_db {\n\t__le16 type;\n\t__le16 length;\n\tu8 data[];\n} __packed;\n\n \nstruct iwl_phy_db_cmd {\n\t__le16 type;\n\t__le16 length;\n\tu8 data[];\n} __packed;\n\n \nstruct iwl_cmd_response {\n\t__le32 status;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

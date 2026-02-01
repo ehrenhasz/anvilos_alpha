@@ -1,0 +1,9 @@
+{
+  "module_name": "adv7183.h",
+  "hash_id": "f70f6966562b42526621c0838c06eaea6ee52458505d80727b53d0e7ad19cedd",
+  "original_prompt": "Ingested from linux-6.6.14/include/media/i2c/adv7183.h",
+  "human_readable_source": " \n \n\n#ifndef _ADV7183_H_\n#define _ADV7183_H_\n\n \n#define ADV7183_COMPOSITE0  0   \n#define ADV7183_COMPOSITE1  1   \n#define ADV7183_COMPOSITE2  2   \n#define ADV7183_COMPOSITE3  3   \n#define ADV7183_COMPOSITE4  4   \n#define ADV7183_COMPOSITE5  5   \n#define ADV7183_COMPOSITE6  6   \n#define ADV7183_COMPOSITE7  7   \n#define ADV7183_COMPOSITE8  8   \n#define ADV7183_COMPOSITE9  9   \n#define ADV7183_COMPOSITE10 10  \n\n#define ADV7183_SVIDEO0     11  \n#define ADV7183_SVIDEO1     12  \n#define ADV7183_SVIDEO2     13  \n\n#define ADV7183_COMPONENT0  14  \n#define ADV7183_COMPONENT1  15  \n\n \n#define ADV7183_8BIT_OUT    0\n#define ADV7183_16BIT_OUT   1\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

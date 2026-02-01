@@ -1,0 +1,9 @@
+{
+  "module_name": "paravirt_api_clock.h",
+  "hash_id": "ab91ded4c51b20cb377091bf9a6debdd8134b9af1b6374afc9342a8768dec8fb",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/include/asm/paravirt_api_clock.h",
+  "human_readable_source": "#include <asm/paravirt.h>\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

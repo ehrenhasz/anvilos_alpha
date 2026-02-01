@@ -1,0 +1,9 @@
+{
+  "module_name": "nfnetlink_hook.h",
+  "hash_id": "17be186e31b12ee5fa66077108248492944eb3a6b3f40b104c2f7f193d4d0e36",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/netfilter/nfnetlink_hook.h",
+  "human_readable_source": " \n#ifndef _NFNL_HOOK_H_\n#define _NFNL_HOOK_H_\n\nenum nfnl_hook_msg_types {\n\tNFNL_MSG_HOOK_GET,\n\tNFNL_MSG_HOOK_MAX,\n};\n\n \nenum nfnl_hook_attributes {\n\tNFNLA_HOOK_UNSPEC,\n\tNFNLA_HOOK_HOOKNUM,\n\tNFNLA_HOOK_PRIORITY,\n\tNFNLA_HOOK_DEV,\n\tNFNLA_HOOK_FUNCTION_NAME,\n\tNFNLA_HOOK_MODULE_NAME,\n\tNFNLA_HOOK_CHAIN_INFO,\n\t__NFNLA_HOOK_MAX\n};\n#define NFNLA_HOOK_MAX\t\t(__NFNLA_HOOK_MAX - 1)\n\n \nenum nfnl_hook_chain_info_attributes {\n\tNFNLA_HOOK_INFO_UNSPEC,\n\tNFNLA_HOOK_INFO_DESC,\n\tNFNLA_HOOK_INFO_TYPE,\n\t__NFNLA_HOOK_INFO_MAX,\n};\n#define NFNLA_HOOK_INFO_MAX (__NFNLA_HOOK_INFO_MAX - 1)\n\nenum nfnl_hook_chain_desc_attributes {\n\tNFNLA_CHAIN_UNSPEC,\n\tNFNLA_CHAIN_TABLE,\n\tNFNLA_CHAIN_FAMILY,\n\tNFNLA_CHAIN_NAME,\n\t__NFNLA_CHAIN_MAX,\n};\n#define NFNLA_CHAIN_MAX (__NFNLA_CHAIN_MAX - 1)\n\n \nenum nfnl_hook_chaintype {\n\tNFNL_HOOK_TYPE_NFTABLES = 0x1,\n\tNFNL_HOOK_TYPE_BPF,\n};\n\n \nenum nfnl_hook_bpf_attributes {\n\tNFNLA_HOOK_BPF_UNSPEC,\n\tNFNLA_HOOK_BPF_ID,\n\t__NFNLA_HOOK_BPF_MAX,\n};\n#define NFNLA_HOOK_BPF_MAX (__NFNLA_HOOK_BPF_MAX - 1)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

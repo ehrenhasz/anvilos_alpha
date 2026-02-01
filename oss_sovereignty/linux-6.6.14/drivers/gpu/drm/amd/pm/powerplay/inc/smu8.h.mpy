@@ -1,0 +1,9 @@
+{
+  "module_name": "smu8.h",
+  "hash_id": "bd2d5512720a261ed22f66274857fa7219d0b97192772a825dfbb5ff453072b3",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/pm/powerplay/inc/smu8.h",
+  "human_readable_source": " \n\n#ifndef SMU8_H\n#define SMU8_H\n\n#pragma pack(push, 1)\n\n#define ENABLE_DEBUG_FEATURES\n\nstruct SMU8_Firmware_Header {\n\tuint32_t Version;\n\tuint32_t ImageSize;\n\tuint32_t CodeSize;\n\tuint32_t HeaderSize;\n\tuint32_t EntryPoint;\n\tuint32_t Rtos;\n\tuint32_t UcodeLoadStatus;\n\tuint32_t DpmTable;\n\tuint32_t FanTable;\n\tuint32_t PmFuseTable;\n\tuint32_t Globals;\n\tuint32_t Reserved[20];\n\tuint32_t Signature;\n};\n\nstruct SMU8_MultimediaPowerLogData {\n\tuint32_t avgTotalPower;\n\tuint32_t avgGpuPower;\n\tuint32_t avgUvdPower;\n\tuint32_t avgVcePower;\n\n\tuint32_t avgSclk;\n\tuint32_t avgDclk;\n\tuint32_t avgVclk;\n\tuint32_t avgEclk;\n\n\tuint32_t startTimeHi;\n\tuint32_t startTimeLo;\n\n\tuint32_t endTimeHi;\n\tuint32_t endTimeLo;\n};\n\n#define SMU8_FIRMWARE_HEADER_LOCATION 0x1FF80\n#define SMU8_UNBCSR_START_ADDR 0xC0100000\n\n#define SMN_MP1_SRAM_START_ADDR 0x10000000\n\n#pragma pack(pop)\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

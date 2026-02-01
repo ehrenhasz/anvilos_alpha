@@ -1,0 +1,9 @@
+{
+  "module_name": "test-di-set.c",
+  "hash_id": "00d03419b3799a431d524b9a36a4f58f5a35e36858a85ee1cd064f9956a1a691",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-di-set.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#include \"di-set.h\"\n\n#include \"macros.h\"\n\nint\nmain (void)\n{\n  struct di_set *dis = di_set_alloc ();\n  ASSERT (dis);\n  di_set_free (dis);  \n  dis = di_set_alloc ();\n  ASSERT (dis);\n\n  ASSERT (di_set_lookup (dis, 2, 5) == 0);  \n  ASSERT (di_set_insert (dis, 2, 5) == 1);  \n  ASSERT (di_set_insert (dis, 2, 5) == 0);  \n  ASSERT (di_set_insert (dis, 3, 5) == 1);  \n  ASSERT (di_set_insert (dis, 2, 8) == 1);  \n  ASSERT (di_set_lookup (dis, 2, 5) == 1);  \n\n   \n  ASSERT (di_set_insert (dis, 5, (ino_t) -1) == 1);\n  ASSERT (di_set_insert (dis, 5, (ino_t) -1) == 0);  \n\n  {\n    unsigned int i;\n    for (i = 0; i < 3000; i++)\n      ASSERT (di_set_insert (dis, 9, i) == 1);\n    for (i = 0; i < 3000; i++)\n      ASSERT (di_set_insert (dis, 9, i) == 0);  \n  }\n\n  di_set_free (dis);\n\n  return 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

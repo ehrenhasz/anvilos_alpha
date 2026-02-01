@@ -1,0 +1,9 @@
+{
+  "module_name": "memcasecmp.h",
+  "hash_id": "0a682b80b09859612bfa73e934f58cbf56573cc559c0492fd13ce418e476344c",
+  "original_prompt": "Ingested from coreutils-9.4/lib/memcasecmp.h",
+  "human_readable_source": " \n\n \n#if !_GL_CONFIG_H_INCLUDED\n #error \"Please include config.h first.\"\n#endif\n\n#include <stddef.h>\n\nint memcasecmp (const void *vs1, const void *vs2, size_t n) _GL_ATTRIBUTE_PURE;\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

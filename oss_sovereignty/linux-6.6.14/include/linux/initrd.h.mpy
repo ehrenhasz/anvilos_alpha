@@ -1,0 +1,9 @@
+{
+  "module_name": "initrd.h",
+  "hash_id": "d1ff300c78fe86c3ed7b2c0e308481c3e5d9a35445ae6d770f958821eaaddb23",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/initrd.h",
+  "human_readable_source": " \n\n#ifndef __LINUX_INITRD_H\n#define __LINUX_INITRD_H\n\n#define INITRD_MINOR 250  \n\n \nextern int rd_image_start;\n\n \nextern unsigned long rd_size;\n\n \nextern int initrd_below_start_ok;\n\n \nextern unsigned long initrd_start, initrd_end;\nextern void free_initrd_mem(unsigned long, unsigned long);\n\n#ifdef CONFIG_BLK_DEV_INITRD\nextern void __init reserve_initrd_mem(void);\nextern void wait_for_initramfs(void);\n#else\nstatic inline void __init reserve_initrd_mem(void) {}\nstatic inline void wait_for_initramfs(void) {}\n#endif\n\nextern phys_addr_t phys_initrd_start;\nextern unsigned long phys_initrd_size;\n\nextern char __initramfs_start[];\nextern unsigned long __initramfs_size;\n\nvoid console_on_rootfs(void);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

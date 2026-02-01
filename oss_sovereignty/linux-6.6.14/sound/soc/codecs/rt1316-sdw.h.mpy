@@ -1,0 +1,9 @@
+{
+  "module_name": "rt1316-sdw.h",
+  "hash_id": "ebf385a30200d92243fc20745901b956c2682c7e8c9728e4066135c1c9ea98ad",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/codecs/rt1316-sdw.h",
+  "human_readable_source": " \n \n\n#ifndef __RT1316_SDW_H__\n#define __RT1316_SDW_H__\n\n#include <linux/regmap.h>\n#include <linux/soundwire/sdw.h>\n#include <linux/soundwire/sdw_type.h>\n#include <linux/soundwire/sdw_registers.h>\n#include <sound/soc.h>\n\n \n#define FUNC_NUM_SMART_AMP 0x04\n\n \n#define RT1316_SDCA_ENT_PDE23 0x31\n#define RT1316_SDCA_ENT_PDE27 0x32\n#define RT1316_SDCA_ENT_PDE22 0x33\n#define RT1316_SDCA_ENT_PDE24 0x34\n#define RT1316_SDCA_ENT_XU24 0x24\n#define RT1316_SDCA_ENT_FU21 0x03\n#define RT1316_SDCA_ENT_UDMPU21 0x02\n\n \n#define RT1316_SDCA_CTL_SAMPLE_FREQ_INDEX 0x10\n#define RT1316_SDCA_CTL_REQ_POWER_STATE 0x01\n#define RT1316_SDCA_CTL_BYPASS 0x01\n#define RT1316_SDCA_CTL_FU_MUTE 0x01\n#define RT1316_SDCA_CTL_FU_VOLUME 0x02\n#define RT1316_SDCA_CTL_UDMPU_CLUSTER 0x10\n\n \n#define CH_L 0x01\n#define CH_R 0x02\n\nstruct rt1316_sdw_priv {\n\tstruct snd_soc_component *component;\n\tstruct regmap *regmap;\n\tstruct sdw_slave *sdw_slave;\n\tstruct sdw_bus_params params;\n\tbool hw_init;\n\tbool first_hw_init;\n\tunsigned char *bq_params;\n\tunsigned int bq_params_cnt;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

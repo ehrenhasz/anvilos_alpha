@@ -1,0 +1,9 @@
+{
+  "module_name": "mock_region.h",
+  "hash_id": "8d22668d1db016600d153903353b2d46bf14f01ee4da4d318d835e966c1f3328",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/selftests/mock_region.h",
+  "human_readable_source": " \n \n\n#ifndef __MOCK_REGION_H\n#define __MOCK_REGION_H\n\n#include <linux/types.h>\n\nstruct drm_i915_private;\nstruct intel_memory_region;\n\nstruct intel_memory_region *\nmock_region_create(struct drm_i915_private *i915,\n\t\t   resource_size_t start,\n\t\t   resource_size_t size,\n\t\t   resource_size_t min_page_size,\n\t\t   resource_size_t io_start,\n\t\t   resource_size_t io_size);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "win_minmax.c",
+  "hash_id": "e07c2fd4ae2788b423623a8e108e52c4fbf87dd96ef9e5aa06fc759956858c19",
+  "original_prompt": "Ingested from linux-6.6.14/lib/win_minmax.c",
+  "human_readable_source": "\n \n#include <linux/module.h>\n#include <linux/win_minmax.h>\n\n \nstatic u32 minmax_subwin_update(struct minmax *m, u32 win,\n\t\t\t\tconst struct minmax_sample *val)\n{\n\tu32 dt = val->t - m->s[0].t;\n\n\tif (unlikely(dt > win)) {\n\t\t \n\t\tm->s[0] = m->s[1];\n\t\tm->s[1] = m->s[2];\n\t\tm->s[2] = *val;\n\t\tif (unlikely(val->t - m->s[0].t > win)) {\n\t\t\tm->s[0] = m->s[1];\n\t\t\tm->s[1] = m->s[2];\n\t\t\tm->s[2] = *val;\n\t\t}\n\t} else if (unlikely(m->s[1].t == m->s[0].t) && dt > win/4) {\n\t\t \n\t\tm->s[2] = m->s[1] = *val;\n\t} else if (unlikely(m->s[2].t == m->s[1].t) && dt > win/2) {\n\t\t \n\t\tm->s[2] = *val;\n\t}\n\treturn m->s[0].v;\n}\n\n \nu32 minmax_running_max(struct minmax *m, u32 win, u32 t, u32 meas)\n{\n\tstruct minmax_sample val = { .t = t, .v = meas };\n\n\tif (unlikely(val.v >= m->s[0].v) ||\t   \n\t    unlikely(val.t - m->s[2].t > win))\t   \n\t\treturn minmax_reset(m, t, meas);   \n\n\tif (unlikely(val.v >= m->s[1].v))\n\t\tm->s[2] = m->s[1] = val;\n\telse if (unlikely(val.v >= m->s[2].v))\n\t\tm->s[2] = val;\n\n\treturn minmax_subwin_update(m, win, &val);\n}\nEXPORT_SYMBOL(minmax_running_max);\n\n \nu32 minmax_running_min(struct minmax *m, u32 win, u32 t, u32 meas)\n{\n\tstruct minmax_sample val = { .t = t, .v = meas };\n\n\tif (unlikely(val.v <= m->s[0].v) ||\t   \n\t    unlikely(val.t - m->s[2].t > win))\t   \n\t\treturn minmax_reset(m, t, meas);   \n\n\tif (unlikely(val.v <= m->s[1].v))\n\t\tm->s[2] = m->s[1] = val;\n\telse if (unlikely(val.v <= m->s[2].v))\n\t\tm->s[2] = val;\n\n\treturn minmax_subwin_update(m, win, &val);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

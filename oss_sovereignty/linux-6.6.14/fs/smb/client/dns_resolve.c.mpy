@@ -1,0 +1,9 @@
+{
+  "module_name": "dns_resolve.c",
+  "hash_id": "ef50d83dca798b122a3a643d184ece3b2f6aef53988182eaaa048247baa51fd4",
+  "original_prompt": "Ingested from linux-6.6.14/fs/smb/client/dns_resolve.c",
+  "human_readable_source": "\n \n\n#include <linux/inet.h>\n#include <linux/slab.h>\n#include <linux/dns_resolver.h>\n#include \"dns_resolve.h\"\n#include \"cifsglob.h\"\n#include \"cifsproto.h\"\n#include \"cifs_debug.h\"\n\n \nint\ndns_resolve_server_name_to_ip(const char *unc, struct sockaddr *ip_addr, time64_t *expiry)\n{\n\tconst char *hostname, *sep;\n\tchar *ip;\n\tint len, rc;\n\n\tif (!ip_addr || !unc)\n\t\treturn -EINVAL;\n\n\tlen = strlen(unc);\n\tif (len < 3) {\n\t\tcifs_dbg(FYI, \"%s: unc is too short: %s\\n\", __func__, unc);\n\t\treturn -EINVAL;\n\t}\n\n\t \n\tlen -= 2;\n\thostname = unc + 2;\n\n\t \n\tsep = memchr(hostname, '/', len);\n\tif (sep)\n\t\tlen = sep - hostname;\n\telse\n\t\tcifs_dbg(FYI, \"%s: probably server name is whole unc: %s\\n\",\n\t\t\t __func__, unc);\n\n\t \n\trc = cifs_convert_address(ip_addr, hostname, len);\n\tif (rc > 0) {\n\t\tcifs_dbg(FYI, \"%s: unc is IP, skipping dns upcall: %*.*s\\n\", __func__, len, len,\n\t\t\t hostname);\n\t\treturn 0;\n\t}\n\n\t \n\trc = dns_query(current->nsproxy->net_ns, NULL, hostname, len,\n\t\t       NULL, &ip, expiry, false);\n\tif (rc < 0) {\n\t\tcifs_dbg(FYI, \"%s: unable to resolve: %*.*s\\n\",\n\t\t\t __func__, len, len, hostname);\n\t} else {\n\t\tcifs_dbg(FYI, \"%s: resolved: %*.*s to %s expiry %llu\\n\",\n\t\t\t __func__, len, len, hostname, ip,\n\t\t\t expiry ? (*expiry) : 0);\n\n\t\trc = cifs_convert_address(ip_addr, ip, strlen(ip));\n\t\tkfree(ip);\n\n\t\tif (!rc) {\n\t\t\tcifs_dbg(FYI, \"%s: unable to determine ip address\\n\", __func__);\n\t\t\trc = -EHOSTUNREACH;\n\t\t} else\n\t\t\trc = 0;\n\t}\n\treturn rc;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

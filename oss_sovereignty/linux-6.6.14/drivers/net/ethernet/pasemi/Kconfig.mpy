@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "f0b6b2fee1577a845f813affad2f6cfa405a44faf5299696b645984f64302312",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/pasemi/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# PA Semi network device configuration\n#\n\nconfig NET_VENDOR_PASEMI\n\tbool \"PA Semi devices\"\n\tdefault y\n\tdepends on PPC_PASEMI && PCI\n\thelp\n\t  If you have a network (Ethernet) card belonging to this class, say Y.\n\n\t  Note that the answer to this question doesn't directly affect the\n\t  kernel: saying N will just cause the configurator to skip all\n\t  the questions about PA Semi cards. If you say Y, you will be asked for\n\t  your specific card in the following questions.\n\nif NET_VENDOR_PASEMI\n\nconfig PASEMI_MAC\n\ttristate \"PA Semi 1/10Gbit MAC\"\n\tdepends on PPC_PASEMI && PCI\n\tselect PHYLIB\n\thelp\n\t  This driver supports the on-chip 1/10Gbit Ethernet controller on\n\t  PA Semi's PWRficient line of chips.\n\nendif # NET_VENDOR_PASEMI\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

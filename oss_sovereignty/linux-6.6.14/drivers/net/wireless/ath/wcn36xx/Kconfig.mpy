@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "68905dea2b245e23eb868bc7fc4a32a7618d75bd7ce2a950559f0b00d0265dd5",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/ath/wcn36xx/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: ISC\nconfig WCN36XX\n\ttristate \"Qualcomm Atheros WCN3660/3680 support\"\n\tdepends on MAC80211 && HAS_DMA\n\tdepends on QCOM_WCNSS_CTRL || QCOM_WCNSS_CTRL=n\n\tdepends on RPMSG || RPMSG=n\n\thelp\n\t  This module adds support for wireless adapters based on\n\t  Qualcomm Atheros WCN3660 and WCN3680 mobile chipsets.\n\n\t  If you choose to build a module, it'll be called wcn36xx.\n\nconfig WCN36XX_DEBUGFS\n\tbool \"WCN36XX debugfs support\"\n\tdepends on WCN36XX\n\thelp\n\t  Enabled debugfs support\n\n\t  If unsure, say Y to make it easier to debug problems.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

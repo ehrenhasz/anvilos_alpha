@@ -1,0 +1,9 @@
+{
+  "module_name": "sf_ldexp.c",
+  "hash_id": "9b7ceaa9775d98cedfe6b19cc789ec76aeab4b964b618877676fa37c1c5dd67c",
+  "original_prompt": "Ingested from sys_09_Anvil/source/lib/libm/sf_ldexp.c",
+  "human_readable_source": " \n\n \n\n \n\n#include \"fdlibm.h\"\n\n#ifdef __STDC__\n\tfloat ldexpf(float value, int exp)\n#else\n\tfloat ldexpf(value, exp)\n\tfloat value; int exp;\n#endif\n{\n\tif(!isfinite(value)||value==(float)0.0) return value;\n\tvalue = scalbnf(value,exp);\n\t\n\treturn value;\n}\n\n#ifdef _DOUBLE_IS_32BITS\n\n#ifdef __STDC__\n\tdouble ldexp(double value, int exp)\n#else\n\tdouble ldexp(value, exp)\n\tdouble value; int exp;\n#endif\n{\n\treturn (double) ldexpf((float) value, exp);\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

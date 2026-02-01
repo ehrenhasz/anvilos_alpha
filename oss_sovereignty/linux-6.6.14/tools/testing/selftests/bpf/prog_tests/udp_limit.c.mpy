@@ -1,0 +1,9 @@
+{
+  "module_name": "udp_limit.c",
+  "hash_id": "b167980975260bfa5b68813ff597254db0a54fa96e88c790e1260c3d204e56a6",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/prog_tests/udp_limit.c",
+  "human_readable_source": "\n#include <test_progs.h>\n#include \"udp_limit.skel.h\"\n\n#include <sys/types.h>\n#include <sys/socket.h>\n\nvoid test_udp_limit(void)\n{\n\tstruct udp_limit *skel;\n\tint fd1 = -1, fd2 = -1;\n\tint cgroup_fd;\n\n\tcgroup_fd = test__join_cgroup(\"/udp_limit\");\n\tif (!ASSERT_GE(cgroup_fd, 0, \"cg-join\"))\n\t\treturn;\n\n\tskel = udp_limit__open_and_load();\n\tif (!ASSERT_OK_PTR(skel, \"skel-load\"))\n\t\tgoto close_cgroup_fd;\n\n\tskel->links.sock = bpf_program__attach_cgroup(skel->progs.sock, cgroup_fd);\n\tif (!ASSERT_OK_PTR(skel->links.sock, \"cg_attach_sock\"))\n\t\tgoto close_skeleton;\n\tskel->links.sock_release = bpf_program__attach_cgroup(skel->progs.sock_release, cgroup_fd);\n\tif (!ASSERT_OK_PTR(skel->links.sock_release, \"cg_attach_sock_release\"))\n\t\tgoto close_skeleton;\n\n\t \n\tfd1 = socket(AF_INET, SOCK_DGRAM, 0);\n\tif (!ASSERT_GE(fd1, 0, \"socket(fd1)\"))\n\t\tgoto close_skeleton;\n\n\tfd2 = socket(AF_INET, SOCK_DGRAM, 0);\n\tif (!ASSERT_LT(fd2, 0, \"socket(fd2)\"))\n\t\tgoto close_skeleton;\n\n\t \n\tclose(fd1);\n\tfd1 = -1;\n\n\tfd1 = socket(AF_INET, SOCK_DGRAM, 0);\n\tif (!ASSERT_GE(fd1, 0, \"socket(fd1-again)\"))\n\t\tgoto close_skeleton;\n\n\t \n\tif (!ASSERT_EQ(skel->bss->invocations, 4, \"bss-invocations\"))\n\t\tgoto close_skeleton;\n\n\t \n\tif (!ASSERT_EQ(skel->bss->in_use, 1, \"bss-in_use\"))\n\t\tgoto close_skeleton;\n\nclose_skeleton:\n\tif (fd1 >= 0)\n\t\tclose(fd1);\n\tif (fd2 >= 0)\n\t\tclose(fd2);\n\tudp_limit__destroy(skel);\nclose_cgroup_fd:\n\tclose(cgroup_fd);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "ucall.c",
+  "hash_id": "b690e112c0fb89e6f08cac3891a44c33150e3aad2b5437a6e536b4ba63aba636",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/kvm/lib/riscv/ucall.c",
+  "human_readable_source": "\n \n\n#include <linux/kvm.h>\n\n#include \"kvm_util.h\"\n#include \"processor.h\"\n\nstruct sbiret sbi_ecall(int ext, int fid, unsigned long arg0,\n\t\t\tunsigned long arg1, unsigned long arg2,\n\t\t\tunsigned long arg3, unsigned long arg4,\n\t\t\tunsigned long arg5)\n{\n\tregister uintptr_t a0 asm (\"a0\") = (uintptr_t)(arg0);\n\tregister uintptr_t a1 asm (\"a1\") = (uintptr_t)(arg1);\n\tregister uintptr_t a2 asm (\"a2\") = (uintptr_t)(arg2);\n\tregister uintptr_t a3 asm (\"a3\") = (uintptr_t)(arg3);\n\tregister uintptr_t a4 asm (\"a4\") = (uintptr_t)(arg4);\n\tregister uintptr_t a5 asm (\"a5\") = (uintptr_t)(arg5);\n\tregister uintptr_t a6 asm (\"a6\") = (uintptr_t)(fid);\n\tregister uintptr_t a7 asm (\"a7\") = (uintptr_t)(ext);\n\tstruct sbiret ret;\n\n\tasm volatile (\n\t\t\"ecall\"\n\t\t: \"+r\" (a0), \"+r\" (a1)\n\t\t: \"r\" (a2), \"r\" (a3), \"r\" (a4), \"r\" (a5), \"r\" (a6), \"r\" (a7)\n\t\t: \"memory\");\n\tret.error = a0;\n\tret.value = a1;\n\n\treturn ret;\n}\n\nvoid *ucall_arch_get_ucall(struct kvm_vcpu *vcpu)\n{\n\tstruct kvm_run *run = vcpu->run;\n\n\tif (run->exit_reason == KVM_EXIT_RISCV_SBI &&\n\t    run->riscv_sbi.extension_id == KVM_RISCV_SELFTESTS_SBI_EXT) {\n\t\tswitch (run->riscv_sbi.function_id) {\n\t\tcase KVM_RISCV_SELFTESTS_SBI_UCALL:\n\t\t\treturn (void *)run->riscv_sbi.args[0];\n\t\tcase KVM_RISCV_SELFTESTS_SBI_UNEXP:\n\t\t\tvcpu_dump(stderr, vcpu, 2);\n\t\t\tTEST_ASSERT(0, \"Unexpected trap taken by guest\");\n\t\t\tbreak;\n\t\tdefault:\n\t\t\tbreak;\n\t\t}\n\t}\n\treturn NULL;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

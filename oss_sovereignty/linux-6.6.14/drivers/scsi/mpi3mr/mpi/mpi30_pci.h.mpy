@@ -1,0 +1,9 @@
+{
+  "module_name": "mpi30_pci.h",
+  "hash_id": "55ea7db86e28fbea48386afef48659bc2407d320c39f36d00e57879ab1ad8239",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/scsi/mpi3mr/mpi/mpi30_pci.h",
+  "human_readable_source": " \n \n#ifndef MPI30_PCI_H\n#define MPI30_PCI_H     1\n#ifndef MPI3_NVME_ENCAP_CMD_MAX\n#define MPI3_NVME_ENCAP_CMD_MAX               (1)\n#endif\n#define MPI3_NVME_FLAGS_FORCE_ADMIN_ERR_REPLY_MASK      (0x0002)\n#define MPI3_NVME_FLAGS_FORCE_ADMIN_ERR_REPLY_FAIL_ONLY (0x0000)\n#define MPI3_NVME_FLAGS_FORCE_ADMIN_ERR_REPLY_ALL       (0x0002)\n#define MPI3_NVME_FLAGS_SUBMISSIONQ_MASK                (0x0001)\n#define MPI3_NVME_FLAGS_SUBMISSIONQ_IO                  (0x0000)\n#define MPI3_NVME_FLAGS_SUBMISSIONQ_ADMIN               (0x0001)\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

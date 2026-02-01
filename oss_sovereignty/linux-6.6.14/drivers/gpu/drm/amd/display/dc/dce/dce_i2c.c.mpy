@@ -1,0 +1,9 @@
+{
+  "module_name": "dce_i2c.c",
+  "hash_id": "f3b55700d29d318b1ca2fa0b201abb3c813ce3d151b36b838c46de07339776b2",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/dc/dce/dce_i2c.c",
+  "human_readable_source": " \n#include \"dce_i2c.h\"\n#include \"reg_helper.h\"\n\nbool dce_i2c_oem_device_present(\n\tstruct resource_pool *pool,\n\tstruct ddc_service *ddc,\n\tsize_t slave_address\n)\n{\n\tstruct dc *dc = ddc->ctx->dc;\n\tstruct dc_bios *dcb = dc->ctx->dc_bios;\n\tstruct graphics_object_id id = {0};\n\tstruct graphics_object_i2c_info i2c_info;\n\n\tif (!dc->ctx->dc_bios->fw_info.oem_i2c_present)\n\t\treturn false;\n\n\tid.id = dc->ctx->dc_bios->fw_info.oem_i2c_obj_id;\n\tid.enum_id = 0;\n\tid.type = OBJECT_TYPE_GENERIC;\n\tif (dcb->funcs->get_i2c_info(dcb, id, &i2c_info) != BP_RESULT_OK)\n\t\treturn false;\n\n\tif (i2c_info.i2c_slave_address != slave_address)\n\t\treturn false;\n\n\treturn true;\n}\n\nbool dce_i2c_submit_command(\n\tstruct resource_pool *pool,\n\tstruct ddc *ddc,\n\tstruct i2c_command *cmd)\n{\n\tstruct dce_i2c_hw *dce_i2c_hw;\n\tstruct dce_i2c_sw dce_i2c_sw = {0};\n\n\tif (!ddc) {\n\t\tBREAK_TO_DEBUGGER();\n\t\treturn false;\n\t}\n\n\tif (!cmd) {\n\t\tBREAK_TO_DEBUGGER();\n\t\treturn false;\n\t}\n\n\tdce_i2c_hw = acquire_i2c_hw_engine(pool, ddc);\n\n\tif (dce_i2c_hw)\n\t\treturn dce_i2c_submit_command_hw(pool, ddc, cmd, dce_i2c_hw);\n\n\tdce_i2c_sw.ctx = ddc->ctx;\n\tif (dce_i2c_engine_acquire_sw(&dce_i2c_sw, ddc)) {\n\t\treturn dce_i2c_submit_command_sw(pool, ddc, cmd, &dce_i2c_sw);\n\t}\n\n\treturn false;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

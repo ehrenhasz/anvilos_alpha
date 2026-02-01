@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "0cebb950501ee5dce93eddd3e4148001962597ad12cd787c4437408a99cc4114",
+  "original_prompt": "Ingested from linux-6.6.14/kernel/debug/kdb/Makefile",
+  "human_readable_source": "# This file is subject to the terms and conditions of the GNU General Public\n# License.  See the file \"COPYING\" in the main directory of this archive\n# for more details.\n#\n# Copyright (c) 1999-2004 Silicon Graphics, Inc.  All Rights Reserved.\n# Copyright (c) 2009 Wind River Systems, Inc. All Rights Reserved.\n#\n\nobj-y := kdb_io.o kdb_main.o kdb_support.o kdb_bt.o gen-kdb_cmds.o kdb_bp.o kdb_debugger.o\nobj-$(CONFIG_KDB_KEYBOARD)    += kdb_keyboard.o\n\nclean-files := gen-kdb_cmds.c\n\nquiet_cmd_gen-kdb = GENKDB  $@\n      cmd_gen-kdb = $(AWK) 'BEGIN {print \"\\#include <linux/stddef.h>\"; print \"\\#include <linux/init.h>\"} \\\n\t\t/^\\#/{next} \\\n\t\t/^[ \\t]*$$/{next} \\\n\t\t{gsub(/\"/, \"\\\\\\\"\", $$0); \\\n\t\t  print \"static __initdata char kdb_cmd\" cmds++ \"[] = \\\"\" $$0 \"\\\\n\\\";\"} \\\n\t\tEND {print \"extern char *kdb_cmds[]; char __initdata *kdb_cmds[] = {\"; for (i = 0; i < cmds; ++i) {print \"  kdb_cmd\" i \",\"}; print(\"  NULL\\n};\");}' \\\n\t\t$(filter-out %/Makefile,$^) > $@#\n\n$(obj)/gen-kdb_cmds.c:\t$(src)/kdb_cmds $(src)/Makefile\n\t$(call cmd,gen-kdb)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

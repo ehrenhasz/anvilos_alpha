@@ -1,0 +1,9 @@
+{
+  "module_name": "ili9320.h",
+  "hash_id": "82967198019e918bf26dd9b79dc365be77b3e55ecfe8ec1e9044b8ce66c69cd6",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/video/backlight/ili9320.h",
+  "human_readable_source": " \n \n\n \nstruct ili9320_reg {\n\tunsigned short\t\taddress;\n\tunsigned short\t\tvalue;\n};\n\nstruct ili9320;\n\nstruct ili9320_client {\n\tconst char\t*name;\n\tint\t(*init)(struct ili9320 *ili, struct ili9320_platdata *cfg);\n\n};\n \nstruct  ili9320_spi {\n\tstruct spi_device\t*dev;\n\tstruct spi_message\tmessage;\n\tstruct spi_transfer\txfer[2];\n\n\tunsigned char\t\tid;\n\tunsigned char\t\tbuffer_addr[4];\n\tunsigned char\t\tbuffer_data[4];\n};\n\n \nstruct ili9320 {\n\tunion {\n\t\tstruct ili9320_spi\tspi;\t \n\t} access;\t\t\t\t \n\n\tstruct device\t\t\t*dev;\n\tstruct lcd_device\t\t*lcd;\t \n\tstruct ili9320_client\t\t*client;\n\tstruct ili9320_platdata\t\t*platdata;\n\n\tint\t\t\t\t power;  \n\tint\t\t\t\t initialised;\n\n\tunsigned short\t\t\t display1;\n\tunsigned short\t\t\t power1;\n\n\tint (*write)(struct ili9320 *ili, unsigned int reg, unsigned int val);\n};\n\n\n \n\nextern int ili9320_write(struct ili9320 *ili,\n\t\t\t unsigned int reg, unsigned int value);\n\nextern int ili9320_write_regs(struct ili9320 *ili,\n\t\t\t      const struct ili9320_reg *values,\n\t\t\t      int nr_values);\n\n \n\nextern int ili9320_probe_spi(struct spi_device *spi,\n\t\t\t     struct ili9320_client *cli);\n\nextern void ili9320_remove(struct ili9320 *lcd);\nextern void ili9320_shutdown(struct ili9320 *lcd);\n\n \n\nextern int ili9320_suspend(struct ili9320 *lcd);\nextern int ili9320_resume(struct ili9320 *lcd);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

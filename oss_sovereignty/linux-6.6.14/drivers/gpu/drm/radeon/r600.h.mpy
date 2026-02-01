@@ -1,0 +1,9 @@
+{
+  "module_name": "r600.h",
+  "hash_id": "e27291c491331fb700a0de10a55f7f6bd837d345ba9357761af473e7a49d3e46",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/radeon/r600.h",
+  "human_readable_source": " \n\n#ifndef __R600_H__\n#define __R600_H__\n\nstruct radeon_bo_list;\nstruct radeon_cs_parser;\nstruct r600_audio_pin;\nstruct radeon_crtc;\nstruct radeon_device;\nstruct radeon_hdmi_acr;\n\nu32 r600_gpu_check_soft_reset(struct radeon_device *rdev);\nint r600_ih_ring_alloc(struct radeon_device *rdev);\nvoid r600_ih_ring_fini(struct radeon_device *rdev);\n\nvoid r600_audio_enable(struct radeon_device *rdev, struct r600_audio_pin *pin,\n\t\t       u8 enable_mask);\nvoid r600_set_audio_packet(struct drm_encoder *encoder, u32 offset);\nvoid r600_set_mute(struct drm_encoder *encoder, u32 offset, bool mute);\nvoid r600_hdmi_audio_set_dto(struct radeon_device *rdev,\n\t\t\t     struct radeon_crtc *crtc, unsigned int clock);\nvoid r600_set_avi_packet(struct radeon_device *rdev, u32 offset,\n\t\t\t unsigned char *buffer, size_t size);\nvoid r600_hdmi_update_acr(struct drm_encoder *encoder, long offset,\n\t\t\t  const struct radeon_hdmi_acr *acr);\nvoid r600_set_vbi_packet(struct drm_encoder *encoder, u32 offset);\nvoid r600_hdmi_enable(struct drm_encoder *encoder, bool enable);\n\nint r600_dma_cs_next_reloc(struct radeon_cs_parser *p,\n\t\t\t   struct radeon_bo_list **cs_reloc);\n\n#endif\t\t\t\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

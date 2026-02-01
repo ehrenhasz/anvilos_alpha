@@ -1,0 +1,9 @@
+{
+  "module_name": "cc_lli_defs.h",
+  "hash_id": "dbe0c34aa20aa8a19b7817786a3744f763d11e302401d7c107bb59753d4c2b18",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/crypto/ccree/cc_lli_defs.h",
+  "human_readable_source": " \n \n\n#ifndef _CC_LLI_DEFS_H_\n#define _CC_LLI_DEFS_H_\n\n#include <linux/types.h>\n\n \n#define DLLI_SIZE_BIT_SIZE\t0x18\n\n#define CC_MAX_MLLI_ENTRY_SIZE 0xFFFF\n\n#define LLI_MAX_NUM_OF_DATA_ENTRIES 128\n#define LLI_MAX_NUM_OF_ASSOC_DATA_ENTRIES 8\n#define MLLI_TABLE_MIN_ALIGNMENT 4  \n#define MAX_NUM_OF_BUFFERS_IN_MLLI 4\n#define MAX_NUM_OF_TOTAL_MLLI_ENTRIES \\\n\t\t(2 * LLI_MAX_NUM_OF_DATA_ENTRIES + \\\n\t\t LLI_MAX_NUM_OF_ASSOC_DATA_ENTRIES)\n\n \n#define LLI_ENTRY_WORD_SIZE 2\n#define LLI_ENTRY_BYTE_SIZE (LLI_ENTRY_WORD_SIZE * sizeof(u32))\n\n \n#define LLI_WORD0_OFFSET 0\n#define LLI_LADDR_BIT_OFFSET 0\n#define LLI_LADDR_BIT_SIZE 32\n \n#define LLI_WORD1_OFFSET 1\n#define LLI_SIZE_BIT_OFFSET 0\n#define LLI_SIZE_BIT_SIZE 16\n#define LLI_HADDR_BIT_OFFSET 16\n#define LLI_HADDR_BIT_SIZE 16\n\n#define LLI_SIZE_MASK GENMASK((LLI_SIZE_BIT_SIZE - 1), LLI_SIZE_BIT_OFFSET)\n#define LLI_HADDR_MASK GENMASK( \\\n\t\t\t       (LLI_HADDR_BIT_OFFSET + LLI_HADDR_BIT_SIZE - 1),\\\n\t\t\t\tLLI_HADDR_BIT_OFFSET)\n\nstatic inline void cc_lli_set_addr(u32 *lli_p, dma_addr_t addr)\n{\n\tlli_p[LLI_WORD0_OFFSET] = (addr & U32_MAX);\n#ifdef CONFIG_ARCH_DMA_ADDR_T_64BIT\n\tlli_p[LLI_WORD1_OFFSET] &= ~LLI_HADDR_MASK;\n\tlli_p[LLI_WORD1_OFFSET] |= FIELD_PREP(LLI_HADDR_MASK, (addr >> 32));\n#endif  \n}\n\nstatic inline void cc_lli_set_size(u32 *lli_p, u16 size)\n{\n\tlli_p[LLI_WORD1_OFFSET] &= ~LLI_SIZE_MASK;\n\tlli_p[LLI_WORD1_OFFSET] |= FIELD_PREP(LLI_SIZE_MASK, size);\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

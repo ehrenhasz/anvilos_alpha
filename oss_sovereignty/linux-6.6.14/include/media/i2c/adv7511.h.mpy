@@ -1,0 +1,9 @@
+{
+  "module_name": "adv7511.h",
+  "hash_id": "a592cae42ff2724721ab176468109babfb12821ebcacf51af4c52468273dff7d",
+  "original_prompt": "Ingested from linux-6.6.14/include/media/i2c/adv7511.h",
+  "human_readable_source": " \n \n\n#ifndef ADV7511_H\n#define ADV7511_H\n\n \n#define ADV7511_MONITOR_DETECT 0\n#define ADV7511_EDID_DETECT 1\n\n\nstruct adv7511_monitor_detect {\n\tint present;\n};\n\nstruct adv7511_edid_detect {\n\tint present;\n\tint segment;\n\tuint16_t phys_addr;\n};\n\nstruct adv7511_platform_data {\n\tu8 i2c_edid;\n\tu8 i2c_cec;\n\tu8 i2c_pktmem;\n\tu32 cec_clk;\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

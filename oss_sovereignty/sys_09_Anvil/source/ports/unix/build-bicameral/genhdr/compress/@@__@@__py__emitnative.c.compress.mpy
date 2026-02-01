@@ -1,0 +1,9 @@
+{
+  "module_name": "@@__@@__py__emitnative.c.compress",
+  "hash_id": "f176eeffbf5d709e50c425841c24afa274cfe3ee523fc3405881995a81ac7bd1",
+  "original_prompt": "Ingested from sys_09_Anvil/source/ports/unix/build-bicameral/genhdr/compress/@@__@@__py__emitnative.c.compress",
+  "human_readable_source": "conversion to object\nlocal '%q' used before type known\ncan't load from '%q'\ncan't load with '%q' index\ncan't load from '%q'\nlocal '%q' has type '%q' but source is '%q'\ncan't store '%q'\ncan't store to '%q'\ncan't store with '%q' index\ncan't store '%q'\ncan't store to '%q'\ncan't implicitly convert '%q' to 'bool'\n'not' not implemented\ncan't do unary op of '%q'\ndiv/mod not implemented for uint\ncomparison of int and uint\nbinary op %q not implemented\ncan't do binary op between '%q' and '%q'\ncasting\nreturn expected '%q' but got '%q'\nmust raise an object\nnative yield\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

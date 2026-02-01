@@ -1,0 +1,9 @@
+{
+  "module_name": "proc-self-syscall.c",
+  "hash_id": "24026b7483683c2ea4742d4d3d931e0b83efd98d0f6a9b0266ff9a435caef58b",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/proc/proc-self-syscall.c",
+  "human_readable_source": " \n#include <unistd.h>\n#include <sys/syscall.h>\n#include <sys/types.h>\n#include <sys/stat.h>\n#include <fcntl.h>\n#include <errno.h>\n#include <string.h>\n#include <stdio.h>\n\nstatic inline ssize_t sys_read(int fd, void *buf, size_t len)\n{\n\treturn syscall(SYS_read, fd, buf, len);\n}\n\nint main(void)\n{\n\tchar buf1[64];\n\tchar buf2[64];\n\tint fd;\n\tssize_t rv;\n\n\tfd = open(\"/proc/self/syscall\", O_RDONLY);\n\tif (fd == -1) {\n\t\tif (errno == ENOENT)\n\t\t\treturn 4;\n\t\treturn 1;\n\t}\n\n\t \n\tsnprintf(buf1, sizeof(buf1), \"%ld 0x%lx 0x%lx 0x%lx\",\n\t\t (long)SYS_read, (long)fd, (long)buf2, (long)sizeof(buf2));\n\n\tmemset(buf2, 0, sizeof(buf2));\n\trv = sys_read(fd, buf2, sizeof(buf2));\n\tif (rv < 0)\n\t\treturn 1;\n\tif (rv < strlen(buf1))\n\t\treturn 1;\n\tif (strncmp(buf1, buf2, strlen(buf1)) != 0)\n\t\treturn 1;\n\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

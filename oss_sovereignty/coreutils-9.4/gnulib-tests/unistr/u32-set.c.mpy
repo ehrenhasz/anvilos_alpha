@@ -1,0 +1,9 @@
+{
+  "module_name": "u32-set.c",
+  "hash_id": "c32b01c04797b83ba8c1a6bfbc09127e063a1a33dbf33d0aee1c1dd0ba7c1d76",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/unistr/u32-set.c",
+  "human_readable_source": " \n#include \"unistr.h\"\n\n#define FUNC u32_set\n#define UNIT uint32_t\n#define IS_SINGLE_UNIT(uc) (uc < 0xd800 || (uc >= 0xe000 && uc < 0x110000))\n#include \"u-set.h\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "crc-t10dif.h",
+  "hash_id": "6b0a7d74805015390e132bad37863d74ddf044272a790d4943ab9e639f26cd19",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/crc-t10dif.h",
+  "human_readable_source": " \n#ifndef _LINUX_CRC_T10DIF_H\n#define _LINUX_CRC_T10DIF_H\n\n#include <linux/types.h>\n\n#define CRC_T10DIF_DIGEST_SIZE 2\n#define CRC_T10DIF_BLOCK_SIZE 1\n#define CRC_T10DIF_STRING \"crct10dif\"\n\nextern __u16 crc_t10dif_generic(__u16 crc, const unsigned char *buffer,\n\t\t\t\tsize_t len);\nextern __u16 crc_t10dif(unsigned char const *, size_t);\nextern __u16 crc_t10dif_update(__u16 crc, unsigned char const *, size_t);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "0dc59062267d17da837251d8942892a2b045ef3429a986ce4527942b8823f6a2",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/infiniband/ulp/ipoib/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nobj-$(CONFIG_INFINIBAND_IPOIB)\t\t\t+= ib_ipoib.o\n\nib_ipoib-y\t\t\t\t\t:= ipoib_main.o \\\n\t\t\t\t\t\t   ipoib_ib.o \\\n\t\t\t\t\t\t   ipoib_multicast.o \\\n\t\t\t\t\t\t   ipoib_verbs.o \\\n\t\t\t\t\t\t   ipoib_vlan.o \\\n\t\t\t\t\t\t   ipoib_ethtool.o \\\n\t\t\t\t\t\t   ipoib_netlink.o\nib_ipoib-$(CONFIG_INFINIBAND_IPOIB_CM)\t\t+= ipoib_cm.o\nib_ipoib-$(CONFIG_INFINIBAND_IPOIB_DEBUG)\t+= ipoib_fs.o\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

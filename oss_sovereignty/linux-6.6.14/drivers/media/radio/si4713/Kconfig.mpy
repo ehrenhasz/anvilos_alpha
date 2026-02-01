@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "0c4d76ec1b81ce16329815b70da9d48e7a0fe424c95015a7351dbf5f1239b19a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/radio/si4713/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig USB_SI4713\n\ttristate \"Silicon Labs Si4713 FM Radio Transmitter support with USB\"\n\tdepends on USB && I2C && RADIO_SI4713\n\tselect I2C_SI4713\n\thelp\n\t  This is a driver for USB devices with the Silicon Labs SI4713\n\t  chip. Currently these devices are known to work.\n\t  - 10c4:8244: Silicon Labs FM Transmitter USB device.\n\n\t  Say Y here if you want to connect this type of radio to your\n\t  computer's USB port.\n\n\t  To compile this driver as a module, choose M here: the\n\t  module will be called radio-usb-si4713.\n\nconfig PLATFORM_SI4713\n\ttristate \"Silicon Labs Si4713 FM Radio Transmitter support with I2C\"\n\tdepends on I2C && RADIO_SI4713\n\tselect I2C_SI4713\n\thelp\n\t  This is a driver for I2C devices with the Silicon Labs SI4713\n\t  chip.\n\n\t  Say Y here if you want to connect this type of radio to your\n\t  computer's I2C port.\n\n\t  To compile this driver as a module, choose M here: the\n\t  module will be called radio-platform-si4713.\n\nconfig I2C_SI4713\n\ttristate \"Silicon Labs Si4713 FM Radio Transmitter support\"\n\tdepends on I2C && RADIO_SI4713\n\thelp\n\t  Say Y here if you want support to Si4713 FM Radio Transmitter.\n\t  This device can transmit audio through FM. It can transmit\n\t  RDS and RBDS signals as well. This module is the v4l2 radio\n\t  interface for the i2c driver of this device.\n\n\t  To compile this driver as a module, choose M here: the\n\t  module will be called si4713.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "ga100.c",
+  "hash_id": "344c022ab7aefca42e563b945df7776bc1634eaf69d27523190153f62fedf0dd",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/falcon/ga100.c",
+  "human_readable_source": " \n#include \"priv.h\"\n\nint\nga100_flcn_fw_signature(struct nvkm_falcon_fw *fw, u32 *src_base_src)\n{\n\tstruct nvkm_falcon *falcon = fw->falcon;\n\tstruct nvkm_device *device = falcon->owner->device;\n\tu32 reg_fuse_version;\n\tint idx;\n\n\tFLCN_DBG(falcon, \"brom: %08x %08x\", fw->engine_id, fw->ucode_id);\n\tFLCN_DBG(falcon, \"fuse_version: %d\", fw->fuse_ver);\n\n\tif (fw->engine_id & 0x00000001) {\n\t\treg_fuse_version = nvkm_rd32(device, 0x824140 + (fw->ucode_id - 1) * 4);\n\t} else\n\tif (fw->engine_id & 0x00000004) {\n\t\treg_fuse_version = nvkm_rd32(device, 0x824100 + (fw->ucode_id - 1) * 4);\n\t} else\n\tif (fw->engine_id & 0x00000400) {\n\t\treg_fuse_version = nvkm_rd32(device, 0x8241c0 + (fw->ucode_id - 1) * 4);\n\t} else {\n\t\tWARN_ON(1);\n\t\treturn -ENOSYS;\n\t}\n\n\tFLCN_DBG(falcon, \"reg_fuse_version: %08x\", reg_fuse_version);\n\tif (reg_fuse_version) {\n\t\treg_fuse_version = fls(reg_fuse_version);\n\t\tFLCN_DBG(falcon, \"reg_fuse_version: %d\", reg_fuse_version);\n\n\t\tif (WARN_ON(fw->fuse_ver < reg_fuse_version))\n\t\t\treturn -EINVAL;\n\n\t\tidx = fw->fuse_ver - reg_fuse_version;\n\t} else {\n\t\tidx = fw->sig_nr - 1;\n\t}\n\n\treturn idx;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

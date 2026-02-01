@@ -1,0 +1,9 @@
+{
+  "module_name": ".gitignore",
+  "hash_id": "43e9e9855f2b5bee9387ab2ded5e1a408652eea584a3af507d0c490d7c0b96b2",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/prctl/.gitignore",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\ndisable-tsc-ctxt-sw-stress-test\ndisable-tsc-on-off-stress-test\ndisable-tsc-test\nset-anon-vma-name-test\nset-process-name\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

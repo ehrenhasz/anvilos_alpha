@@ -1,0 +1,9 @@
+{
+  "module_name": "mantis_core.h",
+  "hash_id": "5c6384faec91085cd848e7e585bc6b668841dffe9efaacf99284910a16875f48",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/pci/mantis/mantis_core.h",
+  "human_readable_source": " \n \n\n#ifndef __MANTIS_CORE_H\n#define __MANTIS_CORE_H\n\n#include \"mantis_common.h\"\n\n\n#define FE_TYPE_SAT\t0\n#define FE_TYPE_CAB\t1\n#define FE_TYPE_TER\t2\n\n#define FE_TYPE_TS204\t0\n#define FE_TYPE_TS188\t1\n\n\nstruct vendorname {\n\tu8  *sub_vendor_name;\n\tu32 sub_vendor_id;\n};\n\nstruct devicetype {\n\tu8  *sub_device_name;\n\tu32 sub_device_id;\n\tu8  device_type;\n\tu32 type_flags;\n};\n\n\nextern int mantis_dma_init(struct mantis_pci *mantis);\nextern int mantis_dma_exit(struct mantis_pci *mantis);\nextern void mantis_dma_start(struct mantis_pci *mantis);\nextern void mantis_dma_stop(struct mantis_pci *mantis);\nextern int mantis_i2c_init(struct mantis_pci *mantis);\nextern int mantis_i2c_exit(struct mantis_pci *mantis);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

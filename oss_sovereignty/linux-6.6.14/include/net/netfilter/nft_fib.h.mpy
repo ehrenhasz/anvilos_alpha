@@ -1,0 +1,9 @@
+{
+  "module_name": "nft_fib.h",
+  "hash_id": "6525f11491ed663350003de0504ba940a3f8d9deb52f840ca268c244df6f7f81",
+  "original_prompt": "Ingested from linux-6.6.14/include/net/netfilter/nft_fib.h",
+  "human_readable_source": " \n#ifndef _NFT_FIB_H_\n#define _NFT_FIB_H_\n\n#include <net/netfilter/nf_tables.h>\n\nstruct nft_fib {\n\tu8\t\t\tdreg;\n\tu8\t\t\tresult;\n\tu32\t\t\tflags;\n};\n\nextern const struct nla_policy nft_fib_policy[];\n\nstatic inline bool\nnft_fib_is_loopback(const struct sk_buff *skb, const struct net_device *in)\n{\n\treturn skb->pkt_type == PACKET_LOOPBACK || in->flags & IFF_LOOPBACK;\n}\n\nint nft_fib_dump(struct sk_buff *skb, const struct nft_expr *expr, bool reset);\nint nft_fib_init(const struct nft_ctx *ctx, const struct nft_expr *expr,\n\t\t const struct nlattr * const tb[]);\nint nft_fib_validate(const struct nft_ctx *ctx, const struct nft_expr *expr,\n\t\t     const struct nft_data **data);\n\n\nvoid nft_fib4_eval_type(const struct nft_expr *expr, struct nft_regs *regs,\n\t\t\tconst struct nft_pktinfo *pkt);\nvoid nft_fib4_eval(const struct nft_expr *expr, struct nft_regs *regs,\n\t\t   const struct nft_pktinfo *pkt);\n\nvoid nft_fib6_eval_type(const struct nft_expr *expr, struct nft_regs *regs,\n\t\t\tconst struct nft_pktinfo *pkt);\nvoid nft_fib6_eval(const struct nft_expr *expr, struct nft_regs *regs,\n\t\t   const struct nft_pktinfo *pkt);\n\nvoid nft_fib_store_result(void *reg, const struct nft_fib *priv,\n\t\t\t  const struct net_device *dev);\n\nbool nft_fib_reduce(struct nft_regs_track *track,\n\t\t    const struct nft_expr *expr);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "setjmp.S",
+  "hash_id": "addfbbd4dc714d1957c1a88ed682c3e2d57340d9057e28bf817b4058f637b167",
+  "original_prompt": "Ingested from zfs-2.2.2/module/lua/setjmp/setjmp.S",
+  "human_readable_source": "#if defined(__x86_64__)\n#include \"setjmp_x86_64.S\"\n#elif defined(__i386__)\n#include \"setjmp_i386.S\"\n#elif defined(__aarch64__)\n#include \"setjmp_aarch64.S\"\n#elif defined(__arm__)\n#include \"setjmp_arm.S\"\n#elif defined(__sparc__) && defined(__arch64__)\n#include \"setjmp_sparc64.S\"\n#elif defined(__powerpc__)\n#include \"setjmp_ppc.S\"\n#elif defined(__mips__)\n#include \"setjmp_mips.S\"\n#elif defined(__s390x__)\n#include \"setjmp_s390x.S\"\n#elif defined(__riscv)\n#include \"setjmp_rv64g.S\"\n#elif defined(__loongarch_lp64)\n#include \"setjmp_loongarch64.S\"\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

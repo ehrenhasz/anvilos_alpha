@@ -1,0 +1,9 @@
+{
+  "module_name": "test-unicodeio3.sh",
+  "hash_id": "61b22015a68ef939cdc0f49ca2569383653b48926ce3779f296d44423ebd42e9",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-unicodeio3.sh",
+  "human_readable_source": "#!/bin/sh\n\n# Test whether a specific GB18030 locale is installed.\n: \"${LOCALE_ZH_CN=zh_CN.GB18030}\"\nif test $LOCALE_ZH_CN = none; then\n  if test -f /usr/bin/localedef; then\n    echo \"Skipping test: no transitional chinese locale is installed\"\n  else\n    echo \"Skipping test: no transitional chinese locale is supported\"\n  fi\n  exit 77\nfi\n\nLC_ALL=$LOCALE_ZH_CN \\\n${CHECKER} ./test-unicodeio${EXEEXT} 3\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

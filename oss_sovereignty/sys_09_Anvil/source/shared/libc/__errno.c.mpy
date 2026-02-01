@@ -1,0 +1,9 @@
+{
+  "module_name": "__errno.c",
+  "hash_id": "38c3e664dfaac2f5eb9f3e7682921c5d0ea6c4357eb93b3776f1039aa9b57783",
+  "original_prompt": "Ingested from sys_09_Anvil/source/shared/libc/__errno.c",
+  "human_readable_source": "\n\n\nstatic int embed_errno;\n\n#if defined(__linux__)\nint *__errno_location(void)\n#else\nint *__errno(void)\n#endif\n{\n    return &embed_errno;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

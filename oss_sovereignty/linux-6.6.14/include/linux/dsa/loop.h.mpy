@@ -1,0 +1,9 @@
+{
+  "module_name": "loop.h",
+  "hash_id": "8ed1ba80a0a09e4186e17f9fe0cd00aaf39181123b42cbb5f5b67abaf2f7ea03",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/dsa/loop.h",
+  "human_readable_source": " \n#ifndef DSA_LOOP_H\n#define DSA_LOOP_H\n\n#include <linux/if_vlan.h>\n#include <linux/types.h>\n#include <linux/ethtool.h>\n#include <net/dsa.h>\n\nstruct dsa_loop_vlan {\n\tu16 members;\n\tu16 untagged;\n};\n\nstruct dsa_loop_mib_entry {\n\tchar name[ETH_GSTRING_LEN];\n\tunsigned long val;\n};\n\nenum dsa_loop_mib_counters {\n\tDSA_LOOP_PHY_READ_OK,\n\tDSA_LOOP_PHY_READ_ERR,\n\tDSA_LOOP_PHY_WRITE_OK,\n\tDSA_LOOP_PHY_WRITE_ERR,\n\t__DSA_LOOP_CNT_MAX,\n};\n\nstruct dsa_loop_port {\n\tstruct dsa_loop_mib_entry mib[__DSA_LOOP_CNT_MAX];\n\tu16 pvid;\n\tint mtu;\n};\n\nstruct dsa_loop_priv {\n\tstruct mii_bus\t*bus;\n\tunsigned int\tport_base;\n\tstruct dsa_loop_vlan vlans[VLAN_N_VID];\n\tstruct net_device *netdev;\n\tstruct dsa_loop_port ports[DSA_MAX_PORTS];\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

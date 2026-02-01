@@ -1,0 +1,9 @@
+{
+  "module_name": "max98090.h",
+  "hash_id": "68ed268a0a0c28ac5448ca90248c06a56e3b8048fa98d130dab9151d07f0404d",
+  "original_prompt": "Ingested from linux-6.6.14/include/sound/max98090.h",
+  "human_readable_source": " \n \n\n#ifndef __SOUND_MAX98090_PDATA_H__\n#define __SOUND_MAX98090_PDATA_H__\n\n \nstruct max98090_pdata {\n\n\t \n\tunsigned int digmic_left_mode:1;\n\tunsigned int digmic_right_mode:1;\n\tunsigned int digmic_3_mode:1;\n\tunsigned int digmic_4_mode:1;\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

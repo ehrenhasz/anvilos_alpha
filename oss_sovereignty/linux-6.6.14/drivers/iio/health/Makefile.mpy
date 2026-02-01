@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "b28f73b2b5befc24656332e5058578281e5b62b39fc5739543f07ebdb2ee26ab",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/iio/health/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Makefile for IIO Health sensors\n#\n\n# When adding new entries keep the list in alphabetical order\n\nobj-$(CONFIG_AFE4403)\t\t+= afe4403.o\nobj-$(CONFIG_AFE4404)\t\t+= afe4404.o\nobj-$(CONFIG_MAX30100)\t\t+= max30100.o\nobj-$(CONFIG_MAX30102)\t\t+= max30102.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

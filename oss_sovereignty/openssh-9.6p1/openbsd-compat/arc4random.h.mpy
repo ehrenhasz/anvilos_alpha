@@ -1,0 +1,9 @@
+{
+  "module_name": "arc4random.h",
+  "hash_id": "b04ec1ba44677b0f3ffc4768bb5d66251a32da7a50eaf5d59c943100ba64c39c",
+  "original_prompt": "Ingested from openssh-9.6p1/openbsd-compat/arc4random.h",
+  "human_readable_source": " \n\n \n\n \n\n#include <sys/mman.h>\n\n#include <signal.h>\n\n \n#define _ARC4_LOCK()\n#define _ARC4_UNLOCK()\n#define _ARC4_ATFORK(f)\n\nstatic inline void\n_getentropy_fail(void)\n{\n\tfatal(\"getentropy failed\");\n}\n\nstatic volatile sig_atomic_t _rs_forked;\n\nstatic inline void\n_rs_forkhandler(void)\n{\n\t_rs_forked = 1;\n}\n\nstatic inline void\n_rs_forkdetect(void)\n{\n\tstatic pid_t _rs_pid = 0;\n\tpid_t pid = getpid();\n\n\tif (_rs_pid == 0 || _rs_pid == 1 || _rs_pid != pid || _rs_forked) {\n\t\t_rs_pid = pid;\n\t\t_rs_forked = 0;\n\t\tif (rs)\n\t\t\tmemset(rs, 0, sizeof(*rs));\n\t}\n}\n\nstatic inline int\n_rs_allocate(struct _rs **rsp, struct _rsx **rsxp)\n{\n#if defined(MAP_ANON) && defined(MAP_PRIVATE)\n\tif ((*rsp = mmap(NULL, sizeof(**rsp), PROT_READ|PROT_WRITE,\n\t    MAP_ANON|MAP_PRIVATE, -1, 0)) == MAP_FAILED)\n\t\treturn (-1);\n\n\tif ((*rsxp = mmap(NULL, sizeof(**rsxp), PROT_READ|PROT_WRITE,\n\t    MAP_ANON|MAP_PRIVATE, -1, 0)) == MAP_FAILED) {\n\t\tmunmap(*rsp, sizeof(**rsp));\n\t\t*rsp = NULL;\n\t\treturn (-1);\n\t}\n#else\n\tif ((*rsp = calloc(1, sizeof(**rsp))) == NULL)\n\t\treturn (-1);\n\tif ((*rsxp = calloc(1, sizeof(**rsxp))) == NULL) {\n\t\tfree(*rsp);\n\t\t*rsp = NULL;\n\t\treturn (-1);\n\t}\n#endif\n\n\t_ARC4_ATFORK(_rs_forkhandler);\n\treturn (0);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

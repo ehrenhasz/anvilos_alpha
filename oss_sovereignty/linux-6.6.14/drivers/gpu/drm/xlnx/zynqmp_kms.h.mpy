@@ -1,0 +1,9 @@
+{
+  "module_name": "zynqmp_kms.h",
+  "hash_id": "36b37da6592f9a787736daaa410df5f9705b04170ad16613bd58a5254aceb6d4",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/xlnx/zynqmp_kms.h",
+  "human_readable_source": " \n \n\n#ifndef _ZYNQMP_KMS_H_\n#define _ZYNQMP_KMS_H_\n\n#include <drm/drm_crtc.h>\n#include <drm/drm_device.h>\n#include <drm/drm_encoder.h>\n#include <drm/drm_plane.h>\n\n#include \"zynqmp_dpsub.h\"\n\nstruct zynqmp_dpsub;\n\n \nstruct zynqmp_dpsub_drm {\n\tstruct zynqmp_dpsub *dpsub;\n\n\tstruct drm_device dev;\n\tstruct drm_plane planes[ZYNQMP_DPSUB_NUM_LAYERS];\n\tstruct drm_crtc crtc;\n\tstruct drm_encoder encoder;\n};\n\nvoid zynqmp_dpsub_drm_handle_vblank(struct zynqmp_dpsub *dpsub);\n\nint zynqmp_dpsub_drm_init(struct zynqmp_dpsub *dpsub);\nvoid zynqmp_dpsub_drm_cleanup(struct zynqmp_dpsub *dpsub);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

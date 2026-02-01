@@ -1,0 +1,9 @@
+{
+  "module_name": "pixelgen.h",
+  "hash_id": "9a79c47dcac62c14f439466dd8712bf556b44e6d03df71722283d38be357e61c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/hive_isp_css_include/pixelgen.h",
+  "human_readable_source": " \n \n\n#ifndef __PIXELGEN_H_INCLUDED__\n#define __PIXELGEN_H_INCLUDED__\n\n \n\n#include \"system_local.h\"\n#include \"pixelgen_local.h\"\n\n#ifndef __INLINE_PIXELGEN__\n#define STORAGE_CLASS_PIXELGEN_H extern\n#define STORAGE_CLASS_PIXELGEN_C\n#include \"pixelgen_public.h\"\n#else   \n#define STORAGE_CLASS_PIXELGEN_H static inline\n#define STORAGE_CLASS_PIXELGEN_C static inline\n#include \"pixelgen_private.h\"\n#endif  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "pt.h",
+  "hash_id": "770a5d1a574d616fcdc81eb4c3c2b58d378b1f70135649eb1362ee6b2b03a4c1",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/events/intel/pt.h",
+  "human_readable_source": " \n \n\n#ifndef __INTEL_PT_H__\n#define __INTEL_PT_H__\n\n \n#define TOPA_PMI_MARGIN 512\n\n#define TOPA_SHIFT 12\n\nstatic inline unsigned int sizes(unsigned int tsz)\n{\n\treturn 1 << (tsz + TOPA_SHIFT);\n};\n\nstruct topa_entry {\n\tu64\tend\t: 1;\n\tu64\trsvd0\t: 1;\n\tu64\tintr\t: 1;\n\tu64\trsvd1\t: 1;\n\tu64\tstop\t: 1;\n\tu64\trsvd2\t: 1;\n\tu64\tsize\t: 4;\n\tu64\trsvd3\t: 2;\n\tu64\tbase\t: 36;\n\tu64\trsvd4\t: 16;\n};\n\n \n#define CPUID_TSC_LEAF\t\t0x15\n\nstruct pt_pmu {\n\tstruct pmu\t\tpmu;\n\tu32\t\t\tcaps[PT_CPUID_REGS_NUM * PT_CPUID_LEAVES];\n\tbool\t\t\tvmx;\n\tbool\t\t\tbranch_en_always_on;\n\tunsigned long\t\tmax_nonturbo_ratio;\n\tunsigned int\t\ttsc_art_num;\n\tunsigned int\t\ttsc_art_den;\n};\n\n \nstruct pt_buffer {\n\tstruct list_head\ttables;\n\tstruct topa\t\t*first, *last, *cur;\n\tunsigned int\t\tcur_idx;\n\tsize_t\t\t\toutput_off;\n\tunsigned long\t\tnr_pages;\n\tlocal_t\t\t\tdata_size;\n\tlocal64_t\t\thead;\n\tbool\t\t\tsnapshot;\n\tbool\t\t\tsingle;\n\tlong\t\t\tstop_pos, intr_pos;\n\tstruct topa_entry\t*stop_te, *intr_te;\n\tvoid\t\t\t**data_pages;\n};\n\n#define PT_FILTERS_NUM\t4\n\n \nstruct pt_filter {\n\tunsigned long\tmsr_a;\n\tunsigned long\tmsr_b;\n\tunsigned long\tconfig;\n};\n\n \nstruct pt_filters {\n\tstruct pt_filter\tfilter[PT_FILTERS_NUM];\n\tunsigned int\t\tnr_filters;\n};\n\n \nstruct pt {\n\tstruct perf_output_handle handle;\n\tstruct pt_filters\tfilters;\n\tint\t\t\thandle_nmi;\n\tint\t\t\tvmx_on;\n\tu64\t\t\toutput_base;\n\tu64\t\t\toutput_mask;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

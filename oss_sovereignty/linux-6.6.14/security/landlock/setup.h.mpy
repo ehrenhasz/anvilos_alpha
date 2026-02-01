@@ -1,0 +1,9 @@
+{
+  "module_name": "setup.h",
+  "hash_id": "d74363317c81473e3f54a142a284db76bbe8ac6eb31463cffa3a5ada7201f982",
+  "original_prompt": "Ingested from linux-6.6.14/security/landlock/setup.h",
+  "human_readable_source": " \n \n\n#ifndef _SECURITY_LANDLOCK_SETUP_H\n#define _SECURITY_LANDLOCK_SETUP_H\n\n#include <linux/lsm_hooks.h>\n\nextern bool landlock_initialized;\n\nextern struct lsm_blob_sizes landlock_blob_sizes;\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

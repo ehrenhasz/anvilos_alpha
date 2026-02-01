@@ -1,0 +1,9 @@
+{
+  "module_name": "ia_css_ob.host.h",
+  "hash_id": "c21b91eb9b5341966e6a2a630f5ad1720d53a950ac523cda2d2f72e3a90d87c8",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/isp/kernels/ob/ob_1.0/ia_css_ob.host.h",
+  "human_readable_source": " \n \n\n#ifndef __IA_CSS_OB_HOST_H\n#define __IA_CSS_OB_HOST_H\n\n#include \"ia_css_ob_types.h\"\n#include \"ia_css_ob_param.h\"\n\nextern const struct ia_css_ob_config default_ob_config;\n\nvoid\nia_css_ob_configure(\n    struct sh_css_isp_ob_stream_config *config,\n    unsigned int isp_pipe_version,\n    unsigned int raw_bit_depth);\n\nvoid\nia_css_ob_encode(\n    struct sh_css_isp_ob_params *to,\n    const struct ia_css_ob_config *from,\n    const struct sh_css_isp_ob_stream_config *config,\n    unsigned int size);\n\nvoid\nia_css_ob_vmem_encode(\n    struct sh_css_isp_ob_vmem_params *to,\n    const struct ia_css_ob_config *from,\n    const struct sh_css_isp_ob_stream_config *config,\n    unsigned int size);\n\nvoid\nia_css_ob_dump(\n    const struct sh_css_isp_ob_params *ob,\n    unsigned int level);\n\nvoid\nia_css_ob_debug_dtrace(\n    const struct ia_css_ob_config *config, unsigned int level)\n;\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

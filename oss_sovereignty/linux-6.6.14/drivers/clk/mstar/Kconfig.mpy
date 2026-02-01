@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "4e5ce9982970a3bfb85d0be4880b5a2c28b9854847a27ca5f9d7e0588b818548",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/clk/mstar/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig MSTAR_MSC313_CPUPLL\n\tbool \"MStar CPUPLL driver\"\n\tdepends on ARCH_MSTARV7 || COMPILE_TEST\n\tdefault ARCH_MSTARV7\n\thelp\n\t  Support for the CPU PLL present on MStar/Sigmastar SoCs.\n\nconfig MSTAR_MSC313_MPLL\n\tbool \"MStar MPLL driver\"\n\tdepends on ARCH_MSTARV7 || COMPILE_TEST\n\tdefault ARCH_MSTARV7\n\tselect REGMAP_MMIO\n\thelp\n\t  Support for the MPLL PLL and dividers block present on\n\t  MStar/Sigmastar SoCs.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

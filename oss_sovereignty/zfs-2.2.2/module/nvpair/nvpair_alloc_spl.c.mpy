@@ -1,0 +1,9 @@
+{
+  "module_name": "nvpair_alloc_spl.c",
+  "hash_id": "d7c5022d0f0ff9026bb78b1ff00cbc602f142d0c063dc7cca3ae2a21a03fadc3",
+  "original_prompt": "Ingested from zfs-2.2.2/module/nvpair/nvpair_alloc_spl.c",
+  "human_readable_source": " \n \n\n#include <sys/nvpair.h>\n#include <sys/kmem.h>\n#include <sys/vmem.h>\n\nstatic void *\nnv_alloc_sleep_spl(nv_alloc_t *nva, size_t size)\n{\n\treturn (vmem_alloc(size, KM_SLEEP));\n}\n\nstatic void *\nnv_alloc_pushpage_spl(nv_alloc_t *nva, size_t size)\n{\n\treturn (vmem_alloc(size, KM_PUSHPAGE));\n}\n\nstatic void *\nnv_alloc_nosleep_spl(nv_alloc_t *nva, size_t size)\n{\n\treturn (kmem_alloc(size, KM_NOSLEEP));\n}\n\nstatic void\nnv_free_spl(nv_alloc_t *nva, void *buf, size_t size)\n{\n\tkmem_free(buf, size);\n}\n\nstatic const nv_alloc_ops_t spl_sleep_ops_def = {\n\t.nv_ao_init = NULL,\n\t.nv_ao_fini = NULL,\n\t.nv_ao_alloc = nv_alloc_sleep_spl,\n\t.nv_ao_free = nv_free_spl,\n\t.nv_ao_reset = NULL\n};\n\nstatic const nv_alloc_ops_t spl_pushpage_ops_def = {\n\t.nv_ao_init = NULL,\n\t.nv_ao_fini = NULL,\n\t.nv_ao_alloc = nv_alloc_pushpage_spl,\n\t.nv_ao_free = nv_free_spl,\n\t.nv_ao_reset = NULL\n};\n\nstatic const nv_alloc_ops_t spl_nosleep_ops_def = {\n\t.nv_ao_init = NULL,\n\t.nv_ao_fini = NULL,\n\t.nv_ao_alloc = nv_alloc_nosleep_spl,\n\t.nv_ao_free = nv_free_spl,\n\t.nv_ao_reset = NULL\n};\n\nstatic nv_alloc_t nv_alloc_sleep_def = {\n\t&spl_sleep_ops_def,\n\tNULL\n};\n\nstatic nv_alloc_t nv_alloc_pushpage_def = {\n\t&spl_pushpage_ops_def,\n\tNULL\n};\n\nstatic nv_alloc_t nv_alloc_nosleep_def = {\n\t&spl_nosleep_ops_def,\n\tNULL\n};\n\nnv_alloc_t *const nv_alloc_sleep = &nv_alloc_sleep_def;\nnv_alloc_t *const nv_alloc_pushpage = &nv_alloc_pushpage_def;\nnv_alloc_t *const nv_alloc_nosleep = &nv_alloc_nosleep_def;\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

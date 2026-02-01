@@ -1,0 +1,9 @@
+{
+  "module_name": "pr.x",
+  "hash_id": "7a8ac0ee5a68c7f3be8719bfa2c41c26394b61953dea771c895c3c5a79789a86",
+  "original_prompt": "Ingested from coreutils-9.4/man/pr.x",
+  "human_readable_source": "[NAME]\npr \\- convert text files for printing\n[DESCRIPTION]\n.\\\" Add any additional description here\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

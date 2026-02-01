@@ -1,0 +1,9 @@
+{
+  "module_name": "tps51632-regulator.h",
+  "hash_id": "508c432b4a6ce64c8df5ddfa9b0c414c70b6c59cf3a0c24712f2546645166fea",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/regulator/tps51632-regulator.h",
+  "human_readable_source": " \n \n\n#ifndef __LINUX_REGULATOR_TPS51632_H\n#define __LINUX_REGULATOR_TPS51632_H\n\n \nstruct tps51632_regulator_platform_data {\n\tstruct regulator_init_data *reg_init_data;\n\tbool enable_pwm_dvfs;\n\tbool dvfs_step_20mV;\n\tint max_voltage_uV;\n\tint base_voltage_uV;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

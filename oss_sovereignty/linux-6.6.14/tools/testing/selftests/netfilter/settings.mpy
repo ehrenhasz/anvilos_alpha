@@ -1,0 +1,9 @@
+{
+  "module_name": "settings",
+  "hash_id": "47e22394c309d3eab5ffd5c6bb86fdc83062a94bc1d70d32a52ec270e7897ed7",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/netfilter/settings",
+  "human_readable_source": "timeout=120\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

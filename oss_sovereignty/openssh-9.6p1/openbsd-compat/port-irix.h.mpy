@@ -1,0 +1,9 @@
+{
+  "module_name": "port-irix.h",
+  "hash_id": "4f21c875fac98dbdf50deac9c80637b4d8ca395b3e89b2a1f0129054ba7efda9",
+  "original_prompt": "Ingested from openssh-9.6p1/openbsd-compat/port-irix.h",
+  "human_readable_source": " \n\n#ifndef _PORT_IRIX_H\n#define _PORT_IRIX_H\n\n#if defined(WITH_IRIX_PROJECT) || \\\n    defined(WITH_IRIX_JOBS) || \\\n    defined(WITH_IRIX_ARRAY)\n\nvoid irix_setusercontext(struct passwd *pw);\n\n#endif  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

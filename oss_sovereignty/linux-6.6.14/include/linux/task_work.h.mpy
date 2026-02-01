@@ -1,0 +1,9 @@
+{
+  "module_name": "task_work.h",
+  "hash_id": "f6f14567178da331f4d5251c6c1a0cae3d44a23c2807fa29940021704a2cbd18",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/task_work.h",
+  "human_readable_source": " \n#ifndef _LINUX_TASK_WORK_H\n#define _LINUX_TASK_WORK_H\n\n#include <linux/list.h>\n#include <linux/sched.h>\n\ntypedef void (*task_work_func_t)(struct callback_head *);\n\nstatic inline void\ninit_task_work(struct callback_head *twork, task_work_func_t func)\n{\n\ttwork->func = func;\n}\n\nenum task_work_notify_mode {\n\tTWA_NONE,\n\tTWA_RESUME,\n\tTWA_SIGNAL,\n\tTWA_SIGNAL_NO_IPI,\n};\n\nstatic inline bool task_work_pending(struct task_struct *task)\n{\n\treturn READ_ONCE(task->task_works);\n}\n\nint task_work_add(struct task_struct *task, struct callback_head *twork,\n\t\t\tenum task_work_notify_mode mode);\n\nstruct callback_head *task_work_cancel_match(struct task_struct *task,\n\tbool (*match)(struct callback_head *, void *data), void *data);\nstruct callback_head *task_work_cancel(struct task_struct *, task_work_func_t);\nvoid task_work_run(void);\n\nstatic inline void exit_task_work(struct task_struct *task)\n{\n\ttask_work_run();\n}\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

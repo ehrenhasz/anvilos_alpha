@@ -1,0 +1,9 @@
+{
+  "module_name": "mpconfigvariant.h",
+  "hash_id": "7c989bf17fb8078ab2d2b746fecfdb0be04718bf445d8e9f81fe3899137d8f2c",
+  "original_prompt": "Ingested from sys_09_Anvil/source/ports/unix/variants/standard/mpconfigvariant.h",
+  "human_readable_source": " \n\n\n#define MICROPY_CONFIG_ROM_LEVEL (MICROPY_CONFIG_ROM_LEVEL_EXTRA_FEATURES)\n\n\n#include \"../mpconfigvariant_common.h\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

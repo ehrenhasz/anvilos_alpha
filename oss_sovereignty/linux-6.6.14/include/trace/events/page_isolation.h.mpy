@@ -1,0 +1,9 @@
+{
+  "module_name": "page_isolation.h",
+  "hash_id": "dd3cf30b840d84150c7149ed5daf107941b875a5723db11ff19c2fa93e4e58cd",
+  "original_prompt": "Ingested from linux-6.6.14/include/trace/events/page_isolation.h",
+  "human_readable_source": " \n#undef TRACE_SYSTEM\n#define TRACE_SYSTEM page_isolation\n\n#if !defined(_TRACE_PAGE_ISOLATION_H) || defined(TRACE_HEADER_MULTI_READ)\n#define _TRACE_PAGE_ISOLATION_H\n\n#include <linux/tracepoint.h>\n\nTRACE_EVENT(test_pages_isolated,\n\n\tTP_PROTO(\n\t\tunsigned long start_pfn,\n\t\tunsigned long end_pfn,\n\t\tunsigned long fin_pfn),\n\n\tTP_ARGS(start_pfn, end_pfn, fin_pfn),\n\n\tTP_STRUCT__entry(\n\t\t__field(unsigned long, start_pfn)\n\t\t__field(unsigned long, end_pfn)\n\t\t__field(unsigned long, fin_pfn)\n\t),\n\n\tTP_fast_assign(\n\t\t__entry->start_pfn = start_pfn;\n\t\t__entry->end_pfn = end_pfn;\n\t\t__entry->fin_pfn = fin_pfn;\n\t),\n\n\tTP_printk(\"start_pfn=0x%lx end_pfn=0x%lx fin_pfn=0x%lx ret=%s\",\n\t\t__entry->start_pfn, __entry->end_pfn, __entry->fin_pfn,\n\t\t__entry->end_pfn <= __entry->fin_pfn ? \"success\" : \"fail\")\n);\n\n#endif  \n\n \n#include <trace/define_trace.h>\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

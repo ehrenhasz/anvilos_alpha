@@ -1,0 +1,9 @@
+{
+  "module_name": "disasm.h",
+  "hash_id": "0d18ef31ec9ce30b9754f04f5e8ff65b6591f1ed624dc5ad6acd4405e94877ce",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/disasm.h",
+  "human_readable_source": " \n \n\n#ifndef __BPF_DISASM_H__\n#define __BPF_DISASM_H__\n\n#include <linux/bpf.h>\n#include <linux/kernel.h>\n#include <linux/stringify.h>\n#ifndef __KERNEL__\n#include <stdio.h>\n#include <string.h>\n#endif\n\nextern const char *const bpf_alu_string[16];\nextern const char *const bpf_class_string[8];\n\nconst char *func_id_name(int id);\n\ntypedef __printf(2, 3) void (*bpf_insn_print_t)(void *private_data,\n\t\t\t\t\t\tconst char *, ...);\ntypedef const char *(*bpf_insn_revmap_call_t)(void *private_data,\n\t\t\t\t\t      const struct bpf_insn *insn);\ntypedef const char *(*bpf_insn_print_imm_t)(void *private_data,\n\t\t\t\t\t    const struct bpf_insn *insn,\n\t\t\t\t\t    __u64 full_imm);\n\nstruct bpf_insn_cbs {\n\tbpf_insn_print_t\tcb_print;\n\tbpf_insn_revmap_call_t\tcb_call;\n\tbpf_insn_print_imm_t\tcb_imm;\n\tvoid\t\t\t*private_data;\n};\n\nvoid print_bpf_insn(const struct bpf_insn_cbs *cbs,\n\t\t    const struct bpf_insn *insn,\n\t\t    bool allow_ptr_leaks);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

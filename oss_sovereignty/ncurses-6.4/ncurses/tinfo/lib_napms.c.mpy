@@ -1,0 +1,9 @@
+{
+  "module_name": "lib_napms.c",
+  "hash_id": "6de9796636fd1c2d2f90a374853ac7a0e79fb46e40d484bd69e6f822943056e4",
+  "original_prompt": "Ingested from ncurses-6.4/ncurses/tinfo/lib_napms.c",
+  "human_readable_source": " \n\n \n\n \n\n#include <curses.priv.h>\n\n#if HAVE_NANOSLEEP\n#include <time.h>\n#if HAVE_SYS_TIME_H\n#include <sys/time.h>\t\t \n#endif\n#endif\n\nMODULE_ID(\"$Id: lib_napms.c,v 1.27 2020/08/15 19:45:23 tom Exp $\")\n\nNCURSES_EXPORT(int)\nNCURSES_SP_NAME(napms) (NCURSES_SP_DCLx int ms)\n{\n    T((T_CALLED(\"napms(%d)\"), ms));\n\n#ifdef USE_TERM_DRIVER\n    CallDriver_1(SP_PARM, td_nap, ms);\n#else  \n#if NCURSES_SP_FUNCS\n    (void) sp;\n#endif\n#if HAVE_NANOSLEEP\n    {\n\tstruct timespec request, remaining;\n\trequest.tv_sec = ms / 1000;\n\trequest.tv_nsec = (ms % 1000) * 1000000;\n\twhile (nanosleep(&request, &remaining) == -1\n\t       && errno == EINTR) {\n\t    request = remaining;\n\t}\n    }\n#elif defined(_NC_WINDOWS)\n    Sleep((DWORD) ms);\n#else\n    _nc_timed_wait(0, 0, ms, (int *) 0 EVENTLIST_2nd(0));\n#endif\n#endif  \n\n    returnCode(OK);\n}\n\n#if NCURSES_SP_FUNCS\nNCURSES_EXPORT(int)\nnapms(int ms)\n{\n    return NCURSES_SP_NAME(napms) (CURRENT_SCREEN, ms);\n}\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

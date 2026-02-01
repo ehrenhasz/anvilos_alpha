@@ -1,0 +1,9 @@
+{
+  "module_name": "test-backtrace.c",
+  "hash_id": "81f50af9b9921f6af361be811150e063a23975d70425534c849913e4a6cf9348",
+  "original_prompt": "Ingested from linux-6.6.14/tools/build/feature/test-backtrace.c",
+  "human_readable_source": "\n#include <execinfo.h>\n#include <stdio.h>\n\nint main(void)\n{\n\tvoid *backtrace_fns[10];\n\tsize_t entries;\n\n\tentries = backtrace(backtrace_fns, 10);\n\tbacktrace_symbols_fd(backtrace_fns, entries, 1);\n\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

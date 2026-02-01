@@ -1,0 +1,9 @@
+{
+  "module_name": "dcn303_fpu.h",
+  "hash_id": "b2ca86e42248301c0088b54738008b0ed88873a5d58f87ec34c3939fdc41d0b4",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/dc/dml/dcn303/dcn303_fpu.h",
+  "human_readable_source": " \n\n#ifndef __DCN303_FPU_H__\n#define __DCN303_FPU_H__\n\nvoid dcn303_fpu_update_bw_bounding_box(struct dc *dc, struct clk_bw_params *bw_params);\nvoid dcn303_fpu_init_soc_bounding_box(struct bp_soc_bb_info bb_info);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

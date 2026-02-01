@@ -1,0 +1,9 @@
+{
+  "module_name": "test-fnmatch-w32-2.sh",
+  "hash_id": "d04c2dad37e6796b15ad4142956c3597b0e184938a450b5d9f38bc87da4c5de1",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-fnmatch-w32-2.sh",
+  "human_readable_source": "#!/bin/sh\n\n# Test a CP1252 locale.\n${CHECKER} ./test-fnmatch-w32${EXEEXT} French_France 1252\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

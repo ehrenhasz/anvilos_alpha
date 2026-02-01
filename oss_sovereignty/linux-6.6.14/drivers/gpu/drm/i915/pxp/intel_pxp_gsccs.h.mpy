@@ -1,0 +1,9 @@
+{
+  "module_name": "intel_pxp_gsccs.h",
+  "hash_id": "642d81ba834f42e0e16637db344b1f34853ff4d8fa4019f8378b077d75b35101",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/pxp/intel_pxp_gsccs.h",
+  "human_readable_source": " \n \n\n#ifndef __INTEL_PXP_GSCCS_H__\n#define __INTEL_PXP_GSCCS_H__\n\n#include <linux/types.h>\n\nstruct intel_pxp;\n\n#define GSC_REPLY_LATENCY_MS 210\n \n#define GSC_PENDING_RETRY_MAXCOUNT 40\n#define GSC_PENDING_RETRY_PAUSE_MS 50\n#define GSCFW_MAX_ROUND_TRIP_LATENCY_MS (GSC_PENDING_RETRY_MAXCOUNT * GSC_PENDING_RETRY_PAUSE_MS)\n\n#ifdef CONFIG_DRM_I915_PXP\nvoid intel_pxp_gsccs_fini(struct intel_pxp *pxp);\nint intel_pxp_gsccs_init(struct intel_pxp *pxp);\n\nint intel_pxp_gsccs_create_session(struct intel_pxp *pxp, int arb_session_id);\nvoid intel_pxp_gsccs_end_arb_fw_session(struct intel_pxp *pxp, u32 arb_session_id);\n\n#else\nstatic inline void intel_pxp_gsccs_fini(struct intel_pxp *pxp)\n{\n}\n\nstatic inline int intel_pxp_gsccs_init(struct intel_pxp *pxp)\n{\n\treturn 0;\n}\n\n#endif\n\nbool intel_pxp_gsccs_is_ready_for_sessions(struct intel_pxp *pxp);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

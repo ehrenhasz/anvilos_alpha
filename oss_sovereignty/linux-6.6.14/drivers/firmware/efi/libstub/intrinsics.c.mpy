@@ -1,0 +1,9 @@
+{
+  "module_name": "intrinsics.c",
+  "hash_id": "e89fb191d5895bf057ae8129d8b11a3f97aa1654422a071f6d7aabd2df5f5a55",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/firmware/efi/libstub/intrinsics.c",
+  "human_readable_source": "\n\n#include <linux/efi.h>\n#include <asm/efi.h>\n#include <asm/string.h>\n\n#include \"efistub.h\"\n\n#ifdef CONFIG_KASAN\n#undef memcpy\n#undef memmove\n#undef memset\nvoid *__memcpy(void *__dest, const void *__src, size_t __n) __alias(memcpy);\nvoid *__memmove(void *__dest, const void *__src, size_t count) __alias(memmove);\nvoid *__memset(void *s, int c, size_t count) __alias(memset);\n#endif\n\nvoid *memcpy(void *dst, const void *src, size_t len)\n{\n\tefi_bs_call(copy_mem, dst, src, len);\n\treturn dst;\n}\n\nextern void *memmove(void *dst, const void *src, size_t len) __alias(memcpy);\n\nvoid *memset(void *dst, int c, size_t len)\n{\n\tefi_bs_call(set_mem, dst, len, c & U8_MAX);\n\treturn dst;\n}\n\n \n#undef memcmp\nint memcmp(const void *cs, const void *ct, size_t count)\n{\n\tconst unsigned char *su1, *su2;\n\tint res = 0;\n\n\tfor (su1 = cs, su2 = ct; 0 < count; ++su1, ++su2, count--)\n\t\tif ((res = *su1 - *su2) != 0)\n\t\t\tbreak;\n\treturn res;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

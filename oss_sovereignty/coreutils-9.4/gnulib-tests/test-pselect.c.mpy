@@ -1,0 +1,9 @@
+{
+  "module_name": "test-pselect.c",
+  "hash_id": "3069d0c601e4844eb8cd369e8ccb25d64d57d110f79bfbadebcd58d0fd5ddabe",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-pselect.c",
+  "human_readable_source": "/* Test of pselect() substitute.\n   Copyright (C) 2011-2023 Free Software Foundation, Inc.\n\n   This program is free software: you can redistribute it and/or modify\n   it under the terms of the GNU General Public License as published by\n   the Free Software Foundation, either version 3 of the License, or\n   (at your option) any later version.\n\n   This program is distributed in the hope that it will be useful,\n   but WITHOUT ANY WARRANTY; without even the implied warranty of\n   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n   GNU General Public License for more details.\n\n   You should have received a copy of the GNU General Public License\n   along with this program.  If not, see <https:\n\n#include <config.h>\n\n#include <sys/select.h>\n\n#include \"signature.h\"\n\nSIGNATURE_CHECK (pselect, int,\n                 (int, fd_set *restrict, fd_set *restrict, fd_set *restrict,\n                  struct timespec const *restrict, const sigset_t *restrict));\n\n#define TEST_PORT 12347\n#include \"test-select.h\"\n\nstatic int\nmy_select (int nfds, fd_set *readfds, fd_set *writefds, fd_set *exceptfds,\n           struct timeval *timeout)\n{\n  struct timespec ts;\n  struct timespec *pts = NULL;\n  if (timeout)\n    {\n      ts.tv_sec = timeout->tv_sec;\n      ts.tv_nsec = timeout->tv_usec * 1000;\n      pts = &ts;\n    }\n  return pselect (nfds, readfds, writefds, exceptfds, pts, NULL);\n}\n\nint\nmain (void)\n{\n  return test_function (my_select);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "f63f7ac59d45b2c2b1e4461f806dd9a5c2407a95adafd29f49cd595a22d18f88",
+  "original_prompt": "Ingested from linux-6.6.14/tools/crypto/ccp/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nCFLAGS += -D__EXPORTED_HEADERS__ -I../../../include/uapi -I../../../include\n\nTARGET = dbc_library.so\n\nall: $(TARGET)\n\ndbc_library.so: dbc.c\n\t$(CC) $(CFLAGS) $(LDFLAGS) -shared -o $@ $<\n\tchmod -x $@\n\nclean:\n\t$(RM) $(TARGET)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

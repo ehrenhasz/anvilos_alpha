@@ -1,0 +1,9 @@
+{
+  "module_name": "ocfs2_lockingver.h",
+  "hash_id": "8c37df64fa907aa07588579db5d3ea86aa0461966e6d6c827ebf99c40e8e2c1e",
+  "original_prompt": "Ingested from linux-6.6.14/fs/ocfs2/ocfs2_lockingver.h",
+  "human_readable_source": " \n \n\n#ifndef OCFS2_LOCKINGVER_H\n#define OCFS2_LOCKINGVER_H\n\n \n#define OCFS2_LOCKING_PROTOCOL_MAJOR 1\n#define OCFS2_LOCKING_PROTOCOL_MINOR 0\n\n#endif   \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

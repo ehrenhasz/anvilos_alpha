@@ -1,0 +1,9 @@
+{
+  "module_name": "ebt_802_3.h",
+  "hash_id": "6bd38345397996df509e81407f36e09e2a86625e5f64bb1f0d62f6f997606362",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/netfilter_bridge/ebt_802_3.h",
+  "human_readable_source": " \n#ifndef _UAPI__LINUX_BRIDGE_EBT_802_3_H\n#define _UAPI__LINUX_BRIDGE_EBT_802_3_H\n\n#include <linux/types.h>\n#include <linux/if_ether.h>\n\n#define EBT_802_3_SAP 0x01\n#define EBT_802_3_TYPE 0x02\n\n#define EBT_802_3_MATCH \"802_3\"\n\n \n#define CHECK_TYPE 0xaa\n\n \n#define IS_UI 0x03\n\n#define EBT_802_3_MASK (EBT_802_3_SAP | EBT_802_3_TYPE | EBT_802_3)\n\n \nstruct hdr_ui {\n\t__u8 dsap;\n\t__u8 ssap;\n\t__u8 ctrl;\n\t__u8 orig[3];\n\t__be16 type;\n};\n\nstruct hdr_ni {\n\t__u8 dsap;\n\t__u8 ssap;\n\t__be16 ctrl;\n\t__u8  orig[3];\n\t__be16 type;\n};\n\nstruct ebt_802_3_hdr {\n\t__u8  daddr[ETH_ALEN];\n\t__u8  saddr[ETH_ALEN];\n\t__be16 len;\n\tunion {\n\t\tstruct hdr_ui ui;\n\t\tstruct hdr_ni ni;\n\t} llc;\n};\n\n\nstruct ebt_802_3_info {\n\t__u8  sap;\n\t__be16 type;\n\t__u8  bitmask;\n\t__u8  invflags;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

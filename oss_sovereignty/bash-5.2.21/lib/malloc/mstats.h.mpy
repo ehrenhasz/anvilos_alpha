@@ -1,0 +1,9 @@
+{
+  "module_name": "mstats.h",
+  "hash_id": "f525a338442118cfd2c6e691d23602b1da8de751bda06a38198f274338558b12",
+  "original_prompt": "Ingested from bash-5.2.21/lib/malloc/mstats.h",
+  "human_readable_source": " \n\n \n\n#ifndef _MSTATS_H\n#define _MSTATS_H\n\n#include \"imalloc.h\"\n\n#ifdef MALLOC_STATS\n\n \n#ifndef NBUCKETS\n#  define NBUCKETS 28\n#endif\n\n \nstruct _malstats {\n  int nmalloc[NBUCKETS];\n  int tmalloc[NBUCKETS];\n  int nmorecore[NBUCKETS];\n  int nlesscore[NBUCKETS];\n  int nmal;\n  int nfre;\n  int nrealloc;\n  int nrcopy;\n  int nrecurse;\n  int nsbrk;\n  bits32_t tsbrk;\n  bits32_t bytesused;\n  bits32_t bytesfree;\n  u_bits32_t bytesreq;\n  int tbsplit;\n  int nsplit[NBUCKETS];\n  int tbcoalesce;\n  int ncoalesce[NBUCKETS];\n  int nmmap;\n  bits32_t tmmap;\n};\n\n \nstruct bucket_stats {\n  u_bits32_t blocksize;\n  int nfree;\n  int nused;\n  int nmal;\n  int nmorecore;\n  int nlesscore;\n  int nsplit;\n  int ncoalesce;\n  int nmmap;\t\t \n};\n\nextern struct bucket_stats malloc_bucket_stats PARAMS((int));\nextern struct _malstats malloc_stats PARAMS((void));\nextern void print_malloc_stats PARAMS((char *));\nextern void trace_malloc_stats PARAMS((char *, char *));\n\n#endif  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

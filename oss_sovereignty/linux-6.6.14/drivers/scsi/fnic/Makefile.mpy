@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "bc9ddbc4813adbe0a6420683aec0e09a0b27bac0adb22fdd30a4925659ccce46",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/scsi/fnic/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nobj-$(CONFIG_FCOE_FNIC) += fnic.o\n\nfnic-y\t:= \\\n\tfnic_attrs.o \\\n\tfnic_isr.o \\\n\tfnic_main.o \\\n\tfnic_res.o \\\n\tfnic_fcs.o \\\n\tfnic_scsi.o \\\n\tfnic_trace.o \\\n\tfnic_debugfs.o \\\n\tvnic_cq.o \\\n\tvnic_dev.o \\\n\tvnic_intr.o \\\n\tvnic_rq.o \\\n\tvnic_wq_copy.o \\\n\tvnic_wq.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

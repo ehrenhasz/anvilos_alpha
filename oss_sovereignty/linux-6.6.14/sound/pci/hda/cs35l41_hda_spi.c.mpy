@@ -1,0 +1,9 @@
+{
+  "module_name": "cs35l41_hda_spi.c",
+  "hash_id": "db5867e43e9aff7d6c54c6ab40d9b7e02dc885b5ed96543460b697bdaf91ec32",
+  "original_prompt": "Ingested from linux-6.6.14/sound/pci/hda/cs35l41_hda_spi.c",
+  "human_readable_source": "\n\n\n\n\n\n\n\n#include <linux/mod_devicetable.h>\n#include <linux/module.h>\n#include <linux/spi/spi.h>\n\n#include \"cs35l41_hda.h\"\n\nstatic int cs35l41_hda_spi_probe(struct spi_device *spi)\n{\n\tconst char *device_name;\n\n\t \n\tif (strstr(dev_name(&spi->dev), \"CSC3551\"))\n\t\tdevice_name = \"CSC3551\";\n\telse\n\t\treturn -ENODEV;\n\n\treturn cs35l41_hda_probe(&spi->dev, device_name, spi_get_chipselect(spi, 0), spi->irq,\n\t\t\t\t devm_regmap_init_spi(spi, &cs35l41_regmap_spi));\n}\n\nstatic void cs35l41_hda_spi_remove(struct spi_device *spi)\n{\n\tcs35l41_hda_remove(&spi->dev);\n}\n\nstatic const struct spi_device_id cs35l41_hda_spi_id[] = {\n\t{ \"cs35l41-hda\", 0 },\n\t{}\n};\n\nstatic const struct acpi_device_id cs35l41_acpi_hda_match[] = {\n\t{ \"CSC3551\", 0 },\n\t{}\n};\nMODULE_DEVICE_TABLE(acpi, cs35l41_acpi_hda_match);\n\nstatic struct spi_driver cs35l41_spi_driver = {\n\t.driver = {\n\t\t.name\t\t= \"cs35l41-hda\",\n\t\t.acpi_match_table = cs35l41_acpi_hda_match,\n\t\t.pm\t\t= &cs35l41_hda_pm_ops,\n\t},\n\t.id_table\t= cs35l41_hda_spi_id,\n\t.probe\t\t= cs35l41_hda_spi_probe,\n\t.remove\t\t= cs35l41_hda_spi_remove,\n};\nmodule_spi_driver(cs35l41_spi_driver);\n\nMODULE_DESCRIPTION(\"HDA CS35L41 driver\");\nMODULE_IMPORT_NS(SND_HDA_SCODEC_CS35L41);\nMODULE_AUTHOR(\"Lucas Tanure <tanureal@opensource.cirrus.com>\");\nMODULE_LICENSE(\"GPL\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

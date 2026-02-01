@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "527e65d2c6248d4069355ae8de32032168e5c8bbc68070d338e008c504ff4341",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/mqueue/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nCFLAGS += -O2\nLDLIBS = -lrt -lpthread -lpopt\n\nTEST_GEN_PROGS := mq_open_tests mq_perf_tests\n\ninclude ../lib.mk\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

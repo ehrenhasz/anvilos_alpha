@@ -1,0 +1,9 @@
+{
+  "module_name": "int_sqrt.c",
+  "hash_id": "d355e550f3a307f9f2d8b1b11e63d37200cae0bea702698c5b2e7f8696a25280",
+  "original_prompt": "Ingested from linux-6.6.14/lib/math/int_sqrt.c",
+  "human_readable_source": "\n \n\n#include <linux/export.h>\n#include <linux/bitops.h>\n#include <linux/limits.h>\n#include <linux/math.h>\n\n \nunsigned long int_sqrt(unsigned long x)\n{\n\tunsigned long b, m, y = 0;\n\n\tif (x <= 1)\n\t\treturn x;\n\n\tm = 1UL << (__fls(x) & ~1UL);\n\twhile (m != 0) {\n\t\tb = y + m;\n\t\ty >>= 1;\n\n\t\tif (x >= b) {\n\t\t\tx -= b;\n\t\t\ty += m;\n\t\t}\n\t\tm >>= 2;\n\t}\n\n\treturn y;\n}\nEXPORT_SYMBOL(int_sqrt);\n\n#if BITS_PER_LONG < 64\n \nu32 int_sqrt64(u64 x)\n{\n\tu64 b, m, y = 0;\n\n\tif (x <= ULONG_MAX)\n\t\treturn int_sqrt((unsigned long) x);\n\n\tm = 1ULL << ((fls64(x) - 1) & ~1ULL);\n\twhile (m != 0) {\n\t\tb = y + m;\n\t\ty >>= 1;\n\n\t\tif (x >= b) {\n\t\t\tx -= b;\n\t\t\ty += m;\n\t\t}\n\t\tm >>= 2;\n\t}\n\n\treturn y;\n}\nEXPORT_SYMBOL(int_sqrt64);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

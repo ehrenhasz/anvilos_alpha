@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "1f847174fc79d2b5fb93e18e1663764d628b59a3d7005f139aa076b48088cf98",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/crypto/nx/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nobj-$(CONFIG_CRYPTO_DEV_NX_ENCRYPT) += nx-crypto.o\nnx-crypto-objs := nx.o \\\n\t\t  nx-aes-cbc.o \\\n\t\t  nx-aes-ecb.o \\\n\t\t  nx-aes-gcm.o \\\n\t\t  nx-aes-ccm.o \\\n\t\t  nx-aes-ctr.o \\\n\t\t  nx-aes-xcbc.o \\\n\t\t  nx-sha256.o \\\n\t\t  nx-sha512.o\n\nnx-crypto-$(CONFIG_DEBUG_FS) += nx_debugfs.o\nobj-$(CONFIG_CRYPTO_DEV_NX_COMPRESS_PSERIES) += nx-compress-pseries.o nx-compress.o\nobj-$(CONFIG_CRYPTO_DEV_NX_COMPRESS_POWERNV) += nx-compress-powernv.o nx-compress.o\nnx-compress-objs := nx-842.o\nnx-compress-pseries-objs := nx-common-pseries.o\nnx-compress-powernv-objs := nx-common-powernv.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

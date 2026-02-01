@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "b49eade15b886bf52c27cf1b054ed7299938655f8beb439d87832dc9472d0142",
+  "original_prompt": "Ingested from linux-6.6.14/fs/hfs/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Makefile for the Linux hfs filesystem routines.\n#\n\nobj-$(CONFIG_HFS_FS) += hfs.o\n\nhfs-objs := bitmap.o bfind.o bnode.o brec.o btree.o \\\n\t    catalog.o dir.o extent.o inode.o attr.o mdb.o \\\n            part_tbl.o string.o super.o sysdep.o trans.o\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

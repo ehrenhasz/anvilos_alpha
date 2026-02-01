@@ -1,0 +1,9 @@
+{
+  "module_name": "hid-debug.h",
+  "hash_id": "9791fb4db568367fc21d6bc145edac40a9e8ac0f8a59bebd876941c6eb22bf0d",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/hid-debug.h",
+  "human_readable_source": " \n#ifndef __HID_DEBUG_H\n#define __HID_DEBUG_H\n\n \n\n \n\n#ifdef CONFIG_DEBUG_FS\n\n#include <linux/kfifo.h>\n\n#define HID_DEBUG_BUFSIZE 512\n#define HID_DEBUG_FIFOSIZE 512\n\nvoid hid_dump_input(struct hid_device *, struct hid_usage *, __s32);\nvoid hid_dump_report(struct hid_device *, int , u8 *, int);\nvoid hid_dump_device(struct hid_device *, struct seq_file *);\nvoid hid_dump_field(struct hid_field *, int, struct seq_file *);\nchar *hid_resolv_usage(unsigned, struct seq_file *);\nvoid hid_debug_register(struct hid_device *, const char *);\nvoid hid_debug_unregister(struct hid_device *);\nvoid hid_debug_init(void);\nvoid hid_debug_exit(void);\nvoid hid_debug_event(struct hid_device *, char *);\n\nstruct hid_debug_list {\n\tDECLARE_KFIFO_PTR(hid_debug_fifo, char);\n\tstruct fasync_struct *fasync;\n\tstruct hid_device *hdev;\n\tstruct list_head node;\n\tstruct mutex read_mutex;\n};\n\n#else\n\n#define hid_dump_input(a,b,c)\t\tdo { } while (0)\n#define hid_dump_report(a,b,c,d)\tdo { } while (0)\n#define hid_dump_device(a,b)\t\tdo { } while (0)\n#define hid_dump_field(a,b,c)\t\tdo { } while (0)\n#define hid_resolv_usage(a,b)\t\tdo { } while (0)\n#define hid_debug_register(a, b)\tdo { } while (0)\n#define hid_debug_unregister(a)\t\tdo { } while (0)\n#define hid_debug_init()\t\tdo { } while (0)\n#define hid_debug_exit()\t\tdo { } while (0)\n#define hid_debug_event(a,b)\t\tdo { } while (0)\n\n#endif\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

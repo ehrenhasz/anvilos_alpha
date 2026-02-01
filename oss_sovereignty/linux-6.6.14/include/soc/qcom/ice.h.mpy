@@ -1,0 +1,9 @@
+{
+  "module_name": "ice.h",
+  "hash_id": "09ec87b91e8aa62170df12640f875becbbb3972cbe2c784f3472dd7ba1b112c4",
+  "original_prompt": "Ingested from linux-6.6.14/include/soc/qcom/ice.h",
+  "human_readable_source": " \n \n\n#ifndef __QCOM_ICE_H__\n#define __QCOM_ICE_H__\n\n#include <linux/types.h>\n\nstruct qcom_ice;\n\nenum qcom_ice_crypto_key_size {\n\tQCOM_ICE_CRYPTO_KEY_SIZE_INVALID\t= 0x0,\n\tQCOM_ICE_CRYPTO_KEY_SIZE_128\t\t= 0x1,\n\tQCOM_ICE_CRYPTO_KEY_SIZE_192\t\t= 0x2,\n\tQCOM_ICE_CRYPTO_KEY_SIZE_256\t\t= 0x3,\n\tQCOM_ICE_CRYPTO_KEY_SIZE_512\t\t= 0x4,\n};\n\nenum qcom_ice_crypto_alg {\n\tQCOM_ICE_CRYPTO_ALG_AES_XTS\t\t= 0x0,\n\tQCOM_ICE_CRYPTO_ALG_BITLOCKER_AES_CBC\t= 0x1,\n\tQCOM_ICE_CRYPTO_ALG_AES_ECB\t\t= 0x2,\n\tQCOM_ICE_CRYPTO_ALG_ESSIV_AES_CBC\t= 0x3,\n};\n\nint qcom_ice_enable(struct qcom_ice *ice);\nint qcom_ice_resume(struct qcom_ice *ice);\nint qcom_ice_suspend(struct qcom_ice *ice);\nint qcom_ice_program_key(struct qcom_ice *ice,\n\t\t\t u8 algorithm_id, u8 key_size,\n\t\t\t const u8 crypto_key[], u8 data_unit_size,\n\t\t\t int slot);\nint qcom_ice_evict_key(struct qcom_ice *ice, int slot);\nstruct qcom_ice *of_qcom_ice_get(struct device *dev);\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

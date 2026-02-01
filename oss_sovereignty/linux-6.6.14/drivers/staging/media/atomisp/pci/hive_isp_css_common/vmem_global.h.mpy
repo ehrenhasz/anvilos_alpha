@@ -1,0 +1,9 @@
+{
+  "module_name": "vmem_global.h",
+  "hash_id": "394ff7506723ace4894f20f5e11b3d8fa1c22f482d4979697cb3d3b9075e7685",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/hive_isp_css_common/vmem_global.h",
+  "human_readable_source": " \n \n\n#ifndef __VMEM_GLOBAL_H_INCLUDED__\n#define __VMEM_GLOBAL_H_INCLUDED__\n\n#include \"isp.h\"\n\n#define VMEM_SIZE\tISP_VMEM_DEPTH\n#define VMEM_ELEMBITS\tISP_VMEM_ELEMBITS\n#define VMEM_ALIGN\tISP_VMEM_ALIGN\n\n#ifndef PIPE_GENERATION\ntypedef tvector *pvector;\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

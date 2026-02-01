@@ -1,0 +1,9 @@
+{
+  "module_name": "mscode.asn1",
+  "hash_id": "f233fa083b1c6907139ed8ccd0124de35376eb5d6f9a05d944f274534a23c536",
+  "original_prompt": "Ingested from linux-6.6.14/crypto/asymmetric_keys/mscode.asn1",
+  "human_readable_source": "--- Microsoft individual code signing data blob parser\n---\n--- Copyright (C) 2012 Red Hat, Inc. All Rights Reserved.\n--- Written by David Howells (dhowells@redhat.com)\n---\n--- This program is free software; you can redistribute it and/or\n--- modify it under the terms of the GNU General Public Licence\n--- as published by the Free Software Foundation; either version\n--- 2 of the Licence, or (at your option) any later version.\n---\n\nMSCode ::= SEQUENCE {\n\ttype\t\t\tSEQUENCE {\n\t\tcontentType\tContentType,\n\t\tparameters\tANY\n\t},\n\tcontent\t\t\tSEQUENCE {\n\t\tdigestAlgorithm\tDigestAlgorithmIdentifier,\n\t\tdigest\t\tOCTET STRING ({ mscode_note_digest })\n\t}\n}\n\nContentType ::= OBJECT IDENTIFIER ({ mscode_note_content_type })\n\nDigestAlgorithmIdentifier ::= SEQUENCE {\n\talgorithm   OBJECT IDENTIFIER ({ mscode_note_digest_algo }),\n\tparameters  ANY OPTIONAL\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

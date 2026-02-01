@@ -1,0 +1,9 @@
+{
+  "module_name": "permissive.h",
+  "hash_id": "40aef5c679f358dff612a679d2aae1e37682205a517c4567c5273148113ef2c2",
+  "original_prompt": "Ingested from linux-6.6.14/kernel/kcsan/permissive.h",
+  "human_readable_source": " \n \n\n#ifndef _KERNEL_KCSAN_PERMISSIVE_H\n#define _KERNEL_KCSAN_PERMISSIVE_H\n\n#include <linux/bitops.h>\n#include <linux/sched.h>\n#include <linux/types.h>\n\n \nstatic __always_inline bool kcsan_ignore_address(const volatile void *ptr)\n{\n\tif (!IS_ENABLED(CONFIG_KCSAN_PERMISSIVE))\n\t\treturn false;\n\n\t \n\treturn ptr == &current->flags;\n}\n\n \nstatic bool\nkcsan_ignore_data_race(size_t size, int type, u64 old, u64 new, u64 diff)\n{\n\tif (!IS_ENABLED(CONFIG_KCSAN_PERMISSIVE))\n\t\treturn false;\n\n\t \n\tif (type || size > sizeof(long))\n\t\treturn false;\n\n\t \n\tif (hweight64(diff) == 1) {\n\t\t \n\t\tif (!((!old || !new) && diff == 1))\n\t\t\treturn true;\n\t}\n\n\treturn false;\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

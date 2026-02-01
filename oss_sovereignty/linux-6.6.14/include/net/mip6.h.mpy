@@ -1,0 +1,9 @@
+{
+  "module_name": "mip6.h",
+  "hash_id": "1318e341595acbc18b83f7e17132737d28ca6927d11d60472522be0baf81a5fb",
+  "original_prompt": "Ingested from linux-6.6.14/include/net/mip6.h",
+  "human_readable_source": " \n \n \n#ifndef _NET_MIP6_H\n#define _NET_MIP6_H\n\n#include <linux/skbuff.h>\n#include <net/sock.h>\n\n \nstruct ip6_mh {\n\t__u8\tip6mh_proto;\n\t__u8\tip6mh_hdrlen;\n\t__u8\tip6mh_type;\n\t__u8\tip6mh_reserved;\n\t__u16\tip6mh_cksum;\n\t \n\t__u8\tdata[];\n} __packed;\n\n#define IP6_MH_TYPE_BRR\t\t0    \n#define IP6_MH_TYPE_HOTI\t1    \n#define IP6_MH_TYPE_COTI\t2    \n#define IP6_MH_TYPE_HOT\t\t3    \n#define IP6_MH_TYPE_COT\t\t4    \n#define IP6_MH_TYPE_BU\t\t5    \n#define IP6_MH_TYPE_BACK\t6    \n#define IP6_MH_TYPE_BERROR\t7    \n#define IP6_MH_TYPE_MAX\t\tIP6_MH_TYPE_BERROR\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

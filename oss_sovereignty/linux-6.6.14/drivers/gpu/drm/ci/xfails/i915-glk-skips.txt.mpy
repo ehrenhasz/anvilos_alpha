@@ -1,0 +1,9 @@
+{
+  "module_name": "i915-glk-skips.txt",
+  "hash_id": "02a58f4a2143f3f79e7ecad3f2d81c5c9cc3084040144f6af0bcd28c99e3eb27",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/ci/xfails/i915-glk-skips.txt",
+  "human_readable_source": "# Suspend to RAM seems to be broken on this machine\n.*suspend.*\n\n# This is generating kernel oops with divide error\nkms_plane_scaling@invalid-parameters",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

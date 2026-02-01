@@ -1,0 +1,9 @@
+{
+  "module_name": "failslab.c",
+  "hash_id": "72a7f444ac221063da6974598ffcb86211f6a29e109762e36ff4c4c0ddbcc45c",
+  "original_prompt": "Ingested from linux-6.6.14/mm/failslab.c",
+  "human_readable_source": "\n#include <linux/fault-inject.h>\n#include <linux/slab.h>\n#include <linux/mm.h>\n#include \"slab.h\"\n\nstatic struct {\n\tstruct fault_attr attr;\n\tbool ignore_gfp_reclaim;\n\tbool cache_filter;\n} failslab = {\n\t.attr = FAULT_ATTR_INITIALIZER,\n\t.ignore_gfp_reclaim = true,\n\t.cache_filter = false,\n};\n\nbool __should_failslab(struct kmem_cache *s, gfp_t gfpflags)\n{\n\tint flags = 0;\n\n\t \n\tif (unlikely(s == kmem_cache))\n\t\treturn false;\n\n\tif (gfpflags & __GFP_NOFAIL)\n\t\treturn false;\n\n\tif (failslab.ignore_gfp_reclaim &&\n\t\t\t(gfpflags & __GFP_DIRECT_RECLAIM))\n\t\treturn false;\n\n\tif (failslab.cache_filter && !(s->flags & SLAB_FAILSLAB))\n\t\treturn false;\n\n\t \n\tif (gfpflags & __GFP_NOWARN)\n\t\tflags |= FAULT_NOWARN;\n\n\treturn should_fail_ex(&failslab.attr, s->object_size, flags);\n}\n\nstatic int __init setup_failslab(char *str)\n{\n\treturn setup_fault_attr(&failslab.attr, str);\n}\n__setup(\"failslab=\", setup_failslab);\n\n#ifdef CONFIG_FAULT_INJECTION_DEBUG_FS\nstatic int __init failslab_debugfs_init(void)\n{\n\tstruct dentry *dir;\n\tumode_t mode = S_IFREG | 0600;\n\n\tdir = fault_create_debugfs_attr(\"failslab\", NULL, &failslab.attr);\n\tif (IS_ERR(dir))\n\t\treturn PTR_ERR(dir);\n\n\tdebugfs_create_bool(\"ignore-gfp-wait\", mode, dir,\n\t\t\t    &failslab.ignore_gfp_reclaim);\n\tdebugfs_create_bool(\"cache-filter\", mode, dir,\n\t\t\t    &failslab.cache_filter);\n\n\treturn 0;\n}\n\nlate_initcall(failslab_debugfs_init);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

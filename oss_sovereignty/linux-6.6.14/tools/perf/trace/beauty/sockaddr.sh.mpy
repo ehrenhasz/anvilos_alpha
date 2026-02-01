@@ -1,0 +1,9 @@
+{
+  "module_name": "sockaddr.sh",
+  "hash_id": "3edf2a8e9619ee00a265e310396c5386f3671fcccb577f1a4bcaf623161836d6",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/trace/beauty/sockaddr.sh",
+  "human_readable_source": "#!/bin/sh\n# SPDX-License-Identifier: LGPL-2.1\n\n# This one uses a copy from the kernel sources headers that is in a\n# place used just for these tools/perf/beauty/ usage, we shouldn't not\n# put it in tools/include/linux otherwise they would be used in the\n# normal compiler building process and would drag needless stuff from the\n# kernel.\n\n# When what these scripts need is already in tools/include/ then use it,\n# otherwise grab and check the copy from the kernel sources just for these\n# string table building scripts.\n\n[ $# -eq 1 ] && header_dir=$1 || header_dir=tools/perf/trace/beauty/include/linux/\n\nprintf \"static const char *socket_families[] = {\\n\"\n# #define AF_LOCAL\t1\t/* POSIX name for AF_UNIX\t*/\nregex='^#define[[:space:]]+AF_(\\w+)[[:space:]]+([[:digit:]]+).*'\n\ngrep -E $regex ${header_dir}/socket.h | \\\n\tsed -r \"s/$regex/\\2 \\1/g\"\t| \\\n\txargs printf \"\\t[%s] = \\\"%s\\\",\\n\" | \\\n\tgrep -E -v \"\\\"(UNIX|MAX)\\\"\"\nprintf \"};\\n\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

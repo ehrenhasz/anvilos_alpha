@@ -1,0 +1,9 @@
+{
+  "module_name": "rtl8712_timectrl_regdef.h",
+  "hash_id": "4d5b6b9177b4b7281c353e9a54b475c73b0798f184661801338c0374aa3a30c8",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/rtl8712/rtl8712_timectrl_regdef.h",
+  "human_readable_source": " \n \n#ifndef __RTL8712_TIMECTRL_REGDEF_H__\n#define __RTL8712_TIMECTRL_REGDEF_H__\n\n#define TSFTR\t\t\t(RTL8712_TIMECTRL_ + 0x00)\n#define USTIME\t\t\t(RTL8712_TIMECTRL_ + 0x08)\n#define SLOT\t\t\t(RTL8712_TIMECTRL_ + 0x09)\n#define TUBASE\t\t\t(RTL8712_TIMECTRL_ + 0x0A)\n#define SIFS_CCK\t\t(RTL8712_TIMECTRL_ + 0x0C)\n#define SIFS_OFDM\t\t(RTL8712_TIMECTRL_ + 0x0E)\n#define PIFS\t\t\t(RTL8712_TIMECTRL_ + 0x10)\n#define ACKTO\t\t\t(RTL8712_TIMECTRL_ + 0x11)\n#define EIFS\t\t\t(RTL8712_TIMECTRL_ + 0x12)\n#define BCNITV\t\t\t(RTL8712_TIMECTRL_ + 0x14)\n#define ATIMWND\t\t\t(RTL8712_TIMECTRL_ + 0x16)\n#define DRVERLYINT\t\t(RTL8712_TIMECTRL_ + 0x18)\n#define BCNDMATIM\t\t(RTL8712_TIMECTRL_ + 0x1A)\n#define BCNERRTH\t\t(RTL8712_TIMECTRL_ + 0x1C)\n#define MLT\t\t\t(RTL8712_TIMECTRL_ + 0x1D)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

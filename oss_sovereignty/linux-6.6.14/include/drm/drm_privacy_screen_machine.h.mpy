@@ -1,0 +1,9 @@
+{
+  "module_name": "drm_privacy_screen_machine.h",
+  "hash_id": "561ae0a7e68b0af2bc39f1047dd0256809a81f01433095412420d5d1c25cefa8",
+  "original_prompt": "Ingested from linux-6.6.14/include/drm/drm_privacy_screen_machine.h",
+  "human_readable_source": " \n \n\n#ifndef __DRM_PRIVACY_SCREEN_MACHINE_H__\n#define __DRM_PRIVACY_SCREEN_MACHINE_H__\n\n#include <linux/list.h>\n\n \nstruct drm_privacy_screen_lookup {\n\t \n\tstruct list_head list;\n\t \n\tconst char *dev_id;\n\t \n\tconst char *con_id;\n\t \n\tconst char *provider;\n};\n\nvoid drm_privacy_screen_lookup_add(struct drm_privacy_screen_lookup *lookup);\nvoid drm_privacy_screen_lookup_remove(struct drm_privacy_screen_lookup *lookup);\n\n#if IS_ENABLED(CONFIG_DRM_PRIVACY_SCREEN) && IS_ENABLED(CONFIG_X86)\nvoid drm_privacy_screen_lookup_init(void);\nvoid drm_privacy_screen_lookup_exit(void);\n#else\nstatic inline void drm_privacy_screen_lookup_init(void)\n{\n}\nstatic inline void drm_privacy_screen_lookup_exit(void)\n{\n}\n#endif\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

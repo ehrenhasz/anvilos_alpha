@@ -1,0 +1,9 @@
+{
+  "module_name": "delay.h",
+  "hash_id": "a76bd9b97e80d4355734f576303dc6882bf17accfce8e286679b2f02c8d932bf",
+  "original_prompt": "Ingested from linux-6.6.14/tools/include/linux/delay.h",
+  "human_readable_source": "#ifndef _TOOLS_INCLUDE_LINUX_DELAY_H\n#define _TOOLS_INCLUDE_LINUX_DELAY_H\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

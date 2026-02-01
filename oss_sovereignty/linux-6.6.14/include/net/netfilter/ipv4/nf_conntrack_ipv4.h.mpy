@@ -1,0 +1,9 @@
+{
+  "module_name": "nf_conntrack_ipv4.h",
+  "hash_id": "ea0ebb0cf5f5af7b02f66efef3a3891c98883e977bd95e25cc1933a71df13bd8",
+  "original_prompt": "Ingested from linux-6.6.14/include/net/netfilter/ipv4/nf_conntrack_ipv4.h",
+  "human_readable_source": " \n \n\n#ifndef _NF_CONNTRACK_IPV4_H\n#define _NF_CONNTRACK_IPV4_H\n\nextern const struct nf_conntrack_l4proto nf_conntrack_l4proto_tcp;\nextern const struct nf_conntrack_l4proto nf_conntrack_l4proto_udp;\nextern const struct nf_conntrack_l4proto nf_conntrack_l4proto_icmp;\n#ifdef CONFIG_NF_CT_PROTO_DCCP\nextern const struct nf_conntrack_l4proto nf_conntrack_l4proto_dccp;\n#endif\n#ifdef CONFIG_NF_CT_PROTO_SCTP\nextern const struct nf_conntrack_l4proto nf_conntrack_l4proto_sctp;\n#endif\n#ifdef CONFIG_NF_CT_PROTO_UDPLITE\nextern const struct nf_conntrack_l4proto nf_conntrack_l4proto_udplite;\n#endif\n#ifdef CONFIG_NF_CT_PROTO_GRE\nextern const struct nf_conntrack_l4proto nf_conntrack_l4proto_gre;\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

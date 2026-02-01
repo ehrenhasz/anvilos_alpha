@@ -1,0 +1,9 @@
+{
+  "module_name": "tun_proto.h",
+  "hash_id": "3dfebc48895e00ab2eedb4a0205fee09b0842c762b36a184a867ccee83dcdae1",
+  "original_prompt": "Ingested from linux-6.6.14/include/net/tun_proto.h",
+  "human_readable_source": "#ifndef __NET_TUN_PROTO_H\n#define __NET_TUN_PROTO_H\n\n#include <linux/if_ether.h>\n#include <linux/types.h>\n\n \n#define TUN_P_IPV4      0x01\n#define TUN_P_IPV6      0x02\n#define TUN_P_ETHERNET  0x03\n#define TUN_P_NSH       0x04\n#define TUN_P_MPLS_UC   0x05\n\nstatic inline __be16 tun_p_to_eth_p(u8 proto)\n{\n\tswitch (proto) {\n\tcase TUN_P_IPV4:\n\t\treturn htons(ETH_P_IP);\n\tcase TUN_P_IPV6:\n\t\treturn htons(ETH_P_IPV6);\n\tcase TUN_P_ETHERNET:\n\t\treturn htons(ETH_P_TEB);\n\tcase TUN_P_NSH:\n\t\treturn htons(ETH_P_NSH);\n\tcase TUN_P_MPLS_UC:\n\t\treturn htons(ETH_P_MPLS_UC);\n\t}\n\treturn 0;\n}\n\nstatic inline u8 tun_p_from_eth_p(__be16 proto)\n{\n\tswitch (proto) {\n\tcase htons(ETH_P_IP):\n\t\treturn TUN_P_IPV4;\n\tcase htons(ETH_P_IPV6):\n\t\treturn TUN_P_IPV6;\n\tcase htons(ETH_P_TEB):\n\t\treturn TUN_P_ETHERNET;\n\tcase htons(ETH_P_NSH):\n\t\treturn TUN_P_NSH;\n\tcase htons(ETH_P_MPLS_UC):\n\t\treturn TUN_P_MPLS_UC;\n\t}\n\treturn 0;\n}\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

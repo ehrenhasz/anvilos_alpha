@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "04700a5f2582164369edaacb08c5617f30ad59386981e1013e7bb49504dc1d89",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/intel/avs/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n\nsnd-soc-avs-objs := dsp.o ipc.o messages.o utils.o core.o loader.o \\\n\t\t    topology.o path.o pcm.o board_selection.o control.o\nsnd-soc-avs-objs += cldma.o\nsnd-soc-avs-objs += skl.o apl.o\n\nsnd-soc-avs-objs += trace.o\n# tell define_trace.h where to find the trace header\nCFLAGS_trace.o := -I$(src)\n\nifneq ($(CONFIG_DEBUG_FS),)\nsnd-soc-avs-objs += probes.o debugfs.o\nendif\n\nobj-$(CONFIG_SND_SOC_INTEL_AVS) += snd-soc-avs.o\n\n# Machine support\nobj-$(CONFIG_SND_SOC) += boards/\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "atan2.c",
+  "hash_id": "cc016498bd778bedecdb44436fae5d4a0820c083be4f00ea8695d46c4217ccb3",
+  "original_prompt": "Ingested from sys_09_Anvil/source/lib/libm_dbl/atan2.c",
+  "human_readable_source": " \n \n \n\n#include \"libm.h\"\n\nstatic const double\npi     = 3.1415926535897931160E+00,  \npi_lo  = 1.2246467991473531772E-16;  \n\ndouble atan2(double y, double x)\n{\n\tdouble z;\n\tuint32_t m,lx,ly,ix,iy;\n\n\tif (isnan(x) || isnan(y))\n\t\treturn x+y;\n\tEXTRACT_WORDS(ix, lx, x);\n\tEXTRACT_WORDS(iy, ly, y);\n\tif (((ix-0x3ff00000) | lx) == 0)   \n\t\treturn atan(y);\n\tm = ((iy>>31)&1) | ((ix>>30)&2);   \n\tix = ix & 0x7fffffff;\n\tiy = iy & 0x7fffffff;\n\n\t \n\tif ((iy|ly) == 0) {\n\t\tswitch(m) {\n\t\tcase 0:\n\t\tcase 1: return y;    \n\t\tcase 2: return  pi;  \n\t\tcase 3: return -pi;  \n\t\t}\n\t}\n\t \n\tif ((ix|lx) == 0)\n\t\treturn m&1 ? -pi/2 : pi/2;\n\t \n\tif (ix == 0x7ff00000) {\n\t\tif (iy == 0x7ff00000) {\n\t\t\tswitch(m) {\n\t\t\tcase 0: return  pi/4;    \n\t\t\tcase 1: return -pi/4;    \n\t\t\tcase 2: return  3*pi/4;  \n\t\t\tcase 3: return -3*pi/4;  \n\t\t\t}\n\t\t} else {\n\t\t\tswitch(m) {\n\t\t\tcase 0: return  0.0;  \n\t\t\tcase 1: return -0.0;  \n\t\t\tcase 2: return  pi;   \n\t\t\tcase 3: return -pi;   \n\t\t\t}\n\t\t}\n\t}\n\t \n\tif (ix+(64<<20) < iy || iy == 0x7ff00000)\n\t\treturn m&1 ? -pi/2 : pi/2;\n\n\t \n\tif ((m&2) && iy+(64<<20) < ix)   \n\t\tz = 0;\n\telse\n\t\tz = atan(fabs(y/x));\n\tswitch (m) {\n\tcase 0: return z;               \n\tcase 1: return -z;              \n\tcase 2: return pi - (z-pi_lo);  \n\tdefault:  \n\t\treturn (z-pi_lo) - pi;  \n\t}\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

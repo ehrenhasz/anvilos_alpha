@@ -1,0 +1,9 @@
+{
+  "module_name": "ice_dcb_nl.h",
+  "hash_id": "d3b26bcca2e6dad4290154d72f42cd88aa8bf3cb4b3ccacadc834fa9c5031f4b",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/intel/ice/ice_dcb_nl.h",
+  "human_readable_source": " \n \n\n#ifndef _ICE_DCB_NL_H_\n#define _ICE_DCB_NL_H_\n\n#ifdef CONFIG_DCB\nvoid ice_dcbnl_setup(struct ice_vsi *vsi);\nvoid ice_dcbnl_set_all(struct ice_vsi *vsi);\nvoid\nice_dcbnl_flush_apps(struct ice_pf *pf, struct ice_dcbx_cfg *old_cfg,\n\t\t     struct ice_dcbx_cfg *new_cfg);\n#else\nstatic inline void ice_dcbnl_setup(struct ice_vsi *vsi) { }\nstatic inline void ice_dcbnl_set_all(struct ice_vsi *vsi) { }\nstatic inline void\nice_dcbnl_flush_apps(struct ice_pf *pf, struct ice_dcbx_cfg *old_cfg,\n\t\t     struct ice_dcbx_cfg *new_cfg) { }\n#endif  \n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

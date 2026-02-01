@@ -1,0 +1,9 @@
+{
+  "module_name": "intel_dp_mst.h",
+  "hash_id": "964f8bcc9300a27118284a3401f0b828f09f9f3964b9f594e67f801d825d60a2",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/display/intel_dp_mst.h",
+  "human_readable_source": " \n \n\n#ifndef __INTEL_DP_MST_H__\n#define __INTEL_DP_MST_H__\n\n#include <linux/types.h>\n\nstruct intel_atomic_state;\nstruct intel_crtc;\nstruct intel_crtc_state;\nstruct intel_digital_port;\nstruct intel_dp;\n\nint intel_dp_mst_encoder_init(struct intel_digital_port *dig_port, int conn_id);\nvoid intel_dp_mst_encoder_cleanup(struct intel_digital_port *dig_port);\nint intel_dp_mst_encoder_active_links(struct intel_digital_port *dig_port);\nbool intel_dp_mst_is_master_trans(const struct intel_crtc_state *crtc_state);\nbool intel_dp_mst_is_slave_trans(const struct intel_crtc_state *crtc_state);\nbool intel_dp_mst_source_support(struct intel_dp *intel_dp);\nint intel_dp_mst_add_topology_state_for_crtc(struct intel_atomic_state *state,\n\t\t\t\t\t     struct intel_crtc *crtc);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

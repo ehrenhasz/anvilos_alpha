@@ -1,0 +1,9 @@
+{
+  "module_name": "post_meter.h",
+  "hash_id": "2c3c3b9f9bee6852334b991eccaca9b47dc29b545fa5b0c7c62ad3d7ec1d8ab0",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/mellanox/mlx5/core/en/tc/post_meter.h",
+  "human_readable_source": " \n \n\n#ifndef __MLX5_EN_POST_METER_H__\n#define __MLX5_EN_POST_METER_H__\n\n#define packet_color_to_reg { \\\n\t.mfield = MLX5_ACTION_IN_FIELD_METADATA_REG_C_5, \\\n\t.moffset = 0, \\\n\t.mlen = 8, \\\n\t.soffset = MLX5_BYTE_OFF(fte_match_param, \\\n\t\t\t\t misc_parameters_2.metadata_reg_c_5), \\\n}\n\nstruct mlx5e_post_meter_priv;\n\nenum mlx5e_post_meter_type {\n\tMLX5E_POST_METER_RATE = 0,\n\tMLX5E_POST_METER_MTU\n};\n\n#if IS_ENABLED(CONFIG_MLX5_CLS_ACT)\n\nstruct mlx5_flow_table *\nmlx5e_post_meter_get_ft(struct mlx5e_post_meter_priv *post_meter);\n\nstruct mlx5_flow_table *\nmlx5e_post_meter_get_mtu_true_ft(struct mlx5e_post_meter_priv *post_meter);\n\nstruct mlx5_flow_table *\nmlx5e_post_meter_get_mtu_false_ft(struct mlx5e_post_meter_priv *post_meter);\n\nstruct mlx5e_post_meter_priv *\nmlx5e_post_meter_init(struct mlx5e_priv *priv,\n\t\t      enum mlx5_flow_namespace_type ns_type,\n\t\t      struct mlx5e_post_act *post_act,\n\t\t      enum mlx5e_post_meter_type type,\n\t\t      struct mlx5_fc *act_counter,\n\t\t      struct mlx5_fc *drop_counter,\n\t\t      struct mlx5_flow_attr *branch_true,\n\t\t      struct mlx5_flow_attr *branch_false);\n\nvoid\nmlx5e_post_meter_cleanup(struct mlx5_eswitch *esw, struct mlx5e_post_meter_priv *post_meter);\n\n#else  \n\nstatic inline struct mlx5_flow_table *\nmlx5e_post_meter_get_mtu_true_ft(struct mlx5e_post_meter_priv *post_meter)\n{\n\treturn NULL;\n}\n\nstatic inline struct mlx5_flow_table *\nmlx5e_post_meter_get_mtu_false_ft(struct mlx5e_post_meter_priv *post_meter)\n{\n\treturn NULL;\n}\n\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

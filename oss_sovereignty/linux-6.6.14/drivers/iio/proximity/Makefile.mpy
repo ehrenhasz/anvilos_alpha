@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "f765cb1665a49d0be40470d48b6c4a2bb43ca2b8a50cb15c01eb22c75b1070c6",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/iio/proximity/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for IIO proximity sensors\n#\n\n# When adding new entries keep the list in alphabetical order\nobj-$(CONFIG_AS3935)\t\t+= as3935.o\nobj-$(CONFIG_CROS_EC_MKBP_PROXIMITY) += cros_ec_mkbp_proximity.o\nobj-$(CONFIG_IRSD200)\t\t+= irsd200.o\nobj-$(CONFIG_ISL29501)\t\t+= isl29501.o\nobj-$(CONFIG_LIDAR_LITE_V2)\t+= pulsedlight-lidar-lite-v2.o\nobj-$(CONFIG_MB1232)\t\t+= mb1232.o\nobj-$(CONFIG_PING)\t\t+= ping.o\nobj-$(CONFIG_RFD77402)\t\t+= rfd77402.o\nobj-$(CONFIG_SRF04)\t\t+= srf04.o\nobj-$(CONFIG_SRF08)\t\t+= srf08.o\nobj-$(CONFIG_SX9310)\t\t+= sx9310.o\nobj-$(CONFIG_SX9324)\t\t+= sx9324.o\nobj-$(CONFIG_SX9360)\t\t+= sx9360.o\nobj-$(CONFIG_SX_COMMON) \t+= sx_common.o\nobj-$(CONFIG_SX9500)\t\t+= sx9500.o\nobj-$(CONFIG_VCNL3020)\t\t+= vcnl3020.o\nobj-$(CONFIG_VL53L0X_I2C)\t+= vl53l0x-i2c.o\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

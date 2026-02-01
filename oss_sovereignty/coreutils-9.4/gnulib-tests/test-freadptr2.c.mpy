@@ -1,0 +1,9 @@
+{
+  "module_name": "test-freadptr2.c",
+  "hash_id": "8f7dbc5dccde8ddbaa2f2c3b70c32f376b7c8da85f0706d979c707af79efd226",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-freadptr2.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#include \"freadptr.h\"\n\n#include <stdio.h>\n#include <stdlib.h>\n#include <unistd.h>\n\n#include \"macros.h\"\n\nstatic int\nfreadptrbufsize (FILE *fp)\n{\n  size_t size = 0;\n\n  freadptr (fp, &size);\n  return size;\n}\n\nint\nmain (int argc, char **argv)\n{\n  int nbytes = atoi (argv[1]);\n  if (nbytes > 0)\n    {\n      void *buf = malloc (nbytes);\n      ASSERT (fread (buf, 1, nbytes, stdin) == nbytes);\n      free (buf);\n    }\n\n  if (nbytes == 0)\n    ASSERT (freadptrbufsize (stdin) == 0);\n  else\n    {\n      if (lseek (0, 0, SEEK_CUR) == nbytes)\n         \n        ASSERT (freadptrbufsize (stdin) == 0);\n      else\n         \n        ASSERT (freadptrbufsize (stdin) != 0);\n    }\n\n  return 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

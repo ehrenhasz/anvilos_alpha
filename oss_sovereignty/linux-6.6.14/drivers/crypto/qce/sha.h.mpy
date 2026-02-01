@@ -1,0 +1,9 @@
+{
+  "module_name": "sha.h",
+  "hash_id": "20079b1f3017424f794edf69c9d3bff02afa9b6e161c86288bffba5fa5241681",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/crypto/qce/sha.h",
+  "human_readable_source": " \n \n\n#ifndef _SHA_H_\n#define _SHA_H_\n\n#include <crypto/scatterwalk.h>\n#include <crypto/sha1.h>\n#include <crypto/sha2.h>\n\n#include \"common.h\"\n#include \"core.h\"\n\n#define QCE_SHA_MAX_BLOCKSIZE\t\tSHA256_BLOCK_SIZE\n#define QCE_SHA_MAX_DIGESTSIZE\t\tSHA256_DIGEST_SIZE\n\nstruct qce_sha_ctx {\n\tu8 authkey[QCE_SHA_MAX_BLOCKSIZE];\n};\n\n \nstruct qce_sha_reqctx {\n\tu8 buf[QCE_SHA_MAX_BLOCKSIZE];\n\tu8 tmpbuf[QCE_SHA_MAX_BLOCKSIZE];\n\tu8 digest[QCE_SHA_MAX_DIGESTSIZE];\n\tunsigned int buflen;\n\tunsigned long flags;\n\tstruct scatterlist *src_orig;\n\tunsigned int nbytes_orig;\n\tint src_nents;\n\t__be32 byte_count[2];\n\tu64 count;\n\tbool first_blk;\n\tbool last_blk;\n\tstruct scatterlist sg[2];\n\tu8 *authkey;\n\tunsigned int authklen;\n\tstruct scatterlist result_sg;\n};\n\nstatic inline struct qce_alg_template *to_ahash_tmpl(struct crypto_tfm *tfm)\n{\n\tstruct crypto_ahash *ahash = __crypto_ahash_cast(tfm);\n\tstruct ahash_alg *alg = container_of(crypto_hash_alg_common(ahash),\n\t\t\t\t\t     struct ahash_alg, halg);\n\n\treturn container_of(alg, struct qce_alg_template, alg.ahash);\n}\n\nextern const struct qce_algo_ops ahash_ops;\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

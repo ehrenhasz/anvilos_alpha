@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "00bab855fdc04a0a5e302f773a34d657f0e96968bd042388b99ce655329b036d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/mediatek/mt76/mt7921/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: ISC\nconfig MT7921_COMMON\n\ttristate\n\tselect MT792x_LIB\n\tselect WANT_DEV_COREDUMP\n\nconfig MT7921E\n\ttristate \"MediaTek MT7921E (PCIe) support\"\n\tselect MT7921_COMMON\n\tdepends on MAC80211\n\tdepends on PCI\n\thelp\n\t  This adds support for MT7921E 802.11ax 2x2:2SS wireless devices.\n\n\t  To compile this driver as a module, choose M here.\n\nconfig MT7921S\n\ttristate \"MediaTek MT7921S (SDIO) support\"\n\tselect MT76_SDIO\n\tselect MT7921_COMMON\n\tdepends on MAC80211\n\tdepends on MMC\n\thelp\n\t  This adds support for MT7921S 802.11ax 2x2:2SS wireless devices.\n\n\t  To compile this driver as a module, choose M here.\n\nconfig MT7921U\n\ttristate \"MediaTek MT7921U (USB) support\"\n\tselect MT792x_USB\n\tselect MT7921_COMMON\n\tdepends on MAC80211\n\tdepends on USB\n\thelp\n\t  This adds support for MT7921U 802.11ax 2x2:2SS wireless devices.\n\n\t  To compile this driver as a module, choose M here.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

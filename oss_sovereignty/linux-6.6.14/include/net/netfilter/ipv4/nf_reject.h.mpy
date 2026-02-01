@@ -1,0 +1,9 @@
+{
+  "module_name": "nf_reject.h",
+  "hash_id": "b6e32791ad4c2c3d82f30609bfc7643f7f666b508e77b54c785304b51c2c86ba",
+  "original_prompt": "Ingested from linux-6.6.14/include/net/netfilter/ipv4/nf_reject.h",
+  "human_readable_source": " \n#ifndef _IPV4_NF_REJECT_H\n#define _IPV4_NF_REJECT_H\n\n#include <linux/skbuff.h>\n#include <net/ip.h>\n#include <net/icmp.h>\n#include <net/netfilter/nf_reject.h>\n\nvoid nf_send_unreach(struct sk_buff *skb_in, int code, int hook);\nvoid nf_send_reset(struct net *net, struct sock *, struct sk_buff *oldskb,\n\t\t   int hook);\nconst struct tcphdr *nf_reject_ip_tcphdr_get(struct sk_buff *oldskb,\n\t\t\t\t\t     struct tcphdr *_oth, int hook);\nstruct iphdr *nf_reject_iphdr_put(struct sk_buff *nskb,\n\t\t\t\t  const struct sk_buff *oldskb,\n\t\t\t\t  __u8 protocol, int ttl);\nvoid nf_reject_ip_tcphdr_put(struct sk_buff *nskb, const struct sk_buff *oldskb,\n\t\t\t     const struct tcphdr *oth);\n\nstruct sk_buff *nf_reject_skb_v4_unreach(struct net *net,\n                                         struct sk_buff *oldskb,\n                                         const struct net_device *dev,\n                                         int hook, u8 code);\nstruct sk_buff *nf_reject_skb_v4_tcp_reset(struct net *net,\n\t\t\t\t\t   struct sk_buff *oldskb,\n\t\t\t\t\t   const struct net_device *dev,\n\t\t\t\t\t   int hook);\n\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

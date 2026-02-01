@@ -1,0 +1,9 @@
+{
+  "module_name": "security.h",
+  "hash_id": "8716bc615d43a72a63b3695df8e2e111953ff3f78d16ef48072e233ffde4ed4a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/accel/habanalabs/common/security.h",
+  "human_readable_source": " \n\n#ifndef SECURITY_H_\n#define SECURITY_H_\n\n#include <linux/io-64-nonatomic-lo-hi.h>\n\nstruct hl_device;\n\n \n#define HL_MAX_NUM_OF_GLBL_ERR_CAUSE\t\t10\n#define HL_GLBL_ERR_ADDRESS_MASK\t\tGENMASK(11, 0)\n \n#define HL_GLBL_ERR_ADDR_OFFSET\t\t0xF44\n \n#define HL_GLBL_ERR_CAUSE_OFFSET\t0xF48\n\n \nstruct hl_special_block_info {\n\tint block_type;\n\tu32 base_addr;\n\tu32 major;\n\tu32 minor;\n\tu32 sub_minor;\n\tu32 major_offset;\n\tu32 minor_offset;\n\tu32 sub_minor_offset;\n};\n\n \nstruct hl_automated_pb_cfg {\n\tstruct hl_special_block_info addr;\n\tu32 prot_map;\n\tu32 data_map;\n\tconst u32 *data;\n\tu8 data_size;\n};\n\n \nstruct hl_special_blocks_cfg {\n\tstruct hl_automated_pb_cfg *priv_automated_pb_cfg;\n\tstruct hl_automated_pb_cfg *sec_automated_pb_cfg;\n\tstruct hl_skip_blocks_cfg *skip_blocks_cfg;\n\tu32 priv_cfg_size;\n\tu32 sec_cfg_size;\n\tu8 prot_lvl_priv;\n};\n\n \n\n \nstruct hl_skip_blocks_cfg {\n\tint *block_types;\n\tsize_t block_types_len;\n\tstruct range *block_ranges;\n\tsize_t block_ranges_len;\n\tbool (*skip_block_hook)(struct hl_device *hdev,\n\t\t\t\tstruct hl_special_blocks_cfg *special_blocks_cfg,\n\t\t\t\tu32 blk_idx, u32 major, u32 minor, u32 sub_minor);\n};\n\n \nstruct iterate_special_ctx {\n\t \n\tint (*fn)(struct hl_device *hdev, u32 block_id, u32 major, u32 minor,\n\t\t\t\t\t\tu32 sub_minor, void *data);\n\tvoid *data;\n};\n\nint hl_iterate_special_blocks(struct hl_device *hdev, struct iterate_special_ctx *ctx);\nvoid hl_check_for_glbl_errors(struct hl_device *hdev);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "ia_css_pipe_stagedesc.h",
+  "hash_id": "bee5ccc05a2f0253663e95ab306eac438a7be5469a88340da98abf388e21a719",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/camera/pipe/interface/ia_css_pipe_stagedesc.h",
+  "human_readable_source": " \n \n\n#ifndef __IA_CSS_PIPE_STAGEDESC_H__\n#define __IA_CSS_PIPE_STAGEDESC_H__\n\n#include <ia_css_acc_types.h>  \n#include <ia_css_frame_public.h>\n#include <ia_css_binary.h>\n#include \"ia_css_pipeline.h\"\n#include \"ia_css_pipeline_common.h\"\n\nvoid ia_css_pipe_get_generic_stage_desc(\n    struct ia_css_pipeline_stage_desc *stage_desc,\n    struct ia_css_binary *binary,\n    struct ia_css_frame *out_frame[],\n    struct ia_css_frame *in_frame,\n    struct ia_css_frame *vf_frame);\n\nvoid ia_css_pipe_get_firmwares_stage_desc(\n    struct ia_css_pipeline_stage_desc *stage_desc,\n    struct ia_css_binary *binary,\n    struct ia_css_frame *out_frame[],\n    struct ia_css_frame *in_frame,\n    struct ia_css_frame *vf_frame,\n    const struct ia_css_fw_info *fw,\n    unsigned int mode);\n\nvoid ia_css_pipe_get_sp_func_stage_desc(\n    struct ia_css_pipeline_stage_desc *stage_desc,\n    struct ia_css_frame *out_frame,\n    enum ia_css_pipeline_stage_sp_func sp_func,\n    unsigned int max_input_width);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

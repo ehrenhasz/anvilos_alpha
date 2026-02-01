@@ -1,0 +1,9 @@
+{
+  "module_name": "udmabuf.h",
+  "hash_id": "ff33ad6b1397b9105db2ad8ed820c98e447fd16c3a8307a6b94bd4c39a50059c",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/udmabuf.h",
+  "human_readable_source": " \n#ifndef _UAPI_LINUX_UDMABUF_H\n#define _UAPI_LINUX_UDMABUF_H\n\n#include <linux/types.h>\n#include <linux/ioctl.h>\n\n#define UDMABUF_FLAGS_CLOEXEC\t0x01\n\nstruct udmabuf_create {\n\t__u32 memfd;\n\t__u32 flags;\n\t__u64 offset;\n\t__u64 size;\n};\n\nstruct udmabuf_create_item {\n\t__u32 memfd;\n\t__u32 __pad;\n\t__u64 offset;\n\t__u64 size;\n};\n\nstruct udmabuf_create_list {\n\t__u32 flags;\n\t__u32 count;\n\tstruct udmabuf_create_item list[];\n};\n\n#define UDMABUF_CREATE       _IOW('u', 0x42, struct udmabuf_create)\n#define UDMABUF_CREATE_LIST  _IOW('u', 0x43, struct udmabuf_create_list)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

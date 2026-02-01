@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "f696a9e55d7156666547931c01f2cddeaeeb90165a4e4b0f76e1916d1525746f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/apm/xgene/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Makefile for APM X-Gene Ethernet Driver.\n#\n\nxgene-enet-objs := xgene_enet_hw.o xgene_enet_sgmac.o xgene_enet_xgmac.o \\\n\t\t   xgene_enet_main.o xgene_enet_ring2.o xgene_enet_ethtool.o \\\n\t\t   xgene_enet_cle.o\nobj-$(CONFIG_NET_XGENE) += xgene-enet.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

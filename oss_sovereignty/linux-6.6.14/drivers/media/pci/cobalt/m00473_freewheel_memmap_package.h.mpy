@@ -1,0 +1,9 @@
+{
+  "module_name": "m00473_freewheel_memmap_package.h",
+  "hash_id": "436614ea06cb0cbf3223516c0fcaaa5673bb585db4d8af90b79d39e68356c204",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/pci/cobalt/m00473_freewheel_memmap_package.h",
+  "human_readable_source": " \n \n\n#ifndef M00473_FREEWHEEL_MEMMAP_PACKAGE_H\n#define M00473_FREEWHEEL_MEMMAP_PACKAGE_H\n\n \nstruct m00473_freewheel_regmap {\n\tuint32_t ctrl;           \n\tuint32_t status;         \n\tuint32_t active_length;  \n\tuint32_t total_length;   \n\tuint32_t data_width;     \n\tuint32_t output_color;   \n\tuint32_t clk_freq;       \n};\n\n#define M00473_FREEWHEEL_REG_CTRL_OFST 0\n#define M00473_FREEWHEEL_REG_STATUS_OFST 4\n#define M00473_FREEWHEEL_REG_ACTIVE_LENGTH_OFST 8\n#define M00473_FREEWHEEL_REG_TOTAL_LENGTH_OFST 12\n#define M00473_FREEWHEEL_REG_DATA_WIDTH_OFST 16\n#define M00473_FREEWHEEL_REG_OUTPUT_COLOR_OFST 20\n#define M00473_FREEWHEEL_REG_CLK_FREQ_OFST 24\n\n \n \n#define M00473_CTRL_BITMAP_ENABLE_OFST               (0)\n#define M00473_CTRL_BITMAP_ENABLE_MSK                (0x1 << M00473_CTRL_BITMAP_ENABLE_OFST)\n#define M00473_CTRL_BITMAP_FORCE_FREEWHEEL_MODE_OFST (1)\n#define M00473_CTRL_BITMAP_FORCE_FREEWHEEL_MODE_MSK  (0x1 << M00473_CTRL_BITMAP_FORCE_FREEWHEEL_MODE_OFST)\n \n#define M00473_STATUS_BITMAP_FREEWHEEL_MODE_OFST     (0)\n#define M00473_STATUS_BITMAP_FREEWHEEL_MODE_MSK      (0x1 << M00473_STATUS_BITMAP_FREEWHEEL_MODE_OFST)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

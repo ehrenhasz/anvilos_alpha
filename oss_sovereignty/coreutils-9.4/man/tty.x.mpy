@@ -1,0 +1,9 @@
+{
+  "module_name": "tty.x",
+  "hash_id": "06491239946958488a7a07bf6fe64764c7c778b68018f8470068eb83af61e162",
+  "original_prompt": "Ingested from coreutils-9.4/man/tty.x",
+  "human_readable_source": "[NAME]\ntty \\- print the file name of the terminal connected to standard input\n[DESCRIPTION]\n.\\\" Add any additional description here\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

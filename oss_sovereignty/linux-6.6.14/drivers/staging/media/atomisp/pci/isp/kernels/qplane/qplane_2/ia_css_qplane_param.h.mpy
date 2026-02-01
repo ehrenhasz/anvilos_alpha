@@ -1,0 +1,9 @@
+{
+  "module_name": "ia_css_qplane_param.h",
+  "hash_id": "d8493a62e3751cb6032e76b06379cf259e689a732e70cc3b64ed934435856fd7",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/isp/kernels/qplane/qplane_2/ia_css_qplane_param.h",
+  "human_readable_source": " \n \n\n#ifndef __IA_CSS_QPLANE_PARAM_H\n#define __IA_CSS_QPLANE_PARAM_H\n\n#include <type_support.h>\n#include \"dma.h\"\n\n \nstruct sh_css_isp_qplane_isp_config {\n\tu32 width_a_over_b;\n\tstruct dma_port_config port_b;\n\tu32 inout_port_config;\n\tu32 input_needs_raw_binning;\n\tu32 format;  \n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "c70720954c765b3f4f25ea604148d48730a5213ab84bb377d55812873eb76112",
+  "original_prompt": "Ingested from linux-6.6.14/samples/trace_printk/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n# builds a module that calls various trace_printk routines\n# then to use one (as root):  insmod <module_name.ko>\n\n# This module can also be used to test the trace_printk code.\n\nobj-$(CONFIG_SAMPLE_TRACE_PRINTK) += trace-printk.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

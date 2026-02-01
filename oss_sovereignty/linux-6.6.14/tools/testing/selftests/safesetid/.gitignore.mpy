@@ -1,0 +1,9 @@
+{
+  "module_name": ".gitignore",
+  "hash_id": "15a6e08149ccda5daace05935b039930b1ae6a6973d0880d7143641ba537eb23",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/safesetid/.gitignore",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nsafesetid-test\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

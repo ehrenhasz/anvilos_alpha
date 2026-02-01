@@ -1,0 +1,9 @@
+{
+  "module_name": "am65-cpsw-qos.h",
+  "hash_id": "02d2e2d71b69da5c87703230df6f51ba86e26ae0c9456233bdf8a289caacdd8c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/ti/am65-cpsw-qos.h",
+  "human_readable_source": " \n \n\n#ifndef AM65_CPSW_QOS_H_\n#define AM65_CPSW_QOS_H_\n\n#include <linux/netdevice.h>\n#include <net/pkt_sched.h>\n\nstruct am65_cpsw_common;\n\nstruct am65_cpsw_est {\n\tint buf;\n\t \n\tstruct tc_taprio_qopt_offload taprio;\n};\n\nstruct am65_cpsw_ale_ratelimit {\n\tunsigned long cookie;\n\tu64 rate_packet_ps;\n};\n\nstruct am65_cpsw_qos {\n\tstruct am65_cpsw_est *est_admin;\n\tstruct am65_cpsw_est *est_oper;\n\tktime_t link_down_time;\n\tint link_speed;\n\n\tstruct am65_cpsw_ale_ratelimit ale_bc_ratelimit;\n\tstruct am65_cpsw_ale_ratelimit ale_mc_ratelimit;\n};\n\nint am65_cpsw_qos_ndo_setup_tc(struct net_device *ndev, enum tc_setup_type type,\n\t\t\t       void *type_data);\nvoid am65_cpsw_qos_link_up(struct net_device *ndev, int link_speed);\nvoid am65_cpsw_qos_link_down(struct net_device *ndev);\nint am65_cpsw_qos_ndo_tx_p0_set_maxrate(struct net_device *ndev, int queue, u32 rate_mbps);\nvoid am65_cpsw_qos_tx_p0_rate_init(struct am65_cpsw_common *common);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

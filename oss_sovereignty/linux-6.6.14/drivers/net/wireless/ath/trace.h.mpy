@@ -1,0 +1,9 @@
+{
+  "module_name": "trace.h",
+  "hash_id": "a403330c8dff32776d886ce23f8d39605cdc1acefe915d080741be05e4d1a34b",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/ath/trace.h",
+  "human_readable_source": " \n\n#if !defined(_TRACE_H) || defined(TRACE_HEADER_MULTI_READ)\n#define _TRACE_H\n\n#include <linux/tracepoint.h>\n#include \"ath.h\"\n\n#undef TRACE_SYSTEM\n#define TRACE_SYSTEM ath\n\n#if !defined(CONFIG_ATH_TRACEPOINTS)\n\n#undef TRACE_EVENT\n#define TRACE_EVENT(name, proto, ...) static inline void trace_ ## name(proto) {}\n\n#endif  \n\nTRACE_EVENT(ath_log,\n\n\t    TP_PROTO(struct wiphy *wiphy,\n\t\t     struct va_format *vaf),\n\n\t    TP_ARGS(wiphy, vaf),\n\n\t    TP_STRUCT__entry(\n\t\t    __string(device, wiphy_name(wiphy))\n\t\t    __string(driver, KBUILD_MODNAME)\n\t\t    __vstring(msg, vaf->fmt, vaf->va)\n\t    ),\n\n\t    TP_fast_assign(\n\t\t    __assign_str(device, wiphy_name(wiphy));\n\t\t    __assign_str(driver, KBUILD_MODNAME);\n\t\t    __assign_vstr(msg, vaf->fmt, vaf->va);\n\t    ),\n\n\t    TP_printk(\n\t\t    \"%s %s %s\",\n\t\t    __get_str(driver),\n\t\t    __get_str(device),\n\t\t    __get_str(msg)\n\t    )\n);\n\n#endif  \n\n#undef TRACE_INCLUDE_PATH\n#define TRACE_INCLUDE_PATH .\n#undef TRACE_INCLUDE_FILE\n#define TRACE_INCLUDE_FILE trace\n\n \n#include <trace/define_trace.h>\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

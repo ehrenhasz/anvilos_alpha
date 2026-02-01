@@ -1,0 +1,9 @@
+{
+  "module_name": "nfsacl.h",
+  "hash_id": "ea9bee783c8d017894a41376b2eb93dd4cbe9643f5c6fbc95571977a9f89f44a",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/nfsacl.h",
+  "human_readable_source": " \n \n#ifndef __LINUX_NFSACL_H\n#define __LINUX_NFSACL_H\n\n\n#include <linux/posix_acl.h>\n#include <linux/sunrpc/xdr.h>\n#include <uapi/linux/nfsacl.h>\n\n \n#define NFS_ACL_MAX_ENTRIES\t1024\n\n#define NFSACL_MAXWORDS\t\t(2*(2+3*NFS_ACL_MAX_ENTRIES))\n#define NFSACL_MAXPAGES\t\t((2*(8+12*NFS_ACL_MAX_ENTRIES) + PAGE_SIZE-1) \\\n\t\t\t\t >> PAGE_SHIFT)\n\n#define NFS_ACL_MAX_ENTRIES_INLINE\t(5)\n#define NFS_ACL_INLINE_BUFSIZE\t((2*(2+3*NFS_ACL_MAX_ENTRIES_INLINE)) << 2)\n\nstatic inline unsigned int\nnfsacl_size(struct posix_acl *acl_access, struct posix_acl *acl_default)\n{\n\tunsigned int w = 16;\n\tw += max(acl_access ? (int)acl_access->a_count : 3, 4) * 12;\n\tif (acl_default)\n\t\tw += max((int)acl_default->a_count, 4) * 12;\n\treturn w;\n}\n\nextern int\nnfsacl_encode(struct xdr_buf *buf, unsigned int base, struct inode *inode,\n\t      struct posix_acl *acl, int encode_entries, int typeflag);\nextern int\nnfsacl_decode(struct xdr_buf *buf, unsigned int base, unsigned int *aclcnt,\n\t      struct posix_acl **pacl);\nextern bool\nnfs_stream_decode_acl(struct xdr_stream *xdr, unsigned int *aclcnt,\n\t\t      struct posix_acl **pacl);\nextern bool\nnfs_stream_encode_acl(struct xdr_stream *xdr, struct inode *inode,\n\t\t      struct posix_acl *acl, int encode_entries, int typeflag);\n\n#endif   \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

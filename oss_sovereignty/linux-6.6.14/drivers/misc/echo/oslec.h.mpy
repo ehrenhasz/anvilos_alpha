@@ -1,0 +1,9 @@
+{
+  "module_name": "oslec.h",
+  "hash_id": "8851e0298ec587735d7fdad5af92781f41686486a481a6e7f5f26bbf52b1d16a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/misc/echo/oslec.h",
+  "human_readable_source": " \n \n\n#ifndef __OSLEC_H\n#define __OSLEC_H\n\n \n#define ECHO_CAN_USE_ADAPTION\t0x01\n#define ECHO_CAN_USE_NLP\t0x02\n#define ECHO_CAN_USE_CNG\t0x04\n#define ECHO_CAN_USE_CLIP\t0x08\n#define ECHO_CAN_USE_TX_HPF\t0x10\n#define ECHO_CAN_USE_RX_HPF\t0x20\n#define ECHO_CAN_DISABLE\t0x40\n\n \nstruct oslec_state;\n\n \nstruct oslec_state *oslec_create(int len, int adaption_mode);\n\n \nvoid oslec_free(struct oslec_state *ec);\n\n \nvoid oslec_flush(struct oslec_state *ec);\n\n \nvoid oslec_adaption_mode(struct oslec_state *ec, int adaption_mode);\n\nvoid oslec_snapshot(struct oslec_state *ec);\n\n \nint16_t oslec_update(struct oslec_state *ec, int16_t tx, int16_t rx);\n\n \nint16_t oslec_hpf_tx(struct oslec_state *ec, int16_t tx);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "blocklayoutxdr.h",
+  "hash_id": "54ca99e0fbc5a6740a8c2c41123a344085c31a8bd9ac030ff91add56fe4ac87d",
+  "original_prompt": "Ingested from linux-6.6.14/fs/nfsd/blocklayoutxdr.h",
+  "human_readable_source": " \n#ifndef _NFSD_BLOCKLAYOUTXDR_H\n#define _NFSD_BLOCKLAYOUTXDR_H 1\n\n#include <linux/blkdev.h>\n#include \"xdr4.h\"\n\nstruct iomap;\nstruct xdr_stream;\n\nstruct pnfs_block_extent {\n\tstruct nfsd4_deviceid\t\tvol_id;\n\tu64\t\t\t\tfoff;\n\tu64\t\t\t\tlen;\n\tu64\t\t\t\tsoff;\n\tenum pnfs_block_extent_state\tes;\n};\n\nstruct pnfs_block_range {\n\tu64\t\t\t\tfoff;\n\tu64\t\t\t\tlen;\n};\n\n \n#define PNFS_BLOCK_UUID_LEN\t128\n\nstruct pnfs_block_volume {\n\tenum pnfs_block_volume_type\ttype;\n\tunion {\n\t\tstruct {\n\t\t\tu64\t\toffset;\n\t\t\tu32\t\tsig_len;\n\t\t\tu8\t\tsig[PNFS_BLOCK_UUID_LEN];\n\t\t} simple;\n\t\tstruct {\n\t\t\tenum scsi_code_set\t\tcode_set;\n\t\t\tenum scsi_designator_type\tdesignator_type;\n\t\t\tint\t\t\t\tdesignator_len;\n\t\t\tu8\t\t\t\tdesignator[256];\n\t\t\tu64\t\t\t\tpr_key;\n\t\t} scsi;\n\t};\n};\n\nstruct pnfs_block_deviceaddr {\n\tu32\t\t\t\tnr_volumes;\n\tstruct pnfs_block_volume\tvolumes[];\n};\n\n__be32 nfsd4_block_encode_getdeviceinfo(struct xdr_stream *xdr,\n\t\tstruct nfsd4_getdeviceinfo *gdp);\n__be32 nfsd4_block_encode_layoutget(struct xdr_stream *xdr,\n\t\tstruct nfsd4_layoutget *lgp);\nint nfsd4_block_decode_layoutupdate(__be32 *p, u32 len, struct iomap **iomapp,\n\t\tu32 block_size);\nint nfsd4_scsi_decode_layoutupdate(__be32 *p, u32 len, struct iomap **iomapp,\n\t\tu32 block_size);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

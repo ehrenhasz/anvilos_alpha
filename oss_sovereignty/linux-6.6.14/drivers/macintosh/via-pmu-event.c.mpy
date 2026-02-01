@@ -1,0 +1,9 @@
+{
+  "module_name": "via-pmu-event.c",
+  "hash_id": "a7109f5d50baecc92490abeabd850e1f5b6e3cd67de20dc39cd6b24a702806e3",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/macintosh/via-pmu-event.c",
+  "human_readable_source": " \n\n#include <linux/input.h>\n#include <linux/adb.h>\n#include <linux/pmu.h>\n#include \"via-pmu-event.h\"\n\nstatic struct input_dev *pmu_input_dev;\n\nstatic int __init via_pmu_event_init(void)\n{\n\tint err;\n\n\t \n\tif (pmu_get_model() != PMU_KEYLARGO_BASED)\n\t\treturn -ENODEV;\n\n\tpmu_input_dev = input_allocate_device();\n\tif (!pmu_input_dev)\n\t\treturn -ENOMEM;\n\n\tpmu_input_dev->name = \"PMU\";\n\tpmu_input_dev->id.bustype = BUS_HOST;\n\tpmu_input_dev->id.vendor = 0x0001;\n\tpmu_input_dev->id.product = 0x0001;\n\tpmu_input_dev->id.version = 0x0100;\n\n\tset_bit(EV_KEY, pmu_input_dev->evbit);\n\tset_bit(EV_SW, pmu_input_dev->evbit);\n\tset_bit(KEY_POWER, pmu_input_dev->keybit);\n\tset_bit(SW_LID, pmu_input_dev->swbit);\n\n\terr = input_register_device(pmu_input_dev);\n\tif (err)\n\t\tinput_free_device(pmu_input_dev);\n\treturn err;\n}\n\nvoid via_pmu_event(int key, int down)\n{\n\n\tif (unlikely(!pmu_input_dev))\n\t\treturn;\n\n\tswitch (key) {\n\tcase PMU_EVT_POWER:\n\t\tinput_report_key(pmu_input_dev, KEY_POWER, down);\n\t\tbreak;\n\tcase PMU_EVT_LID:\n\t\tinput_report_switch(pmu_input_dev, SW_LID, down);\n\t\tbreak;\n\tdefault:\n\t\t \n\t\treturn;\n\t}\n\n\tinput_sync(pmu_input_dev);\n}\n\nlate_initcall(via_pmu_event_init);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

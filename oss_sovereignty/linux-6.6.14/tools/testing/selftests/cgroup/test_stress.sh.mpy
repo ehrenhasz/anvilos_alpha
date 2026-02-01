@@ -1,0 +1,9 @@
+{
+  "module_name": "test_stress.sh",
+  "hash_id": "456dec4f95c14ad09239f9686346eabb1091f516290e112116e75d3761e4f5fc",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/cgroup/test_stress.sh",
+  "human_readable_source": "#!/bin/bash\n# SPDX-License-Identifier: GPL-2.0\n\n./with_stress.sh -s subsys -s fork ${OUTPUT:-.}/test_core\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "tda10048.h",
+  "hash_id": "c6a334c045ba93f90fac6b36e49f772fd03f5a447f3d5643421a4827b80eb66c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/dvb-frontends/tda10048.h",
+  "human_readable_source": " \n \n\n#ifndef TDA10048_H\n#define TDA10048_H\n\n#include <linux/dvb/frontend.h>\n#include <linux/firmware.h>\n\nstruct tda10048_config {\n\n\t \n\tu8 demod_address;\n\n\t \n#define TDA10048_PARALLEL_OUTPUT 0\n#define TDA10048_SERIAL_OUTPUT   1\n\tu8 output_mode;\n\n#define TDA10048_BULKWRITE_200\t200\n#define TDA10048_BULKWRITE_50\t50\n\tu8 fwbulkwritelen;\n\n\t \n#define TDA10048_INVERSION_OFF 0\n#define TDA10048_INVERSION_ON  1\n\tu8 inversion;\n\n#define TDA10048_IF_3300  3300\n#define TDA10048_IF_3500  3500\n#define TDA10048_IF_3800  3800\n#define TDA10048_IF_4000  4000\n#define TDA10048_IF_4300  4300\n#define TDA10048_IF_4500  4500\n#define TDA10048_IF_4750  4750\n#define TDA10048_IF_5000  5000\n#define TDA10048_IF_36130 36130\n\tu16 dtv6_if_freq_khz;\n\tu16 dtv7_if_freq_khz;\n\tu16 dtv8_if_freq_khz;\n\n#define TDA10048_CLK_4000  4000\n#define TDA10048_CLK_16000 16000\n\tu16 clk_freq_khz;\n\n\t \n\tu8 disable_gate_access;\n\n\tbool no_firmware;\n\n\tbool set_pll;\n\tu8 pll_m;\n\tu8 pll_p;\n\tu8 pll_n;\n};\n\n#if IS_REACHABLE(CONFIG_DVB_TDA10048)\nextern struct dvb_frontend *tda10048_attach(\n\tconst struct tda10048_config *config,\n\tstruct i2c_adapter *i2c);\n#else\nstatic inline struct dvb_frontend *tda10048_attach(\n\tconst struct tda10048_config *config,\n\tstruct i2c_adapter *i2c)\n{\n\tprintk(KERN_WARNING \"%s: driver disabled by Kconfig\\n\", __func__);\n\treturn NULL;\n}\n#endif  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

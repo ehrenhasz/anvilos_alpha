@@ -1,0 +1,9 @@
+{
+  "module_name": "windfarm_pid.h",
+  "hash_id": "b4259116fc5ef0337192d8450afa0c4b462cc75dc144026eb68697d2f57dfa0b",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/macintosh/windfarm_pid.h",
+  "human_readable_source": " \n#ifndef _WINDFARM_PID_H\n#define _WINDFARM_PID_H\n\n \n\n \n\n#define WF_PID_MAX_HISTORY\t32\n\n \nstruct wf_pid_param {\n\tint\tinterval;\t \n\tint\thistory_len;\t \n\tint\tadditive;\t \n\ts32\tgd, gp, gr;\t \n\ts32\titarget;\t \n\ts32\tmin,max;\t \n};\n\nstruct wf_pid_state {\n\tint\tfirst;\t\t\t\t \n\tint\tindex; \t\t\t\t \n\ts32\ttarget;\t\t\t\t \n\ts32\tsamples[WF_PID_MAX_HISTORY];\t \n\ts32\terrors[WF_PID_MAX_HISTORY];\t \n\n\tstruct wf_pid_param param;\n};\n\nextern void wf_pid_init(struct wf_pid_state *st, struct wf_pid_param *param);\nextern s32 wf_pid_run(struct wf_pid_state *st, s32 sample);\n\n\n \n\n#define WF_CPU_PID_MAX_HISTORY\t32\n\n \nstruct wf_cpu_pid_param {\n\tint\tinterval;\t \n\tint\thistory_len;\t \n\ts32\tgd, gp, gr;\t \n\ts32\tpmaxadj;\t \n\ts32\tttarget;\t \n\ts32\ttmax;\t\t \n\ts32\tmin,max;\t \n};\n\nstruct wf_cpu_pid_state {\n\tint\tfirst;\t\t\t\t \n\tint\tindex; \t\t\t\t \n\tint\ttindex; \t\t\t \n\ts32\ttarget;\t\t\t\t \n\ts32\tlast_delta;\t\t\t \n\ts32\tpowers[WF_PID_MAX_HISTORY];\t \n\ts32\terrors[WF_PID_MAX_HISTORY];\t \n\ts32\ttemps[2];\t\t\t \n\n\tstruct wf_cpu_pid_param param;\n};\n\nextern void wf_cpu_pid_init(struct wf_cpu_pid_state *st,\n\t\t\t    struct wf_cpu_pid_param *param);\nextern s32 wf_cpu_pid_run(struct wf_cpu_pid_state *st, s32 power, s32 temp);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

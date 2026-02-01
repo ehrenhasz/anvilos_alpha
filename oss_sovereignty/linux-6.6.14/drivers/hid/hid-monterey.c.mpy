@@ -1,0 +1,9 @@
+{
+  "module_name": "hid-monterey.c",
+  "hash_id": "abd834958657fa20233f5b9af53c17c49ee3a42d86e48cea3cf5865bdf22623b",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/hid/hid-monterey.c",
+  "human_readable_source": "\n \n\n \n\n#include <linux/device.h>\n#include <linux/hid.h>\n#include <linux/module.h>\n\n#include \"hid-ids.h\"\n\nstatic __u8 *mr_report_fixup(struct hid_device *hdev, __u8 *rdesc,\n\t\tunsigned int *rsize)\n{\n\tif (*rsize >= 31 && rdesc[29] == 0x05 && rdesc[30] == 0x09) {\n\t\thid_info(hdev, \"fixing up button/consumer in HID report descriptor\\n\");\n\t\trdesc[30] = 0x0c;\n\t}\n\treturn rdesc;\n}\n\n#define mr_map_key_clear(c)\thid_map_usage_clear(hi, usage, bit, max, \\\n\t\t\t\t\tEV_KEY, (c))\nstatic int mr_input_mapping(struct hid_device *hdev, struct hid_input *hi,\n\t\tstruct hid_field *field, struct hid_usage *usage,\n\t\tunsigned long **bit, int *max)\n{\n\tif ((usage->hid & HID_USAGE_PAGE) != HID_UP_CONSUMER)\n\t\treturn 0;\n\n\tswitch (usage->hid & HID_USAGE) {\n\tcase 0x156: mr_map_key_clear(KEY_WORDPROCESSOR);\tbreak;\n\tcase 0x157: mr_map_key_clear(KEY_SPREADSHEET);\t\tbreak;\n\tcase 0x158: mr_map_key_clear(KEY_PRESENTATION);\t\tbreak;\n\tcase 0x15c: mr_map_key_clear(KEY_STOP);\t\t\tbreak;\n\tdefault:\n\t\treturn 0;\n\t}\n\treturn 1;\n}\n\nstatic const struct hid_device_id mr_devices[] = {\n\t{ HID_USB_DEVICE(USB_VENDOR_ID_MONTEREY, USB_DEVICE_ID_GENIUS_KB29E) },\n\t{ }\n};\nMODULE_DEVICE_TABLE(hid, mr_devices);\n\nstatic struct hid_driver mr_driver = {\n\t.name = \"monterey\",\n\t.id_table = mr_devices,\n\t.report_fixup = mr_report_fixup,\n\t.input_mapping = mr_input_mapping,\n};\nmodule_hid_driver(mr_driver);\n\nMODULE_LICENSE(\"GPL\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

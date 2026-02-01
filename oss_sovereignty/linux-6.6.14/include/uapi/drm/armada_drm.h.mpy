@@ -1,0 +1,9 @@
+{
+  "module_name": "armada_drm.h",
+  "hash_id": "8d1699d188e7a4ee808cdc073c6f6781e1b2eace2163b99f6af1cf5f29f864d4",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/drm/armada_drm.h",
+  "human_readable_source": " \n \n#ifndef DRM_ARMADA_IOCTL_H\n#define DRM_ARMADA_IOCTL_H\n\n#include \"drm.h\"\n\n#if defined(__cplusplus)\nextern \"C\" {\n#endif\n\n#define DRM_ARMADA_GEM_CREATE\t\t0x00\n#define DRM_ARMADA_GEM_MMAP\t\t0x02\n#define DRM_ARMADA_GEM_PWRITE\t\t0x03\n\n#define ARMADA_IOCTL(dir, name, str) \\\n\tDRM_##dir(DRM_COMMAND_BASE + DRM_ARMADA_##name, struct drm_armada_##str)\n\nstruct drm_armada_gem_create {\n\t__u32 handle;\n\t__u32 size;\n};\n#define DRM_IOCTL_ARMADA_GEM_CREATE \\\n\tARMADA_IOCTL(IOWR, GEM_CREATE, gem_create)\n\nstruct drm_armada_gem_mmap {\n\t__u32 handle;\n\t__u32 pad;\n\t__u64 offset;\n\t__u64 size;\n\t__u64 addr;\n};\n#define DRM_IOCTL_ARMADA_GEM_MMAP \\\n\tARMADA_IOCTL(IOWR, GEM_MMAP, gem_mmap)\n\nstruct drm_armada_gem_pwrite {\n\t__u64 ptr;\n\t__u32 handle;\n\t__u32 offset;\n\t__u32 size;\n};\n#define DRM_IOCTL_ARMADA_GEM_PWRITE \\\n\tARMADA_IOCTL(IOW, GEM_PWRITE, gem_pwrite)\n\n#if defined(__cplusplus)\n}\n#endif\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

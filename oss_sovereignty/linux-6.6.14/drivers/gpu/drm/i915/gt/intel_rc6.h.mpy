@@ -1,0 +1,9 @@
+{
+  "module_name": "intel_rc6.h",
+  "hash_id": "aa406e5cb417e650759f869be8695a623b9d852d10faa4217a3f65aa2b721771",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/gt/intel_rc6.h",
+  "human_readable_source": " \n \n\n#ifndef INTEL_RC6_H\n#define INTEL_RC6_H\n\n#include <linux/types.h>\n\nenum intel_rc6_res_type;\nstruct intel_rc6;\nstruct seq_file;\n\nvoid intel_rc6_init(struct intel_rc6 *rc6);\nvoid intel_rc6_fini(struct intel_rc6 *rc6);\n\nvoid intel_rc6_unpark(struct intel_rc6 *rc6);\nvoid intel_rc6_park(struct intel_rc6 *rc6);\n\nvoid intel_rc6_sanitize(struct intel_rc6 *rc6);\nvoid intel_rc6_enable(struct intel_rc6 *rc6);\nvoid intel_rc6_disable(struct intel_rc6 *rc6);\n\nu64 intel_rc6_residency_ns(struct intel_rc6 *rc6, enum intel_rc6_res_type id);\nu64 intel_rc6_residency_us(struct intel_rc6 *rc6, enum intel_rc6_res_type id);\nvoid intel_rc6_print_residency(struct seq_file *m, const char *title,\n\t\t\t       enum intel_rc6_res_type id);\n\nbool intel_check_bios_c6_setup(struct intel_rc6 *rc6);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

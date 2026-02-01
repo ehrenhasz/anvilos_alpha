@@ -1,0 +1,9 @@
+{
+  "module_name": "qman_test.c",
+  "hash_id": "b99e58c3699918deaccbe215bdad16699ca304fda082cbf1df44e52d43fa916f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/soc/fsl/qbman/qman_test.c",
+  "human_readable_source": " \n\n#include \"qman_test.h\"\n\nMODULE_AUTHOR(\"Geoff Thorpe\");\nMODULE_LICENSE(\"Dual BSD/GPL\");\nMODULE_DESCRIPTION(\"QMan testing\");\n\nstatic int test_init(void)\n{\n\tint loop = 1;\n\tint err = 0;\n\n\twhile (loop--) {\n#ifdef CONFIG_FSL_QMAN_TEST_STASH\n\t\terr = qman_test_stash();\n\t\tif (err)\n\t\t\tbreak;\n#endif\n#ifdef CONFIG_FSL_QMAN_TEST_API\n\t\terr = qman_test_api();\n\t\tif (err)\n\t\t\tbreak;\n#endif\n\t}\n\treturn err;\n}\n\nstatic void test_exit(void)\n{\n}\n\nmodule_init(test_init);\nmodule_exit(test_exit);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

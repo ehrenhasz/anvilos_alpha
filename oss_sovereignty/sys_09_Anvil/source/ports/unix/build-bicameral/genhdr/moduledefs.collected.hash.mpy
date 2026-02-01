@@ -1,0 +1,9 @@
+{
+  "module_name": "moduledefs.collected.hash",
+  "hash_id": "874966afb5e24cc947fcfad906f9a73efe8d22762279cc7f6624d819ac83e6dc",
+  "original_prompt": "Ingested from sys_09_Anvil/source/ports/unix/build-bicameral/genhdr/moduledefs.collected.hash",
+  "human_readable_source": "c261e0c15824818ffca190c78b6fca95",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

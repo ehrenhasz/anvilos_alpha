@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "949f127d2a6cacbf6f3e5bcc2d69d2e2f0a506c9d979881c2a6a5b1db776687d",
+  "original_prompt": "Ingested from linux-6.6.14/samples/rust/hostprogs/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n\nhostprogs-always-y := single\n\nsingle-rust := y\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

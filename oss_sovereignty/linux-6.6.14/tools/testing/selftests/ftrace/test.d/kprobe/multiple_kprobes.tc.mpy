@@ -1,0 +1,9 @@
+{
+  "module_name": "multiple_kprobes.tc",
+  "hash_id": "a3481198087000477dc9cf1b51bb073bd56c248de6fa3e2eb8c0fa08a9d318e1",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/ftrace/test.d/kprobe/multiple_kprobes.tc",
+  "human_readable_source": "#!/bin/sh\n# SPDX-License-Identifier: GPL-2.0\n# description: Register/unregister many kprobe events\n# requires: kprobe_events\n\n# ftrace fentry skip size depends on the machine architecture.\n# Currently HAVE_KPROBES_ON_FTRACE defined on x86 and powerpc64le\ncase `uname -m` in\n  x86_64|i[3456]86) OFFS=5;;\n  ppc64le) OFFS=8;;\n  *) OFFS=0;;\nesac\n\nN=0\necho \"Setup up kprobes on first available 256 text symbols\"\ngrep -i \" t \" /proc/kallsyms | cut -f3 -d\" \" | grep -v .*\\\\..* | \\\nwhile read i; do\n  echo p ${i}+${OFFS} >> kprobe_events && N=$((N+1)) ||:\n  test $N -eq 256 && break\ndone\n\nL=`cat kprobe_events | wc -l`\nif [ $L -ne 256 ]; then\n  echo \"The number of kprobes events ($L) is not 256\"\n  exit_fail\nfi\n\ncat kprobe_events >> $testlog\n\necho 1 > events/kprobes/enable\necho 0 > events/kprobes/enable\necho > kprobe_events\necho \"Waiting for unoptimizing & freeing\"\nsleep 5\necho \"Done\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

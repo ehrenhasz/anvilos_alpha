@@ -1,0 +1,9 @@
+{
+  "module_name": "CFLIST",
+  "hash_id": "76b604e6678667693a66307218b59d6806c6f4c76a10a195b242ecdcd136982b",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/rcutorture/configs/rcu/CFLIST",
+  "human_readable_source": "TREE01\nTREE02\nTREE03\nTREE04\nTREE05\nTREE07\nTREE09\nSRCU-N\nSRCU-P\nSRCU-T\nSRCU-U\nTINY01\nTINY02\nTASKS01\nTASKS02\nTASKS03\nRUDE01\nTRACE01\nTRACE02\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

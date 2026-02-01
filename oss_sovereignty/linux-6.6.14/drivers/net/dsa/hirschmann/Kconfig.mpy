@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "97db167fb8c37e9b914b9115a59425d3bc4c676b85a0d0607b87638515c886d6",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/dsa/hirschmann/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nconfig NET_DSA_HIRSCHMANN_HELLCREEK\n\ttristate \"Hirschmann Hellcreek TSN Switch support\"\n\tdepends on HAS_IOMEM\n\tdepends on NET_DSA\n\tdepends on PTP_1588_CLOCK\n\tdepends on LEDS_CLASS\n\tdepends on NET_SCH_TAPRIO\n\tselect NET_DSA_TAG_HELLCREEK\n\thelp\n\t  This driver adds support for Hirschmann Hellcreek TSN switches.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

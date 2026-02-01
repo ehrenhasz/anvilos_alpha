@@ -1,0 +1,9 @@
+{
+  "module_name": "user.h",
+  "hash_id": "bd99ff94c75772e0f3cc8a369046937a83d50f808cc4f3767e08cdcb5607093f",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/sched/user.h",
+  "human_readable_source": " \n#ifndef _LINUX_SCHED_USER_H\n#define _LINUX_SCHED_USER_H\n\n#include <linux/uidgid.h>\n#include <linux/atomic.h>\n#include <linux/percpu_counter.h>\n#include <linux/refcount.h>\n#include <linux/ratelimit.h>\n\n \nstruct user_struct {\n\trefcount_t __count;\t \n#ifdef CONFIG_EPOLL\n\tstruct percpu_counter epoll_watches;  \n#endif\n\tunsigned long unix_inflight;\t \n\tatomic_long_t pipe_bufs;   \n\n\t \n\tstruct hlist_node uidhash_node;\n\tkuid_t uid;\n\n#if defined(CONFIG_PERF_EVENTS) || defined(CONFIG_BPF_SYSCALL) || \\\n\tdefined(CONFIG_NET) || defined(CONFIG_IO_URING) || \\\n\tdefined(CONFIG_VFIO_PCI_ZDEV_KVM) || IS_ENABLED(CONFIG_IOMMUFD)\n\tatomic_long_t locked_vm;\n#endif\n#ifdef CONFIG_WATCH_QUEUE\n\tatomic_t nr_watches;\t \n#endif\n\n\t \n\tstruct ratelimit_state ratelimit;\n};\n\nextern int uids_sysfs_init(void);\n\nextern struct user_struct *find_user(kuid_t);\n\nextern struct user_struct root_user;\n#define INIT_USER (&root_user)\n\n\n \nextern struct user_struct * alloc_uid(kuid_t);\nstatic inline struct user_struct *get_uid(struct user_struct *u)\n{\n\trefcount_inc(&u->__count);\n\treturn u;\n}\nextern void free_uid(struct user_struct *);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

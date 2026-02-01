@@ -1,0 +1,9 @@
+{
+  "module_name": "firmware_attributes_class.c",
+  "hash_id": "c6f00a4e1c2c02e722f2be279d005bc4e6c733cc0b5d68dd83aa0beec5bfb7c8",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/platform/x86/firmware_attributes_class.c",
+  "human_readable_source": "\n\n \n\n#include <linux/mutex.h>\n#include <linux/device/class.h>\n#include <linux/module.h>\n#include \"firmware_attributes_class.h\"\n\nstatic DEFINE_MUTEX(fw_attr_lock);\nstatic int fw_attr_inuse;\n\nstatic struct class firmware_attributes_class = {\n\t.name = \"firmware-attributes\",\n};\n\nint fw_attributes_class_get(struct class **fw_attr_class)\n{\n\tint err;\n\n\tmutex_lock(&fw_attr_lock);\n\tif (!fw_attr_inuse) {  \n\t\terr = class_register(&firmware_attributes_class);\n\t\tif (err) {\n\t\t\tmutex_unlock(&fw_attr_lock);\n\t\t\treturn err;\n\t\t}\n\t}\n\tfw_attr_inuse++;\n\t*fw_attr_class = &firmware_attributes_class;\n\tmutex_unlock(&fw_attr_lock);\n\treturn 0;\n}\nEXPORT_SYMBOL_GPL(fw_attributes_class_get);\n\nint fw_attributes_class_put(void)\n{\n\tmutex_lock(&fw_attr_lock);\n\tif (!fw_attr_inuse) {\n\t\tmutex_unlock(&fw_attr_lock);\n\t\treturn -EINVAL;\n\t}\n\tfw_attr_inuse--;\n\tif (!fw_attr_inuse)  \n\t\tclass_unregister(&firmware_attributes_class);\n\tmutex_unlock(&fw_attr_lock);\n\treturn 0;\n}\nEXPORT_SYMBOL_GPL(fw_attributes_class_put);\n\nMODULE_AUTHOR(\"Mark Pearson <markpearson@lenovo.com>\");\nMODULE_LICENSE(\"GPL\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

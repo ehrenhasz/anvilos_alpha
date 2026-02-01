@@ -1,0 +1,9 @@
+{
+  "module_name": "ctype_lower.c",
+  "hash_id": "b78b0114163b9c9c97391cd97af8de8ca20bf0f6a4454043a860d10b774abbab",
+  "original_prompt": "Ingested from coreutils-9.4/lib/unictype/ctype_lower.c",
+  "human_readable_source": " \n#include \"unictype.h\"\n\n#include \"bitmap.h\"\n\n \n#include \"ctype_lower.h\"\n\nbool\nuc_is_lower (ucs4_t uc)\n{\n  return bitmap_lookup (&u_is_lower, uc);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

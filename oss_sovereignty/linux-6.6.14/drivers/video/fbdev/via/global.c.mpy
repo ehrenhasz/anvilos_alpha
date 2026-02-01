@@ -1,0 +1,9 @@
+{
+  "module_name": "global.c",
+  "hash_id": "795b18992bf7c79fb74cab5c177b6cbfc15d32db55255e9c2407004bc6e10a4b",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/video/fbdev/via/global.c",
+  "human_readable_source": "\n \n#include \"global.h\"\nint viafb_platform_epia_dvi = STATE_OFF;\nint viafb_device_lcd_dualedge = STATE_OFF;\nint viafb_bus_width = 12;\nint viafb_display_hardware_layout = HW_LAYOUT_LCD_DVI;\nint viafb_DeviceStatus = CRT_Device;\nint viafb_hotplug;\nint viafb_refresh = 60;\nint viafb_refresh1 = 60;\nint viafb_lcd_dsp_method = LCD_EXPANDSION;\nint viafb_lcd_mode = LCD_OPENLDI;\nint viafb_CRT_ON = 1;\nint viafb_DVI_ON;\nint viafb_LCD_ON ;\nint viafb_LCD2_ON;\nint viafb_SAMM_ON;\nint viafb_dual_fb;\nunsigned int viafb_second_xres = 640;\nunsigned int viafb_second_yres = 480;\nint viafb_hotplug_Xres = 640;\nint viafb_hotplug_Yres = 480;\nint viafb_hotplug_bpp = 32;\nint viafb_hotplug_refresh = 60;\nint viafb_primary_dev = None_Device;\nint viafb_lcd_panel_id = LCD_PANEL_ID_MAXIMUM + 1;\nstruct fb_info *viafbinfo;\nstruct fb_info *viafbinfo1;\nstruct viafb_par *viaparinfo;\nstruct viafb_par *viaparinfo1;\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

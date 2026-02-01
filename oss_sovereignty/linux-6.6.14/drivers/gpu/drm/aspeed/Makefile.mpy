@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "996b5a497fc2aa42cd05aab7cb8cd03ca33905bc4f77ad9b277a9a1df964284f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/aspeed/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\naspeed_gfx-y := aspeed_gfx_drv.o aspeed_gfx_crtc.o aspeed_gfx_out.o\n\nobj-$(CONFIG_DRM_ASPEED_GFX) += aspeed_gfx.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "00086e9981c6948cd664081c2fc703321fca26afcdd20fa9653e37b247fad327",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/crypto/amcc/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-$(CONFIG_CRYPTO_DEV_PPC4XX) += crypto4xx.o\ncrypto4xx-y :=  crypto4xx_core.o crypto4xx_alg.o\ncrypto4xx-$(CONFIG_HW_RANDOM_PPC4XX) += crypto4xx_trng.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

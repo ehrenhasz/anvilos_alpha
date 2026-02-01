@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "dd7ead40a5c0ad1abe1871af25c9737b8d458515feceeaf927e41e904141411c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/char/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for the kernel character device drivers.\n#\n\nobj-y\t\t\t\t+= mem.o random.o\nobj-$(CONFIG_TTY_PRINTK)\t+= ttyprintk.o\nobj-y\t\t\t\t+= misc.o\nobj-$(CONFIG_ATARI_DSP56K)\t+= dsp56k.o\nobj-$(CONFIG_VIRTIO_CONSOLE)\t+= virtio_console.o\nobj-$(CONFIG_MSPEC)\t\t+= mspec.o\nobj-$(CONFIG_UV_MMTIMER)\t+= uv_mmtimer.o\nobj-$(CONFIG_IBM_BSR)\t\t+= bsr.o\n\nobj-$(CONFIG_PRINTER)\t\t+= lp.o\n\nobj-$(CONFIG_APM_EMULATION)\t+= apm-emulation.o\n\nobj-$(CONFIG_DTLK)\t\t+= dtlk.o\nobj-$(CONFIG_APPLICOM)\t\t+= applicom.o\nobj-$(CONFIG_SONYPI)\t\t+= sonypi.o\nobj-$(CONFIG_HPET)\t\t+= hpet.o\nobj-$(CONFIG_XILINX_HWICAP)\t+= xilinx_hwicap/\nobj-$(CONFIG_NVRAM)\t\t+= nvram.o\nobj-$(CONFIG_TOSHIBA)\t\t+= toshiba.o\nobj-$(CONFIG_DS1620)\t\t+= ds1620.o\nobj-$(CONFIG_HW_RANDOM)\t\t+= hw_random/\nobj-$(CONFIG_PPDEV)\t\t+= ppdev.o\nobj-$(CONFIG_NWBUTTON)\t\t+= nwbutton.o\nobj-$(CONFIG_NWFLASH)\t\t+= nwflash.o\nobj-$(CONFIG_SCx200_GPIO)\t+= scx200_gpio.o\nobj-$(CONFIG_PC8736x_GPIO)\t+= pc8736x_gpio.o\nobj-$(CONFIG_NSC_GPIO)\t\t+= nsc_gpio.o\nobj-$(CONFIG_TELCLOCK)\t\t+= tlclk.o\n\nobj-$(CONFIG_MWAVE)\t\t+= mwave/\nobj-y\t\t\t\t+= agp/\n\nobj-$(CONFIG_HANGCHECK_TIMER)\t+= hangcheck-timer.o\nobj-$(CONFIG_TCG_TPM)\t\t+= tpm/\n\nobj-$(CONFIG_PS3_FLASH)\t\t+= ps3flash.o\n\nobj-$(CONFIG_XILLYBUS_CLASS)\t+= xillybus/\nobj-$(CONFIG_POWERNV_OP_PANEL)\t+= powernv-op-panel.o\nobj-$(CONFIG_ADI)\t\t+= adi.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

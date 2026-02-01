@@ -1,0 +1,9 @@
+{
+  "module_name": "gen7_renderclear.h",
+  "hash_id": "2605dea75374f082264fde5d0d8bcd19bf5ea4db4b305f3b49b172d428d3e315",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/gt/gen7_renderclear.h",
+  "human_readable_source": " \n \n\n#ifndef __GEN7_RENDERCLEAR_H__\n#define __GEN7_RENDERCLEAR_H__\n\nstruct intel_engine_cs;\nstruct i915_vma;\n\nint gen7_setup_clear_gpr_bb(struct intel_engine_cs * const engine,\n\t\t\t    struct i915_vma * const vma);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

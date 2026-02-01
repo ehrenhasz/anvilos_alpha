@@ -1,0 +1,9 @@
+{
+  "module_name": "ip6t_opts.h",
+  "hash_id": "ba2efbb25b4f5962fdec746bfe54e71545883037b79e86aa13383a709df36fbb",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/netfilter_ipv6/ip6t_opts.h",
+  "human_readable_source": " \n#ifndef _IP6T_OPTS_H\n#define _IP6T_OPTS_H\n\n#include <linux/types.h>\n\n#define IP6T_OPTS_OPTSNR 16\n\nstruct ip6t_opts {\n\t__u32 hdrlen;\t\t\t \n\t__u8 flags;\t\t\t\t \n\t__u8 invflags;\t\t\t \n\t__u16 opts[IP6T_OPTS_OPTSNR];\t \n\t__u8 optsnr;\t\t\t \n};\n\n#define IP6T_OPTS_LEN \t\t0x01\n#define IP6T_OPTS_OPTS \t\t0x02\n#define IP6T_OPTS_NSTRICT\t0x04\n\n \n#define IP6T_OPTS_INV_LEN\t0x01\t \n#define IP6T_OPTS_INV_MASK\t0x01\t \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "cma.h",
+  "hash_id": "3eb03be5c5097f22ff8c99aebcabf9b4d50e55d13fde2d06300cd36047e3e437",
+  "original_prompt": "Ingested from linux-6.6.14/mm/cma.h",
+  "human_readable_source": " \n#ifndef __MM_CMA_H__\n#define __MM_CMA_H__\n\n#include <linux/debugfs.h>\n#include <linux/kobject.h>\n\nstruct cma_kobject {\n\tstruct kobject kobj;\n\tstruct cma *cma;\n};\n\nstruct cma {\n\tunsigned long   base_pfn;\n\tunsigned long   count;\n\tunsigned long   *bitmap;\n\tunsigned int order_per_bit;  \n\tspinlock_t\tlock;\n#ifdef CONFIG_CMA_DEBUGFS\n\tstruct hlist_head mem_head;\n\tspinlock_t mem_head_lock;\n\tstruct debugfs_u32_array dfs_bitmap;\n#endif\n\tchar name[CMA_MAX_NAME];\n#ifdef CONFIG_CMA_SYSFS\n\t \n\tatomic64_t nr_pages_succeeded;\n\t \n\tatomic64_t nr_pages_failed;\n\t \n\tstruct cma_kobject *cma_kobj;\n#endif\n\tbool reserve_pages_on_error;\n};\n\nextern struct cma cma_areas[MAX_CMA_AREAS];\nextern unsigned cma_area_count;\n\nstatic inline unsigned long cma_bitmap_maxno(struct cma *cma)\n{\n\treturn cma->count >> cma->order_per_bit;\n}\n\n#ifdef CONFIG_CMA_SYSFS\nvoid cma_sysfs_account_success_pages(struct cma *cma, unsigned long nr_pages);\nvoid cma_sysfs_account_fail_pages(struct cma *cma, unsigned long nr_pages);\n#else\nstatic inline void cma_sysfs_account_success_pages(struct cma *cma,\n\t\t\t\t\t\t   unsigned long nr_pages) {};\nstatic inline void cma_sysfs_account_fail_pages(struct cma *cma,\n\t\t\t\t\t\tunsigned long nr_pages) {};\n#endif\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

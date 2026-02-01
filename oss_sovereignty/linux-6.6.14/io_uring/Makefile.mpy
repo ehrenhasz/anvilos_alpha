@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "f402cae7465591045c55f99d4b3f328195ea9a496237352cbb9cc178e44fdd1a",
+  "original_prompt": "Ingested from linux-6.6.14/io_uring/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for io_uring\n\nobj-$(CONFIG_IO_URING)\t\t+= io_uring.o xattr.o nop.o fs.o splice.o \\\n\t\t\t\t\tsync.o advise.o filetable.o \\\n\t\t\t\t\topenclose.o uring_cmd.o epoll.o \\\n\t\t\t\t\tstatx.o net.o msg_ring.o timeout.o \\\n\t\t\t\t\tsqpoll.o fdinfo.o tctx.o poll.o \\\n\t\t\t\t\tcancel.o kbuf.o rsrc.o rw.o opdef.o notif.o\nobj-$(CONFIG_IO_WQ)\t\t+= io-wq.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

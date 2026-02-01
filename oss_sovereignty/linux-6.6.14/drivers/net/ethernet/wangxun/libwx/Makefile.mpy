@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "e26b05e4f96ec391407cc5f4ec7ade231a878890c13bf62597f573ef90c09a0d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/wangxun/libwx/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n# Copyright (c) 2015 - 2022 Beijing WangXun Technology Co., Ltd.\n#\n\nobj-$(CONFIG_LIBWX) += libwx.o\n\nlibwx-objs := wx_hw.o wx_lib.o wx_ethtool.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

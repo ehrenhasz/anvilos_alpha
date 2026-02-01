@@ -1,0 +1,9 @@
+{
+  "module_name": "snprintftest.c",
+  "hash_id": "342d524e81e774983bcc43f2cf2266985f202a814ca26b4eb14d2cc8e0d3e446",
+  "original_prompt": "Ingested from openssh-9.6p1/openbsd-compat/regress/snprintftest.c",
+  "human_readable_source": " \n\n#define BUFSZ 2048\n\n#include \"includes.h\"\n\n#include <sys/types.h>\n#include <stdlib.h>\n#include <stdio.h>\n#include <stdarg.h>\n#include <string.h>\n\nstatic int failed = 0;\n\nstatic void\nfail(const char *m)\n{\n\tfprintf(stderr, \"snprintftest: %s\\n\", m);\n\tfailed = 1;\n}\n\nint x_snprintf(char *str, size_t count, const char *fmt, ...)\n{\n\tsize_t ret;\n\tva_list ap;\n\n\tva_start(ap, fmt);\n\tret = vsnprintf(str, count, fmt, ap);\n\tva_end(ap);\n\treturn ret;\n}\n\nint\nmain(void)\n{\n\tchar b[5];\n\tchar *src = NULL;\n\tint ret;\n\n\tmemset(b, 'X', sizeof(b));\n\tret = snprintf(b, 5, \"123456789\");\n\tif (ret != 9 || b[4] != '\\0')\n\t\tfail(\"snprintf does not correctly terminate long strings\");\n\n\t \n\tif ((src = malloc(BUFSZ)) == NULL) {\n\t\tfail(\"malloc failed\");\n\t} else {\n\t\tmemset(src, 'a', BUFSZ);\n\t\tsnprintf(b, sizeof(b), \"%.*s\", 1, src);\n\t\tif (strcmp(b, \"a\") != 0)\n\t\t\tfail(\"failed with length limit '%%.s'\");\n\t}\n\n\t \n\tif (snprintf(b, 1, \"%s %d\", \"hello\", 12345) != 11)\n\t\tfail(\"snprintf does not return required length\");\n\tif (x_snprintf(b, 1, \"%s %d\", \"hello\", 12345) != 11)\n\t\tfail(\"vsnprintf does not return required length\");\n\n\tfree(src);\n\treturn failed;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "priv.h",
+  "hash_id": "54db3e4130697303c42787472736c24c8f261ab1dc98ae34ba9ef5a423aee107",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/subdev/bar/priv.h",
+  "human_readable_source": " \n#ifndef __NVKM_BAR_PRIV_H__\n#define __NVKM_BAR_PRIV_H__\n#define nvkm_bar(p) container_of((p), struct nvkm_bar, subdev)\n#include <subdev/bar.h>\n\nvoid nvkm_bar_ctor(const struct nvkm_bar_func *, struct nvkm_device *,\n\t\t   enum nvkm_subdev_type, int, struct nvkm_bar *);\n\nstruct nvkm_bar_func {\n\tvoid *(*dtor)(struct nvkm_bar *);\n\tint (*oneinit)(struct nvkm_bar *);\n\tvoid (*init)(struct nvkm_bar *);\n\n\tstruct {\n\t\tvoid (*init)(struct nvkm_bar *);\n\t\tvoid (*fini)(struct nvkm_bar *);\n\t\tvoid (*wait)(struct nvkm_bar *);\n\t\tstruct nvkm_vmm *(*vmm)(struct nvkm_bar *);\n\t} bar1, bar2;\n\n\tvoid (*flush)(struct nvkm_bar *);\n};\n\nvoid nv50_bar_bar1_fini(struct nvkm_bar *);\nvoid nv50_bar_bar2_fini(struct nvkm_bar *);\n\nvoid g84_bar_flush(struct nvkm_bar *);\n\nvoid gf100_bar_bar1_fini(struct nvkm_bar *);\nvoid gf100_bar_bar2_fini(struct nvkm_bar *);\n\nvoid gm107_bar_bar1_wait(struct nvkm_bar *);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

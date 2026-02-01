@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "7f7f94ef4eb59498aa3ac96f740039e2c68eb91cfa896378023c0bffbacc6e18",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/powerpc/dscr/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nTEST_GEN_PROGS := dscr_default_test dscr_explicit_test dscr_user_test\t\\\n\t      dscr_inherit_test dscr_inherit_exec_test dscr_sysfs_test\t\\\n\t      dscr_sysfs_thread_test\n\ntop_srcdir = ../../../../..\ninclude ../../lib.mk\n\n$(OUTPUT)/dscr_default_test: LDLIBS += -lpthread\n$(OUTPUT)/dscr_explicit_test: LDLIBS += -lpthread\n\n$(TEST_GEN_PROGS): ../harness.c ../utils.c\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

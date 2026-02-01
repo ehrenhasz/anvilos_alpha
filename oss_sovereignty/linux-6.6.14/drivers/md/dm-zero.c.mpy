@@ -1,0 +1,9 @@
+{
+  "module_name": "dm-zero.c",
+  "hash_id": "5a696a61e95773b90921499bdc939f5eb297f0a92fc303954c93f5c908960c1e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/md/dm-zero.c",
+  "human_readable_source": "\n \n\n#include <linux/device-mapper.h>\n\n#include <linux/module.h>\n#include <linux/init.h>\n#include <linux/bio.h>\n\n#define DM_MSG_PREFIX \"zero\"\n\n \nstatic int zero_ctr(struct dm_target *ti, unsigned int argc, char **argv)\n{\n\tif (argc != 0) {\n\t\tti->error = \"No arguments required\";\n\t\treturn -EINVAL;\n\t}\n\n\t \n\tti->num_discard_bios = 1;\n\tti->discards_supported = true;\n\n\treturn 0;\n}\n\n \nstatic int zero_map(struct dm_target *ti, struct bio *bio)\n{\n\tswitch (bio_op(bio)) {\n\tcase REQ_OP_READ:\n\t\tif (bio->bi_opf & REQ_RAHEAD) {\n\t\t\t \n\t\t\treturn DM_MAPIO_KILL;\n\t\t}\n\t\tzero_fill_bio(bio);\n\t\tbreak;\n\tcase REQ_OP_WRITE:\n\tcase REQ_OP_DISCARD:\n\t\t \n\t\tbreak;\n\tdefault:\n\t\treturn DM_MAPIO_KILL;\n\t}\n\n\tbio_endio(bio);\n\n\t \n\treturn DM_MAPIO_SUBMITTED;\n}\n\nstatic void zero_io_hints(struct dm_target *ti, struct queue_limits *limits)\n{\n\tlimits->max_discard_sectors = UINT_MAX;\n\tlimits->max_hw_discard_sectors = UINT_MAX;\n\tlimits->discard_granularity = 512;\n}\n\nstatic struct target_type zero_target = {\n\t.name   = \"zero\",\n\t.version = {1, 2, 0},\n\t.features = DM_TARGET_NOWAIT,\n\t.module = THIS_MODULE,\n\t.ctr    = zero_ctr,\n\t.map    = zero_map,\n\t.io_hints = zero_io_hints,\n};\nmodule_dm(zero);\n\nMODULE_AUTHOR(\"Jana Saout <jana@saout.de>\");\nMODULE_DESCRIPTION(DM_NAME \" dummy target returning zeros\");\nMODULE_LICENSE(\"GPL\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

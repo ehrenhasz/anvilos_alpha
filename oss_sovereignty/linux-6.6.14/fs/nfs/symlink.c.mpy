@@ -1,0 +1,9 @@
+{
+  "module_name": "symlink.c",
+  "hash_id": "0b63e09db37a2b34da62ac683329d2e35eaa250df8baa0bae60ac16dce60fa69",
+  "original_prompt": "Ingested from linux-6.6.14/fs/nfs/symlink.c",
+  "human_readable_source": "\n \n\n#include <linux/time.h>\n#include <linux/errno.h>\n#include <linux/sunrpc/clnt.h>\n#include <linux/nfs.h>\n#include <linux/nfs2.h>\n#include <linux/nfs_fs.h>\n#include <linux/pagemap.h>\n#include <linux/stat.h>\n#include <linux/mm.h>\n#include <linux/string.h>\n\n \n\nstatic int nfs_symlink_filler(struct file *file, struct folio *folio)\n{\n\tstruct inode *inode = folio->mapping->host;\n\tint error;\n\n\terror = NFS_PROTO(inode)->readlink(inode, &folio->page, 0, PAGE_SIZE);\n\tif (error < 0)\n\t\tgoto error;\n\tfolio_mark_uptodate(folio);\n\tfolio_unlock(folio);\n\treturn 0;\n\nerror:\n\tfolio_set_error(folio);\n\tfolio_unlock(folio);\n\treturn -EIO;\n}\n\nstatic const char *nfs_get_link(struct dentry *dentry,\n\t\t\t\tstruct inode *inode,\n\t\t\t\tstruct delayed_call *done)\n{\n\tstruct page *page;\n\tvoid *err;\n\n\tif (!dentry) {\n\t\terr = ERR_PTR(nfs_revalidate_mapping_rcu(inode));\n\t\tif (err)\n\t\t\treturn err;\n\t\tpage = find_get_page(inode->i_mapping, 0);\n\t\tif (!page)\n\t\t\treturn ERR_PTR(-ECHILD);\n\t\tif (!PageUptodate(page)) {\n\t\t\tput_page(page);\n\t\t\treturn ERR_PTR(-ECHILD);\n\t\t}\n\t} else {\n\t\terr = ERR_PTR(nfs_revalidate_mapping(inode, inode->i_mapping));\n\t\tif (err)\n\t\t\treturn err;\n\t\tpage = read_cache_page(&inode->i_data, 0, nfs_symlink_filler,\n\t\t\t\tNULL);\n\t\tif (IS_ERR(page))\n\t\t\treturn ERR_CAST(page);\n\t}\n\tset_delayed_call(done, page_put_link, page);\n\treturn page_address(page);\n}\n\n \nconst struct inode_operations nfs_symlink_inode_operations = {\n\t.get_link\t= nfs_get_link,\n\t.getattr\t= nfs_getattr,\n\t.setattr\t= nfs_setattr,\n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

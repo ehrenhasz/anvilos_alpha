@@ -1,0 +1,9 @@
+{
+  "module_name": "ofpart_linksys_ns.c",
+  "hash_id": "effcd2e7a8de381577456e135bc9d7e12020a62c034d8c819d466be57a95b81d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/mtd/parsers/ofpart_linksys_ns.c",
+  "human_readable_source": "\n \n\n#include <linux/bcm47xx_nvram.h>\n#include <linux/mtd/mtd.h>\n#include <linux/mtd/partitions.h>\n\n#include \"ofpart_linksys_ns.h\"\n\n#define NVRAM_BOOT_PART\t\t\"bootpartition\"\n\nstatic int ofpart_linksys_ns_bootpartition(void)\n{\n\tchar buf[4];\n\tint bootpartition;\n\n\t \n\tif (bcm47xx_nvram_getenv(NVRAM_BOOT_PART, buf, sizeof(buf)) > 0) {\n\t\tif (!kstrtoint(buf, 0, &bootpartition))\n\t\t\treturn bootpartition;\n\t\tpr_warn(\"Failed to parse %s value \\\"%s\\\"\\n\", NVRAM_BOOT_PART,\n\t\t\tbuf);\n\t} else {\n\t\tpr_warn(\"Failed to get NVRAM \\\"%s\\\"\\n\", NVRAM_BOOT_PART);\n\t}\n\n\treturn 0;\n}\n\nint linksys_ns_partitions_post_parse(struct mtd_info *mtd,\n\t\t\t\t     struct mtd_partition *parts,\n\t\t\t\t     int nr_parts)\n{\n\tint bootpartition = ofpart_linksys_ns_bootpartition();\n\tint trx_idx = 0;\n\tint i;\n\n\tfor (i = 0; i < nr_parts; i++) {\n\t\tif (of_device_is_compatible(parts[i].of_node, \"linksys,ns-firmware\")) {\n\t\t\tif (trx_idx++ == bootpartition)\n\t\t\t\tparts[i].name = \"firmware\";\n\t\t\telse\n\t\t\t\tparts[i].name = \"backup\";\n\t\t}\n\t}\n\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

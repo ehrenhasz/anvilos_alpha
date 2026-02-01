@@ -1,0 +1,9 @@
+{
+  "module_name": "gccollect.c",
+  "hash_id": "bc60c20ca7ede4863b1d3f483f96fc5f9f55c5efd7a146b4a62ed266f529c7ce",
+  "original_prompt": "Ingested from sys_09_Anvil/source/mpy-cross/gccollect.c",
+  "human_readable_source": " \n\n#include <stdio.h>\n\n#include \"py/mpstate.h\"\n#include \"py/gc.h\"\n\n#include \"shared/runtime/gchelper.h\"\n\n#if MICROPY_ENABLE_GC\n\nvoid gc_collect(void) {\n    gc_collect_start();\n    gc_helper_collect_regs_and_stack();\n    gc_collect_end();\n}\n\n#endif \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

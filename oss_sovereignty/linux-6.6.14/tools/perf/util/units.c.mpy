@@ -1,0 +1,9 @@
+{
+  "module_name": "units.c",
+  "hash_id": "051b675b98aed4c40dbb4a2813c86e9a098ff96edd46ae7e711039a953992b67",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/util/units.c",
+  "human_readable_source": "\n#include \"units.h\"\n#include <inttypes.h>\n#include <limits.h>\n#include <stdlib.h>\n#include <string.h>\n#include <linux/kernel.h>\n#include <linux/time64.h>\n\nunsigned long parse_tag_value(const char *str, struct parse_tag *tags)\n{\n\tstruct parse_tag *i = tags;\n\n\twhile (i->tag) {\n\t\tchar *s = strchr(str, i->tag);\n\n\t\tif (s) {\n\t\t\tunsigned long int value;\n\t\t\tchar *endptr;\n\n\t\t\tvalue = strtoul(str, &endptr, 10);\n\t\t\tif (s != endptr)\n\t\t\t\tbreak;\n\n\t\t\tif (value > ULONG_MAX / i->mult)\n\t\t\t\tbreak;\n\t\t\tvalue *= i->mult;\n\t\t\treturn value;\n\t\t}\n\t\ti++;\n\t}\n\n\treturn (unsigned long) -1;\n}\n\ndouble convert_unit_double(double value, char *unit)\n{\n\t*unit = ' ';\n\n\tif (value > 1000.0) {\n\t\tvalue /= 1000.0;\n\t\t*unit = 'K';\n\t}\n\n\tif (value > 1000.0) {\n\t\tvalue /= 1000.0;\n\t\t*unit = 'M';\n\t}\n\n\tif (value > 1000.0) {\n\t\tvalue /= 1000.0;\n\t\t*unit = 'G';\n\t}\n\n\treturn value;\n}\n\nunsigned long convert_unit(unsigned long value, char *unit)\n{\n\tdouble v = convert_unit_double((double)value, unit);\n\n\treturn (unsigned long)v;\n}\n\nint unit_number__scnprintf(char *buf, size_t size, u64 n)\n{\n\tchar unit[4] = \"BKMG\";\n\tint i = 0;\n\n\twhile (((n / 1024) > 1) && (i < 3)) {\n\t\tn /= 1024;\n\t\ti++;\n\t}\n\n\treturn scnprintf(buf, size, \"%\" PRIu64 \"%c\", n, unit[i]);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

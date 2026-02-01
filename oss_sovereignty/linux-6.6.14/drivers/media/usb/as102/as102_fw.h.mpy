@@ -1,0 +1,9 @@
+{
+  "module_name": "as102_fw.h",
+  "hash_id": "ae734c8b6999c982a0d0482d9b7a65e094abceabc19f4b535d8edd0ce82fb20d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/usb/as102/as102_fw.h",
+  "human_readable_source": " \n \n#define MAX_FW_PKT_SIZE\t64\n\nextern int dual_tuner;\n\nstruct as10x_raw_fw_pkt {\n\tunsigned char address[4];\n\tunsigned char data[MAX_FW_PKT_SIZE - 6];\n} __packed;\n\nstruct as10x_fw_pkt_t {\n\tunion {\n\t\tunsigned char request[2];\n\t\tunsigned char length[2];\n\t} __packed u;\n\tstruct as10x_raw_fw_pkt raw;\n} __packed;\n\n#ifdef __KERNEL__\nint as102_fw_upload(struct as10x_bus_adapter_t *bus_adap);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "scsi_netlink_fc.h",
+  "hash_id": "9b7dbd8e48bea88c376e21a06dcc6c993f4f5ffe3f7d6e5e0681f8dd981a0115",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/scsi/scsi_netlink_fc.h",
+  "human_readable_source": " \n \n#ifndef SCSI_NETLINK_FC_H\n#define SCSI_NETLINK_FC_H\n\n#include <linux/types.h>\n#include <scsi/scsi_netlink.h>\n\n \n\n \n\t \n#define FC_NL_ASYNC_EVENT\t\t\t0x0100\n\t \n \n\n\n \n\n \n#define FC_NL_MSGALIGN(len)\t\t(((len) + 7) & ~7)\n\n\n \nstruct fc_nl_event {\n\tstruct scsi_nl_hdr snlh;\t\t \n\t__u64 seconds;\n\t__u64 vendor_id;\n\t__u16 host_no;\n\t__u16 event_datalen;\n\t__u32 event_num;\n\t__u32 event_code;\n\tunion {\n\t\t__u32 event_data;\n\t\t__DECLARE_FLEX_ARRAY(__u8, event_data_flex);\n\t};\n} __attribute__((aligned(sizeof(__u64))));\n\n\n#endif  \n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

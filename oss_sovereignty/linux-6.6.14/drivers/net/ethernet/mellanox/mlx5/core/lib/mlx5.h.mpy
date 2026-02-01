@@ -1,0 +1,9 @@
+{
+  "module_name": "mlx5.h",
+  "hash_id": "aefa3409f6102065fd6322bc6ed2434b3176577754e7001f1f4e6cf2cdf94d49",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/mellanox/mlx5/core/lib/mlx5.h",
+  "human_readable_source": " \n\n#ifndef __LIB_MLX5_H__\n#define __LIB_MLX5_H__\n\n#include \"mlx5_core.h\"\n\nvoid mlx5_init_reserved_gids(struct mlx5_core_dev *dev);\nvoid mlx5_cleanup_reserved_gids(struct mlx5_core_dev *dev);\nint  mlx5_core_reserve_gids(struct mlx5_core_dev *dev, unsigned int count);\nvoid mlx5_core_unreserve_gids(struct mlx5_core_dev *dev, unsigned int count);\nint  mlx5_core_reserved_gid_alloc(struct mlx5_core_dev *dev, int *gid_index);\nvoid mlx5_core_reserved_gid_free(struct mlx5_core_dev *dev, int gid_index);\nint mlx5_crdump_enable(struct mlx5_core_dev *dev);\nvoid mlx5_crdump_disable(struct mlx5_core_dev *dev);\nint mlx5_crdump_collect(struct mlx5_core_dev *dev, u32 *cr_data);\n\nstatic inline struct net *mlx5_core_net(struct mlx5_core_dev *dev)\n{\n\treturn devlink_net(priv_to_devlink(dev));\n}\n\nstatic inline struct net_device *mlx5_uplink_netdev_get(struct mlx5_core_dev *mdev)\n{\n\treturn mdev->mlx5e_res.uplink_netdev;\n}\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

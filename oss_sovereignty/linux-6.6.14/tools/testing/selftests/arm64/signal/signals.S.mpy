@@ -1,0 +1,9 @@
+{
+  "module_name": "signals.S",
+  "hash_id": "8bfb12abc532f2ca387b588e09fde5ab232f1a0496b4773f43aafca1396e3e0a",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/arm64/signal/signals.S",
+  "human_readable_source": " \n \n\n#include <asm/unistd.h>\n\n.section        .rodata, \"a\"\ncall_fmt:\n\t.asciz \"Calling sigreturn with fake sigframe sized:%zd at SP @%08lX\\n\"\n\n.text\n\n.globl fake_sigreturn\n\n \nfake_sigreturn:\n\tstp\tx29, x30, [sp, #-16]!\n\tmov\tx29, sp\n\n\tmov\tx20, x0\n\tmov\tx21, x1\n\tmov\tx22, x2\n\n\t \n\tadd\tx0, x21, x22\n\tadd\tx0, x0, #15\n\tbic\tx0, x0, #15  \n\tsub\tsp, sp, x0\n\tadd\tx23, sp, x22  \n\n\tldr\tx0, =call_fmt\n\tmov\tx1, x21\n\tmov\tx2, x23\n\tbl\tprintf\n\n\t \n\tmov\tx0, x23\n\tmov\tx1, x20\n\tmov\tx2, x21\n\tbl\tmemcpy\n\n\t \n\tldr\tx0, current\n\tstr\tx23, [x0]\n\t \n\tmov\tsp, x23\n\n\tmov\tx8, #__NR_rt_sigreturn\n\tsvc\t#0\n\n\t \n\tb\t.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "truncate.x",
+  "hash_id": "56d77aaaeb013a3ee43bfcde97ae3e0f53f62f3ba943118059c7618eb806d8cb",
+  "original_prompt": "Ingested from coreutils-9.4/man/truncate.x",
+  "human_readable_source": "[NAME]\ntruncate \\- shrink or extend the size of a file to the specified size\n[DESCRIPTION]\n.\\\" Add any additional description here\n[SEE ALSO]\ndd(1), truncate(2), ftruncate(2)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

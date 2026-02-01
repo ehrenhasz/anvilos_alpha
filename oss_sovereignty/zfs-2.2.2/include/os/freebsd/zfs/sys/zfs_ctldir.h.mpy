@@ -1,0 +1,9 @@
+{
+  "module_name": "zfs_ctldir.h",
+  "hash_id": "a5ce25fe2158de757cdf4f409f36ef44970c8779ca5462a89b59e44b163a3ebd",
+  "original_prompt": "Ingested from zfs-2.2.2/include/os/freebsd/zfs/sys/zfs_ctldir.h",
+  "human_readable_source": " \n \n\n#ifndef\t_ZFS_CTLDIR_H\n#define\t_ZFS_CTLDIR_H\n\n#include <sys/vnode.h>\n#include <sys/zfs_vfsops.h>\n#include <sys/zfs_znode.h>\n\n#ifdef\t__cplusplus\nextern \"C\" {\n#endif\n\n#define\tZFS_CTLDIR_NAME\t\t\".zfs\"\n\n#define\tzfs_has_ctldir(zdp)\t\\\n\t((zdp)->z_id == (zdp)->z_zfsvfs->z_root && \\\n\t((zdp)->z_zfsvfs->z_ctldir != NULL))\n#define\tzfs_show_ctldir(zdp)\t\\\n\t(zfs_has_ctldir(zdp) && \\\n\t((zdp)->z_zfsvfs->z_show_ctldir))\n\nvoid zfsctl_create(zfsvfs_t *);\nvoid zfsctl_destroy(zfsvfs_t *);\nint zfsctl_root(zfsvfs_t *, int, vnode_t **);\nvoid zfsctl_init(void);\nvoid zfsctl_fini(void);\nboolean_t zfsctl_is_node(vnode_t *);\nint zfsctl_snapshot_unmount(const char *snapname, int flags);\nint zfsctl_rename_snapshot(const char *from, const char *to);\nint zfsctl_destroy_snapshot(const char *snapname, int force);\nint zfsctl_umount_snapshots(vfs_t *, int, cred_t *);\n\nint zfsctl_lookup_objset(vfs_t *vfsp, uint64_t objsetid, zfsvfs_t **zfsvfsp);\n\n#define\tZFSCTL_INO_ROOT\t\t0x1\n#define\tZFSCTL_INO_SNAPDIR\t0x2\n\n#ifdef\t__cplusplus\n}\n#endif\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "delalloc-space.h",
+  "hash_id": "8d3a2eea966265c724aaa953d06d92160441929c389c9b9f44eff1268bd609cc",
+  "original_prompt": "Ingested from linux-6.6.14/fs/btrfs/delalloc-space.h",
+  "human_readable_source": " \n\n#ifndef BTRFS_DELALLOC_SPACE_H\n#define BTRFS_DELALLOC_SPACE_H\n\nstruct extent_changeset;\n\nint btrfs_alloc_data_chunk_ondemand(struct btrfs_inode *inode, u64 bytes);\nint btrfs_check_data_free_space(struct btrfs_inode *inode,\n\t\t\tstruct extent_changeset **reserved, u64 start, u64 len,\n\t\t\tbool noflush);\nvoid btrfs_free_reserved_data_space(struct btrfs_inode *inode,\n\t\t\tstruct extent_changeset *reserved, u64 start, u64 len);\nvoid btrfs_delalloc_release_space(struct btrfs_inode *inode,\n\t\t\t\t  struct extent_changeset *reserved,\n\t\t\t\t  u64 start, u64 len, bool qgroup_free);\nvoid btrfs_free_reserved_data_space_noquota(struct btrfs_fs_info *fs_info,\n\t\t\t\t\t    u64 len);\nvoid btrfs_delalloc_release_metadata(struct btrfs_inode *inode, u64 num_bytes,\n\t\t\t\t     bool qgroup_free);\nint btrfs_delalloc_reserve_space(struct btrfs_inode *inode,\n\t\t\tstruct extent_changeset **reserved, u64 start, u64 len);\nint btrfs_delalloc_reserve_metadata(struct btrfs_inode *inode, u64 num_bytes,\n\t\t\t\t    u64 disk_num_bytes, bool noflush);\nvoid btrfs_delalloc_release_extents(struct btrfs_inode *inode, u64 num_bytes);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

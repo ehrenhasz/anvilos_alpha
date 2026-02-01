@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "77d0ae3bf1d60ec0513bbb119b66f74475d33352ce45b95debf441ba4fc4f4bc",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/vlynq/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nmenu \"TI VLYNQ\"\n\tdepends on AR7\n\nconfig VLYNQ\n\tbool \"TI VLYNQ bus support\"\n\thelp\n\t  Support for Texas Instruments(R) VLYNQ bus.\n\t  The VLYNQ bus is a high-speed, serial and packetized\n\t  data bus which allows external peripherals of a SoC\n\t  to appear into the system's main memory.\n\n\t  If unsure, say N\n\nconfig VLYNQ_DEBUG\n\tbool \"VLYNQ bus debug\"\n\tdepends on VLYNQ && DEBUG_KERNEL\n\thelp\n\t  Turn on VLYNQ bus debugging.\n\nendmenu\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

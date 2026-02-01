@@ -1,0 +1,9 @@
+{
+  "module_name": "thermal_exynos.h",
+  "hash_id": "ba637e074e91b7d34d5c5e75a7eaa39ff819d208d2f5eec8b3dce4fa2f03b972",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/thermal/thermal_exynos.h",
+  "human_readable_source": " \n \n\n#ifndef _EXYNOS_THERMAL_TMU_DT_H\n#define _EXYNOS_THERMAL_TMU_DT_H\n\n#define TYPE_ONE_POINT_TRIMMING 0\n#define TYPE_ONE_POINT_TRIMMING_25 1\n#define TYPE_ONE_POINT_TRIMMING_85 2\n#define TYPE_TWO_POINT_TRIMMING 3\n#define TYPE_NONE 4\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

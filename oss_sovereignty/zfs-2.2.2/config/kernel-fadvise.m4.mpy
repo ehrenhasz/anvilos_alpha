@@ -1,0 +1,9 @@
+{
+  "module_name": "kernel-fadvise.m4",
+  "hash_id": "7e9e307f25aac04d865e721d249e1bc02baf969e97c67eea48543bd1b6e2eed5",
+  "original_prompt": "Ingested from zfs-2.2.2/config/kernel-fadvise.m4",
+  "human_readable_source": "dnl #\ndnl # Linux 4.19 API\ndnl #\nAC_DEFUN([ZFS_AC_KERNEL_SRC_FADVISE], [\n\tZFS_LINUX_TEST_SRC([file_fadvise], [\n\t\t#include <linux/fs.h>\n\n\t\tstatic const struct file_operations\n\t\t    fops __attribute__ ((unused)) = {\n\t\t\t.fadvise = NULL,\n\t\t};\n\t],[])\n])\n\nAC_DEFUN([ZFS_AC_KERNEL_FADVISE], [\n\tAC_MSG_CHECKING([whether fops->fadvise() exists])\n\tZFS_LINUX_TEST_RESULT([file_fadvise], [\n\t\tAC_MSG_RESULT(yes)\n\t\tAC_DEFINE(HAVE_FILE_FADVISE, 1, [fops->fadvise() exists])\n\t],[\n\t\tAC_MSG_RESULT(no)\n\t])\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

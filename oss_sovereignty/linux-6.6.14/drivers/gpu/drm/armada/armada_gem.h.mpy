@@ -1,0 +1,9 @@
+{
+  "module_name": "armada_gem.h",
+  "hash_id": "cd1be9289d8269ff290a477022d17a02294bc329f12fa6f143aa919af0bd7a28",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/armada/armada_gem.h",
+  "human_readable_source": " \n \n#ifndef ARMADA_GEM_H\n#define ARMADA_GEM_H\n\n#include <drm/drm_gem.h>\n\n \nstruct armada_gem_object {\n\tstruct drm_gem_object\tobj;\n\tvoid\t\t\t*addr;\n\tphys_addr_t\t\tphys_addr;\n\tresource_size_t\t\tdev_addr;\n\tbool\t\t\tmapped;\n\tstruct drm_mm_node\t*linear;\t \n\tstruct page\t\t*page;\t\t \n\tstruct sg_table\t\t*sgt;\t\t \n\tvoid\t\t\t(*update)(void *);\n\tvoid\t\t\t*update_data;\n};\n\n#define drm_to_armada_gem(o) container_of(o, struct armada_gem_object, obj)\n\nvoid armada_gem_free_object(struct drm_gem_object *);\nint armada_gem_linear_back(struct drm_device *, struct armada_gem_object *);\nvoid *armada_gem_map_object(struct drm_device *, struct armada_gem_object *);\nstruct armada_gem_object *armada_gem_alloc_private_object(struct drm_device *,\n\tsize_t);\nint armada_gem_dumb_create(struct drm_file *, struct drm_device *,\n\tstruct drm_mode_create_dumb *);\nstruct dma_buf *armada_gem_prime_export(struct drm_gem_object *obj, int flags);\nstruct drm_gem_object *armada_gem_prime_import(struct drm_device *,\n\tstruct dma_buf *);\nint armada_gem_map_import(struct armada_gem_object *);\n\nstatic inline struct armada_gem_object *armada_gem_object_lookup(\n\tstruct drm_file *dfile, unsigned handle)\n{\n\tstruct drm_gem_object *obj = drm_gem_object_lookup(dfile, handle);\n\n\treturn obj ? drm_to_armada_gem(obj) : NULL;\n}\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

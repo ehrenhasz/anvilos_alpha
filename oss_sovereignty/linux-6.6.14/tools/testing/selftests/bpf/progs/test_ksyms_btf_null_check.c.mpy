@@ -1,0 +1,9 @@
+{
+  "module_name": "test_ksyms_btf_null_check.c",
+  "hash_id": "eb49a12436f36f69c106e47297baaf4b761acd4268cf5f6a41f5087527828525",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/test_ksyms_btf_null_check.c",
+  "human_readable_source": "\n \n\n#include \"vmlinux.h\"\n\n#include <bpf/bpf_helpers.h>\n\nextern const struct rq runqueues __ksym;  \nextern const int bpf_prog_active __ksym;  \n\nSEC(\"raw_tp/sys_enter\")\nint handler(const void *ctx)\n{\n\tstruct rq *rq;\n\tint *active;\n\t__u32 cpu;\n\n\tcpu = bpf_get_smp_processor_id();\n\trq = (struct rq *)bpf_per_cpu_ptr(&runqueues, cpu);\n\tactive = (int *)bpf_per_cpu_ptr(&bpf_prog_active, cpu);\n\tif (active) {\n\t\t \n\t\t*(volatile int *)active;\n\t\t \n\t\t*(volatile int *)(&rq->cpu);\n\t}\n\n\treturn 0;\n}\n\nchar _license[] SEC(\"license\") = \"GPL\";\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

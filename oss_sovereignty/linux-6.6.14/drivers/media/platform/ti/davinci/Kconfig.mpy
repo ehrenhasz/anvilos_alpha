@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "1d6d85bdcc5aaf5b4f641587548dbcf64432cdf378509135ef2ac25511f7d3f4",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/platform/ti/davinci/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig VIDEO_DAVINCI_VPIF_DISPLAY\n\ttristate \"TI DaVinci VPIF V4L2-Display driver\"\n\tdepends on V4L_PLATFORM_DRIVERS\n\tdepends on VIDEO_DEV\n\tdepends on ARCH_DAVINCI || COMPILE_TEST\n\tdepends on I2C\n\tselect VIDEOBUF2_DMA_CONTIG\n\tselect VIDEO_ADV7343 if MEDIA_SUBDRV_AUTOSELECT\n\tselect VIDEO_THS7303 if MEDIA_SUBDRV_AUTOSELECT\n\thelp\n\t  Enables Davinci VPIF module used for display devices.\n\t  This module is used for display on TI DM6467/DA850/OMAPL138\n\t  SoCs.\n\n\t  To compile this driver as a module, choose M here. There will\n\t  be two modules called vpif.ko and vpif_display.ko\n\nconfig VIDEO_DAVINCI_VPIF_CAPTURE\n\ttristate \"TI DaVinci VPIF video capture driver\"\n\tdepends on V4L_PLATFORM_DRIVERS\n\tdepends on VIDEO_DEV\n\tdepends on ARCH_DAVINCI || COMPILE_TEST\n\tdepends on I2C\n\tselect VIDEOBUF2_DMA_CONTIG\n\tselect V4L2_FWNODE\n\thelp\n\t  Enables Davinci VPIF module used for capture devices.\n\t  This module is used for capture on TI DM6467/DA850/OMAPL138\n\t  SoCs.\n\n\t  To compile this driver as a module, choose M here. There will\n\t  be two modules called vpif.ko and vpif_capture.ko\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

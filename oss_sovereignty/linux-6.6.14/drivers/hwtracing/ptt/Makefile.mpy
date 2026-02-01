@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "7a2d7f0dbfa9478f59139308557205d49721b1730aabc4cf60a4513138463783",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/hwtracing/ptt/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nobj-$(CONFIG_HISI_PTT) += hisi_ptt.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

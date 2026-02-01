@@ -1,0 +1,9 @@
+{
+  "module_name": "always-sed.m4",
+  "hash_id": "965247029823c4ce6829372b7e820b6502782dec2897d09f4444a5d38ddad40a",
+  "original_prompt": "Ingested from zfs-2.2.2/config/always-sed.m4",
+  "human_readable_source": "dnl #\ndnl # Set the flags used for sed in-place edits.\ndnl #\nAC_DEFUN([ZFS_AC_CONFIG_ALWAYS_SED], [\n\tAC_REQUIRE([AC_PROG_SED])dnl\n\tAC_CACHE_CHECK([for sed --in-place], [ac_cv_inplace], [\n\t\ttmpfile=$(mktemp conftest.XXXXXX)\n\t\techo foo >$tmpfile\n\t\tAS_IF([$SED --in-place 's#foo#bar#' $tmpfile 2>/dev/null],\n\t\t      [ac_cv_inplace=\"--in-place\"],\n\t\t      [$SED -i '' 's#foo#bar#' $tmpfile 2>/dev/null],\n\t\t      [ac_cv_inplace=\"-i ''\"],\n\t\t      [AC_MSG_ERROR([$SED does not support in-place])])\n\t])\n\tAC_SUBST([ac_inplace], [$ac_cv_inplace])\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

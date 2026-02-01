@@ -1,0 +1,9 @@
+{
+  "module_name": "sof-of-dev.h",
+  "hash_id": "668e51e21f42792e1a37284113aaf44b928f8b6d6885f9e79fa65a56ee1aec9d",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/sof/sof-of-dev.h",
+  "human_readable_source": " \n \n\n#ifndef __SOUND_SOC_SOF_OF_H\n#define __SOUND_SOC_SOF_OF_H\n\nstruct snd_sof_of_mach {\n\tconst char *compatible;\n\tconst char *drv_name;\n\tconst char *fw_filename;\n\tconst char *sof_tplg_filename;\n};\n\nextern const struct dev_pm_ops sof_of_pm;\n\nint sof_of_probe(struct platform_device *pdev);\nint sof_of_remove(struct platform_device *pdev);\nvoid sof_of_shutdown(struct platform_device *pdev);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

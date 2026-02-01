@@ -1,0 +1,9 @@
+{
+  "module_name": "fou_nl.h",
+  "hash_id": "75f8cf8becd0bfe9ba35a23fd54fe92908871b7ea63b2906fe5ad01364c27090",
+  "original_prompt": "Ingested from linux-6.6.14/net/ipv4/fou_nl.h",
+  "human_readable_source": " \n \n \n \n\n#ifndef _LINUX_FOU_GEN_H\n#define _LINUX_FOU_GEN_H\n\n#include <net/netlink.h>\n#include <net/genetlink.h>\n\n#include <uapi/linux/fou.h>\n\n \nextern const struct nla_policy fou_nl_policy[FOU_ATTR_IFINDEX + 1];\n\n \nextern const struct genl_small_ops fou_nl_ops[3];\n\nint fou_nl_add_doit(struct sk_buff *skb, struct genl_info *info);\nint fou_nl_del_doit(struct sk_buff *skb, struct genl_info *info);\nint fou_nl_get_doit(struct sk_buff *skb, struct genl_info *info);\nint fou_nl_get_dumpit(struct sk_buff *skb, struct netlink_callback *cb);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

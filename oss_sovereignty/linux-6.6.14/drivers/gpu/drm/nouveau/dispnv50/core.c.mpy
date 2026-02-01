@@ -1,0 +1,9 @@
+{
+  "module_name": "core.c",
+  "hash_id": "76e49c38cfea630d4ca297fc8c0f28ef7ec3c301d1bbb01a8f9099eeda402c4d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/dispnv50/core.c",
+  "human_readable_source": " \n#include \"core.h\"\n\n#include <nvif/class.h>\n\nvoid\nnv50_core_del(struct nv50_core **pcore)\n{\n\tstruct nv50_core *core = *pcore;\n\tif (core) {\n\t\tnv50_dmac_destroy(&core->chan);\n\t\tkfree(*pcore);\n\t\t*pcore = NULL;\n\t}\n}\n\nint\nnv50_core_new(struct nouveau_drm *drm, struct nv50_core **pcore)\n{\n\tstruct {\n\t\ts32 oclass;\n\t\tint version;\n\t\tint (*new)(struct nouveau_drm *, s32, struct nv50_core **);\n\t} cores[] = {\n\t\t{ GA102_DISP_CORE_CHANNEL_DMA, 0, corec57d_new },\n\t\t{ TU102_DISP_CORE_CHANNEL_DMA, 0, corec57d_new },\n\t\t{ GV100_DISP_CORE_CHANNEL_DMA, 0, corec37d_new },\n\t\t{ GP102_DISP_CORE_CHANNEL_DMA, 0, core917d_new },\n\t\t{ GP100_DISP_CORE_CHANNEL_DMA, 0, core917d_new },\n\t\t{ GM200_DISP_CORE_CHANNEL_DMA, 0, core917d_new },\n\t\t{ GM107_DISP_CORE_CHANNEL_DMA, 0, core917d_new },\n\t\t{ GK110_DISP_CORE_CHANNEL_DMA, 0, core917d_new },\n\t\t{ GK104_DISP_CORE_CHANNEL_DMA, 0, core917d_new },\n\t\t{ GF110_DISP_CORE_CHANNEL_DMA, 0, core907d_new },\n\t\t{ GT214_DISP_CORE_CHANNEL_DMA, 0, core827d_new },\n\t\t{ GT206_DISP_CORE_CHANNEL_DMA, 0, core827d_new },\n\t\t{ GT200_DISP_CORE_CHANNEL_DMA, 0, core827d_new },\n\t\t{   G82_DISP_CORE_CHANNEL_DMA, 0, core827d_new },\n\t\t{  NV50_DISP_CORE_CHANNEL_DMA, 0, core507d_new },\n\t\t{}\n\t};\n\tstruct nv50_disp *disp = nv50_disp(drm->dev);\n\tint cid;\n\n\tcid = nvif_mclass(&disp->disp->object, cores);\n\tif (cid < 0) {\n\t\tNV_ERROR(drm, \"No supported core channel class\\n\");\n\t\treturn cid;\n\t}\n\n\treturn cores[cid].new(drm, cores[cid].oclass, pcore);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

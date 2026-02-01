@@ -1,0 +1,9 @@
+{
+  "module_name": "portnum.sh",
+  "hash_id": "9e7e1a4063bafcba2a24228333c5141dcc0ec94eeb0106cd82c5fc26155506f8",
+  "original_prompt": "Ingested from openssh-9.6p1/regress/portnum.sh",
+  "human_readable_source": "#\t$OpenBSD: portnum.sh,v 1.2 2013/05/17 10:34:30 dtucker Exp $\n#\tPlaced in the Public Domain.\n\ntid=\"port number parsing\"\n\nbadport() {\n\tport=$1\n\tverbose \"$tid: invalid port $port\"\n\tif ${SSH} -F $OBJ/ssh_proxy -p $port somehost true 2>/dev/null ; then\n\t\tfail \"$tid accepted invalid port $port\"\n\tfi\n}\ngoodport() {\n\tport=$1\n\tverbose \"$tid: valid port $port\"\n\tif ${SSH} -F $OBJ/ssh_proxy -p $port somehost true 2>/dev/null ; then\n\t\t:\n\telse\n\t\tfail \"$tid rejected valid port $port\"\n\tfi\n}\n\nbadport 0\nbadport 65536\nbadport 131073\nbadport 2000blah\nbadport blah2000\n\ngoodport 1\ngoodport 22\ngoodport 2222\ngoodport 22222\ngoodport 65535\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "anybuss-controller.h",
+  "hash_id": "c3ce36784137aaad0084196f497baf946a0a8d8664a89d892a9d697494a68bf1",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/fieldbus/anybuss/anybuss-controller.h",
+  "human_readable_source": " \n \n\n#ifndef __LINUX_ANYBUSS_CONTROLLER_H__\n#define __LINUX_ANYBUSS_CONTROLLER_H__\n\n#include <linux/device.h>\n#include <linux/regmap.h>\n\n \n \nstruct anybuss_ops {\n\tvoid (*reset)(struct device *dev, bool assert);\n\tstruct regmap *regmap;\n\tint irq;\n\tint host_idx;\n};\n\nstruct anybuss_host;\n\nstruct anybuss_host * __must_check\nanybuss_host_common_probe(struct device *dev,\n\t\t\t  const struct anybuss_ops *ops);\nvoid anybuss_host_common_remove(struct anybuss_host *host);\n\nstruct anybuss_host * __must_check\ndevm_anybuss_host_common_probe(struct device *dev,\n\t\t\t       const struct anybuss_ops *ops);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

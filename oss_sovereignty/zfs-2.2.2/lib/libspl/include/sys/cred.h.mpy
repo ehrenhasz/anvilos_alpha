@@ -1,0 +1,9 @@
+{
+  "module_name": "cred.h",
+  "hash_id": "8fbb28f30fdf9e878738f6748ab62d7bd5ec43d9f0ed63313b7e55db876445c7",
+  "original_prompt": "Ingested from zfs-2.2.2/lib/libspl/include/sys/cred.h",
+  "human_readable_source": " \n \n\n#ifndef _LIBSPL_SYS_CRED_H\n#define\t_LIBSPL_SYS_CRED_H\n\ntypedef struct cred cred_t;\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

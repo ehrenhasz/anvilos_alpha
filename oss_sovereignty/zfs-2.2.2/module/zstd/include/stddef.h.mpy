@@ -1,0 +1,9 @@
+{
+  "module_name": "stddef.h",
+  "hash_id": "11253a480e397e2219ce98b1b86442f9efa2b611ba31f749aba06f24040622e2",
+  "original_prompt": "Ingested from zfs-2.2.2/module/zstd/include/stddef.h",
+  "human_readable_source": " \n\n \n\n#ifndef\t_ZSTD_STDDEF_H\n#define\t_ZSTD_STDDEF_H\n\n#ifdef __cplusplus\nextern \"C\" {\n#endif\n\n#ifdef _KERNEL\n\n#if defined(__FreeBSD__)\n#include <sys/types.h>\n#elif defined(__linux__)\n#include <linux/types.h>\n#else\n#error \"Unsupported platform\"\n#endif\n\n#else  \n#include_next <stddef.h>\n#endif  \n\n#ifdef __cplusplus\n}\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "wcnss_ctrl.h",
+  "hash_id": "04295dee083ee3edcbc38f16a097918363dec2662390676a867bef2fd4fc7289",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/soc/qcom/wcnss_ctrl.h",
+  "human_readable_source": " \n#ifndef __WCNSS_CTRL_H__\n#define __WCNSS_CTRL_H__\n\n#include <linux/rpmsg.h>\n\n#if IS_ENABLED(CONFIG_QCOM_WCNSS_CTRL)\n\nstruct rpmsg_endpoint *qcom_wcnss_open_channel(void *wcnss, const char *name,\n\t\t\t\t\t       rpmsg_rx_cb_t cb, void *priv);\n\n#else\n\nstatic struct rpmsg_endpoint *qcom_wcnss_open_channel(void *wcnss,\n\t\t\t\t\t\t      const char *name,\n\t\t\t\t\t\t      rpmsg_rx_cb_t cb,\n\t\t\t\t\t\t      void *priv)\n{\n\tWARN_ON(1);\n\treturn ERR_PTR(-ENXIO);\n}\n\n#endif\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

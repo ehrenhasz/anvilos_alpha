@@ -1,0 +1,9 @@
+{
+  "module_name": "lchmod.c",
+  "hash_id": "112b03569fdbd8678e6a9799e8738e4f4693a54aabe3ac84c548049dc7bbd918",
+  "original_prompt": "Ingested from coreutils-9.4/lib/lchmod.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n \n#include <sys/stat.h>\n\n#include <errno.h>\n#include <fcntl.h>\n#include <stdio.h>\n#include <string.h>\n#include <unistd.h>\n\n#include <intprops.h>\n\n \n\nint\nlchmod (char const *file, mode_t mode)\n{\n  char readlink_buf[1];\n\n#ifdef O_PATH\n   \n  int fd = open (file, O_PATH | O_NOFOLLOW | O_CLOEXEC);\n  if (fd < 0)\n    return fd;\n\n  int err;\n  if (0 <= readlinkat (fd, \"\", readlink_buf, sizeof readlink_buf))\n    err = EOPNOTSUPP;\n  else if (errno == EINVAL)\n    {\n      static char const fmt[] = \"/proc/self/fd/%d\";\n      char buf[sizeof fmt - sizeof \"%d\" + INT_BUFSIZE_BOUND (int)];\n      sprintf (buf, fmt, fd);\n      err = chmod (buf, mode) == 0 ? 0 : errno == ENOENT ? -1 : errno;\n    }\n  else\n    err = errno == ENOENT ? -1 : errno;\n\n  close (fd);\n\n  errno = err;\n  if (0 <= err)\n    return err == 0 ? 0 : -1;\n#endif\n\n  size_t len = strlen (file);\n  if (len && file[len - 1] == '/')\n    {\n      struct stat st;\n      if (lstat (file, &st) < 0)\n        return -1;\n      if (!S_ISDIR (st.st_mode))\n        {\n          errno = ENOTDIR;\n          return -1;\n        }\n    }\n\n   \n\n  if (0 <= readlink (file, readlink_buf, sizeof readlink_buf))\n    {\n      errno = EOPNOTSUPP;\n      return -1;\n    }\n\n   \n  return chmod (file, mode);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

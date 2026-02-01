@@ -1,0 +1,9 @@
+{
+  "module_name": "tegra114-mc.h",
+  "hash_id": "cbc53cc61ec5a8ffd73a3b45ada188cfcf86b5138953be1c5ff0fa274b88a18d",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/memory/tegra114-mc.h",
+  "human_readable_source": " \n#ifndef DT_BINDINGS_MEMORY_TEGRA114_MC_H\n#define DT_BINDINGS_MEMORY_TEGRA114_MC_H\n\n#define TEGRA_SWGROUP_PTC\t0\n#define TEGRA_SWGROUP_DC\t1\n#define TEGRA_SWGROUP_DCB\t2\n#define TEGRA_SWGROUP_EPP\t3\n#define TEGRA_SWGROUP_G2\t4\n#define TEGRA_SWGROUP_AVPC\t5\n#define TEGRA_SWGROUP_NV\t6\n#define TEGRA_SWGROUP_HDA\t7\n#define TEGRA_SWGROUP_HC\t8\n#define TEGRA_SWGROUP_MSENC\t9\n#define TEGRA_SWGROUP_PPCS\t10\n#define TEGRA_SWGROUP_VDE\t11\n#define TEGRA_SWGROUP_MPCORELP\t12\n#define TEGRA_SWGROUP_MPCORE\t13\n#define TEGRA_SWGROUP_VI\t14\n#define TEGRA_SWGROUP_ISP\t15\n#define TEGRA_SWGROUP_XUSB_HOST\t16\n#define TEGRA_SWGROUP_XUSB_DEV\t17\n#define TEGRA_SWGROUP_EMUCIF\t18\n#define TEGRA_SWGROUP_TSEC\t19\n\n#define TEGRA114_MC_RESET_AVPC\t\t0\n#define TEGRA114_MC_RESET_DC\t\t1\n#define TEGRA114_MC_RESET_DCB\t\t2\n#define TEGRA114_MC_RESET_EPP\t\t3\n#define TEGRA114_MC_RESET_2D\t\t4\n#define TEGRA114_MC_RESET_HC\t\t5\n#define TEGRA114_MC_RESET_HDA\t\t6\n#define TEGRA114_MC_RESET_ISP\t\t7\n#define TEGRA114_MC_RESET_MPCORE\t8\n#define TEGRA114_MC_RESET_MPCORELP\t9\n#define TEGRA114_MC_RESET_MPE\t\t10\n#define TEGRA114_MC_RESET_3D\t\t11\n#define TEGRA114_MC_RESET_3D2\t\t12\n#define TEGRA114_MC_RESET_PPCS\t\t13\n#define TEGRA114_MC_RESET_VDE\t\t14\n#define TEGRA114_MC_RESET_VI\t\t15\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

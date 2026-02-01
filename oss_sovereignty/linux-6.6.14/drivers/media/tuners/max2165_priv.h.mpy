@@ -1,0 +1,9 @@
+{
+  "module_name": "max2165_priv.h",
+  "hash_id": "c8ef749c4e57f17d1f365eeb0fb864fb62421989ccb86575136ae5506f9b36fb",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/tuners/max2165_priv.h",
+  "human_readable_source": " \n \n\n#ifndef __MAX2165_PRIV_H__\n#define __MAX2165_PRIV_H__\n\n#define REG_NDIV_INT 0x00\n#define REG_NDIV_FRAC2 0x01\n#define REG_NDIV_FRAC1 0x02\n#define REG_NDIV_FRAC0 0x03\n#define REG_TRACK_FILTER 0x04\n#define REG_LNA 0x05\n#define REG_PLL_CFG 0x06\n#define REG_TEST 0x07\n#define REG_SHUTDOWN 0x08\n#define REG_VCO_CTRL 0x09\n#define REG_BASEBAND_CTRL 0x0A\n#define REG_DC_OFFSET_CTRL 0x0B\n#define REG_DC_OFFSET_DAC 0x0C\n#define REG_ROM_TABLE_ADDR 0x0D\n\n \n#define REG_ROM_TABLE_DATA 0x10\n#define REG_STATUS 0x11\n#define REG_AUTOTUNE 0x12\n\nstruct max2165_priv {\n\tstruct max2165_config *config;\n\tstruct i2c_adapter *i2c;\n\n\tu32 frequency;\n\tu32 bandwidth;\n\n\tu8 tf_ntch_low_cfg;\n\tu8 tf_ntch_hi_cfg;\n\tu8 tf_balun_low_ref;\n\tu8 tf_balun_hi_ref;\n\tu8 bb_filter_7mhz_cfg;\n\tu8 bb_filter_8mhz_cfg;\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

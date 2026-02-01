@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "92e4fb180099324e167fc80ecaf08f13918c0a4a723f5958ae9e050613853ff5",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/rtl8192e/rtl8192e/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nr8192e_pci-objs :=\t\t\\\n\tr8192E_dev.o\t\t\\\n\tr8192E_phy.o\t\t\\\n\tr8192E_firmware.o\t\\\n\tr8192E_cmdpkt.o\t\t\\\n\ttable.o\t\t\t\\\n\tr8190P_rtl8256.o\t\\\n\trtl_cam.o\t\t\\\n\trtl_core.o\t\t\\\n\trtl_dm.o\t\t\\\n\trtl_eeprom.o\t\t\\\n\trtl_ethtool.o\t\t\\\n\trtl_pci.o\t\t\\\n\trtl_pm.o\t\t\\\n\trtl_ps.o\t\t\\\n\trtl_wx.o\t\t\\\n\nobj-$(CONFIG_RTL8192E) += r8192e_pci.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

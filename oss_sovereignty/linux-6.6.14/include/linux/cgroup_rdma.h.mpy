@@ -1,0 +1,9 @@
+{
+  "module_name": "cgroup_rdma.h",
+  "hash_id": "21a90c87cd70a525cae70de3e40cc72a191ceceea42378a5777d486e308624c6",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/cgroup_rdma.h",
+  "human_readable_source": " \n \n\n#ifndef _CGROUP_RDMA_H\n#define _CGROUP_RDMA_H\n\n#include <linux/cgroup.h>\n\nenum rdmacg_resource_type {\n\tRDMACG_RESOURCE_HCA_HANDLE,\n\tRDMACG_RESOURCE_HCA_OBJECT,\n\tRDMACG_RESOURCE_MAX,\n};\n\n#ifdef CONFIG_CGROUP_RDMA\n\nstruct rdma_cgroup {\n\tstruct cgroup_subsys_state\tcss;\n\n\t \n\tstruct list_head\t\trpools;\n};\n\nstruct rdmacg_device {\n\tstruct list_head\tdev_node;\n\tstruct list_head\trpools;\n\tchar\t\t\t*name;\n};\n\n \nvoid rdmacg_register_device(struct rdmacg_device *device);\nvoid rdmacg_unregister_device(struct rdmacg_device *device);\n\n \nint rdmacg_try_charge(struct rdma_cgroup **rdmacg,\n\t\t      struct rdmacg_device *device,\n\t\t      enum rdmacg_resource_type index);\nvoid rdmacg_uncharge(struct rdma_cgroup *cg,\n\t\t     struct rdmacg_device *device,\n\t\t     enum rdmacg_resource_type index);\n#endif\t \n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

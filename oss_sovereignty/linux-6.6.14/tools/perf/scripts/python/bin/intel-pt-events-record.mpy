@@ -1,0 +1,9 @@
+{
+  "module_name": "intel-pt-events-record",
+  "hash_id": "7f5927c16c924a301407e171a0aa31a6c7b84fa835792ba76a69b72fc003a079",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/scripts/python/bin/intel-pt-events-record",
+  "human_readable_source": "#!/bin/bash\n\n#\n# print Intel PT Events including Power Events and PTWRITE. The intel_pt PMU\n# event needs to be specified with appropriate config terms.\n#\nif ! echo \"$@\" | grep -q intel_pt ; then\n\techo \"Options must include the Intel PT event e.g. -e intel_pt/pwr_evt,ptw/\"\n\techo \"and for power events it probably needs to be system wide i.e. -a option\"\n\techo \"For example: -a -e intel_pt/pwr_evt,branch=0/ sleep 1\"\n\texit 1\nfi\nperf record $@\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

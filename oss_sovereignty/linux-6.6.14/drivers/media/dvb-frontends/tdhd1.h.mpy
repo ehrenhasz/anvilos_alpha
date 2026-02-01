@@ -1,0 +1,9 @@
+{
+  "module_name": "tdhd1.h",
+  "hash_id": "59615035dd3a575c1d833dabc4ec9ac4c37d584b3ff167d26efcd32df0585bad",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/dvb-frontends/tdhd1.h",
+  "human_readable_source": " \n \n\n#ifndef TDHD1_H\n#define TDHD1_H\n\n#include \"tda1004x.h\"\n\nstatic int alps_tdhd1_204_request_firmware(struct dvb_frontend *fe, const struct firmware **fw, char *name);\n\nstatic struct tda1004x_config alps_tdhd1_204a_config = {\n\t.demod_address = 0x8,\n\t.invert = 1,\n\t.invert_oclk = 0,\n\t.xtal_freq = TDA10046_XTAL_4M,\n\t.agc_config = TDA10046_AGC_DEFAULT,\n\t.if_freq = TDA10046_FREQ_3617,\n\t.request_firmware = alps_tdhd1_204_request_firmware\n};\n\nstatic int alps_tdhd1_204a_tuner_set_params(struct dvb_frontend *fe)\n{\n\tstruct dtv_frontend_properties *p = &fe->dtv_property_cache;\n\tstruct i2c_adapter *i2c = fe->tuner_priv;\n\tu8 data[4];\n\tstruct i2c_msg msg = { .addr = 0x61, .flags = 0, .buf = data, .len = sizeof(data) };\n\tu32 div;\n\n\tdiv = (p->frequency + 36166666) / 166666;\n\n\tdata[0] = (div >> 8) & 0x7f;\n\tdata[1] = div & 0xff;\n\tdata[2] = 0x85;\n\n\tif (p->frequency >= 174000000 && p->frequency <= 230000000)\n\t\tdata[3] = 0x02;\n\telse if (p->frequency >= 470000000 && p->frequency <= 823000000)\n\t\tdata[3] = 0x0C;\n\telse if (p->frequency > 823000000 && p->frequency <= 862000000)\n\t\tdata[3] = 0x8C;\n\telse\n\t\treturn -EINVAL;\n\n\tif (fe->ops.i2c_gate_ctrl)\n\t\tfe->ops.i2c_gate_ctrl(fe, 1);\n\tif (i2c_transfer(i2c, &msg, 1) != 1)\n\t\treturn -EIO;\n\n\treturn 0;\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

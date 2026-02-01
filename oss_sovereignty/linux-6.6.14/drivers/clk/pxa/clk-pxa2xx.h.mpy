@@ -1,0 +1,9 @@
+{
+  "module_name": "clk-pxa2xx.h",
+  "hash_id": "c055dbe2c3b761116b6a9a039f17dc9a1d95d40b420d3a036cd13013cdda0a48",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/clk/pxa/clk-pxa2xx.h",
+  "human_readable_source": " \n#ifndef __CLK_PXA2XX_H\n#define __CLK_PXA2XX_H\n\n#define CCCR\t\t(0x0000)   \n#define CCSR\t\t(0x000C)   \n#define CKEN\t\t(0x0004)   \n#define OSCC\t\t(0x0008)   \n\n#define CCCR_N_MASK\t0x0380\t \n#define CCCR_M_MASK\t0x0060\t \n#define CCCR_L_MASK\t0x001f\t \n\n#define CCCR_CPDIS_BIT\t(31)\n#define CCCR_PPDIS_BIT\t(30)\n#define CCCR_LCD_26_BIT\t(27)\n#define CCCR_A_BIT\t(25)\n\n#define CCSR_N2_MASK\tCCCR_N_MASK\n#define CCSR_M_MASK\tCCCR_M_MASK\n#define CCSR_L_MASK\tCCCR_L_MASK\n#define CCSR_N2_SHIFT\t7\n\n#define CKEN_AC97CONF   (31)     \n#define CKEN_CAMERA\t(24)\t \n#define CKEN_SSP1\t(23)\t \n#define CKEN_MEMC\t(22)\t \n#define CKEN_MEMSTK\t(21)\t \n#define CKEN_IM\t\t(20)\t \n#define CKEN_KEYPAD\t(19)\t \n#define CKEN_USIM\t(18)\t \n#define CKEN_MSL\t(17)\t \n#define CKEN_LCD\t(16)\t \n#define CKEN_PWRI2C\t(15)\t \n#define CKEN_I2C\t(14)\t \n#define CKEN_FICP\t(13)\t \n#define CKEN_MMC\t(12)\t \n#define CKEN_USB\t(11)\t \n#define CKEN_ASSP\t(10)\t \n#define CKEN_USBHOST\t(10)\t \n#define CKEN_OSTIMER\t(9)\t \n#define CKEN_NSSP\t(9)\t \n#define CKEN_I2S\t(8)\t \n#define CKEN_BTUART\t(7)\t \n#define CKEN_FFUART\t(6)\t \n#define CKEN_STUART\t(5)\t \n#define CKEN_HWUART\t(4)\t \n#define CKEN_SSP3\t(4)\t \n#define CKEN_SSP\t(3)\t \n#define CKEN_SSP2\t(3)\t \n#define CKEN_AC97\t(2)\t \n#define CKEN_PWM1\t(1)\t \n#define CKEN_PWM0\t(0)\t \n\n#define OSCC_OON\t(1 << 1)\t \n#define OSCC_OOK\t(1 << 0)\t \n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

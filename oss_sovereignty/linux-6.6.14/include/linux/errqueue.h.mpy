@@ -1,0 +1,9 @@
+{
+  "module_name": "errqueue.h",
+  "hash_id": "262c96be59c9b9f9f5684b3174161d284bb90d0eefd2fdf7e04707d9fd8cc72b",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/errqueue.h",
+  "human_readable_source": " \n#ifndef _LINUX_ERRQUEUE_H\n#define _LINUX_ERRQUEUE_H 1\n\n\n#include <net/ip.h>\n#if IS_ENABLED(CONFIG_IPV6)\n#include <linux/ipv6.h>\n#endif\n#include <uapi/linux/errqueue.h>\n\n#define SKB_EXT_ERR(skb) ((struct sock_exterr_skb *) ((skb)->cb))\n\nstruct sock_exterr_skb {\n\tunion {\n\t\tstruct inet_skb_parm\th4;\n#if IS_ENABLED(CONFIG_IPV6)\n\t\tstruct inet6_skb_parm\th6;\n#endif\n\t} header;\n\tstruct sock_extended_err\tee;\n\tu16\t\t\t\taddr_offset;\n\t__be16\t\t\t\tport;\n\tu8\t\t\t\topt_stats:1,\n\t\t\t\t\tunused:7;\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

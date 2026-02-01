@@ -1,0 +1,9 @@
+{
+  "module_name": "barrier.h",
+  "hash_id": "b27582844a839a1220349667f76a99a3832f11f3eb625c05703e8d4d69b118ea",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/um/asm/barrier.h",
+  "human_readable_source": " \n#ifndef _ASM_UM_BARRIER_H_\n#define _ASM_UM_BARRIER_H_\n\n#include <asm/cpufeatures.h>\n#include <asm/alternative.h>\n\n \n#ifdef CONFIG_X86_32\n\n#define mb()\talternative(\"lock; addl $0,0(%%esp)\", \"mfence\", X86_FEATURE_XMM2)\n#define rmb()\talternative(\"lock; addl $0,0(%%esp)\", \"lfence\", X86_FEATURE_XMM2)\n#define wmb()\talternative(\"lock; addl $0,0(%%esp)\", \"sfence\", X86_FEATURE_XMM)\n\n#else  \n\n#define mb()\tasm volatile(\"mfence\" : : : \"memory\")\n#define rmb()\tasm volatile(\"lfence\" : : : \"memory\")\n#define wmb()\tasm volatile(\"sfence\" : : : \"memory\")\n\n#endif  \n\n#include <asm-generic/barrier.h>\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

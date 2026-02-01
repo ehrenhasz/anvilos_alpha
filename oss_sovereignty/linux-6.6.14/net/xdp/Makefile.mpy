@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "8a12977f87101f858239dd0bed2f09b61dc89045ae1a017ab83fc2897c65badd",
+  "original_prompt": "Ingested from linux-6.6.14/net/xdp/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-$(CONFIG_XDP_SOCKETS) += xsk.o xdp_umem.o xsk_queue.o xskmap.o\nobj-$(CONFIG_XDP_SOCKETS) += xsk_buff_pool.o\nobj-$(CONFIG_XDP_SOCKETS_DIAG) += xsk_diag.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

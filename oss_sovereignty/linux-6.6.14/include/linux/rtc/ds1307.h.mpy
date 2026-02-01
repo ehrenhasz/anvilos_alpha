@@ -1,0 +1,9 @@
+{
+  "module_name": "ds1307.h",
+  "hash_id": "300a2d8dcf7946f6adea36cb3ac8e62a612520acc131c656c300e2ee44f82fd4",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/rtc/ds1307.h",
+  "human_readable_source": " \n\n#ifndef _LINUX_DS1307_H\n#define _LINUX_DS1307_H\n\n#include <linux/types.h>\n\n#define DS1307_TRICKLE_CHARGER_250_OHM\t0x01\n#define DS1307_TRICKLE_CHARGER_2K_OHM\t0x02\n#define DS1307_TRICKLE_CHARGER_4K_OHM\t0x03\n#define DS1307_TRICKLE_CHARGER_NO_DIODE\t0x04\n#define DS1307_TRICKLE_CHARGER_DIODE\t0x08\n\nstruct ds1307_platform_data {\n\tu8 trickle_charger_setup;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

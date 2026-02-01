@@ -1,0 +1,9 @@
+{
+  "module_name": "wm8775.h",
+  "hash_id": "138e63e6e11c01d9054cb1c8a77e459af08b27b76e34050dd7fff8f097906f5b",
+  "original_prompt": "Ingested from linux-6.6.14/include/media/i2c/wm8775.h",
+  "human_readable_source": " \n \n\n#ifndef _WM8775_H_\n#define _WM8775_H_\n\n \n\n#define WM8775_AIN1 1\n#define WM8775_AIN2 2\n#define WM8775_AIN3 4\n#define WM8775_AIN4 8\n\n\nstruct wm8775_platform_data {\n\t \n\tbool is_nova_s;\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

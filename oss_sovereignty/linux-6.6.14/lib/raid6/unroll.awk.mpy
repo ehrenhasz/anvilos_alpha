@@ -1,0 +1,9 @@
+{
+  "module_name": "unroll.awk",
+  "hash_id": "a9dd0f65a3ba3b9e88779c29df29cffb390265880cea155d2d07153c886cec1e",
+  "original_prompt": "Ingested from linux-6.6.14/lib/raid6/unroll.awk",
+  "human_readable_source": "\n# This filter requires one command line option of form -vN=n\n# where n must be a decimal number.\n#\n# Repeat each input line containing $$ n times, replacing $$ with 0...n-1.\n# Replace each $# with n, and each $* with a single $.\n\nBEGIN {\n\tn = N + 0\n}\n{\n\tif (/\\$\\$/) { rep = n } else { rep = 1 }\n\tfor (i = 0; i < rep; ++i) {\n\t\ttmp = $0\n\t\tgsub(/\\$\\$/, i, tmp)\n\t\tgsub(/\\$#/, n, tmp)\n\t\tgsub(/\\$\\*/, \"$\", tmp)\n\t\tprint tmp\n\t}\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

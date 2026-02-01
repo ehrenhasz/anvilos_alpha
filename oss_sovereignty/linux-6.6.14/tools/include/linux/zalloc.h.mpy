@@ -1,0 +1,9 @@
+{
+  "module_name": "zalloc.h",
+  "hash_id": "c790847d16b7629d3474d047f83477ee6a66eecf67298032997f534418103f85",
+  "original_prompt": "Ingested from linux-6.6.14/tools/include/linux/zalloc.h",
+  "human_readable_source": "\n#ifndef __TOOLS_LINUX_ZALLOC_H\n#define __TOOLS_LINUX_ZALLOC_H\n\n#include <stddef.h>\n\nvoid *zalloc(size_t size);\nvoid __zfree(void **ptr);\n\n#define zfree(ptr) __zfree((void **)(ptr))\n\n#endif \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

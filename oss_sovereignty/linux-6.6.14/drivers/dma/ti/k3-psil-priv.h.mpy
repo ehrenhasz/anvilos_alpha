@@ -1,0 +1,9 @@
+{
+  "module_name": "k3-psil-priv.h",
+  "hash_id": "bd7efbcc70c0a18eb6a820355c244d95a1ddd8f9da579326127be365c34d779e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/dma/ti/k3-psil-priv.h",
+  "human_readable_source": " \n \n\n#ifndef K3_PSIL_PRIV_H_\n#define K3_PSIL_PRIV_H_\n\n#include <linux/dma/k3-psil.h>\n\nstruct psil_ep {\n\tu32 thread_id;\n\tstruct psil_endpoint_config ep_config;\n};\n\n \nstruct psil_ep_map {\n\tchar *name;\n\tstruct psil_ep\t*src;\n\tint src_count;\n\tstruct psil_ep\t*dst;\n\tint dst_count;\n};\n\nstruct psil_endpoint_config *psil_get_ep_config(u32 thread_id);\n\n \nextern struct psil_ep_map am654_ep_map;\nextern struct psil_ep_map j721e_ep_map;\nextern struct psil_ep_map j7200_ep_map;\nextern struct psil_ep_map am64_ep_map;\nextern struct psil_ep_map j721s2_ep_map;\nextern struct psil_ep_map am62_ep_map;\nextern struct psil_ep_map am62a_ep_map;\nextern struct psil_ep_map j784s4_ep_map;\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

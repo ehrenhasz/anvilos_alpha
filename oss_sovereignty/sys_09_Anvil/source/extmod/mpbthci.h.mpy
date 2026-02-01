@@ -1,0 +1,9 @@
+{
+  "module_name": "mpbthci.h",
+  "hash_id": "cb41d7192ff3349be86da1624846a85b1f0bb85467a0f8c384c401104158aaed",
+  "original_prompt": "Ingested from sys_09_Anvil/source/extmod/mpbthci.h",
+  "human_readable_source": " \n\n#ifndef MICROPY_INCLUDED_EXTMOD_MPBTHCI_H\n#define MICROPY_INCLUDED_EXTMOD_MPBTHCI_H\n\n#define MICROPY_PY_BLUETOOTH_HCI_READ_MODE_BYTE  (0)\n#define MICROPY_PY_BLUETOOTH_HCI_READ_MODE_PACKET  (1)\n\n\n\n\n\nint mp_bluetooth_hci_controller_init(void);\nint mp_bluetooth_hci_controller_deinit(void);\n\n\nint mp_bluetooth_hci_controller_sleep_maybe(void);\n\nbool mp_bluetooth_hci_controller_woken(void);\n\nint mp_bluetooth_hci_controller_wakeup(void);\n\n\nint mp_bluetooth_hci_uart_init(uint32_t port, uint32_t baudrate);\nint mp_bluetooth_hci_uart_deinit(void);\nint mp_bluetooth_hci_uart_set_baudrate(uint32_t baudrate);\nint mp_bluetooth_hci_uart_any(void);\nint mp_bluetooth_hci_uart_write(const uint8_t *buf, size_t len);\n\n\nint mp_bluetooth_hci_uart_readchar(void);\n\n\ntypedef void (*mp_bluetooth_hci_uart_readchar_t)(uint8_t chr);\nint mp_bluetooth_hci_uart_readpacket(mp_bluetooth_hci_uart_readchar_t handler);\n\n#endif \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

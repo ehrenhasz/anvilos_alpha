@@ -1,0 +1,9 @@
+{
+  "module_name": "test-exclude7.sh",
+  "hash_id": "7624a9aeef4fe6808216079bef7514c69f8f878dbed3eae8e1b4a2a06d121314",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-exclude7.sh",
+  "human_readable_source": "#! /bin/sh\n# Test suite for exclude.\n# Copyright (C) 2009-2023 Free Software Foundation, Inc.\n# This file is part of the GNUlib Library.\n#\n# This program is free software: you can redistribute it and/or modify\n# it under the terms of the GNU General Public License as published by\n# the Free Software Foundation, either version 3 of the License, or\n# (at your option) any later version.\n#\n# This program is distributed in the hope that it will be useful,\n# but WITHOUT ANY WARRANTY; without even the implied warranty of\n# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n# GNU General Public License for more details.\n#\n# You should have received a copy of the GNU General Public License\n# along with this program.  If not, see <https://www.gnu.org/licenses/>.\n\n. \"${srcdir=.}/init.sh\"; path_prepend_ .\nfail=0\n\n# Test exclude precedence\n\ncat > in <<EOT\nfoo*\nbar\nBaz\nEOT\n\ncat > expected <<EOT\nbar: 0\nbar: 1\nEOT\n\n${CHECKER} test-exclude in -include in -- bar > out || exit $?\n${CHECKER} test-exclude -include in -no-include in -- bar >> out || exit $?\n\n# Find out how to remove carriage returns from output. Solaris /usr/ucb/tr\n# does not understand '\\r'.\ncase $(echo r | tr -d '\\r') in '') cr='\\015';; *) cr='\\r';; esac\n\n# normalize output\nLC_ALL=C tr -d \"$cr\" < out > k && mv k out\n\ncompare expected out || fail=1\n\nExit $fail\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

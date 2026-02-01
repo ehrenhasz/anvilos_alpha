@@ -1,0 +1,9 @@
+{
+  "module_name": "fty_ipv4.c",
+  "hash_id": "fd6401da2ace310d0056bb7eb9956ee408f1c6e75f38991af6355f55bf0e9bd0",
+  "original_prompt": "Ingested from ncurses-6.4/form/fty_ipv4.c",
+  "human_readable_source": " \n\n \n\n#include \"form.priv.h\"\n\nMODULE_ID(\"$Id: fty_ipv4.c,v 1.16 2021/06/17 21:11:08 tom Exp $\")\n\n \nstatic bool\nCheck_IPV4_Field(FIELD *field, const void *argp GCC_UNUSED)\n{\n  char *bp = field_buffer(field, 0);\n  int num = 0, len;\n  unsigned int d1 = 0, d2 = 0, d3 = 0, d4 = 0;\n\n  if (isdigit(UChar(*bp)))\t \n    {\n      num = sscanf(bp, \"%u.%u.%u.%u%n\", &d1, &d2, &d3, &d4, &len);\n      if (num == 4)\n\t{\n\t  bp += len;\t\t \n\t  while (isspace(UChar(*bp)))\n\t    bp++;\t\t \n\t}\n    }\n  return ((num != 4 || *bp || d1 > 255 || d2 > 255\n\t   || d3 > 255 || d4 > 255) ? FALSE : TRUE);\n}\n\n \nstatic bool\nCheck_IPV4_Character(int c, const void *argp GCC_UNUSED)\n{\n  return ((isdigit(UChar(c)) || (c == '.')) ? TRUE : FALSE);\n}\n\nstatic FIELDTYPE typeIPV4 =\n{\n  _RESIDENT,\n  1,\t\t\t\t \n  (FIELDTYPE *)0,\n  (FIELDTYPE *)0,\n  NULL,\n  NULL,\n  NULL,\n  INIT_FT_FUNC(Check_IPV4_Field),\n  INIT_FT_FUNC(Check_IPV4_Character),\n  INIT_FT_FUNC(NULL),\n  INIT_FT_FUNC(NULL),\n#if NCURSES_INTEROP_FUNCS\n  NULL\n#endif\n};\n\nFORM_EXPORT_VAR(FIELDTYPE *) TYPE_IPV4 = &typeIPV4;\n\n#if NCURSES_INTEROP_FUNCS\n \nFORM_EXPORT(FIELDTYPE *)\n_nc_TYPE_IPV4(void)\n{\n  return TYPE_IPV4;\n}\n#endif\n\n \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

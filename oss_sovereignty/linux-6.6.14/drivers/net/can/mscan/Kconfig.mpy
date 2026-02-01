@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "b9931b2f7790b97e43378022f562744667b9119d8a1d859c3265d4e2b0fd9f79",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/can/mscan/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig CAN_MSCAN\n\tdepends on PPC\n\ttristate \"Support for Freescale MSCAN based chips\"\n\thelp\n\t  The Motorola Scalable Controller Area Network (MSCAN) definition\n\t  is based on the MSCAN12 definition which is the specific\n\t  implementation of the Motorola Scalable CAN concept targeted for\n\t  the Motorola MC68HC12 Microcontroller Family.\n\nif CAN_MSCAN\n\nconfig CAN_MPC5XXX\n\ttristate \"Freescale MPC5xxx onboard CAN controller\"\n\tdepends on (PPC_MPC52xx || PPC_MPC512x)\n\thelp\n\t  If you say yes here you get support for Freescale's MPC5xxx\n\t  onboard CAN controller. Currently, the MPC5200, MPC5200B and\n\t  MPC5121 (Rev. 2 and later) are supported.\n\n\t  This driver can also be built as a module. If so, the module\n\t  will be called mscan-mpc5xxx.ko.\n\nendif\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "namei.h",
+  "hash_id": "886e50822a3019082cf36d2a8f79c85e4d64d18b1e47b1da22b6bb25c87a9dc7",
+  "original_prompt": "Ingested from linux-6.6.14/fs/ocfs2/namei.h",
+  "human_readable_source": " \n \n\n#ifndef OCFS2_NAMEI_H\n#define OCFS2_NAMEI_H\n\n#define OCFS2_DIO_ORPHAN_PREFIX \"dio-\"\n#define OCFS2_DIO_ORPHAN_PREFIX_LEN 4\n\nextern const struct inode_operations ocfs2_dir_iops;\n\nstruct dentry *ocfs2_get_parent(struct dentry *child);\n\nint ocfs2_orphan_del(struct ocfs2_super *osb,\n\t\t     handle_t *handle,\n\t\t     struct inode *orphan_dir_inode,\n\t\t     struct inode *inode,\n\t\t     struct buffer_head *orphan_dir_bh,\n\t\t     bool dio);\nint ocfs2_create_inode_in_orphan(struct inode *dir,\n\t\t\t\t int mode,\n\t\t\t\t struct inode **new_inode);\nint ocfs2_add_inode_to_orphan(struct ocfs2_super *osb,\n\t\tstruct inode *inode);\nint ocfs2_del_inode_from_orphan(struct ocfs2_super *osb,\n\t\tstruct inode *inode, struct buffer_head *di_bh,\n\t\tint update_isize, loff_t end);\nint ocfs2_mv_orphaned_inode_to_new(struct inode *dir,\n\t\t\t\t   struct inode *new_inode,\n\t\t\t\t   struct dentry *new_dentry);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

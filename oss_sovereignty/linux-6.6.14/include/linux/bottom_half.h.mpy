@@ -1,0 +1,9 @@
+{
+  "module_name": "bottom_half.h",
+  "hash_id": "eca1a2f7e06e43425055648d746db54e3f38b4f26c8f9d55cc39ffbd308e315d",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/bottom_half.h",
+  "human_readable_source": " \n#ifndef _LINUX_BH_H\n#define _LINUX_BH_H\n\n#include <linux/instruction_pointer.h>\n#include <linux/preempt.h>\n\n#if defined(CONFIG_PREEMPT_RT) || defined(CONFIG_TRACE_IRQFLAGS)\nextern void __local_bh_disable_ip(unsigned long ip, unsigned int cnt);\n#else\nstatic __always_inline void __local_bh_disable_ip(unsigned long ip, unsigned int cnt)\n{\n\tpreempt_count_add(cnt);\n\tbarrier();\n}\n#endif\n\nstatic inline void local_bh_disable(void)\n{\n\t__local_bh_disable_ip(_THIS_IP_, SOFTIRQ_DISABLE_OFFSET);\n}\n\nextern void _local_bh_enable(void);\nextern void __local_bh_enable_ip(unsigned long ip, unsigned int cnt);\n\nstatic inline void local_bh_enable_ip(unsigned long ip)\n{\n\t__local_bh_enable_ip(ip, SOFTIRQ_DISABLE_OFFSET);\n}\n\nstatic inline void local_bh_enable(void)\n{\n\t__local_bh_enable_ip(_THIS_IP_, SOFTIRQ_DISABLE_OFFSET);\n}\n\n#ifdef CONFIG_PREEMPT_RT\nextern bool local_bh_blocked(void);\n#else\nstatic inline bool local_bh_blocked(void) { return false; }\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

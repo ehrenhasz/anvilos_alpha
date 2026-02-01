@@ -1,0 +1,9 @@
+{
+  "module_name": "write_overflow-strncpy.c",
+  "hash_id": "783c8b336c356205d9197159261b34fa1f65fb3d7d46e0fe32c64b6f00ebddd5",
+  "original_prompt": "Ingested from linux-6.6.14/lib/test_fortify/write_overflow-strncpy.c",
+  "human_readable_source": "\n#define TEST\t\\\n\tstrncpy(instance.buf, large_src, sizeof(instance.buf) + 1)\n\n#include \"test_fortify.h\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

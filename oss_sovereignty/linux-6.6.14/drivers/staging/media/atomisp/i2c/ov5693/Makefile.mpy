@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "a3b60dd196c689e3712948d29002b22a573ba611d752e4e78d2d24ea2edfeb6c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/i2c/ov5693/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nobj-$(CONFIG_VIDEO_ATOMISP_OV5693) += atomisp-ov5693.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

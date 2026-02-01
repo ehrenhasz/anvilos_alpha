@@ -1,0 +1,9 @@
+{
+  "module_name": "link_hwss_hpo_fixed_vs_pe_retimer_dp.h",
+  "hash_id": "3c583c81c351707ab9f78a8d20c6370cf4f8e6ce18bee6c9bd19ec295ff4c0eb",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/dc/link/hwss/link_hwss_hpo_fixed_vs_pe_retimer_dp.h",
+  "human_readable_source": " \n#ifndef __LINK_HWSS_HPO_FIXED_VS_PE_RETIMER_DP_H__\n#define __LINK_HWSS_HPO_FIXED_VS_PE_RETIMER_DP_H__\n\n#include \"link.h\"\n\nbool requires_fixed_vs_pe_retimer_hpo_link_hwss(const struct dc_link *link);\nconst struct link_hwss *get_hpo_fixed_vs_pe_retimer_dp_link_hwss(void);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

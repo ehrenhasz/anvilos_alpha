@@ -1,0 +1,9 @@
+{
+  "module_name": "ispcsiphy.h",
+  "hash_id": "198dd48450412a0b9a48390e15519bcb71ff3db9b8779e9dcf0599c605eccdf4",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/platform/ti/omap3isp/ispcsiphy.h",
+  "human_readable_source": " \n \n\n#ifndef OMAP3_ISP_CSI_PHY_H\n#define OMAP3_ISP_CSI_PHY_H\n\n#include \"omap3isp.h\"\n\nstruct isp_csi2_device;\nstruct regulator;\n\nstruct isp_csiphy {\n\tstruct isp_device *isp;\n\tstruct mutex mutex;\t \n\tstruct isp_csi2_device *csi2;\n\tstruct regulator *vdd;\n\t \n\tstruct media_entity *entity;\n\n\t \n\tunsigned int cfg_regs;\n\tunsigned int phy_regs;\n\n\tu8 num_data_lanes;\t \n};\n\nint omap3isp_csiphy_acquire(struct isp_csiphy *phy,\n\t\t\t    struct media_entity *entity);\nvoid omap3isp_csiphy_release(struct isp_csiphy *phy);\nint omap3isp_csiphy_init(struct isp_device *isp);\nvoid omap3isp_csiphy_cleanup(struct isp_device *isp);\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

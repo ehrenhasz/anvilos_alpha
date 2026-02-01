@@ -1,0 +1,9 @@
+{
+  "module_name": "change_skew.c",
+  "hash_id": "ff2fdc99e0ac547d15cedec78143ed0b1735bd8dd86d154b37f41e4081b37704",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/timers/change_skew.c",
+  "human_readable_source": " \n\n\n#include <stdio.h>\n#include <stdlib.h>\n#include <sys/time.h>\n#include <sys/timex.h>\n#include <time.h>\n#include \"../kselftest.h\"\n\n#define NSEC_PER_SEC 1000000000LL\n\n\nint change_skew_test(int ppm)\n{\n\tstruct timex tx;\n\tint ret;\n\n\ttx.modes = ADJ_FREQUENCY;\n\ttx.freq = ppm << 16;\n\n\tret = adjtimex(&tx);\n\tif (ret < 0) {\n\t\tprintf(\"Error adjusting freq\\n\");\n\t\treturn ret;\n\t}\n\n\tret = system(\"./raw_skew\");\n\tret |= system(\"./inconsistency-check\");\n\tret |= system(\"./nanosleep\");\n\n\treturn ret;\n}\n\n\nint main(int argc, char **argv)\n{\n\tstruct timex tx;\n\tint i, ret;\n\n\tint ppm[5] = {0, 250, 500, -250, -500};\n\n\t \n\tret = system(\"killall -9 ntpd\");\n\n\t \n\ttx.modes = ADJ_OFFSET;\n\ttx.offset = 0;\n\tret = adjtimex(&tx);\n\n\tif (ret < 0) {\n\t\tprintf(\"Maybe you're not running as root?\\n\");\n\t\treturn -1;\n\t}\n\n\tfor (i = 0; i < 5; i++) {\n\t\tprintf(\"Using %i ppm adjustment\\n\", ppm[i]);\n\t\tret = change_skew_test(ppm[i]);\n\t\tif (ret)\n\t\t\tbreak;\n\t}\n\n\t \n\ttx.modes = ADJ_FREQUENCY;\n\ttx.offset = 0;\n\tadjtimex(&tx);\n\n\tif (ret) {\n\t\tprintf(\"[FAIL]\");\n\t\treturn ksft_exit_fail();\n\t}\n\tprintf(\"[OK]\");\n\treturn ksft_exit_pass();\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

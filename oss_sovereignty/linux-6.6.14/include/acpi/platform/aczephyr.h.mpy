@@ -1,0 +1,9 @@
+{
+  "module_name": "aczephyr.h",
+  "hash_id": "c22c02c77985a937845386c7ee5d772688074948499e32c98202ecff36a7e9aa",
+  "original_prompt": "Ingested from linux-6.6.14/include/acpi/platform/aczephyr.h",
+  "human_readable_source": " \n \n\n#ifndef __ACZEPHYR_H__\n#define __ACZEPHYR_H__\n\n#define ACPI_MACHINE_WIDTH      64\n\n#define ACPI_NO_ERROR_MESSAGES\n#undef ACPI_DEBUG_OUTPUT\n#define ACPI_USE_SYSTEM_CLIBRARY\n#undef ACPI_DBG_TRACK_ALLOCATIONS\n#define ACPI_SINGLE_THREADED\n#define ACPI_USE_NATIVE_RSDP_POINTER\n\n#include <zephyr/kernel.h>\n#include <zephyr/device.h>\n#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\n#include <ctype.h>\n#include <zephyr/fs/fs.h>\n#include <zephyr/sys/printk.h>\n#include <zephyr/sys/__assert.h>\n\n \n\nvoid acpi_enable_dbg_print(bool enable);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "strftime.h",
+  "hash_id": "cfcf88b0337d0349119834d2d63c57b86d66276e966ffa4a07990874d2d2b833",
+  "original_prompt": "Ingested from coreutils-9.4/lib/strftime.h",
+  "human_readable_source": " \nsize_t nstrftime (char *restrict, size_t, char const *, struct tm const *,\n                  timezone_t __tz, int __ns);\n\n#ifdef __cplusplus\n}\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

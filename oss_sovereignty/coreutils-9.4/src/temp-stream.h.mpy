@@ -1,0 +1,9 @@
+{
+  "module_name": "temp-stream.h",
+  "hash_id": "f8989852fccb5492ab6f5c48399ce5a8a93c38fcddc536323d6ac6997d871d4c",
+  "original_prompt": "Ingested from coreutils-9.4/src/temp-stream.h",
+  "human_readable_source": " \nextern bool temp_stream (FILE **fp, char **file_name);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

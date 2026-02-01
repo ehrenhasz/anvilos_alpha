@@ -1,0 +1,9 @@
+{
+  "module_name": "perf_api_probe.h",
+  "hash_id": "14090de59175cf4e88097701b6e4251ea66d8d1e868398cd71a3c5d6030ffeb6",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/util/perf_api_probe.h",
+  "human_readable_source": "\n \n#ifndef __PERF_API_PROBE_H\n#define __PERF_API_PROBE_H\n\n#include <stdbool.h>\n\nbool perf_can_aux_sample(void);\nbool perf_can_comm_exec(void);\nbool perf_can_record_cpu_wide(void);\nbool perf_can_record_switch_events(void);\nbool perf_can_record_text_poke_events(void);\nbool perf_can_sample_identifier(void);\nbool perf_can_record_build_id(void);\nbool perf_can_record_cgroup(void);\n\n#endif \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

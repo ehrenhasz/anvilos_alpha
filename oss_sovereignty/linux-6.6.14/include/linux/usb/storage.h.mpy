@@ -1,0 +1,9 @@
+{
+  "module_name": "storage.h",
+  "hash_id": "eb49b0d59a48cf562d2af30c1321b672c2d3487642a4ee88174b6fe01e7ba925",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/usb/storage.h",
+  "human_readable_source": "\n#ifndef __LINUX_USB_STORAGE_H\n#define __LINUX_USB_STORAGE_H\n\n \n\n \n\n#define USB_SC_RBC\t0x01\t\t \n#define USB_SC_8020\t0x02\t\t \n#define USB_SC_QIC\t0x03\t\t \n#define USB_SC_UFI\t0x04\t\t \n#define USB_SC_8070\t0x05\t\t \n#define USB_SC_SCSI\t0x06\t\t \n#define USB_SC_LOCKABLE\t0x07\t\t \n\n#define USB_SC_ISD200\t0xf0\t\t \n#define USB_SC_CYP_ATACB\t0xf1\t \n#define USB_SC_DEVICE\t0xff\t\t \n\n \n\n#define USB_PR_CBI\t0x00\t\t \n#define USB_PR_CB\t0x01\t\t \n#define USB_PR_BULK\t0x50\t\t \n#define USB_PR_UAS\t0x62\t\t \n\n#define USB_PR_USBAT\t0x80\t\t \n#define USB_PR_EUSB_SDDR09\t0x81\t \n#define USB_PR_SDDR55\t0x82\t\t \n#define USB_PR_DPCM_USB\t0xf0\t\t \n#define USB_PR_FREECOM\t0xf1\t\t \n#define USB_PR_DATAFAB\t0xf2\t\t \n#define USB_PR_JUMPSHOT\t0xf3\t\t \n#define USB_PR_ALAUDA\t0xf4\t\t \n#define USB_PR_KARMA\t0xf5\t\t \n\n#define USB_PR_DEVICE\t0xff\t\t \n\n \n\n \nstruct bulk_cb_wrap {\n\t__le32\tSignature;\t\t \n\t__u32\tTag;\t\t\t \n\t__le32\tDataTransferLength;\t \n\t__u8\tFlags;\t\t\t \n\t__u8\tLun;\t\t\t \n\t__u8\tLength;\t\t\t \n\t__u8\tCDB[16];\t\t \n};\n\n#define US_BULK_CB_WRAP_LEN\t31\n#define US_BULK_CB_SIGN\t\t0x43425355\t \n#define US_BULK_FLAG_IN\t\t(1 << 7)\n#define US_BULK_FLAG_OUT\t0\n\n \nstruct bulk_cs_wrap {\n\t__le32\tSignature;\t \n\t__u32\tTag;\t\t \n\t__le32\tResidue;\t \n\t__u8\tStatus;\t\t \n};\n\n#define US_BULK_CS_WRAP_LEN\t13\n#define US_BULK_CS_SIGN\t\t0x53425355       \n#define US_BULK_STAT_OK\t\t0\n#define US_BULK_STAT_FAIL\t1\n#define US_BULK_STAT_PHASE\t2\n\n \n#define US_BULK_RESET_REQUEST   0xff\n#define US_BULK_GET_MAX_LUN     0xfe\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

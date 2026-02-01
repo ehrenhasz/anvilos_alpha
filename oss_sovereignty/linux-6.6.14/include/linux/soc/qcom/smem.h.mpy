@@ -1,0 +1,9 @@
+{
+  "module_name": "smem.h",
+  "hash_id": "fb0b48f50dbba299d9691120f4df781a6e55eaeab21ff3886895ff3025b1f3e5",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/soc/qcom/smem.h",
+  "human_readable_source": " \n#ifndef __QCOM_SMEM_H__\n#define __QCOM_SMEM_H__\n\n#define QCOM_SMEM_HOST_ANY -1\n\nbool qcom_smem_is_available(void);\nint qcom_smem_alloc(unsigned host, unsigned item, size_t size);\nvoid *qcom_smem_get(unsigned host, unsigned item, size_t *size);\n\nint qcom_smem_get_free_space(unsigned host);\n\nphys_addr_t qcom_smem_virt_to_phys(void *p);\n\nint qcom_smem_get_soc_id(u32 *id);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

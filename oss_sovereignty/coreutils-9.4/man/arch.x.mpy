@@ -1,0 +1,9 @@
+{
+  "module_name": "arch.x",
+  "hash_id": "f2d3f8f1376b9c75d3af1ad1b8ab2c397a39d20b5148e288e9b5aa85201d75a9",
+  "original_prompt": "Ingested from coreutils-9.4/man/arch.x",
+  "human_readable_source": "[NAME]\narch \\- print machine hardware name (same as uname -m)\n[DESCRIPTION]\n.\\\" Add any additional description here\n[SEE ALSO]\nuname(1), uname(2)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

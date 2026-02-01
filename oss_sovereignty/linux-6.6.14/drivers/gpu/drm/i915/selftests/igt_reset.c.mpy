@@ -1,0 +1,9 @@
+{
+  "module_name": "igt_reset.c",
+  "hash_id": "792ada534771c368d81901ef3f1a2b1592d125e53a54e44abefd60714bf831c8",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/selftests/igt_reset.c",
+  "human_readable_source": " \n\n#include \"igt_reset.h\"\n\n#include \"gt/intel_engine.h\"\n#include \"gt/intel_gt.h\"\n\n#include \"../i915_drv.h\"\n\nvoid igt_global_reset_lock(struct intel_gt *gt)\n{\n\tstruct intel_engine_cs *engine;\n\tenum intel_engine_id id;\n\n\tpr_debug(\"%s: current gpu_error=%08lx\\n\", __func__, gt->reset.flags);\n\n\twhile (test_and_set_bit(I915_RESET_BACKOFF, &gt->reset.flags))\n\t\twait_event(gt->reset.queue,\n\t\t\t   !test_bit(I915_RESET_BACKOFF, &gt->reset.flags));\n\n\tfor_each_engine(engine, gt, id) {\n\t\twhile (test_and_set_bit(I915_RESET_ENGINE + id,\n\t\t\t\t\t&gt->reset.flags))\n\t\t\twait_on_bit(&gt->reset.flags, I915_RESET_ENGINE + id,\n\t\t\t\t    TASK_UNINTERRUPTIBLE);\n\t}\n}\n\nvoid igt_global_reset_unlock(struct intel_gt *gt)\n{\n\tstruct intel_engine_cs *engine;\n\tenum intel_engine_id id;\n\n\tfor_each_engine(engine, gt, id)\n\t\tclear_and_wake_up_bit(I915_RESET_ENGINE + id, &gt->reset.flags);\n\n\tclear_bit(I915_RESET_BACKOFF, &gt->reset.flags);\n\twake_up_all(&gt->reset.queue);\n}\n\nbool igt_force_reset(struct intel_gt *gt)\n{\n\tintel_gt_set_wedged(gt);\n\tintel_gt_reset(gt, 0, NULL);\n\n\treturn !intel_gt_is_wedged(gt);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

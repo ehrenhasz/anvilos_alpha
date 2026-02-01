@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "56df7bf3a05f40affbbd4a8a8827dd155089afdd3f356e32f16ec8bf96da7d05",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/can/spi/mcp251xfd/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n\nobj-$(CONFIG_CAN_MCP251XFD) += mcp251xfd.o\n\nmcp251xfd-objs :=\nmcp251xfd-objs += mcp251xfd-chip-fifo.o\nmcp251xfd-objs += mcp251xfd-core.o\nmcp251xfd-objs += mcp251xfd-crc16.o\nmcp251xfd-objs += mcp251xfd-ethtool.o\nmcp251xfd-objs += mcp251xfd-ram.o\nmcp251xfd-objs += mcp251xfd-regmap.o\nmcp251xfd-objs += mcp251xfd-ring.o\nmcp251xfd-objs += mcp251xfd-rx.o\nmcp251xfd-objs += mcp251xfd-tef.o\nmcp251xfd-objs += mcp251xfd-timestamp.o\nmcp251xfd-objs += mcp251xfd-tx.o\n\nmcp251xfd-$(CONFIG_DEV_COREDUMP) += mcp251xfd-dump.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

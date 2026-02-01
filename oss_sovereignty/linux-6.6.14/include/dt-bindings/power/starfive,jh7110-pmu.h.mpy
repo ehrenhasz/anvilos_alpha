@@ -1,0 +1,9 @@
+{
+  "module_name": "starfive,jh7110-pmu.h",
+  "hash_id": "08a8cf225f4414d0fbbef797ad4855cc2a8f3f4d3663731b775342e3890391ed",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/power/starfive,jh7110-pmu.h",
+  "human_readable_source": " \n \n#ifndef __DT_BINDINGS_POWER_JH7110_POWER_H__\n#define __DT_BINDINGS_POWER_JH7110_POWER_H__\n\n#define JH7110_PD_SYSTOP\t0\n#define JH7110_PD_CPU\t\t1\n#define JH7110_PD_GPUA\t\t2\n#define JH7110_PD_VDEC\t\t3\n#define JH7110_PD_VOUT\t\t4\n#define JH7110_PD_ISP\t\t5\n#define JH7110_PD_VENC\t\t6\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

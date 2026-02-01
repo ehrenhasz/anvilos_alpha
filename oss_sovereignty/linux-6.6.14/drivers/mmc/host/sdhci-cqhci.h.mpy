@@ -1,0 +1,9 @@
+{
+  "module_name": "sdhci-cqhci.h",
+  "hash_id": "4b4c530dadba7bdf6a995da56af8c4ac5e45fa53ad2cd723008afea488484438",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/mmc/host/sdhci-cqhci.h",
+  "human_readable_source": " \n \n\n#ifndef __MMC_HOST_SDHCI_CQHCI_H__\n#define __MMC_HOST_SDHCI_CQHCI_H__\n\n#include \"cqhci.h\"\n#include \"sdhci.h\"\n\nstatic inline void sdhci_and_cqhci_reset(struct sdhci_host *host, u8 mask)\n{\n\tif ((host->mmc->caps2 & MMC_CAP2_CQE) && (mask & SDHCI_RESET_ALL) &&\n\t    host->mmc->cqe_private)\n\t\tcqhci_deactivate(host->mmc);\n\n\tsdhci_reset(host, mask);\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

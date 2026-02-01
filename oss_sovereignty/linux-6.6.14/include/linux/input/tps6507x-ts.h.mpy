@@ -1,0 +1,9 @@
+{
+  "module_name": "tps6507x-ts.h",
+  "hash_id": "6a8767d2a2660ceb2d9cd3397de5922a288536161399c02f6da0c0eee700f5fc",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/input/tps6507x-ts.h",
+  "human_readable_source": " \n\n#ifndef __LINUX_I2C_TPS6507X_TS_H\n#define __LINUX_I2C_TPS6507X_TS_H\n\n \nstruct touchscreen_init_data {\n\tint\tpoll_period;\t \n\t__u16\tmin_pressure;\t \n\t__u16\tvendor;\n\t__u16\tproduct;\n\t__u16\tversion;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

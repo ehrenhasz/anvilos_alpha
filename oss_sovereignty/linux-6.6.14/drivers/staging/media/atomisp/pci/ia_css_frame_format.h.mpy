@@ -1,0 +1,9 @@
+{
+  "module_name": "ia_css_frame_format.h",
+  "hash_id": "b1c949dd7e5985e3e2fc0f7edf71d30bff8a1ea8d82e324d26339b653defaa35",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/ia_css_frame_format.h",
+  "human_readable_source": " \n \n\n#ifndef __IA_CSS_FRAME_FORMAT_H\n#define __IA_CSS_FRAME_FORMAT_H\n\n \n\n \nenum ia_css_frame_format {\n\tIA_CSS_FRAME_FORMAT_NV11 = 0,    \n\tIA_CSS_FRAME_FORMAT_NV12,        \n\tIA_CSS_FRAME_FORMAT_NV12_16,     \n\tIA_CSS_FRAME_FORMAT_NV12_TILEY,  \n\tIA_CSS_FRAME_FORMAT_NV16,        \n\tIA_CSS_FRAME_FORMAT_NV21,        \n\tIA_CSS_FRAME_FORMAT_NV61,        \n\tIA_CSS_FRAME_FORMAT_YV12,        \n\tIA_CSS_FRAME_FORMAT_YV16,        \n\tIA_CSS_FRAME_FORMAT_YUV420,      \n\tIA_CSS_FRAME_FORMAT_YUV420_16,   \n\tIA_CSS_FRAME_FORMAT_YUV422,      \n\tIA_CSS_FRAME_FORMAT_YUV422_16,   \n\tIA_CSS_FRAME_FORMAT_UYVY,        \n\tIA_CSS_FRAME_FORMAT_YUYV,        \n\tIA_CSS_FRAME_FORMAT_YUV444,      \n\tIA_CSS_FRAME_FORMAT_YUV_LINE,    \n\tIA_CSS_FRAME_FORMAT_RAW,\t \n\tIA_CSS_FRAME_FORMAT_RGB565,      \n\tIA_CSS_FRAME_FORMAT_PLANAR_RGB888,  \n\tIA_CSS_FRAME_FORMAT_RGBA888,\t \n\tIA_CSS_FRAME_FORMAT_QPLANE6,  \n\tIA_CSS_FRAME_FORMAT_BINARY_8,\t \n\tIA_CSS_FRAME_FORMAT_MIPI,\t \n\tIA_CSS_FRAME_FORMAT_RAW_PACKED,  \n\tIA_CSS_FRAME_FORMAT_CSI_MIPI_YUV420_8,\t       \n\tIA_CSS_FRAME_FORMAT_CSI_MIPI_LEGACY_YUV420_8,  \n\tIA_CSS_FRAME_FORMAT_CSI_MIPI_YUV420_10        \n};\n\n \n \n#define IA_CSS_FRAME_FORMAT_NUM (IA_CSS_FRAME_FORMAT_CSI_MIPI_YUV420_10 + 1)\n\n \n#define IA_CSS_FRAME_OUT_FORMAT_NUM\t(IA_CSS_FRAME_FORMAT_RGBA888 + 1)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

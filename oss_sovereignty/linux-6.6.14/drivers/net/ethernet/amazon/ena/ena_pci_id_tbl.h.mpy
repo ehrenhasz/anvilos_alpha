@@ -1,0 +1,9 @@
+{
+  "module_name": "ena_pci_id_tbl.h",
+  "hash_id": "f0e5c517519f506d7023fb92b2cd292d1d608e12f65810562b59683a58780102",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/amazon/ena/ena_pci_id_tbl.h",
+  "human_readable_source": " \n \n\n#ifndef ENA_PCI_ID_TBL_H_\n#define ENA_PCI_ID_TBL_H_\n\n#ifndef PCI_VENDOR_ID_AMAZON\n#define PCI_VENDOR_ID_AMAZON 0x1d0f\n#endif\n\n#ifndef PCI_DEV_ID_ENA_PF\n#define PCI_DEV_ID_ENA_PF\t0x0ec2\n#endif\n\n#ifndef PCI_DEV_ID_ENA_LLQ_PF\n#define PCI_DEV_ID_ENA_LLQ_PF\t0x1ec2\n#endif\n\n#ifndef PCI_DEV_ID_ENA_VF\n#define PCI_DEV_ID_ENA_VF\t0xec20\n#endif\n\n#ifndef PCI_DEV_ID_ENA_LLQ_VF\n#define PCI_DEV_ID_ENA_LLQ_VF\t0xec21\n#endif\n\n#ifndef PCI_DEV_ID_ENA_RESRV0\n#define PCI_DEV_ID_ENA_RESRV0\t0x0051\n#endif\n\n#define ENA_PCI_ID_TABLE_ENTRY(devid) \\\n\t{PCI_DEVICE(PCI_VENDOR_ID_AMAZON, devid)},\n\nstatic const struct pci_device_id ena_pci_tbl[] = {\n\tENA_PCI_ID_TABLE_ENTRY(PCI_DEV_ID_ENA_RESRV0)\n\tENA_PCI_ID_TABLE_ENTRY(PCI_DEV_ID_ENA_PF)\n\tENA_PCI_ID_TABLE_ENTRY(PCI_DEV_ID_ENA_LLQ_PF)\n\tENA_PCI_ID_TABLE_ENTRY(PCI_DEV_ID_ENA_VF)\n\tENA_PCI_ID_TABLE_ENTRY(PCI_DEV_ID_ENA_LLQ_VF)\n\t{ }\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

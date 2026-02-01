@@ -1,0 +1,9 @@
+{
+  "module_name": "jz4740-adc.h",
+  "hash_id": "2e0258fd0ada95e51fad62d7e73a6e71578a3b33755bc86692c92ff1b85c0aa7",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/jz4740-adc.h",
+  "human_readable_source": " \n\n#ifndef __LINUX_JZ4740_ADC\n#define __LINUX_JZ4740_ADC\n\nstruct device;\n\n \nint jz4740_adc_set_config(struct device *dev, uint32_t mask, uint32_t val);\n\n#define JZ_ADC_CONFIG_SPZZ\t\tBIT(31)\n#define JZ_ADC_CONFIG_EX_IN\t\tBIT(30)\n#define JZ_ADC_CONFIG_DNUM_MASK\t\t(0x7 << 16)\n#define JZ_ADC_CONFIG_DMA_ENABLE\tBIT(15)\n#define JZ_ADC_CONFIG_XYZ_MASK\t\t(0x2 << 13)\n#define JZ_ADC_CONFIG_SAMPLE_NUM_MASK\t(0x7 << 10)\n#define JZ_ADC_CONFIG_CLKDIV_MASK\t(0xf << 5)\n#define JZ_ADC_CONFIG_BAT_MB\t\tBIT(4)\n\n#define JZ_ADC_CONFIG_DNUM(dnum)\t((dnum) << 16)\n#define JZ_ADC_CONFIG_XYZ_OFFSET(dnum)\t((xyz) << 13)\n#define JZ_ADC_CONFIG_SAMPLE_NUM(x)\t((x) << 10)\n#define JZ_ADC_CONFIG_CLKDIV(div)\t((div) << 5)\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

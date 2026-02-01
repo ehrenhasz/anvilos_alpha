@@ -1,0 +1,9 @@
+{
+  "module_name": "core.c",
+  "hash_id": "829e579195a137567816f1bb27281e5bf5585ca8552589cbd500eb5799da73b5",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/mediatek/mt7601u/core.c",
+  "human_readable_source": "\n \n\n#include \"mt7601u.h\"\n\nint mt7601u_wait_asic_ready(struct mt7601u_dev *dev)\n{\n\tint i = 100;\n\tu32 val;\n\n\tdo {\n\t\tif (test_bit(MT7601U_STATE_REMOVED, &dev->state))\n\t\t\treturn -EIO;\n\n\t\tval = mt7601u_rr(dev, MT_MAC_CSR0);\n\t\tif (val && ~val)\n\t\t\treturn 0;\n\n\t\tudelay(10);\n\t} while (i--);\n\n\treturn -EIO;\n}\n\nbool mt76_poll(struct mt7601u_dev *dev, u32 offset, u32 mask, u32 val,\n\t       int timeout)\n{\n\tu32 cur;\n\n\ttimeout /= 10;\n\tdo {\n\t\tif (test_bit(MT7601U_STATE_REMOVED, &dev->state))\n\t\t\treturn false;\n\n\t\tcur = mt7601u_rr(dev, offset) & mask;\n\t\tif (cur == val)\n\t\t\treturn true;\n\n\t\tudelay(10);\n\t} while (timeout-- > 0);\n\n\tdev_err(dev->dev, \"Error: Time out with reg %08x\\n\", offset);\n\n\treturn false;\n}\n\nbool mt76_poll_msec(struct mt7601u_dev *dev, u32 offset, u32 mask, u32 val,\n\t\t    int timeout)\n{\n\tu32 cur;\n\n\ttimeout /= 10;\n\tdo {\n\t\tif (test_bit(MT7601U_STATE_REMOVED, &dev->state))\n\t\t\treturn false;\n\n\t\tcur = mt7601u_rr(dev, offset) & mask;\n\t\tif (cur == val)\n\t\t\treturn true;\n\n\t\tmsleep(10);\n\t} while (timeout-- > 0);\n\n\tdev_err(dev->dev, \"Error: Time out with reg %08x\\n\", offset);\n\n\treturn false;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "fake_sigreturn_missing_fpsimd.c",
+  "hash_id": "3c093bed501aae09ecf3873c22a05def1e3c4feb6a639a7a368f57c1ee1550be",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/arm64/signal/testcases/fake_sigreturn_missing_fpsimd.c",
+  "human_readable_source": "\n \n\n#include <stdio.h>\n#include <signal.h>\n#include <ucontext.h>\n\n#include \"test_signals_utils.h\"\n#include \"testcases.h\"\n\nstruct fake_sigframe sf;\n\nstatic int fake_sigreturn_missing_fpsimd_run(struct tdescr *td,\n\t\t\t\t\t     siginfo_t *si, ucontext_t *uc)\n{\n\tsize_t resv_sz, offset;\n\tstruct _aarch64_ctx *head = GET_SF_RESV_HEAD(sf);\n\n\t \n\tif (!get_current_context(td, &sf.uc, sizeof(sf.uc)))\n\t\treturn 1;\n\n\tresv_sz = GET_SF_RESV_SIZE(sf);\n\thead = get_header(head, FPSIMD_MAGIC, resv_sz, &offset);\n\tif (head && resv_sz - offset >= HDR_SZ) {\n\t\tfprintf(stderr, \"Mangling template header. Spare space:%zd\\n\",\n\t\t\tresv_sz - offset);\n\t\t \n\t\twrite_terminator_record(head);\n\n\t\tASSERT_BAD_CONTEXT(&sf.uc);\n\t\tfake_sigreturn(&sf, sizeof(sf), 0);\n\t}\n\n\treturn 1;\n}\n\nstruct tdescr tde = {\n\t\t.name = \"FAKE_SIGRETURN_MISSING_FPSIMD\",\n\t\t.descr = \"Triggers a sigreturn with a missing fpsimd_context\",\n\t\t.sig_ok = SIGSEGV,\n\t\t.timeout = 3,\n\t\t.run = fake_sigreturn_missing_fpsimd_run,\n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

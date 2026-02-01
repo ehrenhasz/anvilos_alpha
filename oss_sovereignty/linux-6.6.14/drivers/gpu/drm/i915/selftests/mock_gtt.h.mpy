@@ -1,0 +1,9 @@
+{
+  "module_name": "mock_gtt.h",
+  "hash_id": "f912497f914c45b50766867728cf71bb6f93a36d55eb522c82b3dca4c45e5fc0",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/selftests/mock_gtt.h",
+  "human_readable_source": " \n\n#ifndef __MOCK_GTT_H\n#define __MOCK_GTT_H\n\nstruct drm_i915_private;\nstruct i915_ggtt;\nstruct intel_gt;\n\nvoid mock_init_ggtt(struct intel_gt *gt);\nvoid mock_fini_ggtt(struct i915_ggtt *ggtt);\n\nstruct i915_ppgtt *mock_ppgtt(struct drm_i915_private *i915, const char *name);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

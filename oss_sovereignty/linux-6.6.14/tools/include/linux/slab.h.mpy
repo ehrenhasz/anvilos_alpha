@@ -1,0 +1,9 @@
+{
+  "module_name": "slab.h",
+  "hash_id": "51902d921bf01c6103703c7b05ed38b0eb50635575b3d6cdbfd3003858b4d058",
+  "original_prompt": "Ingested from linux-6.6.14/tools/include/linux/slab.h",
+  "human_readable_source": " \n#ifndef _TOOLS_SLAB_H\n#define _TOOLS_SLAB_H\n\n#include <linux/types.h>\n#include <linux/gfp.h>\n\n#define SLAB_PANIC 2\n#define SLAB_RECLAIM_ACCOUNT    0x00020000UL             \n\n#define kzalloc_node(size, flags, node) kmalloc(size, flags)\n\nvoid *kmalloc(size_t size, gfp_t gfp);\nvoid kfree(void *p);\n\nbool slab_is_available(void);\n\nenum slab_state {\n\tDOWN,\n\tPARTIAL,\n\tPARTIAL_NODE,\n\tUP,\n\tFULL\n};\n\nstatic inline void *kzalloc(size_t size, gfp_t gfp)\n{\n\treturn kmalloc(size, gfp | __GFP_ZERO);\n}\n\nstruct list_lru;\n\nvoid *kmem_cache_alloc_lru(struct kmem_cache *cachep, struct list_lru *, int flags);\nstatic inline void *kmem_cache_alloc(struct kmem_cache *cachep, int flags)\n{\n\treturn kmem_cache_alloc_lru(cachep, NULL, flags);\n}\nvoid kmem_cache_free(struct kmem_cache *cachep, void *objp);\n\nstruct kmem_cache *kmem_cache_create(const char *name, unsigned int size,\n\t\t\tunsigned int align, unsigned int flags,\n\t\t\tvoid (*ctor)(void *));\n\nvoid kmem_cache_free_bulk(struct kmem_cache *cachep, size_t size, void **list);\nint kmem_cache_alloc_bulk(struct kmem_cache *cachep, gfp_t gfp, size_t size,\n\t\t\t  void **list);\n\n#endif\t\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

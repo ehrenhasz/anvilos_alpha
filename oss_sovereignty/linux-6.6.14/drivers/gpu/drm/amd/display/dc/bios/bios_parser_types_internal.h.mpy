@@ -1,0 +1,9 @@
+{
+  "module_name": "bios_parser_types_internal.h",
+  "hash_id": "2978264aff0359ffd37db9768e14ba412f225053cc3bf44a8ac501fe34a2dc35",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/dc/bios/bios_parser_types_internal.h",
+  "human_readable_source": " \n\n#ifndef __DAL_BIOS_PARSER_TYPES_BIOS_H__\n#define __DAL_BIOS_PARSER_TYPES_BIOS_H__\n\n#include \"dc_bios_types.h\"\n#include \"bios_parser_helper.h\"\n\nstruct atom_data_revision {\n\tuint32_t major;\n\tuint32_t minor;\n};\n\nstruct object_info_table {\n\tstruct atom_data_revision revision;\n\tunion {\n\t\tATOM_OBJECT_HEADER *v1_1;\n\t\tATOM_OBJECT_HEADER_V3 *v1_3;\n\t};\n};\n\nenum spread_spectrum_id {\n\tSS_ID_UNKNOWN = 0,\n\tSS_ID_DP1 = 0xf1,\n\tSS_ID_DP2 = 0xf2,\n\tSS_ID_LVLINK_2700MHZ = 0xf3,\n\tSS_ID_LVLINK_1620MHZ = 0xf4\n};\n\nstruct bios_parser {\n\tstruct dc_bios base;\n\n\tstruct object_info_table object_info_tbl;\n\tuint32_t object_info_tbl_offset;\n\tATOM_MASTER_DATA_TABLE *master_data_tbl;\n\n\tconst struct bios_parser_helper *bios_helper;\n\n\tconst struct command_table_helper *cmd_helper;\n\tstruct cmd_tbl cmd_tbl;\n\n\tbool remap_device_tags;\n};\n\n \n#define BP_FROM_DCB(dc_bios) \\\n\tcontainer_of(dc_bios, struct bios_parser, base)\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

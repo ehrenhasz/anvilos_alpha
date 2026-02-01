@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "4b324d2b3e469b58e80d4179b36866bece5d244168a9097a769ebcb7651d8d3a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/mediatek/mt76/mt7921/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: ISC\n\nobj-$(CONFIG_MT7921_COMMON) += mt7921-common.o\nobj-$(CONFIG_MT7921E) += mt7921e.o\nobj-$(CONFIG_MT7921S) += mt7921s.o\nobj-$(CONFIG_MT7921U) += mt7921u.o\n\nmt7921-common-y := mac.o mcu.o main.o init.o debugfs.o\nmt7921-common-$(CONFIG_NL80211_TESTMODE) += testmode.o\nmt7921e-y := pci.o pci_mac.o pci_mcu.o\nmt7921s-y := sdio.o sdio_mac.o sdio_mcu.o\nmt7921u-y := usb.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

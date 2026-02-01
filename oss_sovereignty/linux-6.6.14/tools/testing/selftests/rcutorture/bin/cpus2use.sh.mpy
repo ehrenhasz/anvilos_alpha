@@ -1,0 +1,9 @@
+{
+  "module_name": "cpus2use.sh",
+  "hash_id": "a4a18fc367d51d30147f6d80b711e69fa591fb3d9fe7f2c8ca1f88504d1a5af0",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/rcutorture/bin/cpus2use.sh",
+  "human_readable_source": "#!/bin/bash\n# SPDX-License-Identifier: GPL-2.0+\n#\n# Get an estimate of how CPU-hoggy to be.\n#\n# Usage: cpus2use.sh\n#\n# Copyright (C) IBM Corporation, 2013\n#\n# Authors: Paul E. McKenney <paulmck@linux.ibm.com>\n\nif test -n \"$TORTURE_ALLOTED_CPUS\"\nthen\n\techo $TORTURE_ALLOTED_CPUS\n\texit 0\nfi\nncpus=`grep '^processor' /proc/cpuinfo | wc -l`\nif mpstat -V > /dev/null 2>&1\nthen\n\tidlecpus=`mpstat | tail -1 | \\\n\t\tawk -v ncpus=$ncpus '{ print ncpus * ($7 + $NF) / 100 }'`\nelse\n\t# No mpstat command, so use all available CPUs.\n\tidlecpus=$ncpus\nfi\nawk -v ncpus=$ncpus -v idlecpus=$idlecpus < /dev/null '\nBEGIN {\n\tcpus2use = idlecpus;\n\tif (cpus2use < 1)\n\t\tcpus2use = 1;\n\tif (cpus2use < ncpus / 10)\n\t\tcpus2use = ncpus / 10;\n\tif (cpus2use == int(cpus2use))\n\t\tcpus2use = int(cpus2use)\n\telse\n\t\tcpus2use = int(cpus2use) + 1\n\tprint cpus2use;\n}'\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

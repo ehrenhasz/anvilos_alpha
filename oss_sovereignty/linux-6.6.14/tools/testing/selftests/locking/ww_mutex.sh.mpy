@@ -1,0 +1,9 @@
+{
+  "module_name": "ww_mutex.sh",
+  "hash_id": "a0c46e14fe14cfc5dfe2cbfafd2ddd7587a4b359f9dabdbf182283f43f3b0a6f",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/locking/ww_mutex.sh",
+  "human_readable_source": "#!/bin/sh\n# SPDX-License-Identifier: GPL-2.0\n\n# Kselftest framework requirement - SKIP code is 4.\nksft_skip=4\n\n# Runs API tests for struct ww_mutex (Wait/Wound mutexes)\nif ! /sbin/modprobe -q -n test-ww_mutex; then\n\techo \"ww_mutex: module test-ww_mutex is not found [SKIP]\"\n\texit $ksft_skip\nfi\n\nif /sbin/modprobe -q test-ww_mutex; then\n       /sbin/modprobe -q -r test-ww_mutex\n       echo \"locking/ww_mutex: ok\"\nelse\n       echo \"locking/ww_mutex: [FAIL]\"\n       exit 1\nfi\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

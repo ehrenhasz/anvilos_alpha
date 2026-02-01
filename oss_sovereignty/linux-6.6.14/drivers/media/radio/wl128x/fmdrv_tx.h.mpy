@@ -1,0 +1,9 @@
+{
+  "module_name": "fmdrv_tx.h",
+  "hash_id": "ce5918ca2f581e1164543441eae9eb205c2d48a1dad8d96b72493ae6bdafa356",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/radio/wl128x/fmdrv_tx.h",
+  "human_readable_source": " \n \n\n#ifndef _FMDRV_TX_H\n#define _FMDRV_TX_H\n\nint fm_tx_set_freq(struct fmdev *, u32);\nint fm_tx_set_pwr_lvl(struct fmdev *, u8);\nint fm_tx_set_region(struct fmdev *, u8);\nint fm_tx_set_mute_mode(struct fmdev *, u8);\nint fm_tx_set_stereo_mono(struct fmdev *, u16);\nint fm_tx_set_rds_mode(struct fmdev *, u8);\nint fm_tx_set_radio_text(struct fmdev *, u8 *, u8);\nint fm_tx_set_af(struct fmdev *, u32);\nint fm_tx_set_preemph_filter(struct fmdev *, u32);\nint fm_tx_get_tune_cap_val(struct fmdev *);\n\n#endif\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

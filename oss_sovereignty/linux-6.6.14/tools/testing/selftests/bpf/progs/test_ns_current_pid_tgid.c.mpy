@@ -1,0 +1,9 @@
+{
+  "module_name": "test_ns_current_pid_tgid.c",
+  "hash_id": "43fc98d28737a71b07052bd0f659b3052d5590126f78781787d091835f216785",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/test_ns_current_pid_tgid.c",
+  "human_readable_source": "\n \n\n#include <linux/bpf.h>\n#include <stdint.h>\n#include <bpf/bpf_helpers.h>\n\n__u64 user_pid = 0;\n__u64 user_tgid = 0;\n__u64 dev = 0;\n__u64 ino = 0;\n\nSEC(\"tracepoint/syscalls/sys_enter_nanosleep\")\nint handler(const void *ctx)\n{\n\tstruct bpf_pidns_info nsdata;\n\n\tif (bpf_get_ns_current_pid_tgid(dev, ino, &nsdata, sizeof(struct bpf_pidns_info)))\n\t\treturn 0;\n\n\tuser_pid = nsdata.pid;\n\tuser_tgid = nsdata.tgid;\n\n\treturn 0;\n}\n\nchar _license[] SEC(\"license\") = \"GPL\";\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

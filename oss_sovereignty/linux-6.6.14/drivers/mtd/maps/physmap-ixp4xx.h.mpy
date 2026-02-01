@@ -1,0 +1,9 @@
+{
+  "module_name": "physmap-ixp4xx.h",
+  "hash_id": "e7f9174f78eca7ae8896e0ea1afe6dec2a3c0206b95b3b556ea10fdfb9baf882",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/mtd/maps/physmap-ixp4xx.h",
+  "human_readable_source": " \n#include <linux/of.h>\n#include <linux/platform_device.h>\n#include <linux/mtd/map.h>\n\n#ifdef CONFIG_MTD_PHYSMAP_IXP4XX\nint of_flash_probe_ixp4xx(struct platform_device *pdev,\n\t\t\t  struct device_node *np,\n\t\t\t  struct map_info *map);\n#else\nstatic inline\nint of_flash_probe_ixp4xx(struct platform_device *pdev,\n\t\t\t  struct device_node *np,\n\t\t\t  struct map_info *map)\n{\n\treturn 0;\n}\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

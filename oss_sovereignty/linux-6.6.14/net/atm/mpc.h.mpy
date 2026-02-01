@@ -1,0 +1,9 @@
+{
+  "module_name": "mpc.h",
+  "hash_id": "60826e944f711eb37074b128f68bc77e44dfae99493615db7003e589d2b5b008",
+  "original_prompt": "Ingested from linux-6.6.14/net/atm/mpc.h",
+  "human_readable_source": " \n#ifndef _MPC_H_\n#define _MPC_H_\n\n#include <linux/types.h>\n#include <linux/atm.h>\n#include <linux/atmmpc.h>\n#include <linux/skbuff.h>\n#include <linux/spinlock.h>\n#include \"mpoa_caches.h\"\n\n \nint msg_to_mpoad(struct k_message *msg, struct mpoa_client *mpc);\n\nstruct mpoa_client {\n\tstruct mpoa_client *next;\n\tstruct net_device *dev;       \n\tint dev_num;                  \n\n\tstruct atm_vcc *mpoad_vcc;    \n\tuint8_t mps_ctrl_addr[ATM_ESA_LEN];   \n\tuint8_t our_ctrl_addr[ATM_ESA_LEN];   \n\n\trwlock_t ingress_lock;\n\tconst struct in_cache_ops *in_ops;  \n\tin_cache_entry *in_cache;     \n\n\trwlock_t egress_lock;\n\tconst struct eg_cache_ops *eg_ops;  \n\teg_cache_entry *eg_cache;     \n\n\tuint8_t *mps_macs;            \n\tint number_of_mps_macs;       \n\tstruct mpc_parameters parameters;   \n\n\tconst struct net_device_ops *old_ops;\n\tstruct net_device_ops new_ops;\n};\n\n\nstruct atm_mpoa_qos {\n\tstruct atm_mpoa_qos *next;\n\t__be32 ipaddr;\n\tstruct atm_qos qos;\n};\n\n\n \nstruct atm_mpoa_qos *atm_mpoa_add_qos(__be32 dst_ip, struct atm_qos *qos);\nstruct atm_mpoa_qos *atm_mpoa_search_qos(__be32 dst_ip);\nint atm_mpoa_delete_qos(struct atm_mpoa_qos *qos);\n\n \nstruct seq_file;\nvoid atm_mpoa_disp_qos(struct seq_file *m);\n\n#ifdef CONFIG_PROC_FS\nint mpc_proc_init(void);\nvoid mpc_proc_clean(void);\n#else\n#define mpc_proc_init() (0)\n#define mpc_proc_clean() do { } while(0)\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

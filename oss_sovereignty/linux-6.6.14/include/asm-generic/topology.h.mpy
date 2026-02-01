@@ -1,0 +1,9 @@
+{
+  "module_name": "topology.h",
+  "hash_id": "abacf5c965051a06dcebacecabe65a63a649804cf52c0c3dcaf87a0693b820eb",
+  "original_prompt": "Ingested from linux-6.6.14/include/asm-generic/topology.h",
+  "human_readable_source": " \n#ifndef _ASM_GENERIC_TOPOLOGY_H\n#define _ASM_GENERIC_TOPOLOGY_H\n\n#ifndef\tCONFIG_NUMA\n\n \n#ifndef cpu_to_node\n#define cpu_to_node(cpu)\t((void)(cpu),0)\n#endif\n#ifndef set_numa_node\n#define set_numa_node(node)\n#endif\n#ifndef set_cpu_numa_node\n#define set_cpu_numa_node(cpu, node)\n#endif\n#ifndef cpu_to_mem\n#define cpu_to_mem(cpu)\t\t((void)(cpu),0)\n#endif\n\n#ifndef cpumask_of_node\n  #ifdef CONFIG_NUMA\n    #define cpumask_of_node(node)\t((node) == 0 ? cpu_online_mask : cpu_none_mask)\n  #else\n    #define cpumask_of_node(node)\t((void)(node), cpu_online_mask)\n  #endif\n#endif\n#ifndef pcibus_to_node\n#define pcibus_to_node(bus)\t((void)(bus), -1)\n#endif\n\n#ifndef cpumask_of_pcibus\n#define cpumask_of_pcibus(bus)\t(pcibus_to_node(bus) == -1 ?\t\t\\\n\t\t\t\t cpu_all_mask :\t\t\t\t\\\n\t\t\t\t cpumask_of_node(pcibus_to_node(bus)))\n#endif\n\n#endif\t \n\n#if !defined(CONFIG_NUMA) || !defined(CONFIG_HAVE_MEMORYLESS_NODES)\n\n#ifndef set_numa_mem\n#define set_numa_mem(node)\n#endif\n#ifndef set_cpu_numa_mem\n#define set_cpu_numa_mem(cpu, node)\n#endif\n\n#endif\t \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

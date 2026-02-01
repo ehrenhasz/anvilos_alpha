@@ -1,0 +1,9 @@
+{
+  "module_name": "utimecmp.h",
+  "hash_id": "608f2f8fe0eaee9d5161c5f4df960648b6ba74e036efbae258c33676ee3b8ef0",
+  "original_prompt": "Ingested from coreutils-9.4/lib/utimecmp.h",
+  "human_readable_source": " \n\n#ifndef UTIMECMP_H\n#define UTIMECMP_H 1\n\n#include <sys/types.h>\n#include <sys/stat.h>\n\n \nenum\n{\n   \n  UTIMECMP_TRUNCATE_SOURCE = 1\n};\n\nint utimecmp (char const *, struct stat const *, struct stat const *, int);\nint utimecmpat (int, char const *, struct stat const *, struct stat const *,\n                int);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

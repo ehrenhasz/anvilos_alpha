@@ -1,0 +1,9 @@
+{
+  "module_name": "capability.h",
+  "hash_id": "26a8bf6c7f4c629b59f6cd3abdaf01c81e92d69208e522ce70dd7c8e66c68ad4",
+  "original_prompt": "Ingested from linux-6.6.14/security/apparmor/include/capability.h",
+  "human_readable_source": " \n \n\n#ifndef __AA_CAPABILITY_H\n#define __AA_CAPABILITY_H\n\n#include <linux/sched.h>\n\n#include \"apparmorfs.h\"\n\nstruct aa_label;\n\n \nstruct aa_caps {\n\tkernel_cap_t allow;\n\tkernel_cap_t audit;\n\tkernel_cap_t denied;\n\tkernel_cap_t quiet;\n\tkernel_cap_t kill;\n\tkernel_cap_t extended;\n};\n\nextern struct aa_sfs_entry aa_sfs_entry_caps[];\n\nint aa_capable(const struct cred *subj_cred, struct aa_label *label,\n\t       int cap, unsigned int opts);\n\nstatic inline void aa_free_cap_rules(struct aa_caps *caps)\n{\n\t \n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

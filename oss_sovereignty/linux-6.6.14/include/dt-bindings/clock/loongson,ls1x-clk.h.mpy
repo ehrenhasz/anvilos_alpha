@@ -1,0 +1,9 @@
+{
+  "module_name": "loongson,ls1x-clk.h",
+  "hash_id": "13e394574f8f0c609cf312020aebecc088a994a524f8752efe820f4cb0a9b247",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/clock/loongson,ls1x-clk.h",
+  "human_readable_source": " \n \n\n#ifndef __DT_BINDINGS_CLOCK_LS1X_CLK_H__\n#define __DT_BINDINGS_CLOCK_LS1X_CLK_H__\n\n#define LS1X_CLKID_PLL\t0\n#define LS1X_CLKID_CPU\t1\n#define LS1X_CLKID_DC\t2\n#define LS1X_CLKID_AHB\t3\n#define LS1X_CLKID_APB\t4\n\n#define CLK_NR_CLKS\t(LS1X_CLKID_APB + 1)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

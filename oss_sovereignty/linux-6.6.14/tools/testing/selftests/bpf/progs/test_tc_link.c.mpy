@@ -1,0 +1,9 @@
+{
+  "module_name": "test_tc_link.c",
+  "hash_id": "00cb9c20ae6597bc24aab368658eaabad243372cec98bd4642dd36287b1c51aa",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/test_tc_link.c",
+  "human_readable_source": "\n \n#include <stdbool.h>\n#include <linux/bpf.h>\n#include <bpf/bpf_helpers.h>\n\nchar LICENSE[] SEC(\"license\") = \"GPL\";\n\nbool seen_tc1;\nbool seen_tc2;\nbool seen_tc3;\nbool seen_tc4;\nbool seen_tc5;\nbool seen_tc6;\n\nSEC(\"tc/ingress\")\nint tc1(struct __sk_buff *skb)\n{\n\tseen_tc1 = true;\n\treturn TCX_NEXT;\n}\n\nSEC(\"tc/egress\")\nint tc2(struct __sk_buff *skb)\n{\n\tseen_tc2 = true;\n\treturn TCX_NEXT;\n}\n\nSEC(\"tc/egress\")\nint tc3(struct __sk_buff *skb)\n{\n\tseen_tc3 = true;\n\treturn TCX_NEXT;\n}\n\nSEC(\"tc/egress\")\nint tc4(struct __sk_buff *skb)\n{\n\tseen_tc4 = true;\n\treturn TCX_NEXT;\n}\n\nSEC(\"tc/egress\")\nint tc5(struct __sk_buff *skb)\n{\n\tseen_tc5 = true;\n\treturn TCX_PASS;\n}\n\nSEC(\"tc/egress\")\nint tc6(struct __sk_buff *skb)\n{\n\tseen_tc6 = true;\n\treturn TCX_PASS;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

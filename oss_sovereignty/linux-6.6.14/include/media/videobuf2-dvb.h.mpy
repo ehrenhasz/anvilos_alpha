@@ -1,0 +1,9 @@
+{
+  "module_name": "videobuf2-dvb.h",
+  "hash_id": "5880e6d9ebde0c6163cf71a47105561fc4fc8c9086dd01d5e40e57ed212dc799",
+  "original_prompt": "Ingested from linux-6.6.14/include/media/videobuf2-dvb.h",
+  "human_readable_source": " \n#ifndef _VIDEOBUF2_DVB_H_\n#define\t_VIDEOBUF2_DVB_H_\n\n#include <media/dvbdev.h>\n#include <media/dmxdev.h>\n#include <media/dvb_demux.h>\n#include <media/dvb_net.h>\n#include <media/dvb_frontend.h>\n#include <media/videobuf2-v4l2.h>\n\n \nstruct media_device;\n\n \n\nstruct vb2_dvb {\n\t \n\tchar\t\t\t*name;\n\tstruct dvb_frontend\t*frontend;\n\tstruct vb2_queue\tdvbq;\n\n\t \n\tstruct mutex\t\tlock;\n\tint\t\t\tnfeeds;\n\n\t \n\tstruct dvb_demux\tdemux;\n\tstruct dmxdev\t\tdmxdev;\n\tstruct dmx_frontend\tfe_hw;\n\tstruct dmx_frontend\tfe_mem;\n\tstruct dvb_net\t\tnet;\n};\n\nstruct vb2_dvb_frontend {\n\tstruct list_head felist;\n\tint id;\n\tstruct vb2_dvb dvb;\n};\n\nstruct vb2_dvb_frontends {\n\tstruct list_head felist;\n\tstruct mutex lock;\n\tstruct dvb_adapter adapter;\n\tint active_fe_id;  \n\tint gate;  \n};\n\nint vb2_dvb_register_bus(struct vb2_dvb_frontends *f,\n\t\t\t struct module *module,\n\t\t\t void *adapter_priv,\n\t\t\t struct device *device,\n\t\t\t struct media_device *mdev,\n\t\t\t short *adapter_nr,\n\t\t\t int mfe_shared);\n\nvoid vb2_dvb_unregister_bus(struct vb2_dvb_frontends *f);\n\nstruct vb2_dvb_frontend *vb2_dvb_alloc_frontend(struct vb2_dvb_frontends *f, int id);\nvoid vb2_dvb_dealloc_frontends(struct vb2_dvb_frontends *f);\n\nstruct vb2_dvb_frontend *vb2_dvb_get_frontend(struct vb2_dvb_frontends *f, int id);\nint vb2_dvb_find_frontend(struct vb2_dvb_frontends *f, struct dvb_frontend *p);\n\n#endif\t\t\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

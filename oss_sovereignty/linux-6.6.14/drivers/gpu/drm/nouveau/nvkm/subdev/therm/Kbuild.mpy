@@ -1,0 +1,9 @@
+{
+  "module_name": "Kbuild",
+  "hash_id": "70a085e1422f598b08e69cafee75a7ba94ef9bc23eb11ec6d3c00faf48401f86",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/subdev/therm/Kbuild",
+  "human_readable_source": "# SPDX-License-Identifier: MIT\nnvkm-y += nvkm/subdev/therm/base.o\nnvkm-y += nvkm/subdev/therm/fan.o\nnvkm-y += nvkm/subdev/therm/fannil.o\nnvkm-y += nvkm/subdev/therm/fanpwm.o\nnvkm-y += nvkm/subdev/therm/fantog.o\nnvkm-y += nvkm/subdev/therm/ic.o\nnvkm-y += nvkm/subdev/therm/temp.o\nnvkm-y += nvkm/subdev/therm/nv40.o\nnvkm-y += nvkm/subdev/therm/nv50.o\nnvkm-y += nvkm/subdev/therm/g84.o\nnvkm-y += nvkm/subdev/therm/gt215.o\nnvkm-y += nvkm/subdev/therm/gf100.o\nnvkm-y += nvkm/subdev/therm/gf119.o\nnvkm-y += nvkm/subdev/therm/gk104.o\nnvkm-y += nvkm/subdev/therm/gm107.o\nnvkm-y += nvkm/subdev/therm/gm200.o\nnvkm-y += nvkm/subdev/therm/gp100.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

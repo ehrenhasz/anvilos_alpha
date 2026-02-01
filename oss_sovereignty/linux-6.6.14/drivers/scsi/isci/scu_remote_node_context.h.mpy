@@ -1,0 +1,9 @@
+{
+  "module_name": "scu_remote_node_context.h",
+  "hash_id": "ccfccbe82827dc8905037a457e5d42418c9c68a0561c618a6da8411d8e81aab1",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/scsi/isci/scu_remote_node_context.h",
+  "human_readable_source": " \n\n#ifndef __SCU_REMOTE_NODE_CONTEXT_HEADER__\n#define __SCU_REMOTE_NODE_CONTEXT_HEADER__\n\n \n\n \nstruct ssp_remote_node_context {\n\t \n\n\t \n\tu32 remote_node_index:12;\n\tu32 reserved0_1:4;\n\n\t \n\tu32 remote_node_port_width:4;\n\n\t \n\tu32 logical_port_index:3;\n\tu32 reserved0_2:5;\n\n\t \n\tu32 nexus_loss_timer_enable:1;\n\n\t \n\tu32 check_bit:1;\n\n\t \n\tu32 is_valid:1;\n\n\t \n\tu32 is_remote_node_context:1;\n\n\t \n\n\t \n\tu32 remote_sas_address_lo;\n\n\t \n\tu32 remote_sas_address_hi;\n\n\t \n\t \n\tu32 function_number:8;\n\tu32 reserved3_1:8;\n\n\t \n\tu32 arbitration_wait_time:16;\n\n\t \n\t \n\tu32 connection_occupancy_timeout:16;\n\n\t \n\tu32 connection_inactivity_timeout:16;\n\n\t \n\t \n\tu32 initial_arbitration_wait_time:16;\n\n\t \n\tu32 oaf_connection_rate:4;\n\n\t \n\tu32 oaf_features:4;\n\n\t \n\tu32 oaf_source_zone_group:8;\n\n\t \n\t \n\tu32 oaf_more_compatibility_features;\n\n\t \n\tu32 reserved7;\n\n};\n\n \nstruct stp_remote_node_context {\n\t \n\tu32 data[8];\n\n};\n\n \nunion scu_remote_node_context {\n\t \n\tstruct ssp_remote_node_context ssp;\n\n\t \n\tstruct stp_remote_node_context stp;\n\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

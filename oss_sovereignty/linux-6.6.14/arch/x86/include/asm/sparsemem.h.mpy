@@ -1,0 +1,9 @@
+{
+  "module_name": "sparsemem.h",
+  "hash_id": "7bb6d332aeeb190744bc8bf4a094991c9be3e8bdf6d2d1711b3972f4d0a2102f",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/include/asm/sparsemem.h",
+  "human_readable_source": " \n#ifndef _ASM_X86_SPARSEMEM_H\n#define _ASM_X86_SPARSEMEM_H\n\n#include <linux/types.h>\n\n#ifdef CONFIG_SPARSEMEM\n \n\n#ifdef CONFIG_X86_32\n# ifdef CONFIG_X86_PAE\n#  define SECTION_SIZE_BITS\t29\n#  define MAX_PHYSMEM_BITS\t36\n# else\n#  define SECTION_SIZE_BITS\t26\n#  define MAX_PHYSMEM_BITS\t32\n# endif\n#else  \n# define SECTION_SIZE_BITS\t27  \n# define MAX_PHYSMEM_BITS\t(pgtable_l5_enabled() ? 52 : 46)\n#endif\n\n#endif  \n\n#ifndef __ASSEMBLY__\n#ifdef CONFIG_NUMA_KEEP_MEMINFO\nextern int phys_to_target_node(phys_addr_t start);\n#define phys_to_target_node phys_to_target_node\nextern int memory_add_physaddr_to_nid(u64 start);\n#define memory_add_physaddr_to_nid memory_add_physaddr_to_nid\nextern int numa_fill_memblks(u64 start, u64 end);\n#define numa_fill_memblks numa_fill_memblks\n#endif\n#endif  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

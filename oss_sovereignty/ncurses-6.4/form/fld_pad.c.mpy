@@ -1,0 +1,9 @@
+{
+  "module_name": "fld_pad.c",
+  "hash_id": "93e3fd508f4bffc63dddcb3f32bdc499c587b948515f158fed0c8f7d5638da54",
+  "original_prompt": "Ingested from ncurses-6.4/form/fld_pad.c",
+  "human_readable_source": " \n\n \n\n#include \"form.priv.h\"\n\nMODULE_ID(\"$Id: fld_pad.c,v 1.14 2021/06/17 21:20:30 tom Exp $\")\n\n \nFORM_EXPORT(int)\nset_field_pad(FIELD *field, int ch)\n{\n  int res = E_BAD_ARGUMENT;\n\n  T((T_CALLED(\"set_field_pad(%p,%d)\"), (void *)field, ch));\n\n  Normalize_Field(field);\n  if (isprint(UChar(ch)))\n    {\n      if (field->pad != ch)\n\t{\n\t  field->pad = ch;\n\t  res = _nc_Synchronize_Attributes(field);\n\t}\n      else\n\tres = E_OK;\n    }\n  RETURN(res);\n}\n\n \nFORM_EXPORT(int)\nfield_pad(const FIELD *field)\n{\n  T((T_CALLED(\"field_pad(%p)\"), (const void *)field));\n\n  returnCode(Normalize_Field(field)->pad);\n}\n\n \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

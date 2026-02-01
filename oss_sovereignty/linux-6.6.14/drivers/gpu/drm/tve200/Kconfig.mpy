@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "db8cec111ea5449b1586b2442705ee2a1e7ac39e6138a5190145c766a60da5c0",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/tve200/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig DRM_TVE200\n\ttristate \"DRM Support for Faraday TV Encoder TVE200\"\n\tdepends on DRM\n\tdepends on CMA\n\tdepends on ARM || COMPILE_TEST\n\tdepends on OF\n\tselect DRM_BRIDGE\n\tselect DRM_PANEL_BRIDGE\n\tselect DRM_KMS_HELPER\n\tselect DRM_GEM_DMA_HELPER\n\tselect VT_HW_CONSOLE_BINDING if FRAMEBUFFER_CONSOLE\n\thelp\n\t  Choose this option for DRM support for the Faraday TV Encoder\n\t  TVE200 Controller.\n\t  If M is selected the module will be called tve200_drm.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "gf119.c",
+  "hash_id": "774543c6ea5a4ce1430c3afe6c2a163fae7a90c6244b81c6c92714b2f02e96a0",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/subdev/pmu/gf119.c",
+  "human_readable_source": " \n#include \"priv.h\"\n#include \"fuc/gf119.fuc4.h\"\n\nstatic const struct nvkm_pmu_func\ngf119_pmu = {\n\t.flcn = &gt215_pmu_flcn,\n\t.code.data = gf119_pmu_code,\n\t.code.size = sizeof(gf119_pmu_code),\n\t.data.data = gf119_pmu_data,\n\t.data.size = sizeof(gf119_pmu_data),\n\t.enabled = gf100_pmu_enabled,\n\t.reset = gf100_pmu_reset,\n\t.init = gt215_pmu_init,\n\t.fini = gt215_pmu_fini,\n\t.intr = gt215_pmu_intr,\n\t.send = gt215_pmu_send,\n\t.recv = gt215_pmu_recv,\n};\n\nstatic const struct nvkm_pmu_fwif\ngf119_pmu_fwif[] = {\n\t{ -1, gf100_pmu_nofw, &gf119_pmu },\n\t{}\n};\n\nint\ngf119_pmu_new(struct nvkm_device *device, enum nvkm_subdev_type type, int inst,\n\t      struct nvkm_pmu **ppmu)\n{\n\treturn nvkm_pmu_new_(gf119_pmu_fwif, device, type, inst, ppmu);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

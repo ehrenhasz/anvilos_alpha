@@ -1,0 +1,9 @@
+{
+  "module_name": "v4l2-cci.h",
+  "hash_id": "8efc7114d9200d11cc7cb70e77f0c624522ed7221b4fbab81b5bd0e14acbce59",
+  "original_prompt": "Ingested from linux-6.6.14/include/media/v4l2-cci.h",
+  "human_readable_source": " \n \n#ifndef _V4L2_CCI_H\n#define _V4L2_CCI_H\n\n#include <linux/types.h>\n\nstruct i2c_client;\nstruct regmap;\n\n \nstruct cci_reg_sequence {\n\tu32 reg;\n\tu64 val;\n};\n\n \n#define CCI_REG_ADDR_MASK\t\tGENMASK(15, 0)\n#define CCI_REG_WIDTH_SHIFT\t\t16\n#define CCI_REG_WIDTH_MASK\t\tGENMASK(19, 16)\n\n#define CCI_REG8(x)\t\t\t((1 << CCI_REG_WIDTH_SHIFT) | (x))\n#define CCI_REG16(x)\t\t\t((2 << CCI_REG_WIDTH_SHIFT) | (x))\n#define CCI_REG24(x)\t\t\t((3 << CCI_REG_WIDTH_SHIFT) | (x))\n#define CCI_REG32(x)\t\t\t((4 << CCI_REG_WIDTH_SHIFT) | (x))\n#define CCI_REG64(x)\t\t\t((8 << CCI_REG_WIDTH_SHIFT) | (x))\n\n \nint cci_read(struct regmap *map, u32 reg, u64 *val, int *err);\n\n \nint cci_write(struct regmap *map, u32 reg, u64 val, int *err);\n\n \nint cci_update_bits(struct regmap *map, u32 reg, u64 mask, u64 val, int *err);\n\n \nint cci_multi_reg_write(struct regmap *map, const struct cci_reg_sequence *regs,\n\t\t\tunsigned int num_regs, int *err);\n\n#if IS_ENABLED(CONFIG_V4L2_CCI_I2C)\n \nstruct regmap *devm_cci_regmap_init_i2c(struct i2c_client *client,\n\t\t\t\t\tint reg_addr_bits);\n#endif\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

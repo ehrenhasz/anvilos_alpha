@@ -1,0 +1,9 @@
+{
+  "module_name": "run_fuse_test.sh",
+  "hash_id": "b97642fc1a6c1debd85fdb7292a1a2b548893e29c33e27cc8f0973f7ceada786",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/memfd/run_fuse_test.sh",
+  "human_readable_source": "#!/bin/sh\n# SPDX-License-Identifier: GPL-2.0\n\nif test -d \"./mnt\" ; then\n\tfusermount -u ./mnt\n\trmdir ./mnt\nfi\n\nset -e\n\nmkdir mnt\n./fuse_mnt ./mnt\n./fuse_test ./mnt/memfd $@\nfusermount -u ./mnt\nrmdir ./mnt\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

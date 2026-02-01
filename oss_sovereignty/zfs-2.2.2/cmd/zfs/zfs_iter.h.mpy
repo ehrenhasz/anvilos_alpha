@@ -1,0 +1,9 @@
+{
+  "module_name": "zfs_iter.h",
+  "hash_id": "3334c25f9c2df9858a5bb9670b7a9ed559734a1d8cb706d2bf3bfa93cb7fbab0",
+  "original_prompt": "Ingested from zfs-2.2.2/cmd/zfs/zfs_iter.h",
+  "human_readable_source": " \n\n \n\n#ifndef\tZFS_ITER_H\n#define\tZFS_ITER_H\n\n#ifdef\t__cplusplus\nextern \"C\" {\n#endif\n\ntypedef struct zfs_sort_column {\n\tstruct zfs_sort_column\t*sc_next;\n\tstruct zfs_sort_column\t*sc_last;\n\tzfs_prop_t\t\tsc_prop;\n\tchar\t\t\t*sc_user_prop;\n\tboolean_t\t\tsc_reverse;\n} zfs_sort_column_t;\n\nint zfs_for_each(int, char **, int options, zfs_type_t,\n    zfs_sort_column_t *, zprop_list_t **, int, zfs_iter_f, void *);\nint zfs_add_sort_column(zfs_sort_column_t **, const char *, boolean_t);\nvoid zfs_free_sort_columns(zfs_sort_column_t *);\nboolean_t zfs_sort_only_by_fast(const zfs_sort_column_t *);\nboolean_t zfs_list_only_by_fast(const zprop_list_t *);\n\n#ifdef\t__cplusplus\n}\n#endif\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "rvt-abi.h",
+  "hash_id": "87d9cbfd957907f2b962cd0fea821bd99e7db4235a27da9139ab498aed35be1c",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/rdma/rvt-abi.h",
+  "human_readable_source": " \n\n \n\n#ifndef RVT_ABI_USER_H\n#define RVT_ABI_USER_H\n\n#include <linux/types.h>\n#include <rdma/ib_user_verbs.h>\n#ifndef RDMA_ATOMIC_UAPI\n#define RDMA_ATOMIC_UAPI(_type, _name) struct{ _type val; } _name\n#endif\n\nstruct rvt_wqe_sge {\n\t__aligned_u64 addr;\n\t__u32 length;\n\t__u32 lkey;\n};\n\n \nstruct rvt_cq_wc {\n\t \n\tRDMA_ATOMIC_UAPI(__u32, head);\n\t \n\tRDMA_ATOMIC_UAPI(__u32, tail);\n\n\t \n\tstruct ib_uverbs_wc uqueue[];\n};\n\n \nstruct rvt_rwqe {\n\t__u64 wr_id;\n\t__u8 num_sge;\n\t__u8 padding[7];\n\tstruct rvt_wqe_sge sg_list[];\n};\n\n \nstruct rvt_rwq {\n\t \n\tRDMA_ATOMIC_UAPI(__u32, head);\n\t \n\tRDMA_ATOMIC_UAPI(__u32, tail);\n\tstruct rvt_rwqe wq[];\n};\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

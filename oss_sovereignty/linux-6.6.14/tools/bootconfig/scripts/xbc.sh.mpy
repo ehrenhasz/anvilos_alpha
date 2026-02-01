@@ -1,0 +1,9 @@
+{
+  "module_name": "xbc.sh",
+  "hash_id": "0a4cc84bf85c8141e30700712acf7cbf98330af2b0b49ea0ba21d69682e0b66e",
+  "original_prompt": "Ingested from linux-6.6.14/tools/bootconfig/scripts/xbc.sh",
+  "human_readable_source": "#!/bin/sh\n# SPDX-License-Identifier: GPL-2.0-only\n\n# bootconfig utility functions\n\nXBC_TMPFILE=\nXBC_BASEDIR=`dirname $0`\nBOOTCONFIG=${BOOTCONFIG:=$XBC_BASEDIR/../bootconfig}\nif [ ! -x \"$BOOTCONFIG\" ]; then\n\tBOOTCONFIG=`which bootconfig`\n\tif [ -z \"$BOOTCONFIG\" ]; then\n\t\techo \"Erorr: bootconfig command is not found\" 1>&2\n\t\texit 1\n\tfi\nfi\n\nxbc_cleanup() {\n\tif [ \"$XBC_TMPFILE\" ]; then\n\t\trm -f \"$XBC_TMPFILE\"\n\tfi\n}\n\nxbc_init() { # bootconfig-file\n\txbc_cleanup\n\tXBC_TMPFILE=`mktemp bconf-XXXX`\n\ttrap xbc_cleanup EXIT TERM\n\n\t$BOOTCONFIG -l $1 > $XBC_TMPFILE || exit 1\n}\n\nnr_args() { # args\n\techo $#\n}\n\nxbc_get_val() { # key [maxnum]\n\tif [ \"$2\" ]; then\n\t\tMAXOPT=\"-L $2\"\n\tfi\n\tgrep \"^$1 =\" $XBC_TMPFILE | cut -d= -f2- | \\\n\t\tsed -e 's/\", /\" /g' -e \"s/',/' /g\" | \\\n\t\txargs $MAXOPT -n 1 echo\n}\n\nxbc_has_key() { # key\n\tgrep -q \"^$1 =\" $XBC_TMPFILE\n}\n\nxbc_has_branch() { # prefix-key\n\tgrep -q \"^$1\" $XBC_TMPFILE\n}\n\nxbc_subkeys() { # prefix-key depth [subkey-pattern]\n\t__keys=`echo $1 | sed \"s/\\./ /g\"`\n\t__s=`nr_args $__keys`\n\tgrep \"^$1$3\" $XBC_TMPFILE | cut -d= -f1| cut -d. -f$((__s + 1))-$((__s + $2)) | uniq\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

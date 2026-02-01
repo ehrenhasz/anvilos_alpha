@@ -1,0 +1,9 @@
+{
+  "module_name": "max9850.h",
+  "hash_id": "78c48342b4198ff14b16bb6f4f9d7b96fa4b5976916f8b04baff6379a6931f02",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/codecs/max9850.h",
+  "human_readable_source": " \n \n\n#ifndef _MAX9850_H\n#define _MAX9850_H\n\n#define MAX9850_STATUSA\t\t\t0x00\n#define MAX9850_STATUSB\t\t\t0x01\n#define MAX9850_VOLUME\t\t\t0x02\n#define MAX9850_GENERAL_PURPOSE\t\t0x03\n#define MAX9850_INTERRUPT\t\t0x04\n#define MAX9850_ENABLE\t\t\t0x05\n#define MAX9850_CLOCK\t\t\t0x06\n#define MAX9850_CHARGE_PUMP\t\t0x07\n#define MAX9850_LRCLK_MSB\t\t0x08\n#define MAX9850_LRCLK_LSB\t\t0x09\n#define MAX9850_DIGITAL_AUDIO\t\t0x0a\n\n#define MAX9850_CACHEREGNUM 11\n\n \n#define MAX9850_MASTER\t\t\t(1<<7)\n#define MAX9850_INV\t\t\t(1<<6)\n#define MAX9850_BCINV\t\t\t(1<<5)\n#define MAX9850_DLY\t\t\t(1<<3)\n#define MAX9850_RTJ\t\t\t(1<<2)\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "vidtv_s302m.h",
+  "hash_id": "54bb8cc8bf6a0d07437c596af4b3be7edbf3f3f2970a9003b2f6d654ad647050",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/test-drivers/vidtv/vidtv_s302m.h",
+  "human_readable_source": " \n \n\n#ifndef VIDTV_S302M_H\n#define VIDTV_S302M_H\n\n#include <linux/types.h>\n\n#include \"vidtv_encoder.h\"\n\n \n#define VIDTV_S302M_BUF_SZ 65024\n\n \n#define VIDTV_S302M_FORMAT_IDENTIFIER 0x42535344\n\n \nstruct vidtv_s302m_ctx {\n\tstruct vidtv_encoder *enc;\n\tu32 frame_index;\n\tu32 au_count;\n\tint last_duration;\n\tunsigned int note_offset;\n\tenum musical_notes last_tone;\n};\n\n \nstruct vidtv_smpte_s302m_es {\n\t \n\t__be32 bitfield;\n} __packed;\n\nstruct vidtv_s302m_frame_16 {\n\tu8 data[5];\n} __packed;\n\n \nstruct vidtv_s302m_encoder_init_args {\n\tchar *name;\n\tvoid *src_buf;\n\tu32 src_buf_sz;\n\tu16 es_pid;\n\tstruct vidtv_encoder *sync;\n\tvoid (*last_sample_cb)(u32 sample_no);\n\n\tstruct vidtv_encoder *head;\n};\n\nstruct vidtv_encoder\n*vidtv_s302m_encoder_init(struct vidtv_s302m_encoder_init_args args);\n\nvoid vidtv_s302m_encoder_destroy(struct vidtv_encoder *encoder);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

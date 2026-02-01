@@ -1,0 +1,9 @@
+{
+  "module_name": "reset.h",
+  "hash_id": "844985c0a60311c9e9a75ed1d1c5309ebf0abea69a855e2a2c27741986c67068",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/clk/visconti/reset.h",
+  "human_readable_source": " \n \n\n#ifndef _VISCONTI_RESET_H_\n#define _VISCONTI_RESET_H_\n\n#include <linux/reset-controller.h>\n\nstruct visconti_reset_data {\n\tu32\trson_offset;\n\tu32\trsoff_offset;\n\tu8\trs_idx;\n};\n\nstruct visconti_reset {\n\tstruct reset_controller_dev rcdev;\n\tstruct regmap *regmap;\n\tconst struct visconti_reset_data *resets;\n\tspinlock_t *lock;\n};\n\nextern const struct reset_control_ops visconti_reset_ops;\n\nint visconti_register_reset_controller(struct device *dev,\n\t\t\t\t       struct regmap *regmap,\n\t\t\t\t       const struct visconti_reset_data *resets,\n\t\t\t\t       unsigned int num_resets,\n\t\t\t\t       const struct reset_control_ops *reset_ops,\n\t\t\t\t       spinlock_t *lock);\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "pinctrl-bcm63xx.h",
+  "hash_id": "5b49182a2bce84bd7052980b55a3b061bbdcbab94e2c4b9f099f91d7914b8ff2",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/pinctrl/bcm/pinctrl-bcm63xx.h",
+  "human_readable_source": "\n \n\n#ifndef __PINCTRL_BCM63XX_H__\n#define __PINCTRL_BCM63XX_H__\n\n#include <linux/pinctrl/pinctrl.h>\n\n#define BCM63XX_BANK_GPIOS 32\n\nstruct bcm63xx_pinctrl_soc {\n\tconst struct pinctrl_ops *pctl_ops;\n\tconst struct pinmux_ops *pmx_ops;\n\n\tconst struct pinctrl_pin_desc *pins;\n\tunsigned npins;\n\n\tunsigned int ngpios;\n};\n\n#define BCM_PIN_GROUP(n)\tPINCTRL_PINGROUP(#n, n##_pins, ARRAY_SIZE(n##_pins))\n\nstruct bcm63xx_pinctrl {\n\tstruct device *dev;\n\tstruct regmap *regs;\n\n\tstruct pinctrl_desc pctl_desc;\n\tstruct pinctrl_dev *pctl_dev;\n\n\tvoid *driver_data;\n};\n\nstatic inline unsigned int bcm63xx_bank_pin(unsigned int pin)\n{\n\treturn pin % BCM63XX_BANK_GPIOS;\n}\n\nint bcm63xx_pinctrl_probe(struct platform_device *pdev,\n\t\t\t  const struct bcm63xx_pinctrl_soc *soc,\n\t\t\t  void *driver_data);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

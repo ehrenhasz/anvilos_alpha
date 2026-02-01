@@ -1,0 +1,9 @@
+{
+  "module_name": "bsg.h",
+  "hash_id": "a3f3193e8c18eda1e77a4fc301629b2058a541aae20e84d5a3b1e655db9bd678",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/bsg.h",
+  "human_readable_source": " \n#ifndef _UAPIBSG_H\n#define _UAPIBSG_H\n\n#include <linux/types.h>\n\n#define BSG_PROTOCOL_SCSI\t\t0\n\n#define BSG_SUB_PROTOCOL_SCSI_CMD\t0\n#define BSG_SUB_PROTOCOL_SCSI_TMF\t1\n#define BSG_SUB_PROTOCOL_SCSI_TRANSPORT\t2\n\n \n#define BSG_FLAG_Q_AT_TAIL 0x10  \n#define BSG_FLAG_Q_AT_HEAD 0x20\n\nstruct sg_io_v4 {\n\t__s32 guard;\t\t \n\t__u32 protocol;\t\t \n\t__u32 subprotocol;\t \n\n\t__u32 request_len;\t \n\t__u64 request;\t\t \n\t__u64 request_tag;\t \n\t__u32 request_attr;\t \n\t__u32 request_priority;\t \n\t__u32 request_extra;\t \n\t__u32 max_response_len;\t \n\t__u64 response;\t\t \n\n         \n\t__u32 dout_iovec_count;\t \n\t__u32 dout_xfer_len;\t \n\t__u32 din_iovec_count;\t \n\t__u32 din_xfer_len;\t \n\t__u64 dout_xferp;\t \n\t__u64 din_xferp;\t \n\n\t__u32 timeout;\t\t \n\t__u32 flags;\t\t \n\t__u64 usr_ptr;\t\t \n\t__u32 spare_in;\t\t \n\n\t__u32 driver_status;\t \n\t__u32 transport_status;\t \n\t__u32 device_status;\t \n\t__u32 retry_delay;\t \n\t__u32 info;\t\t \n\t__u32 duration;\t\t \n\t__u32 response_len;\t \n\t__s32 din_resid;\t \n\t__s32 dout_resid;\t \n\t__u64 generated_tag;\t \n\t__u32 spare_out;\t \n\n\t__u32 padding;\n};\n\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

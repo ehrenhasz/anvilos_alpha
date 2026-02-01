@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "a9d9fceb1366b4426d4f8a13618512a09aded424bc035c43ec663951dfae1cc8",
+  "original_prompt": "Ingested from linux-6.6.14/net/smc/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nccflags-y += -I$(src)\nobj-$(CONFIG_SMC)\t+= smc.o\nobj-$(CONFIG_SMC_DIAG)\t+= smc_diag.o\nsmc-y := af_smc.o smc_pnet.o smc_ib.o smc_clc.o smc_core.o smc_wr.o smc_llc.o\nsmc-y += smc_cdc.o smc_tx.o smc_rx.o smc_close.o smc_ism.o smc_netlink.o smc_stats.o\nsmc-y += smc_tracepoint.o\nsmc-$(CONFIG_SYSCTL) += smc_sysctl.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

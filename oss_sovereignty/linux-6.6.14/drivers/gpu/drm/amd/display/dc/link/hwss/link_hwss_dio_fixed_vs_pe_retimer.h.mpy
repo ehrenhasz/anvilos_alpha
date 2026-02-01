@@ -1,0 +1,9 @@
+{
+  "module_name": "link_hwss_dio_fixed_vs_pe_retimer.h",
+  "hash_id": "3a5dd2c4a365728f2f840a464b2ce1e58ef5b20283f2a2404735adf8edc30637",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/dc/link/hwss/link_hwss_dio_fixed_vs_pe_retimer.h",
+  "human_readable_source": " \n#ifndef __LINK_HWSS_DIO_FIXED_VS_PE_RETIMER_H__\n#define __LINK_HWSS_DIO_FIXED_VS_PE_RETIMER_H__\n\n#include \"link.h\"\n\nuint32_t dp_dio_fixed_vs_pe_retimer_get_lttpr_write_address(struct dc_link *link);\nuint8_t dp_dio_fixed_vs_pe_retimer_lane_cfg_to_hw_cfg(struct dc_link *link);\nvoid dp_dio_fixed_vs_pe_retimer_exit_manual_automation(struct dc_link *link);\nvoid enable_dio_fixed_vs_pe_retimer_program_4lane_output(struct dc_link *link);\nbool requires_fixed_vs_pe_retimer_dio_link_hwss(const struct dc_link *link);\nconst struct link_hwss *get_dio_fixed_vs_pe_retimer_link_hwss(void);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

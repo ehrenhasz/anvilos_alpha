@@ -1,0 +1,9 @@
+{
+  "module_name": "intel_th.h",
+  "hash_id": "26ca1d3e02aa72cc007579fdf2c22cfae3a50fdf2fe569b3f7940a338e7d9dac",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/intel_th.h",
+  "human_readable_source": " \n \n\n#ifndef _INTEL_TH_H_\n#define _INTEL_TH_H_\n\n#include <linux/scatterlist.h>\n\n \nenum {\n\tMSC_MODE_SINGLE\t= 0,\n\tMSC_MODE_MULTI,\n\tMSC_MODE_EXI,\n\tMSC_MODE_DEBUG,\n};\n\nstruct msu_buffer {\n\tconst char\t*name;\n\t \n\tvoid\t*(*assign)(struct device *dev, int *mode);\n\t \n\tvoid\t(*unassign)(void *priv);\n\t \n\tint\t(*alloc_window)(void *priv, struct sg_table **sgt,\n\t\t\t\tsize_t size);\n\tvoid\t(*free_window)(void *priv, struct sg_table *sgt);\n\t \n\tvoid\t(*activate)(void *priv);\n\t \n\tvoid\t(*deactivate)(void *priv);\n\t \n\tint\t(*ready)(void *priv, struct sg_table *sgt, size_t bytes);\n};\n\nint intel_th_msu_buffer_register(const struct msu_buffer *mbuf,\n\t\t\t\t struct module *owner);\nvoid intel_th_msu_buffer_unregister(const struct msu_buffer *mbuf);\nvoid intel_th_msc_window_unlock(struct device *dev, struct sg_table *sgt);\n\n#define module_intel_th_msu_buffer(__buffer) \\\nstatic int __init __buffer##_init(void) \\\n{ \\\n\treturn intel_th_msu_buffer_register(&(__buffer), THIS_MODULE); \\\n} \\\nmodule_init(__buffer##_init); \\\nstatic void __exit __buffer##_exit(void) \\\n{ \\\n\tintel_th_msu_buffer_unregister(&(__buffer)); \\\n} \\\nmodule_exit(__buffer##_exit);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

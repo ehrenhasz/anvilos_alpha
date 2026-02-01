@@ -1,0 +1,9 @@
+{
+  "module_name": "x86_32.c",
+  "hash_id": "dd7ea0874af8730da29c98a30e730c890149cf6d057d25b4553d702992d2a148",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/util/libunwind/x86_32.c",
+  "human_readable_source": "\n \n\n#define REMOTE_UNWIND_LIBUNWIND\n\n \n#define LIBUNWIND__ARCH_REG_ID(regnum) libunwind__x86_reg_id(regnum)\n\n#include \"unwind.h\"\n#include \"libunwind-x86.h\"\n#include <../../../../arch/x86/include/uapi/asm/perf_regs.h>\n\n \n#undef HAVE_ARCH_X86_64_SUPPORT\n#include \"../../arch/x86/util/unwind-libunwind.c\"\n\n \n#ifndef NO_LIBUNWIND_DEBUG_FRAME\n#define NO_LIBUNWIND_DEBUG_FRAME\n#endif\n#include \"util/unwind-libunwind-local.c\"\n\nstruct unwind_libunwind_ops *\nx86_32_unwind_libunwind_ops = &_unwind_libunwind_ops;\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

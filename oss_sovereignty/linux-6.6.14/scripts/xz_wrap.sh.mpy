@@ -1,0 +1,9 @@
+{
+  "module_name": "xz_wrap.sh",
+  "hash_id": "ab0cb50211acd183a39e69f6bd6c3d680d5e3f5535f750ac5489b5991eb76a93",
+  "original_prompt": "Ingested from linux-6.6.14/scripts/xz_wrap.sh",
+  "human_readable_source": "#!/bin/sh\n#\n# This is a wrapper for xz to compress the kernel image using appropriate\n# compression options depending on the architecture.\n#\n# Author: Lasse Collin <lasse.collin@tukaani.org>\n#\n# This file has been put into the public domain.\n# You can do whatever you want with this file.\n#\n\nBCJ=\nLZMA2OPTS=\n\ncase $SRCARCH in\n\tx86)            BCJ=--x86 ;;\n\tpowerpc)        BCJ=--powerpc ;;\n\tia64)           BCJ=--ia64; LZMA2OPTS=pb=4 ;;\n\tarm)            BCJ=--arm ;;\n\tsparc)          BCJ=--sparc ;;\nesac\n\nexec $XZ --check=crc32 $BCJ --lzma2=$LZMA2OPTS,dict=32MiB\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

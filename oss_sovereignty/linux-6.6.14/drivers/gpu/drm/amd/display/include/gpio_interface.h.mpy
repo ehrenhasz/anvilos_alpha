@@ -1,0 +1,9 @@
+{
+  "module_name": "gpio_interface.h",
+  "hash_id": "cd6c208ec65cd877a4a6052c9d709bf4de207ca348171745938c9a5c7548221c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/include/gpio_interface.h",
+  "human_readable_source": " \n\n#ifndef __DAL_GPIO_INTERFACE_H__\n#define __DAL_GPIO_INTERFACE_H__\n\n#include \"gpio_types.h\"\n#include \"grph_object_defs.h\"\n\nstruct gpio;\n\n \nenum gpio_result dal_gpio_open(\n\tstruct gpio *gpio,\n\tenum gpio_mode mode);\n\nenum gpio_result dal_gpio_open_ex(\n\tstruct gpio *gpio,\n\tenum gpio_mode mode);\n\n \nenum gpio_result dal_gpio_get_value(\n\tconst struct gpio *gpio,\n\tuint32_t *value);\n\n \nenum gpio_result dal_gpio_set_value(\n\tconst struct gpio *gpio,\n\tuint32_t value);\n\n \nenum gpio_mode dal_gpio_get_mode(\n\tconst struct gpio *gpio);\n\n \nenum gpio_result dal_gpio_change_mode(\n\tstruct gpio *gpio,\n\tenum gpio_mode mode);\n\n \nenum gpio_result dal_gpio_lock_pin(\n\tstruct gpio *gpio);\n\n \nenum gpio_result dal_gpio_unlock_pin(\n\tstruct gpio *gpio);\n\n \nenum gpio_id dal_gpio_get_id(\n\tconst struct gpio *gpio);\n\n \nuint32_t dal_gpio_get_enum(\n\tconst struct gpio *gpio);\n\n \nenum gpio_result dal_gpio_set_config(\n\tstruct gpio *gpio,\n\tconst struct gpio_config_data *config_data);\n\n \nenum gpio_result dal_gpio_get_pin_info(\n\tconst struct gpio *gpio,\n\tstruct gpio_pin_info *pin_info);\n\n \nenum sync_source dal_gpio_get_sync_source(\n\tconst struct gpio *gpio);\n\n \nenum gpio_pin_output_state dal_gpio_get_output_state(\n\tconst struct gpio *gpio);\n\nstruct hw_ddc *dal_gpio_get_ddc(struct gpio *gpio);\n\nstruct hw_hpd *dal_gpio_get_hpd(struct gpio *gpio);\n\nstruct hw_generic *dal_gpio_get_generic(struct gpio *gpio);\n\n \nvoid dal_gpio_close(\n\tstruct gpio *gpio);\n\n\n\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "priv.h",
+  "hash_id": "78316098532447c7db8d09d8be3e8017070a79ca0f26f9e4dda82d164f2eb8d7",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/subdev/bios/priv.h",
+  "human_readable_source": " \n#ifndef __NVKM_BIOS_PRIV_H__\n#define __NVKM_BIOS_PRIV_H__\n#define nvkm_bios(p) container_of((p), struct nvkm_bios, subdev)\n#include <subdev/bios.h>\n\nstruct nvbios_source {\n\tconst char *name;\n\tvoid *(*init)(struct nvkm_bios *, const char *);\n\tvoid  (*fini)(void *);\n\tu32   (*read)(void *, u32 offset, u32 length, struct nvkm_bios *);\n\tu32   (*size)(void *);\n\tbool rw;\n\tbool ignore_checksum;\n\tbool no_pcir;\n\tbool require_checksum;\n};\n\nint nvbios_extend(struct nvkm_bios *, u32 length);\nint nvbios_shadow(struct nvkm_bios *);\n\nextern const struct nvbios_source nvbios_prom;\nextern const struct nvbios_source nvbios_ramin;\nextern const struct nvbios_source nvbios_acpi_fast;\nextern const struct nvbios_source nvbios_acpi_slow;\nextern const struct nvbios_source nvbios_pcirom;\nextern const struct nvbios_source nvbios_platform;\nextern const struct nvbios_source nvbios_of;\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

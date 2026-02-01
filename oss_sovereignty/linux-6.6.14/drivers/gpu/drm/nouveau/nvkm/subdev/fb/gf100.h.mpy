@@ -1,0 +1,9 @@
+{
+  "module_name": "gf100.h",
+  "hash_id": "249be47ecf7656d4baeeec124deef3e9b0e68e49cfc9657b5680cf47011f9d00",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/subdev/fb/gf100.h",
+  "human_readable_source": " \n#ifndef __NVKM_RAM_NVC0_H__\n#define __NVKM_RAM_NVC0_H__\n#define gf100_fb(p) container_of((p), struct gf100_fb, base)\n#include \"priv.h\"\n\nstruct gf100_fb {\n\tstruct nvkm_fb base;\n};\n\nint gf100_fb_new_(const struct nvkm_fb_func *, struct nvkm_device *, enum nvkm_subdev_type, int,\n\t\t  struct nvkm_fb **);\nvoid *gf100_fb_dtor(struct nvkm_fb *);\nvoid gf100_fb_init(struct nvkm_fb *);\nvoid gf100_fb_intr(struct nvkm_fb *);\n\nvoid gm200_fb_init(struct nvkm_fb *base);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

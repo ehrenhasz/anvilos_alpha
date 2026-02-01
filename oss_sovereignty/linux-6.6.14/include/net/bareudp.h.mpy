@@ -1,0 +1,9 @@
+{
+  "module_name": "bareudp.h",
+  "hash_id": "4999b44672e57f0fc8dc1d7aac95baf6342c528d6e4cd79a75885ecee3a467a9",
+  "original_prompt": "Ingested from linux-6.6.14/include/net/bareudp.h",
+  "human_readable_source": " \n\n#ifndef __NET_BAREUDP_H\n#define __NET_BAREUDP_H\n\n#include <linux/netdevice.h>\n#include <linux/types.h>\n#include <net/rtnetlink.h>\n\nstatic inline bool netif_is_bareudp(const struct net_device *dev)\n{\n\treturn dev->rtnl_link_ops &&\n\t       !strcmp(dev->rtnl_link_ops->kind, \"bareudp\");\n}\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

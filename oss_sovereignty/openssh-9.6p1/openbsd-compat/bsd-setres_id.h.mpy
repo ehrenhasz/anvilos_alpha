@@ -1,0 +1,9 @@
+{
+  "module_name": "bsd-setres_id.h",
+  "hash_id": "e9b607d9e14a86cd957a35ec1c50872fc84c7ee160600df671a8db5886c11671",
+  "original_prompt": "Ingested from openssh-9.6p1/openbsd-compat/bsd-setres_id.h",
+  "human_readable_source": " \n\n#ifndef HAVE_SETRESGID\nint\tsetresgid(gid_t, gid_t, gid_t);\n#endif\n#ifndef HAVE_SETRESUID\nint\tsetresuid(uid_t, uid_t, uid_t);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

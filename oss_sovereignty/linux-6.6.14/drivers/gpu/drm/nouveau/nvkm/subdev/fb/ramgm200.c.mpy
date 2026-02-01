@@ -1,0 +1,9 @@
+{
+  "module_name": "ramgm200.c",
+  "hash_id": "4253a28f8eec560f931a93d569896a7c505429ccc0f0554de5b0bfd5f0f302c8",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/subdev/fb/ramgm200.c",
+  "human_readable_source": " \n#include \"ram.h\"\n\nu32\ngm200_ram_probe_fbp_amount(const struct nvkm_ram_func *func, u32 fbpao,\n\t\t\t   struct nvkm_device *device, int fbp, int *pltcs)\n{\n\tu32 ltcs  = nvkm_rd32(device, 0x022450);\n\tu32 fbpas = nvkm_rd32(device, 0x022458);\n\tu32 fbpa  = fbp * fbpas;\n\tu32 size  = 0;\n\tif (!(nvkm_rd32(device, 0x021d38) & BIT(fbp))) {\n\t\tu32 ltco = nvkm_rd32(device, 0x021d70 + (fbp * 4));\n\t\tu32 ltcm = ~ltco & ((1 << ltcs) - 1);\n\n\t\twhile (fbpas--) {\n\t\t\tif (!(fbpao & (1 << fbpa)))\n\t\t\t\tsize += func->probe_fbpa_amount(device, fbpa);\n\t\t\tfbpa++;\n\t\t}\n\n\t\t*pltcs = hweight32(ltcm);\n\t}\n\treturn size;\n}\n\nstatic const struct nvkm_ram_func\ngm200_ram = {\n\t.upper = 0x1000000000ULL,\n\t.probe_fbp = gm107_ram_probe_fbp,\n\t.probe_fbp_amount = gm200_ram_probe_fbp_amount,\n\t.probe_fbpa_amount = gf100_ram_probe_fbpa_amount,\n\t.dtor = gk104_ram_dtor,\n\t.init = gk104_ram_init,\n\t.calc = gk104_ram_calc,\n\t.prog = gk104_ram_prog,\n\t.tidy = gk104_ram_tidy,\n};\n\nint\ngm200_ram_new(struct nvkm_fb *fb, struct nvkm_ram **pram)\n{\n\treturn gk104_ram_new_(&gm200_ram, fb, pram);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

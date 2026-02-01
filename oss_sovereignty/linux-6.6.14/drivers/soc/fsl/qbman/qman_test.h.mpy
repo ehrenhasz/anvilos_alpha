@@ -1,0 +1,9 @@
+{
+  "module_name": "qman_test.h",
+  "hash_id": "9016cf815154407278ebf0410b2e9594959c66159de540c0c0eed5993c8a36ba",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/soc/fsl/qbman/qman_test.h",
+  "human_readable_source": " \n\n#include \"qman_priv.h\"\n\nint qman_test_stash(void);\nint qman_test_api(void);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

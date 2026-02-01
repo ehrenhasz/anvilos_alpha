@@ -1,0 +1,9 @@
+{
+  "module_name": "rtl871x_event.h",
+  "hash_id": "ce69111f110432af191954261e7dc0976a12b88147817731f088dbf080722d63",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/rtl8712/rtl871x_event.h",
+  "human_readable_source": " \n \n#ifndef _RTL871x_EVENT_H_\n#define _RTL871x_EVENT_H_\n\n#include \"osdep_service.h\"\n\n#include \"wlan_bssdef.h\"\n#include <linux/semaphore.h>\n#include <linux/sem.h>\n\n \nstruct survey_event\t{\n\tstruct wlan_bssid_ex bss;\n};\n\n \nstruct surveydone_event {\n\tunsigned int\tbss_cnt;\n\n};\n\n \nstruct joinbss_event {\n\tstruct\twlan_network\tnetwork;\n};\n\n \nstruct stassoc_event {\n\tunsigned char macaddr[6];\n\tunsigned char rsvd[2];\n\t__le32    cam_id;\n};\n\nstruct stadel_event {\n\tunsigned char macaddr[6];\n\tunsigned char rsvd[2];\n};\n\nstruct addba_event {\n\tunsigned int tid;\n};\n\n#define GEN_EVT_CODE(event)\tevent ## _EVT_\n\nstruct fwevent {\n\tu32\tparmsize;\n\tvoid (*event_callback)(struct _adapter *dev, u8 *pbuf);\n};\n\n#define C2HEVENT_SZ\t\t\t32\nstruct event_node {\n\tunsigned char *node;\n\tunsigned char evt_code;\n\tunsigned short evt_sz;\n\t  int *caller_ff_tail;\n\tint\tcaller_ff_sz;\n};\n\nstruct c2hevent_queue {\n\t  int\thead;\n\t  int\ttail;\n\tstruct\tevent_node\tnodes[C2HEVENT_SZ];\n\tunsigned char\tseq;\n};\n\n#define NETWORK_QUEUE_SZ\t4\n\nstruct network_queue {\n\t  int\thead;\n\t  int\ttail;\n\tstruct wlan_bssid_ex networks[NETWORK_QUEUE_SZ];\n};\n\nstruct ADDBA_Req_Report_parm {\n\tunsigned char MacAddress[ETH_ALEN];\n\tunsigned short StartSeqNum;\n\tunsigned char tid;\n};\n\n#include \"rtl8712_event.h\"\n\n#endif  \n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

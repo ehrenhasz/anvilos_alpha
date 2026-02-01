@@ -1,0 +1,9 @@
+{
+  "module_name": "priv.h",
+  "hash_id": "f09b0785809b4d2d2124efdb5ba7d2abf855787a80b8ea6131dde0f52f5bd3b9",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/subdev/volt/priv.h",
+  "human_readable_source": " \n#ifndef __NVKM_VOLT_PRIV_H__\n#define __NVKM_VOLT_PRIV_H__\n#define nvkm_volt(p) container_of((p), struct nvkm_volt, subdev)\n#include <subdev/volt.h>\n\nvoid nvkm_volt_ctor(const struct nvkm_volt_func *, struct nvkm_device *, enum nvkm_subdev_type, int,\n\t\t    struct nvkm_volt *);\nint nvkm_volt_new_(const struct nvkm_volt_func *, struct nvkm_device *, enum nvkm_subdev_type, int,\n\t\t   struct nvkm_volt **);\n\nstruct nvkm_volt_func {\n\tint (*oneinit)(struct nvkm_volt *);\n\tint (*volt_get)(struct nvkm_volt *);\n\tint (*volt_set)(struct nvkm_volt *, u32 uv);\n\tint (*vid_get)(struct nvkm_volt *);\n\tint (*vid_set)(struct nvkm_volt *, u8 vid);\n\tint (*set_id)(struct nvkm_volt *, u8 id, int condition);\n\tint (*speedo_read)(struct nvkm_volt *);\n};\n\nint nvkm_voltgpio_init(struct nvkm_volt *);\nint nvkm_voltgpio_get(struct nvkm_volt *);\nint nvkm_voltgpio_set(struct nvkm_volt *, u8);\n\nint nvkm_voltpwm_init(struct nvkm_volt *volt);\nint nvkm_voltpwm_get(struct nvkm_volt *volt);\nint nvkm_voltpwm_set(struct nvkm_volt *volt, u32 uv);\n\nint gf100_volt_oneinit(struct nvkm_volt *);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

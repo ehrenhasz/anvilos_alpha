@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "ae63f1c181e2d620948ea6340943f7937c1a59e5c2b8cf73edfbfec961137304",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/i2c/algos/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Makefile for the i2c algorithms\n#\n\nobj-$(CONFIG_I2C_ALGOBIT)\t+= i2c-algo-bit.o\nobj-$(CONFIG_I2C_ALGOPCF)\t+= i2c-algo-pcf.o\nobj-$(CONFIG_I2C_ALGOPCA)\t+= i2c-algo-pca.o\n\nccflags-$(CONFIG_I2C_DEBUG_ALGO) := -DDEBUG\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

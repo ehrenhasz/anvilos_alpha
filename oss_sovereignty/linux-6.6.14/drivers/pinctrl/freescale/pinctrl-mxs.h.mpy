@@ -1,0 +1,9 @@
+{
+  "module_name": "pinctrl-mxs.h",
+  "hash_id": "bf737bee8eb47499f86a5d4c45b74bc6c42fb56693a29a0af7e5db6b3fc64dcc",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/pinctrl/freescale/pinctrl-mxs.h",
+  "human_readable_source": " \n \n\n#ifndef __PINCTRL_MXS_H\n#define __PINCTRL_MXS_H\n\n#include <linux/platform_device.h>\n#include <linux/pinctrl/pinctrl.h>\n\n#define SET\t0x4\n#define CLR\t0x8\n#define TOG\t0xc\n\n#define MXS_PINCTRL_PIN(pin)\tPINCTRL_PIN(pin, #pin)\n#define PINID(bank, pin)\t((bank) * 32 + (pin))\n\n \n#define MUXID_TO_PINID(m)\tPINID((m) >> 12 & 0xf, (m) >> 4 & 0xff)\n#define MUXID_TO_MUXSEL(m)\t((m) & 0xf)\n\n#define PINID_TO_BANK(p)\t((p) >> 5)\n#define PINID_TO_PIN(p)\t\t((p) % 32)\n\n \n#define PULL_PRESENT\t\t(1 << 6)\n#define PULL_SHIFT\t\t5\n#define VOL_PRESENT\t\t(1 << 4)\n#define VOL_SHIFT\t\t3\n#define MA_PRESENT\t\t(1 << 2)\n#define MA_SHIFT\t\t0\n#define PIN_CONFIG_TO_PULL(c)\t((c) >> PULL_SHIFT & 0x1)\n#define PIN_CONFIG_TO_VOL(c)\t((c) >> VOL_SHIFT & 0x1)\n#define PIN_CONFIG_TO_MA(c)\t((c) >> MA_SHIFT & 0x3)\n\nstruct mxs_function {\n\tconst char *name;\n\tconst char **groups;\n\tunsigned ngroups;\n};\n\nstruct mxs_group {\n\tconst char *name;\n\tunsigned int *pins;\n\tunsigned npins;\n\tu8 *muxsel;\n\tu8 config;\n};\n\nstruct mxs_regs {\n\tu16 muxsel;\n\tu16 drive;\n\tu16 pull;\n};\n\nstruct mxs_pinctrl_soc_data {\n\tconst struct mxs_regs *regs;\n\tconst struct pinctrl_pin_desc *pins;\n\tunsigned npins;\n\tstruct mxs_function *functions;\n\tunsigned nfunctions;\n\tstruct mxs_group *groups;\n\tunsigned ngroups;\n};\n\nint mxs_pinctrl_probe(struct platform_device *pdev,\n\t\t      struct mxs_pinctrl_soc_data *soc);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

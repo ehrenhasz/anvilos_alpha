@@ -1,0 +1,9 @@
+{
+  "module_name": "mem_64.c",
+  "hash_id": "b800a8c998b39cd7c11862f5f8aff5d05d52d4ad08cda7e0b85e9a0bf045f5b9",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/um/mem_64.c",
+  "human_readable_source": "\n#include <linux/mm.h>\n#include <asm/elf.h>\n\nconst char *arch_vma_name(struct vm_area_struct *vma)\n{\n\tif (vma->vm_mm && vma->vm_start == um_vdso_addr)\n\t\treturn \"[vdso]\";\n\n\treturn NULL;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "format",
+  "hash_id": "e8e18df40bcd69d6aa404282679186d9b8256ac63a5b4e80d7f081e8a0095a2e",
+  "original_prompt": "Ingested from ncurses-6.4/package/debian/source/format",
+  "human_readable_source": "3.0 (native)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

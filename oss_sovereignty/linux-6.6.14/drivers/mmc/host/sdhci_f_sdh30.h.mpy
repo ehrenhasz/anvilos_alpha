@@ -1,0 +1,9 @@
+{
+  "module_name": "sdhci_f_sdh30.h",
+  "hash_id": "04bf3859114a88109f214b23b9262f864b44d7b338e984fe53bf8fa2ebcbafdb",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/mmc/host/sdhci_f_sdh30.h",
+  "human_readable_source": " \n \n\n \n#define F_SDH30_AHB_CONFIG      0x100\n#define  F_SDH30_AHB_BIGED      BIT(6)\n#define  F_SDH30_BUSLOCK_DMA    BIT(5)\n#define  F_SDH30_BUSLOCK_EN     BIT(4)\n#define  F_SDH30_SIN            BIT(3)\n#define  F_SDH30_AHB_INCR_16    BIT(2)\n#define  F_SDH30_AHB_INCR_8     BIT(1)\n#define  F_SDH30_AHB_INCR_4     BIT(0)\n\n#define F_SDH30_TUNING_SETTING  0x108\n#define  F_SDH30_CMD_CHK_DIS    BIT(16)\n\n#define F_SDH30_IO_CONTROL2     0x114\n#define  F_SDH30_CRES_O_DN      BIT(19)\n#define  F_SDH30_MSEL_O_1_8     BIT(18)\n\n#define F_SDH30_ESD_CONTROL     0x124\n#define\t F_SDH30_EMMC_RST\t\tBIT(1)\n#define  F_SDH30_CMD_DAT_DELAY\tBIT(9)\n#define\t F_SDH30_EMMC_HS200\t\tBIT(24)\n\n#define F_SDH30_TEST\t\t0x158\n#define F_SDH30_FORCE_CARD_INSERT\tBIT(6)\n\n#define F_SDH30_MIN_CLOCK\t\t400000\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

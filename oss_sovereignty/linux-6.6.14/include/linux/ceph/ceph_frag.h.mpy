@@ -1,0 +1,9 @@
+{
+  "module_name": "ceph_frag.h",
+  "hash_id": "5041dff7e52a2be0b948b0a5ba7bcd40a102bfe8e6c8f6a9f12abb96b8915e59",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/ceph/ceph_frag.h",
+  "human_readable_source": " \n#ifndef FS_CEPH_FRAG_H\n#define FS_CEPH_FRAG_H\n\n \nstatic inline __u32 ceph_frag_make(__u32 b, __u32 v)\n{\n\treturn (b << 24) |\n\t\t(v & (0xffffffu << (24-b)) & 0xffffffu);\n}\nstatic inline __u32 ceph_frag_bits(__u32 f)\n{\n\treturn f >> 24;\n}\nstatic inline __u32 ceph_frag_value(__u32 f)\n{\n\treturn f & 0xffffffu;\n}\nstatic inline __u32 ceph_frag_mask(__u32 f)\n{\n\treturn (0xffffffu << (24-ceph_frag_bits(f))) & 0xffffffu;\n}\nstatic inline __u32 ceph_frag_mask_shift(__u32 f)\n{\n\treturn 24 - ceph_frag_bits(f);\n}\n\nstatic inline bool ceph_frag_contains_value(__u32 f, __u32 v)\n{\n\treturn (v & ceph_frag_mask(f)) == ceph_frag_value(f);\n}\n\nstatic inline __u32 ceph_frag_make_child(__u32 f, int by, int i)\n{\n\tint newbits = ceph_frag_bits(f) + by;\n\treturn ceph_frag_make(newbits,\n\t\t\t ceph_frag_value(f) | (i << (24 - newbits)));\n}\nstatic inline bool ceph_frag_is_leftmost(__u32 f)\n{\n\treturn ceph_frag_value(f) == 0;\n}\nstatic inline bool ceph_frag_is_rightmost(__u32 f)\n{\n\treturn ceph_frag_value(f) == ceph_frag_mask(f);\n}\nstatic inline __u32 ceph_frag_next(__u32 f)\n{\n\treturn ceph_frag_make(ceph_frag_bits(f),\n\t\t\t ceph_frag_value(f) + (0x1000000 >> ceph_frag_bits(f)));\n}\n\n \nint ceph_frag_compare(__u32 a, __u32 b);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

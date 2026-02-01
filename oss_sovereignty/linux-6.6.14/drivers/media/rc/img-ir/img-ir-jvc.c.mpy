@@ -1,0 +1,9 @@
+{
+  "module_name": "img-ir-jvc.c",
+  "hash_id": "99b4d9879ab432f8260e8270898746ca71527b2d42fd603c68eaaec4d0760dd9",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/rc/img-ir/img-ir-jvc.c",
+  "human_readable_source": "\n \n\n#include \"img-ir-hw.h\"\n\n \nstatic int img_ir_jvc_scancode(int len, u64 raw, u64 enabled_protocols,\n\t\t\t       struct img_ir_scancode_req *request)\n{\n\tunsigned int cust, data;\n\n\tif (len != 16)\n\t\treturn -EINVAL;\n\n\tcust = (raw >> 0) & 0xff;\n\tdata = (raw >> 8) & 0xff;\n\n\trequest->protocol = RC_PROTO_JVC;\n\trequest->scancode = cust << 8 | data;\n\treturn IMG_IR_SCANCODE;\n}\n\n \nstatic int img_ir_jvc_filter(const struct rc_scancode_filter *in,\n\t\t\t     struct img_ir_filter *out, u64 protocols)\n{\n\tunsigned int cust, data;\n\tunsigned int cust_m, data_m;\n\n\tcust   = (in->data >> 8) & 0xff;\n\tcust_m = (in->mask >> 8) & 0xff;\n\tdata   = (in->data >> 0) & 0xff;\n\tdata_m = (in->mask >> 0) & 0xff;\n\n\tout->data = cust   | data << 8;\n\tout->mask = cust_m | data_m << 8;\n\n\treturn 0;\n}\n\n \nstruct img_ir_decoder img_ir_jvc = {\n\t.type = RC_PROTO_BIT_JVC,\n\t.control = {\n\t\t.decoden = 1,\n\t\t.code_type = IMG_IR_CODETYPE_PULSEDIST,\n\t},\n\t \n\t.unit = 527500,  \n\t.timings = {\n\t\t \n\t\t.ldr = {\n\t\t\t.pulse = { 16\t  },\n\t\t\t.space = { 8\t  },\n\t\t},\n\t\t \n\t\t.s00 = {\n\t\t\t.pulse = { 1\t  },\n\t\t\t.space = { 1\t  },\n\t\t},\n\t\t \n\t\t.s01 = {\n\t\t\t.pulse = { 1\t  },\n\t\t\t.space = { 3\t  },\n\t\t},\n\t\t \n\t\t.ft = {\n\t\t\t.minlen = 16,\n\t\t\t.maxlen = 16,\n\t\t\t.ft_min = 10,\t \n\t\t},\n\t},\n\t \n\t.scancode = img_ir_jvc_scancode,\n\t.filter = img_ir_jvc_filter,\n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": ".version",
+  "hash_id": "786fa64798ba19bc7f501c7c66083a267c06e22428dbecaa8926c3d648382551",
+  "original_prompt": "Ingested from coreutils-9.4/.version",
+  "human_readable_source": "9.4\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

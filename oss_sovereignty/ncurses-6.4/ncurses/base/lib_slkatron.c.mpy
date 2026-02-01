@@ -1,0 +1,9 @@
+{
+  "module_name": "lib_slkatron.c",
+  "hash_id": "5b40088be061f0d324f35db49a6b1a0f7f36612bbab82e6ab8f931dd7b97d5e9",
+  "original_prompt": "Ingested from ncurses-6.4/ncurses/base/lib_slkatron.c",
+  "human_readable_source": " \n\n \n\n \n#include <curses.priv.h>\n\nMODULE_ID(\"$Id: lib_slkatron.c,v 1.13 2020/02/02 23:34:34 tom Exp $\")\n\nNCURSES_EXPORT(int)\nNCURSES_SP_NAME(slk_attron) (NCURSES_SP_DCLx const chtype attr)\n{\n    T((T_CALLED(\"slk_attron(%p,%s)\"), (void *) SP_PARM, _traceattr(attr)));\n\n    if (SP_PARM != 0 && SP_PARM->_slk != 0) {\n\tTR(TRACE_ATTRS, (\"... current %s\", _tracech_t(CHREF(SP_PARM->_slk->attr))));\n\tAddAttr(SP_PARM->_slk->attr, attr);\n\tif ((attr & A_COLOR) != 0) {\n\t    SetPair(SP_PARM->_slk->attr, PairNumber(attr));\n\t}\n\tTR(TRACE_ATTRS, (\"new attribute is %s\", _tracech_t(CHREF(SP_PARM->_slk->attr))));\n\treturnCode(OK);\n    } else\n\treturnCode(ERR);\n}\n\n#if NCURSES_SP_FUNCS\nNCURSES_EXPORT(int)\nslk_attron(const chtype attr)\n{\n    return NCURSES_SP_NAME(slk_attron) (CURRENT_SCREEN, attr);\n}\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

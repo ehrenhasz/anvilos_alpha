@@ -1,0 +1,9 @@
+{
+  "module_name": "rockchip_av1_filmgrain.h",
+  "hash_id": "3d2547314dee1528cce310ddacce805068094a6fe46215c6314b96e5e8bf11a9",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/platform/verisilicon/rockchip_av1_filmgrain.h",
+  "human_readable_source": " \n\n#ifndef _ROCKCHIP_AV1_FILMGRAIN_H_\n#define _ROCKCHIP_AV1_FILMGRAIN_H_\n\n#include <linux/types.h>\n\nvoid rockchip_av1_generate_luma_grain_block(s32 (*luma_grain_block)[73][82],\n\t\t\t\t\t    s32 bitdepth,\n\t\t\t\t\t    u8 num_y_points,\n\t\t\t\t\t    s32 grain_scale_shift,\n\t\t\t\t\t    s32 ar_coeff_lag,\n\t\t\t\t\t    s32 (*ar_coeffs_y)[24],\n\t\t\t\t\t    s32 ar_coeff_shift,\n\t\t\t\t\t    s32 grain_min,\n\t\t\t\t\t    s32 grain_max,\n\t\t\t\t\t    u16 random_seed);\n\nvoid rockchip_av1_generate_chroma_grain_block(s32 (*luma_grain_block)[73][82],\n\t\t\t\t\t      s32 (*cb_grain_block)[38][44],\n\t\t\t\t\t      s32 (*cr_grain_block)[38][44],\n\t\t\t\t\t      s32 bitdepth,\n\t\t\t\t\t      u8 num_y_points,\n\t\t\t\t\t      u8 num_cb_points,\n\t\t\t\t\t      u8 num_cr_points,\n\t\t\t\t\t      s32 grain_scale_shift,\n\t\t\t\t\t      s32 ar_coeff_lag,\n\t\t\t\t\t      s32 (*ar_coeffs_cb)[25],\n\t\t\t\t\t      s32 (*ar_coeffs_cr)[25],\n\t\t\t\t\t      s32 ar_coeff_shift,\n\t\t\t\t\t      s32 grain_min,\n\t\t\t\t\t      s32 grain_max,\n\t\t\t\t\t      u8 chroma_scaling_from_luma,\n\t\t\t\t\t      u16 random_seed);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

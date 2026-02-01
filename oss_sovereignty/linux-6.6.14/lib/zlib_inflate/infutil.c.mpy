@@ -1,0 +1,9 @@
+{
+  "module_name": "infutil.c",
+  "hash_id": "cb9e913da213a6bf23bc6627d5a40ae24110dcafae95caee059b4014e3f77099",
+  "original_prompt": "Ingested from linux-6.6.14/lib/zlib_inflate/infutil.c",
+  "human_readable_source": "#include <linux/zutil.h>\n#include <linux/errno.h>\n#include <linux/slab.h>\n#include <linux/vmalloc.h>\n\n \nint zlib_inflate_blob(void *gunzip_buf, unsigned int sz,\n\t\t      const void *buf, unsigned int len)\n{\n\tconst u8 *zbuf = buf;\n\tstruct z_stream_s *strm;\n\tint rc;\n\n\trc = -ENOMEM;\n\tstrm = kmalloc(sizeof(*strm), GFP_KERNEL);\n\tif (strm == NULL)\n\t\tgoto gunzip_nomem1;\n\tstrm->workspace = kmalloc(zlib_inflate_workspacesize(), GFP_KERNEL);\n\tif (strm->workspace == NULL)\n\t\tgoto gunzip_nomem2;\n\n\t \n\tstrm->next_in = zbuf;\n\tstrm->avail_in = len;\n\tstrm->next_out = gunzip_buf;\n\tstrm->avail_out = sz;\n\n\trc = zlib_inflateInit2(strm, -MAX_WBITS);\n\tif (rc == Z_OK) {\n\t\trc = zlib_inflate(strm, Z_FINISH);\n\t\t \n\t\tif (rc == Z_STREAM_END)\n\t\t\trc = sz - strm->avail_out;\n\t\telse\n\t\t\trc = -EINVAL;\n\t\tzlib_inflateEnd(strm);\n\t} else\n\t\trc = -EINVAL;\n\n\tkfree(strm->workspace);\ngunzip_nomem2:\n\tkfree(strm);\ngunzip_nomem1:\n\treturn rc;  \n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

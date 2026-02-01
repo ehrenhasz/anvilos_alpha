@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile.am",
+  "hash_id": "5a024c727c43b8e73458215d3f9a74bd76f35519ad9b03c36a9906a1440ec167",
+  "original_prompt": "Ingested from zfs-2.2.2/lib/libzstd/Makefile.am",
+  "human_readable_source": "libzstd_la_CFLAGS  = $(AM_CFLAGS) $(LIBRARY_CFLAGS)\n# -fno-tree-vectorize is set for gcc in zstd/common/compiler.h\n# Set it for other compilers, too.\nlibzstd_la_CFLAGS += -fno-tree-vectorize\n\nnoinst_LTLIBRARIES += libzstd.la\n\nnodist_libzstd_la_SOURCES = \\\n\tmodule/zstd/lib/common/entropy_common.c \\\n\tmodule/zstd/lib/common/error_private.c \\\n\tmodule/zstd/lib/common/fse_decompress.c \\\n\tmodule/zstd/lib/common/pool.c \\\n\tmodule/zstd/lib/common/zstd_common.c \\\n\tmodule/zstd/lib/compress/fse_compress.c \\\n\tmodule/zstd/lib/compress/hist.c \\\n\tmodule/zstd/lib/compress/huf_compress.c \\\n\tmodule/zstd/lib/compress/zstd_compress_literals.c \\\n\tmodule/zstd/lib/compress/zstd_compress_sequences.c \\\n\tmodule/zstd/lib/compress/zstd_compress_superblock.c \\\n\tmodule/zstd/lib/compress/zstd_compress.c \\\n\tmodule/zstd/lib/compress/zstd_double_fast.c \\\n\tmodule/zstd/lib/compress/zstd_fast.c \\\n\tmodule/zstd/lib/compress/zstd_lazy.c \\\n\tmodule/zstd/lib/compress/zstd_ldm.c \\\n\tmodule/zstd/lib/compress/zstd_opt.c \\\n\tmodule/zstd/lib/decompress/huf_decompress.c \\\n\tmodule/zstd/lib/decompress/zstd_ddict.c \\\n\tmodule/zstd/lib/decompress/zstd_decompress.c \\\n\tmodule/zstd/lib/decompress/zstd_decompress_block.c \\\n\tmodule/zstd/zfs_zstd.c\n\nlibzstd_la_CFLAGS += -include $(top_srcdir)/module/zstd/include/zstd_compat_wrapper.h -fno-tree-vectorize -Wp,-w $(AM_CFLAGS)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": ".gitignore",
+  "hash_id": "f0e25dc8d25f8130530613e13bc4288a6833d9e0b397b81060149dc518718708",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/rseq/.gitignore",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nbasic_percpu_ops_test\nbasic_percpu_ops_mm_cid_test\nbasic_test\nbasic_rseq_op_test\nparam_test\nparam_test_benchmark\nparam_test_compare_twice\nparam_test_mm_cid\nparam_test_mm_cid_benchmark\nparam_test_mm_cid_compare_twice\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

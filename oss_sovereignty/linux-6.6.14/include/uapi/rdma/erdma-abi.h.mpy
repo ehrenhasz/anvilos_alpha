@@ -1,0 +1,9 @@
+{
+  "module_name": "erdma-abi.h",
+  "hash_id": "bc2ab09aa7b45404a5dec3f33d0886ea2b1284aa6069eebccecb923d4cc170f7",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/rdma/erdma-abi.h",
+  "human_readable_source": " \n \n\n#ifndef __ERDMA_USER_H__\n#define __ERDMA_USER_H__\n\n#include <linux/types.h>\n\n#define ERDMA_ABI_VERSION       1\n\nstruct erdma_ureq_create_cq {\n\t__aligned_u64 db_record_va;\n\t__aligned_u64 qbuf_va;\n\t__u32 qbuf_len;\n\t__u32 rsvd0;\n};\n\nstruct erdma_uresp_create_cq {\n\t__u32 cq_id;\n\t__u32 num_cqe;\n};\n\nstruct erdma_ureq_create_qp {\n\t__aligned_u64 db_record_va;\n\t__aligned_u64 qbuf_va;\n\t__u32 qbuf_len;\n\t__u32 rsvd0;\n};\n\nstruct erdma_uresp_create_qp {\n\t__u32 qp_id;\n\t__u32 num_sqe;\n\t__u32 num_rqe;\n\t__u32 rq_offset;\n};\n\nstruct erdma_uresp_alloc_ctx {\n\t__u32 dev_id;\n\t__u32 pad;\n\t__u32 sdb_type;\n\t__u32 sdb_offset;\n\t__aligned_u64 sdb;\n\t__aligned_u64 rdb;\n\t__aligned_u64 cdb;\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

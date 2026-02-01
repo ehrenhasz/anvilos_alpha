@@ -1,0 +1,9 @@
+{
+  "module_name": "ks8851_mll.h",
+  "hash_id": "37562a6e4c199318a6187a769be8da8308b86a900205ee17feb3b4a87c737d0e",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/ks8851_mll.h",
+  "human_readable_source": " \n \n\n#ifndef _LINUX_KS8851_MLL_H\n#define _LINUX_KS8851_MLL_H\n\n#include <linux/if_ether.h>\n\n \nstruct ks8851_mll_platform_data {\n\tu8 mac_addr[ETH_ALEN];\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

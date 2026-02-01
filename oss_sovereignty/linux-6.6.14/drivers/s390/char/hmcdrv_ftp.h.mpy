@@ -1,0 +1,9 @@
+{
+  "module_name": "hmcdrv_ftp.h",
+  "hash_id": "6b9473cdd9c27d1f33fd8a7a5f39ecb8de20f5858d78d8cf66a85ec0e538cd84",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/s390/char/hmcdrv_ftp.h",
+  "human_readable_source": " \n \n\n#ifndef __HMCDRV_FTP_H__\n#define __HMCDRV_FTP_H__\n\n#include <linux/types.h>  \n\n \n#define HMCDRV_FTP_FIDENT_MAX 192\n\n \nenum hmcdrv_ftp_cmdid {\n\tHMCDRV_FTP_NOOP = 0,\n\tHMCDRV_FTP_GET = 1,\n\tHMCDRV_FTP_PUT = 2,\n\tHMCDRV_FTP_APPEND = 3,\n\tHMCDRV_FTP_DIR = 4,\n\tHMCDRV_FTP_NLIST = 5,\n\tHMCDRV_FTP_DELETE = 6,\n\tHMCDRV_FTP_CANCEL = 7\n};\n\n \nstruct hmcdrv_ftp_cmdspec {\n\tenum hmcdrv_ftp_cmdid id;\n\tloff_t ofs;\n\tconst char *fname;\n\tvoid __kernel *buf;\n\tsize_t len;\n};\n\nint hmcdrv_ftp_startup(void);\nvoid hmcdrv_ftp_shutdown(void);\nint hmcdrv_ftp_probe(void);\nssize_t hmcdrv_ftp_do(const struct hmcdrv_ftp_cmdspec *ftp);\nssize_t hmcdrv_ftp_cmd(char __kernel *cmd, loff_t offset,\n\t\t       char __user *buf, size_t len);\n\n#endif\t  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

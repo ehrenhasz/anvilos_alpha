@@ -1,0 +1,9 @@
+{
+  "module_name": "hypervisor.h",
+  "hash_id": "97d72c4c0db36c41b542b47658208ea2f026e6450fab58f1c548dc5216146ee2",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/include/asm/hypervisor.h",
+  "human_readable_source": " \n#ifndef _ASM_X86_HYPERVISOR_H\n#define _ASM_X86_HYPERVISOR_H\n\n \nenum x86_hypervisor_type {\n\tX86_HYPER_NATIVE = 0,\n\tX86_HYPER_VMWARE,\n\tX86_HYPER_MS_HYPERV,\n\tX86_HYPER_XEN_PV,\n\tX86_HYPER_XEN_HVM,\n\tX86_HYPER_KVM,\n\tX86_HYPER_JAILHOUSE,\n\tX86_HYPER_ACRN,\n};\n\n#ifdef CONFIG_HYPERVISOR_GUEST\n\n#include <asm/kvm_para.h>\n#include <asm/x86_init.h>\n#include <asm/xen/hypervisor.h>\n\nstruct hypervisor_x86 {\n\t \n\tconst char\t*name;\n\n\t \n\tuint32_t\t(*detect)(void);\n\n\t \n\tenum x86_hypervisor_type type;\n\n\t \n\tstruct x86_hyper_init init;\n\n\t \n\tstruct x86_hyper_runtime runtime;\n\n\t \n\tbool ignore_nopv;\n};\n\nextern const struct hypervisor_x86 x86_hyper_vmware;\nextern const struct hypervisor_x86 x86_hyper_ms_hyperv;\nextern const struct hypervisor_x86 x86_hyper_xen_pv;\nextern const struct hypervisor_x86 x86_hyper_kvm;\nextern const struct hypervisor_x86 x86_hyper_jailhouse;\nextern const struct hypervisor_x86 x86_hyper_acrn;\nextern struct hypervisor_x86 x86_hyper_xen_hvm;\n\nextern bool nopv;\nextern enum x86_hypervisor_type x86_hyper_type;\nextern void init_hypervisor_platform(void);\nstatic inline bool hypervisor_is_type(enum x86_hypervisor_type type)\n{\n\treturn x86_hyper_type == type;\n}\n#else\nstatic inline void init_hypervisor_platform(void) { }\nstatic inline bool hypervisor_is_type(enum x86_hypervisor_type type)\n{\n\treturn type == X86_HYPER_NATIVE;\n}\n#endif  \n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

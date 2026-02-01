@@ -1,0 +1,9 @@
+{
+  "module_name": "audit.h",
+  "hash_id": "0649a9acb6a6ad33826d196ebb3414fa4a7c3ddadf79ebb9de5ff2791f254569",
+  "original_prompt": "Ingested from openssh-9.6p1/audit.h",
+  "human_readable_source": " \n\n#ifndef _SSH_AUDIT_H\n# define _SSH_AUDIT_H\n\n#include \"loginrec.h\"\n\nstruct ssh;\n\nenum ssh_audit_event_type {\n\tSSH_LOGIN_EXCEED_MAXTRIES,\n\tSSH_LOGIN_ROOT_DENIED,\n\tSSH_AUTH_SUCCESS,\n\tSSH_AUTH_FAIL_NONE,\n\tSSH_AUTH_FAIL_PASSWD,\n\tSSH_AUTH_FAIL_KBDINT,\t \n\tSSH_AUTH_FAIL_PUBKEY,\t \n\tSSH_AUTH_FAIL_HOSTBASED,\t \n\tSSH_AUTH_FAIL_GSSAPI,\n\tSSH_INVALID_USER,\n\tSSH_NOLOGIN,\t\t \n\tSSH_CONNECTION_CLOSE,\t \n\tSSH_CONNECTION_ABANDON,\t \n\tSSH_AUDIT_UNKNOWN\n};\ntypedef enum ssh_audit_event_type ssh_audit_event_t;\n\nvoid\taudit_connection_from(const char *, int);\nvoid\taudit_event(struct ssh *, ssh_audit_event_t);\nvoid\taudit_session_open(struct logininfo *);\nvoid\taudit_session_close(struct logininfo *);\nvoid\taudit_run_command(const char *);\nssh_audit_event_t audit_classify_auth(const char *);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

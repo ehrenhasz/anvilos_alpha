@@ -1,0 +1,9 @@
+{
+  "module_name": "time-internal.h",
+  "hash_id": "7088b48e0a03c4b239b8eccbabe089b02a754c12e0dda5377d96dbfe0af32b33",
+  "original_prompt": "Ingested from coreutils-9.4/lib/time-internal.h",
+  "human_readable_source": " \n\n \nstruct tm_zone\n{\n   \n  struct tm_zone *next;\n\n#if HAVE_TZNAME && !HAVE_STRUCT_TM_TM_ZONE\n   \n  char *tzname_copy[2];\n#endif\n\n   \n  char tz_is_set;\n\n   \n  char abbrs[FLEXIBLE_ARRAY_MEMBER];\n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

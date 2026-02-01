@@ -1,0 +1,9 @@
+{
+  "module_name": "cpuinfo.c",
+  "hash_id": "63e092ff2ca63a490234c3323bc802af36406cde014e8367b45733263d9cea01",
+  "original_prompt": "Ingested from linux-6.6.14/fs/proc/cpuinfo.c",
+  "human_readable_source": "\n#include <linux/cpufreq.h>\n#include <linux/fs.h>\n#include <linux/init.h>\n#include <linux/proc_fs.h>\n#include <linux/seq_file.h>\n\nextern const struct seq_operations cpuinfo_op;\n\nstatic int cpuinfo_open(struct inode *inode, struct file *file)\n{\n\treturn seq_open(file, &cpuinfo_op);\n}\n\nstatic const struct proc_ops cpuinfo_proc_ops = {\n\t.proc_flags\t= PROC_ENTRY_PERMANENT,\n\t.proc_open\t= cpuinfo_open,\n\t.proc_read_iter\t= seq_read_iter,\n\t.proc_lseek\t= seq_lseek,\n\t.proc_release\t= seq_release,\n};\n\nstatic int __init proc_cpuinfo_init(void)\n{\n\tproc_create(\"cpuinfo\", 0, NULL, &cpuinfo_proc_ops);\n\treturn 0;\n}\nfs_initcall(proc_cpuinfo_init);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

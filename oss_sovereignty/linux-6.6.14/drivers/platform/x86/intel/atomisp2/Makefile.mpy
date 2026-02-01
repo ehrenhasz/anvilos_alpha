@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "93474bcb5d14003fdf928667e0ecb71b9154c90ca5ce260fb761f9f0f541c711",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/platform/x86/intel/atomisp2/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Intel x86 Platform Specific Drivers\n#\n\nintel_atomisp2_led-y\t\t\t:= led.o\nobj-$(CONFIG_INTEL_ATOMISP2_LED)\t+= intel_atomisp2_led.o\nintel_atomisp2_pm-y\t\t\t+= pm.o\nobj-$(CONFIG_INTEL_ATOMISP2_PM)\t\t+= intel_atomisp2_pm.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

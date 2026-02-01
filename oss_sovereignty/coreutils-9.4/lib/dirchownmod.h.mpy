@@ -1,0 +1,9 @@
+{
+  "module_name": "dirchownmod.h",
+  "hash_id": "d9967f960c172ec4854ce352a71327ce50f2aa4da950d5281e51e16b401a0d33",
+  "original_prompt": "Ingested from coreutils-9.4/lib/dirchownmod.h",
+  "human_readable_source": "/* Change the ownership and mode bits of a directory.\n\n   Copyright (C) 2006-2023 Free Software Foundation, Inc.\n\n   This file is free software: you can redistribute it and/or modify\n   it under the terms of the GNU General Public License as published\n   by the Free Software Foundation, either version 3 of the License,\n   or (at your option) any later version.\n\n   This file is distributed in the hope that it will be useful,\n   but WITHOUT ANY WARRANTY; without even the implied warranty of\n   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n   GNU General Public License for more details.\n\n   You should have received a copy of the GNU General Public License\n   along with this program.  If not, see <https:\n\n#include <sys/types.h>\n\nint dirchownmod (int, char const *, mode_t, uid_t, gid_t, mode_t, mode_t);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

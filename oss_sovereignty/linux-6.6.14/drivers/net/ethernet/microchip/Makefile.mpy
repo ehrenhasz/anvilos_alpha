@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "eac687284c2dfc2b8c9c9e5153863645da4a4b5323b8dad03f6308c182ecc19c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/microchip/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Makefile for the Microchip network device drivers.\n#\n\nobj-$(CONFIG_ENC28J60) += enc28j60.o\nobj-$(CONFIG_ENCX24J600) += encx24j600.o encx24j600-regmap.o\nobj-$(CONFIG_LAN743X) += lan743x.o\n\nlan743x-objs := lan743x_main.o lan743x_ethtool.o lan743x_ptp.o\n\nobj-$(CONFIG_LAN966X_SWITCH) += lan966x/\nobj-$(CONFIG_SPARX5_SWITCH) += sparx5/\nobj-$(CONFIG_VCAP) += vcap/\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

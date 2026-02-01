@@ -1,0 +1,9 @@
+{
+  "module_name": "iosm_ipc_wwan.h",
+  "hash_id": "25659405f46c6cbe2c0cc6ea2cdea49876f65bce5ea26221db2ede31b47bec3e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wwan/iosm/iosm_ipc_wwan.h",
+  "human_readable_source": " \n\n#ifndef IOSM_IPC_WWAN_H\n#define IOSM_IPC_WWAN_H\n\n \nstruct iosm_wwan *ipc_wwan_init(struct iosm_imem *ipc_imem, struct device *dev);\n\n \nvoid ipc_wwan_deinit(struct iosm_wwan *ipc_wwan);\n\n \nint ipc_wwan_receive(struct iosm_wwan *ipc_wwan, struct sk_buff *skb_arg,\n\t\t     bool dss, int if_id);\n\n \nvoid ipc_wwan_tx_flowctrl(struct iosm_wwan *ipc_wwan, int id, bool on);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

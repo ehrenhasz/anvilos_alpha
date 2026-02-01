@@ -1,0 +1,9 @@
+{
+  "module_name": "ti-aemif.h",
+  "hash_id": "b0f6fd7f412987945d8c0461c066fe91e247d3ec1eb5431db6db2f231ecf542c",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/platform_data/ti-aemif.h",
+  "human_readable_source": " \n \n\n#ifndef __TI_DAVINCI_AEMIF_DATA_H__\n#define __TI_DAVINCI_AEMIF_DATA_H__\n\n#include <linux/of_platform.h>\n\n \nstruct aemif_abus_data {\n\tu32 cs;\n};\n\n \nstruct aemif_platform_data {\n\tstruct of_dev_auxdata *dev_lookup;\n\tu32 cs_offset;\n\tstruct aemif_abus_data *abus_data;\n\tsize_t num_abus_data;\n\tstruct platform_device *sub_devices;\n\tsize_t num_sub_devices;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

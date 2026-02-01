@@ -1,0 +1,9 @@
+{
+  "module_name": "ledtrig-panic.c",
+  "hash_id": "4e3cc504aec9ffe6cfab0e406f653beecdcf6cae7922c96a4f5553bb75c08ec6",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/leds/trigger/ledtrig-panic.c",
+  "human_readable_source": "\n \n\n#include <linux/kernel.h>\n#include <linux/init.h>\n#include <linux/notifier.h>\n#include <linux/panic_notifier.h>\n#include <linux/leds.h>\n#include \"../leds.h\"\n\nstatic struct led_trigger *trigger;\n\n \nstatic void led_trigger_set_panic(struct led_classdev *led_cdev)\n{\n\tstruct led_trigger *trig;\n\n\tlist_for_each_entry(trig, &trigger_list, next_trig) {\n\t\tif (strcmp(\"panic\", trig->name))\n\t\t\tcontinue;\n\t\tif (led_cdev->trigger)\n\t\t\tlist_del(&led_cdev->trig_list);\n\t\tlist_add_tail(&led_cdev->trig_list, &trig->led_cdevs);\n\n\t\t \n\t\tled_cdev->blink_delay_on = 0;\n\t\tled_cdev->blink_delay_off = 0;\n\n\t\tled_cdev->trigger = trig;\n\t\tif (trig->activate)\n\t\t\ttrig->activate(led_cdev);\n\t\tbreak;\n\t}\n}\n\nstatic int led_trigger_panic_notifier(struct notifier_block *nb,\n\t\t\t\t      unsigned long code, void *unused)\n{\n\tstruct led_classdev *led_cdev;\n\n\tlist_for_each_entry(led_cdev, &leds_list, node)\n\t\tif (led_cdev->flags & LED_PANIC_INDICATOR)\n\t\t\tled_trigger_set_panic(led_cdev);\n\treturn NOTIFY_DONE;\n}\n\nstatic struct notifier_block led_trigger_panic_nb = {\n\t.notifier_call = led_trigger_panic_notifier,\n};\n\nstatic long led_panic_blink(int state)\n{\n\tled_trigger_event(trigger, state ? LED_FULL : LED_OFF);\n\treturn 0;\n}\n\nstatic int __init ledtrig_panic_init(void)\n{\n\tatomic_notifier_chain_register(&panic_notifier_list,\n\t\t\t\t       &led_trigger_panic_nb);\n\n\tled_trigger_register_simple(\"panic\", &trigger);\n\tpanic_blink = led_panic_blink;\n\treturn 0;\n}\ndevice_initcall(ledtrig_panic_init);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

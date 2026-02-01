@@ -1,0 +1,9 @@
+{
+  "module_name": "sdw.h",
+  "hash_id": "936aff7e1e3a74a2f36182aa06c3d9bf80779c394ad5bbe7f298fa8d57ec11ad",
+  "original_prompt": "Ingested from linux-6.6.14/include/sound/sdw.h",
+  "human_readable_source": " \n\n#include <linux/soundwire/sdw.h>\n#include <sound/asound.h>\n#include <sound/pcm.h>\n#include <sound/pcm_params.h>\n\n#ifndef __INCLUDE_SOUND_SDW_H\n#define __INCLUDE_SOUND_SDW_H\n\n \nstatic inline void snd_sdw_params_to_config(struct snd_pcm_substream *substream,\n\t\t\t\t\t    struct snd_pcm_hw_params *params,\n\t\t\t\t\t    struct sdw_stream_config *stream_config,\n\t\t\t\t\t    struct sdw_port_config *port_config)\n{\n\tstream_config->frame_rate = params_rate(params);\n\tstream_config->ch_count = params_channels(params);\n\tstream_config->bps = snd_pcm_format_width(params_format(params));\n\n\tif (substream->stream == SNDRV_PCM_STREAM_PLAYBACK)\n\t\tstream_config->direction = SDW_DATA_DIR_RX;\n\telse\n\t\tstream_config->direction = SDW_DATA_DIR_TX;\n\n\tport_config->ch_mask = GENMASK(stream_config->ch_count - 1, 0);\n}\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "printf.x",
+  "hash_id": "3363702c45ad36ece763c7540aafed07fd00e9677d9e2d55a03cbad178c45bee",
+  "original_prompt": "Ingested from coreutils-9.4/man/printf.x",
+  "human_readable_source": "[NAME]\nprintf \\- format and print data\n[DESCRIPTION]\n.\\\" Add any additional description here\n[SEE ALSO]\nprintf(3)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

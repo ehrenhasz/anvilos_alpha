@@ -1,0 +1,9 @@
+{
+  "module_name": "intel_soc_dts_iosf.h",
+  "hash_id": "8e36290cbfe8eeaf97f101ef8c342eb48b413f6edae887e1d022c3997379bbe2",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/thermal/intel/intel_soc_dts_iosf.h",
+  "human_readable_source": " \n \n\n#ifndef _INTEL_SOC_DTS_IOSF_CORE_H\n#define _INTEL_SOC_DTS_IOSF_CORE_H\n\n#include <linux/thermal.h>\n\n \n#define SOC_MAX_DTS_SENSORS\t2\n\n \n#define SOC_MAX_DTS_TRIPS\t2\n\nenum intel_soc_dts_interrupt_type {\n\tINTEL_SOC_DTS_INTERRUPT_NONE,\n\tINTEL_SOC_DTS_INTERRUPT_APIC,\n\tINTEL_SOC_DTS_INTERRUPT_MSI,\n\tINTEL_SOC_DTS_INTERRUPT_SCI,\n\tINTEL_SOC_DTS_INTERRUPT_SMI,\n};\n\nstruct intel_soc_dts_sensors;\n\nstruct intel_soc_dts_sensor_entry {\n\tint id;\n\tu32 store_status;\n\tu32 trip_mask;\n\tstruct thermal_trip trips[SOC_MAX_DTS_TRIPS];\n\tstruct thermal_zone_device *tzone;\n\tstruct intel_soc_dts_sensors *sensors;\n};\n\nstruct intel_soc_dts_sensors {\n\tu32 tj_max;\n\tspinlock_t intr_notify_lock;\n\tstruct mutex dts_update_lock;\n\tenum intel_soc_dts_interrupt_type intr_type;\n\tstruct intel_soc_dts_sensor_entry soc_dts[SOC_MAX_DTS_SENSORS];\n};\n\n\nstruct intel_soc_dts_sensors *\nintel_soc_dts_iosf_init(enum intel_soc_dts_interrupt_type intr_type,\n\t\t\tbool critical_trip, int crit_offset);\nvoid intel_soc_dts_iosf_exit(struct intel_soc_dts_sensors *sensors);\nvoid intel_soc_dts_iosf_interrupt_handler(\n\t\t\t\tstruct intel_soc_dts_sensors *sensors);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "sun20i-d1-r-ccu.h",
+  "hash_id": "04878a8d31126eff581e853c174ff685f8c60fd84f3dd779780e862f11b3f059",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/reset/sun20i-d1-r-ccu.h",
+  "human_readable_source": " \n \n\n#ifndef _DT_BINDINGS_RST_SUN20I_D1_R_CCU_H_\n#define _DT_BINDINGS_RST_SUN20I_D1_R_CCU_H_\n\n#define RST_BUS_R_TIMER\t\t0\n#define RST_BUS_R_TWD\t\t1\n#define RST_BUS_R_PPU\t\t2\n#define RST_BUS_R_IR_RX\t\t3\n#define RST_BUS_R_RTC\t\t4\n#define RST_BUS_R_CPUCFG\t5\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

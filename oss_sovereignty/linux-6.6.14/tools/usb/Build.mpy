@@ -1,0 +1,9 @@
+{
+  "module_name": "Build",
+  "hash_id": "ba41592f55e4265573c6fa26af4df2ed5db9fe8204d382c398ba2556bc4c918c",
+  "original_prompt": "Ingested from linux-6.6.14/tools/usb/Build",
+  "human_readable_source": "testusb-y += testusb.o\nffs-test-y += ffs-test.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "cl206e.h",
+  "hash_id": "b1f34f9dc9cbaf79a6e62f2d23e532e8aea1fe1d4287ba6107b5481645b92b6b",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/include/nvhw/class/cl206e.h",
+  "human_readable_source": " \n#ifndef _cl206e_h_\n#define _cl206e_h_\n\n \n#define NV206E_DMA_OPCODE2                                         1:0\n#define NV206E_DMA_OPCODE2_NONE                                    (0x00000000)\n \n#define NV206E_DMA_OPCODE2_JUMP_LONG                               (0x00000001)\n#define NV206E_DMA_JUMP_LONG_OFFSET                                31:2\n \n#define NV206E_DMA_OPCODE2_CALL                                    (0x00000002)\n#define NV206E_DMA_CALL_OFFSET                                     31:2\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

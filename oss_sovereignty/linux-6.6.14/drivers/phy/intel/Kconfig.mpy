@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "8b5c3be1e4209d6647bc2fe65b09a3ad941a0f3c622bc994c152ee63a40c9a7d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/phy/intel/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Phy drivers for Intel platforms\n#\nconfig PHY_INTEL_KEEMBAY_EMMC\n\ttristate \"Intel Keem Bay EMMC PHY driver\"\n\tdepends on ARCH_KEEMBAY || COMPILE_TEST\n\tdepends on HAS_IOMEM\n\tselect GENERIC_PHY\n\tselect REGMAP_MMIO\n\thelp\n\t  Choose this option if you have an Intel Keem Bay SoC.\n\n\t  To compile this driver as a module, choose M here: the module\n\t  will be called phy-keembay-emmc.ko.\n\nconfig PHY_INTEL_KEEMBAY_USB\n\ttristate \"Intel Keem Bay USB PHY driver\"\n\tdepends on ARCH_KEEMBAY || COMPILE_TEST\n\tdepends on HAS_IOMEM\n\tselect GENERIC_PHY\n\tselect REGMAP_MMIO\n\thelp\n\t  Choose this option if you have an Intel Keem Bay SoC.\n\n\t  To compile this driver as a module, choose M here: the module\n\t  will be called phy-keembay-usb.ko.\n\nconfig PHY_INTEL_LGM_COMBO\n\tbool \"Intel Lightning Mountain ComboPHY driver\"\n\tdepends on X86 || COMPILE_TEST\n\tdepends on OF && HAS_IOMEM\n\tselect MFD_SYSCON\n\tselect GENERIC_PHY\n\tselect REGMAP\n\thelp\n\t  Enable this to support Intel ComboPhy.\n\n\t  This driver configures ComboPhy subsystem on Intel gateway\n\t  chipsets which provides PHYs for various controllers, EMAC,\n\t  SATA and PCIe.\n\nconfig PHY_INTEL_LGM_EMMC\n\ttristate \"Intel Lightning Mountain EMMC PHY driver\"\n\tdepends on X86 || COMPILE_TEST\n\tselect GENERIC_PHY\n\thelp\n\t  Enable this to support the Intel EMMC PHY\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

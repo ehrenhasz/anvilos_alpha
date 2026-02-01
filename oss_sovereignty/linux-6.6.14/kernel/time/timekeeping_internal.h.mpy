@@ -1,0 +1,9 @@
+{
+  "module_name": "timekeeping_internal.h",
+  "hash_id": "1f0b086fe47d9c7da681dcd1e4680709ea99f1ddc7016e83805e553c2656c34c",
+  "original_prompt": "Ingested from linux-6.6.14/kernel/time/timekeeping_internal.h",
+  "human_readable_source": " \n#ifndef _TIMEKEEPING_INTERNAL_H\n#define _TIMEKEEPING_INTERNAL_H\n\n#include <linux/clocksource.h>\n#include <linux/spinlock.h>\n#include <linux/time.h>\n\n \n#ifdef CONFIG_DEBUG_FS\nextern void tk_debug_account_sleep_time(const struct timespec64 *t);\n#else\n#define tk_debug_account_sleep_time(x)\n#endif\n\n#ifdef CONFIG_CLOCKSOURCE_VALIDATE_LAST_CYCLE\nstatic inline u64 clocksource_delta(u64 now, u64 last, u64 mask)\n{\n\tu64 ret = (now - last) & mask;\n\n\t \n\treturn ret & ~(mask >> 1) ? 0 : ret;\n}\n#else\nstatic inline u64 clocksource_delta(u64 now, u64 last, u64 mask)\n{\n\treturn (now - last) & mask;\n}\n#endif\n\n \nextern raw_spinlock_t timekeeper_lock;\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

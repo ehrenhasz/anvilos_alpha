@@ -1,0 +1,9 @@
+{
+  "module_name": "zfs_namecheck.h",
+  "hash_id": "f4edccf2fef76e8485c2a0aac9c0b66b551955809995335ab0136ec5830f0544",
+  "original_prompt": "Ingested from zfs-2.2.2/include/zfs_namecheck.h",
+  "human_readable_source": " \n \n \n\n#ifndef\t_ZFS_NAMECHECK_H\n#define\t_ZFS_NAMECHECK_H extern __attribute__((visibility(\"default\")))\n\n#ifdef\t__cplusplus\nextern \"C\" {\n#endif\n\ntypedef enum {\n\tNAME_ERR_LEADING_SLASH,\t\t \n\tNAME_ERR_EMPTY_COMPONENT,\t \n\tNAME_ERR_TRAILING_SLASH,\t \n\tNAME_ERR_INVALCHAR,\t\t \n\tNAME_ERR_MULTIPLE_DELIMITERS,\t \n\tNAME_ERR_NOLETTER,\t\t \n\tNAME_ERR_RESERVED,\t\t \n\tNAME_ERR_DISKLIKE,\t\t \n\tNAME_ERR_TOOLONG,\t\t \n\tNAME_ERR_SELF_REF,\t\t \n\tNAME_ERR_PARENT_REF,\t\t \n\tNAME_ERR_NO_AT,\t\t\t \n\tNAME_ERR_NO_POUND, \t\t \n} namecheck_err_t;\n\n#define\tZFS_PERMSET_MAXLEN\t64\n\n_ZFS_NAMECHECK_H int zfs_max_dataset_nesting;\n\n_ZFS_NAMECHECK_H int get_dataset_depth(const char *);\n_ZFS_NAMECHECK_H int pool_namecheck(const char *, namecheck_err_t *, char *);\n_ZFS_NAMECHECK_H int entity_namecheck(const char *, namecheck_err_t *, char *);\n_ZFS_NAMECHECK_H int dataset_namecheck(const char *, namecheck_err_t *, char *);\n_ZFS_NAMECHECK_H int snapshot_namecheck(const char *, namecheck_err_t *,\n    char *);\n_ZFS_NAMECHECK_H int bookmark_namecheck(const char *, namecheck_err_t *,\n    char *);\n_ZFS_NAMECHECK_H int dataset_nestcheck(const char *);\n_ZFS_NAMECHECK_H int mountpoint_namecheck(const char *, namecheck_err_t *);\n_ZFS_NAMECHECK_H int zfs_component_namecheck(const char *, namecheck_err_t *,\n    char *);\n_ZFS_NAMECHECK_H int permset_namecheck(const char *, namecheck_err_t *,\n    char *);\n\n#ifdef\t__cplusplus\n}\n#endif\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "73ac83803eeddfaba4a7f430dfa87035e4c3f39bee14bcbb696a3f40bbb189dd",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/mxs/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n# MXS Platform Support\nsnd-soc-mxs-objs := mxs-saif.o\nsnd-soc-mxs-pcm-objs := mxs-pcm.o\n\nobj-$(CONFIG_SND_MXS_SOC) += snd-soc-mxs.o snd-soc-mxs-pcm.o\n\n# i.MX Machine Support\nsnd-soc-mxs-sgtl5000-objs := mxs-sgtl5000.o\n\nobj-$(CONFIG_SND_SOC_MXS_SGTL5000) += snd-soc-mxs-sgtl5000.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

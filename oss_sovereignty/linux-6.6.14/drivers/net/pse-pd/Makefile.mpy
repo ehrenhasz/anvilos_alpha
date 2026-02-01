@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "ba7361bdb2a41022ae150bfde6c746c18d5023b9fc274eb4d4623a3984fd29dd",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/pse-pd/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n# Makefile for Linux PSE drivers\n\nobj-$(CONFIG_PSE_CONTROLLER) += pse_core.o\n\nobj-$(CONFIG_PSE_REGULATOR) += pse_regulator.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

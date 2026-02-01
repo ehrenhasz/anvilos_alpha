@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "cb7becd04cd3e78ae152bebf5a1159a1c0403bc2f51d5bf38363ee56075ed963",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/connector/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-$(CONFIG_CONNECTOR)\t\t+= cn.o\nobj-$(CONFIG_PROC_EVENTS)\t+= cn_proc.o\n\ncn-y\t\t\t\t+= cn_queue.o connector.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

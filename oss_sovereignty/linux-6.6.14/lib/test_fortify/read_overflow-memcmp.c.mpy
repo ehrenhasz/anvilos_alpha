@@ -1,0 +1,9 @@
+{
+  "module_name": "read_overflow-memcmp.c",
+  "hash_id": "fa8c3a99ffe68be129af24116220162c13dd653a00a0b1cfceec3d5fe34fcd7e",
+  "original_prompt": "Ingested from linux-6.6.14/lib/test_fortify/read_overflow-memcmp.c",
+  "human_readable_source": "\n#define TEST\t\\\n\tmemcmp(small, large, sizeof(small) + 1)\n\n#include \"test_fortify.h\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "xattr_security.c",
+  "hash_id": "28fd5ecc7adbe0b29c5293c07c01554cc869c71ce11e9330b813df1443da56df",
+  "original_prompt": "Ingested from linux-6.6.14/fs/ext2/xattr_security.c",
+  "human_readable_source": "\n \n\n#include \"ext2.h\"\n#include <linux/security.h>\n#include \"xattr.h\"\n\nstatic int\next2_xattr_security_get(const struct xattr_handler *handler,\n\t\t\tstruct dentry *unused, struct inode *inode,\n\t\t\tconst char *name, void *buffer, size_t size)\n{\n\treturn ext2_xattr_get(inode, EXT2_XATTR_INDEX_SECURITY, name,\n\t\t\t      buffer, size);\n}\n\nstatic int\next2_xattr_security_set(const struct xattr_handler *handler,\n\t\t\tstruct mnt_idmap *idmap,\n\t\t\tstruct dentry *unused, struct inode *inode,\n\t\t\tconst char *name, const void *value,\n\t\t\tsize_t size, int flags)\n{\n\treturn ext2_xattr_set(inode, EXT2_XATTR_INDEX_SECURITY, name,\n\t\t\t      value, size, flags);\n}\n\nstatic int ext2_initxattrs(struct inode *inode, const struct xattr *xattr_array,\n\t\t\t   void *fs_info)\n{\n\tconst struct xattr *xattr;\n\tint err = 0;\n\n\tfor (xattr = xattr_array; xattr->name != NULL; xattr++) {\n\t\terr = ext2_xattr_set(inode, EXT2_XATTR_INDEX_SECURITY,\n\t\t\t\t     xattr->name, xattr->value,\n\t\t\t\t     xattr->value_len, 0);\n\t\tif (err < 0)\n\t\t\tbreak;\n\t}\n\treturn err;\n}\n\nint\next2_init_security(struct inode *inode, struct inode *dir,\n\t\t   const struct qstr *qstr)\n{\n\treturn security_inode_init_security(inode, dir, qstr,\n\t\t\t\t\t    &ext2_initxattrs, NULL);\n}\n\nconst struct xattr_handler ext2_xattr_security_handler = {\n\t.prefix\t= XATTR_SECURITY_PREFIX,\n\t.get\t= ext2_xattr_security_get,\n\t.set\t= ext2_xattr_security_set,\n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "openat-die.c",
+  "hash_id": "39c596f1004c5221fba77179bd94df57ba9445ee5ac8cc139c2c461a91cafe47",
+  "original_prompt": "Ingested from coreutils-9.4/lib/openat-die.c",
+  "human_readable_source": " \n  abort ();\n}\n\n\n \n\n_Noreturn void\nopenat_restore_fail (int errnum)\n{\n#ifndef GNULIB_LIBPOSIX\n  error (exit_failure, errnum,\n         _(\"failed to return to initial working directory\"));\n#endif\n\n   \n  abort ();\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

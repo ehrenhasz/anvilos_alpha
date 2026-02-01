@@ -1,0 +1,9 @@
+{
+  "module_name": "ddk750_mode.h",
+  "hash_id": "e27fc21f47877abc4072ad2d3e8670f303c2d9fb456a0ef4d9e2c4724f4145d4",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/sm750fb/ddk750_mode.h",
+  "human_readable_source": " \n#ifndef DDK750_MODE_H__\n#define DDK750_MODE_H__\n\n#include \"ddk750_chip.h\"\n\nenum spolarity {\n\tPOS = 0,  \n\tNEG,  \n};\n\nstruct mode_parameter {\n\t \n\tunsigned long horizontal_total;\n\tunsigned long horizontal_display_end;\n\tunsigned long horizontal_sync_start;\n\tunsigned long horizontal_sync_width;\n\tenum spolarity horizontal_sync_polarity;\n\n\t \n\tunsigned long vertical_total;\n\tunsigned long vertical_display_end;\n\tunsigned long vertical_sync_start;\n\tunsigned long vertical_sync_height;\n\tenum spolarity vertical_sync_polarity;\n\n\t \n\tunsigned long pixel_clock;\n\tunsigned long horizontal_frequency;\n\tunsigned long vertical_frequency;\n\n\t \n\tenum spolarity clock_phase_polarity;\n};\n\nint ddk750_setModeTiming(struct mode_parameter *parm, enum clock_type clock);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

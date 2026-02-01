@@ -1,0 +1,9 @@
+{
+  "module_name": "cx23885-f300.h",
+  "hash_id": "f54b938f1df5716f808385e39afd3a489143270c4db02e36f78dd84ebe90d9b4",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/pci/cx23885/cx23885-f300.h",
+  "human_readable_source": " \nextern int f300_set_voltage(struct dvb_frontend *fe,\n\t\t\t    enum fe_sec_voltage voltage);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

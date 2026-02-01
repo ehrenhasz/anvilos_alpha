@@ -1,0 +1,9 @@
+{
+  "module_name": "cxd2880_integ.c",
+  "hash_id": "24aa02b098fedd7948851adf78aa162bd6aca728f174f8319c4b39e647075664",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/dvb-frontends/cxd2880/cxd2880_integ.c",
+  "human_readable_source": "\n \n\n#include <linux/ktime.h>\n#include <linux/errno.h>\n\n#include \"cxd2880_tnrdmd.h\"\n#include \"cxd2880_tnrdmd_mon.h\"\n#include \"cxd2880_integ.h\"\n\nint cxd2880_integ_init(struct cxd2880_tnrdmd *tnr_dmd)\n{\n\tint ret;\n\tktime_t start;\n\tu8 cpu_task_completed = 0;\n\n\tif (!tnr_dmd)\n\t\treturn -EINVAL;\n\n\tret = cxd2880_tnrdmd_init1(tnr_dmd);\n\tif (ret)\n\t\treturn ret;\n\n\tstart = ktime_get();\n\n\twhile (1) {\n\t\tret =\n\t\t    cxd2880_tnrdmd_check_internal_cpu_status(tnr_dmd,\n\t\t\t\t\t\t     &cpu_task_completed);\n\t\tif (ret)\n\t\t\treturn ret;\n\n\t\tif (cpu_task_completed)\n\t\t\tbreak;\n\n\t\tif (ktime_to_ms(ktime_sub(ktime_get(), start)) >\n\t\t\t\t\tCXD2880_TNRDMD_WAIT_INIT_TIMEOUT)\n\t\t\treturn -ETIMEDOUT;\n\n\t\tusleep_range(CXD2880_TNRDMD_WAIT_INIT_INTVL,\n\t\t\t     CXD2880_TNRDMD_WAIT_INIT_INTVL + 1000);\n\t}\n\n\treturn cxd2880_tnrdmd_init2(tnr_dmd);\n}\n\nint cxd2880_integ_cancel(struct cxd2880_tnrdmd *tnr_dmd)\n{\n\tif (!tnr_dmd)\n\t\treturn -EINVAL;\n\n\tatomic_set(&tnr_dmd->cancel, 1);\n\n\treturn 0;\n}\n\nint cxd2880_integ_check_cancellation(struct cxd2880_tnrdmd *tnr_dmd)\n{\n\tif (!tnr_dmd)\n\t\treturn -EINVAL;\n\n\tif (atomic_read(&tnr_dmd->cancel) != 0)\n\t\treturn -ECANCELED;\n\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

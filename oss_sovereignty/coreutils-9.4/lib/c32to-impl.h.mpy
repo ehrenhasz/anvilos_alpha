@@ -1,0 +1,9 @@
+{
+  "module_name": "c32to-impl.h",
+  "hash_id": "af1d8d552deb967933ad08e0137e3f520ce3663764ba373651d2d603cb8e3b58",
+  "original_prompt": "Ingested from coreutils-9.4/lib/c32to-impl.h",
+  "human_readable_source": " \n\n#include <wchar.h>\n#include <wctype.h>\n\n#if GNULIB_defined_mbstate_t\n# include \"localcharset.h\"\n# include \"streq.h\"\n#endif\n\n#if GL_CHAR32_T_IS_UNICODE\n# include \"lc-charset-unicode.h\"\n#endif\n\n#include \"unicase.h\"\n\n#if _GL_WCHAR_T_IS_UCS4 && !GNULIB_defined_mbstate_t\n_GL_EXTERN_INLINE\n#endif\nwint_t\nFUNC (wint_t wc)\n{\n   \n\n#if GNULIB_defined_mbstate_t             \n   \n  if (wc != WEOF)\n    {\n      const char *encoding = locale_charset ();\n      if (STREQ_OPT (encoding, \"UTF-8\", 'U', 'T', 'F', '-', '8', 0, 0, 0, 0))\n        return UCS_FUNC (wc);\n      else\n        return WCHAR_FUNC (wc);\n    }\n  else\n    return wc;\n\n#elif HAVE_WORKING_MBRTOC32              \n   \n\n# if _GL_WCHAR_T_IS_UCS4\n   \n  return WCHAR_FUNC (wc);\n# else\n   \n  if (wc != WEOF)\n    return UCS_FUNC (wc);\n  else\n    return wc;\n# endif\n\n#elif _GL_SMALL_WCHAR_T                  \n   \n\n  if (wc == WEOF || wc == (wchar_t) wc)\n     \n    return WCHAR_FUNC (wc);\n  else\n    return UCS_FUNC (wc);\n\n#else  \n   \n  static_assert (sizeof (char32_t) == sizeof (wchar_t));\n\n# if GL_CHAR32_T_IS_UNICODE && GL_CHAR32_T_VS_WCHAR_T_NEEDS_CONVERSION\n  return UCS_FUNC (wc);\n# else\n  return WCHAR_FUNC (wc);\n# endif\n#endif\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

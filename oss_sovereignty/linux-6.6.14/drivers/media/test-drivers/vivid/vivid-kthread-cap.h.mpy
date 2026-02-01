@@ -1,0 +1,9 @@
+{
+  "module_name": "vivid-kthread-cap.h",
+  "hash_id": "6adb198f1e85380ea19167865cd2c0faf55b4ee1e8b6c61ab7d6383169707432",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/test-drivers/vivid/vivid-kthread-cap.h",
+  "human_readable_source": " \n \n\n#ifndef _VIVID_KTHREAD_CAP_H_\n#define _VIVID_KTHREAD_CAP_H_\n\nint vivid_start_generating_vid_cap(struct vivid_dev *dev, bool *pstreaming);\nvoid vivid_stop_generating_vid_cap(struct vivid_dev *dev, bool *pstreaming);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

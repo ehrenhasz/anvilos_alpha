@@ -1,0 +1,9 @@
+{
+  "module_name": "spark.c",
+  "hash_id": "f75b9341d47f3a1ffbc607e372143bc612be756844d5a6e2f5a5fa680e4deb7c",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/util/spark.c",
+  "human_readable_source": "#include <stdio.h>\n#include <limits.h>\n#include <string.h>\n#include <stdlib.h>\n#include \"spark.h\"\n#include \"stat.h\"\n\n#define SPARK_SHIFT 8\n\n \nint print_spark(char *bf, int size, unsigned long *val, int numval)\n{\n\tstatic const char *ticks[NUM_SPARKS] = {\n\t\t\"\u2581\",  \"\u2582\", \"\u2583\", \"\u2584\", \"\u2585\", \"\u2586\", \"\u2587\", \"\u2588\"\n\t};\n\tint i, printed = 0;\n\tunsigned long min = ULONG_MAX, max = 0, f;\n\n\tfor (i = 0; i < numval; i++) {\n\t\tif (val[i] < min)\n\t\t\tmin = val[i];\n\t\tif (val[i] > max)\n\t\t\tmax = val[i];\n\t}\n\tf = ((max - min) << SPARK_SHIFT) / (NUM_SPARKS - 1);\n\tif (f < 1)\n\t\tf = 1;\n\tfor (i = 0; i < numval; i++) {\n\t\tprinted += scnprintf(bf + printed, size - printed, \"%s\",\n\t\t\t\t     ticks[((val[i] - min) << SPARK_SHIFT) / f]);\n\t}\n\n\treturn printed;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "input.h",
+  "hash_id": "cfb67ee11d0ca4f18eae423c28ead45a9d444e346c3014121739284d34564f9f",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/usb/input.h",
+  "human_readable_source": "\n \n\n#ifndef __LINUX_USB_INPUT_H\n#define __LINUX_USB_INPUT_H\n\n#include <linux/usb.h>\n#include <linux/input.h>\n#include <asm/byteorder.h>\n\nstatic inline void\nusb_to_input_id(const struct usb_device *dev, struct input_id *id)\n{\n\tid->bustype = BUS_USB;\n\tid->vendor = le16_to_cpu(dev->descriptor.idVendor);\n\tid->product = le16_to_cpu(dev->descriptor.idProduct);\n\tid->version = le16_to_cpu(dev->descriptor.bcdDevice);\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

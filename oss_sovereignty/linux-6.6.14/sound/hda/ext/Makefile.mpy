@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "dc90a84cb5a899625f4703de4c236bd8c2a96a1314e06846288ba81a428088c7",
+  "original_prompt": "Ingested from linux-6.6.14/sound/hda/ext/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nsnd-hda-ext-core-objs := hdac_ext_bus.o hdac_ext_controller.o hdac_ext_stream.o\n\nobj-$(CONFIG_SND_HDA_EXT_CORE) += snd-hda-ext-core.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "mmap_unlock_work.h",
+  "hash_id": "0c20fef6e6ac8b9f415008214e4012ef7f14d1cd5dbe5380ed1685f922341b17",
+  "original_prompt": "Ingested from linux-6.6.14/kernel/bpf/mmap_unlock_work.h",
+  "human_readable_source": " \n \n\n#ifndef __MMAP_UNLOCK_WORK_H__\n#define __MMAP_UNLOCK_WORK_H__\n#include <linux/irq_work.h>\n\n \nstruct mmap_unlock_irq_work {\n\tstruct irq_work irq_work;\n\tstruct mm_struct *mm;\n};\n\nDECLARE_PER_CPU(struct mmap_unlock_irq_work, mmap_unlock_work);\n\n \nstatic inline bool bpf_mmap_unlock_get_irq_work(struct mmap_unlock_irq_work **work_ptr)\n{\n\tstruct mmap_unlock_irq_work *work = NULL;\n\tbool irq_work_busy = false;\n\n\tif (irqs_disabled()) {\n\t\tif (!IS_ENABLED(CONFIG_PREEMPT_RT)) {\n\t\t\twork = this_cpu_ptr(&mmap_unlock_work);\n\t\t\tif (irq_work_is_busy(&work->irq_work)) {\n\t\t\t\t \n\t\t\t\tirq_work_busy = true;\n\t\t\t}\n\t\t} else {\n\t\t\t \n\t\t\tirq_work_busy = true;\n\t\t}\n\t}\n\n\t*work_ptr = work;\n\treturn irq_work_busy;\n}\n\nstatic inline void bpf_mmap_unlock_mm(struct mmap_unlock_irq_work *work, struct mm_struct *mm)\n{\n\tif (!work) {\n\t\tmmap_read_unlock(mm);\n\t} else {\n\t\twork->mm = mm;\n\n\t\t \n\t\trwsem_release(&mm->mmap_lock.dep_map, _RET_IP_);\n\t\tirq_work_queue(&work->irq_work);\n\t}\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

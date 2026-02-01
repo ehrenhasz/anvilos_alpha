@@ -1,0 +1,9 @@
+{
+  "module_name": "protocol.h",
+  "hash_id": "edba5da51384f67d3e9b85ea62f554ee3af056195daf7a42618a8ceeeb337951",
+  "original_prompt": "Ingested from linux-6.6.14/net/9p/protocol.h",
+  "human_readable_source": " \n \n\nsize_t p9_msg_buf_size(struct p9_client *c, enum p9_msg_t type,\n\t\t\tconst char *fmt, va_list ap);\nint p9pdu_vwritef(struct p9_fcall *pdu, int proto_version, const char *fmt,\n\t\t  va_list ap);\nint p9pdu_readf(struct p9_fcall *pdu, int proto_version, const char *fmt, ...);\nint p9pdu_prepare(struct p9_fcall *pdu, int16_t tag, int8_t type);\nint p9pdu_finalize(struct p9_client *clnt, struct p9_fcall *pdu);\nvoid p9pdu_reset(struct p9_fcall *pdu);\nsize_t pdu_read(struct p9_fcall *pdu, void *data, size_t size);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

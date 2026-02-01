@@ -1,0 +1,9 @@
+{
+  "module_name": "ia_css_anr.host.c",
+  "hash_id": "1d8f0bcb40654db6789ac2518bbcb6ed641076ee46456f08d994f2992984d7d0",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/isp/kernels/anr/anr_1.0/ia_css_anr.host.c",
+  "human_readable_source": "\n \n\n#include \"ia_css_types.h\"\n#include \"sh_css_defs.h\"\n#include \"ia_css_debug.h\"\n\n#include \"ia_css_anr.host.h\"\n\nconst struct ia_css_anr_config default_anr_config = {\n\t10,\n\t{\n\t\t0, 3, 1, 2, 3, 6, 4, 5, 1, 4, 2, 3, 2, 5, 3, 4,\n\t\t0, 3, 1, 2, 3, 6, 4, 5, 1, 4, 2, 3, 2, 5, 3, 4,\n\t\t0, 3, 1, 2, 3, 6, 4, 5, 1, 4, 2, 3, 2, 5, 3, 4,\n\t\t0, 3, 1, 2, 3, 6, 4, 5, 1, 4, 2, 3, 2, 5, 3, 4\n\t},\n\t{10, 20, 30}\n};\n\nvoid\nia_css_anr_encode(\n    struct sh_css_isp_anr_params *to,\n    const struct ia_css_anr_config *from,\n    unsigned int size)\n{\n\t(void)size;\n\tto->threshold = from->threshold;\n}\n\nvoid\nia_css_anr_dump(\n    const struct sh_css_isp_anr_params *anr,\n    unsigned int level)\n{\n\tif (!anr) return;\n\tia_css_debug_dtrace(level, \"Advance Noise Reduction:\\n\");\n\tia_css_debug_dtrace(level, \"\\t%-32s = %d\\n\",\n\t\t\t    \"anr_threshold\", anr->threshold);\n}\n\nvoid\nia_css_anr_debug_dtrace(\n    const struct ia_css_anr_config *config,\n    unsigned int level)\n{\n\tia_css_debug_dtrace(level,\n\t\t\t    \"config.threshold=%d\\n\",\n\t\t\t    config->threshold);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

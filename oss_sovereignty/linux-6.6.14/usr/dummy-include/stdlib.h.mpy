@@ -1,0 +1,9 @@
+{
+  "module_name": "stdlib.h",
+  "hash_id": "a14e39d5e66391e29b6ad2d8c9d2857656374fafcaaa71b529d5e5d31823e6e2",
+  "original_prompt": "Ingested from linux-6.6.14/usr/dummy-include/stdlib.h",
+  "human_readable_source": " \n#ifndef _STDLIB_H\n#define _STDLIB_H\n\n#error \"Please do not include <stdlib.h> from exported headers\"\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "ISA2+pooncerelease+poacquirerelease+poacquireonce.litmus",
+  "hash_id": "2e2b49df4325303ac38730976229900c3cbc48d3c484e57ec09d6389e01c2a41",
+  "original_prompt": "Ingested from linux-6.6.14/tools/memory-model/litmus-tests/ISA2+pooncerelease+poacquirerelease+poacquireonce.litmus",
+  "human_readable_source": "C ISA2+pooncerelease+poacquirerelease+poacquireonce\n\n(*\n * Result: Never\n *\n * This litmus test demonstrates that a release-acquire chain suffices\n * to order P0()'s initial write against P2()'s final read.  The reason\n * that the release-acquire chain suffices is because in all but one\n * case (P2() to P0()), each process reads from the preceding process's\n * write.  In memory-model-speak, there is only one non-reads-from\n * (AKA non-rf) link, so release-acquire is all that is needed.\n *)\n\n{}\n\nP0(int *x, int *y)\n{\n\tWRITE_ONCE(*x, 1);\n\tsmp_store_release(y, 1);\n}\n\nP1(int *y, int *z)\n{\n\tint r0;\n\n\tr0 = smp_load_acquire(y);\n\tsmp_store_release(z, 1);\n}\n\nP2(int *x, int *z)\n{\n\tint r0;\n\tint r1;\n\n\tr0 = smp_load_acquire(z);\n\tr1 = READ_ONCE(*x);\n}\n\nexists (1:r0=1 /\\ 2:r0=1 /\\ 2:r1=0)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

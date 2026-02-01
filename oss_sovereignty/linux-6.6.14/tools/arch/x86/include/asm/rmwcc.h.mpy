@@ -1,0 +1,9 @@
+{
+  "module_name": "rmwcc.h",
+  "hash_id": "e4780a86c272659d47ad9dacf5e54da2fb629843e8419c4885804d21a6e689b7",
+  "original_prompt": "Ingested from linux-6.6.14/tools/arch/x86/include/asm/rmwcc.h",
+  "human_readable_source": " \n#ifndef _TOOLS_LINUX_ASM_X86_RMWcc\n#define _TOOLS_LINUX_ASM_X86_RMWcc\n\n#define __GEN_RMWcc(fullop, var, cc, ...)\t\t\t\t\\\ndo {\t\t\t\t\t\t\t\t\t\\\n\tasm_volatile_goto (fullop \"; j\" cc \" %l[cc_label]\"\t\t\\\n\t\t\t: : \"m\" (var), ## __VA_ARGS__ \t\t\t\\\n\t\t\t: \"memory\" : cc_label);\t\t\t\t\\\n\treturn 0;\t\t\t\t\t\t\t\\\ncc_label:\t\t\t\t\t\t\t\t\\\n\treturn 1;\t\t\t\t\t\t\t\\\n} while (0)\n\n#define GEN_UNARY_RMWcc(op, var, arg0, cc) \t\t\t\t\\\n\t__GEN_RMWcc(op \" \" arg0, var, cc)\n\n#define GEN_BINARY_RMWcc(op, var, vcon, val, arg0, cc)\t\t\t\\\n\t__GEN_RMWcc(op \" %1, \" arg0, var, cc, vcon (val))\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

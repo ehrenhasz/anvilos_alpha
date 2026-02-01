@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "247434e910bcd3be7eb9ecbd0d6bc608b04eb85859e0066fa507d93d2b224d51",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/accel/habanalabs/common/mmu/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nHL_COMMON_MMU_FILES := common/mmu/mmu.o common/mmu/mmu_v1.o \\\n\t\t\tcommon/mmu/mmu_v2_hr.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

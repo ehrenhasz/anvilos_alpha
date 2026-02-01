@@ -1,0 +1,9 @@
+{
+  "module_name": "agent.h",
+  "hash_id": "527e958530dead157b27186a0964dfffdd05bf9d009547d8fe47fff93a642ece",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/infiniband/core/agent.h",
+  "human_readable_source": " \n\n#ifndef __AGENT_H_\n#define __AGENT_H_\n\n#include <linux/err.h>\n#include <rdma/ib_mad.h>\n\nextern int ib_agent_port_open(struct ib_device *device, int port_num);\n\nextern int ib_agent_port_close(struct ib_device *device, int port_num);\n\nextern void agent_send_response(const struct ib_mad_hdr *mad_hdr, const struct ib_grh *grh,\n\t\t\t\tconst struct ib_wc *wc, const struct ib_device *device,\n\t\t\t\tint port_num, int qpn, size_t resp_mad_len, bool opa);\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

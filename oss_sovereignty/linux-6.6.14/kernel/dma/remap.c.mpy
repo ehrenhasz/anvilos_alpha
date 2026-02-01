@@ -1,0 +1,9 @@
+{
+  "module_name": "remap.c",
+  "hash_id": "07154ee2a7b916c0eae0690eb1111b6500a13839cf60b2dfcee7b16fc434ca27",
+  "original_prompt": "Ingested from linux-6.6.14/kernel/dma/remap.c",
+  "human_readable_source": "\n \n#include <linux/dma-map-ops.h>\n#include <linux/slab.h>\n#include <linux/vmalloc.h>\n\nstruct page **dma_common_find_pages(void *cpu_addr)\n{\n\tstruct vm_struct *area = find_vm_area(cpu_addr);\n\n\tif (!area || area->flags != VM_DMA_COHERENT)\n\t\treturn NULL;\n\treturn area->pages;\n}\n\n \nvoid *dma_common_pages_remap(struct page **pages, size_t size,\n\t\t\t pgprot_t prot, const void *caller)\n{\n\tvoid *vaddr;\n\n\tvaddr = vmap(pages, PAGE_ALIGN(size) >> PAGE_SHIFT,\n\t\t     VM_DMA_COHERENT, prot);\n\tif (vaddr)\n\t\tfind_vm_area(vaddr)->pages = pages;\n\treturn vaddr;\n}\n\n \nvoid *dma_common_contiguous_remap(struct page *page, size_t size,\n\t\t\tpgprot_t prot, const void *caller)\n{\n\tint count = PAGE_ALIGN(size) >> PAGE_SHIFT;\n\tstruct page **pages;\n\tvoid *vaddr;\n\tint i;\n\n\tpages = kvmalloc_array(count, sizeof(struct page *), GFP_KERNEL);\n\tif (!pages)\n\t\treturn NULL;\n\tfor (i = 0; i < count; i++)\n\t\tpages[i] = nth_page(page, i);\n\tvaddr = vmap(pages, count, VM_DMA_COHERENT, prot);\n\tkvfree(pages);\n\n\treturn vaddr;\n}\n\n \nvoid dma_common_free_remap(void *cpu_addr, size_t size)\n{\n\tstruct vm_struct *area = find_vm_area(cpu_addr);\n\n\tif (!area || area->flags != VM_DMA_COHERENT) {\n\t\tWARN(1, \"trying to free invalid coherent area: %p\\n\", cpu_addr);\n\t\treturn;\n\t}\n\n\tvunmap(cpu_addr);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

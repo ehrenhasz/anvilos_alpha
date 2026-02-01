@@ -1,0 +1,9 @@
+{
+  "module_name": "openclose.h",
+  "hash_id": "a7ca1b0eade117cc1fa8d9883fc8b4b3281804159233389557bd855c834b6244",
+  "original_prompt": "Ingested from linux-6.6.14/io_uring/openclose.h",
+  "human_readable_source": "\n\nint __io_close_fixed(struct io_ring_ctx *ctx, unsigned int issue_flags,\n\t\t     unsigned int offset);\n\nint io_openat_prep(struct io_kiocb *req, const struct io_uring_sqe *sqe);\nint io_openat(struct io_kiocb *req, unsigned int issue_flags);\nvoid io_open_cleanup(struct io_kiocb *req);\n\nint io_openat2_prep(struct io_kiocb *req, const struct io_uring_sqe *sqe);\nint io_openat2(struct io_kiocb *req, unsigned int issue_flags);\n\nint io_close_prep(struct io_kiocb *req, const struct io_uring_sqe *sqe);\nint io_close(struct io_kiocb *req, unsigned int issue_flags);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

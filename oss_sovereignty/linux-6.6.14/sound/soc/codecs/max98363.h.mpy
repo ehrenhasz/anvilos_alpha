@@ -1,0 +1,9 @@
+{
+  "module_name": "max98363.h",
+  "hash_id": "77fcd0f990e90dab542085226fc0059306558cfb228f068222e6f042a9e78591",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/codecs/max98363.h",
+  "human_readable_source": " \n \n\n#ifndef _MAX98363_H\n#define _MAX98363_H\n\n#define MAX98363_R2000_SW_RESET\t\t\t0x2000\n#define MAX98363_R2001_INTR_RAW\t\t\t0x2001\n#define MAX98363_R2003_INTR_STATE\t\t0x2003\n#define MAX98363_R2005_INTR_FALG\t\t0x2005\n#define MAX98363_R2007_INTR_EN\t\t\t0x2007\n#define MAX98363_R2009_INTR_CLR\t\t\t0x2009\n#define MAX98363_R2021_ERR_MON_CTRL\t\t0x2021\n#define MAX98363_R2022_SPK_MON_THRESH\t\t0x2022\n#define MAX98363_R2023_SPK_MON_DURATION\t\t0x2023\n#define MAX98363_R2030_TONE_GEN_CFG\t\t0x2030\n#define MAX98363_R203F_TONE_GEN_EN\t\t0x203F\n#define MAX98363_R2040_AMP_VOL\t\t\t0x2040\n#define MAX98363_R2041_AMP_GAIN\t\t\t0x2041\n#define MAX98363_R2042_DSP_CFG\t\t\t0x2042\n#define MAX98363_R21FF_REV_ID\t\t\t0x21FF\n\n \n#define MAX98363_SPKMON_SHIFT\t\t\t(3)\n#define MAX98363_CLOCK_MON_SHIFT\t\t(0)\n\n \n#define MAX98363_AMP_DSP_CFG_RMP_SHIFT\t\t(3)\n\nstruct max98363_priv {\n\tstruct regmap *regmap;\n\tstruct sdw_slave *slave;\n\tbool hw_init;\n\tbool first_hw_init;\n};\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

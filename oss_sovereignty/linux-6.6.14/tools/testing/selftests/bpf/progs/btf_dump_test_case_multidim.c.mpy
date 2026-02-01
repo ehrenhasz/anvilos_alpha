@@ -1,0 +1,9 @@
+{
+  "module_name": "btf_dump_test_case_multidim.c",
+  "hash_id": "e2395e6483a04b292e461e12d47ee5d72cfbfaece2319a629a9f5a2cf89e781f",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/btf_dump_test_case_multidim.c",
+  "human_readable_source": "\n\n \n \ntypedef int arr_t[2];\n\ntypedef int multiarr_t[3][4][5];\n\ntypedef int *ptr_arr_t[6];\n\ntypedef int *ptr_multiarr_t[7][8][9][10];\n\ntypedef int * (*fn_ptr_arr_t[11])();\n\ntypedef int * (*fn_ptr_multiarr_t[12][13])();\n\nstruct root_struct {\n\tarr_t _1;\n\tmultiarr_t _2;\n\tptr_arr_t _3;\n\tptr_multiarr_t _4;\n\tfn_ptr_arr_t _5;\n\tfn_ptr_multiarr_t _6;\n};\n\n \n\nint f(struct root_struct *s)\n{\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

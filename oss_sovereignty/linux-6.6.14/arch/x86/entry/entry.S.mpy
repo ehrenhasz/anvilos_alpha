@@ -1,0 +1,9 @@
+{
+  "module_name": "entry.S",
+  "hash_id": "b9561c8c7bf1c94497de6ff7ef74a1d816c95b2d211347b55c343dca8e9a2168",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/entry/entry.S",
+  "human_readable_source": " \n \n\n#include <linux/linkage.h>\n#include <asm/export.h>\n#include <asm/msr-index.h>\n\n.pushsection .noinstr.text, \"ax\"\n\nSYM_FUNC_START(entry_ibpb)\n\tmovl\t$MSR_IA32_PRED_CMD, %ecx\n\tmovl\t$PRED_CMD_IBPB, %eax\n\txorl\t%edx, %edx\n\twrmsr\n\tRET\nSYM_FUNC_END(entry_ibpb)\n \nEXPORT_SYMBOL_GPL(entry_ibpb);\n\n.popsection\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "exhandler_kern.c",
+  "hash_id": "cbec3f1291ca07a7902f1e6c1d840f22ac2d14819b2a17500edf14910895f5e9",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/exhandler_kern.c",
+  "human_readable_source": "\n \n\n#include \"vmlinux.h\"\n\n#include <bpf/bpf_helpers.h>\n#include <bpf/bpf_tracing.h>\n#include <bpf/bpf_core_read.h>\n\nchar _license[] SEC(\"license\") = \"GPL\";\n\nunsigned int exception_triggered;\nint test_pid;\n\n \nSEC(\"tp_btf/task_newtask\")\nint BPF_PROG(trace_task_newtask, struct task_struct *task, u64 clone_flags)\n{\n\tint pid = bpf_get_current_pid_tgid() >> 32;\n\tstruct callback_head *work;\n\tvoid *func;\n\n\tif (test_pid != pid)\n\t\treturn 0;\n\n\t \n\twork = task->task_works;\n\tfunc = work->func;\n\t \n\tbarrier_var(work);\n\tif (work)\n\t\treturn 0;\n\tbarrier_var(func);\n\tif (func)\n\t\treturn 0;\n\texception_triggered++;\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

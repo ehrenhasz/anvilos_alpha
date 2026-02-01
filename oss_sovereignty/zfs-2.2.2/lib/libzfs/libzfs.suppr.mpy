@@ -1,0 +1,9 @@
+{
+  "module_name": "libzfs.suppr",
+  "hash_id": "5a9aeac06ed105578325ac7571b03e0f052579495f1a23bd31a7e142f6f8782c",
+  "original_prompt": "Ingested from zfs-2.2.2/lib/libzfs/libzfs.suppr",
+  "human_readable_source": "[suppress_type]\n\tname = FILE*\n\n[suppress_type]\n\ttype_kind = typedef\n\tname = SHA256_CTX\n\n[suppress_type]\n\ttype_kind = typedef\n\tname = SHA2_CTX\n\n[suppress_variable]\n\tname = zfs_deleg_perm_tab\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

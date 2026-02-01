@@ -1,0 +1,9 @@
+{
+  "module_name": "bpf_dctcp_release.c",
+  "hash_id": "7f1428b2908c28f2e66d72195de42b8bbfda0758f9dfd36f247fafc37b6540bd",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/bpf_dctcp_release.c",
+  "human_readable_source": "\n \n\n#include <stddef.h>\n#include <linux/bpf.h>\n#include <linux/types.h>\n#include <linux/stddef.h>\n#include <linux/tcp.h>\n#include <bpf/bpf_helpers.h>\n#include <bpf/bpf_tracing.h>\n#include \"bpf_tcp_helpers.h\"\n\nchar _license[] SEC(\"license\") = \"GPL\";\nconst char cubic[] = \"cubic\";\n\nvoid BPF_STRUCT_OPS(dctcp_nouse_release, struct sock *sk)\n{\n\tbpf_setsockopt(sk, SOL_TCP, TCP_CONGESTION,\n\t\t       (void *)cubic, sizeof(cubic));\n}\n\nSEC(\".struct_ops\")\nstruct tcp_congestion_ops dctcp_rel = {\n\t.release\t= (void *)dctcp_nouse_release,\n\t.name\t\t= \"bpf_dctcp_rel\",\n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

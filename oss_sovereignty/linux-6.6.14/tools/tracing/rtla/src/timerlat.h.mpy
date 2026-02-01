@@ -1,0 +1,9 @@
+{
+  "module_name": "timerlat.h",
+  "hash_id": "8f598e9ba89822eb4bba6a2330ba0a141832468b7fbc9c51ffeeecaebfa1349b",
+  "original_prompt": "Ingested from linux-6.6.14/tools/tracing/rtla/src/timerlat.h",
+  "human_readable_source": "\nint timerlat_hist_main(int argc, char *argv[]);\nint timerlat_top_main(int argc, char *argv[]);\nint timerlat_main(int argc, char *argv[]);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

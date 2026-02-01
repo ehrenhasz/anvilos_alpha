@@ -1,0 +1,9 @@
+{
+  "module_name": "hash_func01.h",
+  "hash_id": "1841cd68d41fc032f225ace3ed90ceac434278f91211a1d3d4a213370cbaab58",
+  "original_prompt": "Ingested from linux-6.6.14/samples/bpf/hash_func01.h",
+  "human_readable_source": " \n\n#define get16bits(d) (*((const __u16 *) (d)))\n\nstatic __always_inline\n__u32 SuperFastHash (const char *data, int len, __u32 initval) {\n\t__u32 hash = initval;\n\t__u32 tmp;\n\tint rem;\n\n\tif (len <= 0 || data == NULL) return 0;\n\n\trem = len & 3;\n\tlen >>= 2;\n\n\t \n#pragma clang loop unroll(full)\n\tfor (;len > 0; len--) {\n\t\thash  += get16bits (data);\n\t\ttmp    = (get16bits (data+2) << 11) ^ hash;\n\t\thash   = (hash << 16) ^ tmp;\n\t\tdata  += 2*sizeof (__u16);\n\t\thash  += hash >> 11;\n\t}\n\n\t \n\tswitch (rem) {\n        case 3: hash += get16bits (data);\n                hash ^= hash << 16;\n                hash ^= ((signed char)data[sizeof (__u16)]) << 18;\n                hash += hash >> 11;\n                break;\n        case 2: hash += get16bits (data);\n                hash ^= hash << 11;\n                hash += hash >> 17;\n                break;\n        case 1: hash += (signed char)*data;\n                hash ^= hash << 10;\n                hash += hash >> 1;\n\t}\n\n\t \n\thash ^= hash << 3;\n\thash += hash >> 5;\n\thash ^= hash << 4;\n\thash += hash >> 17;\n\thash ^= hash << 25;\n\thash += hash >> 6;\n\n\treturn hash;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

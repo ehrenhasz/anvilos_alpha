@@ -1,0 +1,9 @@
+{
+  "module_name": "qed_selftest.h",
+  "hash_id": "fc891e4d4d6ea230102a44379d995c0820b93c802b9c6e4251232c8cecabd122",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/qlogic/qed/qed_selftest.h",
+  "human_readable_source": " \n \n\n#ifndef _QED_SELFTEST_API_H\n#define _QED_SELFTEST_API_H\n#include <linux/types.h>\n\n \nint qed_selftest_memory(struct qed_dev *cdev);\n\n \nint qed_selftest_interrupt(struct qed_dev *cdev);\n\n \nint qed_selftest_register(struct qed_dev *cdev);\n\n \nint qed_selftest_clock(struct qed_dev *cdev);\n\n \nint qed_selftest_nvram(struct qed_dev *cdev);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

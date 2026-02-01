@@ -1,0 +1,9 @@
+{
+  "module_name": "omap_remoteproc.h",
+  "hash_id": "d05b72d060b23673f83703696636c7ae36621aef2cabfd0de9c520a150007cea",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/remoteproc/omap_remoteproc.h",
+  "human_readable_source": " \n \n\n#ifndef _OMAP_RPMSG_H\n#define _OMAP_RPMSG_H\n\n \nenum omap_rp_mbox_messages {\n\tRP_MBOX_READY\t\t= 0xFFFFFF00,\n\tRP_MBOX_PENDING_MSG\t= 0xFFFFFF01,\n\tRP_MBOX_CRASH\t\t= 0xFFFFFF02,\n\tRP_MBOX_ECHO_REQUEST\t= 0xFFFFFF03,\n\tRP_MBOX_ECHO_REPLY\t= 0xFFFFFF04,\n\tRP_MBOX_ABORT_REQUEST\t= 0xFFFFFF05,\n\tRP_MBOX_SUSPEND_AUTO\t= 0xFFFFFF10,\n\tRP_MBOX_SUSPEND_SYSTEM\t= 0xFFFFFF11,\n\tRP_MBOX_SUSPEND_ACK\t= 0xFFFFFF12,\n\tRP_MBOX_SUSPEND_CANCEL\t= 0xFFFFFF13,\n\tRP_MBOX_END_MSG\t\t= 0xFFFFFF14,\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Kbuild",
+  "hash_id": "1c0394c9a8aac2947e2d9783363c0fe045d42654bcc52eb61c2b2cdfdb389cb5",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/subdev/devinit/Kbuild",
+  "human_readable_source": "# SPDX-License-Identifier: MIT\nnvkm-y += nvkm/subdev/devinit/base.o\nnvkm-y += nvkm/subdev/devinit/nv04.o\nnvkm-y += nvkm/subdev/devinit/nv05.o\nnvkm-y += nvkm/subdev/devinit/nv10.o\nnvkm-y += nvkm/subdev/devinit/nv1a.o\nnvkm-y += nvkm/subdev/devinit/nv20.o\nnvkm-y += nvkm/subdev/devinit/nv50.o\nnvkm-y += nvkm/subdev/devinit/g84.o\nnvkm-y += nvkm/subdev/devinit/g98.o\nnvkm-y += nvkm/subdev/devinit/gt215.o\nnvkm-y += nvkm/subdev/devinit/mcp89.o\nnvkm-y += nvkm/subdev/devinit/gf100.o\nnvkm-y += nvkm/subdev/devinit/gm107.o\nnvkm-y += nvkm/subdev/devinit/gm200.o\nnvkm-y += nvkm/subdev/devinit/gv100.o\nnvkm-y += nvkm/subdev/devinit/tu102.o\nnvkm-y += nvkm/subdev/devinit/ga100.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

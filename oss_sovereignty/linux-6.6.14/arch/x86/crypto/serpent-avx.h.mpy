@@ -1,0 +1,9 @@
+{
+  "module_name": "serpent-avx.h",
+  "hash_id": "29db45226d20ba408a07d93d1db5d88fb54e02d282dc4f242d390ca471c5cad0",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/crypto/serpent-avx.h",
+  "human_readable_source": " \n#ifndef ASM_X86_SERPENT_AVX_H\n#define ASM_X86_SERPENT_AVX_H\n\n#include <crypto/b128ops.h>\n#include <crypto/serpent.h>\n#include <linux/types.h>\n\nstruct crypto_skcipher;\n\n#define SERPENT_PARALLEL_BLOCKS 8\n\nasmlinkage void serpent_ecb_enc_8way_avx(const void *ctx, u8 *dst,\n\t\t\t\t\t const u8 *src);\nasmlinkage void serpent_ecb_dec_8way_avx(const void *ctx, u8 *dst,\n\t\t\t\t\t const u8 *src);\n\nasmlinkage void serpent_cbc_dec_8way_avx(const void *ctx, u8 *dst,\n\t\t\t\t\t const u8 *src);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

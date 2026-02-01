@@ -1,0 +1,9 @@
+{
+  "module_name": "leds-bd2802.h",
+  "hash_id": "619d7f888d9ed3bf575155368302f04ca74fba0e3f9a259963208f00e2a19de3",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/leds-bd2802.h",
+  "human_readable_source": " \n \n#ifndef _LEDS_BD2802_H_\n#define _LEDS_BD2802_H_\n\nstruct bd2802_led_platform_data{\n\tu8\trgb_time;\n};\n\n#define RGB_TIME(slopedown, slopeup, waveform) \\\n\t((slopedown) << 6 | (slopeup) << 4 | (waveform))\n\n#endif  \n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

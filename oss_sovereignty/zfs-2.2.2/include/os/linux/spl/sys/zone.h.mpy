@@ -1,0 +1,9 @@
+{
+  "module_name": "zone.h",
+  "hash_id": "949f729bd095c5cd473af9f68732b888d241d4b725358c9c99caedbfc766562e",
+  "original_prompt": "Ingested from zfs-2.2.2/include/os/linux/spl/sys/zone.h",
+  "human_readable_source": " \n\n#ifndef _SPL_ZONE_H\n#define\t_SPL_ZONE_H\n\n#include <sys/byteorder.h>\n#include <sys/cred.h>\n\n#include <linux/cred.h>\n#include <linux/user_namespace.h>\n\n \nextern int zone_dataset_attach(cred_t *, const char *, int);\n\n \nextern int zone_dataset_detach(cred_t *, const char *, int);\n\n \nextern int zone_dataset_visible(const char *dataset, int *write);\n\nint spl_zone_init(void);\nvoid spl_zone_fini(void);\n\nextern unsigned int crgetzoneid(const cred_t *);\nextern unsigned int global_zoneid(void);\nextern boolean_t inglobalzone(proc_t *);\n\n#define\tINGLOBALZONE(x) inglobalzone(x)\n#define\tGLOBAL_ZONEID\tglobal_zoneid()\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

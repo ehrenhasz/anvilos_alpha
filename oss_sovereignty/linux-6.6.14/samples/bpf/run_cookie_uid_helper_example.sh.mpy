@@ -1,0 +1,9 @@
+{
+  "module_name": "run_cookie_uid_helper_example.sh",
+  "hash_id": "85773ec71cb8f4ddf61494164ea9f51512b8531bb7b2bcc80353c0c07ff5ac18",
+  "original_prompt": "Ingested from linux-6.6.14/samples/bpf/run_cookie_uid_helper_example.sh",
+  "human_readable_source": "#!/bin/bash\n# SPDX-License-Identifier: GPL-2.0\nlocal_dir=\"$(pwd)\"\nroot_dir=$local_dir/../..\nmnt_dir=$(mktemp -d --tmp)\n\non_exit() {\n\tiptables -D OUTPUT -m bpf --object-pinned ${mnt_dir}/bpf_prog -j ACCEPT\n\tumount ${mnt_dir}\n\trm -r ${mnt_dir}\n}\n\ntrap on_exit EXIT\nmount -t bpf bpf ${mnt_dir}\n./per_socket_stats_example ${mnt_dir}/bpf_prog $1\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

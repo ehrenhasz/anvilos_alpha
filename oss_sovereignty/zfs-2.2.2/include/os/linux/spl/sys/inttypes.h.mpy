@@ -1,0 +1,9 @@
+{
+  "module_name": "inttypes.h",
+  "hash_id": "2af3aefa753c5848d51ec9364f21b7d836ed0283d46b6ea5a957d3ea42238276",
+  "original_prompt": "Ingested from zfs-2.2.2/include/os/linux/spl/sys/inttypes.h",
+  "human_readable_source": " \n\n#ifndef _SPL_INTTYPES_H\n#define\t_SPL_INTTYPES_H\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

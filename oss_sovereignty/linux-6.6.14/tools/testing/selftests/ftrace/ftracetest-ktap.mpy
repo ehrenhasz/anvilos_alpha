@@ -1,0 +1,9 @@
+{
+  "module_name": "ftracetest-ktap",
+  "hash_id": "66bfb02f6f013837450e2bde5c58bc525cfc2f4ffe131af7b38a8141c0785e54",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/ftrace/ftracetest-ktap",
+  "human_readable_source": "#!/bin/sh -e\n# SPDX-License-Identifier: GPL-2.0-only\n#\n# ftracetest-ktap: Wrapper to integrate ftracetest with the kselftest runner\n#\n# Copyright (C) Arm Ltd., 2023\n\n./ftracetest -K\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

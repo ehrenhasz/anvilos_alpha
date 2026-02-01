@@ -1,0 +1,9 @@
+{
+  "module_name": "mman-common-tools.h",
+  "hash_id": "ed51e5f2eadbb3e058b8907686bcf837d52817834d6257a93492a5560190a0d4",
+  "original_prompt": "Ingested from linux-6.6.14/tools/include/uapi/asm-generic/mman-common-tools.h",
+  "human_readable_source": " \n#ifndef __ASM_GENERIC_MMAN_COMMON_TOOLS_ONLY_H\n#define __ASM_GENERIC_MMAN_COMMON_TOOLS_ONLY_H\n\n#include <asm-generic/mman-common.h>\n\n \n#ifndef MAP_SHARED\n#define MAP_SHARED\t0x01\t\t \n#define MAP_PRIVATE\t0x02\t\t \n#define MAP_SHARED_VALIDATE 0x03\t \n#endif\n#endif \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

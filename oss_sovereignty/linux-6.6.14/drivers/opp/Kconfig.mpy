@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "ae21f297b32428c2cdc4549287ed8538c0a7512575b6b6d8ae224510c18c16d5",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/opp/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig PM_OPP\n\tbool\n\thelp\n\t  SOCs have a standard set of tuples consisting of frequency and\n\t  voltage pairs that the device will support per voltage domain. This\n\t  is called Operating Performance Point or OPP. The actual definitions\n\t  of OPP varies over silicon within the same family of devices.\n\n\t  OPP layer organizes the data internally using device pointers\n\t  representing individual voltage domains and provides SOC\n\t  implementations a ready to use framework to manage OPPs.\n\t  For more information, read <file:Documentation/power/opp.rst>\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

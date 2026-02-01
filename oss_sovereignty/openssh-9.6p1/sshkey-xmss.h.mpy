@@ -1,0 +1,9 @@
+{
+  "module_name": "sshkey-xmss.h",
+  "hash_id": "f27d8bf8dd8d2fb7cbbaa05dfb5126537f05d8cd599081f9694f667e69258629",
+  "original_prompt": "Ingested from openssh-9.6p1/sshkey-xmss.h",
+  "human_readable_source": " \n \n#ifndef SSHKEY_XMSS_H\n#define SSHKEY_XMSS_H\n\n#define XMSS_SHA2_256_W16_H10_NAME\t\"XMSS_SHA2-256_W16_H10\"\n#define XMSS_SHA2_256_W16_H16_NAME\t\"XMSS_SHA2-256_W16_H16\"\n#define XMSS_SHA2_256_W16_H20_NAME\t\"XMSS_SHA2-256_W16_H20\"\n#define XMSS_DEFAULT_NAME\t\tXMSS_SHA2_256_W16_H10_NAME\n\nsize_t\t sshkey_xmss_pklen(const struct sshkey *);\nsize_t\t sshkey_xmss_sklen(const struct sshkey *);\nint\t sshkey_xmss_init(struct sshkey *, const char *);\nvoid\t sshkey_xmss_free_state(struct sshkey *);\nint\t sshkey_xmss_generate_private_key(struct sshkey *, int);\nint\t sshkey_xmss_serialize_state(const struct sshkey *, struct sshbuf *);\nint\t sshkey_xmss_serialize_state_opt(const struct sshkey *, struct sshbuf *,\n\t    enum sshkey_serialize_rep);\nint\t sshkey_xmss_serialize_pk_info(const struct sshkey *, struct sshbuf *,\n\t    enum sshkey_serialize_rep);\nint\t sshkey_xmss_deserialize_state(struct sshkey *, struct sshbuf *);\nint\t sshkey_xmss_deserialize_state_opt(struct sshkey *, struct sshbuf *);\nint\t sshkey_xmss_deserialize_pk_info(struct sshkey *, struct sshbuf *);\n\nint\t sshkey_xmss_siglen(const struct sshkey *, size_t *);\nvoid\t*sshkey_xmss_params(const struct sshkey *);\nvoid\t*sshkey_xmss_bds_state(const struct sshkey *);\nint\t sshkey_xmss_get_state(const struct sshkey *, int);\nint\t sshkey_xmss_enable_maxsign(struct sshkey *, u_int32_t);\nint\t sshkey_xmss_forward_state(const struct sshkey *, u_int32_t);\nint\t sshkey_xmss_update_state(const struct sshkey *, int);\nu_int32_t sshkey_xmss_signatures_left(const struct sshkey *);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

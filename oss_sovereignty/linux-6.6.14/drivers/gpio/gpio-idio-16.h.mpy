@@ -1,0 +1,9 @@
+{
+  "module_name": "gpio-idio-16.h",
+  "hash_id": "3cb3e82004af0377edc14257608fd8779e2163aceccb58c977debbdec8dd84df",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpio/gpio-idio-16.h",
+  "human_readable_source": " \n \n#ifndef _IDIO_16_H_\n#define _IDIO_16_H_\n\nstruct device;\nstruct regmap;\nstruct regmap_irq;\n\n \nstruct idio_16_regmap_config {\n\tstruct device *parent;\n\tstruct regmap *map;\n\tconst struct regmap_irq *regmap_irqs;\n\tint num_regmap_irqs;\n\tunsigned int irq;\n\tbool no_status;\n\tbool filters;\n};\n\nint devm_idio_16_regmap_register(struct device *dev, const struct idio_16_regmap_config *config);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "netup-eeprom.h",
+  "hash_id": "40310890d29b836bfa655cd4ebe6b2f0a9f6b18f831bece3f208e7ed24e7f1de",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/pci/cx23885/netup-eeprom.h",
+  "human_readable_source": " \n \n\n#ifndef NETUP_EEPROM_H\n#define NETUP_EEPROM_H\n\nstruct netup_port_info {\n\tu8 mac[6]; \n};\n\nstruct netup_card_info {\n\tstruct netup_port_info port[2]; \n\tu8 rev; \n};\n\nextern int netup_eeprom_read(struct i2c_adapter *i2c_adap, u8 addr);\nextern int netup_eeprom_write(struct i2c_adapter *i2c_adap, u8 addr, u8 data);\nextern void netup_get_card_info(struct i2c_adapter *i2c_adap,\n\t\t\t\tstruct netup_card_info *cinfo);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

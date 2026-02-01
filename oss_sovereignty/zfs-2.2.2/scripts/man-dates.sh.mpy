@@ -1,0 +1,9 @@
+{
+  "module_name": "man-dates.sh",
+  "hash_id": "86caea82448c0de9cce3354759ecb5497b6bd56fbd5f8f92ea40f3c1ec79fc28",
+  "original_prompt": "Ingested from zfs-2.2.2/scripts/man-dates.sh",
+  "human_readable_source": "#!/bin/sh\n\n# This script updates the date lines in the man pages to the date of the last\n# commit to that file.\n\nset -eu\n\nfind man -type f | while read -r i ; do\n    git_date=$(git log -1 --date=short --format=\"%ad\" -- \"$i\")\n    [ -z \"$git_date\" ] && continue\n    sed -i \"s|^\\.Dd.*|.Dd $(date -d \"$git_date\" \"+%B %-d, %Y\")|\" \"$i\"\ndone\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "clkdev.h",
+  "hash_id": "9cecf93e9312dcd9096888e7a99b1cf7a12527ec46c8e2edb758a37bbbdee828",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/clkdev.h",
+  "human_readable_source": " \n \n#ifndef __CLKDEV_H\n#define __CLKDEV_H\n\n#include <linux/slab.h>\n\nstruct clk;\nstruct clk_hw;\nstruct device;\n\nstruct clk_lookup {\n\tstruct list_head\tnode;\n\tconst char\t\t*dev_id;\n\tconst char\t\t*con_id;\n\tstruct clk\t\t*clk;\n\tstruct clk_hw\t\t*clk_hw;\n};\n\n#define CLKDEV_INIT(d, n, c)\t\\\n\t{\t\t\t\\\n\t\t.dev_id = d,\t\\\n\t\t.con_id = n,\t\\\n\t\t.clk = c,\t\\\n\t}\n\nvoid clkdev_add(struct clk_lookup *cl);\nvoid clkdev_drop(struct clk_lookup *cl);\n\nstruct clk_lookup *clkdev_create(struct clk *clk, const char *con_id,\n\tconst char *dev_fmt, ...) __printf(3, 4);\nstruct clk_lookup *clkdev_hw_create(struct clk_hw *hw, const char *con_id,\n\tconst char *dev_fmt, ...) __printf(3, 4);\n\nvoid clkdev_add_table(struct clk_lookup *, size_t);\nint clk_add_alias(const char *, const char *, const char *, struct device *);\n\nint clk_register_clkdev(struct clk *, const char *, const char *);\nint clk_hw_register_clkdev(struct clk_hw *, const char *, const char *);\n\nint devm_clk_hw_register_clkdev(struct device *dev, struct clk_hw *hw,\n\t\t\t\tconst char *con_id, const char *dev_id);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

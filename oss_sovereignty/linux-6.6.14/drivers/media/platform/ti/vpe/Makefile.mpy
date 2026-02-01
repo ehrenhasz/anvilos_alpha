@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "763edc7558225ba5217687e2dceadb73a84ee73325fd47d1d766004d08292f9e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/platform/ti/vpe/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nobj-$(CONFIG_VIDEO_TI_VPE) += ti-vpe.o\nobj-$(CONFIG_VIDEO_TI_VPDMA) += ti-vpdma.o\nobj-$(CONFIG_VIDEO_TI_SC) += ti-sc.o\nobj-$(CONFIG_VIDEO_TI_CSC) += ti-csc.o\n\nti-vpe-y := vpe.o\nti-vpdma-y := vpdma.o\nti-sc-y := sc.o\nti-csc-y := csc.o\n\nccflags-$(CONFIG_VIDEO_TI_VPE_DEBUG) += -DDEBUG\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

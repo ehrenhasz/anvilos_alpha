@@ -1,0 +1,9 @@
+{
+  "module_name": "ipmi_plat_data.h",
+  "hash_id": "7ff498e73c3247c30f37b25489e4665ff713d64057b3363558af41b626e20918",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/char/ipmi/ipmi_plat_data.h",
+  "human_readable_source": " \n\n \n\n#include <linux/ipmi.h>\n\nenum ipmi_plat_interface_type { IPMI_PLAT_IF_SI, IPMI_PLAT_IF_SSIF };\n\nstruct ipmi_plat_data {\n\tenum ipmi_plat_interface_type iftype;\n\tunsigned int type;  \n\tunsigned int space;  \n\tunsigned long addr;\n\tunsigned int regspacing;\n\tunsigned int regsize;\n\tunsigned int regshift;\n\tunsigned int irq;\n\tunsigned int slave_addr;\n\tenum ipmi_addr_src addr_source;\n};\n\nstruct platform_device *ipmi_platform_add(const char *name, unsigned int inst,\n\t\t\t\t\t  struct ipmi_plat_data *p);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

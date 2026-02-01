@@ -1,0 +1,9 @@
+{
+  "module_name": "test_global_func15.c",
+  "hash_id": "0dde49663d5b64ab5874c7d4681c266cbfd501b34117476f10ff2cb63b9bc8ef",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/test_global_func15.c",
+  "human_readable_source": "\n#include <stddef.h>\n#include <linux/bpf.h>\n#include <bpf/bpf_helpers.h>\n#include \"bpf_misc.h\"\n\n__noinline int foo(unsigned int *v)\n{\n\tif (v)\n\t\t*v = bpf_get_prandom_u32();\n\n\treturn 0;\n}\n\nSEC(\"cgroup_skb/ingress\")\n__failure __msg(\"At program exit the register R0 has value\")\nint global_func15(struct __sk_buff *skb)\n{\n\tunsigned int v = 1;\n\n\tfoo(&v);\n\n\treturn v;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

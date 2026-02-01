@@ -1,0 +1,9 @@
+{
+  "module_name": "kprobe_multi_empty.c",
+  "hash_id": "fa5347046aa21e80e09c0a3bfa57c07333a480517a31b2bbeeaefa9bb6875e36",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/kprobe_multi_empty.c",
+  "human_readable_source": "\n#include <linux/bpf.h>\n#include <bpf/bpf_helpers.h>\n#include <bpf/bpf_tracing.h>\n\nchar _license[] SEC(\"license\") = \"GPL\";\n\nSEC(\"kprobe.multi/\")\nint test_kprobe_empty(struct pt_regs *ctx)\n{\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

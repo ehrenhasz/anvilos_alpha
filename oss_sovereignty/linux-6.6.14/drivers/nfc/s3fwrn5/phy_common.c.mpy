@@ -1,0 +1,9 @@
+{
+  "module_name": "phy_common.c",
+  "hash_id": "7799cb2426c21b9556c703fbaf7b95f9329964b96bca87f467709fb1cafcc0d1",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/nfc/s3fwrn5/phy_common.c",
+  "human_readable_source": "\n \n\n#include <linux/gpio.h>\n#include <linux/delay.h>\n#include <linux/module.h>\n\n#include \"phy_common.h\"\n\nvoid s3fwrn5_phy_set_wake(void *phy_id, bool wake)\n{\n\tstruct phy_common *phy = phy_id;\n\n\tmutex_lock(&phy->mutex);\n\tgpio_set_value(phy->gpio_fw_wake, wake);\n\tif (wake)\n\t\tmsleep(S3FWRN5_EN_WAIT_TIME);\n\tmutex_unlock(&phy->mutex);\n}\nEXPORT_SYMBOL(s3fwrn5_phy_set_wake);\n\nbool s3fwrn5_phy_power_ctrl(struct phy_common *phy, enum s3fwrn5_mode mode)\n{\n\tif (phy->mode == mode)\n\t\treturn false;\n\n\tphy->mode = mode;\n\n\tgpio_set_value(phy->gpio_en, 1);\n\tgpio_set_value(phy->gpio_fw_wake, 0);\n\tif (mode == S3FWRN5_MODE_FW)\n\t\tgpio_set_value(phy->gpio_fw_wake, 1);\n\n\tif (mode != S3FWRN5_MODE_COLD) {\n\t\tmsleep(S3FWRN5_EN_WAIT_TIME);\n\t\tgpio_set_value(phy->gpio_en, 0);\n\t\tmsleep(S3FWRN5_EN_WAIT_TIME);\n\t}\n\n\treturn true;\n}\nEXPORT_SYMBOL(s3fwrn5_phy_power_ctrl);\n\nvoid s3fwrn5_phy_set_mode(void *phy_id, enum s3fwrn5_mode mode)\n{\n\tstruct phy_common *phy = phy_id;\n\n\tmutex_lock(&phy->mutex);\n\n\ts3fwrn5_phy_power_ctrl(phy, mode);\n\n\tmutex_unlock(&phy->mutex);\n}\nEXPORT_SYMBOL(s3fwrn5_phy_set_mode);\n\nenum s3fwrn5_mode s3fwrn5_phy_get_mode(void *phy_id)\n{\n\tstruct phy_common *phy = phy_id;\n\tenum s3fwrn5_mode mode;\n\n\tmutex_lock(&phy->mutex);\n\n\tmode = phy->mode;\n\n\tmutex_unlock(&phy->mutex);\n\n\treturn mode;\n}\nEXPORT_SYMBOL(s3fwrn5_phy_get_mode);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

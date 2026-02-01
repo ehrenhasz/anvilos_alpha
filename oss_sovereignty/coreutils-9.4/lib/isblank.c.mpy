@@ -1,0 +1,9 @@
+{
+  "module_name": "isblank.c",
+  "hash_id": "461f4adbb44d18099abc29da078587b48e8ebc485cf01ec049412d1e1f424ffa",
+  "original_prompt": "Ingested from coreutils-9.4/lib/isblank.c",
+  "human_readable_source": " \n#include <ctype.h>\n\nint\nisblank (int c)\n{\n   \n  return (c == ' ' || c == '\\t');\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

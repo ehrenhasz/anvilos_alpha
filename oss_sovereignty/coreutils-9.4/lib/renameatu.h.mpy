@@ -1,0 +1,9 @@
+{
+  "module_name": "renameatu.h",
+  "hash_id": "60f5db95a5de41eddbb77ea039771d2247d67242b10a2629a0788b272605baaa",
+  "original_prompt": "Ingested from coreutils-9.4/lib/renameatu.h",
+  "human_readable_source": " \n\n \n#include <stdio.h>\n#ifndef RENAME_NOREPLACE\n# define RENAME_NOREPLACE  (1 << 0)\n# define RENAME_EXCHANGE   (1 << 1)\n# define RENAME_WHITEOUT   (1 << 2)\n#endif\n\nextern int renameatu (int, char const *, int, char const *, unsigned int);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

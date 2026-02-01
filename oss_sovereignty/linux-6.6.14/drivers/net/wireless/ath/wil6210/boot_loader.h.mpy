@@ -1,0 +1,9 @@
+{
+  "module_name": "boot_loader.h",
+  "hash_id": "d7dffcf64993dcdcac672cb387976a878e620f807081b0439706dadd5fb85de0",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/ath/wil6210/boot_loader.h",
+  "human_readable_source": " \n \n\n \n#ifndef BOOT_LOADER_EXPORT_H_\n#define BOOT_LOADER_EXPORT_H_\n\nstruct bl_dedicated_registers_v1 {\n\t__le32\tboot_loader_ready;\t\t \n\t__le32\tboot_loader_struct_version;\t \n\t__le16\trf_type;\t\t\t \n\t__le16\trf_status;\t\t\t \n\t__le32\tbaseband_type;\t\t\t \n\tu8\tmac_address[6];\t\t\t \n\tu8\tbl_version_major;\t\t \n\tu8\tbl_version_minor;\t\t \n\t__le16\tbl_version_subminor;\t\t \n\t__le16\tbl_version_build;\t\t \n\t \n\t__le32  bl_assert_code;          \n\t__le32  bl_assert_blink;         \n\t__le32  bl_shutdown_handshake;   \n\t__le32  bl_reserved[21];         \n\t__le32  bl_magic_number;         \n} __packed;\n\n \n\nstruct bl_dedicated_registers_v0 {\n\t__le32\tboot_loader_ready;\t\t \n#define BL_READY (1)\t \n\t__le32\tboot_loader_struct_version;\t \n\t__le32\trf_type;\t\t\t \n\t__le32\tbaseband_type;\t\t\t \n\tu8\tmac_address[6];\t\t\t \n} __packed;\n\n \n#define BL_SHUTDOWN_HS_GRTD\t\tBIT(0)\n#define BL_SHUTDOWN_HS_RTD\t\tBIT(1)\n#define BL_SHUTDOWN_HS_PROT_VER(x) WIL_GET_BITS(x, 28, 31)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

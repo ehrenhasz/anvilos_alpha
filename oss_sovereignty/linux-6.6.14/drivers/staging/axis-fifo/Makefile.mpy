@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "324b136a4cbcbc382d407f8f0e959355cbeb85f770cf04653b275966173c3f8a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/axis-fifo/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nobj-$(CONFIG_XIL_AXIS_FIFO) += axis-fifo.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

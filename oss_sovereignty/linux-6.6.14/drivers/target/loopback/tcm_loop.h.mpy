@@ -1,0 +1,9 @@
+{
+  "module_name": "tcm_loop.h",
+  "hash_id": "ecdd6e6d40ad22473ba666078f1dd50d89f132bf91ab80e9a782478a62fc0863",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/target/loopback/tcm_loop.h",
+  "human_readable_source": " \n#include <linux/types.h>\n#include <linux/device.h>\n#include <target/target_core_base.h>  \n\n#define TCM_LOOP_VERSION\t\t\"v2.1-rc2\"\n#define TL_WWN_ADDR_LEN\t\t\t256\n#define TL_TPGS_PER_HBA\t\t\t32\n\nstruct tcm_loop_cmd {\n\t \n\tu32 sc_cmd_state;\n\t \n\tu32 sc_cmd_tag;\n\t \n\tstruct scsi_cmnd *sc;\n\t \n\tstruct se_cmd tl_se_cmd;\n\tstruct completion tmr_done;\n\t \n\tunsigned char tl_sense_buf[TRANSPORT_SENSE_BUFFER];\n};\n\nstruct tcm_loop_nexus {\n\t \n\tstruct se_session *se_sess;\n};\n\n#define TCM_TRANSPORT_ONLINE 0\n#define TCM_TRANSPORT_OFFLINE 1\n\nstruct tcm_loop_tpg {\n\tunsigned short tl_tpgt;\n\tunsigned short tl_transport_status;\n\tenum target_prot_type tl_fabric_prot_type;\n\tatomic_t tl_tpg_port_count;\n\tstruct se_portal_group tl_se_tpg;\n\tstruct tcm_loop_hba *tl_hba;\n\tstruct tcm_loop_nexus *tl_nexus;\n};\n\nstruct tcm_loop_hba {\n\tu8 tl_proto_id;\n\tunsigned char tl_wwn_address[TL_WWN_ADDR_LEN];\n\tstruct se_hba_s *se_hba;\n\tstruct se_lun *tl_hba_lun;\n\tstruct se_port *tl_hba_lun_sep;\n\tstruct device dev;\n\tstruct Scsi_Host *sh;\n\tstruct tcm_loop_tpg tl_hba_tpgs[TL_TPGS_PER_HBA];\n\tstruct se_wwn tl_hba_wwn;\n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

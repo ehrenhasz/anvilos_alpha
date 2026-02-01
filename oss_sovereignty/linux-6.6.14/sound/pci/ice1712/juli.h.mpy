@@ -1,0 +1,9 @@
+{
+  "module_name": "juli.h",
+  "hash_id": "f8cd87308f2aa17b02657b6f79f7788a0bc7c9e2584bdea4108e740ff0393d3c",
+  "original_prompt": "Ingested from linux-6.6.14/sound/pci/ice1712/juli.h",
+  "human_readable_source": " \n#ifndef __SOUND_JULI_H\n#define __SOUND_JULI_H\n\n#define JULI_DEVICE_DESC\t\t\"{ESI,Juli@},\"\n\n#define VT1724_SUBDEVICE_JULI\t\t0x31305345\t \n\nextern struct snd_ice1712_card_info  snd_vt1724_juli_cards[];\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

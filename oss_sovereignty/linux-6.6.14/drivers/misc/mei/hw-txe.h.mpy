@@ -1,0 +1,9 @@
+{
+  "module_name": "hw-txe.h",
+  "hash_id": "37a580fa6b4ac914d0fc93378012032c9a167a2a710c7f1923fbbad60988b0c4",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/misc/mei/hw-txe.h",
+  "human_readable_source": " \n \n\n#ifndef _MEI_HW_TXE_H_\n#define _MEI_HW_TXE_H_\n\n#include <linux/irqreturn.h>\n\n#include \"hw.h\"\n#include \"hw-txe-regs.h\"\n\n#define MEI_TXI_RPM_TIMEOUT    500  \n\n \n#define TXE_INTR_READINESS_BIT  0  \n#define TXE_INTR_READINESS      HISR_INT_0_STS\n#define TXE_INTR_ALIVENESS_BIT  1  \n#define TXE_INTR_ALIVENESS      HISR_INT_1_STS\n#define TXE_INTR_OUT_DB_BIT     2  \n#define TXE_INTR_OUT_DB         HISR_INT_2_STS\n#define TXE_INTR_IN_READY_BIT   8  \n#define TXE_INTR_IN_READY       BIT(8)\n\n \nstruct mei_txe_hw {\n\tvoid __iomem * const *mem_addr;\n\tu32 aliveness;\n\tu32 readiness;\n\tu32 slots;\n\n\twait_queue_head_t wait_aliveness_resp;\n\n\tunsigned long intr_cause;\n};\n\n#define to_txe_hw(dev) (struct mei_txe_hw *)((dev)->hw)\n\nstatic inline struct mei_device *hw_txe_to_mei(struct mei_txe_hw *hw)\n{\n\treturn container_of((void *)hw, struct mei_device, hw);\n}\n\nstruct mei_device *mei_txe_dev_init(struct pci_dev *pdev);\n\nirqreturn_t mei_txe_irq_quick_handler(int irq, void *dev_id);\nirqreturn_t mei_txe_irq_thread_handler(int irq, void *dev_id);\n\nint mei_txe_aliveness_set_sync(struct mei_device *dev, u32 req);\n\nint mei_txe_setup_satt2(struct mei_device *dev, phys_addr_t addr, u32 range);\n\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "of_videomode.c",
+  "hash_id": "ab9a62bd4ab830e0527297ab57267cea6fba49beec621bd209e983c90c517cfa",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/video/of_videomode.c",
+  "human_readable_source": "\n \n#include <linux/errno.h>\n#include <linux/export.h>\n#include <linux/of.h>\n#include <video/display_timing.h>\n#include <video/of_display_timing.h>\n#include <video/of_videomode.h>\n#include <video/videomode.h>\n\n \nint of_get_videomode(struct device_node *np, struct videomode *vm,\n\t\t     int index)\n{\n\tstruct display_timings *disp;\n\tint ret;\n\n\tdisp = of_get_display_timings(np);\n\tif (!disp) {\n\t\tpr_err(\"%pOF: no timings specified\\n\", np);\n\t\treturn -EINVAL;\n\t}\n\n\tif (index == OF_USE_NATIVE_MODE)\n\t\tindex = disp->native_mode;\n\n\tret = videomode_from_timings(disp, vm, index);\n\n\tdisplay_timings_release(disp);\n\n\treturn ret;\n}\nEXPORT_SYMBOL_GPL(of_get_videomode);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

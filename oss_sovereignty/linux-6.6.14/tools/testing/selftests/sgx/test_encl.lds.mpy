@@ -1,0 +1,9 @@
+{
+  "module_name": "test_encl.lds",
+  "hash_id": "388316a825385a9f97a38272a90182647859fc1c4a7a06969acba72c4fe0bfc8",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/sgx/test_encl.lds",
+  "human_readable_source": "OUTPUT_FORMAT(elf64-x86-64)\n\nPHDRS\n{\n\ttcs PT_LOAD;\n\ttext PT_LOAD;\n\tdata PT_LOAD;\n}\n\nSECTIONS\n{\n\t. = 0;\n\t.tcs : {\n\t\t*(.tcs*)\n\t} : tcs\n\n\t. = ALIGN(4096);\n\t.text : {\n\t\t*(.text*)\n\t\t*(.rodata*)\n\t\tFILL(0xDEADBEEF);\n\t\t. = ALIGN(4096);\n\t} : text\n\n\t.data : {\n\t\t*(.data*)\n\t} : data\n\n\t/DISCARD/ : {\n\t\t*(.comment*)\n\t\t*(.note*)\n\t\t*(.debug*)\n\t\t*(.eh_frame*)\n\t}\n}\n\nASSERT(!DEFINED(.altinstructions), \"ALTERNATIVES are not supported in enclaves\")\nASSERT(!DEFINED(.altinstr_replacement), \"ALTERNATIVES are not supported in enclaves\")\nASSERT(!DEFINED(.discard.retpoline_safe), \"RETPOLINE ALTERNATIVES are not supported in enclaves\")\nASSERT(!DEFINED(.discard.nospec), \"RETPOLINE ALTERNATIVES are not supported in enclaves\")\nASSERT(!DEFINED(.got.plt), \"Libcalls are not supported in enclaves\")\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

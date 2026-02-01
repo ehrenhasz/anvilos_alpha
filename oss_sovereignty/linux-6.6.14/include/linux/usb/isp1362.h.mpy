@@ -1,0 +1,9 @@
+{
+  "module_name": "isp1362.h",
+  "hash_id": "8d2c556c0f9398b7cd96108bf8c9b4548a2ffba1250403e04417a8f8ac5a604b",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/usb/isp1362.h",
+  "human_readable_source": " \n \n\n#ifndef __LINUX_USB_ISP1362_H__\n#define __LINUX_USB_ISP1362_H__\n\nstruct isp1362_platform_data {\n\t \n\tunsigned sel15Kres:1;\n\t \n\tunsigned clknotstop:1;\n\t \n\tunsigned oc_enable:1;\n\t \n\tunsigned int_act_high:1;\n\t \n\tunsigned int_edge_triggered:1;\n\t \n\tunsigned dreq_act_high:1;\n\t \n\tunsigned dack_act_high:1;\n\t \n\tunsigned remote_wakeup_connected:1;\n\t \n\tunsigned no_power_switching:1;\n\t \n\tunsigned power_switching_mode:1;\n\t \n\tu8 potpg;\n\t \n\tvoid (*reset) (struct device *dev, int set);\n\t \n\tvoid (*clock) (struct device *dev, int start);\n\t \n\tvoid (*delay) (struct device *dev, unsigned int delay);\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

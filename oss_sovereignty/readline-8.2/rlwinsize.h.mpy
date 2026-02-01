@@ -1,0 +1,9 @@
+{
+  "module_name": "rlwinsize.h",
+  "hash_id": "71ce9d512a5e9622987480893b4c85c539a18e4c2e4617b4af264ddf47a1148b",
+  "original_prompt": "Ingested from readline-8.2/rlwinsize.h",
+  "human_readable_source": " \n\n \n\n#if !defined (_RLWINSIZE_H_)\n#define _RLWINSIZE_H_\n\n#if defined (HAVE_CONFIG_H)\n#  include \"config.h\"\n#endif\n\n \n\n#if defined (GWINSZ_IN_SYS_IOCTL) && !defined (TIOCGWINSZ)\n#  include <sys/ioctl.h>\n#endif  \n\n#if defined (STRUCT_WINSIZE_IN_TERMIOS) && !defined (STRUCT_WINSIZE_IN_SYS_IOCTL)\n#  include <termios.h>\n#endif  \n\n \n#if !defined (STRUCT_WINSIZE_IN_TERMIOS) && !defined (STRUCT_WINSIZE_IN_SYS_IOCTL)\n#  if defined (HAVE_SYS_STREAM_H)\n#    include <sys/stream.h>\n#  endif  \n#  if defined (HAVE_SYS_PTEM_H)  \n#    include <sys/ptem.h>\n#    define _IO_PTEM_H           \n#  endif  \n#  if defined (HAVE_SYS_PTE_H)   \n#    include <sys/pte.h>\n#  endif  \n#endif  \n\n#if defined (M_UNIX) && !defined (_SCO_DS) && !defined (tcflow)\n#  define tcflow(fd, action)\tioctl(fd, TCXONC, action)\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

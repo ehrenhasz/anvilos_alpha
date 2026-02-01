@@ -1,0 +1,9 @@
+{
+  "module_name": "rtw_debug.c",
+  "hash_id": "cb94b988a212b5999f8c405f40300d0dc9fc30959366c527267e476b0e7fb599",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/rtl8723bs/core/rtw_debug.c",
+  "human_readable_source": "\n \n\n#include <drv_types.h>\n#include <rtw_debug.h>\n#include <hal_btcoex.h>\n\n#include <rtw_version.h>\n\nstatic void dump_4_regs(struct adapter *adapter, int offset)\n{\n\tu32 reg[4];\n\tint i;\n\n\tfor (i = 0; i < 4; i++)\n\t\treg[i] = rtw_read32(adapter, offset + i);\n\n\tnetdev_dbg(adapter->pnetdev, \"0x%03x 0x%08x 0x%08x 0x%08x 0x%08x\\n\",\n\t\t   i, reg[0], reg[1], reg[2], reg[3]);\n}\n\nvoid mac_reg_dump(struct adapter *adapter)\n{\n\tint i;\n\n\tnetdev_dbg(adapter->pnetdev, \"======= MAC REG =======\\n\");\n\n\tfor (i = 0x0; i < 0x800; i += 4)\n\t\tdump_4_regs(adapter, i);\n}\n\nvoid bb_reg_dump(struct adapter *adapter)\n{\n\tint i;\n\n\tnetdev_dbg(adapter->pnetdev, \"======= BB REG =======\\n\");\n\n\tfor (i = 0x800; i < 0x1000 ; i += 4)\n\t\tdump_4_regs(adapter, i);\n}\n\nstatic void dump_4_rf_regs(struct adapter *adapter, int path, int offset)\n{\n\tu8 reg[4];\n\tint i;\n\n\tfor (i = 0; i < 4; i++)\n\t\treg[i] = rtw_hal_read_rfreg(adapter, path, offset + i,\n\t\t\t\t\t    0xffffffff);\n\n\tnetdev_dbg(adapter->pnetdev, \"0x%02x 0x%08x 0x%08x 0x%08x 0x%08x\\n\",\n\t\t   i, reg[0], reg[1], reg[2], reg[3]);\n}\n\nvoid rf_reg_dump(struct adapter *adapter)\n{\n\tint i, path = 0;\n\n\tnetdev_dbg(adapter->pnetdev, \"======= RF REG =======\\n\");\n\n\tnetdev_dbg(adapter->pnetdev, \"RF_Path(%x)\\n\", path);\n\tfor (i = 0; i < 0x100; i++)\n\t\tdump_4_rf_regs(adapter, path, i);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

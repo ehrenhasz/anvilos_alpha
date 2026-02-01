@@ -1,0 +1,9 @@
+{
+  "module_name": "tpm-dev.h",
+  "hash_id": "b2126ed3e9dd7ab1ae947f4e6f06b0c64d89aefb66dd758c169a92e553d40c81",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/char/tpm/tpm-dev.h",
+  "human_readable_source": " \n#ifndef _TPM_DEV_H\n#define _TPM_DEV_H\n\n#include <linux/poll.h>\n#include \"tpm.h\"\n\nstruct file_priv {\n\tstruct tpm_chip *chip;\n\tstruct tpm_space *space;\n\n\tstruct mutex buffer_mutex;\n\tstruct timer_list user_read_timer;       \n\tstruct work_struct timeout_work;\n\tstruct work_struct async_work;\n\twait_queue_head_t async_wait;\n\tssize_t response_length;\n\tbool response_read;\n\tbool command_enqueued;\n\n\tu8 data_buffer[TPM_BUFSIZE];\n};\n\nvoid tpm_common_open(struct file *file, struct tpm_chip *chip,\n\t\t     struct file_priv *priv, struct tpm_space *space);\nssize_t tpm_common_read(struct file *file, char __user *buf,\n\t\t\tsize_t size, loff_t *off);\nssize_t tpm_common_write(struct file *file, const char __user *buf,\n\t\t\t size_t size, loff_t *off);\n__poll_t tpm_common_poll(struct file *file, poll_table *wait);\n\nvoid tpm_common_release(struct file *file, struct file_priv *priv);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

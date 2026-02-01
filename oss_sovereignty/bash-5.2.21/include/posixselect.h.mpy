@@ -1,0 +1,9 @@
+{
+  "module_name": "posixselect.h",
+  "hash_id": "3df317014d286e2ba9ed1d4efcf62778fb05837d0e9bbd65e1fd4980f5fc0e07",
+  "original_prompt": "Ingested from bash-5.2.21/include/posixselect.h",
+  "human_readable_source": " \n\n \n\n#ifndef _POSIXSELECT_H_\n#define _POSIXSELECT_H_\n\n#if defined (FD_SET) && !defined (HAVE_SELECT)\n#  define HAVE_SELECT 1\n#endif\n\n#if defined (HAVE_SELECT)\n#  if !defined (HAVE_SYS_SELECT_H) || !defined (M_UNIX)\n#    include <sys/time.h>\n#  endif\n#endif  \n#if defined (HAVE_SYS_SELECT_H)\n#  include <sys/select.h>\n#endif\n\n#ifndef USEC_PER_SEC\n#  define USEC_PER_SEC 1000000\n#endif\n\n#define USEC_TO_TIMEVAL(us, tv) \\\ndo { \\\n  (tv).tv_sec = (us) / USEC_PER_SEC; \\\n  (tv).tv_usec = (us) % USEC_PER_SEC; \\\n} while (0)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

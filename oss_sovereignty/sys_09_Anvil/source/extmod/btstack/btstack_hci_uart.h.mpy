@@ -1,0 +1,9 @@
+{
+  "module_name": "btstack_hci_uart.h",
+  "hash_id": "2be38d8792b7fbb86e5ffc03705d9836a1b0217cfb16a3fac09309efa29c6b7d",
+  "original_prompt": "Ingested from sys_09_Anvil/source/extmod/btstack/btstack_hci_uart.h",
+  "human_readable_source": " \n\n#ifndef MICROPY_INCLUDED_EXTMOD_BTSTACK_HCI_UART_H\n#define MICROPY_INCLUDED_EXTMOD_BTSTACK_HCI_UART_H\n\n#include \"lib/btstack/src/btstack_uart_block.h\"\n\n\nextern const btstack_uart_block_t mp_bluetooth_btstack_hci_uart_block;\n\n\nvoid mp_bluetooth_btstack_hci_uart_process(void);\n\n#endif \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

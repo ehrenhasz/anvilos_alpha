@@ -1,0 +1,9 @@
+{
+  "module_name": "base.c",
+  "hash_id": "bcfca30edc1ca7be9b71c9b14ae834e88f53723f304209650c3f75aa5c4993b0",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/subdev/bus/base.c",
+  "human_readable_source": " \n#include \"priv.h\"\n\nstatic void\nnvkm_bus_intr(struct nvkm_subdev *subdev)\n{\n\tstruct nvkm_bus *bus = nvkm_bus(subdev);\n\tbus->func->intr(bus);\n}\n\nstatic int\nnvkm_bus_init(struct nvkm_subdev *subdev)\n{\n\tstruct nvkm_bus *bus = nvkm_bus(subdev);\n\tbus->func->init(bus);\n\treturn 0;\n}\n\nstatic void *\nnvkm_bus_dtor(struct nvkm_subdev *subdev)\n{\n\treturn nvkm_bus(subdev);\n}\n\nstatic const struct nvkm_subdev_func\nnvkm_bus = {\n\t.dtor = nvkm_bus_dtor,\n\t.init = nvkm_bus_init,\n\t.intr = nvkm_bus_intr,\n};\n\nint\nnvkm_bus_new_(const struct nvkm_bus_func *func, struct nvkm_device *device,\n\t      enum nvkm_subdev_type type, int inst, struct nvkm_bus **pbus)\n{\n\tstruct nvkm_bus *bus;\n\tif (!(bus = *pbus = kzalloc(sizeof(*bus), GFP_KERNEL)))\n\t\treturn -ENOMEM;\n\tnvkm_subdev_ctor(&nvkm_bus, device, type, inst, &bus->subdev);\n\tbus->func = func;\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

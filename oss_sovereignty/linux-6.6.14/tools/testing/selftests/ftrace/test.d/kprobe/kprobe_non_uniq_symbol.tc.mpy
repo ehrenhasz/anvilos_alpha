@@ -1,0 +1,9 @@
+{
+  "module_name": "kprobe_non_uniq_symbol.tc",
+  "hash_id": "29e97852b8f0977716ec60317fdba339da24c0505ba3d793c727fed09f9b39f6",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/ftrace/test.d/kprobe/kprobe_non_uniq_symbol.tc",
+  "human_readable_source": "#!/bin/sh\n# SPDX-License-Identifier: GPL-2.0\n# description: Test failure of registering kprobe on non unique symbol\n# requires: kprobe_events\n\nSYMBOL='name_show'\n\n# We skip this test on kernel where SYMBOL is unique or does not exist.\nif [ \"$(grep -c -E \"[[:alnum:]]+ t ${SYMBOL}\" /proc/kallsyms)\" -le '1' ]; then\n\texit_unsupported\nfi\n\n! echo \"p:test_non_unique ${SYMBOL}\" > kprobe_events\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

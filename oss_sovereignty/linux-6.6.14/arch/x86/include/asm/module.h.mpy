@@ -1,0 +1,9 @@
+{
+  "module_name": "module.h",
+  "hash_id": "22e8bc8da13fd1f8063ca6cc7b437b39fce6630b2dcb4f794196bc2bf5e77cf4",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/include/asm/module.h",
+  "human_readable_source": " \n#ifndef _ASM_X86_MODULE_H\n#define _ASM_X86_MODULE_H\n\n#include <asm-generic/module.h>\n#include <asm/orc_types.h>\n\nstruct mod_arch_specific {\n#ifdef CONFIG_UNWINDER_ORC\n\tunsigned int num_orcs;\n\tint *orc_unwind_ip;\n\tstruct orc_entry *orc_unwind;\n#endif\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

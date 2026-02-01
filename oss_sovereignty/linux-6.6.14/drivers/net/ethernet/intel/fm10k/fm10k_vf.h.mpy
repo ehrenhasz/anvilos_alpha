@@ -1,0 +1,9 @@
+{
+  "module_name": "fm10k_vf.h",
+  "hash_id": "3d5833efaf038b37f90956e795103786fa1652f590d24aa7de6912012f90d750",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/intel/fm10k/fm10k_vf.h",
+  "human_readable_source": " \n \n\n#ifndef _FM10K_VF_H_\n#define _FM10K_VF_H_\n\n#include \"fm10k_type.h\"\n#include \"fm10k_common.h\"\n\nenum fm10k_vf_tlv_msg_id {\n\tFM10K_VF_MSG_ID_TEST = 0,\t \n\tFM10K_VF_MSG_ID_MSIX,\n\tFM10K_VF_MSG_ID_MAC_VLAN,\n\tFM10K_VF_MSG_ID_LPORT_STATE,\n\tFM10K_VF_MSG_ID_MAX,\n};\n\nenum fm10k_tlv_mac_vlan_attr_id {\n\tFM10K_MAC_VLAN_MSG_VLAN,\n\tFM10K_MAC_VLAN_MSG_SET,\n\tFM10K_MAC_VLAN_MSG_MAC,\n\tFM10K_MAC_VLAN_MSG_DEFAULT_MAC,\n\tFM10K_MAC_VLAN_MSG_MULTICAST,\n\tFM10K_MAC_VLAN_MSG_ID_MAX\n};\n\nenum fm10k_tlv_lport_state_attr_id {\n\tFM10K_LPORT_STATE_MSG_DISABLE,\n\tFM10K_LPORT_STATE_MSG_XCAST_MODE,\n\tFM10K_LPORT_STATE_MSG_READY,\n\tFM10K_LPORT_STATE_MSG_MAX\n};\n\n#define FM10K_VF_MSG_MSIX_HANDLER(func) \\\n\t FM10K_MSG_HANDLER(FM10K_VF_MSG_ID_MSIX, NULL, func)\n\ns32 fm10k_msg_mac_vlan_vf(struct fm10k_hw *, u32 **, struct fm10k_mbx_info *);\nextern const struct fm10k_tlv_attr fm10k_mac_vlan_msg_attr[];\n#define FM10K_VF_MSG_MAC_VLAN_HANDLER(func) \\\n\tFM10K_MSG_HANDLER(FM10K_VF_MSG_ID_MAC_VLAN, \\\n\t\t\t  fm10k_mac_vlan_msg_attr, func)\n\ns32 fm10k_msg_lport_state_vf(struct fm10k_hw *, u32 **,\n\t\t\t     struct fm10k_mbx_info *);\nextern const struct fm10k_tlv_attr fm10k_lport_state_msg_attr[];\n#define FM10K_VF_MSG_LPORT_STATE_HANDLER(func) \\\n\tFM10K_MSG_HANDLER(FM10K_VF_MSG_ID_LPORT_STATE, \\\n\t\t\t  fm10k_lport_state_msg_attr, func)\n\nextern const struct fm10k_info fm10k_vf_info;\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

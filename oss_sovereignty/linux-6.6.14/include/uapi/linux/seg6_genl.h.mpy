@@ -1,0 +1,9 @@
+{
+  "module_name": "seg6_genl.h",
+  "hash_id": "15dc21f4e3492f00ddbad7438ebe3cbf2cd145ddef134a3cd9d18d74b0733057",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/seg6_genl.h",
+  "human_readable_source": " \n#ifndef _UAPI_LINUX_SEG6_GENL_H\n#define _UAPI_LINUX_SEG6_GENL_H\n\n#define SEG6_GENL_NAME\t\t\"SEG6\"\n#define SEG6_GENL_VERSION\t0x1\n\nenum {\n\tSEG6_ATTR_UNSPEC,\n\tSEG6_ATTR_DST,\n\tSEG6_ATTR_DSTLEN,\n\tSEG6_ATTR_HMACKEYID,\n\tSEG6_ATTR_SECRET,\n\tSEG6_ATTR_SECRETLEN,\n\tSEG6_ATTR_ALGID,\n\tSEG6_ATTR_HMACINFO,\n\t__SEG6_ATTR_MAX,\n};\n\n#define SEG6_ATTR_MAX (__SEG6_ATTR_MAX - 1)\n\nenum {\n\tSEG6_CMD_UNSPEC,\n\tSEG6_CMD_SETHMAC,\n\tSEG6_CMD_DUMPHMAC,\n\tSEG6_CMD_SET_TUNSRC,\n\tSEG6_CMD_GET_TUNSRC,\n\t__SEG6_CMD_MAX,\n};\n\n#define SEG6_CMD_MAX (__SEG6_CMD_MAX - 1)\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

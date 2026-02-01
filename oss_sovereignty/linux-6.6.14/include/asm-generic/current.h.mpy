@@ -1,0 +1,9 @@
+{
+  "module_name": "current.h",
+  "hash_id": "da94a637472ebf629f83c4c20a944a5ad82934ce7e5ae0d716bc6d738a3d4736",
+  "original_prompt": "Ingested from linux-6.6.14/include/asm-generic/current.h",
+  "human_readable_source": " \n#ifndef __ASM_GENERIC_CURRENT_H\n#define __ASM_GENERIC_CURRENT_H\n\n#ifndef __ASSEMBLY__\n#include <linux/thread_info.h>\n\n#define get_current() (current_thread_info()->task)\n#define current get_current()\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

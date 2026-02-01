@@ -1,0 +1,9 @@
+{
+  "module_name": "acpi.c",
+  "hash_id": "6c825303a6bd4f3b5fd36c36d3dc9688c6a9b6e1d10489dfa20ec85ead8bad03",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/engine/device/acpi.c",
+  "human_readable_source": " \n#include \"acpi.h\"\n\n#include <core/device.h>\n#include <subdev/clk.h>\n\n#ifdef CONFIG_ACPI\nstatic int\nnvkm_acpi_ntfy(struct notifier_block *nb, unsigned long val, void *data)\n{\n\tstruct nvkm_device *device = container_of(nb, typeof(*device), acpi.nb);\n\tstruct acpi_bus_event *info = data;\n\n\tif (!strcmp(info->device_class, \"ac_adapter\"))\n\t\tnvkm_clk_pwrsrc(device);\n\n\treturn NOTIFY_DONE;\n}\n#endif\n\nvoid\nnvkm_acpi_fini(struct nvkm_device *device)\n{\n#ifdef CONFIG_ACPI\n\tunregister_acpi_notifier(&device->acpi.nb);\n#endif\n}\n\nvoid\nnvkm_acpi_init(struct nvkm_device *device)\n{\n#ifdef CONFIG_ACPI\n\tdevice->acpi.nb.notifier_call = nvkm_acpi_ntfy;\n\tregister_acpi_notifier(&device->acpi.nb);\n#endif\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "g_zero.h",
+  "hash_id": "7cf211b17e8d177a3f17d0fa93f3372302a75cc90d917ab9e115bbcc343849ca",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/usb/gadget/function/g_zero.h",
+  "human_readable_source": " \n \n\n#ifndef __G_ZERO_H\n#define __G_ZERO_H\n\n#define GZERO_BULK_BUFLEN\t4096\n#define GZERO_QLEN\t\t32\n#define GZERO_ISOC_INTERVAL\t4\n#define GZERO_ISOC_MAXPACKET\t1024\n#define GZERO_SS_BULK_QLEN\t1\n#define GZERO_SS_ISO_QLEN\t8\n\nstruct usb_zero_options {\n\tunsigned pattern;\n\tunsigned isoc_interval;\n\tunsigned isoc_maxpacket;\n\tunsigned isoc_mult;\n\tunsigned isoc_maxburst;\n\tunsigned bulk_buflen;\n\tunsigned qlen;\n\tunsigned ss_bulk_qlen;\n\tunsigned ss_iso_qlen;\n};\n\nstruct f_ss_opts {\n\tstruct usb_function_instance func_inst;\n\tunsigned pattern;\n\tunsigned isoc_interval;\n\tunsigned isoc_maxpacket;\n\tunsigned isoc_mult;\n\tunsigned isoc_maxburst;\n\tunsigned bulk_buflen;\n\tunsigned bulk_qlen;\n\tunsigned iso_qlen;\n\n\t \n\tstruct mutex\t\t\tlock;\n\tint\t\t\t\trefcnt;\n};\n\nstruct f_lb_opts {\n\tstruct usb_function_instance func_inst;\n\tunsigned bulk_buflen;\n\tunsigned qlen;\n\n\t \n\tstruct mutex\t\t\tlock;\n\tint\t\t\t\trefcnt;\n};\n\nvoid lb_modexit(void);\nint lb_modinit(void);\n\n \nvoid disable_endpoints(struct usb_composite_dev *cdev,\n\t\tstruct usb_ep *in, struct usb_ep *out,\n\t\tstruct usb_ep *iso_in, struct usb_ep *iso_out);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

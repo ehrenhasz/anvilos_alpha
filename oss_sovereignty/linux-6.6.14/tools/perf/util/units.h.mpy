@@ -1,0 +1,9 @@
+{
+  "module_name": "units.h",
+  "hash_id": "b4452096edd3c2b202c81dd46740a62b6c72fd237cfa59ef66d07ac69c451413",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/util/units.h",
+  "human_readable_source": " \n#ifndef PERF_UNIT_H\n#define PERF_UNIT_H\n\n#include <stddef.h>\n#include <linux/types.h>\n\nstruct parse_tag {\n\tchar tag;\n\tint  mult;\n};\n\nunsigned long parse_tag_value(const char *str, struct parse_tag *tags);\n\ndouble convert_unit_double(double value, char *unit);\nunsigned long convert_unit(unsigned long value, char *unit);\nint unit_number__scnprintf(char *buf, size_t size, u64 n);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

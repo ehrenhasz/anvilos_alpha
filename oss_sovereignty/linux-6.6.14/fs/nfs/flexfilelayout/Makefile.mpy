@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "70f755dba7ac9dcd2ad3d2c5cc1d267f6b35a05fef974cc83cd68b971324840b",
+  "original_prompt": "Ingested from linux-6.6.14/fs/nfs/flexfilelayout/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Makefile for the pNFS Flexfile Layout Driver kernel module\n#\nobj-$(CONFIG_PNFS_FLEXFILE_LAYOUT) += nfs_layout_flexfiles.o\nnfs_layout_flexfiles-y := flexfilelayout.o flexfilelayoutdev.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

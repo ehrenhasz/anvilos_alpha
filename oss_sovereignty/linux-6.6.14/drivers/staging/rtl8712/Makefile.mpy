@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "1a07f99fa7700ead7d8589b67c51aa10632ec1d0106e1117568222899d31deb1",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/rtl8712/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nr8712u-y :=\t\t\t\t\\\n\t\trtl871x_cmd.o\t\t\\\n\t\trtl8712_cmd.o\t\t\\\n\t\trtl871x_security.o\t\\\n\t\trtl871x_eeprom.o\t\\\n\t\trtl8712_efuse.o\t\t\\\n\t\thal_init.o\t\t\\\n\t\tusb_halinit.o\t\t\\\n\t\tusb_ops.o\t\t\\\n\t\tusb_ops_linux.o\t\t\\\n\t\trtl871x_io.o\t\t\\\n\t\trtl8712_io.o\t\t\\\n\t\trtl871x_ioctl_linux.o\t\\\n\t\trtl871x_ioctl_rtl.o\t\\\n\t\trtl871x_ioctl_set.o\t\\\n\t\trtl8712_led.o\t\t\\\n\t\trtl871x_mlme.o\t\t\\\n\t\tieee80211.o\t\t\\\n\t\trtl871x_mp_ioctl.o\t\\\n\t\trtl871x_mp.o\t\t\\\n\t\tmlme_linux.o\t\t\\\n\t\trecv_linux.o\t\t\\\n\t\txmit_linux.o\t\t\\\n\t\tusb_intf.o\t\t\\\n\t\tos_intfs.o\t\t\\\n\t\trtl871x_pwrctrl.o\t\\\n\t\trtl8712_recv.o\t\t\\\n\t\trtl871x_recv.o\t\t\\\n\t\trtl871x_sta_mgt.o\t\\\n\t\trtl871x_xmit.o\t\t\\\n\t\trtl8712_xmit.o\n\nobj-$(CONFIG_R8712U)\t:= r8712u.o\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "lima_bcast.c",
+  "hash_id": "6919117332b134f3dd9cde6afabffe9882381691a352a7f7965cb73f20ec588f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/lima/lima_bcast.c",
+  "human_readable_source": "\n \n\n#include <linux/io.h>\n#include <linux/device.h>\n\n#include \"lima_device.h\"\n#include \"lima_bcast.h\"\n#include \"lima_regs.h\"\n\n#define bcast_write(reg, data) writel(data, ip->iomem + reg)\n#define bcast_read(reg) readl(ip->iomem + reg)\n\nvoid lima_bcast_enable(struct lima_device *dev, int num_pp)\n{\n\tstruct lima_sched_pipe *pipe = dev->pipe + lima_pipe_pp;\n\tstruct lima_ip *ip = dev->ip + lima_ip_bcast;\n\tint i, mask = bcast_read(LIMA_BCAST_BROADCAST_MASK) & 0xffff0000;\n\n\tfor (i = 0; i < num_pp; i++) {\n\t\tstruct lima_ip *pp = pipe->processor[i];\n\n\t\tmask |= 1 << (pp->id - lima_ip_pp0);\n\t}\n\n\tbcast_write(LIMA_BCAST_BROADCAST_MASK, mask);\n}\n\nstatic int lima_bcast_hw_init(struct lima_ip *ip)\n{\n\tbcast_write(LIMA_BCAST_BROADCAST_MASK, ip->data.mask << 16);\n\tbcast_write(LIMA_BCAST_INTERRUPT_MASK, ip->data.mask);\n\treturn 0;\n}\n\nint lima_bcast_resume(struct lima_ip *ip)\n{\n\treturn lima_bcast_hw_init(ip);\n}\n\nvoid lima_bcast_suspend(struct lima_ip *ip)\n{\n\n}\n\nint lima_bcast_init(struct lima_ip *ip)\n{\n\tint i;\n\n\tfor (i = lima_ip_pp0; i <= lima_ip_pp7; i++) {\n\t\tif (ip->dev->ip[i].present)\n\t\t\tip->data.mask |= 1 << (i - lima_ip_pp0);\n\t}\n\n\treturn lima_bcast_hw_init(ip);\n}\n\nvoid lima_bcast_fini(struct lima_ip *ip)\n{\n\n}\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

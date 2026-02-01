@@ -1,0 +1,9 @@
+{
+  "module_name": "null-ptr.h",
+  "hash_id": "6f3ae94bc1e4117a07397f7f00cd2a44f4a653694d520ac6b6e65df706f4c4eb",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/null-ptr.h",
+  "human_readable_source": " \nstatic void *\nnull_ptr (void)\n{\n  unsigned int x = rand ();\n  unsigned int y = x * x;\n  if (y & 2)\n    return (void *) -1;\n  else\n    return (void *) 0;\n}\n\n/* If you want to know why this always returns NULL, read\n   https:\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

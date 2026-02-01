@@ -1,0 +1,9 @@
+{
+  "module_name": "omap-twl4030.h",
+  "hash_id": "bc509fcc7630b38e311e3e966bc7066f498a81fa27cc884acfa041bec57d40e7",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/platform_data/omap-twl4030.h",
+  "human_readable_source": " \n \n\n#ifndef _OMAP_TWL4030_H_\n#define _OMAP_TWL4030_H_\n\n \n#define OMAP_TWL4030_LEFT\t(1 << 0)\n#define OMAP_TWL4030_RIGHT\t(1 << 1)\n\nstruct omap_tw4030_pdata {\n\tconst char *card_name;\n\t \n\tbool voice_connected;\n\n\t \n\tbool\tcustom_routing;\n\t \n\tu8\thas_hs;\n\tu8\thas_hf;\n\tu8\thas_predriv;\n\tu8\thas_carkit;\n\tbool\thas_ear;\n\n\tbool\thas_mainmic;\n\tbool\thas_submic;\n\tbool\thas_hsmic;\n\tbool\thas_carkitmic;\n\tbool\thas_digimic0;\n\tbool\thas_digimic1;\n\tu8\thas_linein;\n\n\t \n\tint jack_detect;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

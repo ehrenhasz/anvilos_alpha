@@ -1,0 +1,9 @@
+{
+  "module_name": "string.h",
+  "hash_id": "d25f25b4109c2b110252f39bb2365290c99e3a9e3d264c316df6f91da9cf6a6e",
+  "original_prompt": "Ingested from zfs-2.2.2/include/os/freebsd/spl/sys/string.h",
+  "human_readable_source": " \n\n#ifndef _OPENSOLARIS_SYS_STRING_H_\n#define\t_OPENSOLARIS_SYS_STRING_H_\n\n#include <sys/libkern.h>\n\nchar\t*strpbrk(const char *, const char *);\nvoid\t strident_canon(char *, size_t);\nvoid\t kmem_strfree(char *);\nchar\t*kmem_strdup(const char *s);\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

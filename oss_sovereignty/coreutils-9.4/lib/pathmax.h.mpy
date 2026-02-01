@@ -1,0 +1,9 @@
+{
+  "module_name": "pathmax.h",
+  "hash_id": "207d27e4bb10653b546e712384d7e48938ba3c3bb3b4f382782350ad0e3501c4",
+  "original_prompt": "Ingested from coreutils-9.4/lib/pathmax.h",
+  "human_readable_source": " \n\n \n# if !_GL_CONFIG_H_INCLUDED\n#  error \"Please include config.h first.\"\n# endif\n\n# include <unistd.h>\n\n# include <limits.h>\n\n# ifndef _POSIX_PATH_MAX\n#  define _POSIX_PATH_MAX 256\n# endif\n\n \n# if defined HAVE_SYS_PARAM_H && !defined PATH_MAX && !defined MAXPATHLEN\n#  include <sys/param.h>\n# endif\n\n# if !defined PATH_MAX && defined MAXPATHLEN\n#  define PATH_MAX MAXPATHLEN\n# endif\n\n# ifdef __hpux\n \n#  undef PATH_MAX\n#  define PATH_MAX 1024\n# endif\n\n# if defined _WIN32 && ! defined __CYGWIN__\n \n#  undef PATH_MAX\n#  define PATH_MAX 260\n# endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

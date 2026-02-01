@@ -1,0 +1,9 @@
+{
+  "module_name": "numaif.h",
+  "hash_id": "08815dac232fe698c9d739143bc6483a7094897185bdc0b4c8d3aa07edb47689",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/kvm/include/numaif.h",
+  "human_readable_source": " \n \n\n#ifndef SELFTEST_KVM_NUMAIF_H\n#define SELFTEST_KVM_NUMAIF_H\n\n#define __NR_get_mempolicy 239\n#define __NR_migrate_pages 256\n\n \nlong get_mempolicy(int *policy, const unsigned long *nmask,\n\t\t   unsigned long maxnode, void *addr, int flags)\n{\n\treturn syscall(__NR_get_mempolicy, policy, nmask,\n\t\t       maxnode, addr, flags);\n}\n\nlong migrate_pages(int pid, unsigned long maxnode,\n\t\t   const unsigned long *frommask,\n\t\t   const unsigned long *tomask)\n{\n\treturn syscall(__NR_migrate_pages, pid, maxnode, frommask, tomask);\n}\n\n \n#define MPOL_DEFAULT\t 0\n#define MPOL_PREFERRED\t 1\n#define MPOL_BIND\t 2\n#define MPOL_INTERLEAVE\t 3\n\n#define MPOL_MAX MPOL_INTERLEAVE\n\n \n#define MPOL_F_NODE\t    (1<<0)   \n\t\t\t\t     \n#define MPOL_F_ADDR\t    (1<<1)   \n#define MPOL_F_MEMS_ALLOWED (1<<2)   \n\n \n#define MPOL_MF_STRICT\t     (1<<0)  \n#define MPOL_MF_MOVE\t     (1<<1)  \n#define MPOL_MF_MOVE_ALL     (1<<2)  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

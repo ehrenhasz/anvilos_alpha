@@ -1,0 +1,9 @@
+{
+  "module_name": "bsd-waitpid.c",
+  "hash_id": "9f467f95053942ac1e4f3c565911093bdeae2c01433cdce24dfed6e1553d6543",
+  "original_prompt": "Ingested from openssh-9.6p1/openbsd-compat/bsd-waitpid.c",
+  "human_readable_source": " \n\n#include \"includes.h\"\n\n#ifndef HAVE_WAITPID\n#include <errno.h>\n#include <sys/wait.h>\n#include \"bsd-waitpid.h\"\n\npid_t\nwaitpid(int pid, int *stat_loc, int options)\n{\n\tunion wait statusp;\n\tpid_t wait_pid;\n\n\tif (pid <= 0) {\n\t\tif (pid != -1) {\n\t\t\terrno = EINVAL;\n\t\t\treturn (-1);\n\t\t}\n\t\t \n\t\tpid = 0;\n\t}\n\twait_pid = wait4(pid, &statusp, options, NULL);\n\tif (stat_loc)\n\t\t*stat_loc = (int) statusp.w_status;\n\n\treturn (wait_pid);\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

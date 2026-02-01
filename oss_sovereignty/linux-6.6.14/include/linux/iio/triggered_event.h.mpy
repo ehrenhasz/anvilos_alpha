@@ -1,0 +1,9 @@
+{
+  "module_name": "triggered_event.h",
+  "hash_id": "d3b6aef0fcfa2dc99275b8a6c08954b566f467dde732bc87c6fbd2b0eb10a9e6",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/iio/triggered_event.h",
+  "human_readable_source": " \n#ifndef _LINUX_IIO_TRIGGERED_EVENT_H_\n#define _LINUX_IIO_TRIGGERED_EVENT_H_\n\n#include <linux/interrupt.h>\n\nint iio_triggered_event_setup(struct iio_dev *indio_dev,\n\tirqreturn_t (*h)(int irq, void *p),\n\tirqreturn_t (*thread)(int irq, void *p));\nvoid iio_triggered_event_cleanup(struct iio_dev *indio_dev);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "nvenc.h",
+  "hash_id": "3c0cf6a119fb8ad049d458a3e30be6a0b5834ef35367c5a4427524991d9f8ecd",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/include/nvkm/engine/nvenc.h",
+  "human_readable_source": " \n#ifndef __NVKM_NVENC_H__\n#define __NVKM_NVENC_H__\n#define nvkm_nvenc(p) container_of((p), struct nvkm_nvenc, engine)\n#include <core/engine.h>\n#include <core/falcon.h>\n\nstruct nvkm_nvenc {\n\tconst struct nvkm_nvenc_func *func;\n\tstruct nvkm_engine engine;\n\tstruct nvkm_falcon falcon;\n};\n\nint gm107_nvenc_new(struct nvkm_device *, enum nvkm_subdev_type, int inst, struct nvkm_nvenc **);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

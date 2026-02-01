@@ -1,0 +1,9 @@
+{
+  "module_name": "test_bpftool.sh",
+  "hash_id": "766c6fd76d7fd39d6fc9f28d6f9a5ca5d5e4cce6077b239d49b7a4bca51b5d65",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/test_bpftool.sh",
+  "human_readable_source": "#!/bin/bash\n# SPDX-License-Identifier: GPL-2.0\n# Copyright (c) 2020 SUSE LLC.\n\n# 'make -C tools/testing/selftests/bpf install' will install to SCRIPT_DIR\nSCRIPT_DIR=$(dirname $(realpath $0))\n\n# 'make -C tools/testing/selftests/bpf' will install to BPFTOOL_INSTALL_PATH\nBPFTOOL_INSTALL_PATH=\"$SCRIPT_DIR\"/tools/sbin\nexport PATH=$SCRIPT_DIR:$BPFTOOL_INSTALL_PATH:$PATH\npython3 -m unittest -v test_bpftool.TestBpftool\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

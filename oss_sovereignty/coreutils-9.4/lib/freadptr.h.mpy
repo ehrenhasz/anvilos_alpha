@@ -1,0 +1,9 @@
+{
+  "module_name": "freadptr.h",
+  "hash_id": "38407380457829303c239abeead1032cfacd506ccfebf54172f3634b0b65b5a1",
+  "original_prompt": "Ingested from coreutils-9.4/lib/freadptr.h",
+  "human_readable_source": " \n#if !_GL_CONFIG_H_INCLUDED\n #error \"Please include config.h first.\"\n#endif\n\n#include <stddef.h>\n#include <stdio.h>\n\n \n\n#if HAVE___FREADPTR  \n\n# include <stdio_ext.h>\n# define freadptr(stream,sizep) __freadptr (stream, sizep)\n\n#else\n\n# ifdef __cplusplus\nextern \"C\" {\n# endif\n\nextern const char * freadptr (FILE *stream, size_t *sizep);\n\n# ifdef __cplusplus\n}\n# endif\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

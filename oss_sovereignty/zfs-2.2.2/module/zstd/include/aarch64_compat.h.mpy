@@ -1,0 +1,9 @@
+{
+  "module_name": "aarch64_compat.h",
+  "hash_id": "d0bbbbd3075276601b768cd9e2cc6bb5981dcd25c4b2eb49d702bdd009a2ca29",
+  "original_prompt": "Ingested from zfs-2.2.2/module/zstd/include/aarch64_compat.h",
+  "human_readable_source": " \n\n \n\n#ifdef _KERNEL\n#undef __aarch64__\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

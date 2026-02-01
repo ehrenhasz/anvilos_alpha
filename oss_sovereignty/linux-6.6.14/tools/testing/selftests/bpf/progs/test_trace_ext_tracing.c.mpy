@@ -1,0 +1,9 @@
+{
+  "module_name": "test_trace_ext_tracing.c",
+  "hash_id": "6aecd887e2649b8643dd7446c3718ee9ba245614e11a47d292667685d1b19d3e",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/test_trace_ext_tracing.c",
+  "human_readable_source": "\n\n#include \"vmlinux.h\"\n#include <bpf/bpf_helpers.h>\n#include <bpf/bpf_tracing.h>\n\n__u64 fentry_called = 0;\n\nSEC(\"fentry/test_pkt_md_access_new\")\nint BPF_PROG(fentry, struct sk_buff *skb)\n{\n\tfentry_called = skb->len;\n\treturn 0;\n}\n\n__u64 fexit_called = 0;\n\nSEC(\"fexit/test_pkt_md_access_new\")\nint BPF_PROG(fexit, struct sk_buff *skb)\n{\n\tfexit_called = skb->len;\n\treturn 0;\n}\n\nchar _license[] SEC(\"license\") = \"GPL\";\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

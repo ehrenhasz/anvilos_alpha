@@ -1,0 +1,9 @@
+{
+  "module_name": "drm_color_mgmt.h",
+  "hash_id": "5b40e4d11b9cdf583f3195c1172ce735d86c6eda1c2eb0d51f1bd8d750ace07d",
+  "original_prompt": "Ingested from linux-6.6.14/include/drm/drm_color_mgmt.h",
+  "human_readable_source": " \n\n#ifndef __DRM_COLOR_MGMT_H__\n#define __DRM_COLOR_MGMT_H__\n\n#include <linux/ctype.h>\n#include <drm/drm_property.h>\n\nstruct drm_crtc;\nstruct drm_plane;\n\n \nstatic inline u32 drm_color_lut_extract(u32 user_input, int bit_precision)\n{\n\tu32 val = user_input;\n\tu32 max = 0xffff >> (16 - bit_precision);\n\n\t \n\tif (bit_precision < 16) {\n\t\tval += 1UL << (16 - bit_precision - 1);\n\t\tval >>= 16 - bit_precision;\n\t}\n\n\treturn clamp_val(val, 0, max);\n}\n\nu64 drm_color_ctm_s31_32_to_qm_n(u64 user_input, u32 m, u32 n);\n\nvoid drm_crtc_enable_color_mgmt(struct drm_crtc *crtc,\n\t\t\t\tuint degamma_lut_size,\n\t\t\t\tbool has_ctm,\n\t\t\t\tuint gamma_lut_size);\n\nint drm_mode_crtc_set_gamma_size(struct drm_crtc *crtc,\n\t\t\t\t int gamma_size);\n\n \nstatic inline int drm_color_lut_size(const struct drm_property_blob *blob)\n{\n\treturn blob->length / sizeof(struct drm_color_lut);\n}\n\nenum drm_color_encoding {\n\tDRM_COLOR_YCBCR_BT601,\n\tDRM_COLOR_YCBCR_BT709,\n\tDRM_COLOR_YCBCR_BT2020,\n\tDRM_COLOR_ENCODING_MAX,\n};\n\nenum drm_color_range {\n\tDRM_COLOR_YCBCR_LIMITED_RANGE,\n\tDRM_COLOR_YCBCR_FULL_RANGE,\n\tDRM_COLOR_RANGE_MAX,\n};\n\nint drm_plane_create_color_properties(struct drm_plane *plane,\n\t\t\t\t      u32 supported_encodings,\n\t\t\t\t      u32 supported_ranges,\n\t\t\t\t      enum drm_color_encoding default_encoding,\n\t\t\t\t      enum drm_color_range default_range);\n\n \nenum drm_color_lut_tests {\n\t \n\tDRM_COLOR_LUT_EQUAL_CHANNELS = BIT(0),\n\n\t \n\tDRM_COLOR_LUT_NON_DECREASING = BIT(1),\n};\n\nint drm_color_lut_check(const struct drm_property_blob *lut, u32 tests);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

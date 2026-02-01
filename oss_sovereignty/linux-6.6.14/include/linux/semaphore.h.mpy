@@ -1,0 +1,9 @@
+{
+  "module_name": "semaphore.h",
+  "hash_id": "f9f39e7f2df1e7b078222ffed124efcef13021729a40daba4a54271ca64b0319",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/semaphore.h",
+  "human_readable_source": " \n \n#ifndef __LINUX_SEMAPHORE_H\n#define __LINUX_SEMAPHORE_H\n\n#include <linux/list.h>\n#include <linux/spinlock.h>\n\n \nstruct semaphore {\n\traw_spinlock_t\t\tlock;\n\tunsigned int\t\tcount;\n\tstruct list_head\twait_list;\n};\n\n#define __SEMAPHORE_INITIALIZER(name, n)\t\t\t\t\\\n{\t\t\t\t\t\t\t\t\t\\\n\t.lock\t\t= __RAW_SPIN_LOCK_UNLOCKED((name).lock),\t\\\n\t.count\t\t= n,\t\t\t\t\t\t\\\n\t.wait_list\t= LIST_HEAD_INIT((name).wait_list),\t\t\\\n}\n\n \n#define DEFINE_SEMAPHORE(_name, _n)\t\\\n\tstruct semaphore _name = __SEMAPHORE_INITIALIZER(_name, _n)\n\nstatic inline void sema_init(struct semaphore *sem, int val)\n{\n\tstatic struct lock_class_key __key;\n\t*sem = (struct semaphore) __SEMAPHORE_INITIALIZER(*sem, val);\n\tlockdep_init_map(&sem->lock.dep_map, \"semaphore->lock\", &__key, 0);\n}\n\nextern void down(struct semaphore *sem);\nextern int __must_check down_interruptible(struct semaphore *sem);\nextern int __must_check down_killable(struct semaphore *sem);\nextern int __must_check down_trylock(struct semaphore *sem);\nextern int __must_check down_timeout(struct semaphore *sem, long jiffies);\nextern void up(struct semaphore *sem);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

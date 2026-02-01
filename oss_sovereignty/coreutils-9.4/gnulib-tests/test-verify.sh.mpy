@@ -1,0 +1,9 @@
+{
+  "module_name": "test-verify.sh",
+  "hash_id": "efeec2bd23ee6a74379ce3653970d72ad0ab78246dff88763ce83abe3ac06aee",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-verify.sh",
+  "human_readable_source": "#!/bin/sh\n. \"${srcdir=.}/init.sh\"\n\n# We are not interested in triggering bugs in the compilers and tools\n# (such as gcc 4.3.1 on openSUSE 11.0).\nunset MALLOC_PERTURB_\n\n# Rather than figure out how to invoke the compiler with the right\n# include path ourselves, we let make do it:\n(cd \"$initial_cwd_\" \\\n && rm -f test-verify-try.o \\\n && $MAKE test-verify-try.o >/dev/null 2>&1) \\\n  || skip_ \"cannot compile error-free\"\n\n# Now, prove that we encounter all expected compilation failures:\n: >out\n: >err\nfor i in 1 2 3 4 5; do\n  (cd \"$initial_cwd_\"\n   rm -f test-verify-try.o\n   $MAKE CFLAGS=-DEXP_FAIL=$i test-verify-try.o) >>out 2>>err \\\n  && { warn_ \"compiler didn't detect verification failure $i\"; fail=1; }\ndone\n\nExit $fail\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

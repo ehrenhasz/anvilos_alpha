@@ -1,0 +1,9 @@
+{
+  "module_name": "bitops.h",
+  "hash_id": "e6b9b9d4f6f7526afd49711f9498f1cda29741114f7dfacbe5b2d14ffe6f60f2",
+  "original_prompt": "Ingested from zfs-2.2.2/include/sys/bitops.h",
+  "human_readable_source": " \n \n\n#ifndef _SYS_BITOPS_H\n#define\t_SYS_BITOPS_H\n\n#include <sys/zfs_context.h>\n\n#ifdef\t__cplusplus\nextern \"C\" {\n#endif\n\n \n#define\tBF32_DECODE(x, low, len)\tP2PHASE((x) >> (low), 1U << (len))\n#define\tBF64_DECODE(x, low, len)\tP2PHASE((x) >> (low), 1ULL << (len))\n#define\tBF32_ENCODE(x, low, len)\t(P2PHASE((x), 1U << (len)) << (low))\n#define\tBF64_ENCODE(x, low, len)\t(P2PHASE((x), 1ULL << (len)) << (low))\n\n#define\tBF32_GET(x, low, len)\t\tBF32_DECODE(x, low, len)\n#define\tBF64_GET(x, low, len)\t\tBF64_DECODE(x, low, len)\n\n#define\tBF32_SET(x, low, len, val) do { \\\n\tASSERT3U(val, <, 1U << (len)); \\\n\tASSERT3U(low + len, <=, 32); \\\n\t(x) ^= BF32_ENCODE((x >> low) ^ (val), low, len); \\\n} while (0)\n\n#define\tBF64_SET(x, low, len, val) do { \\\n\tASSERT3U(val, <, 1ULL << (len)); \\\n\tASSERT3U(low + len, <=, 64); \\\n\t((x) ^= BF64_ENCODE((x >> low) ^ (val), low, len)); \\\n} while (0)\n\n#define\tBF32_GET_SB(x, low, len, shift, bias)\t\\\n\t((BF32_GET(x, low, len) + (bias)) << (shift))\n#define\tBF64_GET_SB(x, low, len, shift, bias)\t\\\n\t((BF64_GET(x, low, len) + (bias)) << (shift))\n\n \n#define\tBF32_SET_SB(x, low, len, shift, bias, val) do { \\\n\tASSERT3U(IS_P2ALIGNED(val, 1U << shift), !=, B_FALSE); \\\n\tASSERT3S((val) >> (shift), >=, bias); \\\n\tBF32_SET(x, low, len, ((val) >> (shift)) - (bias)); \\\n} while (0)\n#define\tBF64_SET_SB(x, low, len, shift, bias, val) do { \\\n\tASSERT3U(IS_P2ALIGNED(val, 1ULL << shift), !=, B_FALSE); \\\n\tASSERT3S((val) >> (shift), >=, bias); \\\n\tBF64_SET(x, low, len, ((val) >> (shift)) - (bias)); \\\n} while (0)\n\n#ifdef\t__cplusplus\n}\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

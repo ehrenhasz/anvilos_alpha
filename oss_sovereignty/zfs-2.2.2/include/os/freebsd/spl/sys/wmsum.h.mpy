@@ -1,0 +1,9 @@
+{
+  "module_name": "wmsum.h",
+  "hash_id": "dee898a08b2bd00a5f9d0431816e3710bb56d6ee2c92941148df4332056659ac",
+  "original_prompt": "Ingested from zfs-2.2.2/include/os/freebsd/spl/sys/wmsum.h",
+  "human_readable_source": " \n\n \n\n#ifndef\t_SYS_WMSUM_H\n#define\t_SYS_WMSUM_H\n\n#include <sys/types.h>\n#include <sys/systm.h>\n#include <sys/counter.h>\n#include <sys/malloc.h>\n\n#ifdef\t__cplusplus\nextern \"C\" {\n#endif\n\n#define\twmsum_t\tcounter_u64_t\n\nstatic inline void\nwmsum_init(wmsum_t *ws, uint64_t value)\n{\n\n\t*ws = counter_u64_alloc(M_WAITOK);\n\tcounter_u64_add(*ws, value);\n}\n\nstatic inline void\nwmsum_fini(wmsum_t *ws)\n{\n\n\tcounter_u64_free(*ws);\n}\n\nstatic inline uint64_t\nwmsum_value(wmsum_t *ws)\n{\n\n\treturn (counter_u64_fetch(*ws));\n}\n\nstatic inline void\nwmsum_add(wmsum_t *ws, int64_t delta)\n{\n\n\tcounter_u64_add(*ws, delta);\n}\n\n#ifdef\t__cplusplus\n}\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

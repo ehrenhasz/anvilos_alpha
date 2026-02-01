@@ -1,0 +1,9 @@
+{
+  "module_name": "ef100_sriov.h",
+  "hash_id": "af09d8f4ceaa1bd74d0f7270be1ed49b43f3d746ef1b8a3f1038b39390a84d07",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/sfc/ef100_sriov.h",
+  "human_readable_source": " \n \n#include \"net_driver.h\"\n\nint efx_ef100_sriov_configure(struct efx_nic *efx, int num_vfs);\nint efx_ef100_pci_sriov_disable(struct efx_nic *efx, bool force);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

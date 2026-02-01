@@ -1,0 +1,9 @@
+{
+  "module_name": "pm_helpers.h",
+  "hash_id": "95429cb7d9e2acafcc6137af4751de3ac37f0d7c08fdc384c9b79a34df3b7487",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/platform/qcom/venus/pm_helpers.h",
+  "human_readable_source": " \n \n#ifndef __VENUS_PM_HELPERS_H__\n#define __VENUS_PM_HELPERS_H__\n\nstruct device;\nstruct venus_core;\n\n#define POWER_ON\t1\n#define POWER_OFF\t0\n\nstruct venus_pm_ops {\n\tint (*core_get)(struct venus_core *core);\n\tvoid (*core_put)(struct venus_core *core);\n\tint (*core_power)(struct venus_core *core, int on);\n\n\tint (*vdec_get)(struct device *dev);\n\tvoid (*vdec_put)(struct device *dev);\n\tint (*vdec_power)(struct device *dev, int on);\n\n\tint (*venc_get)(struct device *dev);\n\tvoid (*venc_put)(struct device *dev);\n\tint (*venc_power)(struct device *dev, int on);\n\n\tint (*coreid_power)(struct venus_inst *inst, int on);\n\n\tint (*load_scale)(struct venus_inst *inst);\n};\n\nconst struct venus_pm_ops *venus_pm_get(enum hfi_version version);\n\nstatic inline int venus_pm_load_scale(struct venus_inst *inst)\n{\n\tstruct venus_core *core = inst->core;\n\n\tif (!core->pm_ops || !core->pm_ops->load_scale)\n\t\treturn 0;\n\n\treturn core->pm_ops->load_scale(inst);\n}\n\nstatic inline int venus_pm_acquire_core(struct venus_inst *inst)\n{\n\tstruct venus_core *core = inst->core;\n\tconst struct venus_pm_ops *pm_ops = core->pm_ops;\n\tint ret = 0;\n\n\tif (pm_ops && pm_ops->coreid_power)\n\t\tret = pm_ops->coreid_power(inst, POWER_ON);\n\n\treturn ret;\n}\n\nstatic inline int venus_pm_release_core(struct venus_inst *inst)\n{\n\tstruct venus_core *core = inst->core;\n\tconst struct venus_pm_ops *pm_ops = core->pm_ops;\n\tint ret = 0;\n\n\tif (pm_ops && pm_ops->coreid_power)\n\t\tret = pm_ops->coreid_power(inst, POWER_OFF);\n\n\treturn ret;\n}\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

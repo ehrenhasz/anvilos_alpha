@@ -1,0 +1,9 @@
+{
+  "module_name": "core.h",
+  "hash_id": "4b6049e0a0f3147998e9ea2606e6b26ed4bb6db2bddd05957af019d97e3695c3",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/mfd/da9062/core.h",
+  "human_readable_source": " \n \n\n#ifndef __MFD_DA9062_CORE_H__\n#define __MFD_DA9062_CORE_H__\n\n#include <linux/interrupt.h>\n#include <linux/mfd/da9062/registers.h>\n\nenum da9062_compatible_types {\n\tCOMPAT_TYPE_DA9061 = 1,\n\tCOMPAT_TYPE_DA9062,\n};\n\nenum da9061_irqs {\n\t \n\tDA9061_IRQ_ONKEY,\n\tDA9061_IRQ_WDG_WARN,\n\tDA9061_IRQ_SEQ_RDY,\n\t \n\tDA9061_IRQ_TEMP,\n\tDA9061_IRQ_LDO_LIM,\n\tDA9061_IRQ_DVC_RDY,\n\tDA9061_IRQ_VDD_WARN,\n\t \n\tDA9061_IRQ_GPI0,\n\tDA9061_IRQ_GPI1,\n\tDA9061_IRQ_GPI2,\n\tDA9061_IRQ_GPI3,\n\tDA9061_IRQ_GPI4,\n\n\tDA9061_NUM_IRQ,\n};\n\nenum da9062_irqs {\n\t \n\tDA9062_IRQ_ONKEY,\n\tDA9062_IRQ_ALARM,\n\tDA9062_IRQ_TICK,\n\tDA9062_IRQ_WDG_WARN,\n\tDA9062_IRQ_SEQ_RDY,\n\t \n\tDA9062_IRQ_TEMP,\n\tDA9062_IRQ_LDO_LIM,\n\tDA9062_IRQ_DVC_RDY,\n\tDA9062_IRQ_VDD_WARN,\n\t \n\tDA9062_IRQ_GPI0,\n\tDA9062_IRQ_GPI1,\n\tDA9062_IRQ_GPI2,\n\tDA9062_IRQ_GPI3,\n\tDA9062_IRQ_GPI4,\n\n\tDA9062_NUM_IRQ,\n};\n\nstruct da9062 {\n\tstruct device *dev;\n\tstruct regmap *regmap;\n\tstruct regmap_irq_chip_data *regmap_irq;\n\tenum da9062_compatible_types chip_type;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

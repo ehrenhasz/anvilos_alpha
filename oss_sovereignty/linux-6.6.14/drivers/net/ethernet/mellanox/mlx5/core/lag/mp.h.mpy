@@ -1,0 +1,9 @@
+{
+  "module_name": "mp.h",
+  "hash_id": "0e8b7e8353f05b1b869b1cba0f5b1dd64ce8ea6e1d1fa7faeef241545efd2c00",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/mellanox/mlx5/core/lag/mp.h",
+  "human_readable_source": " \n \n\n#ifndef __MLX5_LAG_MP_H__\n#define __MLX5_LAG_MP_H__\n\n#include \"lag.h\"\n#include \"mlx5_core.h\"\n\nenum mlx5_lag_port_affinity {\n\tMLX5_LAG_NORMAL_AFFINITY,\n\tMLX5_LAG_P1_AFFINITY,\n\tMLX5_LAG_P2_AFFINITY,\n};\n\nstruct lag_mp {\n\tstruct notifier_block     fib_nb;\n\tstruct {\n\t\tconst void        *mfi;  \n\t\tu32               priority;\n\t\tu32               dst;\n\t\tint               dst_len;\n\t} fib;\n\tstruct workqueue_struct   *wq;\n};\n\n#ifdef CONFIG_MLX5_ESWITCH\n\nvoid mlx5_lag_mp_reset(struct mlx5_lag *ldev);\nint mlx5_lag_mp_init(struct mlx5_lag *ldev);\nvoid mlx5_lag_mp_cleanup(struct mlx5_lag *ldev);\nbool mlx5_lag_is_multipath(struct mlx5_core_dev *dev);\n\n#else  \n\nstatic inline void mlx5_lag_mp_reset(struct mlx5_lag *ldev) {};\nstatic inline int mlx5_lag_mp_init(struct mlx5_lag *ldev) { return 0; }\nstatic inline void mlx5_lag_mp_cleanup(struct mlx5_lag *ldev) {}\nstatic inline bool mlx5_lag_is_multipath(struct mlx5_core_dev *dev) { return false; }\n\n#endif  \n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

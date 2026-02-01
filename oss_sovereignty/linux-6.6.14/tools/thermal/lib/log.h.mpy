@@ -1,0 +1,9 @@
+{
+  "module_name": "log.h",
+  "hash_id": "5f3834f1b176e0b7086a4603190d684461e08e7a7b6c1005f6891194c1749973",
+  "original_prompt": "Ingested from linux-6.6.14/tools/thermal/lib/log.h",
+  "human_readable_source": " \n \n#ifndef __THERMAL_TOOLS_LOG_H\n#define __THERMAL_TOOLS_LOG_H\n\n#include <syslog.h>\n\n#ifndef __maybe_unused\n#define __maybe_unused\t\t__attribute__((__unused__))\n#endif\n\n#define TO_SYSLOG 0x1\n#define TO_STDOUT 0x2\n#define TO_STDERR 0x4\n\nextern void logit(int level, const char *format, ...);\n\n#define DEBUG(fmt, ...)\t\tlogit(LOG_DEBUG, \"%s:%d: \" fmt, __func__, __LINE__, ##__VA_ARGS__)\n#define INFO(fmt, ...)\t\tlogit(LOG_INFO, fmt, ##__VA_ARGS__)\n#define NOTICE(fmt, ...)\tlogit(LOG_NOTICE, fmt, ##__VA_ARGS__)\n#define WARN(fmt, ...)\t\tlogit(LOG_WARNING, fmt, ##__VA_ARGS__)\n#define ERROR(fmt, ...)\t\tlogit(LOG_ERR, fmt, ##__VA_ARGS__)\n#define CRITICAL(fmt, ...)\tlogit(LOG_CRIT, fmt, ##__VA_ARGS__)\n#define ALERT(fmt, ...)\t\tlogit(LOG_ALERT, fmt, ##__VA_ARGS__)\n#define EMERG(fmt, ...)\t\tlogit(LOG_EMERG, fmt, ##__VA_ARGS__)\n\nint log_init(int level, const char *ident, int options);\nint log_str2level(const char *lvl);\nvoid log_exit(void);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "types32.h",
+  "hash_id": "6c0020e5dfcec74b99b00d54aa3c517e276d8a51a99b6bdfbc2ea69cc26ed920",
+  "original_prompt": "Ingested from zfs-2.2.2/include/os/linux/spl/sys/types32.h",
+  "human_readable_source": " \n\n#ifndef _SPL_TYPES32_H\n#define\t_SPL_TYPES32_H\n\n#include <sys/types.h>\n\ntypedef uint32_t\tcaddr32_t;\ntypedef int32_t\t\tdaddr32_t;\ntypedef int32_t\t\ttime32_t;\ntypedef uint32_t\tsize32_t;\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

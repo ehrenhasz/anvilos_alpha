@@ -1,0 +1,9 @@
+{
+  "module_name": "common_baco.h",
+  "hash_id": "08786974a726be453ddf631bb36151519d3adc5775210ce928be11526c26a38c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/pm/powerplay/hwmgr/common_baco.h",
+  "human_readable_source": " \n#ifndef __COMMON_BOCO_H__\n#define __COMMON_BOCO_H__\n#include \"hwmgr.h\"\n\n\nenum baco_cmd_type {\n\tCMD_WRITE = 0,\n\tCMD_READMODIFYWRITE,\n\tCMD_WAITFOR,\n\tCMD_DELAY_MS,\n\tCMD_DELAY_US,\n};\n\nstruct baco_cmd_entry {\n\tenum baco_cmd_type cmd;\n\tuint32_t \treg_offset;\n\tuint32_t     \tmask;\n\tuint32_t     \tshift;\n\tuint32_t     \ttimeout;\n\tuint32_t     \tval;\n};\n\nstruct soc15_baco_cmd_entry {\n\tenum baco_cmd_type cmd;\n\tuint32_t \thwip;\n\tuint32_t \tinst;\n\tuint32_t \tseg;\n\tuint32_t \treg_offset;\n\tuint32_t     \tmask;\n\tuint32_t     \tshift;\n\tuint32_t     \ttimeout;\n\tuint32_t     \tval;\n};\n\nextern bool baco_program_registers(struct pp_hwmgr *hwmgr,\n\t\t\t\t   const struct baco_cmd_entry *entry,\n\t\t\t\t   const u32 array_size);\nextern bool soc15_baco_program_registers(struct pp_hwmgr *hwmgr,\n\t\t\t\t\tconst struct soc15_baco_cmd_entry *entry,\n\t\t\t\t\tconst u32 array_size);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

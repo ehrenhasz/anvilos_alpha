@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "cd8178bd85b45710b90875b5da99bc3b14603aba348c7aa67746ef5d8b515e2d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/pci/pt3/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig DVB_PT3\n\ttristate \"Earthsoft PT3 cards\"\n\tdepends on DVB_CORE && PCI && I2C\n\tselect DVB_TC90522 if MEDIA_SUBDRV_AUTOSELECT\n\tselect MEDIA_TUNER_QM1D1C0042 if MEDIA_SUBDRV_AUTOSELECT\n\tselect MEDIA_TUNER_MXL301RF if MEDIA_SUBDRV_AUTOSELECT\n\thelp\n\t  Support for Earthsoft PT3 PCIe cards.\n\n\t  Say Y or M if you own such a device and want to use it.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "kcsan-collapse.sh",
+  "hash_id": "e5534fed05cddc0815e0f44abad70e2349f92a8e78686582545663d01e7d2b9a",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/rcutorture/bin/kcsan-collapse.sh",
+  "human_readable_source": "#!/bin/bash\n# SPDX-License-Identifier: GPL-2.0+\n#\n# If this was a KCSAN run, collapse the reports in the various console.log\n# files onto pairs of functions.\n#\n# Usage: kcsan-collapse.sh resultsdir\n#\n# Copyright (C) 2020 Facebook, Inc.\n#\n# Authors: Paul E. McKenney <paulmck@kernel.org>\n\nif test -z \"$TORTURE_KCONFIG_KCSAN_ARG\"\nthen\n\texit 0\nfi\nfind $1 -name console.log -exec cat {} \\; |\n\tgrep \"BUG: KCSAN: \" |\n\tsed -e 's/^\\[[^]]*] //' |\n\tsort |\n\tuniq -c |\n\tsort -k1nr > $1/kcsan.sum\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

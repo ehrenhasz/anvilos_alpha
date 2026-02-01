@@ -1,0 +1,9 @@
+{
+  "module_name": "c8sectpfe.h",
+  "hash_id": "c2f0b05d499e3254d22e21eeb584b9f8842482c38e797859b2fd8b02a7b35101",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/media/c8sectpfe.h",
+  "human_readable_source": " \n#ifndef __DT_C8SECTPFE_H\n#define __DT_C8SECTPFE_H\n\n#define STV0367_TDA18212_NIMA_1\t0\n#define STV0367_TDA18212_NIMA_2\t1\n#define STV0367_TDA18212_NIMB_1\t2\n#define STV0367_TDA18212_NIMB_2\t3\n\n#define STV0903_6110_LNB24_NIMA\t4\n#define STV0903_6110_LNB24_NIMB\t5\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "watermark.h",
+  "hash_id": "9fe5985ea9f7c62dbbd89890c89982e1f94aed0d268d8796f520ebc70312b322",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/nvdimm/watermark.h",
+  "human_readable_source": "\n\n#ifndef _TEST_NVDIMM_WATERMARK_H_\n#define _TEST_NVDIMM_WATERMARK_H_\nint pmem_test(void);\nint libnvdimm_test(void);\nint acpi_nfit_test(void);\nint device_dax_test(void);\nint dax_pmem_test(void);\nint dax_pmem_core_test(void);\nint dax_pmem_compat_test(void);\n\n \n#define nfit_test_watermark(x)\t\t\t\t\\\nint x##_test(void)\t\t\t\t\t\\\n{\t\t\t\t\t\t\t\\\n\tpr_debug(\"%s for nfit_test\\n\", KBUILD_MODNAME);\t\\\n\treturn 0;\t\t\t\t\t\\\n}\t\t\t\t\t\t\t\\\nEXPORT_SYMBOL(x##_test)\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

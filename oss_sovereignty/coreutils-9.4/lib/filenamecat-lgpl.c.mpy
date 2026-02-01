@@ -1,0 +1,9 @@
+{
+  "module_name": "filenamecat-lgpl.c",
+  "hash_id": "4888f5a2ef7b103f3a595cb9dcd698e568d000a489d68ae135fc27afd19b6769",
+  "original_prompt": "Ingested from coreutils-9.4/lib/filenamecat-lgpl.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n \n#include \"filenamecat.h\"\n\n#include <stdlib.h>\n#include <string.h>\n\n#include \"basename-lgpl.h\"\n#include \"filename.h\"\n\n#if ! HAVE_MEMPCPY && ! defined mempcpy\n# define mempcpy(D, S, N) ((void *) ((char *) memcpy (D, S, N) + (N)))\n#endif\n\n \n\nchar *\nmfile_name_concat (char const *dir, char const *base, char **base_in_result)\n{\n  char const *dirbase = last_component (dir);\n  size_t dirbaselen = base_len (dirbase);\n  size_t dirlen = dirbase - dir + dirbaselen;\n  size_t baselen = strlen (base);\n  char sep = '\\0';\n  if (dirbaselen)\n    {\n       \n      if (! ISSLASH (dir[dirlen - 1]) && ! ISSLASH (*base))\n        sep = '/';\n    }\n  else if (ISSLASH (*base))\n    {\n       \n      sep = '.';\n    }\n\n  char *p_concat = malloc (dirlen + (sep != '\\0')  + baselen + 1);\n  if (p_concat == NULL)\n    return NULL;\n\n  {\n    char *p;\n\n    p = mempcpy (p_concat, dir, dirlen);\n    *p = sep;\n    p += sep != '\\0';\n\n    if (base_in_result)\n      *base_in_result = p;\n\n    p = mempcpy (p, base, baselen);\n    *p = '\\0';\n  }\n\n  return p_concat;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

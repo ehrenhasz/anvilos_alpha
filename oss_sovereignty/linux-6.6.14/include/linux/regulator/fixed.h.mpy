@@ -1,0 +1,9 @@
+{
+  "module_name": "fixed.h",
+  "hash_id": "b017a22f44c9a806ca27693a97c8ba5f8a89cd519199bfefc7f76592e9d003a2",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/regulator/fixed.h",
+  "human_readable_source": " \n \n\n#ifndef __REGULATOR_FIXED_H\n#define __REGULATOR_FIXED_H\n\nstruct regulator_init_data;\n\n \nstruct fixed_voltage_config {\n\tconst char *supply_name;\n\tconst char *input_supply;\n\tint microvolts;\n\tunsigned startup_delay;\n\tunsigned int off_on_delay;\n\tunsigned enabled_at_boot:1;\n\tstruct regulator_init_data *init_data;\n};\n\nstruct regulator_consumer_supply;\n\n#if IS_ENABLED(CONFIG_REGULATOR)\nstruct platform_device *regulator_register_always_on(int id, const char *name,\n\t\tstruct regulator_consumer_supply *supplies, int num_supplies, int uv);\n#else\nstatic inline struct platform_device *regulator_register_always_on(int id, const char *name,\n\t\tstruct regulator_consumer_supply *supplies, int num_supplies, int uv)\n{\n\treturn NULL;\n}\n#endif\n\n#define regulator_register_fixed(id, s, ns) regulator_register_always_on(id, \\\n\t\t\t\t\t\t\"fixed-dummy\", s, ns, 0)\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "df33b4c2ec6ff386216b6b1531e0f2f2c66fc41de049188a8de5ea8dac9fb214",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/infiniband/hw/efa/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0 OR BSD-2-Clause\n# Copyright 2018-2019 Amazon.com, Inc. or its affiliates. All rights reserved.\n#\n# Makefile for Amazon Elastic Fabric Adapter (EFA) device driver.\n#\n\nobj-$(CONFIG_INFINIBAND_EFA) += efa.o\n\nefa-y := efa_com_cmd.o efa_com.o efa_main.o efa_verbs.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

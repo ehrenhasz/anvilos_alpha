@@ -1,0 +1,9 @@
+{
+  "module_name": "i2s.h",
+  "hash_id": "18f7dcdc2b61835c453ca056cb2fc55edfe4d8db5a84296b195f2582083bc1d0",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/samsung/i2s.h",
+  "human_readable_source": " \n \n\n#ifndef __SND_SOC_SAMSUNG_I2S_H\n#define __SND_SOC_SAMSUNG_I2S_H\n\n#define SAMSUNG_I2S_DAI        \"samsung-i2s\"\n#define SAMSUNG_I2S_DAI_SEC    \"samsung-i2s-sec\"\n\n#define SAMSUNG_I2S_DIV_BCLK\t\t1\n\n#define SAMSUNG_I2S_RCLKSRC_0\t\t0\n#define SAMSUNG_I2S_RCLKSRC_1\t\t1\n#define SAMSUNG_I2S_CDCLK\t\t2\n \n#define SAMSUNG_I2S_OPCLK\t\t3\n#define  SAMSUNG_I2S_OPCLK_CDCLK_OUT\t0\t \n#define  SAMSUNG_I2S_OPCLK_CDCLK_IN\t1\t \n#define  SAMSUNG_I2S_OPCLK_BCLK_OUT\t2\t \n#define  SAMSUNG_I2S_OPCLK_PCLK\t\t3\t \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "proc.h",
+  "hash_id": "f6fe85490b531c5009c68839d30119765741d81a979247ef1f2a9b91829fb280",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/proc/proc.h",
+  "human_readable_source": "#pragma once\n#undef NDEBUG\n#include <assert.h>\n#include <dirent.h>\n#include <errno.h>\n#include <stdbool.h>\n#include <stdlib.h>\n#include <string.h>\n#include <unistd.h>\n#include <sys/syscall.h>\n\nstatic inline pid_t sys_getpid(void)\n{\n\treturn syscall(SYS_getpid);\n}\n\nstatic inline pid_t sys_gettid(void)\n{\n\treturn syscall(SYS_gettid);\n}\n\nstatic inline bool streq(const char *s1, const char *s2)\n{\n\treturn strcmp(s1, s2) == 0;\n}\n\nstatic unsigned long long xstrtoull(const char *p, char **end)\n{\n\tif (*p == '0') {\n\t\t*end = (char *)p + 1;\n\t\treturn 0;\n\t} else if ('1' <= *p && *p <= '9') {\n\t\tunsigned long long val;\n\n\t\terrno = 0;\n\t\tval = strtoull(p, end, 10);\n\t\tassert(errno == 0);\n\t\treturn val;\n\t} else\n\t\tassert(0);\n}\n\nstatic struct dirent *xreaddir(DIR *d)\n{\n\tstruct dirent *de;\n\n\terrno = 0;\n\tde = readdir(d);\n\tassert(de || errno == 0);\n\treturn de;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

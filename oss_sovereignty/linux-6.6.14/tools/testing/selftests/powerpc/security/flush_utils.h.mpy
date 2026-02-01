@@ -1,0 +1,9 @@
+{
+  "module_name": "flush_utils.h",
+  "hash_id": "927db210d4650897006a14cd186d65c52d62ceda25f5bdfbe0233fefb1e1acd5",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/powerpc/security/flush_utils.h",
+  "human_readable_source": " \n\n \n\n#ifndef _SELFTESTS_POWERPC_SECURITY_FLUSH_UTILS_H\n#define _SELFTESTS_POWERPC_SECURITY_FLUSH_UTILS_H\n\n#define CACHELINE_SIZE 128\n\n#define PERF_L1D_READ_MISS_CONFIG\t((PERF_COUNT_HW_CACHE_L1D) | \t\t\\\n\t\t\t\t\t(PERF_COUNT_HW_CACHE_OP_READ << 8) |\t\\\n\t\t\t\t\t(PERF_COUNT_HW_CACHE_RESULT_MISS << 16))\n\nvoid syscall_loop(char *p, unsigned long iterations,\n\t\t  unsigned long zero_size);\n\nvoid syscall_loop_uaccess(char *p, unsigned long iterations,\n\t\t\t  unsigned long zero_size);\n\nvoid set_dscr(unsigned long val);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

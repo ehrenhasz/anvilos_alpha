@@ -1,0 +1,9 @@
+{
+  "module_name": "closedir.c",
+  "hash_id": "5c8d764e6f8bf6f2803fd8b170b4968ba77407aedc2b8c1a19bef8866a6ae3e3",
+  "original_prompt": "Ingested from coreutils-9.4/lib/closedir.c",
+  "human_readable_source": " \n#include <dirent.h>\n\n#if REPLACE_FCHDIR\n# include <unistd.h>\n#endif\n\n#include <stdlib.h>\n\n#if HAVE_CLOSEDIR\n\n \n\n#endif\n\n#if GNULIB_defined_DIR\n# include \"dirent-private.h\"\n#endif\n\nint\nclosedir (DIR *dirp)\n#undef closedir\n{\n#if GNULIB_defined_DIR || REPLACE_FCHDIR || defined __KLIBC__\n  int fd = dirfd (dirp);\n#endif\n  int retval;\n\n#if HAVE_DIRENT_H                        \n\n# if GNULIB_defined_DIR\n  retval = closedir (dirp->real_dirp);\n  if (retval >= 0)\n    free (dirp);\n# else\n  retval = closedir (dirp);\n# endif\n\n# ifdef __KLIBC__\n  if (!retval)\n    _gl_unregister_dirp_fd (fd);\n# endif\n#else\n\n  if (dirp->current != INVALID_HANDLE_VALUE)\n    FindClose (dirp->current);\n  free (dirp);\n\n  retval = 0;\n\n#endif\n\n#if GNULIB_defined_DIR\n  if (retval >= 0)\n    close (fd);\n#elif REPLACE_FCHDIR\n  if (retval >= 0)\n    _gl_unregister_fd (fd);\n#endif\n\n  return retval;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

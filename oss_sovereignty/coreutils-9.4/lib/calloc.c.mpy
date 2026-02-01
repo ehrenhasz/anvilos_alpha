@@ -1,0 +1,9 @@
+{
+  "module_name": "calloc.c",
+  "hash_id": "ffebdaf63dec3c41168f245ea720f2f63f8bb09e99eb65ca17854036a57f0840",
+  "original_prompt": "Ingested from coreutils-9.4/lib/calloc.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n \n#include <stdlib.h>\n\n#include <errno.h>\n\n#include \"xalloc-oversized.h\"\n\n \n#undef calloc\n\n \n\nvoid *\nrpl_calloc (size_t n, size_t s)\n{\n  if (n == 0 || s == 0)\n    n = s = 1;\n\n  if (xalloc_oversized (n, s))\n    {\n      errno = ENOMEM;\n      return NULL;\n    }\n\n  void *result = calloc (n, s);\n\n#if !HAVE_MALLOC_POSIX\n  if (result == NULL)\n    errno = ENOMEM;\n#endif\n\n  return result;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "a85433efdcf59381fff7e20aa931af120d73d64632b7001b404a00b614c81a8f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/virtual/Makefile",
+  "human_readable_source": "obj-$(CONFIG_MAC80211_HWSIM)\t+= mac80211_hwsim.o\n\nobj-$(CONFIG_VIRT_WIFI)\t+= virt_wifi.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

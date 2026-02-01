@@ -1,0 +1,9 @@
+{
+  "module_name": "coalesced_mmio.h",
+  "hash_id": "91efc8c5a8ff33461355a726e57b2b5fb0fe18b4541bd26ca12d0082bcd93063",
+  "original_prompt": "Ingested from linux-6.6.14/virt/kvm/coalesced_mmio.h",
+  "human_readable_source": " \n#ifndef __KVM_COALESCED_MMIO_H__\n#define __KVM_COALESCED_MMIO_H__\n\n \n\n#ifdef CONFIG_KVM_MMIO\n\n#include <linux/list.h>\n\nstruct kvm_coalesced_mmio_dev {\n\tstruct list_head list;\n\tstruct kvm_io_device dev;\n\tstruct kvm *kvm;\n\tstruct kvm_coalesced_mmio_zone zone;\n};\n\nint kvm_coalesced_mmio_init(struct kvm *kvm);\nvoid kvm_coalesced_mmio_free(struct kvm *kvm);\nint kvm_vm_ioctl_register_coalesced_mmio(struct kvm *kvm,\n\t\t\t\t\tstruct kvm_coalesced_mmio_zone *zone);\nint kvm_vm_ioctl_unregister_coalesced_mmio(struct kvm *kvm,\n\t\t\t\t\tstruct kvm_coalesced_mmio_zone *zone);\n\n#else\n\nstatic inline int kvm_coalesced_mmio_init(struct kvm *kvm) { return 0; }\nstatic inline void kvm_coalesced_mmio_free(struct kvm *kvm) { }\n\n#endif\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

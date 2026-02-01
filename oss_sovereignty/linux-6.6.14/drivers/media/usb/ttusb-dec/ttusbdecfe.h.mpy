@@ -1,0 +1,9 @@
+{
+  "module_name": "ttusbdecfe.h",
+  "hash_id": "7939a5c05c3938b8c0573513d0c0784a3b2b932f7607c323979f4aa46e686506",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/usb/ttusb-dec/ttusbdecfe.h",
+  "human_readable_source": " \n \n\n#ifndef TTUSBDECFE_H\n#define TTUSBDECFE_H\n\n#include <linux/dvb/frontend.h>\n\nstruct ttusbdecfe_config\n{\n\tint (*send_command)(struct dvb_frontend* fe, const u8 command,\n\t\t\t    int param_length, const u8 params[],\n\t\t\t    int *result_length, u8 cmd_result[]);\n};\n\nextern struct dvb_frontend* ttusbdecfe_dvbs_attach(const struct ttusbdecfe_config* config);\n\nextern struct dvb_frontend* ttusbdecfe_dvbt_attach(const struct ttusbdecfe_config* config);\n\n#endif \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

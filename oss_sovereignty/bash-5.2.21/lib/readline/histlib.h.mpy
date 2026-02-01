@@ -1,0 +1,9 @@
+{
+  "module_name": "histlib.h",
+  "hash_id": "40de7b203c5fe72b34efae7aec358baab82fd63247ec7432c407fc6088232b91",
+  "original_prompt": "Ingested from bash-5.2.21/lib/readline/histlib.h",
+  "human_readable_source": " \n\n \n\n#if !defined (_HISTLIB_H_)\n#define _HISTLIB_H_\n\n#if defined (HAVE_STRING_H)\n#  include <string.h>\n#else\n#  include <strings.h>\n#endif  \n\n#if !defined (STREQ)\n#define STREQ(a, b)\t(((a)[0] == (b)[0]) && (strcmp ((a), (b)) == 0))\n#define STREQN(a, b, n) (((n) == 0) ? (1) \\\n\t\t\t\t    : ((a)[0] == (b)[0]) && (strncmp ((a), (b), (n)) == 0))\n#endif\n\n#ifndef savestring\n#define savestring(x) strcpy (xmalloc (1 + strlen (x)), (x))\n#endif\n\n#ifndef whitespace\n#define whitespace(c) (((c) == ' ') || ((c) == '\\t'))\n#endif\n\n#ifndef _rl_digit_p\n#define _rl_digit_p(c)  ((c) >= '0' && (c) <= '9')\n#endif\n\n#ifndef _rl_digit_value\n#define _rl_digit_value(c) ((c) - '0')\n#endif\n\n#ifndef member\n#  if !defined (strchr) && !defined (__STDC__)\nextern char *strchr ();\n#  endif  \n#define member(c, s) ((c) ? ((char *)strchr ((s), (c)) != (char *)NULL) : 0)\n#endif\n\n#ifndef FREE\n#  define FREE(x)\tif (x) free (x)\n#endif\n\n \n#define EVENT_NOT_FOUND 0\n#define BAD_WORD_SPEC\t1\n#define SUBST_FAILED\t2\n#define BAD_MODIFIER\t3\n#define NO_PREV_SUBST\t4\n\n \n#define NON_ANCHORED_SEARCH\t0\n#define ANCHORED_SEARCH\t\t0x01\n#define PATTERN_SEARCH\t\t0x02\n\n \n#define HISTORY_APPEND 0\n#define HISTORY_OVERWRITE 1\n\n \n\n \nextern int _hs_history_patsearch (const char *, int, int);\n\n \nextern void _hs_replace_history_data (int, histdata_t *, histdata_t *);\nextern int _hs_at_end_of_history (void);\n\n \nextern void _hs_append_history_line (int, const char *);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

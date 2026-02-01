@@ -1,0 +1,9 @@
+{
+  "module_name": "dax-dev.c",
+  "hash_id": "b63ea55093844f2729fffc1cd0250a2f26f0fe7626f6d894a981daa11cc7c8c6",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/nvdimm/dax-dev.c",
+  "human_readable_source": "\n \n#include \"test/nfit_test.h\"\n#include <linux/mm.h>\n#include \"../../../drivers/dax/dax-private.h\"\n\nphys_addr_t dax_pgoff_to_phys(struct dev_dax *dev_dax, pgoff_t pgoff,\n\t\tunsigned long size)\n{\n\tint i;\n\n\tfor (i = 0; i < dev_dax->nr_range; i++) {\n\t\tstruct dev_dax_range *dax_range = &dev_dax->ranges[i];\n\t\tstruct range *range = &dax_range->range;\n\t\tunsigned long long pgoff_end;\n\t\tphys_addr_t addr;\n\n\t\tpgoff_end = dax_range->pgoff + PHYS_PFN(range_len(range)) - 1;\n\t\tif (pgoff < dax_range->pgoff || pgoff > pgoff_end)\n\t\t\tcontinue;\n\t\taddr = PFN_PHYS(pgoff - dax_range->pgoff) + range->start;\n\t\tif (addr + size - 1 <= range->end) {\n\t\t\tif (get_nfit_res(addr)) {\n\t\t\t\tstruct page *page;\n\n\t\t\t\tif (dev_dax->region->align > PAGE_SIZE)\n\t\t\t\t\treturn -1;\n\n\t\t\t\tpage = vmalloc_to_page((void *)addr);\n\t\t\t\treturn PFN_PHYS(page_to_pfn(page));\n\t\t\t}\n\t\t\treturn addr;\n\t\t}\n\t\tbreak;\n\t}\n\treturn -1;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

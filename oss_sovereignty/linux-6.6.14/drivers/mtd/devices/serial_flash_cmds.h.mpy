@@ -1,0 +1,9 @@
+{
+  "module_name": "serial_flash_cmds.h",
+  "hash_id": "664de3deb5a1481acba6c91813b618ad7ea4381aa52b93d39d34d4be85b5ecbd",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/mtd/devices/serial_flash_cmds.h",
+  "human_readable_source": " \n \n\n#ifndef _MTD_SERIAL_FLASH_CMDS_H\n#define _MTD_SERIAL_FLASH_CMDS_H\n\n \n#define SPINOR_OP_WRVCR\t\t0x81\n#define SPINOR_OP_RDVCR\t\t0x85\n\n \n#define SPINOR_OP_WRITE\t\t0x02\t \n#define SPINOR_OP_WRITE_1_1_2\t0xa2\t \n#define SPINOR_OP_WRITE_1_2_2\t0xd2\t \n#define SPINOR_OP_WRITE_1_1_4\t0x32\t \n#define SPINOR_OP_WRITE_1_4_4\t0x12\t \n\n \n#define FLASH_FLAG_SINGLE\t0x000000ff\n#define FLASH_FLAG_READ_WRITE\t0x00000001\n#define FLASH_FLAG_READ_FAST\t0x00000002\n#define FLASH_FLAG_SE_4K\t0x00000004\n#define FLASH_FLAG_SE_32K\t0x00000008\n#define FLASH_FLAG_CE\t\t0x00000010\n#define FLASH_FLAG_32BIT_ADDR\t0x00000020\n#define FLASH_FLAG_RESET\t0x00000040\n#define FLASH_FLAG_DYB_LOCKING\t0x00000080\n\n#define FLASH_FLAG_DUAL\t\t0x0000ff00\n#define FLASH_FLAG_READ_1_1_2\t0x00000100\n#define FLASH_FLAG_READ_1_2_2\t0x00000200\n#define FLASH_FLAG_READ_2_2_2\t0x00000400\n#define FLASH_FLAG_WRITE_1_1_2\t0x00001000\n#define FLASH_FLAG_WRITE_1_2_2\t0x00002000\n#define FLASH_FLAG_WRITE_2_2_2\t0x00004000\n\n#define FLASH_FLAG_QUAD\t\t0x00ff0000\n#define FLASH_FLAG_READ_1_1_4\t0x00010000\n#define FLASH_FLAG_READ_1_4_4\t0x00020000\n#define FLASH_FLAG_READ_4_4_4\t0x00040000\n#define FLASH_FLAG_WRITE_1_1_4\t0x00100000\n#define FLASH_FLAG_WRITE_1_4_4\t0x00200000\n#define FLASH_FLAG_WRITE_4_4_4\t0x00400000\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

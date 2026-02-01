@@ -1,0 +1,9 @@
+{
+  "module_name": "spinlock.h",
+  "hash_id": "179b6afa8a4b3a3a51829ec5db3bcd30b94061b018bf07f08f5aba56f5cfec88",
+  "original_prompt": "Ingested from linux-6.6.14/tools/include/linux/spinlock.h",
+  "human_readable_source": " \n#ifndef __LINUX_SPINLOCK_H_\n#define __LINUX_SPINLOCK_H_\n\n#include <pthread.h>\n#include <stdbool.h>\n\n#define spinlock_t\t\tpthread_mutex_t\n#define DEFINE_SPINLOCK(x)\tpthread_mutex_t x = PTHREAD_MUTEX_INITIALIZER\n#define __SPIN_LOCK_UNLOCKED(x)\t(pthread_mutex_t)PTHREAD_MUTEX_INITIALIZER\n#define spin_lock_init(x)\tpthread_mutex_init(x, NULL)\n\n#define spin_lock(x)\t\t\tpthread_mutex_lock(x)\n#define spin_unlock(x)\t\t\tpthread_mutex_unlock(x)\n#define spin_lock_bh(x)\t\t\tpthread_mutex_lock(x)\n#define spin_unlock_bh(x)\t\tpthread_mutex_unlock(x)\n#define spin_lock_irq(x)\t\tpthread_mutex_lock(x)\n#define spin_unlock_irq(x)\t\tpthread_mutex_unlock(x)\n#define spin_lock_irqsave(x, f)\t\t(void)f, pthread_mutex_lock(x)\n#define spin_unlock_irqrestore(x, f)\t(void)f, pthread_mutex_unlock(x)\n\n#define arch_spinlock_t pthread_mutex_t\n#define __ARCH_SPIN_LOCK_UNLOCKED PTHREAD_MUTEX_INITIALIZER\n\nstatic inline void arch_spin_lock(arch_spinlock_t *mutex)\n{\n\tpthread_mutex_lock(mutex);\n}\n\nstatic inline void arch_spin_unlock(arch_spinlock_t *mutex)\n{\n\tpthread_mutex_unlock(mutex);\n}\n\nstatic inline bool arch_spin_is_locked(arch_spinlock_t *mutex)\n{\n\treturn true;\n}\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

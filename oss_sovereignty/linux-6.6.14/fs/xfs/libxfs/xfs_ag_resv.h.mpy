@@ -1,0 +1,9 @@
+{
+  "module_name": "xfs_ag_resv.h",
+  "hash_id": "d35d94b39b75bc919a48d0d23af0d2bfaed7661b46b2bedb69f9ce82657af296",
+  "original_prompt": "Ingested from linux-6.6.14/fs/xfs/libxfs/xfs_ag_resv.h",
+  "human_readable_source": " \n \n#ifndef __XFS_AG_RESV_H__\n#define\t__XFS_AG_RESV_H__\n\nint xfs_ag_resv_free(struct xfs_perag *pag);\nint xfs_ag_resv_init(struct xfs_perag *pag, struct xfs_trans *tp);\n\nbool xfs_ag_resv_critical(struct xfs_perag *pag, enum xfs_ag_resv_type type);\nxfs_extlen_t xfs_ag_resv_needed(struct xfs_perag *pag,\n\t\tenum xfs_ag_resv_type type);\n\nvoid xfs_ag_resv_alloc_extent(struct xfs_perag *pag, enum xfs_ag_resv_type type,\n\t\tstruct xfs_alloc_arg *args);\nvoid xfs_ag_resv_free_extent(struct xfs_perag *pag, enum xfs_ag_resv_type type,\n\t\tstruct xfs_trans *tp, xfs_extlen_t len);\n\nstatic inline struct xfs_ag_resv *\nxfs_perag_resv(\n\tstruct xfs_perag\t*pag,\n\tenum xfs_ag_resv_type\ttype)\n{\n\tswitch (type) {\n\tcase XFS_AG_RESV_METADATA:\n\t\treturn &pag->pag_meta_resv;\n\tcase XFS_AG_RESV_RMAPBT:\n\t\treturn &pag->pag_rmapbt_resv;\n\tdefault:\n\t\treturn NULL;\n\t}\n}\n\n \nstatic inline void\nxfs_ag_resv_rmapbt_alloc(\n\tstruct xfs_mount\t*mp,\n\txfs_agnumber_t\t\tagno)\n{\n\tstruct xfs_alloc_arg\targs = { NULL };\n\tstruct xfs_perag\t*pag;\n\n\targs.len = 1;\n\tpag = xfs_perag_get(mp, agno);\n\txfs_ag_resv_alloc_extent(pag, XFS_AG_RESV_RMAPBT, &args);\n\txfs_perag_put(pag);\n}\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

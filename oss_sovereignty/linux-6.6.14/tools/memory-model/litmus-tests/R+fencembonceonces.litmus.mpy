@@ -1,0 +1,9 @@
+{
+  "module_name": "R+fencembonceonces.litmus",
+  "hash_id": "d691ed35233384ed97f837aa6f9dfaaddb1c3dc48ab8be251ff8c152e045ebe2",
+  "original_prompt": "Ingested from linux-6.6.14/tools/memory-model/litmus-tests/R+fencembonceonces.litmus",
+  "human_readable_source": "C R+fencembonceonces\n\n(*\n * Result: Never\n *\n * This is the fully ordered (via smp_mb()) version of one of the classic\n * counterintuitive litmus tests that illustrates the effects of store\n * propagation delays.  Note that weakening either of the barriers would\n * cause the resulting test to be allowed.\n *)\n\n{}\n\nP0(int *x, int *y)\n{\n\tWRITE_ONCE(*x, 1);\n\tsmp_mb();\n\tWRITE_ONCE(*y, 1);\n}\n\nP1(int *x, int *y)\n{\n\tint r0;\n\n\tWRITE_ONCE(*y, 2);\n\tsmp_mb();\n\tr0 = READ_ONCE(*x);\n}\n\nexists (y=2 /\\ 1:r0=0)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

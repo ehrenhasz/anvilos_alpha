@@ -1,0 +1,9 @@
+{
+  "module_name": "firmware_attributes_class.h",
+  "hash_id": "79e33a8aaee9884fb3620fd39127c4d56306058678aaaa10bbd653b9d3c37cd2",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/platform/x86/firmware_attributes_class.h",
+  "human_readable_source": " \n\n \n\n#ifndef FW_ATTR_CLASS_H\n#define FW_ATTR_CLASS_H\n\nint fw_attributes_class_get(struct class **fw_attr_class);\nint fw_attributes_class_put(void);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "targetdir.h",
+  "hash_id": "75f364876732b62e89126f87cdb2d8a7e8caa92b94f60e0805dc2abc9ed4c5b7",
+  "original_prompt": "Ingested from coreutils-9.4/lib/targetdir.h",
+  "human_readable_source": " \nextern int target_directory_operand (char const *file, struct stat *st);\n\n \nTARGETDIR_INLINE _GL_ATTRIBUTE_PURE bool\ntarget_dirfd_valid (int fd)\n{\n  return fd != -1 - (AT_FDCWD == -1);\n}\n\n_GL_INLINE_HEADER_END\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "ctype_digit.c",
+  "hash_id": "dabed8d826b000385bd216e5ef0eacc8dffe734065a338f24c382daae75bb09a",
+  "original_prompt": "Ingested from coreutils-9.4/lib/unictype/ctype_digit.c",
+  "human_readable_source": " \n#include \"unictype.h\"\n\n#include \"bitmap.h\"\n\n \n#include \"ctype_digit.h\"\n\nbool\nuc_is_digit (ucs4_t uc)\n{\n  return bitmap_lookup (&u_is_digit, uc);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

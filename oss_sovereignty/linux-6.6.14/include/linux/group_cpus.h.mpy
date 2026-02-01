@@ -1,0 +1,9 @@
+{
+  "module_name": "group_cpus.h",
+  "hash_id": "fa30fa6776b77f8a0a1cdc4c796cdda648347d2d4cf66fe3653efa3d1214baed",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/group_cpus.h",
+  "human_readable_source": " \n \n\n#ifndef __LINUX_GROUP_CPUS_H\n#define __LINUX_GROUP_CPUS_H\n#include <linux/kernel.h>\n#include <linux/cpu.h>\n\nstruct cpumask *group_cpus_evenly(unsigned int numgrps);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

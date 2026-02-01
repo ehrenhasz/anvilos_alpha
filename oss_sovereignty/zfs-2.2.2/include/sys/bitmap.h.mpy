@@ -1,0 +1,9 @@
+{
+  "module_name": "bitmap.h",
+  "hash_id": "62181ae33c0b187da2798975950072dee254441394627d187dc38aafaf93eb06",
+  "original_prompt": "Ingested from zfs-2.2.2/include/sys/bitmap.h",
+  "human_readable_source": " \n\n \n\n \n \n\n\n#ifndef _SYS_BITMAP_H\n#define\t_SYS_BITMAP_H\n\n#ifdef\t__cplusplus\nextern \"C\" {\n#endif\n\n \n\n#ifdef _LP64\n#define\tBT_ULSHIFT\t6  \n#define\tBT_ULSHIFT32\t5  \n#else\n#define\tBT_ULSHIFT\t5  \n#endif\n\n#define\tBT_NBIPUL\t(1 << BT_ULSHIFT)\t \n#define\tBT_ULMASK\t(BT_NBIPUL - 1)\t\t \n\n \n\n \n#define\tBT_WIM(bitmap, bitindex) \\\n\t((bitmap)[(bitindex) >> BT_ULSHIFT])\n \n#define\tBT_BIW(bitindex) \\\n\t(1UL << ((bitindex) & BT_ULMASK))\n\n \n#define\tBT_BITOUL(nbits) \\\n\t(((nbits) + BT_NBIPUL - 1l) / BT_NBIPUL)\n#define\tBT_SIZEOFMAP(nbits) \\\n\t(BT_BITOUL(nbits) * sizeof (ulong_t))\n#define\tBT_TEST(bitmap, bitindex) \\\n\t((BT_WIM((bitmap), (bitindex)) & BT_BIW(bitindex)) ? 1 : 0)\n#define\tBT_SET(bitmap, bitindex) \\\n\t{ BT_WIM((bitmap), (bitindex)) |= BT_BIW(bitindex); }\n#define\tBT_CLEAR(bitmap, bitindex) \\\n\t{ BT_WIM((bitmap), (bitindex)) &= ~BT_BIW(bitindex); }\n\n#ifdef\t__cplusplus\n}\n#endif\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": ".gitignore",
+  "hash_id": "476129ab825017838d3f0d99e4ad6c24152156b6323f2a52d1ed55155a8d3b12",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/powerpc/alignment/.gitignore",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\ncopy_first_unaligned\nalignment_handler\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

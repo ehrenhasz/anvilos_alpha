@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "de9a67a84bb21f516fe6cbdea8c10b30840be9f2632e85f205ad940e477609da",
+  "original_prompt": "Ingested from linux-6.6.14/net/nfc/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for the Linux NFC subsystem.\n#\n\nobj-$(CONFIG_NFC) += nfc.o\nobj-$(CONFIG_NFC_NCI) += nci/\nobj-$(CONFIG_NFC_HCI) += hci/\nobj-$(CONFIG_NFC_DIGITAL) += nfc_digital.o\n\nnfc-objs := core.o netlink.o af_nfc.o rawsock.o llcp_core.o llcp_commands.o \\\n\t\tllcp_sock.o\n\nnfc_digital-objs := digital_core.o digital_technology.o digital_dep.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

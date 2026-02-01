@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "77d3b0e5c005d19deef1a6fe4bd19f863a6dd75382f50dda0d5903a219d2de60",
+  "original_prompt": "Ingested from linux-6.6.14/security/keys/trusted-keys/Kconfig",
+  "human_readable_source": "config TRUSTED_KEYS_TPM\n\tbool \"TPM-based trusted keys\"\n\tdepends on TCG_TPM >= TRUSTED_KEYS\n\tdefault y\n\tselect CRYPTO\n\tselect CRYPTO_HMAC\n\tselect CRYPTO_SHA1\n\tselect CRYPTO_HASH_INFO\n\tselect ASN1_ENCODER\n\tselect OID_REGISTRY\n\tselect ASN1\n\thelp\n\t  Enable use of the Trusted Platform Module (TPM) as trusted key\n\t  backend. Trusted keys are random number symmetric keys,\n\t  which will be generated and RSA-sealed by the TPM.\n\t  The TPM only unseals the keys, if the boot PCRs and other\n\t  criteria match.\n\nconfig TRUSTED_KEYS_TEE\n\tbool \"TEE-based trusted keys\"\n\tdepends on TEE >= TRUSTED_KEYS\n\tdefault y\n\thelp\n\t  Enable use of the Trusted Execution Environment (TEE) as trusted\n\t  key backend.\n\nconfig TRUSTED_KEYS_CAAM\n\tbool \"CAAM-based trusted keys\"\n\tdepends on CRYPTO_DEV_FSL_CAAM_JR >= TRUSTED_KEYS\n\tselect CRYPTO_DEV_FSL_CAAM_BLOB_GEN\n\tdefault y\n\thelp\n\t  Enable use of NXP's Cryptographic Accelerator and Assurance Module\n\t  (CAAM) as trusted key backend.\n\nif !TRUSTED_KEYS_TPM && !TRUSTED_KEYS_TEE && !TRUSTED_KEYS_CAAM\ncomment \"No trust source selected!\"\nendif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

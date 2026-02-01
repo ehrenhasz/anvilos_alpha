@@ -1,0 +1,9 @@
+{
+  "module_name": "g4x_hdmi.h",
+  "hash_id": "72bc6639123b1702632f3f49087a7aabf870f816d35eeedf03c8a043b9127f11",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/display/g4x_hdmi.h",
+  "human_readable_source": " \n \n\n#ifndef _G4X_HDMI_H_\n#define _G4X_HDMI_H_\n\n#include <linux/types.h>\n\n#include \"i915_reg_defs.h\"\n\nenum port;\nstruct drm_atomic_state;\nstruct drm_connector;\nstruct drm_i915_private;\n\nvoid g4x_hdmi_init(struct drm_i915_private *dev_priv,\n\t\t   i915_reg_t hdmi_reg, enum port port);\nint g4x_hdmi_connector_atomic_check(struct drm_connector *connector,\n\t\t\t\t    struct drm_atomic_state *state);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "mpbtstackport.h",
+  "hash_id": "0242968030195fbe229412e288cf125a29061a11e1f0634f15b1420348ce6162",
+  "original_prompt": "Ingested from sys_09_Anvil/source/ports/unix/mpbtstackport.h",
+  "human_readable_source": " \n\n#ifndef MICROPY_INCLUDED_UNIX_BTSTACK_PORT_H\n#define MICROPY_INCLUDED_UNIX_BTSTACK_PORT_H\n\n#define MICROPY_HW_BLE_UART_ID (0)\n#define MICROPY_HW_BLE_UART_BAUDRATE (1000000)\n\nbool mp_bluetooth_hci_poll(void);\n\n#if MICROPY_BLUETOOTH_BTSTACK_H4\nvoid mp_bluetooth_hci_poll_h4(void);\nvoid mp_bluetooth_btstack_port_init_h4(void);\n#endif\n\n#if MICROPY_BLUETOOTH_BTSTACK_USB\nvoid mp_bluetooth_btstack_port_init_usb(void);\n#endif\n\n#endif \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

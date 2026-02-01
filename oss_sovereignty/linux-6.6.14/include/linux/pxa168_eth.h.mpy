@@ -1,0 +1,9 @@
+{
+  "module_name": "pxa168_eth.h",
+  "hash_id": "cab44adb72587371f50e5ef09b56bd18b502140fa1dfec37c8cf20c476f194b2",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/pxa168_eth.h",
+  "human_readable_source": " \n \n#ifndef __LINUX_PXA168_ETH_H\n#define __LINUX_PXA168_ETH_H\n\n#include <linux/phy.h>\n\nstruct pxa168_eth_platform_data {\n\tint\tport_number;\n\tint\tphy_addr;\n\n\t \n\tint\tspeed;\t\t \n\tint\tduplex;\t\t \n\tphy_interface_t intf;\n\n\t \n\tint\trx_queue_size;\n\tint\ttx_queue_size;\n\n\t \n\tint (*init)(void);\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

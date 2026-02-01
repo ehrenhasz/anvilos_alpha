@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "b8f16274c4d4639c863ab33e180926bae8b12e6ca7a08e61ec18a8b338469161",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/marvell/octeon_ep/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Network driver for Marvell's Octeon PCI Endpoint NIC\n#\n\nobj-$(CONFIG_OCTEON_EP) += octeon_ep.o\n\nocteon_ep-y := octep_main.o octep_cn9k_pf.o octep_tx.o octep_rx.o \\\n\t       octep_ethtool.o octep_ctrl_mbox.o octep_ctrl_net.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

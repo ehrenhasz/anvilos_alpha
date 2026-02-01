@@ -1,0 +1,9 @@
+{
+  "module_name": "machine_pinbase.c",
+  "hash_id": "51f2e817f64b880e06da3530911c021afd92bfd1ed3992b8b56af496de75219f",
+  "original_prompt": "Ingested from sys_09_Anvil/source/extmod/machine_pinbase.c",
+  "human_readable_source": " \n\n#include \"py/runtime.h\"\n\n#if MICROPY_PY_MACHINE_PIN_BASE\n\n#include \"extmod/modmachine.h\"\n#include \"extmod/virtpin.h\"\n\n\n\n\n\n\ntypedef struct _mp_pinbase_t {\n    mp_obj_base_t base;\n} mp_pinbase_t;\n\nstatic const mp_pinbase_t pinbase_singleton = {\n    .base = { &machine_pinbase_type },\n};\n\nstatic mp_obj_t pinbase_make_new(const mp_obj_type_t *type, size_t n_args, size_t n_kw, const mp_obj_t *args) {\n    (void)type;\n    (void)n_args;\n    (void)n_kw;\n    (void)args;\n    return MP_OBJ_FROM_PTR(&pinbase_singleton);\n}\n\nmp_uint_t pinbase_ioctl(mp_obj_t obj, mp_uint_t request, uintptr_t arg, int *errcode);\nmp_uint_t pinbase_ioctl(mp_obj_t obj, mp_uint_t request, uintptr_t arg, int *errcode) {\n    (void)errcode;\n    switch (request) {\n        case MP_PIN_READ: {\n            mp_obj_t dest[2];\n            mp_load_method(obj, MP_QSTR_value, dest);\n            return mp_obj_get_int(mp_call_method_n_kw(0, 0, dest));\n        }\n        case MP_PIN_WRITE: {\n            mp_obj_t dest[3];\n            mp_load_method(obj, MP_QSTR_value, dest);\n            dest[2] = (arg == 0 ? mp_const_false : mp_const_true);\n            mp_call_method_n_kw(1, 0, dest);\n            return 0;\n        }\n    }\n    return -1;\n}\n\nstatic const mp_pin_p_t pinbase_pin_p = {\n    .ioctl = pinbase_ioctl,\n};\n\nMP_DEFINE_CONST_OBJ_TYPE(\n    machine_pinbase_type,\n    MP_QSTR_PinBase,\n    MP_TYPE_FLAG_NONE,\n    make_new, pinbase_make_new,\n    protocol, &pinbase_pin_p\n    );\n\n#endif \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

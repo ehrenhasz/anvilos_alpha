@@ -1,0 +1,9 @@
+{
+  "module_name": "if_cablemodem.h",
+  "hash_id": "0e3e2bea4c36e95add529b79577ffc72db84bf9fd77ba0bfb4755fce6a7a38eb",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/if_cablemodem.h",
+  "human_readable_source": " \n#ifndef _LINUX_CABLEMODEM_H_\n#define _LINUX_CABLEMODEM_H_\n \n\n \n#define SIOCGCMSTATS\t\t(SIOCDEVPRIVATE+0)\t \n#define SIOCGCMFIRMWARE\t\t(SIOCDEVPRIVATE+1)\t \n#define SIOCGCMFREQUENCY\t(SIOCDEVPRIVATE+2)\t \n#define SIOCSCMFREQUENCY\t(SIOCDEVPRIVATE+3)\t \n#define SIOCGCMPIDS\t\t\t(SIOCDEVPRIVATE+4)\t \n#define SIOCSCMPIDS\t\t\t(SIOCDEVPRIVATE+5)\t \n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

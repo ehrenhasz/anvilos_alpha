@@ -1,0 +1,9 @@
+{
+  "module_name": "si5351.h",
+  "hash_id": "df99bc90142e29b89a4e01c42e7ac9cd7d5c4eeea95647916832893b52cc99b5",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/platform_data/si5351.h",
+  "human_readable_source": " \n \n\n#ifndef __LINUX_PLATFORM_DATA_SI5351_H__\n#define __LINUX_PLATFORM_DATA_SI5351_H__\n\n \nenum si5351_pll_src {\n\tSI5351_PLL_SRC_DEFAULT = 0,\n\tSI5351_PLL_SRC_XTAL = 1,\n\tSI5351_PLL_SRC_CLKIN = 2,\n};\n\n \nenum si5351_multisynth_src {\n\tSI5351_MULTISYNTH_SRC_DEFAULT = 0,\n\tSI5351_MULTISYNTH_SRC_VCO0 = 1,\n\tSI5351_MULTISYNTH_SRC_VCO1 = 2,\n};\n\n \nenum si5351_clkout_src {\n\tSI5351_CLKOUT_SRC_DEFAULT = 0,\n\tSI5351_CLKOUT_SRC_MSYNTH_N = 1,\n\tSI5351_CLKOUT_SRC_MSYNTH_0_4 = 2,\n\tSI5351_CLKOUT_SRC_XTAL = 3,\n\tSI5351_CLKOUT_SRC_CLKIN = 4,\n};\n\n \nenum si5351_drive_strength {\n\tSI5351_DRIVE_DEFAULT = 0,\n\tSI5351_DRIVE_2MA = 2,\n\tSI5351_DRIVE_4MA = 4,\n\tSI5351_DRIVE_6MA = 6,\n\tSI5351_DRIVE_8MA = 8,\n};\n\n \nenum si5351_disable_state {\n\tSI5351_DISABLE_DEFAULT = 0,\n\tSI5351_DISABLE_LOW,\n\tSI5351_DISABLE_HIGH,\n\tSI5351_DISABLE_FLOATING,\n\tSI5351_DISABLE_NEVER,\n};\n\n \nstruct si5351_clkout_config {\n\tenum si5351_multisynth_src multisynth_src;\n\tenum si5351_clkout_src clkout_src;\n\tenum si5351_drive_strength drive;\n\tenum si5351_disable_state disable_state;\n\tbool pll_master;\n\tbool pll_reset;\n\tunsigned long rate;\n};\n\n \nstruct si5351_platform_data {\n\tenum si5351_pll_src pll_src[2];\n\tstruct si5351_clkout_config clkout[8];\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

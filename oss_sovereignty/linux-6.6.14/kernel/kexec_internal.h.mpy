@@ -1,0 +1,9 @@
+{
+  "module_name": "kexec_internal.h",
+  "hash_id": "5371c25003688257e4d844ac9fbae1eceae26278f853fff90c380af12237f8fc",
+  "original_prompt": "Ingested from linux-6.6.14/kernel/kexec_internal.h",
+  "human_readable_source": " \n#ifndef LINUX_KEXEC_INTERNAL_H\n#define LINUX_KEXEC_INTERNAL_H\n\n#include <linux/kexec.h>\n\nstruct kimage *do_kimage_alloc_init(void);\nint sanity_check_segment_list(struct kimage *image);\nvoid kimage_free_page_list(struct list_head *list);\nvoid kimage_free(struct kimage *image);\nint kimage_load_segment(struct kimage *image, struct kexec_segment *segment);\nvoid kimage_terminate(struct kimage *image);\nint kimage_is_destination_range(struct kimage *image,\n\t\t\t\tunsigned long start, unsigned long end);\n\n \nextern atomic_t __kexec_lock;\nstatic inline bool kexec_trylock(void)\n{\n\treturn atomic_cmpxchg_acquire(&__kexec_lock, 0, 1) == 0;\n}\nstatic inline void kexec_unlock(void)\n{\n\tatomic_set_release(&__kexec_lock, 0);\n}\n\n#ifdef CONFIG_KEXEC_FILE\n#include <linux/purgatory.h>\nvoid kimage_file_post_load_cleanup(struct kimage *image);\nextern char kexec_purgatory[];\nextern size_t kexec_purgatory_size;\n#else  \nstatic inline void kimage_file_post_load_cleanup(struct kimage *image) { }\n#endif  \n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

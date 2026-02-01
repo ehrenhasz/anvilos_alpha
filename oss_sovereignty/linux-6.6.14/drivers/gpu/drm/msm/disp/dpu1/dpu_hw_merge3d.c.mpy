@@ -1,0 +1,9 @@
+{
+  "module_name": "dpu_hw_merge3d.c",
+  "hash_id": "f4f2f5de36f176f978426bd8d9ac687db03b9e0410b1b8094781555b5d267dd2",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_merge3d.c",
+  "human_readable_source": "\n \n\n#include <linux/iopoll.h>\n\n#include \"dpu_hw_mdss.h\"\n#include \"dpu_hwio.h\"\n#include \"dpu_hw_catalog.h\"\n#include \"dpu_hw_merge3d.h\"\n#include \"dpu_kms.h\"\n#include \"dpu_trace.h\"\n\n#define MERGE_3D_MUX  0x000\n#define MERGE_3D_MODE 0x004\n\nstatic void dpu_hw_merge_3d_setup_3d_mode(struct dpu_hw_merge_3d *merge_3d,\n\t\t\tenum dpu_3d_blend_mode mode_3d)\n{\n\tstruct dpu_hw_blk_reg_map *c;\n\tu32 data;\n\n\n\tc = &merge_3d->hw;\n\tif (mode_3d == BLEND_3D_NONE) {\n\t\tDPU_REG_WRITE(c, MERGE_3D_MODE, 0);\n\t\tDPU_REG_WRITE(c, MERGE_3D_MUX, 0);\n\t} else {\n\t\tdata = BIT(0) | ((mode_3d - 1) << 1);\n\t\tDPU_REG_WRITE(c, MERGE_3D_MODE, data);\n\t}\n}\n\nstatic void _setup_merge_3d_ops(struct dpu_hw_merge_3d *c,\n\t\t\t\tunsigned long features)\n{\n\tc->ops.setup_3d_mode = dpu_hw_merge_3d_setup_3d_mode;\n};\n\nstruct dpu_hw_merge_3d *dpu_hw_merge_3d_init(const struct dpu_merge_3d_cfg *cfg,\n\t\tvoid __iomem *addr)\n{\n\tstruct dpu_hw_merge_3d *c;\n\n\tc = kzalloc(sizeof(*c), GFP_KERNEL);\n\tif (!c)\n\t\treturn ERR_PTR(-ENOMEM);\n\n\tc->hw.blk_addr = addr + cfg->base;\n\tc->hw.log_mask = DPU_DBG_MASK_PINGPONG;\n\n\tc->idx = cfg->id;\n\tc->caps = cfg;\n\t_setup_merge_3d_ops(c, c->caps->features);\n\n\treturn c;\n}\n\nvoid dpu_hw_merge_3d_destroy(struct dpu_hw_merge_3d *hw)\n{\n\tkfree(hw);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "fnic_fip.h",
+  "hash_id": "38a420420bf7c028cbf61823f0d48f959fb1cf5916c390ac37f189e0ccdd2948",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/scsi/fnic/fnic_fip.h",
+  "human_readable_source": " \n \n\n#ifndef _FNIC_FIP_H_\n#define _FNIC_FIP_H_\n\n\n#define FCOE_CTLR_START_DELAY    2000     \n#define FCOE_CTLR_FIPVLAN_TOV    2000     \n#define FCOE_CTLR_MAX_SOL        8\n\n#define FINC_MAX_FLOGI_REJECTS   8\n\nstruct vlan {\n\t__be16 vid;\n\t__be16 type;\n};\n\n \nstruct fcoe_vlan {\n\tstruct list_head list;\n\tu16 vid;\t\t \n\tu16 sol_count;\t\t \n\tu16 state;\t\t \n};\n\nenum fip_vlan_state {\n\tFIP_VLAN_AVAIL  = 0,\t \n\tFIP_VLAN_SENT   = 1,\t \n\tFIP_VLAN_USED   = 2,\t \n\tFIP_VLAN_FAILED = 3,\t \n};\n\nstruct fip_vlan {\n\tstruct ethhdr eth;\n\tstruct fip_header fip;\n\tstruct {\n\t\tstruct fip_mac_desc mac;\n\t\tstruct fip_wwn_desc wwnn;\n\t} desc;\n};\n\n#endif   \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

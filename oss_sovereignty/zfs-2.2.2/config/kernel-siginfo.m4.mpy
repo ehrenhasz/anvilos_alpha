@@ -1,0 +1,9 @@
+{
+  "module_name": "kernel-siginfo.m4",
+  "hash_id": "2359c53f5c6ba134a0f850e6b7a8563cca06d21ab0f18c8f2ee64a6423e84143",
+  "original_prompt": "Ingested from zfs-2.2.2/config/kernel-siginfo.m4",
+  "human_readable_source": "dnl #\ndnl # 4.20 API change\ndnl # Added kernel_siginfo_t\ndnl #\nAC_DEFUN([ZFS_AC_KERNEL_SRC_SIGINFO], [\n\tZFS_LINUX_TEST_SRC([siginfo], [\n\t\t#include <linux/signal_types.h>\n\t],[\n\t\tkernel_siginfo_t info __attribute__ ((unused));\n\t])\n])\n\nAC_DEFUN([ZFS_AC_KERNEL_SIGINFO], [\n\tAC_MSG_CHECKING([whether kernel_siginfo_t tyepedef exists])\n\tZFS_LINUX_TEST_RESULT([siginfo], [\n\t\tAC_MSG_RESULT(yes)\n\t\tAC_DEFINE(HAVE_SIGINFO, 1, [kernel_siginfo_t exists])\n\t],[\n\t\tAC_MSG_RESULT(no)\n\t])\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

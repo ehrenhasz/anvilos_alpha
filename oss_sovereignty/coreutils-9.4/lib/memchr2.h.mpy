@@ -1,0 +1,9 @@
+{
+  "module_name": "memchr2.h",
+  "hash_id": "8892f0ceec3c16e43f040b3f49394c9b318899add112fb63ba04ac97d2ea600d",
+  "original_prompt": "Ingested from coreutils-9.4/lib/memchr2.h",
+  "human_readable_source": " \n#if !_GL_CONFIG_H_INCLUDED\n #error \"Please include config.h first.\"\n#endif\n\n#include <stddef.h>\n\n#ifdef __cplusplus\nextern \"C\" {\n#endif\n\n \n\nextern void *memchr2 (void const *s, int c1, int c2, size_t n)\n  _GL_ATTRIBUTE_PURE;\n\n#ifdef __cplusplus\n}\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "static_base_2.dts",
+  "hash_id": "365e167be8466d5af3fdcbe79319e8e54a80c46d02276b1e67bd867e92b6501c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/of/unittest-data/static_base_2.dts",
+  "human_readable_source": "// SPDX-License-Identifier: GPL-2.0\n/dts-v1/;\n\n#include \"overlay_common.dtsi\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

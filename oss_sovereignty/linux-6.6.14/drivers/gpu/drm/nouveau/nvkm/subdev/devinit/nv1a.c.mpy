@@ -1,0 +1,9 @@
+{
+  "module_name": "nv1a.c",
+  "hash_id": "b8158c758ca1ee95eb06c2d41b89daee7dd7eeb840fdad51d9e5ed6b82d89609",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/subdev/devinit/nv1a.c",
+  "human_readable_source": " \n#include \"nv04.h\"\n\n#include <subdev/bios.h>\n#include <subdev/bios/init.h>\n\nstatic const struct nvkm_devinit_func\nnv1a_devinit = {\n\t.dtor = nv04_devinit_dtor,\n\t.preinit = nv04_devinit_preinit,\n\t.post = nv04_devinit_post,\n\t.pll_set = nv04_devinit_pll_set,\n};\n\nint\nnv1a_devinit_new(struct nvkm_device *device, enum nvkm_subdev_type type, int inst,\n\t\t struct nvkm_devinit **pinit)\n{\n\treturn nv04_devinit_new_(&nv1a_devinit, device, type, inst, pinit);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

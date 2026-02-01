@@ -1,0 +1,9 @@
+{
+  "module_name": "neigh.h",
+  "hash_id": "923eab0ed8a0b1e3e17ee8759944b039bf85bd1908fc47a4e7ac614f06132664",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/mellanox/mlx5/core/en/rep/neigh.h",
+  "human_readable_source": " \n \n\n#ifndef __MLX5_EN_REP_NEIGH__\n#define __MLX5_EN_REP_NEIGH__\n\n#include \"en.h\"\n#include \"en_rep.h\"\n\n#if IS_ENABLED(CONFIG_MLX5_CLS_ACT)\n\nint mlx5e_rep_neigh_init(struct mlx5e_rep_priv *rpriv);\nvoid mlx5e_rep_neigh_cleanup(struct mlx5e_rep_priv *rpriv);\n\nstruct mlx5e_neigh_hash_entry *\nmlx5e_rep_neigh_entry_lookup(struct mlx5e_priv *priv,\n\t\t\t     struct mlx5e_neigh *m_neigh);\nint mlx5e_rep_neigh_entry_create(struct mlx5e_priv *priv,\n\t\t\t\t struct mlx5e_neigh *m_neigh,\n\t\t\t\t struct net_device *neigh_dev,\n\t\t\t\t struct mlx5e_neigh_hash_entry **nhe);\nvoid mlx5e_rep_neigh_entry_release(struct mlx5e_neigh_hash_entry *nhe);\n\nvoid mlx5e_rep_queue_neigh_stats_work(struct mlx5e_priv *priv);\n\n#else  \n\nstatic inline int\nmlx5e_rep_neigh_init(struct mlx5e_rep_priv *rpriv) { return 0; }\nstatic inline void\nmlx5e_rep_neigh_cleanup(struct mlx5e_rep_priv *rpriv) {}\n\n#endif  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

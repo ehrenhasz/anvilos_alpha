@@ -1,0 +1,9 @@
+{
+  "module_name": "rockchip_drm_gem.h",
+  "hash_id": "5b83d48154db6debe885e72c1aa9988902b3ffa448dee16acfceb880a5069625",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/rockchip/rockchip_drm_gem.h",
+  "human_readable_source": " \n \n\n#ifndef _ROCKCHIP_DRM_GEM_H\n#define _ROCKCHIP_DRM_GEM_H\n\n#define to_rockchip_obj(x) container_of(x, struct rockchip_gem_object, base)\n\nstruct rockchip_gem_object {\n\tstruct drm_gem_object base;\n\tunsigned int flags;\n\n\tvoid *kvaddr;\n\tdma_addr_t dma_addr;\n\t \n\tunsigned long dma_attrs;\n\n\t \n\tstruct drm_mm_node mm;\n\tunsigned long num_pages;\n\tstruct page **pages;\n\tstruct sg_table *sgt;\n\tsize_t size;\n};\n\nstruct sg_table *rockchip_gem_prime_get_sg_table(struct drm_gem_object *obj);\nstruct drm_gem_object *\nrockchip_gem_prime_import_sg_table(struct drm_device *dev,\n\t\t\t\t   struct dma_buf_attachment *attach,\n\t\t\t\t   struct sg_table *sg);\nint rockchip_gem_prime_vmap(struct drm_gem_object *obj, struct iosys_map *map);\nvoid rockchip_gem_prime_vunmap(struct drm_gem_object *obj,\n\t\t\t       struct iosys_map *map);\n\nstruct rockchip_gem_object *\n\trockchip_gem_create_object(struct drm_device *drm, unsigned int size,\n\t\t\t\t   bool alloc_kmap);\n\nvoid rockchip_gem_free_object(struct drm_gem_object *obj);\n\nint rockchip_gem_dumb_create(struct drm_file *file_priv,\n\t\t\t     struct drm_device *dev,\n\t\t\t     struct drm_mode_create_dumb *args);\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

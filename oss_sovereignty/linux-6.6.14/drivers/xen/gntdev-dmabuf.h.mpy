@@ -1,0 +1,9 @@
+{
+  "module_name": "gntdev-dmabuf.h",
+  "hash_id": "ea330594cc02467c8acaca3440cbb8aaf57f5067db43fe428a1990e6131665ba",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/xen/gntdev-dmabuf.h",
+  "human_readable_source": " \n\n \n\n#ifndef _GNTDEV_DMABUF_H\n#define _GNTDEV_DMABUF_H\n\n#include <xen/gntdev.h>\n\nstruct gntdev_dmabuf_priv;\nstruct gntdev_priv;\n\nstruct gntdev_dmabuf_priv *gntdev_dmabuf_init(struct file *filp);\n\nvoid gntdev_dmabuf_fini(struct gntdev_dmabuf_priv *priv);\n\nlong gntdev_ioctl_dmabuf_exp_from_refs(struct gntdev_priv *priv, int use_ptemod,\n\t\t\t\t       struct ioctl_gntdev_dmabuf_exp_from_refs __user *u);\n\nlong gntdev_ioctl_dmabuf_exp_wait_released(struct gntdev_priv *priv,\n\t\t\t\t\t   struct ioctl_gntdev_dmabuf_exp_wait_released __user *u);\n\nlong gntdev_ioctl_dmabuf_imp_to_refs(struct gntdev_priv *priv,\n\t\t\t\t     struct ioctl_gntdev_dmabuf_imp_to_refs __user *u);\n\nlong gntdev_ioctl_dmabuf_imp_release(struct gntdev_priv *priv,\n\t\t\t\t     struct ioctl_gntdev_dmabuf_imp_release __user *u);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

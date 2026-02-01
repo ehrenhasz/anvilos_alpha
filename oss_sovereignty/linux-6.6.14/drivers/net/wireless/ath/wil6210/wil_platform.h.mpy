@@ -1,0 +1,9 @@
+{
+  "module_name": "wil_platform.h",
+  "hash_id": "ca31f668a35be1db65a3f01fd467ddcb09a0e4203eb7e06e41791bc2cf446809",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/ath/wil6210/wil_platform.h",
+  "human_readable_source": " \n \n\n#ifndef __WIL_PLATFORM_H__\n#define __WIL_PLATFORM_H__\n\nstruct device;\n\nenum wil_platform_event {\n\tWIL_PLATFORM_EVT_FW_CRASH = 0,\n\tWIL_PLATFORM_EVT_PRE_RESET = 1,\n\tWIL_PLATFORM_EVT_FW_RDY = 2,\n\tWIL_PLATFORM_EVT_PRE_SUSPEND = 3,\n\tWIL_PLATFORM_EVT_POST_SUSPEND = 4,\n};\n\nenum wil_platform_features {\n\tWIL_PLATFORM_FEATURE_FW_EXT_CLK_CONTROL = 0,\n\tWIL_PLATFORM_FEATURE_TRIPLE_MSI = 1,\n\tWIL_PLATFORM_FEATURE_MAX,\n};\n\nenum wil_platform_capa {\n\tWIL_PLATFORM_CAPA_RADIO_ON_IN_SUSPEND = 0,\n\tWIL_PLATFORM_CAPA_T_PWR_ON_0 = 1,\n\tWIL_PLATFORM_CAPA_EXT_CLK = 2,\n\tWIL_PLATFORM_CAPA_MAX,\n};\n\n \nstruct wil_platform_ops {\n\tint (*bus_request)(void *handle, uint32_t kbps  );\n\tint (*suspend)(void *handle, bool keep_device_power);\n\tint (*resume)(void *handle, bool device_powered_on);\n\tvoid (*uninit)(void *handle);\n\tint (*notify)(void *handle, enum wil_platform_event evt);\n\tint (*get_capa)(void *handle);\n\tvoid (*set_features)(void *handle, int features);\n};\n\n \nstruct wil_platform_rops {\n\tint (*ramdump)(void *wil_handle, void *buf, uint32_t size);\n\tint (*fw_recovery)(void *wil_handle);\n};\n\n \nvoid *wil_platform_init(struct device *dev, struct wil_platform_ops *ops,\n\t\t\tconst struct wil_platform_rops *rops, void *wil_handle);\n\nint __init wil_platform_modinit(void);\nvoid wil_platform_modexit(void);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

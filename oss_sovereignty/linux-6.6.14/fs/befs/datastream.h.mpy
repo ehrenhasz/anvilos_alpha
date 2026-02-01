@@ -1,0 +1,9 @@
+{
+  "module_name": "datastream.h",
+  "hash_id": "fb0b87797fa2b78c99c177e9f3d0345d2c418ffad0ed2927a97d333195d163e4",
+  "original_prompt": "Ingested from linux-6.6.14/fs/befs/datastream.h",
+  "human_readable_source": " \n \n\nstruct buffer_head *befs_read_datastream(struct super_block *sb,\n\t\t\t\t\t const befs_data_stream *ds,\n\t\t\t\t\t befs_off_t pos, uint *off);\n\nint befs_fblock2brun(struct super_block *sb, const befs_data_stream *data,\n\t\t     befs_blocknr_t fblock, befs_block_run *run);\n\nsize_t befs_read_lsymlink(struct super_block *sb, const befs_data_stream *data,\n\t\t\t  void *buff, befs_off_t len);\n\nbefs_blocknr_t befs_count_blocks(struct super_block *sb,\n\t\t\t  const befs_data_stream *ds);\n\nextern const befs_inode_addr BAD_IADDR;\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

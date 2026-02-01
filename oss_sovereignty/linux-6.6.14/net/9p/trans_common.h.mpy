@@ -1,0 +1,9 @@
+{
+  "module_name": "trans_common.h",
+  "hash_id": "fbbbd37001678a9f8fbfe5ce6c91635705960836aeb31dc256c092c61439edf0",
+  "original_prompt": "Ingested from linux-6.6.14/net/9p/trans_common.h",
+  "human_readable_source": " \n \n\nvoid p9_release_pages(struct page **pages, int nr_pages);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

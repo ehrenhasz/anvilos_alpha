@@ -1,0 +1,9 @@
+{
+  "module_name": "drm_damage_helper.h",
+  "hash_id": "25b4618a2ff2cbb70350cca570f4a937b87e783ea7725120ff507c05ccd4680d",
+  "original_prompt": "Ingested from linux-6.6.14/include/drm/drm_damage_helper.h",
+  "human_readable_source": " \n \n\n#ifndef DRM_DAMAGE_HELPER_H_\n#define DRM_DAMAGE_HELPER_H_\n\n#include <drm/drm_atomic_helper.h>\n\n \n#define drm_atomic_for_each_plane_damage(iter, rect) \\\n\twhile (drm_atomic_helper_damage_iter_next(iter, rect))\n\n \nstruct drm_atomic_helper_damage_iter {\n\t \n\tstruct drm_rect plane_src;\n\t \n\tconst struct drm_rect *clips;\n\t \n\tuint32_t num_clips;\n\t \n\tuint32_t curr_clip;\n\t \n\tbool full_update;\n};\n\nvoid drm_atomic_helper_check_plane_damage(struct drm_atomic_state *state,\n\t\t\t\t\t  struct drm_plane_state *plane_state);\nint drm_atomic_helper_dirtyfb(struct drm_framebuffer *fb,\n\t\t\t      struct drm_file *file_priv, unsigned int flags,\n\t\t\t      unsigned int color, struct drm_clip_rect *clips,\n\t\t\t      unsigned int num_clips);\nvoid\ndrm_atomic_helper_damage_iter_init(struct drm_atomic_helper_damage_iter *iter,\n\t\t\t\t   const struct drm_plane_state *old_state,\n\t\t\t\t   const struct drm_plane_state *new_state);\nbool\ndrm_atomic_helper_damage_iter_next(struct drm_atomic_helper_damage_iter *iter,\n\t\t\t\t   struct drm_rect *rect);\nbool drm_atomic_helper_damage_merged(const struct drm_plane_state *old_state,\n\t\t\t\t     struct drm_plane_state *state,\n\t\t\t\t     struct drm_rect *rect);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

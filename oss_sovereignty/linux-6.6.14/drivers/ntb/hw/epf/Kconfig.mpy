@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "ee6dd0cf673f2c97e75e160627231ff8b0c415fc05d91246b6f39a82f9eb508e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/ntb/hw/epf/Kconfig",
+  "human_readable_source": "config NTB_EPF\n\ttristate \"Generic EPF Non-Transparent Bridge support\"\n\tdepends on m\n\thelp\n\t  This driver supports EPF NTB on configurable endpoint.\n\t  If unsure, say N.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

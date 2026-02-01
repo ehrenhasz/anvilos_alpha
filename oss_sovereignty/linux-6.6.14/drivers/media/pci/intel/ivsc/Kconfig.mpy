@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "c1f44034c4a04ea23782712c727eff132ef481036e4ba3b634518655a60bb250",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/pci/intel/ivsc/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n# Copyright (C) 2023, Intel Corporation. All rights reserved.\n\nconfig INTEL_VSC\n\ttristate \"Intel Visual Sensing Controller\"\n\tdepends on INTEL_MEI && ACPI && VIDEO_DEV\n\tselect MEDIA_CONTROLLER\n\tselect VIDEO_V4L2_SUBDEV_API\n\tselect V4L2_FWNODE\n\thelp\n\t  This adds support for Intel Visual Sensing Controller (IVSC).\n\n\t  Enables the IVSC firmware services required for controlling\n\t  camera sensor ownership and CSI-2 link through Image Processing\n\t  Unit(IPU) driver of Intel.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

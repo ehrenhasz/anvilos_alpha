@@ -1,0 +1,9 @@
+{
+  "module_name": "uv_irq.h",
+  "hash_id": "bf824b287db22d24a3b126bfd93dbaf116f5c47f9b4385b2c66d517ac795b92a",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/include/asm/uv/uv_irq.h",
+  "human_readable_source": " \n\n#ifndef _ASM_X86_UV_UV_IRQ_H\n#define _ASM_X86_UV_UV_IRQ_H\n\n \nstruct uv_IO_APIC_route_entry {\n\t__u64\tvector\t\t:  8,\n\t\tdelivery_mode\t:  3,\n\t\tdest_mode\t:  1,\n\t\tdelivery_status\t:  1,\n\t\tpolarity\t:  1,\n\t\t__reserved_1\t:  1,\n\t\ttrigger\t\t:  1,\n\t\tmask\t\t:  1,\n\t\t__reserved_2\t: 15,\n\t\tdest\t\t: 32;\n};\n\nenum {\n\tUV_AFFINITY_ALL,\n\tUV_AFFINITY_NODE,\n\tUV_AFFINITY_CPU\n};\n\nextern int uv_irq_2_mmr_info(int, unsigned long *, int *);\nextern int uv_setup_irq(char *, int, int, unsigned long, int);\nextern void uv_teardown_irq(unsigned int);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

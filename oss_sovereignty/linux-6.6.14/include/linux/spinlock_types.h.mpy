@@ -1,0 +1,9 @@
+{
+  "module_name": "spinlock_types.h",
+  "hash_id": "a7e3ad90d9020e047a76abea30522ce50173ec83edc9110603a9f30f67b5b0b3",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/spinlock_types.h",
+  "human_readable_source": "#ifndef __LINUX_SPINLOCK_TYPES_H\n#define __LINUX_SPINLOCK_TYPES_H\n\n \n\n#include <linux/spinlock_types_raw.h>\n\n#ifndef CONFIG_PREEMPT_RT\n\n \ntypedef struct spinlock {\n\tunion {\n\t\tstruct raw_spinlock rlock;\n\n#ifdef CONFIG_DEBUG_LOCK_ALLOC\n# define LOCK_PADSIZE (offsetof(struct raw_spinlock, dep_map))\n\t\tstruct {\n\t\t\tu8 __padding[LOCK_PADSIZE];\n\t\t\tstruct lockdep_map dep_map;\n\t\t};\n#endif\n\t};\n} spinlock_t;\n\n#define ___SPIN_LOCK_INITIALIZER(lockname)\t\\\n\t{\t\t\t\t\t\\\n\t.raw_lock = __ARCH_SPIN_LOCK_UNLOCKED,\t\\\n\tSPIN_DEBUG_INIT(lockname)\t\t\\\n\tSPIN_DEP_MAP_INIT(lockname) }\n\n#define __SPIN_LOCK_INITIALIZER(lockname) \\\n\t{ { .rlock = ___SPIN_LOCK_INITIALIZER(lockname) } }\n\n#define __SPIN_LOCK_UNLOCKED(lockname) \\\n\t(spinlock_t) __SPIN_LOCK_INITIALIZER(lockname)\n\n#define DEFINE_SPINLOCK(x)\tspinlock_t x = __SPIN_LOCK_UNLOCKED(x)\n\n#else  \n\n \n#include <linux/rtmutex.h>\n\ntypedef struct spinlock {\n\tstruct rt_mutex_base\tlock;\n#ifdef CONFIG_DEBUG_LOCK_ALLOC\n\tstruct lockdep_map\tdep_map;\n#endif\n} spinlock_t;\n\n#define __SPIN_LOCK_UNLOCKED(name)\t\t\t\t\\\n\t{\t\t\t\t\t\t\t\\\n\t\t.lock = __RT_MUTEX_BASE_INITIALIZER(name.lock),\t\\\n\t\tSPIN_DEP_MAP_INIT(name)\t\t\t\t\\\n\t}\n\n#define __LOCAL_SPIN_LOCK_UNLOCKED(name)\t\t\t\\\n\t{\t\t\t\t\t\t\t\\\n\t\t.lock = __RT_MUTEX_BASE_INITIALIZER(name.lock),\t\\\n\t\tLOCAL_SPIN_DEP_MAP_INIT(name)\t\t\t\\\n\t}\n\n#define DEFINE_SPINLOCK(name)\t\t\t\t\t\\\n\tspinlock_t name = __SPIN_LOCK_UNLOCKED(name)\n\n#endif  \n\n#include <linux/rwlock_types.h>\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "dw-i3c-master.h",
+  "hash_id": "6471938f8b4c8dcac5936396dfec6d9f69c6e50597c60e370c78ffb2f30dc1c1",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/i3c/master/dw-i3c-master.h",
+  "human_readable_source": " \n \n\n#include <linux/clk.h>\n#include <linux/i3c/master.h>\n#include <linux/reset.h>\n#include <linux/types.h>\n\n#define DW_I3C_MAX_DEVS 32\n\nstruct dw_i3c_master_caps {\n\tu8 cmdfifodepth;\n\tu8 datafifodepth;\n};\n\nstruct dw_i3c_dat_entry {\n\tu8 addr;\n\tstruct i3c_dev_desc *ibi_dev;\n};\n\nstruct dw_i3c_master {\n\tstruct i3c_master_controller base;\n\tu16 maxdevs;\n\tu16 datstartaddr;\n\tu32 free_pos;\n\tstruct {\n\t\tstruct list_head list;\n\t\tstruct dw_i3c_xfer *cur;\n\t\tspinlock_t lock;\n\t} xferqueue;\n\tstruct dw_i3c_master_caps caps;\n\tvoid __iomem *regs;\n\tstruct reset_control *core_rst;\n\tstruct clk *core_clk;\n\tchar version[5];\n\tchar type[5];\n\tbool ibi_capable;\n\n\t \n\tstruct dw_i3c_dat_entry devs[DW_I3C_MAX_DEVS];\n\tspinlock_t devs_lock;\n\n\t \n\tconst struct dw_i3c_platform_ops *platform_ops;\n};\n\nstruct dw_i3c_platform_ops {\n\t \n\tint (*init)(struct dw_i3c_master *i3c);\n\n\t \n\tvoid (*set_dat_ibi)(struct dw_i3c_master *i3c,\n\t\t\t    struct i3c_dev_desc *dev, bool enable, u32 *reg);\n};\n\nextern int dw_i3c_common_probe(struct dw_i3c_master *master,\n\t\t\t       struct platform_device *pdev);\nextern void dw_i3c_common_remove(struct dw_i3c_master *master);\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

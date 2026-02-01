@@ -1,0 +1,9 @@
+{
+  "module_name": "tdx.h",
+  "hash_id": "5d8f8de02006bf91cc82bbd958873d393aee2cc5c010e3f46bfd013f208d78f6",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/include/asm/shared/tdx.h",
+  "human_readable_source": " \n#ifndef _ASM_X86_SHARED_TDX_H\n#define _ASM_X86_SHARED_TDX_H\n\n#include <linux/bits.h>\n#include <linux/types.h>\n\n#define TDX_HYPERCALL_STANDARD  0\n\n#define TDX_CPUID_LEAF_ID\t0x21\n#define TDX_IDENT\t\t\"IntelTDX    \"\n\n \n#define TDX_GET_INFO\t\t\t1\n#define TDX_GET_VEINFO\t\t\t3\n#define TDX_GET_REPORT\t\t\t4\n#define TDX_ACCEPT_PAGE\t\t\t6\n#define TDX_WR\t\t\t\t8\n\n \n#define TDCS_NOTIFY_ENABLES\t\t0x9100000000000010\n\n \n#define TDVMCALL_MAP_GPA\t\t0x10001\n#define TDVMCALL_REPORT_FATAL_ERROR\t0x10003\n\n#ifndef __ASSEMBLY__\n\n \nstruct tdx_hypercall_args {\n\tu64 r8;\n\tu64 r9;\n\tu64 r10;\n\tu64 r11;\n\tu64 r12;\n\tu64 r13;\n\tu64 r14;\n\tu64 r15;\n\tu64 rdi;\n\tu64 rsi;\n\tu64 rbx;\n\tu64 rdx;\n};\n\n \nu64 __tdx_hypercall(struct tdx_hypercall_args *args);\nu64 __tdx_hypercall_ret(struct tdx_hypercall_args *args);\n\n \nstatic inline u64 _tdx_hypercall(u64 fn, u64 r12, u64 r13, u64 r14, u64 r15)\n{\n\tstruct tdx_hypercall_args args = {\n\t\t.r10 = TDX_HYPERCALL_STANDARD,\n\t\t.r11 = fn,\n\t\t.r12 = r12,\n\t\t.r13 = r13,\n\t\t.r14 = r14,\n\t\t.r15 = r15,\n\t};\n\n\treturn __tdx_hypercall(&args);\n}\n\n\n \nvoid __tdx_hypercall_failed(void);\n\n \nstruct tdx_module_output {\n\tu64 rcx;\n\tu64 rdx;\n\tu64 r8;\n\tu64 r9;\n\tu64 r10;\n\tu64 r11;\n};\n\n \nu64 __tdx_module_call(u64 fn, u64 rcx, u64 rdx, u64 r8, u64 r9,\n\t\t      struct tdx_module_output *out);\n\nbool tdx_accept_memory(phys_addr_t start, phys_addr_t end);\n\n \nstatic __always_inline u64 hcall_func(u64 exit_reason)\n{\n        return exit_reason;\n}\n\n#endif  \n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

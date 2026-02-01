@@ -1,0 +1,9 @@
+{
+  "module_name": "test_sockmap_invalid_update.c",
+  "hash_id": "6b3ac2d7a1611d74e979f4796f370b7c609b6e5c96edc7f4ebc1ee48ea8f1b8f",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/test_sockmap_invalid_update.c",
+  "human_readable_source": "\n\n#include \"vmlinux.h\"\n#include <bpf/bpf_helpers.h>\n\nstruct {\n\t__uint(type, BPF_MAP_TYPE_SOCKMAP);\n\t__uint(max_entries, 1);\n\t__type(key, __u32);\n\t__type(value, __u64);\n} map SEC(\".maps\");\n\nSEC(\"sockops\")\nint bpf_sockmap(struct bpf_sock_ops *skops)\n{\n\t__u32 key = 0;\n\n\tif (skops->sk)\n\t\tbpf_map_update_elem(&map, &key, skops->sk, 0);\n\treturn 0;\n}\n\nchar _license[] SEC(\"license\") = \"GPL\";\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

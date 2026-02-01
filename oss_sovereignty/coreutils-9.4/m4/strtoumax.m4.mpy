@@ -1,0 +1,9 @@
+{
+  "module_name": "strtoumax.m4",
+  "hash_id": "f268225d53340f4995822309877750d69fd525802567f8aeff6f10c9041b8831",
+  "original_prompt": "Ingested from coreutils-9.4/m4/strtoumax.m4",
+  "human_readable_source": "# strtoumax.m4 serial 13\ndnl Copyright (C) 2002-2004, 2006, 2009-2023 Free Software Foundation, Inc.\ndnl This file is free software; the Free Software Foundation\ndnl gives unlimited permission to copy and/or distribute it,\ndnl with or without modifications, as long as this notice is preserved.\n\nAC_DEFUN([gl_FUNC_STRTOUMAX],\n[\n  AC_REQUIRE([gl_INTTYPES_H_DEFAULTS])\n\n  dnl On OSF/1 5.1 with cc, this function is declared but not defined.\n  AC_CHECK_FUNCS_ONCE([strtoumax])\n  AC_CHECK_DECLS_ONCE([strtoumax])\n  if test \"$ac_cv_have_decl_strtoumax\" = yes; then\n    if test \"$ac_cv_func_strtoumax\" != yes; then\n      # HP-UX 11.11 has \"#define strtoimax(...) ...\" but no function.\n      REPLACE_STRTOUMAX=1\n    fi\n  else\n    HAVE_DECL_STRTOUMAX=0\n  fi\n])\n\n# Prerequisites of lib/strtoumax.c.\nAC_DEFUN([gl_PREREQ_STRTOUMAX], [\n  AC_CHECK_DECLS([strtoull])\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

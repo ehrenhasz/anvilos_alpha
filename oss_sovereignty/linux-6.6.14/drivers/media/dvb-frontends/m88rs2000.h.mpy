@@ -1,0 +1,9 @@
+{
+  "module_name": "m88rs2000.h",
+  "hash_id": "bc6beb5242ee7d0557bb2e9f06a446508595700ef6a3e150c192e32a610ebbb9",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/dvb-frontends/m88rs2000.h",
+  "human_readable_source": " \n \n\n#ifndef M88RS2000_H\n#define M88RS2000_H\n\n#include <linux/dvb/frontend.h>\n#include <media/dvb_frontend.h>\n\nstruct m88rs2000_config {\n\t \n\tu8 demod_addr;\n\n\tu8 *inittab;\n\n\t \n\tint min_delay_ms;\n\n\tint (*set_ts_params)(struct dvb_frontend *, int);\n};\n\nenum {\n\tCALL_IS_SET_FRONTEND = 0x0,\n\tCALL_IS_READ,\n};\n\n#if IS_REACHABLE(CONFIG_DVB_M88RS2000)\nextern struct dvb_frontend *m88rs2000_attach(\n\tconst struct m88rs2000_config *config, struct i2c_adapter *i2c);\n#else\nstatic inline struct dvb_frontend *m88rs2000_attach(\n\tconst struct m88rs2000_config *config, struct i2c_adapter *i2c)\n{\n\tprintk(KERN_WARNING \"%s: driver disabled by Kconfig\\n\", __func__);\n\treturn NULL;\n}\n#endif  \n\n#define RS2000_FE_CRYSTAL_KHZ 27000\n\nenum {\n\tDEMOD_WRITE = 0x1,\n\tWRITE_DELAY = 0x10,\n};\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

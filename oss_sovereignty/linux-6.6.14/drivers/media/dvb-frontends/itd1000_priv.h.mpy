@@ -1,0 +1,9 @@
+{
+  "module_name": "itd1000_priv.h",
+  "hash_id": "dd0364db23adedf824cc09369a349bb62da2c98445107ea61f034a450eb91015",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/dvb-frontends/itd1000_priv.h",
+  "human_readable_source": " \n \n\n#ifndef ITD1000_PRIV_H\n#define ITD1000_PRIV_H\n\nstruct itd1000_state {\n\tstruct itd1000_config *cfg;\n\tstruct i2c_adapter    *i2c;\n\n\tu32 frequency;  \n\n\t \n\tu8 shadow[256];\n};\n\nenum itd1000_register {\n\tVCO_CHP1 = 0x65,\n\tVCO_CHP2,\n\tPLLCON1,\n\tPLLNH,\n\tPLLNL,\n\tPLLFH,\n\tPLLFM,\n\tPLLFL,\n\tRESERVED_0X6D,\n\tPLLLOCK,\n\tVCO_CHP2_I2C,\n\tVCO_CHP1_I2C,\n\tBW,\n\tRESERVED_0X73 = 0x73,\n\tRESERVED_0X74,\n\tRESERVED_0X75,\n\tGVBB,\n\tGVRF,\n\tGVBB_I2C,\n\tEXTGVBBRF,\n\tDIVAGCCK,\n\tBBTR,\n\tRFTR,\n\tBBGVMIN,\n\tRESERVED_0X7E,\n\tRESERVED_0X85 = 0x85,\n\tRESERVED_0X86,\n\tCON1,\n\tRESERVED_0X88,\n\tRESERVED_0X89,\n\tRFST0,\n\tRFST1,\n\tRFST2,\n\tRFST3,\n\tRFST4,\n\tRFST5,\n\tRFST6,\n\tRFST7,\n\tRFST8,\n\tRFST9,\n\tRESERVED_0X94,\n\tRESERVED_0X95,\n\tRESERVED_0X96,\n\tRESERVED_0X97,\n\tRESERVED_0X98,\n\tRESERVED_0X99,\n\tRESERVED_0X9A,\n\tRESERVED_0X9B,\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

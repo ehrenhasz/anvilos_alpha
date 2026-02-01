@@ -1,0 +1,9 @@
+{
+  "module_name": "memcmp2.c",
+  "hash_id": "21c1a50ae4b60dca1138506cf3c0d41f6347a2a2e3d148d07f7f2f937da4b67d",
+  "original_prompt": "Ingested from coreutils-9.4/lib/memcmp2.c",
+  "human_readable_source": " \n#include \"memcmp2.h\"\n\n#include <string.h>\n\nint\nmemcmp2 (const char *s1, size_t n1, const char *s2, size_t n2)\n{\n  int cmp = memcmp (s1, s2, n1 <= n2 ? n1 : n2);\n  if (cmp == 0)\n    cmp = _GL_CMP (n1, n2);\n  return cmp;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

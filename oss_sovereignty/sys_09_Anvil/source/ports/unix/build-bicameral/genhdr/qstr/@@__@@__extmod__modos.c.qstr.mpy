@@ -1,0 +1,9 @@
+{
+  "module_name": "@@__@@__extmod__modos.c.qstr",
+  "hash_id": "9798c4fd4385216c8dc131742d7056a16af2718fbd93d9ba83b9a8938614fa22",
+  "original_prompt": "Ingested from sys_09_Anvil/source/ports/unix/build-bicameral/genhdr/qstr/@@__@@__extmod__modos.c.qstr",
+  "human_readable_source": "Q(__name__)\nQ(os)\nQ(chdir)\nQ(getcwd)\nQ(listdir)\nQ(mkdir)\nQ(remove)\nQ(rename)\nQ(rmdir)\nQ(stat)\nQ(statvfs)\nQ(unlink)\nQ(ilistdir)\nQ(mount)\nQ(umount)\nQ(VfsFat)\nQ(VfsPosix)\nQ(os)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

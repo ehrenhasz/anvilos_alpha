@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "d2f9e0f932a4db3daa6f9daee89b8b995515435abd6dda845c6ff954df3f9c22",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/crypto/axis/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-$(CONFIG_CRYPTO_DEV_ARTPEC6) := artpec6_crypto.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "asoc-pxa.h",
+  "hash_id": "64da9d8ecebd597ce356a4f4968741ff920017cfff261f78ac899c25a26b3c94",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/platform_data/asoc-pxa.h",
+  "human_readable_source": " \n#ifndef __SOC_PXA_AUDIO_H__\n#define __SOC_PXA_AUDIO_H__\n\n#include <sound/core.h>\n#include <sound/pcm.h>\n#include <sound/ac97_codec.h>\n\n \ntypedef struct {\n\tint (*startup)(struct snd_pcm_substream *, void *);\n\tvoid (*shutdown)(struct snd_pcm_substream *, void *);\n\tvoid (*suspend)(void *);\n\tvoid (*resume)(void *);\n\tvoid *priv;\n\tint reset_gpio;\n\tvoid *codec_pdata[AC97_BUS_MAX_DEVICES];\n} pxa2xx_audio_ops_t;\n\nextern void pxa_set_ac97_info(pxa2xx_audio_ops_t *ops);\nextern void pxa27x_configure_ac97reset(int reset_gpio, bool to_gpio);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

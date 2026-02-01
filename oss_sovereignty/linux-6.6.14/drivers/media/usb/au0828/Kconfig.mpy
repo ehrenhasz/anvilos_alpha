@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "c52067f725e8592390821ec30844eb0ce8394b3df9b9a34e9576b358e4b94eb6",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/usb/au0828/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n\nconfig VIDEO_AU0828\n\ttristate \"Auvitek AU0828 support\"\n\tdepends on I2C && INPUT && DVB_CORE && USB && VIDEO_DEV\n\tselect MEDIA_CONTROLLER\n\tselect MEDIA_CONTROLLER_DVB\n\tselect I2C_ALGOBIT\n\tselect VIDEO_TVEEPROM\n\tselect VIDEOBUF2_VMALLOC if VIDEO_DEV\n\tselect DVB_AU8522_DTV if MEDIA_SUBDRV_AUTOSELECT\n\tselect MEDIA_TUNER_XC5000 if MEDIA_SUBDRV_AUTOSELECT\n\tselect MEDIA_TUNER_MXL5007T if MEDIA_SUBDRV_AUTOSELECT\n\tselect MEDIA_TUNER_TDA18271 if MEDIA_SUBDRV_AUTOSELECT\n\thelp\n\t  This is a hybrid analog/digital tv capture driver for\n\t  Auvitek's AU0828 USB device.\n\n\t  To compile this driver as a module, choose M here: the\n\t  module will be called au0828\n\nconfig VIDEO_AU0828_V4L2\n\tbool \"Auvitek AU0828 v4l2 analog video support\"\n\tdepends on VIDEO_AU0828\n\tdepends on VIDEO_DEV=y || VIDEO_DEV=VIDEO_AU0828\n\tselect DVB_AU8522_V4L if MEDIA_SUBDRV_AUTOSELECT\n\tselect VIDEO_TUNER\n\tdefault y\n\thelp\n\t  This is a video4linux driver for Auvitek's USB device.\n\n\t  Choose Y here to include support for v4l2 analog video\n\t  capture within the au0828 driver.\n\nconfig VIDEO_AU0828_RC\n\tbool \"AU0828 Remote Controller support\"\n\tdepends on RC_CORE\n\tdepends on !(RC_CORE=m && VIDEO_AU0828=y)\n\tdepends on VIDEO_AU0828\n\thelp\n\t   Enables Remote Controller support on au0828 driver.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "areadlinkat.c",
+  "hash_id": "9c2e218f79d2fecc82f76d7ea716a9e8418cfe50c98059fdf67e849978f7af81",
+  "original_prompt": "Ingested from coreutils-9.4/lib/areadlinkat.c",
+  "human_readable_source": " \n\n \n\n#include <config.h>\n\n \n#include \"areadlink.h\"\n\n#include <stdlib.h>\n\n#include \"careadlinkat.h\"\n\n#if HAVE_READLINKAT\n\n \n\nchar *\nareadlinkat (int fd, char const *filename)\n{\n  return careadlinkat (fd, filename, NULL, 0, NULL, readlinkat);\n}\n\n#else  \n\n \n\n# define AT_FUNC_NAME areadlinkat\n# define AT_FUNC_F1 areadlink\n# define AT_FUNC_POST_FILE_PARAM_DECLS  \n# define AT_FUNC_POST_FILE_ARGS         \n# define AT_FUNC_RESULT char *\n# define AT_FUNC_FAIL NULL\n# include \"at-func.c\"\n# undef AT_FUNC_NAME\n# undef AT_FUNC_F1\n# undef AT_FUNC_POST_FILE_PARAM_DECLS\n# undef AT_FUNC_POST_FILE_ARGS\n# undef AT_FUNC_RESULT\n# undef AT_FUNC_FAIL\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

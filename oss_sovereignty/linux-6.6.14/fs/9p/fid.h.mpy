@@ -1,0 +1,9 @@
+{
+  "module_name": "fid.h",
+  "hash_id": "53fe0c0ccad344ccf3bf243fdf8375a076411afccf92677a89f7a9ae0394e662",
+  "original_prompt": "Ingested from linux-6.6.14/fs/9p/fid.h",
+  "human_readable_source": " \n \n#ifndef FS_9P_FID_H\n#define FS_9P_FID_H\n#include <linux/list.h>\n#include \"v9fs.h\"\n\nstruct p9_fid *v9fs_fid_find_inode(struct inode *inode, bool want_writeable,\n\tkuid_t uid, bool any);\nstruct p9_fid *v9fs_fid_lookup(struct dentry *dentry);\nstatic inline struct p9_fid *v9fs_parent_fid(struct dentry *dentry)\n{\n\treturn v9fs_fid_lookup(dentry->d_parent);\n}\nvoid v9fs_fid_add(struct dentry *dentry, struct p9_fid **fid);\nvoid v9fs_open_fid_add(struct inode *inode, struct p9_fid **fid);\nstatic inline struct p9_fid *clone_fid(struct p9_fid *fid)\n{\n\treturn IS_ERR(fid) ? fid :  p9_client_walk(fid, 0, NULL, 1);\n}\nstatic inline struct p9_fid *v9fs_fid_clone(struct dentry *dentry)\n{\n\tstruct p9_fid *fid, *nfid;\n\n\tfid = v9fs_fid_lookup(dentry);\n\tif (!fid || IS_ERR(fid))\n\t\treturn fid;\n\n\tnfid = clone_fid(fid);\n\tp9_fid_put(fid);\n\treturn nfid;\n}\n \nstatic inline void v9fs_fid_add_modes(struct p9_fid *fid, unsigned int s_flags,\n\tunsigned int s_cache, unsigned int f_flags)\n{\n\tif (fid->qid.type != P9_QTFILE)\n\t\treturn;\n\n\tif ((!s_cache) ||\n\t   ((fid->qid.version == 0) && !(s_flags & V9FS_IGNORE_QV)) ||\n\t   (s_flags & V9FS_DIRECT_IO) || (f_flags & O_DIRECT)) {\n\t\tfid->mode |= P9L_DIRECT;  \n\t} else if ((!(s_cache & CACHE_WRITEBACK)) ||\n\t\t\t\t(f_flags & O_DSYNC) || (s_flags & V9FS_SYNC)) {\n\t\tfid->mode |= P9L_NOWRITECACHE;\n\t}\n}\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

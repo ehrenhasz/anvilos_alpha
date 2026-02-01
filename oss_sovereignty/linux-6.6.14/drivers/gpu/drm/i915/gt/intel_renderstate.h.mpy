@@ -1,0 +1,9 @@
+{
+  "module_name": "intel_renderstate.h",
+  "hash_id": "40c5546179fd3ab38ade54cd0712525ffb5c1957e28a9559c0dd8ec1f01eaeb5",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/gt/intel_renderstate.h",
+  "human_readable_source": " \n \n\n#ifndef _INTEL_RENDERSTATE_H_\n#define _INTEL_RENDERSTATE_H_\n\n#include <linux/types.h>\n#include \"i915_gem.h\"\n#include \"i915_gem_ww.h\"\n\nstruct i915_request;\nstruct intel_context;\nstruct i915_vma;\n\nstruct intel_renderstate_rodata {\n\tconst u32 *reloc;\n\tconst u32 *batch;\n\tconst u32 batch_items;\n};\n\n#define RO_RENDERSTATE(_g)\t\t\t\t\t\t\\\n\tconst struct intel_renderstate_rodata gen ## _g ## _null_state = { \\\n\t\t.reloc = gen ## _g ## _null_state_relocs,\t\t\\\n\t\t.batch = gen ## _g ## _null_state_batch,\t\t\\\n\t\t.batch_items = sizeof(gen ## _g ## _null_state_batch)/4, \\\n\t}\n\nextern const struct intel_renderstate_rodata gen6_null_state;\nextern const struct intel_renderstate_rodata gen7_null_state;\nextern const struct intel_renderstate_rodata gen8_null_state;\nextern const struct intel_renderstate_rodata gen9_null_state;\n\nstruct intel_renderstate {\n\tstruct i915_gem_ww_ctx ww;\n\tconst struct intel_renderstate_rodata *rodata;\n\tstruct i915_vma *vma;\n\tu32 batch_offset;\n\tu32 batch_size;\n\tu32 aux_offset;\n\tu32 aux_size;\n};\n\nint intel_renderstate_init(struct intel_renderstate *so,\n\t\t\t   struct intel_context *ce);\nint intel_renderstate_emit(struct intel_renderstate *so,\n\t\t\t   struct i915_request *rq);\nvoid intel_renderstate_fini(struct intel_renderstate *so,\n\t\t\t    struct intel_context *ce);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

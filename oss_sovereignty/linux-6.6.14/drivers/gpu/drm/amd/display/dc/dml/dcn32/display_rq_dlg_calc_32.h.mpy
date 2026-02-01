@@ -1,0 +1,9 @@
+{
+  "module_name": "display_rq_dlg_calc_32.h",
+  "hash_id": "5d9763483a0e23a22083f5004e3bf5f83d03c11ad922dac0e6173ec5ea69960c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/dc/dml/dcn32/display_rq_dlg_calc_32.h",
+  "human_readable_source": " \n\n#ifndef __DML32_DISPLAY_RQ_DLG_CALC_H__\n#define __DML32_DISPLAY_RQ_DLG_CALC_H__\n\n#include \"../display_rq_dlg_helpers.h\"\n\nstruct display_mode_lib;\n\n \nvoid dml32_rq_dlg_get_rq_reg(display_rq_regs_st *rq_regs,\n\t\tstruct display_mode_lib *mode_lib,\n\t\tconst display_e2e_pipe_params_st *e2e_pipe_param,\n\t\tconst unsigned int num_pipes,\n\t\tconst unsigned int pipe_idx);\n\n \nvoid dml32_rq_dlg_get_dlg_reg(struct display_mode_lib *mode_lib,\n\t\tdisplay_dlg_regs_st *dlg_regs,\n\t\tdisplay_ttu_regs_st *ttu_regs,\n\t\tdisplay_e2e_pipe_params_st *e2e_pipe_param,\n\t\tconst unsigned int num_pipes,\n\t\tconst unsigned int pipe_idx);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

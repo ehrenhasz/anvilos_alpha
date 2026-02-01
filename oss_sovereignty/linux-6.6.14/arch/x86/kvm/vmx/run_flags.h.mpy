@@ -1,0 +1,9 @@
+{
+  "module_name": "run_flags.h",
+  "hash_id": "d244443f6d1c4c29cf81b48628677cb2fe51eadbce9bdfd121afd14d010a6a0e",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/kvm/vmx/run_flags.h",
+  "human_readable_source": " \n#ifndef __KVM_X86_VMX_RUN_FLAGS_H\n#define __KVM_X86_VMX_RUN_FLAGS_H\n\n#define VMX_RUN_VMRESUME\t(1 << 0)\n#define VMX_RUN_SAVE_SPEC_CTRL\t(1 << 1)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

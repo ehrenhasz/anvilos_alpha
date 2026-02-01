@@ -1,0 +1,9 @@
+{
+  "module_name": "qcom,gpucc-sc8280xp.h",
+  "hash_id": "74a443659648c8f38cde7f9e62f2c852b2843c48b3af29e89444bc89954032da",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/clock/qcom,gpucc-sc8280xp.h",
+  "human_readable_source": " \n \n\n#ifndef _DT_BINDINGS_CLK_QCOM_GPU_CC_SC8280XP_H\n#define _DT_BINDINGS_CLK_QCOM_GPU_CC_SC8280XP_H\n\n \n#define GPU_CC_PLL0\t\t\t\t\t\t0\n#define GPU_CC_PLL1\t\t\t\t\t\t1\n#define GPU_CC_AHB_CLK\t\t\t\t\t\t2\n#define GPU_CC_CB_CLK\t\t\t\t\t\t3\n#define GPU_CC_CRC_AHB_CLK\t\t\t\t\t4\n#define GPU_CC_CX_GMU_CLK\t\t\t\t\t5\n#define GPU_CC_CX_SNOC_DVM_CLK\t\t\t\t\t6\n#define GPU_CC_CXO_AON_CLK\t\t\t\t\t7\n#define GPU_CC_CXO_CLK\t\t\t\t\t\t8\n#define GPU_CC_FREQ_MEASURE_CLK\t\t\t\t\t9\n#define GPU_CC_GMU_CLK_SRC\t\t\t\t\t10\n#define GPU_CC_GX_GMU_CLK\t\t\t\t\t11\n#define GPU_CC_GX_VSENSE_CLK\t\t\t\t\t12\n#define GPU_CC_HUB_AHB_DIV_CLK_SRC\t\t\t\t13\n#define GPU_CC_HUB_AON_CLK\t\t\t\t\t14\n#define GPU_CC_HUB_CLK_SRC\t\t\t\t\t15\n#define GPU_CC_HUB_CX_INT_CLK\t\t\t\t\t16\n#define GPU_CC_HUB_CX_INT_DIV_CLK_SRC\t\t\t\t17\n#define GPU_CC_SLEEP_CLK\t\t\t\t\t18\n#define GPU_CC_HLOS1_VOTE_GPU_SMMU_CLK\t\t\t\t19\n\n \n#define GPU_CC_CX_GDSC\t\t\t\t0\n#define GPU_CC_GX_GDSC\t\t\t\t1\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

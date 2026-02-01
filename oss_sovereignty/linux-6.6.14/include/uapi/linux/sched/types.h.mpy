@@ -1,0 +1,9 @@
+{
+  "module_name": "types.h",
+  "hash_id": "d64bf36d58cd48849af197e8d5f4e904c92c4af7d0a3f5347e37f9210dcf6034",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/sched/types.h",
+  "human_readable_source": " \n#ifndef _UAPI_LINUX_SCHED_TYPES_H\n#define _UAPI_LINUX_SCHED_TYPES_H\n\n#include <linux/types.h>\n\nstruct sched_param {\n\tint sched_priority;\n};\n\n#define SCHED_ATTR_SIZE_VER0\t48\t \n#define SCHED_ATTR_SIZE_VER1\t56\t \n\n \nstruct sched_attr {\n\t__u32 size;\n\n\t__u32 sched_policy;\n\t__u64 sched_flags;\n\n\t \n\t__s32 sched_nice;\n\n\t \n\t__u32 sched_priority;\n\n\t \n\t__u64 sched_runtime;\n\t__u64 sched_deadline;\n\t__u64 sched_period;\n\n\t \n\t__u32 sched_util_min;\n\t__u32 sched_util_max;\n\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

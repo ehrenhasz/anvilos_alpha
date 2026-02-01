@@ -1,0 +1,9 @@
+{
+  "module_name": "@@__@@__extmod__vfs.c.root_pointer",
+  "hash_id": "5c60788d76ac5f6729812d00bf4092d2332cae4d8dc37db380c8e7e01cf72ec3",
+  "original_prompt": "Ingested from sys_09_Anvil/source/ports/unix/build-bicameral/genhdr/root_pointer/@@__@@__extmod__vfs.c.root_pointer",
+  "human_readable_source": "MP_REGISTER_ROOT_POINTER(struct _mp_vfs_mount_t *vfs_cur);\nMP_REGISTER_ROOT_POINTER(struct _mp_vfs_mount_t *vfs_mount_table);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

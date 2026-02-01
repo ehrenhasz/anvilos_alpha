@@ -1,0 +1,9 @@
+{
+  "module_name": "head.h",
+  "hash_id": "ca7ddfd3c177ec6a2710dd841c2d6552393cbae05de4908e204a62705e1e39b1",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/include/nvif/head.h",
+  "human_readable_source": " \n#ifndef __NVIF_HEAD_H__\n#define __NVIF_HEAD_H__\n#include <nvif/object.h>\n#include <nvif/event.h>\nstruct nvif_disp;\n\nstruct nvif_head {\n\tstruct nvif_object object;\n};\n\nint nvif_head_ctor(struct nvif_disp *, const char *name, int id, struct nvif_head *);\nvoid nvif_head_dtor(struct nvif_head *);\n\nstatic inline int\nnvif_head_id(struct nvif_head *head)\n{\n\treturn head->object.handle;\n}\n\nint nvif_head_vblank_event_ctor(struct nvif_head *, const char *name, nvif_event_func, bool wait,\n\t\t\t\tstruct nvif_event *);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

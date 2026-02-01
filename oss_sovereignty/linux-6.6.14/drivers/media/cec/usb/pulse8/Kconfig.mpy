@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "9085327a9ba96b717f9136f9acf19ba8d3a4371254fd0844de5d21b9a97a4fdd",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/cec/usb/pulse8/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig USB_PULSE8_CEC\n\ttristate \"Pulse Eight HDMI CEC\"\n\tselect CEC_CORE\n\tselect USB\n\tselect USB_ACM\n\tselect SERIO\n\tselect SERIO_SERPORT\n\thelp\n\t  This is a cec driver for the Pulse Eight HDMI CEC device.\n\n\t  To compile this driver as a module, choose M here: the\n\t  module will be called pulse8-cec.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

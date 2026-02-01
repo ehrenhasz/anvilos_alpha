@@ -1,0 +1,9 @@
+{
+  "module_name": "simd.h",
+  "hash_id": "42fefce08f80b524057eabeb2d9c1697024f12cf3f80415fbc782e95c592b50f",
+  "original_prompt": "Ingested from zfs-2.2.2/include/os/linux/spl/sys/simd.h",
+  "human_readable_source": " \n\n#ifndef _SPL_SYS_SIMD_H\n#define\t_SPL_SYS_SIMD_H\n\n#include <sys/isa_defs.h>\n#include <linux/simd.h>\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "kcs_bmc_client.h",
+  "hash_id": "c43ae82d3a12320d439997dd85cb3121a9275f37cb7236fe14d18c3156ab32f4",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/char/ipmi/kcs_bmc_client.h",
+  "human_readable_source": " \n \n\n#ifndef __KCS_BMC_CONSUMER_H__\n#define __KCS_BMC_CONSUMER_H__\n\n#include <linux/irqreturn.h>\n\n#include \"kcs_bmc.h\"\n\nstruct kcs_bmc_driver_ops {\n\tint (*add_device)(struct kcs_bmc_device *kcs_bmc);\n\tint (*remove_device)(struct kcs_bmc_device *kcs_bmc);\n};\n\nstruct kcs_bmc_driver {\n\tstruct list_head entry;\n\n\tconst struct kcs_bmc_driver_ops *ops;\n};\n\nstruct kcs_bmc_client_ops {\n\tirqreturn_t (*event)(struct kcs_bmc_client *client);\n};\n\nstruct kcs_bmc_client {\n\tconst struct kcs_bmc_client_ops *ops;\n\n\tstruct kcs_bmc_device *dev;\n};\n\nvoid kcs_bmc_register_driver(struct kcs_bmc_driver *drv);\nvoid kcs_bmc_unregister_driver(struct kcs_bmc_driver *drv);\n\nint kcs_bmc_enable_device(struct kcs_bmc_device *kcs_bmc, struct kcs_bmc_client *client);\nvoid kcs_bmc_disable_device(struct kcs_bmc_device *kcs_bmc, struct kcs_bmc_client *client);\n\nvoid kcs_bmc_update_event_mask(struct kcs_bmc_device *kcs_bmc, u8 mask, u8 events);\n\nu8 kcs_bmc_read_data(struct kcs_bmc_device *kcs_bmc);\nvoid kcs_bmc_write_data(struct kcs_bmc_device *kcs_bmc, u8 data);\nu8 kcs_bmc_read_status(struct kcs_bmc_device *kcs_bmc);\nvoid kcs_bmc_write_status(struct kcs_bmc_device *kcs_bmc, u8 data);\nvoid kcs_bmc_update_status(struct kcs_bmc_device *kcs_bmc, u8 mask, u8 val);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

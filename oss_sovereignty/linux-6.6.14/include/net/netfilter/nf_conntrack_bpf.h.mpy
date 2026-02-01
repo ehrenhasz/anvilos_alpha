@@ -1,0 +1,9 @@
+{
+  "module_name": "nf_conntrack_bpf.h",
+  "hash_id": "16c1a00dfd0910be6ab9247bdb40b5f3800edb77a586b50bd35fa3cb8b7b0a68",
+  "original_prompt": "Ingested from linux-6.6.14/include/net/netfilter/nf_conntrack_bpf.h",
+  "human_readable_source": " \n\n#ifndef _NF_CONNTRACK_BPF_H\n#define _NF_CONNTRACK_BPF_H\n\n#include <linux/kconfig.h>\n#include <net/netfilter/nf_conntrack.h>\n\nstruct nf_conn___init {\n\tstruct nf_conn ct;\n};\n\n#if (IS_BUILTIN(CONFIG_NF_CONNTRACK) && IS_ENABLED(CONFIG_DEBUG_INFO_BTF)) || \\\n    (IS_MODULE(CONFIG_NF_CONNTRACK) && IS_ENABLED(CONFIG_DEBUG_INFO_BTF_MODULES))\n\nextern int register_nf_conntrack_bpf(void);\nextern void cleanup_nf_conntrack_bpf(void);\n\n#else\n\nstatic inline int register_nf_conntrack_bpf(void)\n{\n\treturn 0;\n}\n\nstatic inline void cleanup_nf_conntrack_bpf(void)\n{\n}\n\n#endif\n\n#if (IS_BUILTIN(CONFIG_NF_NAT) && IS_ENABLED(CONFIG_DEBUG_INFO_BTF)) || \\\n    (IS_MODULE(CONFIG_NF_NAT) && IS_ENABLED(CONFIG_DEBUG_INFO_BTF_MODULES))\n\nextern int register_nf_nat_bpf(void);\n\n#else\n\nstatic inline int register_nf_nat_bpf(void)\n{\n\treturn 0;\n}\n\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

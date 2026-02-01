@@ -1,0 +1,9 @@
+{
+  "module_name": "strtoimax.c",
+  "hash_id": "55a8c12567ad321e9f1a857650741fc6290fd3e79f76634eaf86dc54d758f61b",
+  "original_prompt": "Ingested from coreutils-9.4/lib/strtoimax.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n \n#include <inttypes.h>\n\n#include <stdlib.h>\n\n#ifdef UNSIGNED\n# ifndef HAVE_DECL_STRTOULL\n\"this configure-time declaration test was not run\"\n# endif\n# if !HAVE_DECL_STRTOULL\nunsigned long long int strtoull (char const *, char **, int);\n# endif\n\n#else\n\n# ifndef HAVE_DECL_STRTOLL\n\"this configure-time declaration test was not run\"\n# endif\n# if !HAVE_DECL_STRTOLL\nlong long int strtoll (char const *, char **, int);\n# endif\n#endif\n\n#ifdef UNSIGNED\n# define Int uintmax_t\n# define Strtoimax strtoumax\n# define Strtol strtoul\n# define Strtoll strtoull\n# define Unsigned unsigned\n#else\n# define Int intmax_t\n# define Strtoimax strtoimax\n# define Strtol strtol\n# define Strtoll strtoll\n# define Unsigned\n#endif\n\nInt\nStrtoimax (char const *ptr, char **endptr, int base)\n{\n  static_assert (sizeof (Int) == sizeof (Unsigned long int)\n                 || sizeof (Int) == sizeof (Unsigned long long int));\n\n  if (sizeof (Int) != sizeof (Unsigned long int))\n    return Strtoll (ptr, endptr, base);\n\n  return Strtol (ptr, endptr, base);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

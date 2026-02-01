@@ -1,0 +1,9 @@
+{
+  "module_name": "seg6_genl.h",
+  "hash_id": "b7f3701e46b2cff4cbe265fb25e76e8d9567fcc6955b6378b8394827808182d2",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/seg6_genl.h",
+  "human_readable_source": " \n#ifndef _LINUX_SEG6_GENL_H\n#define _LINUX_SEG6_GENL_H\n\n#include <uapi/linux/seg6_genl.h>\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

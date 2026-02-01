@@ -1,0 +1,9 @@
+{
+  "module_name": "lib_echo.c",
+  "hash_id": "f14fbc5f005ae0ba9271915a21decb89f3eaff36f67d65f92cc3a49944bcf82f",
+  "original_prompt": "Ingested from ncurses-6.4/ncurses/base/lib_echo.c",
+  "human_readable_source": " \n\n \n\n \n\n#include <curses.priv.h>\n\nMODULE_ID(\"$Id: lib_echo.c,v 1.9 2020/02/02 23:34:34 tom Exp $\")\n\nNCURSES_EXPORT(int)\nNCURSES_SP_NAME(echo) (NCURSES_SP_DCL0)\n{\n    T((T_CALLED(\"echo(%p)\"), (void *) SP_PARM));\n    if (0 == SP_PARM)\n\treturnCode(ERR);\n    SP_PARM->_echo = TRUE;\n    returnCode(OK);\n}\n\n#if NCURSES_SP_FUNCS\nNCURSES_EXPORT(int)\necho(void)\n{\n    return NCURSES_SP_NAME(echo) (CURRENT_SCREEN);\n}\n#endif\n\nNCURSES_EXPORT(int)\nNCURSES_SP_NAME(noecho) (NCURSES_SP_DCL0)\n{\n    T((T_CALLED(\"noecho(%p)\"), (void *) SP_PARM));\n    if (0 == SP_PARM)\n\treturnCode(ERR);\n    SP_PARM->_echo = FALSE;\n    returnCode(OK);\n}\n\n#if NCURSES_SP_FUNCS\nNCURSES_EXPORT(int)\nnoecho(void)\n{\n    return NCURSES_SP_NAME(noecho) (CURRENT_SCREEN);\n}\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "dpu_formats.h",
+  "hash_id": "9bc015ccbeebf9262edc7f879649af770e340a9acadc8e8f08ceb8d95f873a9c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/msm/disp/dpu1/dpu_formats.h",
+  "human_readable_source": " \n \n\n#ifndef _DPU_FORMATS_H\n#define _DPU_FORMATS_H\n\n#include <drm/drm_fourcc.h>\n#include \"msm_gem.h\"\n#include \"dpu_hw_mdss.h\"\n\n \nconst struct dpu_format *dpu_get_dpu_format_ext(\n\t\tconst uint32_t format,\n\t\tconst uint64_t modifier);\n\n#define dpu_get_dpu_format(f) dpu_get_dpu_format_ext(f, 0)\n\n \nstatic inline bool dpu_find_format(u32 format, const u32 *supported_formats,\n\t\t\t\t\tsize_t num_formats)\n{\n\tint i;\n\n\tfor (i = 0; i < num_formats; i++) {\n\t\t \n\t\tif (format == supported_formats[i])\n\t\t\treturn true;\n\t}\n\n\treturn false;\n}\n\n \nconst struct msm_format *dpu_get_msm_format(\n\t\tstruct msm_kms *kms,\n\t\tconst uint32_t format,\n\t\tconst uint64_t modifiers);\n\n \nint dpu_format_check_modified_format(\n\t\tconst struct msm_kms *kms,\n\t\tconst struct msm_format *msm_fmt,\n\t\tconst struct drm_mode_fb_cmd2 *cmd,\n\t\tstruct drm_gem_object **bos);\n\n \nint dpu_format_populate_layout(\n\t\tstruct msm_gem_address_space *aspace,\n\t\tstruct drm_framebuffer *fb,\n\t\tstruct dpu_hw_fmt_layout *fmtl);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

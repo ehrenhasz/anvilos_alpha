@@ -1,0 +1,9 @@
+{
+  "module_name": "cik.h",
+  "hash_id": "5706f247f6372e62f35ca867599c34f7108ebe125b5ba691494ab8c6c3b831c7",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/radeon/cik.h",
+  "human_readable_source": " \n\n#ifndef __CIK_H__\n#define __CIK_H__\n\nstruct radeon_device;\n\nvoid cik_enter_rlc_safe_mode(struct radeon_device *rdev);\nvoid cik_exit_rlc_safe_mode(struct radeon_device *rdev);\nint ci_mc_load_microcode(struct radeon_device *rdev);\nvoid cik_update_cg(struct radeon_device *rdev, u32 block, bool enable);\nu32 cik_gpu_check_soft_reset(struct radeon_device *rdev);\nvoid cik_init_cp_pg_table(struct radeon_device *rdev);\nu32 cik_get_csb_size(struct radeon_device *rdev);\nvoid cik_get_csb_buffer(struct radeon_device *rdev, volatile u32 *buffer);\n\nint cik_sdma_resume(struct radeon_device *rdev);\nvoid cik_sdma_enable(struct radeon_device *rdev, bool enable);\nvoid cik_sdma_fini(struct radeon_device *rdev);\n#endif                          \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "bitops.h",
+  "hash_id": "49fb61114221ef1fcab3bdf81f96a88c379138d6b78fcb7ad9b8439ed6cd5ec1",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/boot/bitops.h",
+  "human_readable_source": " \n \n\n \n\n#ifndef BOOT_BITOPS_H\n#define BOOT_BITOPS_H\n#define _LINUX_BITOPS_H\t\t \n\n#include <linux/types.h>\n#include <asm/asm.h>\n\nstatic inline bool constant_test_bit(int nr, const void *addr)\n{\n\tconst u32 *p = addr;\n\treturn ((1UL << (nr & 31)) & (p[nr >> 5])) != 0;\n}\nstatic inline bool variable_test_bit(int nr, const void *addr)\n{\n\tbool v;\n\tconst u32 *p = addr;\n\n\tasm(\"btl %2,%1\" CC_SET(c) : CC_OUT(c) (v) : \"m\" (*p), \"Ir\" (nr));\n\treturn v;\n}\n\n#define test_bit(nr,addr) \\\n(__builtin_constant_p(nr) ? \\\n constant_test_bit((nr),(addr)) : \\\n variable_test_bit((nr),(addr)))\n\nstatic inline void set_bit(int nr, void *addr)\n{\n\tasm(\"btsl %1,%0\" : \"+m\" (*(u32 *)addr) : \"Ir\" (nr));\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

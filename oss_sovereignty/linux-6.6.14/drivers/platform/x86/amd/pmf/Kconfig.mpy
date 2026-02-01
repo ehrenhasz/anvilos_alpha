@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "5f8539d12942fa92336cf6e11f966b566f9ede311e2cc5d5b16623e8378cee65",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/platform/x86/amd/pmf/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# AMD PMF Driver\n#\n\nconfig AMD_PMF\n\ttristate \"AMD Platform Management Framework\"\n\tdepends on ACPI && PCI\n\tdepends on POWER_SUPPLY\n\tdepends on AMD_NB\n\tselect ACPI_PLATFORM_PROFILE\n\thelp\n\t  This driver provides support for the AMD Platform Management Framework.\n\t  The goal is to enhance end user experience by making AMD PCs smarter,\n\t  quiter, power efficient by adapting to user behavior and environment.\n\n\t  To compile this driver as a module, choose M here: the module will\n\t  be called amd_pmf.\n\nconfig AMD_PMF_DEBUG\n\tbool \"PMF debug information\"\n\tdepends on AMD_PMF\n\thelp\n\t Enabling this option would give more debug information on the OEM fed\n\t power setting values for each of the PMF feature. PMF driver gets this\n\t information after evaluating a ACPI method and the information is stored\n\t in the PMF config store.\n\n\t Say Y here to enable more debug logs and Say N here if you are not sure.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

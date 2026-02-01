@@ -1,0 +1,9 @@
+{
+  "module_name": "sysdep.c",
+  "hash_id": "fe3bbfb8e96d321bd617ca9b7f972adffa43b9fc2f6649a07ae24b0e5310c26f",
+  "original_prompt": "Ingested from linux-6.6.14/fs/hfs/sysdep.c",
+  "human_readable_source": " \n\n#include <linux/namei.h>\n#include \"hfs_fs.h\"\n\n \n\nstatic int hfs_revalidate_dentry(struct dentry *dentry, unsigned int flags)\n{\n\tstruct inode *inode;\n\tint diff;\n\n\tif (flags & LOOKUP_RCU)\n\t\treturn -ECHILD;\n\n\tinode = d_inode(dentry);\n\tif(!inode)\n\t\treturn 1;\n\n\t \n\tdiff = sys_tz.tz_minuteswest * 60 - HFS_I(inode)->tz_secondswest;\n\tif (diff) {\n\t\tstruct timespec64 ctime = inode_get_ctime(inode);\n\n\t\tinode_set_ctime(inode, ctime.tv_sec + diff, ctime.tv_nsec);\n\t\tinode->i_atime.tv_sec += diff;\n\t\tinode->i_mtime.tv_sec += diff;\n\t\tHFS_I(inode)->tz_secondswest += diff;\n\t}\n\treturn 1;\n}\n\nconst struct dentry_operations hfs_dentry_operations =\n{\n\t.d_revalidate\t= hfs_revalidate_dentry,\n\t.d_hash\t\t= hfs_hash_dentry,\n\t.d_compare\t= hfs_compare_dentry,\n};\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

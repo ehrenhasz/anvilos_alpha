@@ -1,0 +1,9 @@
+{
+  "module_name": "ssb_embedded.h",
+  "hash_id": "43d7a778c1e83b19db27fa34a914a8b84b4dfc13a123e60d4a8fcdf6e12ca69c",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/ssb/ssb_embedded.h",
+  "human_readable_source": " \n#ifndef LINUX_SSB_EMBEDDED_H_\n#define LINUX_SSB_EMBEDDED_H_\n\n#include <linux/types.h>\n#include <linux/ssb/ssb.h>\n\n\nextern int ssb_watchdog_timer_set(struct ssb_bus *bus, u32 ticks);\n\n \nu32 ssb_gpio_in(struct ssb_bus *bus, u32 mask);\nu32 ssb_gpio_out(struct ssb_bus *bus, u32 mask, u32 value);\nu32 ssb_gpio_outen(struct ssb_bus *bus, u32 mask, u32 value);\nu32 ssb_gpio_control(struct ssb_bus *bus, u32 mask, u32 value);\nu32 ssb_gpio_intmask(struct ssb_bus *bus, u32 mask, u32 value);\nu32 ssb_gpio_polarity(struct ssb_bus *bus, u32 mask, u32 value);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

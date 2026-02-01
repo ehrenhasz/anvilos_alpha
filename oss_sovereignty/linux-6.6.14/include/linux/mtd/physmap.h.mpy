@@ -1,0 +1,9 @@
+{
+  "module_name": "physmap.h",
+  "hash_id": "2baa41d09da409654faeb31a8b066f3f823832c83517c5cda4dd86cbae35f373",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/mtd/physmap.h",
+  "human_readable_source": " \n \n\n#ifndef __LINUX_MTD_PHYSMAP__\n#define __LINUX_MTD_PHYSMAP__\n\n#include <linux/mtd/mtd.h>\n#include <linux/mtd/partitions.h>\n\nstruct map_info;\nstruct platform_device;\n\nstruct physmap_flash_data {\n\tunsigned int\t\twidth;\n\tint\t\t\t(*init)(struct platform_device *);\n\tvoid\t\t\t(*exit)(struct platform_device *);\n\tvoid\t\t\t(*set_vpp)(struct platform_device *, int);\n\tunsigned int\t\tnr_parts;\n\tunsigned int\t\tpfow_base;\n\tchar                    *probe_type;\n\tstruct mtd_partition\t*parts;\n\tconst char * const\t*part_probe_types;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

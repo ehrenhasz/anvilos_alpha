@@ -1,0 +1,9 @@
+{
+  "module_name": "hpi6205.h",
+  "hash_id": "7146d856dad0c40c3e3ae7a1d724775bbf021ef215fd34c7bf4f95634cabb20a",
+  "original_prompt": "Ingested from linux-6.6.14/sound/pci/asihpi/hpi6205.h",
+  "human_readable_source": " \n \n\n#ifndef _HPI6205_H_\n#define _HPI6205_H_\n\n#include \"hpi_internal.h\"\n\n \n#define H620_HIF_RESET          0\n#define H620_HIF_IDLE           1\n#define H620_HIF_GET_RESP       2\n#define H620_HIF_DATA_DONE      3\n#define H620_HIF_DATA_MASK      0x10\n#define H620_HIF_SEND_DATA      0x14\n#define H620_HIF_GET_DATA       0x15\n#define H620_HIF_UNKNOWN                0x0000ffff\n\n \n\n#define H620_MAX_ISTREAMS 32\n#define H620_MAX_OSTREAMS 32\n#define HPI_NMIXER_CONTROLS 2048\n\n \nstruct controlcache_6205 {\n\tu32 number_of_controls;\n\tu32 physical_address32;\n\tu32 size_in_bytes;\n};\n\n \nstruct async_event_buffer_6205 {\n\tu32 physical_address32;\n\tu32 spare;\n\tstruct hpi_fifo_buffer b;\n};\n\n \n#define HPI6205_SIZEOF_DATA (16*1024)\n\nstruct message_buffer_6205 {\n\tstruct hpi_message message;\n\tchar data[256];\n};\n\nstruct response_buffer_6205 {\n\tstruct hpi_response response;\n\tchar data[256];\n};\n\nunion buffer_6205 {\n\tstruct message_buffer_6205 message_buffer;\n\tstruct response_buffer_6205 response_buffer;\n\tu8 b_data[HPI6205_SIZEOF_DATA];\n};\n\nstruct bus_master_interface {\n\tu32 host_cmd;\n\tu32 dsp_ack;\n\tu32 transfer_size_in_bytes;\n\tunion buffer_6205 u;\n\tstruct controlcache_6205 control_cache;\n\tstruct async_event_buffer_6205 async_buffer;\n\tstruct hpi_hostbuffer_status\n\t instream_host_buffer_status[H620_MAX_ISTREAMS];\n\tstruct hpi_hostbuffer_status\n\t outstream_host_buffer_status[H620_MAX_OSTREAMS];\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

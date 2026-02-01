@@ -1,0 +1,9 @@
+{
+  "module_name": "nlraarch64.c",
+  "hash_id": "b6912c3c3c56d8ff002d9e8668539339924949620a0c7c907c7a15273f7e1fd1",
+  "original_prompt": "Ingested from sys_09_Anvil/source/py/nlraarch64.c",
+  "human_readable_source": " \n\n#include \"py/mpstate.h\" \n\n#if MICROPY_NLR_AARCH64\n\n\n\n\n\n\n__asm(\n    #if defined(__APPLE__) && defined(__MACH__)\n    \"_nlr_push:              \\n\"\n    \".global _nlr_push       \\n\"\n    #else\n    \"nlr_push:               \\n\"\n    \".global nlr_push        \\n\"\n    #endif\n    \"mov x9, sp              \\n\"\n    \"stp lr,  x9,  [x0,  #16]\\n\" \n    \"stp x19, x20, [x0,  #32]\\n\"\n    \"stp x21, x22, [x0,  #48]\\n\"\n    \"stp x23, x24, [x0,  #64]\\n\"\n    \"stp x25, x26, [x0,  #80]\\n\"\n    \"stp x27, x28, [x0,  #96]\\n\"\n    \"str x29,      [x0, #112]\\n\"\n    #if defined(__APPLE__) && defined(__MACH__)\n    \"b _nlr_push_tail        \\n\" \n    #else\n    \"b nlr_push_tail         \\n\" \n    #endif\n    );\n\nNORETURN void nlr_jump(void *val) {\n    MP_NLR_JUMP_HEAD(val, top)\n\n    MP_STATIC_ASSERT(offsetof(nlr_buf_t, regs) == 16); \n\n    __asm volatile (\n        \"mov x0, %0              \\n\"\n        \"ldr x29,      [x0, #112]\\n\"\n        \"ldp x27, x28, [x0,  #96]\\n\"\n        \"ldp x25, x26, [x0,  #80]\\n\"\n        \"ldp x23, x24, [x0,  #64]\\n\"\n        \"ldp x21, x22, [x0,  #48]\\n\"\n        \"ldp x19, x20, [x0,  #32]\\n\"\n        \"ldp lr,  x9,  [x0,  #16]\\n\" \n        \"mov sp, x9              \\n\"\n        \"mov x0, #1              \\n\"  \n        \"ret                     \\n\"\n        :\n        : \"r\" (top)\n        : \"memory\"\n        );\n\n    MP_UNREACHABLE\n}\n\n#endif \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "strcasestr.c",
+  "hash_id": "a2deaf861fe6206025f125eff12d532047d3f136a54a871958872c523ec1a697",
+  "original_prompt": "Ingested from openssh-9.6p1/openbsd-compat/strcasestr.c",
+  "human_readable_source": " \n \n\n \n\n \n\n#include \"includes.h\"\n\n#ifndef HAVE_STRCASESTR\n\n#include <ctype.h>\n#include <string.h>\n\n \nchar *\nstrcasestr(const char *s, const char *find)\n{\n\tchar c, sc;\n\tsize_t len;\n\n\tif ((c = *find++) != 0) {\n\t\tc = (char)tolower((unsigned char)c);\n\t\tlen = strlen(find);\n\t\tdo {\n\t\t\tdo {\n\t\t\t\tif ((sc = *s++) == 0)\n\t\t\t\t\treturn (NULL);\n\t\t\t} while ((char)tolower((unsigned char)sc) != c);\n\t\t} while (strncasecmp(s, find, len) != 0);\n\t\ts--;\n\t}\n\treturn ((char *)s);\n}\nDEF_WEAK(strcasestr);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

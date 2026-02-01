@@ -1,0 +1,9 @@
+{
+  "module_name": "iswblank.m4",
+  "hash_id": "f24a9bfecc5be4c51f4b741c5d6178c7b8bb61439b5cac8a5443d31dd3cd43b1",
+  "original_prompt": "Ingested from coreutils-9.4/m4/iswblank.m4",
+  "human_readable_source": "# iswblank.m4 serial 7\ndnl Copyright (C) 2011-2023 Free Software Foundation, Inc.\ndnl This file is free software; the Free Software Foundation\ndnl gives unlimited permission to copy and/or distribute it,\ndnl with or without modifications, as long as this notice is preserved.\n\nAC_DEFUN([gl_FUNC_ISWBLANK],\n[\n  AC_REQUIRE([gl_WCTYPE_H_DEFAULTS])\n  AC_REQUIRE([gl_WCTYPE_H])\n  dnl Persuade glibc <wctype.h> to declare iswblank().\n  AC_REQUIRE([gl_USE_SYSTEM_EXTENSIONS])\n  gl_CHECK_FUNCS_ANDROID([iswblank], [[#include <wctype.h>]])\n  AC_CHECK_DECLS([iswblank], , , [[\n    #include <wchar.h>\n    #include <wctype.h>\n  ]])\n  if test $ac_cv_func_iswblank = no; then\n    HAVE_ISWBLANK=0\n    if test $ac_cv_have_decl_iswblank = yes \\\n       || case \"$gl_cv_onwards_func_iswblank\" in \\\n            future*) true ;; \\\n            *) false ;; \\\n          esac; then\n      REPLACE_ISWBLANK=1\n    fi\n  fi\n  if test $HAVE_ISWCNTRL = 0 || test $REPLACE_ISWCNTRL = 1; then\n    dnl Redefine all of iswcntrl, ..., towupper in <wctype.h>.\n    :\n  else\n    if test $HAVE_ISWBLANK = 0 || test $REPLACE_ISWBLANK = 1; then\n      dnl Redefine only iswblank.\n      :\n    fi\n  fi\n\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

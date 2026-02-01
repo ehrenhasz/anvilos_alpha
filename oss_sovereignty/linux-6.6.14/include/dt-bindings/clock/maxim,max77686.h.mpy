@@ -1,0 +1,9 @@
+{
+  "module_name": "maxim,max77686.h",
+  "hash_id": "cd1c28ec9b4e7d2d8df7f7865bdfe91604319f9411f7569d80e797bee854e9dc",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/clock/maxim,max77686.h",
+  "human_readable_source": " \n \n\n#ifndef _DT_BINDINGS_CLOCK_MAXIM_MAX77686_CLOCK_H\n#define _DT_BINDINGS_CLOCK_MAXIM_MAX77686_CLOCK_H\n\n \n\n#define MAX77686_CLK_AP\t\t0\n#define MAX77686_CLK_CP\t\t1\n#define MAX77686_CLK_PMIC\t2\n\n \n#define MAX77686_CLKS_NUM\t\t(MAX77686_CLK_PMIC + 1)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

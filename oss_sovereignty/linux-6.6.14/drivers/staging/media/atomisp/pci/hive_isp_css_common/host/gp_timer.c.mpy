@@ -1,0 +1,9 @@
+{
+  "module_name": "gp_timer.c",
+  "hash_id": "1568e4ada14dde76a736863609d2588fbbdfc0fe30538afce4b4bc6ea03ecb00",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/hive_isp_css_common/host/gp_timer.c",
+  "human_readable_source": "\n \n\n#include <type_support.h>  \n#include \"gp_timer.h\"    \n\n#ifndef __INLINE_GP_TIMER__\n#include \"gp_timer_private.h\"   \n#endif  \n#include \"system_local.h\"\n\n \nstatic uint32_t\ngp_timer_reg_load(uint32_t reg);\n\nstatic void\ngp_timer_reg_store(u32 reg, uint32_t value);\n\nstatic uint32_t\ngp_timer_reg_load(uint32_t reg)\n{\n\treturn ia_css_device_load_uint32(\n\t\t   GP_TIMER_BASE +\n\t\t   (reg * sizeof(uint32_t)));\n}\n\nstatic void\ngp_timer_reg_store(u32 reg, uint32_t value)\n{\n\tia_css_device_store_uint32((GP_TIMER_BASE +\n\t\t\t\t    (reg * sizeof(uint32_t))),\n\t\t\t\t   value);\n}\n\nvoid gp_timer_init(gp_timer_ID_t ID)\n{\n\t \n\tgp_timer_reg_store(_REG_GP_TIMER_OVERALL_ENABLE, 1);\n\n\t \n\tgp_timer_reg_store(_REG_GP_TIMER_ENABLE_ID(ID), 1);\n\n\t \n\tgp_timer_reg_store(_REG_GP_TIMER_SIGNAL_SELECT_ID(ID), GP_TIMER_SIGNAL_SELECT);\n\n\t \n\tgp_timer_reg_store(_REG_GP_TIMER_COUNT_TYPE_ID(ID), GP_TIMER_COUNT_TYPE_LOW);\n\n\t \n\tgp_timer_reg_store(_REG_GP_TIMER_RESET_REG, 0xFF);\n}\n\nuint32_t\ngp_timer_read(gp_timer_ID_t ID)\n{\n\treturn\tgp_timer_reg_load(_REG_GP_TIMER_VALUE_ID(ID));\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "ia_css_conversion.host.c",
+  "hash_id": "1667845c9957c143fceb8adb0fc513bce05d22a2b23c698bbd151dad0d6b093e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/isp/kernels/conversion/conversion_1.0/ia_css_conversion.host.c",
+  "human_readable_source": "\n \n\n#include \"ia_css_types.h\"\n#include \"ia_css_conversion.host.h\"\n\nconst struct ia_css_conversion_config default_conversion_config = {\n\t0,\n\t0,\n\t0,\n\t0,\n};\n\nvoid\nia_css_conversion_encode(\n    struct sh_css_isp_conversion_params *to,\n    const struct ia_css_conversion_config *from,\n    unsigned int size)\n{\n\t(void)size;\n\tto->en     = from->en;\n\tto->dummy0 = from->dummy0;\n\tto->dummy1 = from->dummy1;\n\tto->dummy2 = from->dummy2;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

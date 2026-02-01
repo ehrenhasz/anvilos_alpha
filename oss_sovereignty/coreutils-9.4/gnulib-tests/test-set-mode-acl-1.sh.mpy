@@ -1,0 +1,9 @@
+{
+  "module_name": "test-set-mode-acl-1.sh",
+  "hash_id": "fdc87b9a6ba98a552de5dd642d1d1688c5209bf5d9bbb7868f705c6a6dba2c1b",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-set-mode-acl-1.sh",
+  "human_readable_source": "#!/bin/sh\n\n# Test set-mode-acl on the file system of /var/tmp, which usually is a local\n# file system.\n\n. \"${srcdir=.}/init.sh\"; path_prepend_ .\n\nif test -d /var/tmp; then\n  TMPDIR=/var/tmp\nelse\n  TMPDIR=/tmp\nfi\ntest -d $TMPDIR || Exit 77\nexport TMPDIR\n\n$BOURNE_SHELL \"${srcdir}/test-set-mode-acl.sh\"\n\nExit $?\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

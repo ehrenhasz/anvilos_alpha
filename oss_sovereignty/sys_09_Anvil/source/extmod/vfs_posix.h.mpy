@@ -1,0 +1,9 @@
+{
+  "module_name": "vfs_posix.h",
+  "hash_id": "164cefbe3470ddf8b30ecc43fede0d8cd9baf21ea8c1adf22fd11f52a9dd3f2c",
+  "original_prompt": "Ingested from sys_09_Anvil/source/extmod/vfs_posix.h",
+  "human_readable_source": " \n#ifndef MICROPY_INCLUDED_EXTMOD_VFS_POSIX_H\n#define MICROPY_INCLUDED_EXTMOD_VFS_POSIX_H\n\n#include \"py/lexer.h\"\n#include \"py/obj.h\"\n\nextern const mp_obj_type_t mp_type_vfs_posix;\nextern const mp_obj_type_t mp_type_vfs_posix_fileio;\nextern const mp_obj_type_t mp_type_vfs_posix_textio;\n\nmp_obj_t mp_vfs_posix_file_open(const mp_obj_type_t *type, mp_obj_t file_in, mp_obj_t mode_in);\n\n#endif \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

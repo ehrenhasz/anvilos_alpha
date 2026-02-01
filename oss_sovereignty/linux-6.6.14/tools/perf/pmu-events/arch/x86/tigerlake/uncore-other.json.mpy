@@ -1,0 +1,9 @@
+{
+  "module_name": "uncore-other.json",
+  "hash_id": "520d8407b7d990637c2ce666f307a3cd325a8d9ced3cb7cc07c41a6f5eac5d27",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/pmu-events/arch/x86/tigerlake/uncore-other.json",
+  "human_readable_source": "[\n    {\n        \"BriefDescription\": \"UNC_CLOCK.SOCKET\",\n        \"EventCode\": \"0xff\",\n        \"EventName\": \"UNC_CLOCK.SOCKET\",\n        \"PerPkg\": \"1\",\n        \"Unit\": \"CLOCK\"\n    }\n]\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

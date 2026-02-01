@@ -1,0 +1,9 @@
+{
+  "module_name": "pci.h",
+  "hash_id": "32fd54734707417b1d59690d6f10c1e4f7886ea9aa4849edbe483b7a26d978f3",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/pci.h",
+  "human_readable_source": " \n \n\n#ifndef _UAPILINUX_PCI_H\n#define _UAPILINUX_PCI_H\n\n#include <linux/pci_regs.h>\t \n\n \n#define PCI_DEVFN(slot, func)\t((((slot) & 0x1f) << 3) | ((func) & 0x07))\n#define PCI_SLOT(devfn)\t\t(((devfn) >> 3) & 0x1f)\n#define PCI_FUNC(devfn)\t\t((devfn) & 0x07)\n\n \n#define PCIIOC_BASE\t\t('P' << 24 | 'C' << 16 | 'I' << 8)\n#define PCIIOC_CONTROLLER\t(PCIIOC_BASE | 0x00)\t \n#define PCIIOC_MMAP_IS_IO\t(PCIIOC_BASE | 0x01)\t \n#define PCIIOC_MMAP_IS_MEM\t(PCIIOC_BASE | 0x02)\t \n#define PCIIOC_WRITE_COMBINE\t(PCIIOC_BASE | 0x03)\t \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

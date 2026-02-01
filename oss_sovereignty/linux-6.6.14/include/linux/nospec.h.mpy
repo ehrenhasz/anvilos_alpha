@@ -1,0 +1,9 @@
+{
+  "module_name": "nospec.h",
+  "hash_id": "1b01f9c285f0c9ec8884cf7339c8a95f653355ee5f0fddc4863c1bb515094e01",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/nospec.h",
+  "human_readable_source": "\n\n\n\n\n#ifndef _LINUX_NOSPEC_H\n#define _LINUX_NOSPEC_H\n\n#include <linux/compiler.h>\n#include <asm/barrier.h>\n\nstruct task_struct;\n\n#ifndef barrier_nospec\n# define barrier_nospec() do { } while (0)\n#endif\n\n \n#ifndef array_index_mask_nospec\nstatic inline unsigned long array_index_mask_nospec(unsigned long index,\n\t\t\t\t\t\t    unsigned long size)\n{\n\t \n\tOPTIMIZER_HIDE_VAR(index);\n\treturn ~(long)(index | (size - 1UL - index)) >> (BITS_PER_LONG - 1);\n}\n#endif\n\n \n#define array_index_nospec(index, size)\t\t\t\t\t\\\n({\t\t\t\t\t\t\t\t\t\\\n\ttypeof(index) _i = (index);\t\t\t\t\t\\\n\ttypeof(size) _s = (size);\t\t\t\t\t\\\n\tunsigned long _mask = array_index_mask_nospec(_i, _s);\t\t\\\n\t\t\t\t\t\t\t\t\t\\\n\tBUILD_BUG_ON(sizeof(_i) > sizeof(long));\t\t\t\\\n\tBUILD_BUG_ON(sizeof(_s) > sizeof(long));\t\t\t\\\n\t\t\t\t\t\t\t\t\t\\\n\t(typeof(_i)) (_i & _mask);\t\t\t\t\t\\\n})\n\n \nint arch_prctl_spec_ctrl_get(struct task_struct *task, unsigned long which);\nint arch_prctl_spec_ctrl_set(struct task_struct *task, unsigned long which,\n\t\t\t     unsigned long ctrl);\n \nvoid arch_seccomp_spec_mitigate(struct task_struct *task);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "br_private_stp.h",
+  "hash_id": "2c04828d516f524ce11e371e77b0c89164de50dddf935b4512a573920aab79c6",
+  "original_prompt": "Ingested from linux-6.6.14/net/bridge/br_private_stp.h",
+  "human_readable_source": " \n \n\n#ifndef _BR_PRIVATE_STP_H\n#define _BR_PRIVATE_STP_H\n\n#define BPDU_TYPE_CONFIG 0\n#define BPDU_TYPE_TCN 0x80\n\n \n#define BR_MIN_HELLO_TIME\t(1*HZ)\n#define BR_MAX_HELLO_TIME\t(10*HZ)\n\n#define BR_MIN_FORWARD_DELAY\t(2*HZ)\n#define BR_MAX_FORWARD_DELAY\t(30*HZ)\n\n#define BR_MIN_MAX_AGE\t\t(6*HZ)\n#define BR_MAX_MAX_AGE\t\t(40*HZ)\n\n#define BR_MIN_PATH_COST\t1\n#define BR_MAX_PATH_COST\t65535\n\nstruct br_config_bpdu {\n\tunsigned int\ttopology_change:1;\n\tunsigned int\ttopology_change_ack:1;\n\tbridge_id\troot;\n\tint\t\troot_path_cost;\n\tbridge_id\tbridge_id;\n\tport_id\t\tport_id;\n\tint\t\tmessage_age;\n\tint\t\tmax_age;\n\tint\t\thello_time;\n\tint\t\tforward_delay;\n};\n\n \nstatic inline int br_is_designated_port(const struct net_bridge_port *p)\n{\n\treturn !memcmp(&p->designated_bridge, &p->br->bridge_id, 8) &&\n\t\t(p->designated_port == p->port_id);\n}\n\n\n \nvoid br_become_root_bridge(struct net_bridge *br);\nvoid br_config_bpdu_generation(struct net_bridge *);\nvoid br_configuration_update(struct net_bridge *);\nvoid br_port_state_selection(struct net_bridge *);\nvoid br_received_config_bpdu(struct net_bridge_port *p,\n\t\t\t     const struct br_config_bpdu *bpdu);\nvoid br_received_tcn_bpdu(struct net_bridge_port *p);\nvoid br_transmit_config(struct net_bridge_port *p);\nvoid br_transmit_tcn(struct net_bridge *br);\nvoid br_topology_change_detection(struct net_bridge *br);\nvoid __br_set_topology_change(struct net_bridge *br, unsigned char val);\n\n \nvoid br_send_config_bpdu(struct net_bridge_port *, struct br_config_bpdu *);\nvoid br_send_tcn_bpdu(struct net_bridge_port *);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

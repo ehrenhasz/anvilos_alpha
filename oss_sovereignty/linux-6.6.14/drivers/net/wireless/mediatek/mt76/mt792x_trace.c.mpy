@@ -1,0 +1,9 @@
+{
+  "module_name": "mt792x_trace.c",
+  "hash_id": "de9c37c455b80c145fe5374663f2e377338084daa08855bdee6c753785a98122",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/mediatek/mt76/mt792x_trace.c",
+  "human_readable_source": "\n \n\n#include <linux/module.h>\n\n#ifndef __CHECKER__\n#define CREATE_TRACE_POINTS\n#include \"mt792x_trace.h\"\n\nEXPORT_TRACEPOINT_SYMBOL_GPL(lp_event);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "test-i-ring.c",
+  "hash_id": "fb878273475f10147a5266ad5b4d2fec7fc1a20faaad78d6b24eed01b351541f",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-i-ring.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#include \"i-ring.h\"\n\n#include \"macros.h\"\n\nint\nmain (void)\n{\n  int o;\n  I_ring ir;\n  i_ring_init (&ir, -1);\n  o = i_ring_push (&ir, 1);\n  ASSERT (o == -1);\n  o = i_ring_push (&ir, 2);\n  ASSERT (o == -1);\n  o = i_ring_push (&ir, 3);\n  ASSERT (o == -1);\n  o = i_ring_push (&ir, 4);\n  ASSERT (o == -1);\n  o = i_ring_push (&ir, 5);\n  ASSERT (o == 1);\n  o = i_ring_push (&ir, 6);\n  ASSERT (o == 2);\n  o = i_ring_push (&ir, 7);\n  ASSERT (o == 3);\n\n  o = i_ring_pop (&ir);\n  ASSERT (o == 7);\n  o = i_ring_pop (&ir);\n  ASSERT (o == 6);\n  o = i_ring_pop (&ir);\n  ASSERT (o == 5);\n  o = i_ring_pop (&ir);\n  ASSERT (o == 4);\n  ASSERT (i_ring_empty (&ir));\n\n  o = i_ring_push (&ir, 8);\n  ASSERT (o == -1);\n  o = i_ring_pop (&ir);\n  ASSERT (o == 8);\n  ASSERT (i_ring_empty (&ir));\n\n  return 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

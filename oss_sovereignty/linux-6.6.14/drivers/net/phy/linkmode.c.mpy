@@ -1,0 +1,9 @@
+{
+  "module_name": "linkmode.c",
+  "hash_id": "48c221b99f46036cc622159ba73a7f519cc5c07ab5d1282e63e4242e280c6194",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/phy/linkmode.c",
+  "human_readable_source": "\n#include <linux/linkmode.h>\n\n \nvoid linkmode_resolve_pause(const unsigned long *local_adv,\n\t\t\t    const unsigned long *partner_adv,\n\t\t\t    bool *tx_pause, bool *rx_pause)\n{\n\t__ETHTOOL_DECLARE_LINK_MODE_MASK(m);\n\n\tlinkmode_and(m, local_adv, partner_adv);\n\tif (linkmode_test_bit(ETHTOOL_LINK_MODE_Pause_BIT, m)) {\n\t\t*tx_pause = true;\n\t\t*rx_pause = true;\n\t} else if (linkmode_test_bit(ETHTOOL_LINK_MODE_Asym_Pause_BIT, m)) {\n\t\t*tx_pause = linkmode_test_bit(ETHTOOL_LINK_MODE_Pause_BIT,\n\t\t\t\t\t      partner_adv);\n\t\t*rx_pause = linkmode_test_bit(ETHTOOL_LINK_MODE_Pause_BIT,\n\t\t\t\t\t      local_adv);\n\t} else {\n\t\t*tx_pause = false;\n\t\t*rx_pause = false;\n\t}\n}\nEXPORT_SYMBOL_GPL(linkmode_resolve_pause);\n\n \nvoid linkmode_set_pause(unsigned long *advertisement, bool tx, bool rx)\n{\n\tlinkmode_mod_bit(ETHTOOL_LINK_MODE_Pause_BIT, advertisement, rx);\n\tlinkmode_mod_bit(ETHTOOL_LINK_MODE_Asym_Pause_BIT, advertisement,\n\t\t\t rx ^ tx);\n}\nEXPORT_SYMBOL_GPL(linkmode_set_pause);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

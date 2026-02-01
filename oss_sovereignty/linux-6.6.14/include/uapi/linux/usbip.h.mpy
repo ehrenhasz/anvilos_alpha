@@ -1,0 +1,9 @@
+{
+  "module_name": "usbip.h",
+  "hash_id": "3c797e18922ecd2e23a6bfb89292e72199888882e31166c0d7fb32ce740a7895",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/usbip.h",
+  "human_readable_source": " \n \n\n#ifndef _UAPI_LINUX_USBIP_H\n#define _UAPI_LINUX_USBIP_H\n\n \nenum usbip_device_status {\n\t \n\tSDEV_ST_AVAILABLE = 0x01,\n\t \n\tSDEV_ST_USED,\n\t \n\tSDEV_ST_ERROR,\n\n\t \n\tVDEV_ST_NULL,\n\t \n\tVDEV_ST_NOTASSIGNED,\n\tVDEV_ST_USED,\n\tVDEV_ST_ERROR\n};\n\n \n\n#define USBIP_URB_SHORT_NOT_OK\t\t0x0001\n#define USBIP_URB_ISO_ASAP\t\t0x0002\n#define USBIP_URB_NO_TRANSFER_DMA_MAP\t0x0004\n#define USBIP_URB_ZERO_PACKET\t\t0x0040\n#define USBIP_URB_NO_INTERRUPT\t\t0x0080\n#define USBIP_URB_FREE_BUFFER\t\t0x0100\n#define USBIP_URB_DIR_IN\t\t0x0200\n#define USBIP_URB_DIR_OUT\t\t0\n#define USBIP_URB_DIR_MASK\t\tUSBIP_URB_DIR_IN\n\n#define USBIP_URB_DMA_MAP_SINGLE\t0x00010000\n#define USBIP_URB_DMA_MAP_PAGE\t\t0x00020000\n#define USBIP_URB_DMA_MAP_SG\t\t0x00040000\n#define USBIP_URB_MAP_LOCAL\t\t0x00080000\n#define USBIP_URB_SETUP_MAP_SINGLE\t0x00100000\n#define USBIP_URB_SETUP_MAP_LOCAL\t0x00200000\n#define USBIP_URB_DMA_SG_COMBINED\t0x00400000\n#define USBIP_URB_ALIGNED_TEMP_BUFFER\t0x00800000\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

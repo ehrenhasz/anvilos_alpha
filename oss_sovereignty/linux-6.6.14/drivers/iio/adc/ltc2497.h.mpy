@@ -1,0 +1,9 @@
+{
+  "module_name": "ltc2497.h",
+  "hash_id": "1aeab5659c47422ae4ae3a337235207757519d723d94021d8b3e4f7f927cb054",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/iio/adc/ltc2497.h",
+  "human_readable_source": " \n\n#define LTC2497_ENABLE\t\t\t0xA0\n#define LTC2497_CONFIG_DEFAULT\t\tLTC2497_ENABLE\n#define LTC2497_CONVERSION_TIME_MS\t150ULL\n\nstruct ltc2497_chip_info {\n\tu32 resolution;\n\tconst char *name;\n};\n\nstruct ltc2497core_driverdata {\n\tstruct regulator *ref;\n\tktime_t\ttime_prev;\n\t \n\tstruct mutex lock;\n\tconst struct ltc2497_chip_info\t*chip_info;\n\tu8 addr_prev;\n\tint (*result_and_measure)(struct ltc2497core_driverdata *ddata,\n\t\t\t\t  u8 address, int *val);\n};\n\nint ltc2497core_probe(struct device *dev, struct iio_dev *indio_dev);\nvoid ltc2497core_remove(struct iio_dev *indio_dev);\n\nMODULE_IMPORT_NS(LTC2497);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

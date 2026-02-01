@@ -1,0 +1,9 @@
+{
+  "module_name": "msg.c",
+  "hash_id": "152ae03a047f1b59c729156c0c3ce4cc8e53537cca472ba0dc41a24d28e07f1c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/firmware/arm_scmi/msg.c",
+  "human_readable_source": "\n \n\n#include <linux/types.h>\n\n#include \"common.h\"\n\n \nstruct scmi_msg_payld {\n\t__le32 msg_header;\n\t__le32 msg_payload[];\n};\n\n \nsize_t msg_command_size(struct scmi_xfer *xfer)\n{\n\treturn sizeof(struct scmi_msg_payld) + xfer->tx.len;\n}\n\n \nsize_t msg_response_size(struct scmi_xfer *xfer)\n{\n\treturn sizeof(struct scmi_msg_payld) + sizeof(__le32) + xfer->rx.len;\n}\n\n \nvoid msg_tx_prepare(struct scmi_msg_payld *msg, struct scmi_xfer *xfer)\n{\n\tmsg->msg_header = cpu_to_le32(pack_scmi_header(&xfer->hdr));\n\tif (xfer->tx.buf)\n\t\tmemcpy(msg->msg_payload, xfer->tx.buf, xfer->tx.len);\n}\n\n \nu32 msg_read_header(struct scmi_msg_payld *msg)\n{\n\treturn le32_to_cpu(msg->msg_header);\n}\n\n \nvoid msg_fetch_response(struct scmi_msg_payld *msg, size_t len,\n\t\t\tstruct scmi_xfer *xfer)\n{\n\tsize_t prefix_len = sizeof(*msg) + sizeof(msg->msg_payload[0]);\n\n\txfer->hdr.status = le32_to_cpu(msg->msg_payload[0]);\n\txfer->rx.len = min_t(size_t, xfer->rx.len,\n\t\t\t     len >= prefix_len ? len - prefix_len : 0);\n\n\t \n\tmemcpy(xfer->rx.buf, &msg->msg_payload[1], xfer->rx.len);\n}\n\n \nvoid msg_fetch_notification(struct scmi_msg_payld *msg, size_t len,\n\t\t\t    size_t max_len, struct scmi_xfer *xfer)\n{\n\txfer->rx.len = min_t(size_t, max_len,\n\t\t\t     len >= sizeof(*msg) ? len - sizeof(*msg) : 0);\n\n\t \n\tmemcpy(xfer->rx.buf, msg->msg_payload, xfer->rx.len);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

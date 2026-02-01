@@ -1,0 +1,9 @@
+{
+  "module_name": "pp_thermal.h",
+  "hash_id": "d74cf5402dac4df608d6339f0fc8d7f264c7dcb14118f7c66c9241cb6de8c152",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/pm/powerplay/inc/pp_thermal.h",
+  "human_readable_source": " \n#ifndef PP_THERMAL_H\n#define PP_THERMAL_H\n\n#include \"power_state.h\"\n\nstatic const struct PP_TemperatureRange __maybe_unused SMU7ThermalWithDelayPolicy[] = {\n\t{-273150,  99000, 99000, -273150, 99000, 99000, -273150, 99000, 99000},\n\t{ 120000, 120000, 120000, 120000, 120000, 120000, 120000, 120000, 120000},\n};\n\nstatic const struct PP_TemperatureRange __maybe_unused SMU7ThermalPolicy[] = {\n\t{-273150,  99000, 99000, -273150, 99000, 99000, -273150, 99000, 99000},\n\t{ 120000, 120000, 120000, 120000, 120000, 120000, 120000, 120000, 120000},\n};\n\n#define CTF_OFFSET_EDGE\t\t\t5\n#define CTF_OFFSET_HOTSPOT\t\t5\n#define CTF_OFFSET_HBM\t\t\t5\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

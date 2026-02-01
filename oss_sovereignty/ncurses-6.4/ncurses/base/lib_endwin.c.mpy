@@ -1,0 +1,9 @@
+{
+  "module_name": "lib_endwin.c",
+  "hash_id": "c7e1a72dbf0970f60e27d33eb5ad7eee12e760ba6c9dced71d1a96809bea893a",
+  "original_prompt": "Ingested from ncurses-6.4/ncurses/base/lib_endwin.c",
+  "human_readable_source": " \n\n \n\n \n\n#include <curses.priv.h>\n\nMODULE_ID(\"$Id: lib_endwin.c,v 1.25 2020/02/02 23:34:34 tom Exp $\")\n\nNCURSES_EXPORT(int)\nNCURSES_SP_NAME(endwin) (NCURSES_SP_DCL0)\n{\n    int code = ERR;\n\n    T((T_CALLED(\"endwin(%p)\"), (void *) SP_PARM));\n\n    if (SP_PARM) {\n#ifdef USE_TERM_DRIVER\n\tTERMINAL_CONTROL_BLOCK *TCB = TCBOf(SP_PARM);\n\n\tSP_PARM->_endwin = ewSuspend;\n\tif (TCB && TCB->drv && TCB->drv->td_scexit)\n\t    TCB->drv->td_scexit(SP_PARM);\n#else\n\tSP_PARM->_endwin = ewSuspend;\n\tSP_PARM->_mouse_wrap(SP_PARM);\n\t_nc_screen_wrap();\n\t_nc_mvcur_wrap();\t \n#endif\n\tcode = NCURSES_SP_NAME(reset_shell_mode) (NCURSES_SP_ARG);\n    }\n\n    returnCode(code);\n}\n\n#if NCURSES_SP_FUNCS\nNCURSES_EXPORT(int)\nendwin(void)\n{\n    return NCURSES_SP_NAME(endwin) (CURRENT_SCREEN);\n}\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "ccid.h",
+  "hash_id": "8393268dd83bf726a6734dc560902e44256191f8999ee9fad244927a18f8e4c1",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/usb/ccid.h",
+  "human_readable_source": " \n \n \n#ifndef __CCID_H\n#define __CCID_H\n\n#include <linux/types.h>\n\n#define USB_INTERFACE_CLASS_CCID 0x0b\n\nstruct ccid_descriptor {\n\t__u8  bLength;\n\t__u8  bDescriptorType;\n\t__le16 bcdCCID;\n\t__u8  bMaxSlotIndex;\n\t__u8  bVoltageSupport;\n\t__le32 dwProtocols;\n\t__le32 dwDefaultClock;\n\t__le32 dwMaximumClock;\n\t__u8  bNumClockSupported;\n\t__le32 dwDataRate;\n\t__le32 dwMaxDataRate;\n\t__u8  bNumDataRatesSupported;\n\t__le32 dwMaxIFSD;\n\t__le32 dwSynchProtocols;\n\t__le32 dwMechanical;\n\t__le32 dwFeatures;\n\t__le32 dwMaxCCIDMessageLength;\n\t__u8  bClassGetResponse;\n\t__u8  bClassEnvelope;\n\t__le16 wLcdLayout;\n\t__u8  bPINSupport;\n\t__u8  bMaxCCIDBusySlots;\n} __attribute__ ((packed));\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

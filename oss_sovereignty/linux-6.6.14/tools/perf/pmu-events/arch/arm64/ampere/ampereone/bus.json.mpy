@@ -1,0 +1,9 @@
+{
+  "module_name": "bus.json",
+  "hash_id": "c0239202435343ef6878c079ee2e2cb65d2c239e2168eaea0c6bd5d799ab02d3",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/pmu-events/arch/arm64/ampere/ampereone/bus.json",
+  "human_readable_source": "[\n    {\n        \"ArchStdEvent\": \"CPU_CYCLES\"\n    },\n    {\n        \"ArchStdEvent\": \"BUS_CYCLES\"\n    },\n    {\n        \"ArchStdEvent\": \"BUS_ACCESS_RD\"\n    },\n    {\n        \"ArchStdEvent\": \"BUS_ACCESS_WR\"\n    },\n    {\n        \"ArchStdEvent\": \"BUS_ACCESS_SHARED\"\n    },\n    {\n        \"ArchStdEvent\": \"BUS_ACCESS_NOT_SHARED\"\n    },\n    {\n        \"ArchStdEvent\": \"BUS_ACCESS_NORMAL\"\n    },\n    {\n        \"ArchStdEvent\": \"BUS_ACCESS_PERIPH\"\n    },\n    {\n        \"ArchStdEvent\": \"BUS_ACCESS\"\n    },\n    {\n        \"ArchStdEvent\": \"CNT_CYCLES\"\n    }\n]\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

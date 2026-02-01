@@ -1,0 +1,9 @@
+{
+  "module_name": "oclass.h",
+  "hash_id": "a414037079348b2fbf8ee169efa88baf7598e87ac120ed74de7757a3daed2af0",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/include/nvkm/core/oclass.h",
+  "human_readable_source": "#ifndef __NVKM_OCLASS_H__\n#define __NVKM_OCLASS_H__\n#include <core/os.h>\n#include <core/debug.h>\nstruct nvkm_oclass;\nstruct nvkm_object;\n\nstruct nvkm_sclass {\n\tint minver;\n\tint maxver;\n\ts32 oclass;\n\tconst struct nvkm_object_func *func;\n\tint (*ctor)(const struct nvkm_oclass *, void *data, u32 size,\n\t\t    struct nvkm_object **);\n};\n\nstruct nvkm_oclass {\n\tint (*ctor)(const struct nvkm_oclass *, void *data, u32 size,\n\t\t    struct nvkm_object **);\n\tstruct nvkm_sclass base;\n\tconst void *priv;\n\tconst void *engn;\n\tu32 handle;\n\tu8  route;\n\tu64 token;\n\tu64 object;\n\tstruct nvkm_client *client;\n\tstruct nvkm_object *parent;\n\tstruct nvkm_engine *engine;\n};\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

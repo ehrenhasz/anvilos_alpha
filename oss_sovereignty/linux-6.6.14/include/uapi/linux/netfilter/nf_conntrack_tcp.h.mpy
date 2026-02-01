@@ -1,0 +1,9 @@
+{
+  "module_name": "nf_conntrack_tcp.h",
+  "hash_id": "1a841c7825d0d5d53753cc81a751b1103305c110020ee1d8582373a05abdd49c",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/netfilter/nf_conntrack_tcp.h",
+  "human_readable_source": " \n#ifndef _UAPI_NF_CONNTRACK_TCP_H\n#define _UAPI_NF_CONNTRACK_TCP_H\n \n\n#include <linux/types.h>\n\n \nenum tcp_conntrack {\n\tTCP_CONNTRACK_NONE,\n\tTCP_CONNTRACK_SYN_SENT,\n\tTCP_CONNTRACK_SYN_RECV,\n\tTCP_CONNTRACK_ESTABLISHED,\n\tTCP_CONNTRACK_FIN_WAIT,\n\tTCP_CONNTRACK_CLOSE_WAIT,\n\tTCP_CONNTRACK_LAST_ACK,\n\tTCP_CONNTRACK_TIME_WAIT,\n\tTCP_CONNTRACK_CLOSE,\n\tTCP_CONNTRACK_LISTEN,\t \n#define TCP_CONNTRACK_SYN_SENT2\tTCP_CONNTRACK_LISTEN\n\tTCP_CONNTRACK_MAX,\n\tTCP_CONNTRACK_IGNORE,\n\tTCP_CONNTRACK_RETRANS,\n\tTCP_CONNTRACK_UNACK,\n\tTCP_CONNTRACK_TIMEOUT_MAX\n};\n\n \n#define IP_CT_TCP_FLAG_WINDOW_SCALE\t\t0x01\n\n \n#define IP_CT_TCP_FLAG_SACK_PERM\t\t0x02\n\n \n#define IP_CT_TCP_FLAG_CLOSE_INIT\t\t0x04\n\n \n#define IP_CT_TCP_FLAG_BE_LIBERAL\t\t0x08\n\n \n#define IP_CT_TCP_FLAG_DATA_UNACKNOWLEDGED\t0x10\n\n \n#define IP_CT_TCP_FLAG_MAXACK_SET\t\t0x20\n\n \n#define IP_CT_EXP_CHALLENGE_ACK \t\t0x40\n\n \n#define IP_CT_TCP_SIMULTANEOUS_OPEN\t\t0x80\n\nstruct nf_ct_tcp_flags {\n\t__u8 flags;\n\t__u8 mask;\n};\n\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

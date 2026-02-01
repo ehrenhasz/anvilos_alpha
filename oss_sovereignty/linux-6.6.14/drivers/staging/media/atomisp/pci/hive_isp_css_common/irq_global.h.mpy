@@ -1,0 +1,9 @@
+{
+  "module_name": "irq_global.h",
+  "hash_id": "bf4d7a77dffa6bbcb0a537d42dc519769823d9db8d1171405cafdbd55d4b7605",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/hive_isp_css_common/irq_global.h",
+  "human_readable_source": " \n \n\n#ifndef __IRQ_GLOBAL_H_INCLUDED__\n#define __IRQ_GLOBAL_H_INCLUDED__\n\n#include <system_local.h>\n\n#define IS_IRQ_VERSION_2\n#define IS_IRQ_MAP_VERSION_2\n\n \n#ifndef HAS_NO_RX\n#include \"irq_types_hrt.h\"\n#endif\n\n \n#define\tIRQ_SW_CHANNEL_OFFSET\thrt_isp_css_irq_sw_pin_0\n\ntypedef enum {\n\tIRQ_SW_CHANNEL0_ID = hrt_isp_css_irq_sw_pin_0 - IRQ_SW_CHANNEL_OFFSET,\n\tIRQ_SW_CHANNEL1_ID = hrt_isp_css_irq_sw_pin_1 - IRQ_SW_CHANNEL_OFFSET,\n\tN_IRQ_SW_CHANNEL_ID\n} irq_sw_channel_id_t;\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

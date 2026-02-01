@@ -1,0 +1,9 @@
+{
+  "module_name": "apparmor.h",
+  "hash_id": "9ceea61a16dc8f6a6acb381cfe3b3d7da8b651c8ff02d6b1719214f3a637d599",
+  "original_prompt": "Ingested from linux-6.6.14/security/apparmor/include/apparmor.h",
+  "human_readable_source": " \n \n\n#ifndef __APPARMOR_H\n#define __APPARMOR_H\n\n#include <linux/types.h>\n\n \n#define AA_CLASS_NONE\t\t0\n#define AA_CLASS_UNKNOWN\t1\n#define AA_CLASS_FILE\t\t2\n#define AA_CLASS_CAP\t\t3\n#define AA_CLASS_DEPRECATED\t4\n#define AA_CLASS_RLIMITS\t5\n#define AA_CLASS_DOMAIN\t\t6\n#define AA_CLASS_MOUNT\t\t7\n#define AA_CLASS_PTRACE\t\t9\n#define AA_CLASS_SIGNAL\t\t10\n#define AA_CLASS_XMATCH\t\t11\n#define AA_CLASS_NET\t\t14\n#define AA_CLASS_LABEL\t\t16\n#define AA_CLASS_POSIX_MQUEUE\t17\n#define AA_CLASS_IO_URING\t18\n#define AA_CLASS_MODULE\t\t19\n#define AA_CLASS_DISPLAY_LSM\t20\n\n#define AA_CLASS_X\t\t31\n#define AA_CLASS_DBUS\t\t32\n\n#define AA_CLASS_LAST\t\tAA_CLASS_DBUS\n\n \nextern enum audit_mode aa_g_audit;\nextern bool aa_g_audit_header;\nextern bool aa_g_debug;\nextern bool aa_g_hash_policy;\nextern bool aa_g_export_binary;\nextern int aa_g_rawdata_compression_level;\nextern bool aa_g_lock_policy;\nextern bool aa_g_logsyscall;\nextern bool aa_g_paranoid_load;\nextern unsigned int aa_g_path_max;\n\n#ifdef CONFIG_SECURITY_APPARMOR_EXPORT_BINARY\n#define AA_MIN_CLEVEL zstd_min_clevel()\n#define AA_MAX_CLEVEL zstd_max_clevel()\n#define AA_DEFAULT_CLEVEL ZSTD_CLEVEL_DEFAULT\n#else\n#define AA_MIN_CLEVEL 0\n#define AA_MAX_CLEVEL 0\n#define AA_DEFAULT_CLEVEL 0\n#endif  \n\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

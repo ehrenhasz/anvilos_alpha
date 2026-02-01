@@ -1,0 +1,9 @@
+{
+  "module_name": "spectral.h",
+  "hash_id": "a0318d9f57b90e46fb322a9e631297d49649adb8796675baed1500b9dcf7af5c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/ath/ath11k/spectral.h",
+  "human_readable_source": " \n \n\n#ifndef ATH11K_SPECTRAL_H\n#define ATH11K_SPECTRAL_H\n\n#include \"../spectral_common.h\"\n#include \"dbring.h\"\n\n \nenum ath11k_spectral_mode {\n\tATH11K_SPECTRAL_DISABLED = 0,\n\tATH11K_SPECTRAL_BACKGROUND,\n\tATH11K_SPECTRAL_MANUAL,\n};\n\nstruct ath11k_spectral {\n\tstruct ath11k_dbring rx_ring;\n\t \n\tspinlock_t lock;\n\tstruct rchan *rfs_scan;\t \n\tstruct dentry *scan_ctl;\n\tstruct dentry *scan_count;\n\tstruct dentry *scan_bins;\n\tenum ath11k_spectral_mode mode;\n\tu16 count;\n\tu8 fft_size;\n\tbool enabled;\n\tbool is_primary;\n};\n\n#ifdef CONFIG_ATH11K_SPECTRAL\n\nint ath11k_spectral_init(struct ath11k_base *ab);\nvoid ath11k_spectral_deinit(struct ath11k_base *ab);\nint ath11k_spectral_vif_stop(struct ath11k_vif *arvif);\nvoid ath11k_spectral_reset_buffer(struct ath11k *ar);\nenum ath11k_spectral_mode ath11k_spectral_get_mode(struct ath11k *ar);\nstruct ath11k_dbring *ath11k_spectral_get_dbring(struct ath11k *ar);\n\n#else\n\nstatic inline int ath11k_spectral_init(struct ath11k_base *ab)\n{\n\treturn 0;\n}\n\nstatic inline void ath11k_spectral_deinit(struct ath11k_base *ab)\n{\n}\n\nstatic inline int ath11k_spectral_vif_stop(struct ath11k_vif *arvif)\n{\n\treturn 0;\n}\n\nstatic inline void ath11k_spectral_reset_buffer(struct ath11k *ar)\n{\n}\n\nstatic inline\nenum ath11k_spectral_mode ath11k_spectral_get_mode(struct ath11k *ar)\n{\n\treturn ATH11K_SPECTRAL_DISABLED;\n}\n\nstatic inline\nstruct ath11k_dbring *ath11k_spectral_get_dbring(struct ath11k *ar)\n{\n\treturn NULL;\n}\n\n#endif  \n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

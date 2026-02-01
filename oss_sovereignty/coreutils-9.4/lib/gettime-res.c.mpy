@@ -1,0 +1,9 @@
+{
+  "module_name": "gettime-res.c",
+  "hash_id": "b2d4c6160385713861f4b8828e631cc20e41a7584189ccdf34b9068d09111696",
+  "original_prompt": "Ingested from coreutils-9.4/lib/gettime-res.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#include \"timespec.h\"\n\nstatic long int _GL_ATTRIBUTE_CONST\ngcd (long int a, long int b)\n{\n  while (b != 0)\n    {\n      long int r = a % b;\n      a = b;\n      b = r;\n    }\n  return a;\n}\n\n \n\nlong int\ngettime_res (void)\n{\n  struct timespec res;\n#if defined CLOCK_REALTIME && HAVE_CLOCK_GETRES\n  clock_getres (CLOCK_REALTIME, &res);\n#elif defined HAVE_TIMESPEC_GETRES\n  timespec_getres (&res, TIME_UTC);\n#else\n   \n  res.tv_sec = 1;\n  res.tv_nsec = 0;\n#endif\n\n   \n\n  long int hz = TIMESPEC_HZ;\n  long int r = res.tv_nsec <= 0 ? hz : res.tv_nsec;\n  struct timespec earlier = { .tv_nsec = -1 };\n\n   \n  int nsamples = 32;\n  for (int i = 0; 1 < r && i < nsamples; i++)\n    {\n       \n      struct timespec now;\n      for (;; i = nsamples)\n        {\n          now = current_timespec ();\n          if (earlier.tv_nsec != now.tv_nsec || earlier.tv_sec != now.tv_sec)\n            break;\n        }\n      earlier = now;\n\n      if (0 < now.tv_nsec)\n        r = gcd (r, now.tv_nsec);\n    }\n\n  return r;\n}\n\n \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

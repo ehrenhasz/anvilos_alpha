@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "32355932ff0aeb853ae27471aca7a80b4470653b1c3a082dc018505b73d74b0a",
+  "original_prompt": "Ingested from linux-6.6.14/sound/arm/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n# ALSA ARM drivers\n\nmenuconfig SND_ARM\n\tbool \"ARM sound devices\"\n\tdepends on ARM\n\tdefault y\n\thelp\n\t  Support for sound devices specific to ARM architectures.\n\t  Drivers that are implemented on ASoC can be found in\n\t  \"ALSA for SoC audio support\" section.\n\nif SND_ARM\n\nconfig SND_ARMAACI\n\ttristate \"ARM PrimeCell PL041 AC Link support\"\n\tdepends on ARM_AMBA\n\tselect SND_PCM\n\tselect SND_AC97_CODEC\n\nconfig SND_PXA2XX_AC97\n\ttristate \"AC97 driver for the Intel PXA2xx chip\"\n\tdepends on ARCH_PXA\n\tselect SND_AC97_CODEC\n\tselect SND_PXA2XX_LIB\n\tselect SND_PXA2XX_LIB_AC97\n\thelp\n\t  Say Y or M if you want to support any AC97 codec attached to\n\t  the PXA2xx AC97 interface.\n\nendif\t# SND_ARM\n\nconfig SND_PXA2XX_LIB\n\ttristate\n\tselect SND_DMAENGINE_PCM\n\nconfig SND_PXA2XX_LIB_AC97\n\tbool\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

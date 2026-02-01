@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "fd8bda299a8cd4dff4744cf5ded4974aec0c1448e2ee20516819bc1546786bc8",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/dlink/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Makefile for the D-Link network device drivers.\n#\n\nobj-$(CONFIG_DL2K) += dl2k.o\nobj-$(CONFIG_SUNDANCE) += sundance.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

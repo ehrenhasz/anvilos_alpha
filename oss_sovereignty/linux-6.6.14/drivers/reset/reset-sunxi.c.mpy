@@ -1,0 +1,9 @@
+{
+  "module_name": "reset-sunxi.c",
+  "hash_id": "4c644c1374cba935e1c9e9f40d86610b4386c56cb86ffb86141f40d21f0c4a37",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/reset/reset-sunxi.c",
+  "human_readable_source": "\n \n\n#include <linux/err.h>\n#include <linux/io.h>\n#include <linux/init.h>\n#include <linux/of.h>\n#include <linux/of_address.h>\n#include <linux/platform_device.h>\n#include <linux/reset-controller.h>\n#include <linux/reset/reset-simple.h>\n#include <linux/reset/sunxi.h>\n#include <linux/slab.h>\n#include <linux/spinlock.h>\n#include <linux/types.h>\n\nstatic int sunxi_reset_init(struct device_node *np)\n{\n\tstruct reset_simple_data *data;\n\tstruct resource res;\n\tresource_size_t size;\n\tint ret;\n\n\tdata = kzalloc(sizeof(*data), GFP_KERNEL);\n\tif (!data)\n\t\treturn -ENOMEM;\n\n\tret = of_address_to_resource(np, 0, &res);\n\tif (ret)\n\t\tgoto err_alloc;\n\n\tsize = resource_size(&res);\n\tif (!request_mem_region(res.start, size, np->name)) {\n\t\tret = -EBUSY;\n\t\tgoto err_alloc;\n\t}\n\n\tdata->membase = ioremap(res.start, size);\n\tif (!data->membase) {\n\t\tret = -ENOMEM;\n\t\tgoto err_alloc;\n\t}\n\n\tspin_lock_init(&data->lock);\n\n\tdata->rcdev.owner = THIS_MODULE;\n\tdata->rcdev.nr_resets = size * 8;\n\tdata->rcdev.ops = &reset_simple_ops;\n\tdata->rcdev.of_node = np;\n\tdata->active_low = true;\n\n\treturn reset_controller_register(&data->rcdev);\n\nerr_alloc:\n\tkfree(data);\n\treturn ret;\n};\n\n \nstatic const struct of_device_id sunxi_early_reset_dt_ids[] __initconst = {\n\t{ .compatible = \"allwinner,sun6i-a31-ahb1-reset\", },\n\t{   },\n};\n\nvoid __init sun6i_reset_init(void)\n{\n\tstruct device_node *np;\n\n\tfor_each_matching_node(np, sunxi_early_reset_dt_ids)\n\t\tsunxi_reset_init(np);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

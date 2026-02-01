@@ -1,0 +1,9 @@
+{
+  "module_name": "lctype.h",
+  "hash_id": "834005cca178f5cd020ed8b8bed738e80d33c6eba18a5aa39ff9378c4ec2a4dc",
+  "original_prompt": "Ingested from zfs-2.2.2/module/lua/lctype.h",
+  "human_readable_source": " \n\n#ifndef lctype_h\n#define lctype_h\n\n#include <sys/lua/lua.h>\n\n\n \n\n#if !defined(LUA_USE_CTYPE)\n\n#if 'A' == 65 && '0' == 48\n \n#define LUA_USE_CTYPE\t0\n#else\n \n#define LUA_USE_CTYPE\t1\n#endif\n\n#endif\n\n\n#if !LUA_USE_CTYPE\t \n\n#include \"llimits.h\"\n\n\n#define ALPHABIT\t0\n#define DIGITBIT\t1\n#define PRINTBIT\t2\n#define SPACEBIT\t3\n#define XDIGITBIT\t4\n\n\n#define MASK(B)\t\t(1 << (B))\n\n\n \n#define testprop(c,p)\t(luai_ctype_[(lu_byte)(c)+1] & (p))\n\n \n#define lislalpha(c)\ttestprop(c, MASK(ALPHABIT))\n#define lislalnum(c)\ttestprop(c, (MASK(ALPHABIT) | MASK(DIGITBIT)))\n#define lisdigit(c)\ttestprop(c, MASK(DIGITBIT))\n#define lisspace(c)\ttestprop(c, MASK(SPACEBIT))\n#define lisprint(c)\ttestprop(c, MASK(PRINTBIT))\n#define lisxdigit(c)\ttestprop(c, MASK(XDIGITBIT))\n\n \n#define ltolower(c)\t((c) | ('A' ^ 'a'))\n\n\n \nLUAI_DDEC const lu_byte luai_ctype_[UCHAR_MAX + 2];\n\n\n#else\t\t\t \n\n \n\n#include <ctype.h>\n\n\n#define lislalpha(c)\t(isalpha(c) || (c) == '_')\n#define lislalnum(c)\t(isalnum(c) || (c) == '_')\n#define lisdigit(c)\t(isdigit(c))\n#define lisspace(c)\t(isspace(c))\n#define lisprint(c)\t(isprint(c))\n#define lisxdigit(c)\t(isxdigit(c))\n\n#define ltolower(c)\t(tolower(c))\n\n#endif\t\t\t \n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

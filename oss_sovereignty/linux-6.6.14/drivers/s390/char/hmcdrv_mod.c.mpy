@@ -1,0 +1,9 @@
+{
+  "module_name": "hmcdrv_mod.c",
+  "hash_id": "26eb15f7ecd8dbfa8dd763fddb438bd4079b737c6f32858b9c182b3753d88140",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/s390/char/hmcdrv_mod.c",
+  "human_readable_source": "\n \n\n#define KMSG_COMPONENT \"hmcdrv\"\n#define pr_fmt(fmt) KMSG_COMPONENT \": \" fmt\n\n#include <linux/kernel.h>\n#include <linux/module.h>\n#include <linux/moduleparam.h>\n#include <linux/stat.h>\n\n#include \"hmcdrv_ftp.h\"\n#include \"hmcdrv_dev.h\"\n#include \"hmcdrv_cache.h\"\n\nMODULE_LICENSE(\"GPL\");\nMODULE_AUTHOR(\"Copyright 2013 IBM Corporation\");\nMODULE_DESCRIPTION(\"HMC drive DVD access\");\n\n \nstatic size_t hmcdrv_mod_cachesize = HMCDRV_CACHE_SIZE_DFLT;\nmodule_param_named(cachesize, hmcdrv_mod_cachesize, ulong, S_IRUGO);\n\n \nstatic int __init hmcdrv_mod_init(void)\n{\n\tint rc = hmcdrv_ftp_probe();  \n\n\tif (rc)\n\t\treturn rc;\n\n\trc = hmcdrv_cache_startup(hmcdrv_mod_cachesize);\n\n\tif (rc)\n\t\treturn rc;\n\n\trc = hmcdrv_dev_init();\n\n\tif (rc)\n\t\thmcdrv_cache_shutdown();\n\n\treturn rc;\n}\n\n \nstatic void __exit hmcdrv_mod_exit(void)\n{\n\thmcdrv_dev_exit();\n\thmcdrv_cache_shutdown();\n}\n\nmodule_init(hmcdrv_mod_init);\nmodule_exit(hmcdrv_mod_exit);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "packet.h",
+  "hash_id": "a04ae2c20997900c02c8110b546e4f678745555fe55eb0e0b90293aabaf978aa",
+  "original_prompt": "Ingested from linux-6.6.14/include/net/netns/packet.h",
+  "human_readable_source": " \n \n#ifndef __NETNS_PACKET_H__\n#define __NETNS_PACKET_H__\n\n#include <linux/rculist.h>\n#include <linux/mutex.h>\n\nstruct netns_packet {\n\tstruct mutex\t\tsklist_lock;\n\tstruct hlist_head\tsklist;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

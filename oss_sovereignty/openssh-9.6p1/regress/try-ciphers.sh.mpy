@@ -1,0 +1,9 @@
+{
+  "module_name": "try-ciphers.sh",
+  "hash_id": "cc1bf7a10338fd53e67aaa0b55d43bea431ef119e27be090d5f8c93769a7d38f",
+  "original_prompt": "Ingested from openssh-9.6p1/regress/try-ciphers.sh",
+  "human_readable_source": "#\t$OpenBSD: try-ciphers.sh,v 1.26 2017/04/30 23:34:55 djm Exp $\n#\tPlaced in the Public Domain.\n\ntid=\"try ciphers\"\n\ncp $OBJ/sshd_proxy $OBJ/sshd_proxy_bak\n\nfor c in `${SSH} -Q cipher`; do\n\tn=0\n\tfor m in `${SSH} -Q mac`; do\n\t\ttrace \"cipher $c mac $m\"\n\t\tverbose \"test $tid: cipher $c mac $m\"\n\t\tcp $OBJ/sshd_proxy_bak $OBJ/sshd_proxy\n\t\techo \"Ciphers=$c\" >> $OBJ/sshd_proxy\n\t\techo \"MACs=$m\" >> $OBJ/sshd_proxy\n\t\t${SSH} -F $OBJ/ssh_proxy -m $m -c $c somehost true\n\t\tif [ $? -ne 0 ]; then\n\t\t\tfail \"ssh failed with mac $m cipher $c\"\n\t\tfi\n\t\t# No point trying all MACs for AEAD ciphers since they\n\t\t# are ignored.\n\t\tif ${SSH} -Q cipher-auth | grep \"^${c}\\$\" >/dev/null 2>&1 ; then\n\t\t\tbreak\n\t\tfi\n\t\tn=`expr $n + 1`\n\tdone\ndone\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

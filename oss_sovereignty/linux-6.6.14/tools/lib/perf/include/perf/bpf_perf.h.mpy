@@ -1,0 +1,9 @@
+{
+  "module_name": "bpf_perf.h",
+  "hash_id": "8e81f5cfe70e014c0d965343210b74443f8e48dbe09f0a6a8f6061da122c2c69",
+  "original_prompt": "Ingested from linux-6.6.14/tools/lib/perf/include/perf/bpf_perf.h",
+  "human_readable_source": " \n#ifndef __LIBPERF_BPF_PERF_H\n#define __LIBPERF_BPF_PERF_H\n\n#include <linux/types.h>   \n\n \nstruct perf_event_attr_map_entry {\n\t__u32 link_id;\n\t__u32 diff_map_id;\n};\n\n \n#define BPF_PERF_DEFAULT_ATTR_MAP_PATH \"perf_attr_map\"\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

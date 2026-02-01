@@ -1,0 +1,9 @@
+{
+  "module_name": "queue.h",
+  "hash_id": "5e87cb660ca62b17ad9fff634bdc9fcdf9719a7fcb9c5b46343337498466b05e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/scsi/arm/queue.h",
+  "human_readable_source": " \n \n#ifndef QUEUE_H\n#define QUEUE_H\n\ntypedef struct {\n\tstruct list_head head;\n\tstruct list_head free;\n\tspinlock_t queue_lock;\n\tvoid *alloc;\t\t\t \n} Queue_t;\n\n \nextern int queue_initialise (Queue_t *queue);\n\n \nextern void queue_free (Queue_t *queue);\n\n \nextern struct scsi_cmnd *queue_remove (Queue_t *queue);\n\n \nextern struct scsi_cmnd *queue_remove_exclude(Queue_t *queue,\n\t\t\t\t\t      unsigned long *exclude);\n\n#define queue_add_cmd_ordered(queue,SCpnt) \\\n\t__queue_add(queue,SCpnt,(SCpnt)->cmnd[0] == REQUEST_SENSE)\n#define queue_add_cmd_tail(queue,SCpnt) \\\n\t__queue_add(queue,SCpnt,0)\n \nextern int __queue_add(Queue_t *queue, struct scsi_cmnd *SCpnt, int head);\n\n \nextern struct scsi_cmnd *queue_remove_tgtluntag(Queue_t *queue, int target,\n\t\t\t\t\t\tint lun, int tag);\n\n \nextern void queue_remove_all_target(Queue_t *queue, int target);\n\n \nextern int queue_probetgtlun (Queue_t *queue, int target, int lun);\n\n \nint queue_remove_cmd(Queue_t *queue, struct scsi_cmnd *SCpnt);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

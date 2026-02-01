@@ -1,0 +1,9 @@
+{
+  "module_name": "iscsi_target_auth.h",
+  "hash_id": "3a0f211a28f6b25550572723c6ac46c93d055e76a98f1f663efb78f42c1c1752",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/target/iscsi/iscsi_target_auth.h",
+  "human_readable_source": " \n#ifndef _ISCSI_CHAP_H_\n#define _ISCSI_CHAP_H_\n\n#include <linux/types.h>\n\n#define CHAP_DIGEST_UNKNOWN\t0\n#define CHAP_DIGEST_MD5\t\t5\n#define CHAP_DIGEST_SHA1\t6\n#define CHAP_DIGEST_SHA256\t7\n#define CHAP_DIGEST_SHA3_256\t8\n\n#define MAX_CHAP_CHALLENGE_LEN\t32\n#define CHAP_CHALLENGE_STR_LEN\t4096\n#define MAX_RESPONSE_LENGTH\t128\t \n#define\tMAX_CHAP_N_SIZE\t\t512\n\n#define MD5_SIGNATURE_SIZE\t16\t \n#define SHA1_SIGNATURE_SIZE\t20\t \n#define SHA256_SIGNATURE_SIZE\t32\t \n#define SHA3_256_SIGNATURE_SIZE\t32\t \n\n#define CHAP_STAGE_CLIENT_A\t1\n#define CHAP_STAGE_SERVER_AIC\t2\n#define CHAP_STAGE_CLIENT_NR\t3\n#define CHAP_STAGE_CLIENT_NRIC\t4\n#define CHAP_STAGE_SERVER_NR\t5\n\nstruct iscsi_node_auth;\nstruct iscsit_conn;\n\nextern u32 chap_main_loop(struct iscsit_conn *, struct iscsi_node_auth *, char *, char *,\n\t\t\t\tint *, int *);\n\nstruct iscsi_chap {\n\tunsigned char\tid;\n\tunsigned char\tchallenge[MAX_CHAP_CHALLENGE_LEN];\n\tunsigned int\tchallenge_len;\n\tunsigned char\t*digest_name;\n\tunsigned int\tdigest_size;\n\tunsigned int\tauthenticate_target;\n\tunsigned int\tchap_state;\n} ____cacheline_aligned;\n\n#endif    \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": ".gitignore",
+  "hash_id": "7852cabd70d24c789c7a137fee39252be2150b953b5a3c6ac17f88bbbb4e5e2d",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/seccomp/.gitignore",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nseccomp_bpf\nseccomp_benchmark\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

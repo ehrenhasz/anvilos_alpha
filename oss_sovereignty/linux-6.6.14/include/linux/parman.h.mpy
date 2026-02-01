@@ -1,0 +1,9 @@
+{
+  "module_name": "parman.h",
+  "hash_id": "ea2fe61f0131c42dbac33a4f722ab3892146f7a757837f53e563dc0c9fb8389a",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/parman.h",
+  "human_readable_source": " \n\n#ifndef _PARMAN_H\n#define _PARMAN_H\n\n#include <linux/list.h>\n\nenum parman_algo_type {\n\tPARMAN_ALGO_TYPE_LSORT,\n};\n\nstruct parman_item {\n\tstruct list_head list;\n\tunsigned long index;\n};\n\nstruct parman_prio {\n\tstruct list_head list;\n\tstruct list_head item_list;\n\tunsigned long priority;\n};\n\nstruct parman_ops {\n\tunsigned long base_count;\n\tunsigned long resize_step;\n\tint (*resize)(void *priv, unsigned long new_count);\n\tvoid (*move)(void *priv, unsigned long from_index,\n\t\t     unsigned long to_index, unsigned long count);\n\tenum parman_algo_type algo;\n};\n\nstruct parman;\n\nstruct parman *parman_create(const struct parman_ops *ops, void *priv);\nvoid parman_destroy(struct parman *parman);\nvoid parman_prio_init(struct parman *parman, struct parman_prio *prio,\n\t\t      unsigned long priority);\nvoid parman_prio_fini(struct parman_prio *prio);\nint parman_item_add(struct parman *parman, struct parman_prio *prio,\n\t\t    struct parman_item *item);\nvoid parman_item_remove(struct parman *parman, struct parman_prio *prio,\n\t\t\tstruct parman_item *item);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

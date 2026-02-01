@@ -1,0 +1,9 @@
+{
+  "module_name": "input-poller.h",
+  "hash_id": "70b49da7ee5bc996fa0c444003846a74c65e2caebc7af8e313c997e37ff7e2e2",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/input/input-poller.h",
+  "human_readable_source": " \n#ifndef _INPUT_POLLER_H\n#define _INPUT_POLLER_H\n\n \n#include <linux/sysfs.h>\n\nstruct input_dev_poller;\n\nvoid input_dev_poller_finalize(struct input_dev_poller *poller);\nvoid input_dev_poller_start(struct input_dev_poller *poller);\nvoid input_dev_poller_stop(struct input_dev_poller *poller);\n\nextern struct attribute_group input_poller_attribute_group;\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

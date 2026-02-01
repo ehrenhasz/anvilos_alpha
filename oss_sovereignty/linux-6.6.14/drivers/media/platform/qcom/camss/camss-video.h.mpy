@@ -1,0 +1,9 @@
+{
+  "module_name": "camss-video.h",
+  "hash_id": "fbb5e2882803bb0c5a0c535a20d0e16b60a78275c9ffa547c6661ca2074508c6",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/platform/qcom/camss/camss-video.h",
+  "human_readable_source": " \n \n#ifndef QC_MSM_CAMSS_VIDEO_H\n#define QC_MSM_CAMSS_VIDEO_H\n\n#include <linux/mutex.h>\n#include <linux/videodev2.h>\n#include <media/media-entity.h>\n#include <media/v4l2-dev.h>\n#include <media/v4l2-device.h>\n#include <media/v4l2-fh.h>\n#include <media/v4l2-mediabus.h>\n#include <media/videobuf2-v4l2.h>\n\nstruct camss_buffer {\n\tstruct vb2_v4l2_buffer vb;\n\tdma_addr_t addr[3];\n\tstruct list_head queue;\n};\n\nstruct camss_video;\n\nstruct camss_video_ops {\n\tint (*queue_buffer)(struct camss_video *vid, struct camss_buffer *buf);\n\tint (*flush_buffers)(struct camss_video *vid,\n\t\t\t     enum vb2_buffer_state state);\n};\n\nstruct camss_format_info;\n\nstruct camss_video {\n\tstruct camss *camss;\n\tstruct vb2_queue vb2_q;\n\tstruct video_device vdev;\n\tstruct media_pad pad;\n\tstruct v4l2_format active_fmt;\n\tenum v4l2_buf_type type;\n\tstruct media_pipeline pipe;\n\tconst struct camss_video_ops *ops;\n\tstruct mutex lock;\n\tstruct mutex q_lock;\n\tunsigned int bpl_alignment;\n\tunsigned int line_based;\n\tconst struct camss_format_info *formats;\n\tunsigned int nformats;\n};\n\nint msm_video_register(struct camss_video *video, struct v4l2_device *v4l2_dev,\n\t\t       const char *name, int is_pix);\n\nvoid msm_video_unregister(struct camss_video *video);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

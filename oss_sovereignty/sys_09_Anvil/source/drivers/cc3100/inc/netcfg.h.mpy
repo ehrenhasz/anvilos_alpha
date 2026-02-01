@@ -1,0 +1,9 @@
+{
+  "module_name": "netcfg.h",
+  "hash_id": "8b75c4e5dd29eeaab6d8d5a2a0289fd5207480f9ec1d41a8f7b71104b865cb76",
+  "original_prompt": "Ingested from sys_09_Anvil/source/drivers/cc3100/inc/netcfg.h",
+  "human_readable_source": " \n\n \n \n \n#include \"simplelink.h\"\n\n    \n#ifndef __NETCFG_H__\n#define __NETCFG_H__\n\n\n#ifdef    __cplusplus\nextern \"C\" {\n#endif\n\n\n\n \n\n\n \n \n \n\n#define SL_MAC_ADDR_LEN                          (6)\n#define SL_IPV4_VAL(add_3,add_2,add_1,add_0)     ((((_u32)add_3 << 24) & 0xFF000000) | (((_u32)add_2 << 16) & 0xFF0000) | (((_u32)add_1 << 8) & 0xFF00) | ((_u32)add_0 & 0xFF) )\n#define SL_IPV4_BYTE(val,index)                  ( (val >> (index*8)) & 0xFF )\n\n#define IPCONFIG_MODE_DISABLE_IPV4               (0)\n#define IPCONFIG_MODE_ENABLE_IPV4                (1)\n\n \n \n \ntypedef enum\n{\n    SL_MAC_ADDRESS_SET          = 1,\n    SL_MAC_ADDRESS_GET          = 2,          \n    SL_IPV4_STA_P2P_CL_GET_INFO           = 3,\n    SL_IPV4_STA_P2P_CL_DHCP_ENABLE        = 4,\n    SL_IPV4_STA_P2P_CL_STATIC_ENABLE      = 5,\n    SL_IPV4_AP_P2P_GO_GET_INFO            = 6,\n    SL_IPV4_AP_P2P_GO_STATIC_ENABLE       = 7,\n    SL_SET_HOST_RX_AGGR                   = 8,\n    MAX_SETTINGS = 0xFF\n}Sl_NetCfg_e;\n\n\ntypedef struct\n{\n    _u32  ipV4;\n    _u32  ipV4Mask;\n    _u32  ipV4Gateway;\n    _u32  ipV4DnsServer;\n}SlNetCfgIpV4Args_t;\n\n\n \n \n \n\n \n#if _SL_INCLUDE_FUNC(sl_NetCfgSet)\n_i32 sl_NetCfgSet(const _u8 ConfigId,const _u8 ConfigOpt,const _u8 ConfigLen,const _u8 *pValues);\n#endif\n\n\n \n#if _SL_INCLUDE_FUNC(sl_NetCfgGet)\n_i32 sl_NetCfgGet(const _u8 ConfigId ,_u8 *pConfigOpt, _u8 *pConfigLen, _u8 *pValues);\n#endif\n\n \n\n\n#ifdef  __cplusplus\n}\n#endif  \n\n#endif     \n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

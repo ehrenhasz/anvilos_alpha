@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "952c79650ecf9aa7b86a9813ffb3f7938cd731e48e2b6bec570349b1239055d7",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/misc/sgi-xp/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for SGI's XP devices.\n#\n\nobj-$(CONFIG_SGI_XP)\t\t+= xp.o\nxp-y\t\t\t\t:= xp_main.o xp_uv.o\n\nobj-$(CONFIG_SGI_XP)\t\t+= xpc.o\nxpc-y\t\t\t\t:= xpc_main.o xpc_channel.o xpc_partition.o \\\n\t\t\t\t   xpc_uv.o\n\nobj-$(CONFIG_SGI_XP)\t\t+= xpnet.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

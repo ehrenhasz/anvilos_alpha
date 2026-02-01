@@ -1,0 +1,9 @@
+{
+  "module_name": "t3cdev.h",
+  "hash_id": "822445f251c2ef63178699d57a975bf13eb23a81adc7bf7ea22f771943a8fc97",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/chelsio/cxgb3/t3cdev.h",
+  "human_readable_source": " \n#ifndef _T3CDEV_H_\n#define _T3CDEV_H_\n\n#include <linux/list.h>\n#include <linux/atomic.h>\n#include <linux/netdevice.h>\n#include <linux/proc_fs.h>\n#include <linux/skbuff.h>\n#include <net/neighbour.h>\n\n#define T3CNAMSIZ 16\n\nstruct cxgb3_client;\n\nenum t3ctype {\n\tT3A = 0,\n\tT3B,\n\tT3C,\n};\n\nstruct t3cdev {\n\tchar name[T3CNAMSIZ];\t \n\tenum t3ctype type;\n\tstruct list_head ofld_dev_list;\t \n\tstruct net_device *lldev;\t \n\tstruct proc_dir_entry *proc_dir;\t \n\tint (*send)(struct t3cdev *dev, struct sk_buff *skb);\n\tint (*recv)(struct t3cdev *dev, struct sk_buff **skb, int n);\n\tint (*ctl)(struct t3cdev *dev, unsigned int req, void *data);\n\tvoid (*neigh_update)(struct t3cdev *dev, struct neighbour *neigh);\n\tvoid *priv;\t\t \n\tvoid __rcu *l2opt;\t \n\tvoid *l3opt;\t\t \n\tvoid *l4opt;\t\t \n\tvoid *ulp;\t\t \n\tvoid *ulp_iscsi;\t \n};\n\n#endif\t\t\t\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

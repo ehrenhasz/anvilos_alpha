@@ -1,0 +1,9 @@
+{
+  "module_name": "rtla.c",
+  "hash_id": "0caf0191be68a95237c4bd6a8df438bc754cc16b6912d1bbed7bad1876bc8dc0",
+  "original_prompt": "Ingested from linux-6.6.14/tools/tracing/rtla/src/rtla.c",
+  "human_readable_source": "\n \n\n#include <getopt.h>\n#include <stdlib.h>\n#include <string.h>\n#include <stdio.h>\n\n#include \"osnoise.h\"\n#include \"timerlat.h\"\n\n \nstatic void rtla_usage(int err)\n{\n\tint i;\n\n\tstatic const char *msg[] = {\n\t\t\"\",\n\t\t\"rtla version \" VERSION,\n\t\t\"\",\n\t\t\"  usage: rtla COMMAND ...\",\n\t\t\"\",\n\t\t\"  commands:\",\n\t\t\"     osnoise  - gives information about the operating system noise (osnoise)\",\n\t\t\"     hwnoise  - gives information about hardware-related noise\",\n\t\t\"     timerlat - measures the timer irq and thread latency\",\n\t\t\"\",\n\t\tNULL,\n\t};\n\n\tfor (i = 0; msg[i]; i++)\n\t\tfprintf(stderr, \"%s\\n\", msg[i]);\n\texit(err);\n}\n\n \nint run_command(int argc, char **argv, int start_position)\n{\n\tif (strcmp(argv[start_position], \"osnoise\") == 0) {\n\t\tosnoise_main(argc-start_position, &argv[start_position]);\n\t\tgoto ran;\n\t} else if (strcmp(argv[start_position], \"hwnoise\") == 0) {\n\t\thwnoise_main(argc-start_position, &argv[start_position]);\n\t\tgoto ran;\n\t} else if (strcmp(argv[start_position], \"timerlat\") == 0) {\n\t\ttimerlat_main(argc-start_position, &argv[start_position]);\n\t\tgoto ran;\n\t}\n\n\treturn 0;\nran:\n\treturn 1;\n}\n\nint main(int argc, char *argv[])\n{\n\tint retval;\n\n\t \n\tretval = run_command(argc, argv, 0);\n\tif (retval)\n\t\texit(0);\n\n\tif (argc < 2)\n\t\tgoto usage;\n\n\tif (strcmp(argv[1], \"-h\") == 0) {\n\t\trtla_usage(0);\n\t} else if (strcmp(argv[1], \"--help\") == 0) {\n\t\trtla_usage(0);\n\t}\n\n\tretval = run_command(argc, argv, 1);\n\tif (retval)\n\t\texit(0);\n\nusage:\n\trtla_usage(1);\n\texit(1);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

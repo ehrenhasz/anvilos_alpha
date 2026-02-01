@@ -1,0 +1,9 @@
+{
+  "module_name": "@@__@@__py__builtinimport.c.qstr",
+  "hash_id": "a9e853d85a5e6a2d19032ce290184e513770bf9e65375b9285601b7969762f24",
+  "original_prompt": "Ingested from sys_09_Anvil/source/ports/unix/build-bicameral/genhdr/qstr/@@__@@__py__builtinimport.c.qstr",
+  "human_readable_source": "Q(__file__)\nQ(__name__)\nQ(__main__)\nQ(__main__)\nQ(__path__)\nQ(__path__)\nQ(__name__)\nQ(__main__)\nQ(__main__)\nQ(__main__)\nQ(__path__)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

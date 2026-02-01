@@ -1,0 +1,9 @@
+{
+  "module_name": "mt8183-power.h",
+  "hash_id": "ca1d0c0a1bb127411823ef70213c9583e1e8b02cbf830d5aba2cd4b50bca1d91",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/power/mt8183-power.h",
+  "human_readable_source": " \n \n\n#ifndef _DT_BINDINGS_POWER_MT8183_POWER_H\n#define _DT_BINDINGS_POWER_MT8183_POWER_H\n\n#define MT8183_POWER_DOMAIN_AUDIO\t0\n#define MT8183_POWER_DOMAIN_CONN\t1\n#define MT8183_POWER_DOMAIN_MFG_ASYNC\t2\n#define MT8183_POWER_DOMAIN_MFG\t\t3\n#define MT8183_POWER_DOMAIN_MFG_CORE0\t4\n#define MT8183_POWER_DOMAIN_MFG_CORE1\t5\n#define MT8183_POWER_DOMAIN_MFG_2D\t6\n#define MT8183_POWER_DOMAIN_DISP\t7\n#define MT8183_POWER_DOMAIN_CAM\t\t8\n#define MT8183_POWER_DOMAIN_ISP\t\t9\n#define MT8183_POWER_DOMAIN_VDEC\t10\n#define MT8183_POWER_DOMAIN_VENC\t11\n#define MT8183_POWER_DOMAIN_VPU_TOP\t12\n#define MT8183_POWER_DOMAIN_VPU_CORE0\t13\n#define MT8183_POWER_DOMAIN_VPU_CORE1\t14\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

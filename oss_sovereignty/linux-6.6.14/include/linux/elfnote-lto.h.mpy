@@ -1,0 +1,9 @@
+{
+  "module_name": "elfnote-lto.h",
+  "hash_id": "4bcdb7181ae5607b8c5f4a0ea854a3786bc88d6aadc54f0ebda6d58dbf5f3680",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/elfnote-lto.h",
+  "human_readable_source": "#ifndef __ELFNOTE_LTO_H\n#define __ELFNOTE_LTO_H\n\n#include <linux/elfnote.h>\n\n#define LINUX_ELFNOTE_LTO_INFO\t0x101\n\n#ifdef CONFIG_LTO\n#define BUILD_LTO_INFO\tELFNOTE32(\"Linux\", LINUX_ELFNOTE_LTO_INFO, 1)\n#else\n#define BUILD_LTO_INFO\tELFNOTE32(\"Linux\", LINUX_ELFNOTE_LTO_INFO, 0)\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

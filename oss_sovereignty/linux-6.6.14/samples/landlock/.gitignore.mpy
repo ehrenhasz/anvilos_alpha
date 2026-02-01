@@ -1,0 +1,9 @@
+{
+  "module_name": ".gitignore",
+  "hash_id": "ff2033d1ebde44d8119c9d9e20bbdf7b9e6d441de27de5df36ca5af992fbe1bc",
+  "original_prompt": "Ingested from linux-6.6.14/samples/landlock/.gitignore",
+  "human_readable_source": "/sandboxer\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

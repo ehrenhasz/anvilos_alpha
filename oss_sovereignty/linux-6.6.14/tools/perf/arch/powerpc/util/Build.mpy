@@ -1,0 +1,9 @@
+{
+  "module_name": "Build",
+  "hash_id": "1f2e7acd13d5ab2d3359d8b72c12598346857b1971ad1f38d19ffd8e1edfe0eb",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/arch/powerpc/util/Build",
+  "human_readable_source": "perf-y += header.o\nperf-$(CONFIG_LIBTRACEEVENT) += kvm-stat.o\nperf-y += perf_regs.o\nperf-y += mem-events.o\nperf-y += sym-handling.o\nperf-y += evsel.o\nperf-y += event.o\n\nperf-$(CONFIG_DWARF) += dwarf-regs.o\nperf-$(CONFIG_DWARF) += skip-callchain-idx.o\n\nperf-$(CONFIG_LIBUNWIND) += unwind-libunwind.o\nperf-$(CONFIG_LIBDW_DWARF_UNWIND) += unwind-libdw.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "virtpin.c",
+  "hash_id": "6124595dafe5a1cb840dd283ce98b800e0a67a32ff48323ff7085b790d393415",
+  "original_prompt": "Ingested from sys_09_Anvil/source/extmod/virtpin.c",
+  "human_readable_source": " \n\n#include \"extmod/virtpin.h\"\n\nint mp_virtual_pin_read(mp_obj_t pin) {\n    mp_obj_base_t *s = (mp_obj_base_t *)MP_OBJ_TO_PTR(pin);\n    mp_pin_p_t *pin_p = (mp_pin_p_t *)MP_OBJ_TYPE_GET_SLOT(s->type, protocol);\n    return pin_p->ioctl(pin, MP_PIN_READ, 0, NULL);\n}\n\nvoid mp_virtual_pin_write(mp_obj_t pin, int value) {\n    mp_obj_base_t *s = (mp_obj_base_t *)MP_OBJ_TO_PTR(pin);\n    mp_pin_p_t *pin_p = (mp_pin_p_t *)MP_OBJ_TYPE_GET_SLOT(s->type, protocol);\n    pin_p->ioctl(pin, MP_PIN_WRITE, value, NULL);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

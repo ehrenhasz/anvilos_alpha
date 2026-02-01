@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "062da5d9ac1b40fea745be8514f97041343ee2906fefd8db5fc267f2a5be4422",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/dca/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# DCA server configuration\n#\n\nconfig DCA\n\ttristate\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

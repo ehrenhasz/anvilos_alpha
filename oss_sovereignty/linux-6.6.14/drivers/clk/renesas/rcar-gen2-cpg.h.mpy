@@ -1,0 +1,9 @@
+{
+  "module_name": "rcar-gen2-cpg.h",
+  "hash_id": "5ae9ff3810586bf9378454e916b75f61fd44c1fba049e0696d188c61d833085e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/clk/renesas/rcar-gen2-cpg.h",
+  "human_readable_source": " \n \n\n#ifndef __CLK_RENESAS_RCAR_GEN2_CPG_H__\n#define __CLK_RENESAS_RCAR_GEN2_CPG_H__\n\nenum rcar_gen2_clk_types {\n\tCLK_TYPE_GEN2_MAIN = CLK_TYPE_CUSTOM,\n\tCLK_TYPE_GEN2_PLL0,\n\tCLK_TYPE_GEN2_PLL1,\n\tCLK_TYPE_GEN2_PLL3,\n\tCLK_TYPE_GEN2_Z,\n\tCLK_TYPE_GEN2_LB,\n\tCLK_TYPE_GEN2_ADSP,\n\tCLK_TYPE_GEN2_SDH,\n\tCLK_TYPE_GEN2_SD0,\n\tCLK_TYPE_GEN2_SD1,\n\tCLK_TYPE_GEN2_QSPI,\n\tCLK_TYPE_GEN2_RCAN,\n};\n\nstruct rcar_gen2_cpg_pll_config {\n\tu8 extal_div;\n\tu8 pll1_mult;\n\tu8 pll3_mult;\n\tu8 pll0_mult;\t\t \n};\n\nstruct clk *rcar_gen2_cpg_clk_register(struct device *dev,\n\tconst struct cpg_core_clk *core, const struct cpg_mssr_info *info,\n\tstruct clk **clks, void __iomem *base,\n\tstruct raw_notifier_head *notifiers);\nint rcar_gen2_cpg_init(const struct rcar_gen2_cpg_pll_config *config,\n\t\t       unsigned int pll0_div, u32 mode);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

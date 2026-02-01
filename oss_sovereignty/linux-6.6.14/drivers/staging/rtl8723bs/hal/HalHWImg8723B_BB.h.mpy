@@ -1,0 +1,9 @@
+{
+  "module_name": "HalHWImg8723B_BB.h",
+  "hash_id": "468307f604a3ecdd3358d430ca7bae9f7fed57819b095af23d07324c441059c8",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/rtl8723bs/hal/HalHWImg8723B_BB.h",
+  "human_readable_source": " \n \n\n#ifndef __INC_MP_BB_HW_IMG_8723B_H\n#define __INC_MP_BB_HW_IMG_8723B_H\n\n\n \n\nvoid\nODM_ReadAndConfig_MP_8723B_AGC_TAB( \n\tstruct dm_odm_t *pDM_Odm\n);\n\n \n\nvoid\nODM_ReadAndConfig_MP_8723B_PHY_REG( \n\tstruct dm_odm_t *pDM_Odm\n);\n\n \n\nvoid\nODM_ReadAndConfig_MP_8723B_PHY_REG_PG( \n\tstruct dm_odm_t *pDM_Odm\n);\nu32 ODM_GetVersion_MP_8723B_PHY_REG_PG(void);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

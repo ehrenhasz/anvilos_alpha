@@ -1,0 +1,9 @@
+{
+  "module_name": "@@__@@__py__modio.c.qstr",
+  "hash_id": "6123a0522995ae8a8ae1cdd729ba2d4d43f6a692069db4ab2a1e5a8896a99a96",
+  "original_prompt": "Ingested from sys_09_Anvil/source/ports/unix/build-bicameral/genhdr/qstr/@@__@@__py__modio.c.qstr",
+  "human_readable_source": "Q(__name__)\nQ(io)\nQ(open)\nQ(StringIO)\nQ(BytesIO)\nQ(io)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "trampoline_common.S",
+  "hash_id": "91676d1967ba2ff3407ac629386eefd643a8ebe51c1c8f1569e685f82f7ce31f",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/realmode/rm/trampoline_common.S",
+  "human_readable_source": " \n\t.section \".rodata\",\"a\"\n\t.balign\t16\n\n \nSYM_DATA_START_LOCAL(tr_idt)\n\t.short  0\n\t.quad   0\nSYM_DATA_END(tr_idt)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

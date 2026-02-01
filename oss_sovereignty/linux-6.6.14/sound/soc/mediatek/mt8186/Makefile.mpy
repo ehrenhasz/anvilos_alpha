@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "ad018521872147fbcd9cec367bef69defb67c5101521c5fa46cbc78c5aaf3ffa",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/mediatek/mt8186/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n\n# platform driver\nsnd-soc-mt8186-afe-objs := \\\n\tmt8186-afe-pcm.o \\\n\tmt8186-audsys-clk.o \\\n\tmt8186-afe-clk.o \\\n\tmt8186-afe-gpio.o \\\n\tmt8186-dai-adda.o \\\n\tmt8186-afe-control.o \\\n\tmt8186-dai-i2s.o \\\n\tmt8186-dai-hw-gain.o \\\n\tmt8186-dai-pcm.o \\\n\tmt8186-dai-src.o \\\n\tmt8186-dai-hostless.o \\\n\tmt8186-dai-tdm.o \\\n\tmt8186-misc-control.o \\\n\tmt8186-mt6366-common.o\n\nobj-$(CONFIG_SND_SOC_MT8186) += snd-soc-mt8186-afe.o\nobj-$(CONFIG_SND_SOC_MT8186_MT6366_DA7219_MAX98357) += mt8186-mt6366-da7219-max98357.o\nobj-$(CONFIG_SND_SOC_MT8186_MT6366_RT1019_RT5682S) += mt8186-mt6366-rt1019-rt5682s.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

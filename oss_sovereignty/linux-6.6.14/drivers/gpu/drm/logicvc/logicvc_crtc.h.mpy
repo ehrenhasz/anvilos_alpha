@@ -1,0 +1,9 @@
+{
+  "module_name": "logicvc_crtc.h",
+  "hash_id": "a61c7b399ed5c2de6d246d53cafc2fe06ae6153390b55455f60187d8e200db9f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/logicvc/logicvc_crtc.h",
+  "human_readable_source": " \n \n\n#ifndef _LOGICVC_CRTC_H_\n#define _LOGICVC_CRTC_H_\n\nstruct drm_pending_vblank_event;\nstruct logicvc_drm;\n\nstruct logicvc_crtc {\n\tstruct drm_crtc drm_crtc;\n\tstruct drm_pending_vblank_event *event;\n};\n\nvoid logicvc_crtc_vblank_handler(struct logicvc_drm *logicvc);\nint logicvc_crtc_init(struct logicvc_drm *logicvc);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "gp10b.c",
+  "hash_id": "6e2e9b570481aa14cc09b6b00e3abd662187f7f56ab015480f2ada15c726fdd6",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/subdev/mc/gp10b.c",
+  "human_readable_source": " \n\n#include \"priv.h\"\n\nstatic void\ngp10b_mc_init(struct nvkm_mc *mc)\n{\n\tstruct nvkm_device *device = mc->subdev.device;\n\tnvkm_wr32(device, 0x000200, 0xffffffff);  \n\tnvkm_wr32(device, 0x00020c, 0xffffffff);  \n}\n\nstatic const struct nvkm_mc_func\ngp10b_mc = {\n\t.init = gp10b_mc_init,\n\t.intr = &gp100_mc_intr,\n\t.intrs = gp100_mc_intrs,\n\t.intr_nonstall = true,\n\t.device = &nv04_mc_device,\n\t.reset = gk104_mc_reset,\n};\n\nint\ngp10b_mc_new(struct nvkm_device *device, enum nvkm_subdev_type type, int inst, struct nvkm_mc **pmc)\n{\n\treturn nvkm_mc_new_(&gp10b_mc, device, type, inst, pmc);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

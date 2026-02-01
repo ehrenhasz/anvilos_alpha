@@ -1,0 +1,9 @@
+{
+  "module_name": "mmap.c",
+  "hash_id": "181517284b057b2b42bf3b8a3e2e0eaeccb04da4a1d1164abbc49425035a1878",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/pci/mmap.c",
+  "human_readable_source": "\n \n\n#include <linux/kernel.h>\n#include <linux/mm.h>\n#include <linux/pci.h>\n\n#ifdef ARCH_GENERIC_PCI_MMAP_RESOURCE\n\nstatic const struct vm_operations_struct pci_phys_vm_ops = {\n#ifdef CONFIG_HAVE_IOREMAP_PROT\n\t.access = generic_access_phys,\n#endif\n};\n\nint pci_mmap_resource_range(struct pci_dev *pdev, int bar,\n\t\t\t    struct vm_area_struct *vma,\n\t\t\t    enum pci_mmap_state mmap_state, int write_combine)\n{\n\tunsigned long size;\n\tint ret;\n\n\tsize = ((pci_resource_len(pdev, bar) - 1) >> PAGE_SHIFT) + 1;\n\tif (vma->vm_pgoff + vma_pages(vma) > size)\n\t\treturn -EINVAL;\n\n\tif (write_combine)\n\t\tvma->vm_page_prot = pgprot_writecombine(vma->vm_page_prot);\n\telse\n\t\tvma->vm_page_prot = pgprot_device(vma->vm_page_prot);\n\n\tif (mmap_state == pci_mmap_io) {\n\t\tret = pci_iobar_pfn(pdev, bar, vma);\n\t\tif (ret)\n\t\t\treturn ret;\n\t} else\n\t\tvma->vm_pgoff += (pci_resource_start(pdev, bar) >> PAGE_SHIFT);\n\n\tvma->vm_ops = &pci_phys_vm_ops;\n\n\treturn io_remap_pfn_range(vma, vma->vm_start, vma->vm_pgoff,\n\t\t\t\t  vma->vm_end - vma->vm_start,\n\t\t\t\t  vma->vm_page_prot);\n}\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

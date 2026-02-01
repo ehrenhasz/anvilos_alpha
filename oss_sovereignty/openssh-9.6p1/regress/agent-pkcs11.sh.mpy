@@ -1,0 +1,9 @@
+{
+  "module_name": "agent-pkcs11.sh",
+  "hash_id": "0c34eacd9248a425bed6379b71602b0eb27121c64b4c58d9c11c2936a15e632e",
+  "original_prompt": "Ingested from openssh-9.6p1/regress/agent-pkcs11.sh",
+  "human_readable_source": "#\t$OpenBSD: agent-pkcs11.sh,v 1.13 2023/10/30 23:00:25 djm Exp $\n#\tPlaced in the Public Domain.\n\ntid=\"pkcs11 agent test\"\n\np11_setup || skip \"No PKCS#11 library found\"\n\ntrace \"start agent\"\neval `${SSHAGENT} ${EXTRA_AGENT_ARGS} -s` > /dev/null\nr=$?\nif [ $r -ne 0 ]; then\n\tfail \"could not start ssh-agent: exit code $r\"\nelse\n\ttrace \"add pkcs11 key to agent\"\n\tp11_ssh_add -s ${TEST_SSH_PKCS11} > /dev/null 2>&1\n\tr=$?\n\tif [ $r -ne 0 ]; then\n\t\tfail \"ssh-add -s failed: exit code $r\"\n\tfi\n\n\ttrace \"pkcs11 list via agent\"\n\t${SSHADD} -l > /dev/null 2>&1\n\tr=$?\n\tif [ $r -ne 0 ]; then\n\t\tfail \"ssh-add -l failed: exit code $r\"\n\tfi\n\n\tfor k in $RSA $EC; do\n\t\ttrace \"testing $k\"\n\t\tpub=$(cat $k.pub)\n\t\t${SSHADD} -L | grep -q \"$pub\" || \\\n\t\t\tfail \"key $k missing in ssh-add -L\"\n\t\t${SSHADD} -T $k.pub || fail \"ssh-add -T with $k failed\"\n\n\t\t# add to authorized keys\n\t\tcat $k.pub > $OBJ/authorized_keys_$USER\n\t\ttrace \"pkcs11 connect via agent ($k)\"\n\t\t${SSH} -F $OBJ/ssh_proxy somehost exit 5\n\t\tr=$?\n\t\tif [ $r -ne 5 ]; then\n\t\t\tfail \"ssh connect failed (exit code $r)\"\n\t\tfi\n\tdone\n\n\ttrace \"remove pkcs11 keys\"\n\tp11_ssh_add -e ${TEST_SSH_PKCS11} > /dev/null 2>&1\n\tr=$?\n\tif [ $r -ne 0 ]; then\n\t\tfail \"ssh-add -e failed: exit code $r\"\n\tfi\n\n\ttrace \"kill agent\"\n\t${SSHAGENT} -k > /dev/null\nfi\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

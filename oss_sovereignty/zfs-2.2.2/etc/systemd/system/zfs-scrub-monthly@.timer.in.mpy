@@ -1,0 +1,9 @@
+{
+  "module_name": "zfs-scrub-monthly@.timer.in",
+  "hash_id": "d7133dbd04cf6a8d4459130a989b74560082b1f875dc8336ecadc21723ee89f3",
+  "original_prompt": "Ingested from zfs-2.2.2/etc/systemd/system/zfs-scrub-monthly@.timer.in",
+  "human_readable_source": "[Unit]\nDescription=Monthly zpool scrub timer for %i\nDocumentation=man:zpool-scrub(8)\n\n[Timer]\nOnCalendar=monthly\nPersistent=true\nRandomizedDelaySec=1h\nUnit=zfs-scrub@%i.service\n\n[Install]\nWantedBy=timers.target\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

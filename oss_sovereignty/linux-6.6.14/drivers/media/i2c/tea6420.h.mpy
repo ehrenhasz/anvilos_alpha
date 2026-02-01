@@ -1,0 +1,9 @@
+{
+  "module_name": "tea6420.h",
+  "hash_id": "a95b477327d28630df13dde6e3f0768d97d6e9dcdf03c36753e5635d4a99c975",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/i2c/tea6420.h",
+  "human_readable_source": " \n#ifndef __INCLUDED_TEA6420__\n#define __INCLUDED_TEA6420__\n\n \n#define TEA6420_OUTPUT1 1\n#define TEA6420_OUTPUT2 2\n#define TEA6420_OUTPUT3 3\n#define TEA6420_OUTPUT4 4\n\n \n#define TEA6420_INPUT1 1\n#define TEA6420_INPUT2 2\n#define TEA6420_INPUT3 3\n#define TEA6420_INPUT4 4\n#define TEA6420_INPUT5 5\n#define TEA6420_INPUT6 6\n\n \n#define TEA6420_GAIN0 0x00\n#define TEA6420_GAIN2 0x20\n#define TEA6420_GAIN4 0x40\n#define TEA6420_GAIN6 0x60\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

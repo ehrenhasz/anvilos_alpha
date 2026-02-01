@@ -1,0 +1,9 @@
+{
+  "module_name": "phy_common.h",
+  "hash_id": "df18a0931d3b43d2472ecc98d74e62f9d05f2620fe8f67fdba577c5c7b45bd28",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/nfc/s3fwrn5/phy_common.h",
+  "human_readable_source": " \n\n#ifndef __NFC_S3FWRN5_PHY_COMMON_H\n#define __NFC_S3FWRN5_PHY_COMMON_H\n\n#include <linux/mutex.h>\n#include <net/nfc/nci_core.h>\n\n#include \"s3fwrn5.h\"\n\n#define S3FWRN5_EN_WAIT_TIME 20\n\nstruct phy_common {\n\tstruct nci_dev *ndev;\n\n\tint gpio_en;\n\tint gpio_fw_wake;\n\n\tstruct mutex mutex;\n\n\tenum s3fwrn5_mode mode;\n};\n\nvoid s3fwrn5_phy_set_wake(void *phy_id, bool wake);\nbool s3fwrn5_phy_power_ctrl(struct phy_common *phy, enum s3fwrn5_mode mode);\nvoid s3fwrn5_phy_set_mode(void *phy_id, enum s3fwrn5_mode mode);\nenum s3fwrn5_mode s3fwrn5_phy_get_mode(void *phy_id);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

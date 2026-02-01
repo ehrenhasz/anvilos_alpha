@@ -1,0 +1,9 @@
+{
+  "module_name": "test-libcrypto.c",
+  "hash_id": "d7b9703b90bb2571d44cb830aff4caf0cd5d27bb35f0beb7f650035a9181bf06",
+  "original_prompt": "Ingested from linux-6.6.14/tools/build/feature/test-libcrypto.c",
+  "human_readable_source": "\n#include <openssl/evp.h>\n#include <openssl/sha.h>\n#include <openssl/md5.h>\n\nint main(void)\n{\n\tEVP_MD_CTX *mdctx;\n\tunsigned char md[MD5_DIGEST_LENGTH + SHA_DIGEST_LENGTH];\n\tunsigned char dat[] = \"12345\";\n\tunsigned int digest_len;\n\n\tmdctx = EVP_MD_CTX_new();\n\tif (!mdctx)\n\t\treturn 0;\n\n\tEVP_DigestInit_ex(mdctx, EVP_md5(), NULL);\n\tEVP_DigestUpdate(mdctx, &dat[0], sizeof(dat));\n\tEVP_DigestFinal_ex(mdctx, &md[0], &digest_len);\n\tEVP_MD_CTX_free(mdctx);\n\n\tSHA1(&dat[0], sizeof(dat), &md[0]);\n\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

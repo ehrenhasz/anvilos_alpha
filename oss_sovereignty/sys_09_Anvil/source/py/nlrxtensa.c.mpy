@@ -1,0 +1,9 @@
+{
+  "module_name": "nlrxtensa.c",
+  "hash_id": "c17a1079e512892b38be808a1f62a265449066d8508464a4249d9329e0d0ee4c",
+  "original_prompt": "Ingested from sys_09_Anvil/source/py/nlrxtensa.c",
+  "human_readable_source": " \n\n#include \"py/mpstate.h\"\n\n#if MICROPY_NLR_XTENSA\n\n#undef nlr_push\n\n\n\n\n\n\n\nunsigned int nlr_push(nlr_buf_t *nlr) {\n\n    __asm volatile (\n        \"s32i.n  a0, a2, 8          \\n\" \n        \"s32i.n  a1, a2, 12         \\n\"\n        \"s32i.n  a8, a2, 16         \\n\"\n        \"s32i.n  a9, a2, 20         \\n\"\n        \"s32i.n  a10, a2, 24        \\n\"\n        \"s32i.n  a11, a2, 28        \\n\"\n        \"s32i.n  a12, a2, 32        \\n\"\n        \"s32i.n  a13, a2, 36        \\n\"\n        \"s32i.n  a14, a2, 40        \\n\"\n        \"s32i.n  a15, a2, 44        \\n\"\n        \"j      nlr_push_tail       \\n\" \n        );\n\n    return 0; \n}\n\nNORETURN void nlr_jump(void *val) {\n    MP_NLR_JUMP_HEAD(val, top)\n\n    __asm volatile (\n        \"mov.n   a2, %0             \\n\" \n        \"l32i.n  a0, a2, 8          \\n\" \n        \"l32i.n  a1, a2, 12         \\n\"\n        \"l32i.n  a8, a2, 16         \\n\"\n        \"l32i.n  a9, a2, 20         \\n\"\n        \"l32i.n  a10, a2, 24        \\n\"\n        \"l32i.n  a11, a2, 28        \\n\"\n        \"l32i.n  a12, a2, 32        \\n\"\n        \"l32i.n  a13, a2, 36        \\n\"\n        \"l32i.n  a14, a2, 40        \\n\"\n        \"l32i.n  a15, a2, 44        \\n\"\n        \"movi.n a2, 1               \\n\" \n        \"ret.n                      \\n\" \n        :                           \n        : \"r\" (top)                 \n        : \"memory\"                  \n        );\n\n    MP_UNREACHABLE\n}\n\n#endif \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

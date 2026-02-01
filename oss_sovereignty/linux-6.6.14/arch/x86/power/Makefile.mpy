@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "67c1645265c27de0535ba7486da15c7fe2530eca45670392ab8620147643f87a",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/power/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n\n# __restore_processor_state() restores %gs after S3 resume and so should not\n# itself be stack-protected\nCFLAGS_cpu.o\t:= -fno-stack-protector\n\n# Clang may incorrectly inline functions with stack protector enabled into\n# __restore_processor_state(): https://bugs.llvm.org/show_bug.cgi?id=47479\nCFLAGS_REMOVE_cpu.o := $(CC_FLAGS_LTO)\n\nobj-$(CONFIG_PM_SLEEP)\t\t+= cpu.o\nobj-$(CONFIG_HIBERNATION)\t+= hibernate_$(BITS).o hibernate_asm_$(BITS).o hibernate.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

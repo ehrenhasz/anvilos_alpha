@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "098db7072909bd6a256df129b5e44437b6a2516fcf70c8d445e6af1cba4da991",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/can/dev/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n\nobj-$(CONFIG_CAN_DEV) += can-dev.o\n\ncan-dev-y += skb.o\n\ncan-dev-$(CONFIG_CAN_CALC_BITTIMING) += calc_bittiming.o\ncan-dev-$(CONFIG_CAN_NETLINK) += bittiming.o\ncan-dev-$(CONFIG_CAN_NETLINK) += dev.o\ncan-dev-$(CONFIG_CAN_NETLINK) += length.o\ncan-dev-$(CONFIG_CAN_NETLINK) += netlink.o\ncan-dev-$(CONFIG_CAN_RX_OFFLOAD) += rx-offload.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

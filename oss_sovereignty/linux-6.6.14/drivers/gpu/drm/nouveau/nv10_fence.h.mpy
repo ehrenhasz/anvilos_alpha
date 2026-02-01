@@ -1,0 +1,9 @@
+{
+  "module_name": "nv10_fence.h",
+  "hash_id": "156fc8f9ce411b180bf24767d46835c9db1dc5b34c1fcd4e7ac3102030fe9158",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nv10_fence.h",
+  "human_readable_source": " \n#ifndef __NV10_FENCE_H_\n#define __NV10_FENCE_H_\n\n#include \"nouveau_fence.h\"\n#include \"nouveau_bo.h\"\n\nstruct nv10_fence_chan {\n\tstruct nouveau_fence_chan base;\n\tstruct nvif_object sema;\n};\n\nstruct nv10_fence_priv {\n\tstruct nouveau_fence_priv base;\n\tstruct nouveau_bo *bo;\n\tspinlock_t lock;\n\tu32 sequence;\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

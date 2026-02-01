@@ -1,0 +1,9 @@
+{
+  "module_name": "rk3036-power.h",
+  "hash_id": "fb2a0919cd9dddab69dd0a8e3505828c1b90b0a75ddf63ada07482dc9d81332b",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/power/rk3036-power.h",
+  "human_readable_source": " \n#ifndef __DT_BINDINGS_POWER_RK3036_POWER_H__\n#define __DT_BINDINGS_POWER_RK3036_POWER_H__\n\n#define RK3036_PD_MSCH\t\t0\n#define RK3036_PD_CORE\t\t1\n#define RK3036_PD_PERI\t\t2\n#define RK3036_PD_VIO\t\t3\n#define RK3036_PD_VPU\t\t4\n#define RK3036_PD_GPU\t\t5\n#define RK3036_PD_SYS\t\t6\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

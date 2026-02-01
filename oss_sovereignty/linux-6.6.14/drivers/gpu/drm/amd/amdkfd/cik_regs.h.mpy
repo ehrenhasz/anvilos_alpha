@@ -1,0 +1,9 @@
+{
+  "module_name": "cik_regs.h",
+  "hash_id": "9c5f30658c790221b620243756e07ce7dcaa7de53e226270f3d9e6ca1187e466",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/amdkfd/cik_regs.h",
+  "human_readable_source": " \n\n#ifndef CIK_REGS_H\n#define CIK_REGS_H\n\n \n#define\tPRIVATE_BASE(x)\t\t\t\t\t((x) << 0)  \n#define\tSHARED_BASE(x)\t\t\t\t\t((x) << 16)  \n#define\tPTR32\t\t\t\t\t\t(1 << 0)\n#define\tALIGNMENT_MODE(x)\t\t\t\t((x) << 2)\n#define\tSH_MEM_ALIGNMENT_MODE_UNALIGNED\t\t\t3\n#define\tDEFAULT_MTYPE(x)\t\t\t\t((x) << 4)\n#define\tAPE1_MTYPE(x)\t\t\t\t\t((x) << 7)\n\n \n#define\tMTYPE_CACHED_NV\t\t\t\t\t0\n#define\tMTYPE_CACHED\t\t\t\t\t1\n#define\tMTYPE_NONCACHED\t\t\t\t\t3\n\n#define\tDEFAULT_CP_HQD_PERSISTENT_STATE\t\t\t(0x33U << 8)\n#define\tPRELOAD_REQ\t\t\t\t\t(1 << 0)\n\n#define\tMQD_CONTROL_PRIV_STATE_EN\t\t\t(1U << 8)\n\n#define\tDEFAULT_MIN_IB_AVAIL_SIZE\t\t\t(3U << 20)\n\n#define\tIB_ATC_EN\t\t\t\t\t(1U << 23)\n\n#define\tQUANTUM_EN\t\t\t\t\t1U\n#define\tQUANTUM_SCALE_1MS\t\t\t\t(1U << 4)\n#define\tQUANTUM_DURATION(x)\t\t\t\t((x) << 8)\n\n#define\tRPTR_BLOCK_SIZE(x)\t\t\t\t((x) << 8)\n#define\tMIN_AVAIL_SIZE(x)\t\t\t\t((x) << 20)\n#define\tDEFAULT_RPTR_BLOCK_SIZE\t\t\t\tRPTR_BLOCK_SIZE(5)\n#define\tDEFAULT_MIN_AVAIL_SIZE\t\t\t\tMIN_AVAIL_SIZE(3)\n\n#define\tPQ_ATC_EN\t\t\t\t\t(1 << 23)\n#define\tNO_UPDATE_RPTR\t\t\t\t\t(1 << 27)\n\n#define\tDOORBELL_OFFSET(x)\t\t\t\t((x) << 2)\n#define\tDOORBELL_EN\t\t\t\t\t(1 << 30)\n\n#define\tPRIV_STATE\t\t\t\t\t(1 << 30)\n#define\tKMD_QUEUE\t\t\t\t\t(1 << 31)\n\n#define\tAQL_ENABLE\t\t\t\t\t1\n\n#define GRBM_GFX_INDEX\t\t\t\t\t0x30800\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

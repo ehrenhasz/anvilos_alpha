@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "12b6493ba13b939c43326933fb1ea30f5fdc12c180528be955bc7a95b5aec86e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/iio/frequency/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for Direct Digital Synthesis drivers\n#\n\nobj-$(CONFIG_AD9832) += ad9832.o\nobj-$(CONFIG_AD9834) += ad9834.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

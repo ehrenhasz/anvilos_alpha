@@ -1,0 +1,9 @@
+{
+  "module_name": "tc_vlan.h",
+  "hash_id": "bcb3a970445f1dd29300d964f42953d8b16c7e092feb7d5c963f4dfdef89b014",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/tc_act/tc_vlan.h",
+  "human_readable_source": " \n \n\n#ifndef __LINUX_TC_VLAN_H\n#define __LINUX_TC_VLAN_H\n\n#include <linux/pkt_cls.h>\n\n#define TCA_VLAN_ACT_POP\t1\n#define TCA_VLAN_ACT_PUSH\t2\n#define TCA_VLAN_ACT_MODIFY\t3\n#define TCA_VLAN_ACT_POP_ETH\t4\n#define TCA_VLAN_ACT_PUSH_ETH\t5\n\nstruct tc_vlan {\n\ttc_gen;\n\tint v_action;\n};\n\nenum {\n\tTCA_VLAN_UNSPEC,\n\tTCA_VLAN_TM,\n\tTCA_VLAN_PARMS,\n\tTCA_VLAN_PUSH_VLAN_ID,\n\tTCA_VLAN_PUSH_VLAN_PROTOCOL,\n\tTCA_VLAN_PAD,\n\tTCA_VLAN_PUSH_VLAN_PRIORITY,\n\tTCA_VLAN_PUSH_ETH_DST,\n\tTCA_VLAN_PUSH_ETH_SRC,\n\t__TCA_VLAN_MAX,\n};\n#define TCA_VLAN_MAX (__TCA_VLAN_MAX - 1)\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

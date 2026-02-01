@@ -1,0 +1,9 @@
+{
+  "module_name": "mthca_config_reg.h",
+  "hash_id": "faeae4f00859f39e38c3cd9a971f63353dba24fb5f643e29e70c54dfebccc4b0",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/infiniband/hw/mthca/mthca_config_reg.h",
+  "human_readable_source": " \n\n#ifndef MTHCA_CONFIG_REG_H\n#define MTHCA_CONFIG_REG_H\n\n#define MTHCA_HCR_BASE         0x80680\n#define MTHCA_HCR_SIZE         0x0001c\n#define MTHCA_ECR_BASE         0x80700\n#define MTHCA_ECR_SIZE         0x00008\n#define MTHCA_ECR_CLR_BASE     0x80708\n#define MTHCA_ECR_CLR_SIZE     0x00008\n#define MTHCA_MAP_ECR_SIZE     (MTHCA_ECR_SIZE + MTHCA_ECR_CLR_SIZE)\n#define MTHCA_CLR_INT_BASE     0xf00d8\n#define MTHCA_CLR_INT_SIZE     0x00008\n#define MTHCA_EQ_SET_CI_SIZE   (8 * 32)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

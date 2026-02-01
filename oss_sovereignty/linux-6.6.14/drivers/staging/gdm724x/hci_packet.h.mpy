@@ -1,0 +1,9 @@
+{
+  "module_name": "hci_packet.h",
+  "hash_id": "028f5d36b0b31b3ed6f018e50e2ab8ff1ce871202288acfc44f52ed8aaaa6f08",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/gdm724x/hci_packet.h",
+  "human_readable_source": " \n \n\n#ifndef _HCI_PACKET_H_\n#define _HCI_PACKET_H_\n\n#define HCI_HEADER_SIZE 4\n\n \n#define NIC_TYPE_NIC0\t\t0x00000010\n#define NIC_TYPE_NIC1\t\t0x00000011\n#define NIC_TYPE_NIC2\t\t0x00000012\n#define NIC_TYPE_NIC3\t\t0x00000013\n#define NIC_TYPE_ARP\t\t0x00000100\n#define NIC_TYPE_ICMPV6\t\t0x00000200\n#define NIC_TYPE_MASK\t\t0x0000FFFF\n#define NIC_TYPE_F_IPV4\t\t0x00010000\n#define NIC_TYPE_F_IPV6\t\t0x00020000\n#define NIC_TYPE_F_DHCP\t\t0x00040000\n#define NIC_TYPE_F_NDP\t\t0x00080000\n#define NIC_TYPE_F_VLAN\t\t0x00100000\n\nstruct hci_packet {\n\t__dev16 cmd_evt;\n\t__dev16 len;\n\tu8 data[];\n} __packed;\n\nstruct tlv {\n\tu8 type;\n\tu8 len;\n\tu8 *data[];\n} __packed;\n\nstruct sdu_header {\n\t__dev16 cmd_evt;\n\t__dev16 len;\n\t__dev32 dft_eps_id;\n\t__dev32 bearer_ID;\n\t__dev32 nic_type;\n} __packed;\n\nstruct sdu {\n\t__dev16 cmd_evt;\n\t__dev16 len;\n\t__dev32 dft_eps_ID;\n\t__dev32 bearer_ID;\n\t__dev32 nic_type;\n\tu8 data[];\n} __packed;\n\nstruct multi_sdu {\n\t__dev16 cmd_evt;\n\t__dev16 len;\n\t__dev16 num_packet;\n\t__dev16 reserved;\n\tu8 data[];\n} __packed;\n\nstruct hci_pdn_table_ind {\n\t__dev16 cmd_evt;\n\t__dev16 len;\n\tu8 activate;\n\t__dev32 dft_eps_id;\n\t__dev32 nic_type;\n\tu8 pdn_type;\n\tu8 ipv4_addr[4];\n\tu8 ipv6_intf_id[8];\n} __packed;\n\nstruct hci_connect_ind {\n\t__dev16 cmd_evt;\n\t__dev16 len;\n\t__dev32 connect;\n} __packed;\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

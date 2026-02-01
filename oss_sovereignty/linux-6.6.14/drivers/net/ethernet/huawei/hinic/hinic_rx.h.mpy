@@ -1,0 +1,9 @@
+{
+  "module_name": "hinic_rx.h",
+  "hash_id": "718b285b3b271ad495ebabbdd72f90fbe4047a533a19d28f49ddd640ce9b8a56",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/huawei/hinic/hinic_rx.h",
+  "human_readable_source": " \n \n\n#ifndef HINIC_RX_H\n#define HINIC_RX_H\n\n#include <linux/types.h>\n#include <linux/netdevice.h>\n#include <linux/u64_stats_sync.h>\n#include <linux/interrupt.h>\n\n#include \"hinic_hw_qp.h\"\n\n#define HINIC_RX_CSUM_OFFLOAD_EN\t0xFFF\n#define HINIC_RX_CSUM_HW_CHECK_NONE\tBIT(7)\n#define HINIC_RX_CSUM_IPSU_OTHER_ERR\tBIT(8)\n\nstruct hinic_rxq_stats {\n\tu64                     pkts;\n\tu64                     bytes;\n\tu64\t\t\terrors;\n\tu64\t\t\tcsum_errors;\n\tu64\t\t\tother_errors;\n\tu64\t\t\talloc_skb_err;\n\tstruct u64_stats_sync   syncp;\n};\n\nstruct hinic_rxq {\n\tstruct net_device       *netdev;\n\tstruct hinic_rq         *rq;\n\n\tstruct hinic_rxq_stats  rxq_stats;\n\n\tchar                    *irq_name;\n\tu16\t\t\tbuf_len;\n\tu32\t\t\trx_buff_shift;\n\n\tstruct napi_struct      napi;\n};\n\nvoid hinic_rxq_get_stats(struct hinic_rxq *rxq, struct hinic_rxq_stats *stats);\n\nint hinic_init_rxq(struct hinic_rxq *rxq, struct hinic_rq *rq,\n\t\t   struct net_device *netdev);\n\nvoid hinic_clean_rxq(struct hinic_rxq *rxq);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

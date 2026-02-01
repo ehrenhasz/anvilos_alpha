@@ -1,0 +1,9 @@
+{
+  "module_name": "decompress_sources.h",
+  "hash_id": "81886158a0fabd33c2435b2466031586d50a256598a27feb671d743dc3264e11",
+  "original_prompt": "Ingested from linux-6.6.14/lib/zstd/decompress_sources.h",
+  "human_readable_source": " \n \n\n \n\n \n#define ZSTD_DISABLE_ASM 1\n\n#include \"common/debug.c\"\n#include \"common/entropy_common.c\"\n#include \"common/error_private.c\"\n#include \"common/fse_decompress.c\"\n#include \"common/zstd_common.c\"\n#include \"decompress/huf_decompress.c\"\n#include \"decompress/zstd_ddict.c\"\n#include \"decompress/zstd_decompress.c\"\n#include \"decompress/zstd_decompress_block.c\"\n#include \"zstd_decompress_module.c\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

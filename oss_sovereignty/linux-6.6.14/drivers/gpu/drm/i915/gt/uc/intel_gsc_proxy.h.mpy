@@ -1,0 +1,9 @@
+{
+  "module_name": "intel_gsc_proxy.h",
+  "hash_id": "876b1548056b05b42b5c189eaa69995dbd795b91f7bed788ece6a9ea74fea08c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/gt/uc/intel_gsc_proxy.h",
+  "human_readable_source": " \n \n\n#ifndef _INTEL_GSC_PROXY_H_\n#define _INTEL_GSC_PROXY_H_\n\n#include <linux/types.h>\n\nstruct intel_gsc_uc;\n\nint intel_gsc_proxy_init(struct intel_gsc_uc *gsc);\nvoid intel_gsc_proxy_fini(struct intel_gsc_uc *gsc);\nint intel_gsc_proxy_request_handler(struct intel_gsc_uc *gsc);\nvoid intel_gsc_proxy_irq_handler(struct intel_gsc_uc *gsc, u32 iir);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

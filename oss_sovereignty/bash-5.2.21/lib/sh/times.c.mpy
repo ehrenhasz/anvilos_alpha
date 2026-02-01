@@ -1,0 +1,9 @@
+{
+  "module_name": "times.c",
+  "hash_id": "54d02f3779ca57a2ee8fa105f42ff15ca800dec537b57e91993881001ae9634c",
+  "original_prompt": "Ingested from bash-5.2.21/lib/sh/times.c",
+  "human_readable_source": " \n\n \n\n#include <config.h>\n\n#if !defined (HAVE_TIMES)\n\n#include <sys/types.h>\n#include <posixtime.h>\n#include <systimes.h>\n\n#if defined (HAVE_SYS_RESOURCE_H) && defined (HAVE_GETRUSAGE)\n#  include <sys/resource.h>\n#endif  \n\nextern long\tget_clk_tck PARAMS((void));\n\n#define CONVTCK(r)      (r.tv_sec * clk_tck + r.tv_usec / (1000000 / clk_tck))\n\nclock_t\ntimes(tms)\n\tstruct tms *tms;\n{\n\tclock_t rv;\n\tstatic long clk_tck = -1;\n\n#if defined (HAVE_GETRUSAGE)\n\tstruct timeval tv;\n\tstruct rusage ru;\n\n\tif (clk_tck == -1)\n\t\tclk_tck = get_clk_tck();\n\n\tif (getrusage(RUSAGE_SELF, &ru) < 0)\n\t\treturn ((clock_t)-1);\n\ttms->tms_utime = CONVTCK(ru.ru_utime);\n\ttms->tms_stime = CONVTCK(ru.ru_stime);\n\n\tif (getrusage(RUSAGE_CHILDREN, &ru) < 0)\n\t\treturn ((clock_t)-1);\n\ttms->tms_cutime = CONVTCK(ru.ru_utime);\n\ttms->tms_cstime = CONVTCK(ru.ru_stime);\n\n\tif (gettimeofday(&tv, NULL) < 0)\n\t\treturn ((clock_t)-1);\n\trv = (clock_t)(CONVTCK(tv));\n#else  \n\tif (clk_tck == -1)\n\t\tclk_tck = get_clk_tck();\n\n\t \n\ttms->tms_utime = tms->tms_stime = (clock_t)0;\n\ttms->tms_cutime = tms->tms_cstime = (clock_t)0;\n\n\trv = (clock_t)time((time_t *)0) * clk_tck;\n# endif  \n\n\treturn rv;\n}\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

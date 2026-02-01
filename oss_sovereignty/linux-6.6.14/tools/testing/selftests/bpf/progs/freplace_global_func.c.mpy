@@ -1,0 +1,9 @@
+{
+  "module_name": "freplace_global_func.c",
+  "hash_id": "ecc39fe7d905a01ae8c3c5436af391817e795f925e1acf996630ad823d7832ea",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/freplace_global_func.c",
+  "human_readable_source": "\n#include <linux/bpf.h>\n#include <bpf/bpf_helpers.h>\n\n__noinline\nint test_ctx_global_func(struct __sk_buff *skb)\n{\n\tvolatile int retval = 1;\n\treturn retval;\n}\n\nSEC(\"freplace/test_pkt_access\")\nint new_test_pkt_access(struct __sk_buff *skb)\n{\n\treturn test_ctx_global_func(skb);\n}\n\nchar _license[] SEC(\"license\") = \"GPL\";\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

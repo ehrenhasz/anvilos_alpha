@@ -1,0 +1,9 @@
+{
+  "module_name": "etnaviv_cmdbuf.h",
+  "hash_id": "808e6dcb8b2c18d3d79678d46c1633cefe3f8019606ad411c0a13eec7ab19160",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/etnaviv/etnaviv_cmdbuf.h",
+  "human_readable_source": " \n \n\n#ifndef __ETNAVIV_CMDBUF_H__\n#define __ETNAVIV_CMDBUF_H__\n\n#include <linux/types.h>\n\nstruct device;\nstruct etnaviv_iommu_context;\nstruct etnaviv_vram_mapping;\nstruct etnaviv_cmdbuf_suballoc;\nstruct etnaviv_perfmon_request;\n\nstruct etnaviv_cmdbuf {\n\t \n\tstruct etnaviv_cmdbuf_suballoc *suballoc;\n\t \n\tint suballoc_offset;\n\tvoid *vaddr;\n\tu32 size;\n\tu32 user_size;\n};\n\nstruct etnaviv_cmdbuf_suballoc *\netnaviv_cmdbuf_suballoc_new(struct device *dev);\nvoid etnaviv_cmdbuf_suballoc_destroy(struct etnaviv_cmdbuf_suballoc *suballoc);\nint etnaviv_cmdbuf_suballoc_map(struct etnaviv_cmdbuf_suballoc *suballoc,\n\t\t\t\tstruct etnaviv_iommu_context *context,\n\t\t\t\tstruct etnaviv_vram_mapping *mapping,\n\t\t\t\tu32 memory_base);\nvoid etnaviv_cmdbuf_suballoc_unmap(struct etnaviv_iommu_context *context,\n\t\t\t\t   struct etnaviv_vram_mapping *mapping);\n\n\nint etnaviv_cmdbuf_init(struct etnaviv_cmdbuf_suballoc *suballoc,\n\t\tstruct etnaviv_cmdbuf *cmdbuf, u32 size);\nvoid etnaviv_cmdbuf_free(struct etnaviv_cmdbuf *cmdbuf);\n\nu32 etnaviv_cmdbuf_get_va(struct etnaviv_cmdbuf *buf,\n\t\t\t  struct etnaviv_vram_mapping *mapping);\ndma_addr_t etnaviv_cmdbuf_get_pa(struct etnaviv_cmdbuf *buf);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

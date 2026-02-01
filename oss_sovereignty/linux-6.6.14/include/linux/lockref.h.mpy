@@ -1,0 +1,9 @@
+{
+  "module_name": "lockref.h",
+  "hash_id": "e0187452187937363422b3bf5194ffe1833f89b4d5c36855d0cdda8b06aeb870",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/lockref.h",
+  "human_readable_source": " \n#ifndef __LINUX_LOCKREF_H\n#define __LINUX_LOCKREF_H\n\n \n\n#include <linux/spinlock.h>\n#include <generated/bounds.h>\n\n#define USE_CMPXCHG_LOCKREF \\\n\t(IS_ENABLED(CONFIG_ARCH_USE_CMPXCHG_LOCKREF) && \\\n\t IS_ENABLED(CONFIG_SMP) && SPINLOCK_SIZE <= 4)\n\nstruct lockref {\n\tunion {\n#if USE_CMPXCHG_LOCKREF\n\t\taligned_u64 lock_count;\n#endif\n\t\tstruct {\n\t\t\tspinlock_t lock;\n\t\t\tint count;\n\t\t};\n\t};\n};\n\nextern void lockref_get(struct lockref *);\nextern int lockref_put_return(struct lockref *);\nextern int lockref_get_not_zero(struct lockref *);\nextern int lockref_put_not_zero(struct lockref *);\nextern int lockref_put_or_lock(struct lockref *);\n\nextern void lockref_mark_dead(struct lockref *);\nextern int lockref_get_not_dead(struct lockref *);\n\n \nstatic inline bool __lockref_is_dead(const struct lockref *l)\n{\n\treturn ((int)l->count < 0);\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

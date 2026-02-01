@@ -1,0 +1,9 @@
+{
+  "module_name": "riscv.h",
+  "hash_id": "40b240680ee35df5dde2e93530cf481ff0fcdb746ded69c68376fcfe9d9def01",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/tegra/riscv.h",
+  "human_readable_source": " \n \n\n#ifndef DRM_TEGRA_RISCV_H\n#define DRM_TEGRA_RISCV_H\n\nstruct tegra_drm_riscv_descriptor {\n\tu32 manifest_offset;\n\tu32 code_offset;\n\tu32 code_size;\n\tu32 data_offset;\n\tu32 data_size;\n};\n\nstruct tegra_drm_riscv {\n\t \n\tstruct device *dev;\n\tvoid __iomem *regs;\n\n\tstruct tegra_drm_riscv_descriptor bl_desc;\n\tstruct tegra_drm_riscv_descriptor os_desc;\n};\n\nint tegra_drm_riscv_read_descriptors(struct tegra_drm_riscv *riscv);\nint tegra_drm_riscv_boot_bootrom(struct tegra_drm_riscv *riscv, phys_addr_t image_address,\n\t\t\t\t u32 gscid, const struct tegra_drm_riscv_descriptor *desc);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

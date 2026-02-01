@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "b71dc0532284622b5c90d3753cdcb60157150d090de6d78bd72d315102cb6a84",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/phy/socionext/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# PHY drivers for Socionext platforms.\n#\n\nconfig PHY_UNIPHIER_USB2\n\ttristate \"UniPhier USB2 PHY driver\"\n\tdepends on ARCH_UNIPHIER || COMPILE_TEST\n\tdepends on OF && HAS_IOMEM\n\tselect GENERIC_PHY\n\tselect MFD_SYSCON\n\thelp\n\t  Enable this to support USB PHY implemented on USB2 controller\n\t  on UniPhier SoCs. This driver provides interface to interact\n\t  with USB 2.0 PHY that is part of the UniPhier SoC.\n\t  In case of Pro4, it is necessary to specify this USB2 PHY instead\n\t  of USB3 HS-PHY.\n\nconfig PHY_UNIPHIER_USB3\n\ttristate \"UniPhier USB3 PHY driver\"\n\tdepends on ARCH_UNIPHIER || COMPILE_TEST\n\tdepends on OF && HAS_IOMEM\n\tselect GENERIC_PHY\n\thelp\n\t  Enable this to support USB PHY implemented in USB3 controller\n\t  on UniPhier SoCs. This controller supports USB3.0 and lower speed.\n\nconfig PHY_UNIPHIER_PCIE\n\ttristate \"Uniphier PHY driver for PCIe controller\"\n\tdepends on ARCH_UNIPHIER || COMPILE_TEST\n\tdepends on OF && HAS_IOMEM\n\tdefault PCIE_UNIPHIER\n\tselect GENERIC_PHY\n\thelp\n\t  Enable this to support PHY implemented in PCIe controller\n\t  on UniPhier SoCs. This driver supports LD20 and PXs3 SoCs.\n\nconfig PHY_UNIPHIER_AHCI\n\ttristate \"UniPhier AHCI PHY driver\"\n\tdepends on ARCH_UNIPHIER || COMPILE_TEST\n\tdepends on OF && HAS_IOMEM\n\tdefault SATA_AHCI_PLATFORM\n\tselect GENERIC_PHY\n\thelp\n\t  Enable this to support PHY implemented in AHCI controller\n\t  on UniPhier SoCs. This driver supports Pro4, PXs2 and PXs3 SoCs.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

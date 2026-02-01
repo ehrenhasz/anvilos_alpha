@@ -1,0 +1,9 @@
+{
+  "module_name": "omap-hdmi-audio.h",
+  "hash_id": "dab5d41d3a20898dbb0186d072f53c09d0e7f2a7b266ab0959fe0b17159a1948",
+  "original_prompt": "Ingested from linux-6.6.14/include/sound/omap-hdmi-audio.h",
+  "human_readable_source": " \n \n\n#ifndef __OMAP_HDMI_AUDIO_H__\n#define __OMAP_HDMI_AUDIO_H__\n\n#include <linux/platform_data/omapdss.h>\n\nstruct omap_dss_audio {\n\tstruct snd_aes_iec958 *iec;\n\tstruct snd_cea_861_aud_if *cea;\n};\n\nstruct omap_hdmi_audio_ops {\n\tint (*audio_startup)(struct device *dev,\n\t\t\t     void (*abort_cb)(struct device *dev));\n\tint (*audio_shutdown)(struct device *dev);\n\tint (*audio_start)(struct device *dev);\n\tvoid (*audio_stop)(struct device *dev);\n\tint (*audio_config)(struct device *dev,\n\t\t\t    struct omap_dss_audio *dss_audio);\n};\n\n \nstruct omap_hdmi_audio_pdata {\n\tstruct device *dev;\n\tunsigned int version;\n\tphys_addr_t audio_dma_addr;\n\n\tconst struct omap_hdmi_audio_ops *ops;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

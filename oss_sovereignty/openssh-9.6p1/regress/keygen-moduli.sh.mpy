@@ -1,0 +1,9 @@
+{
+  "module_name": "keygen-moduli.sh",
+  "hash_id": "2a9e658a4fd502f067116ea702f7390a440d268c50bed7d0b207679a2babc1cb",
+  "original_prompt": "Ingested from openssh-9.6p1/regress/keygen-moduli.sh",
+  "human_readable_source": "#\t$OpenBSD: keygen-moduli.sh,v 1.4 2020/01/02 13:25:38 dtucker Exp $\n#\tPlaced in the Public Domain.\n\ntid=\"keygen moduli\"\n\ndhgex=0\nfor kex in `${SSH} -Q kex`; do\n\tcase $kex in\n\t\tdiffie-hellman-group*)\tdhgex=1 ;;\n\tesac\ndone\n\n# Try \"start at the beginning and stop after 1\", \"skip 1 then stop after 1\"\n# and \"skip 2 and run to the end with checkpointing\".  Since our test data\n# file has 3 lines, these should always result in 1 line of output.\nif [ \"x$dhgex\" = \"x1\" ]; then\n    for i in \"-O lines=1\" \"-O start-line=1 -O lines=1\" \"-O start-line=2 -O checkpoint=$OBJ/moduli.ckpt\"; do\n\ttrace \"keygen $i\"\n\trm -f $OBJ/moduli.out $OBJ/moduli.ckpt\n\t${SSHKEYGEN} -M screen -f ${SRC}/moduli.in $i $OBJ/moduli.out 2>/dev/null || \\\n\t    fail \"keygen screen failed $i\"\n\tlines=`wc -l <$OBJ/moduli.out`\n\ttest \"$lines\" -eq \"1\" || fail \"expected 1 line, got $lines\"\n    done\nfi\n\nrm -f $OBJ/moduli.out $OBJ/moduli.ckpt\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

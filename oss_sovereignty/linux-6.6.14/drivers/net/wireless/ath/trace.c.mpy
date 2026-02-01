@@ -1,0 +1,9 @@
+{
+  "module_name": "trace.c",
+  "hash_id": "8da6f9f75fd08186d0ade499bd916e4c674bb74be92b766f4b17ef173d703c21",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/ath/trace.c",
+  "human_readable_source": " \n\n#include <linux/module.h>\n\n#define CREATE_TRACE_POINTS\n#include \"trace.h\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

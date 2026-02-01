@@ -1,0 +1,9 @@
+{
+  "module_name": "pxa2xx_udc.h",
+  "hash_id": "f76bed34447c90d1ece899304f7e5b276c7043b616a029f8bba8cb524c3fe968",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/platform_data/pxa2xx_udc.h",
+  "human_readable_source": " \n \n#ifndef PXA2XX_UDC_H\n#define PXA2XX_UDC_H\n\nstruct pxa2xx_udc_mach_info {\n        int  (*udc_is_connected)(void);\t\t \n        void (*udc_command)(int cmd);\n#define\tPXA2XX_UDC_CMD_CONNECT\t\t0\t \n#define\tPXA2XX_UDC_CMD_DISCONNECT\t1\t \n\n\t \n\tbool\tgpio_pullup_inverted;\n\tint\tgpio_pullup;\t\t\t \n};\n\n#ifdef CONFIG_PXA27x\nextern void pxa27x_clear_otgph(void);\n#else\n#define pxa27x_clear_otgph()\tdo {} while (0)\n#endif\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

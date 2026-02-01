@@ -1,0 +1,9 @@
+{
+  "module_name": "kernel-dirty-inode.m4",
+  "hash_id": "4e5523dccfdcf57b25e47f82d3def3d73e69c06c23e2a232b9d08590f294a16f",
+  "original_prompt": "Ingested from zfs-2.2.2/config/kernel-dirty-inode.m4",
+  "human_readable_source": "dnl #\ndnl # 3.0 API change\ndnl # The sops->dirty_inode() callbacks were updated to take a flags\ndnl # argument.  This allows the greater control over whether the\ndnl # filesystem needs to push out a transaction or not.\ndnl #\nAC_DEFUN([ZFS_AC_KERNEL_SRC_DIRTY_INODE], [\n\tZFS_LINUX_TEST_SRC([dirty_inode_with_flags], [\n\t\t#include <linux/fs.h>\n\n\t\tvoid dirty_inode(struct inode *a, int b) { return; }\n\n\t\tstatic const struct super_operations\n\t\t    sops __attribute__ ((unused)) = {\n\t\t\t.dirty_inode = dirty_inode,\n\t\t};\n\t],[])\n])\n\nAC_DEFUN([ZFS_AC_KERNEL_DIRTY_INODE], [\n\tAC_MSG_CHECKING([whether sops->dirty_inode() wants flags])\n\tZFS_LINUX_TEST_RESULT([dirty_inode_with_flags], [\n\t\tAC_MSG_RESULT([yes])\n\t\tAC_DEFINE(HAVE_DIRTY_INODE_WITH_FLAGS, 1,\n\t\t    [sops->dirty_inode() wants flags])\n\t],[\n\t\tAC_MSG_RESULT([no])\n\t])\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

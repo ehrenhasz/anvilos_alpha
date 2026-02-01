@@ -1,0 +1,9 @@
+{
+  "module_name": "isnanf-nolibm.h",
+  "hash_id": "698186a1004fd66a94fccffbd3b1c972985d3e1ae37595021303ec65d17c9de5",
+  "original_prompt": "Ingested from coreutils-9.4/lib/isnanf-nolibm.h",
+  "human_readable_source": " \n#if !_GL_CONFIG_H_INCLUDED\n #error \"Please include config.h first.\"\n#endif\n\n#if HAVE_ISNANF_IN_LIBC\n \n# include <math.h>\n# if (__GNUC__ >= 4) || (__clang_major__ >= 4)\n    \n#  undef isnanf\n#  define isnanf(x) __builtin_isnan ((float)(x))\n# elif defined isnan\n#  undef isnanf\n#  define isnanf(x) isnan ((float)(x))\n# else\n    \n#  if defined __sgi\n    \nextern int isnanf (float x);\n#  endif\n# endif\n#else\n \n# undef isnanf\n# define isnanf rpl_isnanf\nextern int isnanf (float x);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

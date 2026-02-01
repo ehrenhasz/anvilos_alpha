@@ -1,0 +1,9 @@
+{
+  "module_name": "@@__@@__extmod__vfs_lfs.c.qstr",
+  "hash_id": "897ccd0f03416cd6531a40ce01463cdba0ba2976275638e6ecd7b8825c1c568f",
+  "original_prompt": "Ingested from sys_09_Anvil/source/ports/unix/build-bicameral/genhdr/qstr/@@__@@__extmod__vfs_lfs.c.qstr",
+  "human_readable_source": "Q(readsize)\nQ(progsize)\nQ(lookahead)\nQ(mtime)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

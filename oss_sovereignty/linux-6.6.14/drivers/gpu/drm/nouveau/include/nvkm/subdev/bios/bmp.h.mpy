@@ -1,0 +1,9 @@
+{
+  "module_name": "bmp.h",
+  "hash_id": "805d22be16bf8e1db3084f9aa68c87d3e510911e224e0ce738070e7f89a42e2b",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/include/nvkm/subdev/bios/bmp.h",
+  "human_readable_source": " \n#ifndef __NVBIOS_BMP_H__\n#define __NVBIOS_BMP_H__\nstatic inline u16\nbmp_version(struct nvkm_bios *bios)\n{\n\tif (bios->bmp_offset) {\n\t\treturn nvbios_rd08(bios, bios->bmp_offset + 5) << 8 |\n\t\t       nvbios_rd08(bios, bios->bmp_offset + 6);\n\t}\n\n\treturn 0x0000;\n}\n\nstatic inline u16\nbmp_mem_init_table(struct nvkm_bios *bios)\n{\n\tif (bmp_version(bios) >= 0x0300)\n\t\treturn nvbios_rd16(bios, bios->bmp_offset + 24);\n\treturn 0x0000;\n}\n\nstatic inline u16\nbmp_sdr_seq_table(struct nvkm_bios *bios)\n{\n\tif (bmp_version(bios) >= 0x0300)\n\t\treturn nvbios_rd16(bios, bios->bmp_offset + 26);\n\treturn 0x0000;\n}\n\nstatic inline u16\nbmp_ddr_seq_table(struct nvkm_bios *bios)\n{\n\tif (bmp_version(bios) >= 0x0300)\n\t\treturn nvbios_rd16(bios, bios->bmp_offset + 28);\n\treturn 0x0000;\n}\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

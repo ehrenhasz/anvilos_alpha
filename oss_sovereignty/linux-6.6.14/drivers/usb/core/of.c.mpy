@@ -1,0 +1,9 @@
+{
+  "module_name": "of.c",
+  "hash_id": "ace2bfbba57a9306fed58f4f67f182e5d159076afa17cb59ebdbbfa51ae1d4cc",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/usb/core/of.c",
+  "human_readable_source": "\n \n\n#include <linux/of.h>\n#include <linux/usb/of.h>\n\n \nstruct device_node *usb_of_get_device_node(struct usb_device *hub, int port1)\n{\n\tstruct device_node *node;\n\tu32 reg;\n\n\tfor_each_child_of_node(hub->dev.of_node, node) {\n\t\tif (of_property_read_u32(node, \"reg\", &reg))\n\t\t\tcontinue;\n\n\t\tif (reg == port1)\n\t\t\treturn node;\n\t}\n\n\treturn NULL;\n}\nEXPORT_SYMBOL_GPL(usb_of_get_device_node);\n\n \nbool usb_of_has_combined_node(struct usb_device *udev)\n{\n\tstruct usb_device_descriptor *ddesc = &udev->descriptor;\n\tstruct usb_config_descriptor *cdesc;\n\n\tif (!udev->dev.of_node)\n\t\treturn false;\n\n\tswitch (ddesc->bDeviceClass) {\n\tcase USB_CLASS_PER_INTERFACE:\n\tcase USB_CLASS_HUB:\n\t\tif (ddesc->bNumConfigurations == 1) {\n\t\t\tcdesc = &udev->config->desc;\n\t\t\tif (cdesc->bNumInterfaces == 1)\n\t\t\t\treturn true;\n\t\t}\n\t}\n\n\treturn false;\n}\nEXPORT_SYMBOL_GPL(usb_of_has_combined_node);\n\n \nstruct device_node *\nusb_of_get_interface_node(struct usb_device *udev, u8 config, u8 ifnum)\n{\n\tstruct device_node *node;\n\tu32 reg[2];\n\n\tfor_each_child_of_node(udev->dev.of_node, node) {\n\t\tif (of_property_read_u32_array(node, \"reg\", reg, 2))\n\t\t\tcontinue;\n\n\t\tif (reg[0] == ifnum && reg[1] == config)\n\t\t\treturn node;\n\t}\n\n\treturn NULL;\n}\nEXPORT_SYMBOL_GPL(usb_of_get_interface_node);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "ispccp2.h",
+  "hash_id": "e43e77ff31663beea50f6fb0b7b14799b93da686c70cd8993ab9b7459474bfb3",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/platform/ti/omap3isp/ispccp2.h",
+  "human_readable_source": " \n \n\n#ifndef OMAP3_ISP_CCP2_H\n#define OMAP3_ISP_CCP2_H\n\n#include <linux/videodev2.h>\n\nstruct isp_device;\nstruct isp_csiphy;\n\n \n#define CCP2_PAD_SINK\t\t\t0\n#define CCP2_PAD_SOURCE\t\t\t1\n#define CCP2_PADS_NUM\t\t\t2\n\n \nenum ccp2_input_entity {\n\tCCP2_INPUT_NONE,\n\tCCP2_INPUT_SENSOR,\n\tCCP2_INPUT_MEMORY,\n};\n\n \nenum ccp2_output_entity {\n\tCCP2_OUTPUT_NONE,\n\tCCP2_OUTPUT_CCDC,\n\tCCP2_OUTPUT_MEMORY,\n};\n\n\n \nstruct isp_interface_lcx_config {\n\tint crc;\n\tu32 data_start;\n\tu32 data_size;\n\tu32 format;\n};\n\n \nstruct isp_interface_mem_config {\n\tu32 dst_port;\n\tu32 vsize_count;\n\tu32 hsize_count;\n\tu32 src_ofst;\n\tu32 dst_ofst;\n};\n\n \nstruct isp_ccp2_device {\n\tstruct v4l2_subdev subdev;\n\tstruct v4l2_mbus_framefmt formats[CCP2_PADS_NUM];\n\tstruct media_pad pads[CCP2_PADS_NUM];\n\n\tenum ccp2_input_entity input;\n\tenum ccp2_output_entity output;\n\tstruct isp_interface_lcx_config if_cfg;\n\tstruct isp_interface_mem_config mem_cfg;\n\tstruct isp_video video_in;\n\tstruct isp_csiphy *phy;\n\tstruct regulator *vdds_csib;\n\tenum isp_pipeline_stream_state state;\n\twait_queue_head_t wait;\n\tatomic_t stopping;\n};\n\n \nint omap3isp_ccp2_init(struct isp_device *isp);\nvoid omap3isp_ccp2_cleanup(struct isp_device *isp);\nint omap3isp_ccp2_register_entities(struct isp_ccp2_device *ccp2,\n\t\t\tstruct v4l2_device *vdev);\nvoid omap3isp_ccp2_unregister_entities(struct isp_ccp2_device *ccp2);\nvoid omap3isp_ccp2_isr(struct isp_ccp2_device *ccp2);\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "mod.h",
+  "hash_id": "bd5dd60a76af0c593d11cd79e19c5c6ac6ea9fb718a79916b49ec0e86b81dafb",
+  "original_prompt": "Ingested from zfs-2.2.2/include/sys/mod.h",
+  "human_readable_source": " \n#ifndef _SYS_MOD_H\n#define\t_SYS_MOD_H\n\n#ifdef _KERNEL\n#include <sys/mod_os.h>\n#else\n \n#define\tEXPORT_SYMBOL(x)\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

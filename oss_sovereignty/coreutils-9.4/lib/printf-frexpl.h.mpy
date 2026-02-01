@@ -1,0 +1,9 @@
+{
+  "module_name": "printf-frexpl.h",
+  "hash_id": "0d602d82f49b15934890f239c58385a591cb496357ca3b0a4f6968349b7e0141",
+  "original_prompt": "Ingested from coreutils-9.4/lib/printf-frexpl.h",
+  "human_readable_source": " \nextern long double printf_frexpl (long double x, int *expptr);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

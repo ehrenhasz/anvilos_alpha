@@ -1,0 +1,9 @@
+{
+  "module_name": "ipmi_si_sm.h",
+  "hash_id": "12ed3466fcacb65e0845d45f330da61495a901fcaf9658f50536246c0c2fb3db",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/char/ipmi/ipmi_si_sm.h",
+  "human_readable_source": " \n \n\n#ifndef __IPMI_SI_SM_H__\n#define __IPMI_SI_SM_H__\n\n#include \"ipmi_si.h\"\n\n \nstruct si_sm_data;\n\n \nenum si_sm_result {\n\tSI_SM_CALL_WITHOUT_DELAY,  \n\tSI_SM_CALL_WITH_DELAY,\t \n\tSI_SM_CALL_WITH_TICK_DELAY, \n\tSI_SM_TRANSACTION_COMPLETE,  \n\tSI_SM_IDLE,\t\t \n\tSI_SM_HOSED,\t\t \n\n\t \n\tSI_SM_ATTN\n};\n\n \nstruct si_sm_handlers {\n\t \n\tchar *version;\n\n\t \n\tunsigned int (*init_data)(struct si_sm_data *smi,\n\t\t\t\t  struct si_sm_io   *io);\n\n\t \n\tint (*start_transaction)(struct si_sm_data *smi,\n\t\t\t\t unsigned char *data, unsigned int size);\n\n\t \n\tint (*get_result)(struct si_sm_data *smi,\n\t\t\t  unsigned char *data, unsigned int length);\n\n\t \n\tenum si_sm_result (*event)(struct si_sm_data *smi, long time);\n\n\t \n\tint (*detect)(struct si_sm_data *smi);\n\n\t \n\tvoid (*cleanup)(struct si_sm_data *smi);\n\n\t \n\tint (*size)(void);\n};\n\n \nextern const struct si_sm_handlers kcs_smi_handlers;\nextern const struct si_sm_handlers smic_smi_handlers;\nextern const struct si_sm_handlers bt_smi_handlers;\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

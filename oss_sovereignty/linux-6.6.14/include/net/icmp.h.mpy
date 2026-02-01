@@ -1,0 +1,9 @@
+{
+  "module_name": "icmp.h",
+  "hash_id": "7c48e8b08585067b41eb76fa374199b27f9b9396d11d1287332602cd881af1e3",
+  "original_prompt": "Ingested from linux-6.6.14/include/net/icmp.h",
+  "human_readable_source": " \n \n#ifndef _ICMP_H\n#define\t_ICMP_H\n\n#include <linux/icmp.h>\n\n#include <net/inet_sock.h>\n#include <net/snmp.h>\n#include <net/ip.h>\n\nstruct icmp_err {\n  int\t\terrno;\n  unsigned int\tfatal:1;\n};\n\nextern const struct icmp_err icmp_err_convert[];\n#define ICMP_INC_STATS(net, field)\tSNMP_INC_STATS((net)->mib.icmp_statistics, field)\n#define __ICMP_INC_STATS(net, field)\t__SNMP_INC_STATS((net)->mib.icmp_statistics, field)\n#define ICMPMSGOUT_INC_STATS(net, field)\tSNMP_INC_STATS_ATOMIC_LONG((net)->mib.icmpmsg_statistics, field+256)\n#define ICMPMSGIN_INC_STATS(net, field)\t\tSNMP_INC_STATS_ATOMIC_LONG((net)->mib.icmpmsg_statistics, field)\n\nstruct dst_entry;\nstruct net_proto_family;\nstruct sk_buff;\nstruct net;\n\nvoid __icmp_send(struct sk_buff *skb_in, int type, int code, __be32 info,\n\t\t const struct ip_options *opt);\nstatic inline void icmp_send(struct sk_buff *skb_in, int type, int code, __be32 info)\n{\n\t__icmp_send(skb_in, type, code, info, &IPCB(skb_in)->opt);\n}\n\n#if IS_ENABLED(CONFIG_NF_NAT)\nvoid icmp_ndo_send(struct sk_buff *skb_in, int type, int code, __be32 info);\n#else\nstatic inline void icmp_ndo_send(struct sk_buff *skb_in, int type, int code, __be32 info)\n{\n\tstruct ip_options opts = { 0 };\n\t__icmp_send(skb_in, type, code, info, &opts);\n}\n#endif\n\nint icmp_rcv(struct sk_buff *skb);\nint icmp_err(struct sk_buff *skb, u32 info);\nint icmp_init(void);\nvoid icmp_out_count(struct net *net, unsigned char type);\nbool icmp_build_probe(struct sk_buff *skb, struct icmphdr *icmphdr);\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

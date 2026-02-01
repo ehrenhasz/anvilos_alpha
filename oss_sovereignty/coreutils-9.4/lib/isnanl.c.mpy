@@ -1,0 +1,9 @@
+{
+  "module_name": "isnanl.c",
+  "hash_id": "a8d11ea57a3e8a4a65df7a83a7aadf15cc475d7f16314088de81b768d9fb083d",
+  "original_prompt": "Ingested from coreutils-9.4/lib/isnanl.c",
+  "human_readable_source": " \n\n#define USE_LONG_DOUBLE\n#include \"isnan.c\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "ver_functions.sh",
+  "hash_id": "c464c782c50aa10589426edfcd27151f08ca456b796ca41d40e1d51a81d22660",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/rcutorture/configs/scf/ver_functions.sh",
+  "human_readable_source": "#!/bin/bash\n# SPDX-License-Identifier: GPL-2.0+\n#\n# Torture-suite-dependent shell functions for the rest of the scripts.\n#\n# Copyright (C) Facebook, 2020\n#\n# Authors: Paul E. McKenney <paulmck@kernel.org>\n\n# scftorture_param_onoff bootparam-string config-file\n#\n# Adds onoff scftorture module parameters to kernels having it.\nscftorture_param_onoff () {\n\tif ! bootparam_hotplug_cpu \"$1\" && configfrag_hotplug_cpu \"$2\"\n\tthen\n\t\techo CPU-hotplug kernel, adding scftorture onoff. 1>&2\n\t\techo scftorture.onoff_interval=1000 scftorture.onoff_holdoff=30\n\tfi\n}\n\n# per_version_boot_params bootparam-string config-file seconds\n#\n# Adds per-version torture-module parameters to kernels supporting them.\nper_version_boot_params () {\n\techo\t`scftorture_param_onoff \"$1\" \"$2\"` \\\n\t\tscftorture.stat_interval=15 \\\n\t\tscftorture.shutdown_secs=$3 \\\n\t\tscftorture.verbose=1 \\\n\t\t$1\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

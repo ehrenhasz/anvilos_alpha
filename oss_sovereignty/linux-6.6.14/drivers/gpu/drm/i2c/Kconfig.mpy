@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "ef405b3a99b966e2ce03f57eb87c7238ad3242c6290d02845bfdb10f6f67895e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i2c/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nmenu \"I2C encoder or helper chips\"\n     depends on DRM && DRM_KMS_HELPER && I2C\n\nconfig DRM_I2C_CH7006\n\ttristate \"Chrontel ch7006 TV encoder\"\n\tdefault m if DRM_NOUVEAU\n\thelp\n\t  Support for Chrontel ch7006 and similar TV encoders, found\n\t  on some nVidia video cards.\n\n\t  This driver is currently only useful if you're also using\n\t  the nouveau driver.\n\nconfig DRM_I2C_SIL164\n\ttristate \"Silicon Image sil164 TMDS transmitter\"\n\tdefault m if DRM_NOUVEAU\n\thelp\n\t  Support for sil164 and similar single-link (or dual-link\n\t  when used in pairs) TMDS transmitters, used in some nVidia\n\t  video cards.\n\nconfig DRM_I2C_NXP_TDA998X\n\ttristate \"NXP Semiconductors TDA998X HDMI encoder\"\n\tdefault m if DRM_TILCDC\n\tselect CEC_CORE if CEC_NOTIFIER\n\tselect SND_SOC_HDMI_CODEC if SND_SOC\n\thelp\n\t  Support for NXP Semiconductors TDA998X HDMI encoders.\n\nconfig DRM_I2C_NXP_TDA9950\n\ttristate \"NXP Semiconductors TDA9950/TDA998X HDMI CEC\"\n\tselect CEC_NOTIFIER\n\tselect CEC_CORE\n\nendmenu\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

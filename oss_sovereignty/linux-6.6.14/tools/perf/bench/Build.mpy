@@ -1,0 +1,9 @@
+{
+  "module_name": "Build",
+  "hash_id": "a8ba30d4291b8f36fc9419c9adf26804836517644a5259e7ddb64f9df8608d2f",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/bench/Build",
+  "human_readable_source": "perf-y += sched-messaging.o\nperf-y += sched-pipe.o\nperf-y += sched-seccomp-notify.o\nperf-y += syscall.o\nperf-y += mem-functions.o\nperf-y += futex-hash.o\nperf-y += futex-wake.o\nperf-y += futex-wake-parallel.o\nperf-y += futex-requeue.o\nperf-y += futex-lock-pi.o\nperf-y += epoll-wait.o\nperf-y += epoll-ctl.o\nperf-y += synthesize.o\nperf-y += kallsyms-parse.o\nperf-y += find-bit-bench.o\nperf-y += inject-buildid.o\nperf-y += evlist-open-close.o\nperf-y += breakpoint.o\nperf-y += pmu-scan.o\nperf-y += uprobe.o\n\nperf-$(CONFIG_X86_64) += mem-memcpy-x86-64-asm.o\nperf-$(CONFIG_X86_64) += mem-memset-x86-64-asm.o\n\nperf-$(CONFIG_NUMA) += numa.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

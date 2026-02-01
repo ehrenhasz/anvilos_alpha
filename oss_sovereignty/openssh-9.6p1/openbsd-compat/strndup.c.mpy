@@ -1,0 +1,9 @@
+{
+  "module_name": "strndup.c",
+  "hash_id": "d1fbb348768435e630a0978b99935ee855550b22764d3495ad723b35b8029fa6",
+  "original_prompt": "Ingested from openssh-9.6p1/openbsd-compat/strndup.c",
+  "human_readable_source": " \n\n \n\n#include \"includes.h\"\n#if !defined(HAVE_STRNDUP) || defined(BROKEN_STRNDUP)\n#include <sys/types.h>\n\n#include <stddef.h>\n#include <stdlib.h>\n#include <string.h>\n\nchar *\nstrndup(const char *str, size_t maxlen)\n{\n\tchar *copy;\n\tsize_t len;\n\n\tlen = strnlen(str, maxlen);\n\tcopy = malloc(len + 1);\n\tif (copy != NULL) {\n\t\t(void)memcpy(copy, str, len);\n\t\tcopy[len] = '\\0';\n\t}\n\n\treturn copy;\n}\nDEF_WEAK(strndup);\n#endif   \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

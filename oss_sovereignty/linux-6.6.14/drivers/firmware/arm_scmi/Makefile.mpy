@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "709c8764452f8ab979ddf1d00023cdf2a521508114f5d5cc65bf630cbda5712c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/firmware/arm_scmi/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nscmi-bus-y = bus.o\nscmi-core-objs := $(scmi-bus-y)\n\nscmi-driver-y = driver.o notify.o\nscmi-driver-$(CONFIG_ARM_SCMI_RAW_MODE_SUPPORT) += raw_mode.o\nscmi-transport-$(CONFIG_ARM_SCMI_HAVE_SHMEM) = shmem.o\nscmi-transport-$(CONFIG_ARM_SCMI_TRANSPORT_MAILBOX) += mailbox.o\nscmi-transport-$(CONFIG_ARM_SCMI_TRANSPORT_SMC) += smc.o\nscmi-transport-$(CONFIG_ARM_SCMI_HAVE_MSG) += msg.o\nscmi-transport-$(CONFIG_ARM_SCMI_TRANSPORT_VIRTIO) += virtio.o\nscmi-transport-$(CONFIG_ARM_SCMI_TRANSPORT_OPTEE) += optee.o\nscmi-protocols-y = base.o clock.o perf.o power.o reset.o sensors.o system.o voltage.o powercap.o\nscmi-module-objs := $(scmi-driver-y) $(scmi-protocols-y) $(scmi-transport-y)\n\nobj-$(CONFIG_ARM_SCMI_PROTOCOL) += scmi-core.o\nobj-$(CONFIG_ARM_SCMI_PROTOCOL) += scmi-module.o\n\nobj-$(CONFIG_ARM_SCMI_POWER_DOMAIN) += scmi_pm_domain.o\nobj-$(CONFIG_ARM_SCMI_POWER_CONTROL) += scmi_power_control.o\n\nifeq ($(CONFIG_THUMB2_KERNEL)$(CONFIG_CC_IS_CLANG),yy)\n# The use of R7 in the SMCCC conflicts with the compiler's use of R7 as a frame\n# pointer in Thumb2 mode, which is forcibly enabled by Clang when profiling\n# hooks are inserted via the -pg switch.\nCFLAGS_REMOVE_smc.o += $(CC_FLAGS_FTRACE)\nendif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

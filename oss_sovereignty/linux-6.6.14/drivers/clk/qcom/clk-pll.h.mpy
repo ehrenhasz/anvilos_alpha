@@ -1,0 +1,9 @@
+{
+  "module_name": "clk-pll.h",
+  "hash_id": "1985cdd97f1a3886c4973053816e56762753897e19361d322cfe4f09630ed3a3",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/clk/qcom/clk-pll.h",
+  "human_readable_source": " \n \n\n#ifndef __QCOM_CLK_PLL_H__\n#define __QCOM_CLK_PLL_H__\n\n#include <linux/clk-provider.h>\n#include \"clk-regmap.h\"\n\n \nstruct pll_freq_tbl {\n\tunsigned long freq;\n\tu16 l;\n\tu16 m;\n\tu16 n;\n\tu32 ibits;\n};\n\n \nstruct clk_pll {\n\tu32\tl_reg;\n\tu32\tm_reg;\n\tu32\tn_reg;\n\tu32\tconfig_reg;\n\tu32\tmode_reg;\n\tu32\tstatus_reg;\n\tu8\tstatus_bit;\n\tu8\tpost_div_width;\n\tu8\tpost_div_shift;\n\n\tconst struct pll_freq_tbl *freq_tbl;\n\n\tstruct clk_regmap clkr;\n};\n\nextern const struct clk_ops clk_pll_ops;\nextern const struct clk_ops clk_pll_vote_ops;\nextern const struct clk_ops clk_pll_sr2_ops;\n\n#define to_clk_pll(_hw) container_of(to_clk_regmap(_hw), struct clk_pll, clkr)\n\nstruct pll_config {\n\tu16 l;\n\tu32 m;\n\tu32 n;\n\tu32 vco_val;\n\tu32 vco_mask;\n\tu32 pre_div_val;\n\tu32 pre_div_mask;\n\tu32 post_div_val;\n\tu32 post_div_mask;\n\tu32 mn_ena_mask;\n\tu32 main_output_mask;\n\tu32 aux_output_mask;\n};\n\nvoid clk_pll_configure_sr(struct clk_pll *pll, struct regmap *regmap,\n\t\tconst struct pll_config *config, bool fsm_mode);\nvoid clk_pll_configure_sr_hpm_lp(struct clk_pll *pll, struct regmap *regmap,\n\t\tconst struct pll_config *config, bool fsm_mode);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

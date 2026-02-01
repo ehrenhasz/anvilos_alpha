@@ -1,0 +1,9 @@
+{
+  "module_name": "auth_gss_internal.h",
+  "hash_id": "004b52af9f2682baa3ed2b4f5a48c895ce19d1d9a7fe46fdd6a7a899f013a246",
+  "original_prompt": "Ingested from linux-6.6.14/net/sunrpc/auth_gss/auth_gss_internal.h",
+  "human_readable_source": "\n \n#include <linux/err.h>\n#include <linux/string.h>\n#include <linux/sunrpc/xdr.h>\n\nstatic inline const void *\nsimple_get_bytes(const void *p, const void *end, void *res, size_t len)\n{\n\tconst void *q = (const void *)((const char *)p + len);\n\tif (unlikely(q > end || q < p))\n\t\treturn ERR_PTR(-EFAULT);\n\tmemcpy(res, p, len);\n\treturn q;\n}\n\nstatic inline const void *\nsimple_get_netobj(const void *p, const void *end, struct xdr_netobj *dest)\n{\n\tconst void *q;\n\tunsigned int len;\n\n\tp = simple_get_bytes(p, end, &len, sizeof(len));\n\tif (IS_ERR(p))\n\t\treturn p;\n\tq = (const void *)((const char *)p + len);\n\tif (unlikely(q > end || q < p))\n\t\treturn ERR_PTR(-EFAULT);\n\tif (len) {\n\t\tdest->data = kmemdup(p, len, GFP_KERNEL);\n\t\tif (unlikely(dest->data == NULL))\n\t\t\treturn ERR_PTR(-ENOMEM);\n\t} else\n\t\tdest->data = NULL;\n\tdest->len = len;\n\treturn q;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "dirent.h",
+  "hash_id": "26bf549132e2edb6059c3487e088a05c6b79c8472f6733a153455d2a7b320e3e",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/dirent.h",
+  "human_readable_source": " \n#ifndef _LINUX_DIRENT_H\n#define _LINUX_DIRENT_H\n\nstruct linux_dirent64 {\n\tu64\t\td_ino;\n\ts64\t\td_off;\n\tunsigned short\td_reclen;\n\tunsigned char\td_type;\n\tchar\t\td_name[];\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

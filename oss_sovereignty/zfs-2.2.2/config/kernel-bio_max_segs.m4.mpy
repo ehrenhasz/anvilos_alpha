@@ -1,0 +1,9 @@
+{
+  "module_name": "kernel-bio_max_segs.m4",
+  "hash_id": "d42d33d1d26b773af69c74ff73ae9666a2c23097664ed4ba2c29d9edbf678dd7",
+  "original_prompt": "Ingested from zfs-2.2.2/config/kernel-bio_max_segs.m4",
+  "human_readable_source": "dnl #\ndnl # 5.12 API change removes BIO_MAX_PAGES in favor of bio_max_segs()\ndnl # which will handle the logic of setting the upper-bound to a\ndnl # BIO_MAX_PAGES, internally.\ndnl #\nAC_DEFUN([ZFS_AC_KERNEL_SRC_BIO_MAX_SEGS], [\n\tZFS_LINUX_TEST_SRC([bio_max_segs], [\n\t\t#include <linux/bio.h>\n\t],[\n\t\tbio_max_segs(1);\n\t])\n])\n\nAC_DEFUN([ZFS_AC_KERNEL_BIO_MAX_SEGS], [\n\tAC_MSG_CHECKING([whether bio_max_segs() exists])\n\tZFS_LINUX_TEST_RESULT([bio_max_segs], [\n\t\tAC_MSG_RESULT(yes)\n\n\t\tAC_DEFINE([HAVE_BIO_MAX_SEGS], 1, [bio_max_segs() is implemented])\n\t],[\n\t\tAC_MSG_RESULT(no)\n\t])\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "uniq.x",
+  "hash_id": "bb7f4c0d6dad378de13203fbdf9267ec54dd8e9ed9f51bc815aed33d49235f65",
+  "original_prompt": "Ingested from coreutils-9.4/man/uniq.x",
+  "human_readable_source": "[NAME]\nuniq \\- report or omit repeated lines\n[DESCRIPTION]\n.\\\" Add any additional description here\n[SEE ALSO]\ncomm(1), join(1), sort(1)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "seq_prioq.h",
+  "hash_id": "f1a72226cd53e24305ce5db0fd9247d9670cd4048e715990f9bc2dd465c788a6",
+  "original_prompt": "Ingested from linux-6.6.14/sound/core/seq/seq_prioq.h",
+  "human_readable_source": " \n \n#ifndef __SND_SEQ_PRIOQ_H\n#define __SND_SEQ_PRIOQ_H\n\n#include \"seq_memory.h\"\n\n\n \n\nstruct snd_seq_prioq {\n\tstruct snd_seq_event_cell *head;       \n\tstruct snd_seq_event_cell *tail;       \n\tint cells;\n\tspinlock_t lock;\n};\n\n\n \nstruct snd_seq_prioq *snd_seq_prioq_new(void);\n\n \nvoid snd_seq_prioq_delete(struct snd_seq_prioq **fifo);\n\n \nint snd_seq_prioq_cell_in(struct snd_seq_prioq *f, struct snd_seq_event_cell *cell);\n\n  \nstruct snd_seq_event_cell *snd_seq_prioq_cell_out(struct snd_seq_prioq *f,\n\t\t\t\t\t\t  void *current_time);\n\n \nint snd_seq_prioq_avail(struct snd_seq_prioq *f);\n\n \nvoid snd_seq_prioq_leave(struct snd_seq_prioq *f, int client, int timestamp);        \n\n \nvoid snd_seq_prioq_remove_events(struct snd_seq_prioq *f, int client,\n\t\t\t\t struct snd_seq_remove_events *info);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

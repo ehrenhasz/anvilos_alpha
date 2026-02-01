@@ -1,0 +1,9 @@
+{
+  "module_name": "u8-uctomb-aux.c",
+  "hash_id": "3d3397cb44f76d04188e35d8b013f453426ba9649c166134e1245aa421fa707d",
+  "original_prompt": "Ingested from coreutils-9.4/lib/unistr/u8-uctomb-aux.c",
+  "human_readable_source": " \n#include \"unistr.h\"\n\n#include \"attribute.h\"\n\nint\nu8_uctomb_aux (uint8_t *s, ucs4_t uc, ptrdiff_t n)\n{\n  int count;\n\n  if (uc < 0x80)\n     \n    return -2;\n  else if (uc < 0x800)\n    count = 2;\n  else if (uc < 0x10000)\n    {\n      if (uc < 0xd800 || uc >= 0xe000)\n        count = 3;\n      else\n        return -1;\n    }\n  else if (uc < 0x110000)\n    count = 4;\n  else\n    return -1;\n\n  if (n < count)\n    return -2;\n\n  switch (count)  \n    {\n    case 4: s[3] = 0x80 | (uc & 0x3f); uc = uc >> 6; uc |= 0x10000;\n      FALLTHROUGH;\n    case 3: s[2] = 0x80 | (uc & 0x3f); uc = uc >> 6; uc |= 0x800;\n      FALLTHROUGH;\n    case 2: s[1] = 0x80 | (uc & 0x3f); uc = uc >> 6; uc |= 0xc0;\n    s[0] = uc;\n    }\n  return count;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

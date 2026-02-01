@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "cf45e4bb308a0311d843037c5e5e38dfc086f2bb312ae2a2b219e5fce883086f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/usb/typec/altmodes/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n\nmenu \"USB Type-C Alternate Mode drivers\"\n\nconfig TYPEC_DP_ALTMODE\n\ttristate \"DisplayPort Alternate Mode driver\"\n\tdepends on DRM\n\thelp\n\t  DisplayPort USB Type-C Alternate Mode allows DisplayPort\n\t  displays and adapters to be attached to the USB Type-C\n\t  connectors on the system.\n\n\t  To compile this driver as a module, choose M here: the\n\t  module will be called typec_displayport.\n\nconfig TYPEC_NVIDIA_ALTMODE\n\ttristate \"NVIDIA Alternate Mode driver\"\n\tdepends on TYPEC_DP_ALTMODE\n\thelp\n\t  Latest NVIDIA GPUs support VirtualLink devices. Select this\n\t  to enable support for VirtualLink devices with NVIDIA GPUs.\n\n\t  To compile this driver as a module, choose M here: the\n\t  module will be called typec_nvidia.\n\nendmenu\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

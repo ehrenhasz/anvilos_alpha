@@ -1,0 +1,9 @@
+{
+  "module_name": "local.h",
+  "hash_id": "2f14b33a2b5a2ea0b24239901865a74c66c5399a344f12d5aefb750572ad002f",
+  "original_prompt": "Ingested from linux-6.6.14/sound/hda/local.h",
+  "human_readable_source": " \n \n\n#ifndef __HDAC_LOCAL_H\n#define __HDAC_LOCAL_H\n\n#define get_wcaps(codec, nid) \\\n\tsnd_hdac_read_parm(codec, nid, AC_PAR_AUDIO_WIDGET_CAP)\n\n \nstatic inline int get_wcaps_type(unsigned int wcaps)\n{\n\tif (!wcaps)\n\t\treturn -1;  \n\treturn (wcaps & AC_WCAP_TYPE) >> AC_WCAP_TYPE_SHIFT;\n}\n\nstatic inline unsigned int get_wcaps_channels(u32 wcaps)\n{\n\tunsigned int chans;\n\n\tchans = (wcaps & AC_WCAP_CHAN_CNT_EXT) >> 13;\n\tchans = (chans + 1) * 2;\n\n\treturn chans;\n}\n\nextern const struct attribute_group *hdac_dev_attr_groups[];\nint hda_widget_sysfs_init(struct hdac_device *codec);\nint hda_widget_sysfs_reinit(struct hdac_device *codec, hda_nid_t start_nid,\n\t\t\t    int num_nodes);\nvoid hda_widget_sysfs_exit(struct hdac_device *codec);\n\nint snd_hdac_bus_add_device(struct hdac_bus *bus, struct hdac_device *codec);\nvoid snd_hdac_bus_remove_device(struct hdac_bus *bus,\n\t\t\t\tstruct hdac_device *codec);\nvoid snd_hdac_bus_queue_event(struct hdac_bus *bus, u32 res, u32 res_ex);\nint snd_hdac_bus_exec_verb(struct hdac_bus *bus, unsigned int addr,\n\t\t\t   unsigned int cmd, unsigned int *res);\n\nint snd_hdac_exec_verb(struct hdac_device *codec, unsigned int cmd,\n\t\t       unsigned int flags, unsigned int *res);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

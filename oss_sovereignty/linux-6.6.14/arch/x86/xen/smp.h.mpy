@@ -1,0 +1,9 @@
+{
+  "module_name": "smp.h",
+  "hash_id": "e0e8211efbf705429fe4b9b2e18f8c32a4663bbea496af24e730c13e03987f1d",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/xen/smp.h",
+  "human_readable_source": " \n#ifndef _XEN_SMP_H\n\n#ifdef CONFIG_SMP\n\nvoid asm_cpu_bringup_and_idle(void);\nasmlinkage void cpu_bringup_and_idle(void);\n\nextern void xen_send_IPI_mask(const struct cpumask *mask,\n\t\t\t      int vector);\nextern void xen_send_IPI_mask_allbutself(const struct cpumask *mask,\n\t\t\t\tint vector);\nextern void xen_send_IPI_allbutself(int vector);\nextern void xen_send_IPI_all(int vector);\nextern void xen_send_IPI_self(int vector);\n\nextern int xen_smp_intr_init(unsigned int cpu);\nextern void xen_smp_intr_free(unsigned int cpu);\nint xen_smp_intr_init_pv(unsigned int cpu);\nvoid xen_smp_intr_free_pv(unsigned int cpu);\n\nvoid xen_smp_cpus_done(unsigned int max_cpus);\n\nvoid xen_smp_send_reschedule(int cpu);\nvoid xen_smp_send_call_function_ipi(const struct cpumask *mask);\nvoid xen_smp_send_call_function_single_ipi(int cpu);\n\nvoid __noreturn xen_cpu_bringup_again(unsigned long stack);\n\nstruct xen_common_irq {\n\tint irq;\n\tchar *name;\n};\n#else  \n\nstatic inline int xen_smp_intr_init(unsigned int cpu)\n{\n\treturn 0;\n}\nstatic inline void xen_smp_intr_free(unsigned int cpu) {}\n\nstatic inline int xen_smp_intr_init_pv(unsigned int cpu)\n{\n\treturn 0;\n}\nstatic inline void xen_smp_intr_free_pv(unsigned int cpu) {}\n#endif  \n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

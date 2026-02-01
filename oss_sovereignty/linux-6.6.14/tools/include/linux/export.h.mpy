@@ -1,0 +1,9 @@
+{
+  "module_name": "export.h",
+  "hash_id": "af87297860ab6441cb64f58d41ec1c089eff10c029ed8c83a62ec557365f14cf",
+  "original_prompt": "Ingested from linux-6.6.14/tools/include/linux/export.h",
+  "human_readable_source": "#ifndef _TOOLS_LINUX_EXPORT_H_\n#define _TOOLS_LINUX_EXPORT_H_\n\n#define EXPORT_SYMBOL(sym)\n#define EXPORT_SYMBOL_GPL(sym)\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

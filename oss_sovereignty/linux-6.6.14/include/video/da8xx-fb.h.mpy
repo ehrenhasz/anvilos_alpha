@@ -1,0 +1,9 @@
+{
+  "module_name": "da8xx-fb.h",
+  "hash_id": "f8191625102673d37a760de43e47675159f8b8ba55c0499aa9a6735a81a732c5",
+  "original_prompt": "Ingested from linux-6.6.14/include/video/da8xx-fb.h",
+  "human_readable_source": " \n\n#ifndef DA8XX_FB_H\n#define DA8XX_FB_H\n\nenum panel_shade {\n\tMONOCHROME = 0,\n\tCOLOR_ACTIVE,\n\tCOLOR_PASSIVE,\n};\n\nenum raster_load_mode {\n\tLOAD_DATA = 1,\n\tLOAD_PALETTE,\n};\n\nenum da8xx_frame_complete {\n\tDA8XX_FRAME_WAIT,\n\tDA8XX_FRAME_NOWAIT,\n};\n\nstruct da8xx_lcdc_platform_data {\n\tconst char manu_name[10];\n\tvoid *controller_data;\n\tconst char type[25];\n};\n\nstruct lcd_ctrl_config {\n\tenum panel_shade panel_shade;\n\n\t \n\tint ac_bias;\n\n\t \n\tint ac_bias_intrpt;\n\n\t \n\tint dma_burst_sz;\n\n\t \n\tint bpp;\n\n\t \n\tint fdd;\n\n\t \n\tunsigned char tft_alt_mode;\n\n\t \n\tunsigned char stn_565_mode;\n\n\t \n\tunsigned char mono_8bit_mode;\n\n\t \n\tunsigned char sync_edge;\n\n\t \n\tunsigned char raster_order;\n\n\t \n\tint fifo_th;\n};\n\nstruct lcd_sync_arg {\n\tint back_porch;\n\tint front_porch;\n\tint pulse_width;\n};\n\n \n#define FBIOGET_CONTRAST\t_IOR('F', 1, int)\n#define FBIOPUT_CONTRAST\t_IOW('F', 2, int)\n#define FBIGET_BRIGHTNESS\t_IOR('F', 3, int)\n#define FBIPUT_BRIGHTNESS\t_IOW('F', 3, int)\n#define FBIGET_COLOR\t\t_IOR('F', 5, int)\n#define FBIPUT_COLOR\t\t_IOW('F', 6, int)\n#define FBIPUT_HSYNC\t\t_IOW('F', 9, int)\n#define FBIPUT_VSYNC\t\t_IOW('F', 10, int)\n\n \n#define FB_SYNC_CLK_INVERT 0x40000000\n\n#endif   \n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

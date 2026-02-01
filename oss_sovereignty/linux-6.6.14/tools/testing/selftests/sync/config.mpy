@@ -1,0 +1,9 @@
+{
+  "module_name": "config",
+  "hash_id": "78f162953366f92f6a5de315e8dba31b843f12accd6ce0c5435c3437aaa639d8",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/sync/config",
+  "human_readable_source": "CONFIG_STAGING=y\nCONFIG_SW_SYNC=y\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

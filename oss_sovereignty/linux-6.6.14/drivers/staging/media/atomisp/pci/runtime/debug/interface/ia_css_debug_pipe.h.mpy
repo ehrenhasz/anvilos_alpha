@@ -1,0 +1,9 @@
+{
+  "module_name": "ia_css_debug_pipe.h",
+  "hash_id": "379f807ac7da55187d636cc5883b245daa1cd2c5730df8b10085eff4398ddcca",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/runtime/debug/interface/ia_css_debug_pipe.h",
+  "human_readable_source": " \n \n\n#ifndef _IA_CSS_DEBUG_PIPE_H_\n#define _IA_CSS_DEBUG_PIPE_H_\n\n \n\n#include <ia_css_frame_public.h>\n#include <ia_css_stream_public.h>\n#include \"ia_css_pipeline.h\"\n\n \nvoid ia_css_debug_pipe_graph_dump_prologue(void);\n\n \nvoid ia_css_debug_pipe_graph_dump_epilogue(void);\n\n \nvoid ia_css_debug_pipe_graph_dump_stage(\n    struct ia_css_pipeline_stage *stage,\n    enum ia_css_pipe_id id);\n\n \nvoid ia_css_debug_pipe_graph_dump_sp_raw_copy(\n    struct ia_css_frame *out_frame);\n\n \nvoid ia_css_debug_pipe_graph_dump_stream_config(\n    const struct ia_css_stream_config *stream_config);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

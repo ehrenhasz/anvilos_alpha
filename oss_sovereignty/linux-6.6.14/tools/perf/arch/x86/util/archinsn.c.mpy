@@ -1,0 +1,9 @@
+{
+  "module_name": "archinsn.c",
+  "hash_id": "7417f29250c790589b130b09735dfc2d596669bacffc78d9035c92eeff10af66",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/arch/x86/util/archinsn.c",
+  "human_readable_source": "\n#include \"archinsn.h\"\n#include \"event.h\"\n#include \"machine.h\"\n#include \"thread.h\"\n#include \"symbol.h\"\n#include \"../../../../arch/x86/include/asm/insn.h\"\n\nvoid arch_fetch_insn(struct perf_sample *sample,\n\t\t     struct thread *thread,\n\t\t     struct machine *machine)\n{\n\tstruct insn insn;\n\tint len, ret;\n\tbool is64bit = false;\n\n\tif (!sample->ip)\n\t\treturn;\n\tlen = thread__memcpy(thread, machine, sample->insn, sample->ip, sizeof(sample->insn), &is64bit);\n\tif (len <= 0)\n\t\treturn;\n\n\tret = insn_decode(&insn, sample->insn, len,\n\t\t\t  is64bit ? INSN_MODE_64 : INSN_MODE_32);\n\tif (ret >= 0 && insn.length <= len)\n\t\tsample->insn_len = insn.length;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

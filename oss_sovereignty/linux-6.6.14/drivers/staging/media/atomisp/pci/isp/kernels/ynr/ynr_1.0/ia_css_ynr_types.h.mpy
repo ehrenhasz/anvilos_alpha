@@ -1,0 +1,9 @@
+{
+  "module_name": "ia_css_ynr_types.h",
+  "hash_id": "757a7fe59581d802179fae0c9cd571ccf1bdc8d2f441b0147252885a673bba3b",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/isp/kernels/ynr/ynr_1.0/ia_css_ynr_types.h",
+  "human_readable_source": " \n \n\n#ifndef __IA_CSS_YNR_TYPES_H\n#define __IA_CSS_YNR_TYPES_H\n\n \n\n \nstruct ia_css_nr_config {\n\tia_css_u0_16 bnr_gain;\t    \n\tia_css_u0_16 ynr_gain;\t    \n\tia_css_u0_16 direction;     \n\tia_css_u0_16 threshold_cb;  \n\tia_css_u0_16 threshold_cr;  \n};\n\n \nstruct ia_css_ee_config {\n\tia_css_u5_11 gain;\t   \n\tia_css_u8_8 threshold;     \n\tia_css_u5_11 detail_gain;  \n};\n\n \nstruct ia_css_yee_config {\n\tstruct ia_css_nr_config nr;  \n\tstruct ia_css_ee_config ee;  \n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

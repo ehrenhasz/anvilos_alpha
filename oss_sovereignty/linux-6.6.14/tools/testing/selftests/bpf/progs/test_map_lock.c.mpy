@@ -1,0 +1,9 @@
+{
+  "module_name": "test_map_lock.c",
+  "hash_id": "78d08cffd3dcb077a60701fed81cf2a2f323e86e5947302f637edce005747b73",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/test_map_lock.c",
+  "human_readable_source": "\n\n#include <linux/bpf.h>\n#include <linux/version.h>\n#include <bpf/bpf_helpers.h>\n\n#define VAR_NUM 16\n\nstruct hmap_elem {\n\tstruct bpf_spin_lock lock;\n\tint var[VAR_NUM];\n};\n\nstruct {\n\t__uint(type, BPF_MAP_TYPE_HASH);\n\t__uint(max_entries, 1);\n\t__type(key, __u32);\n\t__type(value, struct hmap_elem);\n} hash_map SEC(\".maps\");\n\nstruct array_elem {\n\tstruct bpf_spin_lock lock;\n\tint var[VAR_NUM];\n};\n\nstruct {\n\t__uint(type, BPF_MAP_TYPE_ARRAY);\n\t__uint(max_entries, 1);\n\t__type(key, int);\n\t__type(value, struct array_elem);\n} array_map SEC(\".maps\");\n\nSEC(\"cgroup/skb\")\nint bpf_map_lock_test(struct __sk_buff *skb)\n{\n\tstruct hmap_elem *val;\n\tint rnd = bpf_get_prandom_u32();\n\tint key = 0, err = 1, i;\n\tstruct array_elem *q;\n\n\tval = bpf_map_lookup_elem(&hash_map, &key);\n\tif (!val)\n\t\tgoto err;\n\t \n\tbpf_spin_lock(&val->lock);\n\tfor (i = 0; i < VAR_NUM; i++)\n\t\tval->var[i] = rnd;\n\tbpf_spin_unlock(&val->lock);\n\n\t \n\tq = bpf_map_lookup_elem(&array_map, &key);\n\tif (!q)\n\t\tgoto err;\n\tbpf_spin_lock(&q->lock);\n\tfor (i = 0; i < VAR_NUM; i++)\n\t\tq->var[i] = rnd;\n\tbpf_spin_unlock(&q->lock);\n\terr = 0;\nerr:\n\treturn err;\n}\nchar _license[] SEC(\"license\") = \"GPL\";\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

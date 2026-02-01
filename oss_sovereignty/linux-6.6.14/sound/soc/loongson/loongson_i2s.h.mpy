@@ -1,0 +1,9 @@
+{
+  "module_name": "loongson_i2s.h",
+  "hash_id": "316e6b3ff6a15bc32135b00669e82b913c7b3d0c831e4bd14665bf682fb8b31e",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/loongson/loongson_i2s.h",
+  "human_readable_source": " \n \n\n#ifndef _LOONGSON_I2S_H\n#define _LOONGSON_I2S_H\n\n#include <linux/regmap.h>\n#include <sound/dmaengine_pcm.h>\n\n \n#define LS_I2S_VER\t0x00  \n#define LS_I2S_CFG\t0x04  \n#define LS_I2S_CTRL\t0x08  \n#define LS_I2S_RX_DATA\t0x0C  \n#define LS_I2S_TX_DATA\t0x10  \n\n \n#define LS_I2S_CFG1\t0x14  \n\n \n#define LS_I2S_TX_ORDER\t0x100  \n#define LS_I2S_RX_ORDER 0x110  \n\n \n#define I2S_CTRL_MCLK_READY\t(1 << 16)  \n#define I2S_CTRL_MASTER\t\t(1 << 15)  \n#define I2S_CTRL_MSB\t\t(1 << 14)  \n#define I2S_CTRL_RX_EN\t\t(1 << 13)  \n#define I2S_CTRL_TX_EN\t\t(1 << 12)  \n#define I2S_CTRL_RX_DMA_EN\t(1 << 11)  \n#define I2S_CTRL_CLK_READY\t(1 << 8)   \n#define I2S_CTRL_TX_DMA_EN\t(1 << 7)   \n#define I2S_CTRL_RESET\t\t(1 << 4)   \n#define I2S_CTRL_MCLK_EN\t(1 << 3)   \n#define I2S_CTRL_RX_INT_EN\t(1 << 1)   \n#define I2S_CTRL_TX_INT_EN\t(1 << 0)   \n\n#define LS_I2S_DRVNAME\t\t\"loongson-i2s\"\n\nstruct loongson_dma_data {\n\tdma_addr_t dev_addr;\t\t \n\tvoid __iomem *order_addr;\t \n\tint irq;\t\t\t \n};\n\nstruct loongson_i2s {\n\tstruct device *dev;\n\tunion {\n\t\tstruct snd_dmaengine_dai_dma_data playback_dma_data;\n\t\tstruct loongson_dma_data tx_dma_data;\n\t};\n\tunion {\n\t\tstruct snd_dmaengine_dai_dma_data capture_dma_data;\n\t\tstruct loongson_dma_data rx_dma_data;\n\t};\n\tstruct regmap *regmap;\n\tvoid __iomem *reg_base;\n\tu32 rev_id;\n\tu32 clk_rate;\n\tu32 sysclk;\n};\n\nextern const struct dev_pm_ops loongson_i2s_pm;\nextern struct snd_soc_dai_driver loongson_i2s_dai;\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

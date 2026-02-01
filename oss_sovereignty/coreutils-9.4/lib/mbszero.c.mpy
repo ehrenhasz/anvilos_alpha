@@ -1,0 +1,9 @@
+{
+  "module_name": "mbszero.c",
+  "hash_id": "f9a9f890f38dc91ee00c87f5460f939614f7507b594442dca71dc5ff3c218df0",
+  "original_prompt": "Ingested from coreutils-9.4/lib/mbszero.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#define IN_MBSZERO\n \n#include <wchar.h>\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "intel_ddi_buf_trans.h",
+  "hash_id": "993802a636b25b5f2689989005fb0b977bd300fd66570baec90f6f430e88d14c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/display/intel_ddi_buf_trans.h",
+  "human_readable_source": " \n \n\n#ifndef _INTEL_DDI_BUF_TRANS_H_\n#define _INTEL_DDI_BUF_TRANS_H_\n\n#include <linux/types.h>\n\nstruct drm_i915_private;\nstruct intel_encoder;\nstruct intel_crtc_state;\n\nstruct hsw_ddi_buf_trans {\n\tu32 trans1;\t \n\tu32 trans2;\t \n\tu8 i_boost;\t \n};\n\nstruct bxt_ddi_buf_trans {\n\tu8 margin;\t \n\tu8 scale;\t \n\tu8 enable;\t \n\tu8 deemphasis;\n};\n\nstruct icl_ddi_buf_trans {\n\tu8 dw2_swing_sel;\n\tu8 dw7_n_scalar;\n\tu8 dw4_cursor_coeff;\n\tu8 dw4_post_cursor_2;\n\tu8 dw4_post_cursor_1;\n};\n\nstruct icl_mg_phy_ddi_buf_trans {\n\tu8 cri_txdeemph_override_11_6;\n\tu8 cri_txdeemph_override_5_0;\n\tu8 cri_txdeemph_override_17_12;\n};\n\nstruct tgl_dkl_phy_ddi_buf_trans {\n\tu8 vswing;\n\tu8 preshoot;\n\tu8 de_emphasis;\n};\n\nstruct dg2_snps_phy_buf_trans {\n\tu8 vswing;\n\tu8 pre_cursor;\n\tu8 post_cursor;\n};\n\nunion intel_ddi_buf_trans_entry {\n\tstruct hsw_ddi_buf_trans hsw;\n\tstruct bxt_ddi_buf_trans bxt;\n\tstruct icl_ddi_buf_trans icl;\n\tstruct icl_mg_phy_ddi_buf_trans mg;\n\tstruct tgl_dkl_phy_ddi_buf_trans dkl;\n\tstruct dg2_snps_phy_buf_trans snps;\n};\n\nstruct intel_ddi_buf_trans {\n\tconst union intel_ddi_buf_trans_entry *entries;\n\tu8 num_entries;\n\tu8 hdmi_default_entry;\n};\n\nbool is_hobl_buf_trans(const struct intel_ddi_buf_trans *table);\n\nvoid intel_ddi_buf_trans_init(struct intel_encoder *encoder);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "spinlock.c",
+  "hash_id": "fe7dbde876b3b9085eb85ee12c82462263869b7627b6a497ce876c404b1aeba2",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/kvm/lib/aarch64/spinlock.c",
+  "human_readable_source": "\n \n#include <stdint.h>\n\n#include \"spinlock.h\"\n\nvoid spin_lock(struct spinlock *lock)\n{\n\tint val, res;\n\n\tasm volatile(\n\t\"1:\tldaxr\t%w0, [%2]\\n\"\n\t\"\tcbnz\t%w0, 1b\\n\"\n\t\"\tmov\t%w0, #1\\n\"\n\t\"\tstxr\t%w1, %w0, [%2]\\n\"\n\t\"\tcbnz\t%w1, 1b\\n\"\n\t: \"=&r\" (val), \"=&r\" (res)\n\t: \"r\" (&lock->v)\n\t: \"memory\");\n}\n\nvoid spin_unlock(struct spinlock *lock)\n{\n\tasm volatile(\"stlr wzr, [%0]\\n\"\t: : \"r\" (&lock->v) : \"memory\");\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

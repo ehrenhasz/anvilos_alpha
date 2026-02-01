@@ -1,0 +1,9 @@
+{
+  "module_name": "unicode.h",
+  "hash_id": "9b0de1d35c7ec5ebdbf27c158f4492f64cb6ec682311941bcbb82c945539c6d3",
+  "original_prompt": "Ingested from linux-6.6.14/fs/smb/server/unicode.h",
+  "human_readable_source": " \n \n#ifndef _SMB_UNICODE_H\n#define _SMB_UNICODE_H\n\n#include <asm/byteorder.h>\n#include <linux/types.h>\n#include <linux/nls.h>\n#include <linux/unicode.h>\n#include \"../../nls/nls_ucs2_utils.h\"\n\n#ifdef __KERNEL__\nint smb_strtoUTF16(__le16 *to, const char *from, int len,\n\t\t   const struct nls_table *codepage);\nchar *smb_strndup_from_utf16(const char *src, const int maxlen,\n\t\t\t     const bool is_unicode,\n\t\t\t     const struct nls_table *codepage);\nint smbConvertToUTF16(__le16 *target, const char *source, int srclen,\n\t\t      const struct nls_table *cp, int mapchars);\nchar *ksmbd_extract_sharename(struct unicode_map *um, const char *treename);\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

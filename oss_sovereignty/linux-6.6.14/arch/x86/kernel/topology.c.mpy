@@ -1,0 +1,9 @@
+{
+  "module_name": "topology.c",
+  "hash_id": "1e78091741bf134d8558828eca0bccd464bc50448b894961c3123354ef3fd278",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/kernel/topology.c",
+  "human_readable_source": " \n#include <linux/interrupt.h>\n#include <linux/nodemask.h>\n#include <linux/export.h>\n#include <linux/mmzone.h>\n#include <linux/init.h>\n#include <linux/smp.h>\n#include <linux/irq.h>\n#include <asm/io_apic.h>\n#include <asm/cpu.h>\n\nstatic DEFINE_PER_CPU(struct x86_cpu, cpu_devices);\n\n#ifdef CONFIG_HOTPLUG_CPU\nint arch_register_cpu(int cpu)\n{\n\tstruct x86_cpu *xc = per_cpu_ptr(&cpu_devices, cpu);\n\n\txc->cpu.hotpluggable = cpu > 0;\n\treturn register_cpu(&xc->cpu, cpu);\n}\nEXPORT_SYMBOL(arch_register_cpu);\n\nvoid arch_unregister_cpu(int num)\n{\n\tunregister_cpu(&per_cpu(cpu_devices, num).cpu);\n}\nEXPORT_SYMBOL(arch_unregister_cpu);\n#else  \n\nint __init arch_register_cpu(int num)\n{\n\treturn register_cpu(&per_cpu(cpu_devices, num).cpu, num);\n}\n#endif  \n\nstatic int __init topology_init(void)\n{\n\tint i;\n\n\tfor_each_present_cpu(i)\n\t\tarch_register_cpu(i);\n\n\treturn 0;\n}\nsubsys_initcall(topology_init);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

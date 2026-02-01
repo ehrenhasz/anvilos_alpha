@@ -1,0 +1,9 @@
+{
+  "module_name": "overlay_gpio_04b.dtso",
+  "hash_id": "921483026dbfb4e337e35c2e194363971c3f58eb094123d64350068bbf4b63d6",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/of/unittest-data/overlay_gpio_04b.dtso",
+  "human_readable_source": "// SPDX-License-Identifier: GPL-2.0\n/dts-v1/;\n/plugin/;\n\n&unittest_test_bus {\n\t#address-cells = <1>;\n\t#size-cells = <0>;\n\n\tgpio@4 {\n\t\tline-c {\n\t\t\tgpio-hog;\n\t\t\tgpios = <3 0>;\n\t\t\tinput;\n\t\t\tline-name = \"line-C-input\";\n\t\t};\n\t};\n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

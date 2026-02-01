@@ -1,0 +1,9 @@
+{
+  "module_name": "xen_snd_front_cfg.h",
+  "hash_id": "0a6a17457fab2f0e4bc7b74164f645920a1076df769125225202ff52de5d396f",
+  "original_prompt": "Ingested from linux-6.6.14/sound/xen/xen_snd_front_cfg.h",
+  "human_readable_source": " \n\n \n\n#ifndef __XEN_SND_FRONT_CFG_H\n#define __XEN_SND_FRONT_CFG_H\n\n#include <sound/core.h>\n#include <sound/pcm.h>\n\nstruct xen_snd_front_info;\n\nstruct xen_front_cfg_stream {\n\tint index;\n\tchar *xenstore_path;\n\tstruct snd_pcm_hardware pcm_hw;\n};\n\nstruct xen_front_cfg_pcm_instance {\n\tchar name[80];\n\tint device_id;\n\tstruct snd_pcm_hardware pcm_hw;\n\tint  num_streams_pb;\n\tstruct xen_front_cfg_stream *streams_pb;\n\tint  num_streams_cap;\n\tstruct xen_front_cfg_stream *streams_cap;\n};\n\nstruct xen_front_cfg_card {\n\tchar name_short[32];\n\tchar name_long[80];\n\tstruct snd_pcm_hardware pcm_hw;\n\tint num_pcm_instances;\n\tstruct xen_front_cfg_pcm_instance *pcm_instances;\n};\n\nint xen_snd_front_cfg_card(struct xen_snd_front_info *front_info,\n\t\t\t   int *stream_cnt);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

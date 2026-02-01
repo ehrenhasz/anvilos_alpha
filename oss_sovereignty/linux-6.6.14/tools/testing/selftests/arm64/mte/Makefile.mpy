@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "3711ed41204d562247f35704950516c29494c6f9eac42aa3766137f063311b7a",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/arm64/mte/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n# Copyright (C) 2020 ARM Limited\n\nCFLAGS += -std=gnu99 -I. -pthread\nLDFLAGS += -pthread\nSRCS := $(filter-out mte_common_util.c,$(wildcard *.c))\nPROGS := $(patsubst %.c,%,$(SRCS))\n\nifeq ($(LLVM),)\n# For GCC check that the toolchain has MTE support.\n\n# preserve CC value from top level Makefile\nifeq ($(CC),cc)\nCC := $(CROSS_COMPILE)gcc\nendif\n\n#check if the compiler works well\nmte_cc_support := $(shell if ($(CC) $(CFLAGS) -march=armv8.5-a+memtag -E -x c /dev/null -o /dev/null 2>&1) then echo \"1\"; fi)\n\nelse\n\n# All supported clang versions also support MTE.\nmte_cc_support := 1\n\nendif\n\nifeq ($(mte_cc_support),1)\n# Generated binaries to be installed by top KSFT script\nTEST_GEN_PROGS := $(PROGS)\n\nelse\n    $(warning compiler \"$(CC)\" does not support the ARMv8.5 MTE extension.)\n    $(warning test program \"mte\" will not be created.)\nendif\n\n# Include KSFT lib.mk.\ninclude ../../lib.mk\n\nifeq ($(mte_cc_support),1)\n$(TEST_GEN_PROGS): mte_common_util.c mte_helper.S\nendif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

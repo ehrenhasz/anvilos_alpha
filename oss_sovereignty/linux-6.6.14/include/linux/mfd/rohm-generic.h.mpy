@@ -1,0 +1,9 @@
+{
+  "module_name": "rohm-generic.h",
+  "hash_id": "e038d46b0855c9f3f478fe47ab370119694cff7de481c236acdf2bab706d20f9",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/mfd/rohm-generic.h",
+  "human_readable_source": " \n \n\n#ifndef __LINUX_MFD_ROHM_H__\n#define __LINUX_MFD_ROHM_H__\n\n#include <linux/regmap.h>\n#include <linux/regulator/driver.h>\n\nenum rohm_chip_type {\n\tROHM_CHIP_TYPE_BD9571,\n\tROHM_CHIP_TYPE_BD9573,\n\tROHM_CHIP_TYPE_BD9574,\n\tROHM_CHIP_TYPE_BD9576,\n\tROHM_CHIP_TYPE_BD71815,\n\tROHM_CHIP_TYPE_BD71828,\n\tROHM_CHIP_TYPE_BD71837,\n\tROHM_CHIP_TYPE_BD71847,\n\tROHM_CHIP_TYPE_AMOUNT\n};\n\nstruct rohm_regmap_dev {\n\tstruct device *dev;\n\tstruct regmap *regmap;\n};\n\n#define ROHM_DVS_LEVEL_RUN\t\tBIT(0)\n#define ROHM_DVS_LEVEL_IDLE\t\tBIT(1)\n#define ROHM_DVS_LEVEL_SUSPEND\t\tBIT(2)\n#define ROHM_DVS_LEVEL_LPSR\t\tBIT(3)\n#define ROHM_DVS_LEVEL_SNVS\t\tBIT(4)\n#define ROHM_DVS_LEVEL_VALID_AMOUNT\t5\n#define ROHM_DVS_LEVEL_UNKNOWN\t\t0\n\n \nstruct rohm_dvs_config {\n\tuint64_t level_map;\n\tunsigned int run_reg;\n\tunsigned int run_mask;\n\tunsigned int run_on_mask;\n\tunsigned int idle_reg;\n\tunsigned int idle_mask;\n\tunsigned int idle_on_mask;\n\tunsigned int suspend_reg;\n\tunsigned int suspend_mask;\n\tunsigned int suspend_on_mask;\n\tunsigned int lpsr_reg;\n\tunsigned int lpsr_mask;\n\tunsigned int lpsr_on_mask;\n\tunsigned int snvs_reg;\n\tunsigned int snvs_mask;\n\tunsigned int snvs_on_mask;\n};\n\n#if IS_ENABLED(CONFIG_REGULATOR_ROHM)\nint rohm_regulator_set_dvs_levels(const struct rohm_dvs_config *dvs,\n\t\t\t\t  struct device_node *np,\n\t\t\t\t  const struct regulator_desc *desc,\n\t\t\t\t  struct regmap *regmap);\n\nint rohm_regulator_set_voltage_sel_restricted(struct regulator_dev *rdev,\n\t\t\t\t\t      unsigned int sel);\n#endif\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "dimgrey_cavefish_reg_init.c",
+  "hash_id": "43d6da83c8bb05a53100ad95b5c790780899565420ee3b3c37fef1a9d062f01c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/amdgpu/dimgrey_cavefish_reg_init.c",
+  "human_readable_source": " \n#include \"amdgpu.h\"\n#include \"nv.h\"\n\n#include \"soc15_common.h\"\n#include \"soc15_hw_ip.h\"\n#include \"dimgrey_cavefish_ip_offset.h\"\n\nint dimgrey_cavefish_reg_base_init(struct amdgpu_device *adev)\n{\n\t \n\tuint32_t i;\n\tfor (i = 0 ; i < MAX_INSTANCE ; ++i) {\n\t\tadev->reg_offset[GC_HWIP][i] = (uint32_t *)(&(GC_BASE.instance[i]));\n\t\tadev->reg_offset[HDP_HWIP][i] = (uint32_t *)(&(HDP_BASE.instance[i]));\n\t\tadev->reg_offset[MMHUB_HWIP][i] = (uint32_t *)(&(MMHUB_BASE.instance[i]));\n\t\tadev->reg_offset[ATHUB_HWIP][i] = (uint32_t *)(&(ATHUB_BASE.instance[i]));\n\t\tadev->reg_offset[NBIO_HWIP][i] = (uint32_t *)(&(NBIO_BASE.instance[i]));\n\t\tadev->reg_offset[MP0_HWIP][i] = (uint32_t *)(&(MP0_BASE.instance[i]));\n\t\tadev->reg_offset[MP1_HWIP][i] = (uint32_t *)(&(MP1_BASE.instance[i]));\n\t\tadev->reg_offset[VCN_HWIP][i] = (uint32_t *)(&(VCN0_BASE.instance[i]));\n\t\tadev->reg_offset[DF_HWIP][i] = (uint32_t *)(&(DF_BASE.instance[i]));\n\t\tadev->reg_offset[DCE_HWIP][i] = (uint32_t *)(&(DCN_BASE.instance[i]));\n\t\tadev->reg_offset[OSSSYS_HWIP][i] = (uint32_t *)(&(OSSSYS_BASE.instance[i]));\n\t\tadev->reg_offset[SDMA0_HWIP][i] = (uint32_t *)(&(GC_BASE.instance[i]));\n\t\tadev->reg_offset[SDMA1_HWIP][i] = (uint32_t *)(&(GC_BASE.instance[i]));\n\t\tadev->reg_offset[SDMA2_HWIP][i] = (uint32_t *)(&(GC_BASE.instance[i]));\n\t\tadev->reg_offset[SDMA3_HWIP][i] = (uint32_t *)(&(GC_BASE.instance[i]));\n\t\tadev->reg_offset[SMUIO_HWIP][i] = (uint32_t *)(&(SMUIO_BASE.instance[i]));\n\t\tadev->reg_offset[THM_HWIP][i] = (uint32_t *)(&(THM_BASE.instance[i]));\n\t}\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "prog-fprintf.h",
+  "hash_id": "f00c57e375e2cc1b0286fa713db6840edb425185a0e46b6017c0c3a9733c8d3d",
+  "original_prompt": "Ingested from coreutils-9.4/src/prog-fprintf.h",
+  "human_readable_source": "/* prog-fprintf.h - common formatting output functions and definitions\n   Copyright (C) 2008-2023 Free Software Foundation, Inc.\n\n   This program is free software: you can redistribute it and/or modify\n   it under the terms of the GNU General Public License as published by\n   the Free Software Foundation, either version 3 of the License, or\n   (at your option) any later version.\n\n   This program is distributed in the hope that it will be useful,\n   but WITHOUT ANY WARRANTY; without even the implied warranty of\n   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n   GNU General Public License for more details.\n\n   You should have received a copy of the GNU General Public License\n   along with this program.  If not, see <https:\n\n#ifndef PROG_FPRINTF_H\n# define PROG_FPRINTF_H\n\n# include <stdio.h>\n\nextern void prog_fprintf (FILE *fp, char const *fmt, ...)\n  _GL_ATTRIBUTE_FORMAT ((__printf__, 2, 3)) _GL_ATTRIBUTE_NONNULL ((1, 2));\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "machine_bitstream.c",
+  "hash_id": "35911189e849b212301c26b607d6c696d640159a7445c851072b66e90d485477",
+  "original_prompt": "Ingested from sys_09_Anvil/source/extmod/machine_bitstream.c",
+  "human_readable_source": " \n\n#include \"py/runtime.h\"\n#include \"py/mphal.h\"\n#include \"extmod/modmachine.h\"\n\n#if MICROPY_PY_MACHINE_BITSTREAM\n\n\n\n#define MICROPY_MACHINE_BITSTREAM_TYPE_HIGH_LOW (0)\n\n\nstatic mp_obj_t machine_bitstream_(size_t n_args, const mp_obj_t *args) {\n    mp_hal_pin_obj_t pin = mp_hal_get_pin_obj(args[0]);\n    int encoding = mp_obj_get_int(args[1]);\n\n    mp_buffer_info_t bufinfo;\n    mp_get_buffer_raise(args[3], &bufinfo, MP_BUFFER_READ);\n\n    switch (encoding) {\n        case MICROPY_MACHINE_BITSTREAM_TYPE_HIGH_LOW: {\n            uint32_t timing_ns[4];\n            mp_obj_t *timing;\n            mp_obj_get_array_fixed_n(args[2], 4, &timing);\n            for (size_t i = 0; i < 4; ++i) {\n                timing_ns[i] = mp_obj_get_int(timing[i]);\n            }\n            machine_bitstream_high_low(pin, timing_ns, bufinfo.buf, bufinfo.len);\n            break;\n        }\n        default:\n            mp_raise_ValueError(MP_ERROR_TEXT(\"encoding\"));\n    }\n\n    return mp_const_none;\n}\nMP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(machine_bitstream_obj, 4, 4, machine_bitstream_);\n\n#endif \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

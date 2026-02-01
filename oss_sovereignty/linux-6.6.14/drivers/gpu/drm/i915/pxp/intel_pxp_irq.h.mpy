@@ -1,0 +1,9 @@
+{
+  "module_name": "intel_pxp_irq.h",
+  "hash_id": "43afb6a5807be86d58e5d03a17b44b604b20b229dd769bfc5aa0bfb027b0833a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/pxp/intel_pxp_irq.h",
+  "human_readable_source": " \n \n\n#ifndef __INTEL_PXP_IRQ_H__\n#define __INTEL_PXP_IRQ_H__\n\n#include <linux/types.h>\n\nstruct intel_pxp;\n\n#define GEN12_DISPLAY_PXP_STATE_TERMINATED_INTERRUPT BIT(1)\n#define GEN12_DISPLAY_APP_TERMINATED_PER_FW_REQ_INTERRUPT BIT(2)\n#define GEN12_DISPLAY_STATE_RESET_COMPLETE_INTERRUPT BIT(3)\n\n#define GEN12_PXP_INTERRUPTS \\\n\t(GEN12_DISPLAY_PXP_STATE_TERMINATED_INTERRUPT | \\\n\t GEN12_DISPLAY_APP_TERMINATED_PER_FW_REQ_INTERRUPT | \\\n\t GEN12_DISPLAY_STATE_RESET_COMPLETE_INTERRUPT)\n\n#ifdef CONFIG_DRM_I915_PXP\nvoid intel_pxp_irq_enable(struct intel_pxp *pxp);\nvoid intel_pxp_irq_disable(struct intel_pxp *pxp);\nvoid intel_pxp_irq_handler(struct intel_pxp *pxp, u16 iir);\n#else\nstatic inline void intel_pxp_irq_handler(struct intel_pxp *pxp, u16 iir)\n{\n}\n\nstatic inline void intel_pxp_irq_enable(struct intel_pxp *pxp)\n{\n}\n\nstatic inline void intel_pxp_irq_disable(struct intel_pxp *pxp)\n{\n}\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

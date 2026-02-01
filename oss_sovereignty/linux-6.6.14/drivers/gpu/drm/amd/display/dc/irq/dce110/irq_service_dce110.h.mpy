@@ -1,0 +1,9 @@
+{
+  "module_name": "irq_service_dce110.h",
+  "hash_id": "c38f40074cba480bc41c9e72e8d6a04cc4f0422c38e119c7fb6797a408a2fa98",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/dc/irq/dce110/irq_service_dce110.h",
+  "human_readable_source": " \n\n#ifndef __DAL_IRQ_SERVICE_DCE110_H__\n#define __DAL_IRQ_SERVICE_DCE110_H__\n\n#include \"../irq_service.h\"\n\nstruct irq_service *dal_irq_service_dce110_create(\n\tstruct irq_service_init_data *init_data);\n\nenum dc_irq_source to_dal_irq_source_dce110(\n\t\tstruct irq_service *irq_service,\n\t\tuint32_t src_id,\n\t\tuint32_t ext_id);\n\nbool dal_irq_service_dummy_set(\n\tstruct irq_service *irq_service,\n\tconst struct irq_source_info *info,\n\tbool enable);\n\nbool dal_irq_service_dummy_ack(\n\tstruct irq_service *irq_service,\n\tconst struct irq_source_info *info);\n\nbool dce110_vblank_set(\n\tstruct irq_service *irq_service,\n\tconst struct irq_source_info *info,\n\tbool enable);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

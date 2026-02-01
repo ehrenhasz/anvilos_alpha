@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "a3dfbf94accbd8dab471b23b43225785e41cced3269dfc19c40dc954b7f58693",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/common/videobuf2/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n# Used by drivers that need Videobuf2 modules\nconfig VIDEOBUF2_CORE\n\tselect DMA_SHARED_BUFFER\n\ttristate\n\nconfig VIDEOBUF2_V4L2\n\ttristate\n\nconfig VIDEOBUF2_MEMOPS\n\ttristate\n\nconfig VIDEOBUF2_DMA_CONTIG\n\ttristate\n\tselect VIDEOBUF2_CORE\n\tselect VIDEOBUF2_MEMOPS\n\tselect DMA_SHARED_BUFFER\n\nconfig VIDEOBUF2_VMALLOC\n\ttristate\n\tselect VIDEOBUF2_CORE\n\tselect VIDEOBUF2_MEMOPS\n\tselect DMA_SHARED_BUFFER\n\nconfig VIDEOBUF2_DMA_SG\n\ttristate\n\tselect VIDEOBUF2_CORE\n\tselect VIDEOBUF2_MEMOPS\n\nconfig VIDEOBUF2_DVB\n\ttristate\n\tselect VIDEOBUF2_CORE\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

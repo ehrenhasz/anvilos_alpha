@@ -1,0 +1,9 @@
+{
+  "module_name": "memory_hotplug.h",
+  "hash_id": "983692a6480f2e4b1fbb27d8291c7d923527a396636d83cf026d86031b68a663",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/memblock/linux/memory_hotplug.h",
+  "human_readable_source": " \n#ifndef _LINUX_MEMORY_HOTPLUG_H\n#define _LINUX_MEMORY_HOTPLUG_H\n\n#include <linux/numa.h>\n#include <linux/pfn.h>\n#include <linux/cache.h>\n#include <linux/types.h>\n\nextern bool movable_node_enabled;\n\nstatic inline bool movable_node_is_enabled(void)\n{\n\treturn movable_node_enabled;\n}\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

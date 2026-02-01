@@ -1,0 +1,9 @@
+{
+  "module_name": "memmove_validate.c",
+  "hash_id": "f3cd255956d2771df86fe1eb9ce0e9af1415a3713be924d0746effd89d304e24",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/powerpc/copyloops/memmove_validate.c",
+  "human_readable_source": "\n#include <malloc.h>\n#include <stdlib.h>\n#include <string.h>\n#include <assert.h>\n#include \"utils.h\"\n\nvoid *TEST_MEMMOVE(const void *s1, const void *s2, size_t n);\n\n#define BUF_LEN 65536\n#define MAX_OFFSET 512\n\nsize_t max(size_t a, size_t b)\n{\n\tif (a >= b)\n\t\treturn a;\n\treturn b;\n}\n\nstatic int testcase_run(void)\n{\n\tsize_t i, src_off, dst_off, len;\n\n\tchar *usermap = memalign(BUF_LEN, BUF_LEN);\n\tchar *kernelmap = memalign(BUF_LEN, BUF_LEN);\n\n\tassert(usermap != NULL);\n\tassert(kernelmap != NULL);\n\n\tmemset(usermap, 0, BUF_LEN);\n\tmemset(kernelmap, 0, BUF_LEN);\n\n\tfor (i = 0; i < BUF_LEN; i++) {\n\t\tusermap[i] = i & 0xff;\n\t\tkernelmap[i] = i & 0xff;\n\t}\n\n\tfor (src_off = 0; src_off < MAX_OFFSET; src_off++) {\n\t\tfor (dst_off = 0; dst_off < MAX_OFFSET; dst_off++) {\n\t\t\tfor (len = 1; len < MAX_OFFSET - max(src_off, dst_off); len++) {\n\n\t\t\t\tmemmove(usermap + dst_off, usermap + src_off, len);\n\t\t\t\tTEST_MEMMOVE(kernelmap + dst_off, kernelmap + src_off, len);\n\t\t\t\tif (memcmp(usermap, kernelmap, MAX_OFFSET) != 0) {\n\t\t\t\t\tprintf(\"memmove failed at %ld %ld %ld\\n\",\n\t\t\t\t\t\t\tsrc_off, dst_off, len);\n\t\t\t\t\tabort();\n\t\t\t\t}\n\t\t\t}\n\t\t}\n\t}\n\treturn 0;\n}\n\nint main(void)\n{\n\treturn test_harness(testcase_run, \"memmove\");\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

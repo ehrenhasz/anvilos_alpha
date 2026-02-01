@@ -1,0 +1,9 @@
+{
+  "module_name": "gcd.c",
+  "hash_id": "501db82cd323645e23cd326525e57dbad98543f1d0117bdcd6c24bbf37be6a41",
+  "original_prompt": "Ingested from linux-6.6.14/lib/math/gcd.c",
+  "human_readable_source": "\n#include <linux/kernel.h>\n#include <linux/gcd.h>\n#include <linux/export.h>\n\n \n\n#if !defined(CONFIG_CPU_NO_EFFICIENT_FFS)\n\n \n\n \nunsigned long gcd(unsigned long a, unsigned long b)\n{\n\tunsigned long r = a | b;\n\n\tif (!a || !b)\n\t\treturn r;\n\n\tb >>= __ffs(b);\n\tif (b == 1)\n\t\treturn r & -r;\n\n\tfor (;;) {\n\t\ta >>= __ffs(a);\n\t\tif (a == 1)\n\t\t\treturn r & -r;\n\t\tif (a == b)\n\t\t\treturn a << __ffs(r);\n\n\t\tif (a < b)\n\t\t\tswap(a, b);\n\t\ta -= b;\n\t}\n}\n\n#else\n\n \nunsigned long gcd(unsigned long a, unsigned long b)\n{\n\tunsigned long r = a | b;\n\n\tif (!a || !b)\n\t\treturn r;\n\n\t \n\tr &= -r;\n\n\twhile (!(b & r))\n\t\tb >>= 1;\n\tif (b == r)\n\t\treturn r;\n\n\tfor (;;) {\n\t\twhile (!(a & r))\n\t\t\ta >>= 1;\n\t\tif (a == r)\n\t\t\treturn r;\n\t\tif (a == b)\n\t\t\treturn a;\n\n\t\tif (a < b)\n\t\t\tswap(a, b);\n\t\ta -= b;\n\t\ta >>= 1;\n\t\tif (a & r)\n\t\t\ta += b;\n\t\ta >>= 1;\n\t}\n}\n\n#endif\n\nEXPORT_SYMBOL_GPL(gcd);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

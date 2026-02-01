@@ -1,0 +1,9 @@
+{
+  "module_name": "length.c",
+  "hash_id": "711f41c6ab0f96817cb9003dd155cc91063b63c1977623da66794e63cd1fd0c6",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/can/dev/length.c",
+  "human_readable_source": "\n \n\n#include <linux/can/dev.h>\n\n \n\nstatic const u8 dlc2len[] = {\n\t0, 1, 2, 3, 4, 5, 6, 7,\n\t8, 12, 16, 20, 24, 32, 48, 64\n};\n\n \nu8 can_fd_dlc2len(u8 dlc)\n{\n\treturn dlc2len[dlc & 0x0F];\n}\nEXPORT_SYMBOL_GPL(can_fd_dlc2len);\n\nstatic const u8 len2dlc[] = {\n\t0, 1, 2, 3, 4, 5, 6, 7, 8,\t \n\t9, 9, 9, 9,\t\t\t \n\t10, 10, 10, 10,\t\t\t \n\t11, 11, 11, 11,\t\t\t \n\t12, 12, 12, 12,\t\t\t \n\t13, 13, 13, 13, 13, 13, 13, 13,\t \n\t14, 14, 14, 14, 14, 14, 14, 14,\t \n\t14, 14, 14, 14, 14, 14, 14, 14,\t \n\t15, 15, 15, 15, 15, 15, 15, 15,\t \n\t15, 15, 15, 15, 15, 15, 15, 15\t \n};\n\n \nu8 can_fd_len2dlc(u8 len)\n{\n\t \n\tBUILD_BUG_ON(ARRAY_SIZE(len2dlc) != CANFD_MAX_DLEN + 1);\n\n\tif (unlikely(len > CANFD_MAX_DLEN))\n\t\treturn CANFD_MAX_DLC;\n\n\treturn len2dlc[len];\n}\nEXPORT_SYMBOL_GPL(can_fd_len2dlc);\n\n \nunsigned int can_skb_get_frame_len(const struct sk_buff *skb)\n{\n\tconst struct canfd_frame *cf = (const struct canfd_frame *)skb->data;\n\tu8 len;\n\n\tif (can_is_canfd_skb(skb))\n\t\tlen = canfd_sanitize_len(cf->len);\n\telse if (cf->can_id & CAN_RTR_FLAG)\n\t\tlen = 0;\n\telse\n\t\tlen = cf->len;\n\n\treturn can_frame_bytes(can_is_canfd_skb(skb), cf->can_id & CAN_EFF_FLAG,\n\t\t\t       false, len);\n}\nEXPORT_SYMBOL_GPL(can_skb_get_frame_len);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

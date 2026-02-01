@@ -1,0 +1,9 @@
+{
+  "module_name": "ingenic,jz4725b-cgu.h",
+  "hash_id": "e1a6605352177d75326ed3cf9f3ac57b54cc568319854de8c25274c79f0d31a0",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/clock/ingenic,jz4725b-cgu.h",
+  "human_readable_source": " \n \n\n#ifndef __DT_BINDINGS_CLOCK_JZ4725B_CGU_H__\n#define __DT_BINDINGS_CLOCK_JZ4725B_CGU_H__\n\n#define JZ4725B_CLK_EXT\t\t0\n#define JZ4725B_CLK_OSC32K\t1\n#define JZ4725B_CLK_PLL\t\t2\n#define JZ4725B_CLK_PLL_HALF\t3\n#define JZ4725B_CLK_CCLK\t4\n#define JZ4725B_CLK_HCLK\t5\n#define JZ4725B_CLK_PCLK\t6\n#define JZ4725B_CLK_MCLK\t7\n#define JZ4725B_CLK_IPU\t\t8\n#define JZ4725B_CLK_LCD\t\t9\n#define JZ4725B_CLK_I2S\t\t10\n#define JZ4725B_CLK_SPI\t\t11\n#define JZ4725B_CLK_MMC_MUX\t12\n#define JZ4725B_CLK_UDC\t\t13\n#define JZ4725B_CLK_UART\t14\n#define JZ4725B_CLK_DMA\t\t15\n#define JZ4725B_CLK_ADC\t\t16\n#define JZ4725B_CLK_I2C\t\t17\n#define JZ4725B_CLK_AIC\t\t18\n#define JZ4725B_CLK_MMC0\t19\n#define JZ4725B_CLK_MMC1\t20\n#define JZ4725B_CLK_BCH\t\t21\n#define JZ4725B_CLK_TCU\t\t22\n#define JZ4725B_CLK_EXT512\t23\n#define JZ4725B_CLK_RTC\t\t24\n#define JZ4725B_CLK_UDC_PHY\t25\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

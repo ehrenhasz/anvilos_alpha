@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "3ae3e58fae76e360ca81000ed8a9f6f68d82fe19dce113bf3107231d9e899f7f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/leds/blink/Kconfig",
+  "human_readable_source": "config LEDS_BCM63138\n\ttristate \"LED Support for Broadcom BCM63138 SoC\"\n\tdepends on LEDS_CLASS\n\tdepends on ARCH_BCMBCA || ARCH_BCM_5301X || BCM63XX || COMPILE_TEST\n\tdepends on HAS_IOMEM\n\tdepends on OF\n\tdefault ARCH_BCMBCA\n\thelp\n\t  This option enables support for LED controller that is part of\n\t  BCM63138 SoC. The same hardware block is known to be also used\n\t  in BCM4908, BCM6848, BCM6858, BCM63148, BCM63381 and BCM68360.\n\n\t  If compiled as module it will be called leds-bcm63138.\n\nconfig LEDS_LGM\n       tristate \"LED support for LGM SoC series\"\n       depends on X86 || COMPILE_TEST\n       depends on GPIOLIB && LEDS_CLASS && MFD_SYSCON && OF\n       help\n         This option enables support for LEDs connected to GPIO lines on\n         Lightning Mountain (LGM) SoC. Lightning Mountain is a AnyWAN\n         gateway-on-a-chip SoC to be shipped on mid and high end home\n         gateways and routers.\n\n         These LEDs are driven by a Serial Shift Output (SSO) controller.\n         The driver supports hardware blinking and the LEDs can be configured\n         to be triggered by software/CPU or by hardware.\n\n         Say 'Y' here if you are working on LGM SoC based platform. Otherwise,\n         say 'N'. To compile this driver as a module, choose M here: the module\n         will be called leds-lgm-sso.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

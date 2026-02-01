@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "722abdc06903dda3a9f9b8f3ee706f2a3746c42d2715a8b7581092841dc1c58d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/ralink/rt2x00/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nrt2x00lib-y\t\t\t\t+= rt2x00dev.o\nrt2x00lib-y\t\t\t\t+= rt2x00mac.o\nrt2x00lib-y\t\t\t\t+= rt2x00config.o\nrt2x00lib-y\t\t\t\t+= rt2x00queue.o\nrt2x00lib-y\t\t\t\t+= rt2x00link.o\nrt2x00lib-$(CONFIG_RT2X00_LIB_DEBUGFS)\t+= rt2x00debug.o\nrt2x00lib-$(CONFIG_RT2X00_LIB_CRYPTO)\t+= rt2x00crypto.o\nrt2x00lib-$(CONFIG_RT2X00_LIB_FIRMWARE)\t+= rt2x00firmware.o\nrt2x00lib-$(CONFIG_RT2X00_LIB_LEDS)\t+= rt2x00leds.o\n\nobj-$(CONFIG_RT2X00_LIB)\t\t+= rt2x00lib.o\nobj-$(CONFIG_RT2X00_LIB_MMIO)\t\t+= rt2x00mmio.o\nobj-$(CONFIG_RT2X00_LIB_PCI)\t\t+= rt2x00pci.o\nobj-$(CONFIG_RT2X00_LIB_SOC)\t\t+= rt2x00soc.o\nobj-$(CONFIG_RT2X00_LIB_USB)\t\t+= rt2x00usb.o\nobj-$(CONFIG_RT2800_LIB)\t\t+= rt2800lib.o\nobj-$(CONFIG_RT2800_LIB_MMIO)\t\t+= rt2800mmio.o\nobj-$(CONFIG_RT2400PCI)\t\t\t+= rt2400pci.o\nobj-$(CONFIG_RT2500PCI)\t\t\t+= rt2500pci.o\nobj-$(CONFIG_RT61PCI)\t\t\t+= rt61pci.o\nobj-$(CONFIG_RT2800PCI)\t\t\t+= rt2800pci.o\nobj-$(CONFIG_RT2500USB)\t\t\t+= rt2500usb.o\nobj-$(CONFIG_RT73USB)\t\t\t+= rt73usb.o\nobj-$(CONFIG_RT2800USB)\t\t\t+= rt2800usb.o\nobj-$(CONFIG_RT2800SOC)\t\t\t+= rt2800soc.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

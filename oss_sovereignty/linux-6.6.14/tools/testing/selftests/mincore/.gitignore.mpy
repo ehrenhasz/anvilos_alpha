@@ -1,0 +1,9 @@
+{
+  "module_name": ".gitignore",
+  "hash_id": "670995c45bac7f58bbb451c8c71bc12eb77cdc0afa143dc996872719e623b871",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/mincore/.gitignore",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0+\nmincore_selftest\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

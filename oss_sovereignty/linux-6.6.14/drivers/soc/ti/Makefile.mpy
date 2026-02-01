@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "80b3e5de88505f1b5e6e820d756c0595816cf36668d9c633f85b42737b600551",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/soc/ti/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# TI Keystone SOC drivers\n#\nobj-$(CONFIG_KEYSTONE_NAVIGATOR_QMSS)\t+= knav_qmss.o\nknav_qmss-y := knav_qmss_queue.o knav_qmss_acc.o\nobj-$(CONFIG_KEYSTONE_NAVIGATOR_DMA)\t+= knav_dma.o\nobj-$(CONFIG_AMX3_PM)\t\t\t+= pm33xx.o\nobj-$(CONFIG_WKUP_M3_IPC)\t\t+= wkup_m3_ipc.o\nobj-$(CONFIG_TI_SCI_INTA_MSI_DOMAIN)\t+= ti_sci_inta_msi.o\nobj-$(CONFIG_TI_K3_RINGACC)\t\t+= k3-ringacc.o\nobj-$(CONFIG_TI_K3_SOCINFO)\t\t+= k3-socinfo.o\nobj-$(CONFIG_TI_PRUSS)\t\t\t+= pruss.o\nobj-$(CONFIG_POWER_AVS_OMAP)\t\t+= smartreflex.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "18d67bf80e99a7a2c57dfbc3e105be913ed7d6117eff83c57eb11ee699482600",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/powerpc/papr_attributes/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nTEST_GEN_PROGS := attr_test\n\ntop_srcdir = ../../../../..\ninclude ../../lib.mk\n\n$(TEST_GEN_PROGS): ../harness.c ../utils.c",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

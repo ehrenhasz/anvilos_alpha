@@ -1,0 +1,9 @@
+{
+  "module_name": "backup-find.c",
+  "hash_id": "c3568caa67e324df6043f47d2e42295393abb29579517d59c63bd721fc8e2548",
+  "original_prompt": "Ingested from coreutils-9.4/lib/backup-find.c",
+  "human_readable_source": " \n\nchar *\nfind_backup_file_name (int dir_fd, char const *file,\n                       enum backup_type backup_type)\n{\n  char *result = backupfile_internal (dir_fd, file, backup_type, false);\n  if (!result)\n    xalloc_die ();\n  return result;\n}\n\nstatic char const *const backup_args[] =\n{\n   \n  \"none\", \"off\",\n  \"simple\", \"never\",\n  \"existing\", \"nil\",\n  \"numbered\", \"t\",\n  NULL\n};\n\nstatic const enum backup_type backup_types[] =\n{\n  no_backups, no_backups,\n  simple_backups, simple_backups,\n  numbered_existing_backups, numbered_existing_backups,\n  numbered_backups, numbered_backups\n};\n\n \nARGMATCH_VERIFY (backup_args, backup_types);\n\n \n\nenum backup_type\nget_version (char const *context, char const *version)\n{\n  if (version == 0 || *version == 0)\n    return numbered_existing_backups;\n  else\n    return XARGMATCH (context, version, backup_args, backup_types);\n}\n\n\n \n\nenum backup_type\nxget_version (char const *context, char const *version)\n{\n  if (version && *version)\n    return get_version (context, version);\n  else\n    return get_version (\"$VERSION_CONTROL\", getenv (\"VERSION_CONTROL\"));\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

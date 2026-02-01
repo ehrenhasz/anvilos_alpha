@@ -1,0 +1,9 @@
+{
+  "module_name": "aarch64_be.config",
+  "hash_id": "c0344ede867d895fcdc6b7a122e8e44462266b73676c85ab5d2965ac648c2a90",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/wireguard/qemu/arch/aarch64_be.config",
+  "human_readable_source": "CONFIG_CPU_BIG_ENDIAN=y\nCONFIG_SERIAL_AMBA_PL011=y\nCONFIG_SERIAL_AMBA_PL011_CONSOLE=y\nCONFIG_VIRTIO_MENU=y\nCONFIG_VIRTIO_MMIO=y\nCONFIG_VIRTIO_CONSOLE=y\nCONFIG_CMDLINE_BOOL=y\nCONFIG_CMDLINE=\"console=ttyAMA0 wg.success=vport0p1 panic_on_warn=1\"\nCONFIG_FRAME_WARN=1280\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

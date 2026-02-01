@@ -1,0 +1,9 @@
+{
+  "module_name": "i915_gem_create.h",
+  "hash_id": "431cc887323a69bf8f3049794694dc9889df265f62e73b2a94b3ded6e6dc0907",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/gem/i915_gem_create.h",
+  "human_readable_source": " \n \n\n#ifndef __I915_GEM_CREATE_H__\n#define __I915_GEM_CREATE_H__\n\nstruct drm_file;\nstruct drm_device;\nstruct drm_mode_create_dumb;\n\nint i915_gem_dumb_create(struct drm_file *file_priv,\n\t\t\t struct drm_device *dev,\n\t\t\t struct drm_mode_create_dumb *args);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

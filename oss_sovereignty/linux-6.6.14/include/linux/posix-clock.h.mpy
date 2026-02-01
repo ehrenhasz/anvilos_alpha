@@ -1,0 +1,9 @@
+{
+  "module_name": "posix-clock.h",
+  "hash_id": "98d2219212f21ce56ff46bcf806da6eab6421acd17893ce0ffd0efefefa5acb9",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/posix-clock.h",
+  "human_readable_source": " \n \n#ifndef _LINUX_POSIX_CLOCK_H_\n#define _LINUX_POSIX_CLOCK_H_\n\n#include <linux/cdev.h>\n#include <linux/fs.h>\n#include <linux/poll.h>\n#include <linux/posix-timers.h>\n#include <linux/rwsem.h>\n\nstruct posix_clock;\n\n \nstruct posix_clock_operations {\n\tstruct module *owner;\n\n\tint  (*clock_adjtime)(struct posix_clock *pc, struct __kernel_timex *tx);\n\n\tint  (*clock_gettime)(struct posix_clock *pc, struct timespec64 *ts);\n\n\tint  (*clock_getres) (struct posix_clock *pc, struct timespec64 *ts);\n\n\tint  (*clock_settime)(struct posix_clock *pc,\n\t\t\t      const struct timespec64 *ts);\n\n\t \n\tlong    (*ioctl)   (struct posix_clock *pc,\n\t\t\t    unsigned int cmd, unsigned long arg);\n\n\tint     (*open)    (struct posix_clock *pc, fmode_t f_mode);\n\n\t__poll_t (*poll)   (struct posix_clock *pc,\n\t\t\t    struct file *file, poll_table *wait);\n\n\tint     (*release) (struct posix_clock *pc);\n\n\tssize_t (*read)    (struct posix_clock *pc,\n\t\t\t    uint flags, char __user *buf, size_t cnt);\n};\n\n \nstruct posix_clock {\n\tstruct posix_clock_operations ops;\n\tstruct cdev cdev;\n\tstruct device *dev;\n\tstruct rw_semaphore rwsem;\n\tbool zombie;\n};\n\n \nint posix_clock_register(struct posix_clock *clk, struct device *dev);\n\n \nvoid posix_clock_unregister(struct posix_clock *clk);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

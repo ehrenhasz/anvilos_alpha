@@ -1,0 +1,9 @@
+{
+  "module_name": "pgtable_32.h",
+  "hash_id": "9ab508fa46294e61700d2af62d3e335ed8a77a2ce5cc23306c7f5a457cb9e48e",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/include/asm/pgtable_32.h",
+  "human_readable_source": " \n#ifndef _ASM_X86_PGTABLE_32_H\n#define _ASM_X86_PGTABLE_32_H\n\n#include <asm/pgtable_32_types.h>\n\n \n#ifndef __ASSEMBLY__\n#include <asm/processor.h>\n#include <linux/threads.h>\n#include <asm/paravirt.h>\n\n#include <linux/bitops.h>\n#include <linux/list.h>\n#include <linux/spinlock.h>\n\nstruct mm_struct;\nstruct vm_area_struct;\n\nextern pgd_t swapper_pg_dir[1024];\nextern pgd_t initial_page_table[1024];\nextern pmd_t initial_pg_pmd[];\n\nvoid paging_init(void);\nvoid sync_initial_page_table(void);\n\n#ifdef CONFIG_X86_PAE\n# include <asm/pgtable-3level.h>\n#else\n# include <asm/pgtable-2level.h>\n#endif\n\n \n#define kpte_clear_flush(ptep, vaddr)\t\t\\\ndo {\t\t\t\t\t\t\\\n\tpte_clear(&init_mm, (vaddr), (ptep));\t\\\n\tflush_tlb_one_kernel((vaddr));\t\t\\\n} while (0)\n\n#endif  \n\n \n#if PTRS_PER_PMD > 1\n#define PAGE_TABLE_SIZE(pages) (((pages) / PTRS_PER_PMD) + PTRS_PER_PGD)\n#else\n#define PAGE_TABLE_SIZE(pages) ((pages) / PTRS_PER_PGD)\n#endif\n\n \n#define LOWMEM_PAGES ((((_ULL(2)<<31) - __PAGE_OFFSET) >> PAGE_SHIFT))\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

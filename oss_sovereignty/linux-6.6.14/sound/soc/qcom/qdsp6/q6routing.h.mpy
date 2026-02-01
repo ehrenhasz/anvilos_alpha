@@ -1,0 +1,9 @@
+{
+  "module_name": "q6routing.h",
+  "hash_id": "3980d21ddb6629ac21a8a2c64a03e4f982afe64c8413807a06a4c7684e16370f",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/qcom/qdsp6/q6routing.h",
+  "human_readable_source": " \n#ifndef _Q6_PCM_ROUTING_H\n#define _Q6_PCM_ROUTING_H\n\nint q6routing_stream_open(int fedai_id, int perf_mode,\n\t\t\t   int stream_id, int stream_type);\nvoid q6routing_stream_close(int fedai_id, int stream_type);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

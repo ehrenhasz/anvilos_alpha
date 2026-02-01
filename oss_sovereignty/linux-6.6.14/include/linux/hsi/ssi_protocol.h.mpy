@@ -1,0 +1,9 @@
+{
+  "module_name": "ssi_protocol.h",
+  "hash_id": "b311ee7f49b6452837b643b0c81b171be6cff47514f13496563f856a202fde3c",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/hsi/ssi_protocol.h",
+  "human_readable_source": " \n \n\n#ifndef __LINUX_SSIP_SLAVE_H__\n#define __LINUX_SSIP_SLAVE_H__\n\n#include <linux/hsi/hsi.h>\n\nstatic inline void ssip_slave_put_master(struct hsi_client *master)\n{\n}\n\nstruct hsi_client *ssip_slave_get_master(struct hsi_client *slave);\nint ssip_slave_start_tx(struct hsi_client *master);\nint ssip_slave_stop_tx(struct hsi_client *master);\nvoid ssip_reset_event(struct hsi_client *master);\n\nint ssip_slave_running(struct hsi_client *master);\nvoid ssi_waketest(struct hsi_client *cl, unsigned int enable);\n\n#endif  \n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

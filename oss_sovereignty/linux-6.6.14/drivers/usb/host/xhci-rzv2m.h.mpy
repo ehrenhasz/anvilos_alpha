@@ -1,0 +1,9 @@
+{
+  "module_name": "xhci-rzv2m.h",
+  "hash_id": "030f8298355705f6ce75b8bd661f4fc9838d8fb9dfd45058eec34f011278202a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/usb/host/xhci-rzv2m.h",
+  "human_readable_source": " \n#ifndef __XHCI_RZV2M_H\n#define __XHCI_RZV2M_H\n\n#if IS_ENABLED(CONFIG_USB_XHCI_RZV2M)\nvoid xhci_rzv2m_start(struct usb_hcd *hcd);\nint xhci_rzv2m_init_quirk(struct usb_hcd *hcd);\n#else\nstatic inline void xhci_rzv2m_start(struct usb_hcd *hcd) {}\nstatic inline int xhci_rzv2m_init_quirk(struct usb_hcd *hcd)\n{\n\treturn -EINVAL;\n}\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "bpf-filter.h",
+  "hash_id": "a518e90ac3dbb094810987db1e13012de1e7c135320a514487a72c36d332b326",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/util/bpf-filter.h",
+  "human_readable_source": " \n#ifndef PERF_UTIL_BPF_FILTER_H\n#define PERF_UTIL_BPF_FILTER_H\n\n#include <linux/list.h>\n\n#include \"bpf_skel/sample-filter.h\"\n\nstruct perf_bpf_filter_expr {\n\tstruct list_head list;\n\tstruct list_head groups;\n\tenum perf_bpf_filter_op op;\n\tint part;\n\tunsigned long sample_flags;\n\tunsigned long val;\n};\n\nstruct evsel;\n\n#ifdef HAVE_BPF_SKEL\nstruct perf_bpf_filter_expr *perf_bpf_filter_expr__new(unsigned long sample_flags, int part,\n\t\t\t\t\t\t       enum perf_bpf_filter_op op,\n\t\t\t\t\t\t       unsigned long val);\nint perf_bpf_filter__parse(struct list_head *expr_head, const char *str);\nint perf_bpf_filter__prepare(struct evsel *evsel);\nint perf_bpf_filter__destroy(struct evsel *evsel);\nu64 perf_bpf_filter__lost_count(struct evsel *evsel);\n\n#else  \n\nstatic inline int perf_bpf_filter__parse(struct list_head *expr_head __maybe_unused,\n\t\t\t\t\t const char *str __maybe_unused)\n{\n\treturn -EOPNOTSUPP;\n}\nstatic inline int perf_bpf_filter__prepare(struct evsel *evsel __maybe_unused)\n{\n\treturn -EOPNOTSUPP;\n}\nstatic inline int perf_bpf_filter__destroy(struct evsel *evsel __maybe_unused)\n{\n\treturn -EOPNOTSUPP;\n}\nstatic inline u64 perf_bpf_filter__lost_count(struct evsel *evsel __maybe_unused)\n{\n\treturn 0;\n}\n#endif  \n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

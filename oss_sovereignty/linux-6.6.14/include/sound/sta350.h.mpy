@@ -1,0 +1,9 @@
+{
+  "module_name": "sta350.h",
+  "hash_id": "2d8150899aaab727a0373e3adbd687099db42e9991b6158f5a21ccad1a43614d",
+  "original_prompt": "Ingested from linux-6.6.14/include/sound/sta350.h",
+  "human_readable_source": " \n \n#ifndef __LINUX_SND__STA350_H\n#define __LINUX_SND__STA350_H\n\n#define STA350_OCFG_2CH\t\t0\n#define STA350_OCFG_2_1CH\t1\n#define STA350_OCFG_1CH\t\t3\n\n#define STA350_OM_CH1\t\t0\n#define STA350_OM_CH2\t\t1\n#define STA350_OM_CH3\t\t2\n\n#define STA350_THERMAL_ADJUSTMENT_ENABLE\t1\n#define STA350_THERMAL_RECOVERY_ENABLE\t\t2\n#define STA350_FAULT_DETECT_RECOVERY_BYPASS\t1\n\n#define STA350_FFX_PM_DROP_COMP\t\t\t0\n#define STA350_FFX_PM_TAPERED_COMP\t\t1\n#define STA350_FFX_PM_FULL_POWER\t\t2\n#define STA350_FFX_PM_VARIABLE_DROP_COMP\t3\n\n\nstruct sta350_platform_data {\n\tu8 output_conf;\n\tu8 ch1_output_mapping;\n\tu8 ch2_output_mapping;\n\tu8 ch3_output_mapping;\n\tu8 ffx_power_output_mode;\n\tu8 drop_compensation_ns;\n\tu8 powerdown_delay_divider;\n\tunsigned int thermal_warning_recovery:1;\n\tunsigned int thermal_warning_adjustment:1;\n\tunsigned int fault_detect_recovery:1;\n\tunsigned int oc_warning_adjustment:1;\n\tunsigned int max_power_use_mpcc:1;\n\tunsigned int max_power_correction:1;\n\tunsigned int am_reduction_mode:1;\n\tunsigned int odd_pwm_speed_mode:1;\n\tunsigned int distortion_compensation:1;\n\tunsigned int invalid_input_detect_mute:1;\n\tunsigned int activate_mute_output:1;\n\tunsigned int bridge_immediate_off:1;\n\tunsigned int noise_shape_dc_cut:1;\n\tunsigned int powerdown_master_vol:1;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "nhc_ghc_udp.c",
+  "hash_id": "2000760d8b946b583e79d7ec53923544a4b60153d854943e8d41c020d6f5a6b7",
+  "original_prompt": "Ingested from linux-6.6.14/net/6lowpan/nhc_ghc_udp.c",
+  "human_readable_source": "\n \n\n#include \"nhc.h\"\n\n#define LOWPAN_GHC_UDP_ID_0\t0xd0\n#define LOWPAN_GHC_UDP_MASK_0\t0xf8\n\nLOWPAN_NHC(ghc_udp, \"RFC7400 UDP\", NEXTHDR_UDP, 0,\n\t   LOWPAN_GHC_UDP_ID_0, LOWPAN_GHC_UDP_MASK_0, NULL, NULL);\n\nmodule_lowpan_nhc(ghc_udp);\nMODULE_DESCRIPTION(\"6LoWPAN generic header UDP compression\");\nMODULE_LICENSE(\"GPL\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

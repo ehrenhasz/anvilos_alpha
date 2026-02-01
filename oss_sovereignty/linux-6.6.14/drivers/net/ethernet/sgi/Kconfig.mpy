@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "6f4994ddeed19c190b585a2dae281a8a7e0d9a04e1e507636debe78b06aa343f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/sgi/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# SGI device configuration\n#\n\nconfig NET_VENDOR_SGI\n\tbool \"SGI devices\"\n\tdefault y\n\tdepends on (PCI && SGI_MFD_IOC3) ||  SGI_IP32\n\thelp\n\t  If you have a network (Ethernet) card belonging to this class, say Y.\n\n\t  Note that the answer to this question doesn't directly affect the\n\t  kernel: saying N will just cause the configurator to skip all\n\t  the questions about SGI devices. If you say Y, you will be asked for\n\t  your specific card in the following questions.\n\nif NET_VENDOR_SGI\n\nconfig SGI_IOC3_ETH\n\tbool \"SGI IOC3 Ethernet\"\n\tdepends on PCI && SGI_MFD_IOC3\n\tselect CRC16\n\tselect CRC32\n\tselect MII\n\thelp\n\t  If you have a network (Ethernet) card of this type, say Y here.\n\nconfig SGI_O2MACE_ETH\n\ttristate \"SGI O2 MACE Fast Ethernet support\"\n\tdepends on SGI_IP32=y\n\nendif # NET_VENDOR_SGI\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

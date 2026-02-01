@@ -1,0 +1,9 @@
+{
+  "module_name": "debugfs.h",
+  "hash_id": "457b8ba966e72574faaff3d63079879cd9fe065bfe937179f740d501b5f9c08a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/infiniband/hw/hfi1/debugfs.h",
+  "human_readable_source": " \n \n\n#ifndef _HFI1_DEBUGFS_H\n#define _HFI1_DEBUGFS_H\n\nstruct hfi1_ibdev;\n\n#define DEBUGFS_SEQ_FILE_OPS(name) \\\nstatic const struct seq_operations _##name##_seq_ops = { \\\n\t.start = _##name##_seq_start, \\\n\t.next  = _##name##_seq_next, \\\n\t.stop  = _##name##_seq_stop, \\\n\t.show  = _##name##_seq_show \\\n}\n\n#define DEBUGFS_SEQ_FILE_OPEN(name) \\\nstatic int _##name##_open(struct inode *inode, struct file *s) \\\n{ \\\n\tstruct seq_file *seq; \\\n\tint ret; \\\n\tret =  seq_open(s, &_##name##_seq_ops); \\\n\tif (ret) \\\n\t\treturn ret; \\\n\tseq = s->private_data; \\\n\tseq->private = inode->i_private; \\\n\treturn 0; \\\n}\n\n#define DEBUGFS_FILE_OPS(name) \\\nstatic const struct file_operations _##name##_file_ops = { \\\n\t.owner   = THIS_MODULE, \\\n\t.open    = _##name##_open, \\\n\t.read    = hfi1_seq_read, \\\n\t.llseek  = hfi1_seq_lseek, \\\n\t.release = seq_release \\\n}\n\n\nssize_t hfi1_seq_read(struct file *file, char __user *buf, size_t size,\n\t\t      loff_t *ppos);\nloff_t hfi1_seq_lseek(struct file *file, loff_t offset, int whence);\n\n#ifdef CONFIG_DEBUG_FS\nvoid hfi1_dbg_ibdev_init(struct hfi1_ibdev *ibd);\nvoid hfi1_dbg_ibdev_exit(struct hfi1_ibdev *ibd);\nvoid hfi1_dbg_init(void);\nvoid hfi1_dbg_exit(void);\n\n#else\nstatic inline void hfi1_dbg_ibdev_init(struct hfi1_ibdev *ibd)\n{\n}\n\nstatic inline void hfi1_dbg_ibdev_exit(struct hfi1_ibdev *ibd)\n{\n}\n\nstatic inline void hfi1_dbg_init(void)\n{\n}\n\nstatic inline void hfi1_dbg_exit(void)\n{\n}\n#endif\n\n#endif                           \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

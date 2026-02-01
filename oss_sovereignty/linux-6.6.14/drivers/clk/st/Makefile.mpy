@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "969962f635ef0415042b9c17fda0da9283f694a05aa430aefb4d1d2b7568c8e6",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/clk/st/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-y += clkgen-mux.o clkgen-pll.o clkgen-fsyn.o clk-flexgen.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

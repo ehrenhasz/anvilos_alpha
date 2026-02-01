@@ -1,0 +1,9 @@
+{
+  "module_name": "bnxt_debugfs.h",
+  "hash_id": "8bd99a5514f6bba434ffa5d1278f320f28c0c2039bec6a0ce57bde87516baede",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/broadcom/bnxt/bnxt_debugfs.h",
+  "human_readable_source": " \n\n#include \"bnxt_hsi.h\"\n#include \"bnxt.h\"\n\n#ifdef CONFIG_DEBUG_FS\nvoid bnxt_debug_init(void);\nvoid bnxt_debug_exit(void);\nvoid bnxt_debug_dev_init(struct bnxt *bp);\nvoid bnxt_debug_dev_exit(struct bnxt *bp);\n#else\nstatic inline void bnxt_debug_init(void) {}\nstatic inline void bnxt_debug_exit(void) {}\nstatic inline void bnxt_debug_dev_init(struct bnxt *bp) {}\nstatic inline void bnxt_debug_dev_exit(struct bnxt *bp) {}\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "coresight-cfg-sample.c",
+  "hash_id": "d7af52a6c11d04cb67904dd03cc4e8e7482339e6703ed8e73dbf15138e43f2e8",
+  "original_prompt": "Ingested from linux-6.6.14/samples/coresight/coresight-cfg-sample.c",
+  "human_readable_source": "\n \n\n#include \"coresight-config.h\"\n#include \"coresight-syscfg.h\"\n\n \n\n \n#define AFDO2_NR_PRESETS\t4\n \n#define AFDO2_NR_PARAM_SUM\t2\n\nstatic const char *afdo2_ref_names[] = {\n\t\"strobing\",\n};\n\n \nstatic u64 afdo2_presets[AFDO2_NR_PRESETS][AFDO2_NR_PARAM_SUM] = {\n\t{ 1000, 100 },\n\t{ 1000, 1000 },\n\t{ 1000, 5000 },\n\t{ 1000, 10000 },\n};\n\nstruct cscfg_config_desc afdo2 = {\n\t.name = \"autofdo2\",\n\t.description = \"Setup ETMs with strobing for autofdo\\n\"\n\t\"Supplied presets allow experimentation with mark-space ratio for various loads\\n\",\n\t.nr_feat_refs = ARRAY_SIZE(afdo2_ref_names),\n\t.feat_ref_names = afdo2_ref_names,\n\t.nr_presets = AFDO2_NR_PRESETS,\n\t.nr_total_params = AFDO2_NR_PARAM_SUM,\n\t.presets = &afdo2_presets[0][0],\n};\n\nstatic struct cscfg_feature_desc *sample_feats[] = {\n\tNULL\n};\n\nstatic struct cscfg_config_desc *sample_cfgs[] = {\n\t&afdo2,\n\tNULL\n};\n\nstatic struct cscfg_load_owner_info mod_owner = {\n\t.type = CSCFG_OWNER_MODULE,\n\t.owner_handle = THIS_MODULE,\n};\n\n \nstatic int __init cscfg_sample_init(void)\n{\n\treturn cscfg_load_config_sets(sample_cfgs, sample_feats, &mod_owner);\n}\n\nstatic void __exit cscfg_sample_exit(void)\n{\n\tcscfg_unload_config_sets(&mod_owner);\n}\n\nmodule_init(cscfg_sample_init);\nmodule_exit(cscfg_sample_exit);\n\nMODULE_LICENSE(\"GPL v2\");\nMODULE_AUTHOR(\"Mike Leach <mike.leach@linaro.org>\");\nMODULE_DESCRIPTION(\"CoreSight Syscfg Example\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

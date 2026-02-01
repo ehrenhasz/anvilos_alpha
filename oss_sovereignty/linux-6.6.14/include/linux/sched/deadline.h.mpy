@@ -1,0 +1,9 @@
+{
+  "module_name": "deadline.h",
+  "hash_id": "c89187e4fb6ae2bab132546e8eb288b7b775dcf531e94e62998c7f76463d24a7",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/sched/deadline.h",
+  "human_readable_source": " \n\n \n\n#include <linux/sched.h>\n\n#define MAX_DL_PRIO\t\t0\n\nstatic inline int dl_prio(int prio)\n{\n\tif (unlikely(prio < MAX_DL_PRIO))\n\t\treturn 1;\n\treturn 0;\n}\n\nstatic inline int dl_task(struct task_struct *p)\n{\n\treturn dl_prio(p->prio);\n}\n\nstatic inline bool dl_time_before(u64 a, u64 b)\n{\n\treturn (s64)(a - b) < 0;\n}\n\n#ifdef CONFIG_SMP\n\nstruct root_domain;\nextern void dl_add_task_root_domain(struct task_struct *p);\nextern void dl_clear_root_domain(struct root_domain *rd);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

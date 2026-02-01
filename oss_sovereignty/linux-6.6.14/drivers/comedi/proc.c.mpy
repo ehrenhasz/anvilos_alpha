@@ -1,0 +1,9 @@
+{
+  "module_name": "proc.c",
+  "hash_id": "291211fa89d628f5b38762e0f869cf6c064e011ed38405e536f1d30149b99f72",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/comedi/proc.c",
+  "human_readable_source": "\n \n\n \n\n#include <linux/comedi/comedidev.h>\n#include \"comedi_internal.h\"\n#include <linux/proc_fs.h>\n#include <linux/seq_file.h>\n\nstatic int comedi_read(struct seq_file *m, void *v)\n{\n\tint i;\n\tint devices_q = 0;\n\tstruct comedi_driver *driv;\n\n\tseq_printf(m, \"comedi version \" COMEDI_RELEASE \"\\nformat string: %s\\n\",\n\t\t   \"\\\"%2d: %-20s %-20s %4d\\\", i, driver_name, board_name, n_subdevices\");\n\n\tfor (i = 0; i < COMEDI_NUM_BOARD_MINORS; i++) {\n\t\tstruct comedi_device *dev = comedi_dev_get_from_minor(i);\n\n\t\tif (!dev)\n\t\t\tcontinue;\n\n\t\tdown_read(&dev->attach_lock);\n\t\tif (dev->attached) {\n\t\t\tdevices_q = 1;\n\t\t\tseq_printf(m, \"%2d: %-20s %-20s %4d\\n\",\n\t\t\t\t   i, dev->driver->driver_name,\n\t\t\t\t   dev->board_name, dev->n_subdevices);\n\t\t}\n\t\tup_read(&dev->attach_lock);\n\t\tcomedi_dev_put(dev);\n\t}\n\tif (!devices_q)\n\t\tseq_puts(m, \"no devices\\n\");\n\n\tmutex_lock(&comedi_drivers_list_lock);\n\tfor (driv = comedi_drivers; driv; driv = driv->next) {\n\t\tseq_printf(m, \"%s:\\n\", driv->driver_name);\n\t\tfor (i = 0; i < driv->num_names; i++)\n\t\t\tseq_printf(m, \" %s\\n\",\n\t\t\t\t   *(char **)((char *)driv->board_name +\n\t\t\t\t\t      i * driv->offset));\n\n\t\tif (!driv->num_names)\n\t\t\tseq_printf(m, \" %s\\n\", driv->driver_name);\n\t}\n\tmutex_unlock(&comedi_drivers_list_lock);\n\n\treturn 0;\n}\n\nvoid __init comedi_proc_init(void)\n{\n\tif (!proc_create_single(\"comedi\", 0444, NULL, comedi_read))\n\t\tpr_warn(\"comedi: unable to create proc entry\\n\");\n}\n\nvoid comedi_proc_cleanup(void)\n{\n\tremove_proc_entry(\"comedi\", NULL);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

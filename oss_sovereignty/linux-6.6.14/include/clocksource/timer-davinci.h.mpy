@@ -1,0 +1,9 @@
+{
+  "module_name": "timer-davinci.h",
+  "hash_id": "01dc2134487b9d60edc463a3f494d571dc7039bfdc2e85ebf9fbc729c10daa18",
+  "original_prompt": "Ingested from linux-6.6.14/include/clocksource/timer-davinci.h",
+  "human_readable_source": " \n \n\n#ifndef __TIMER_DAVINCI_H__\n#define __TIMER_DAVINCI_H__\n\n#include <linux/clk.h>\n#include <linux/ioport.h>\n\nenum {\n\tDAVINCI_TIMER_CLOCKEVENT_IRQ,\n\tDAVINCI_TIMER_CLOCKSOURCE_IRQ,\n\tDAVINCI_TIMER_NUM_IRQS,\n};\n\n \nstruct davinci_timer_cfg {\n\tstruct resource reg;\n\tstruct resource irq[DAVINCI_TIMER_NUM_IRQS];\n\tunsigned int cmp_off;\n};\n\nint __init davinci_timer_register(struct clk *clk,\n\t\t\t\t  const struct davinci_timer_cfg *data);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

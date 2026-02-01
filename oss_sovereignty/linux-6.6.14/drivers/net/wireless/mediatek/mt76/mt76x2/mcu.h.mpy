@@ -1,0 +1,9 @@
+{
+  "module_name": "mcu.h",
+  "hash_id": "2107ebc3fe99d2582d14fca06ba57105d66dc8bb34a90eda076c80d06b9cb12e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/mediatek/mt76/mt76x2/mcu.h",
+  "human_readable_source": " \n \n\n#ifndef __MT76x2_MCU_H\n#define __MT76x2_MCU_H\n\n#include \"../mt76x02_mcu.h\"\n\n \n#define MT_MCU_CPU_CTL\t\t\t0x0704\n#define MT_MCU_CLOCK_CTL\t\t0x0708\n#define MT_MCU_PCIE_REMAP_BASE1\t\t0x0740\n#define MT_MCU_PCIE_REMAP_BASE2\t\t0x0744\n#define MT_MCU_PCIE_REMAP_BASE3\t\t0x0748\n\n#define MT_MCU_ROM_PATCH_OFFSET\t\t0x80000\n#define MT_MCU_ROM_PATCH_ADDR\t\t0x90000\n\n#define MT_MCU_ILM_OFFSET\t\t0x80000\n\n#define MT_MCU_DLM_OFFSET\t\t0x100000\n#define MT_MCU_DLM_ADDR\t\t\t0x90000\n#define MT_MCU_DLM_ADDR_E3\t\t0x90800\n\nenum mcu_calibration {\n\tMCU_CAL_R = 1,\n\tMCU_CAL_TEMP_SENSOR,\n\tMCU_CAL_RXDCOC,\n\tMCU_CAL_RC,\n\tMCU_CAL_SX_LOGEN,\n\tMCU_CAL_LC,\n\tMCU_CAL_TX_LOFT,\n\tMCU_CAL_TXIQ,\n\tMCU_CAL_TSSI,\n\tMCU_CAL_TSSI_COMP,\n\tMCU_CAL_DPD,\n\tMCU_CAL_RXIQC_FI,\n\tMCU_CAL_RXIQC_FD,\n\tMCU_CAL_PWRON,\n\tMCU_CAL_TX_SHAPING,\n};\n\nenum mt76x2_mcu_cr_mode {\n\tMT_RF_CR,\n\tMT_BBP_CR,\n\tMT_RF_BBP_CR,\n\tMT_HL_TEMP_CR_UPDATE,\n};\n\nstruct mt76x2_tssi_comp {\n\tu8 pa_mode;\n\tu8 cal_mode;\n\tu16 pad;\n\n\tu8 slope0;\n\tu8 slope1;\n\tu8 offset0;\n\tu8 offset1;\n} __packed __aligned(4);\n\nint mt76x2_mcu_tssi_comp(struct mt76x02_dev *dev,\n\t\t\t struct mt76x2_tssi_comp *tssi_data);\nint mt76x2_mcu_init_gain(struct mt76x02_dev *dev, u8 channel, u32 gain,\n\t\t\t bool force);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

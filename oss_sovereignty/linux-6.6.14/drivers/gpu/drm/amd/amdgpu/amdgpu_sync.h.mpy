@@ -1,0 +1,9 @@
+{
+  "module_name": "amdgpu_sync.h",
+  "hash_id": "519a2e757cf7535216d07be53bb442246ff2bce4c10870ee74af8b1f79be097d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/amdgpu/amdgpu_sync.h",
+  "human_readable_source": " \n#ifndef __AMDGPU_SYNC_H__\n#define __AMDGPU_SYNC_H__\n\n#include <linux/hashtable.h>\n\nstruct dma_fence;\nstruct dma_resv;\nstruct amdgpu_device;\nstruct amdgpu_ring;\nstruct amdgpu_job;\n\nenum amdgpu_sync_mode {\n\tAMDGPU_SYNC_ALWAYS,\n\tAMDGPU_SYNC_NE_OWNER,\n\tAMDGPU_SYNC_EQ_OWNER,\n\tAMDGPU_SYNC_EXPLICIT\n};\n\n \nstruct amdgpu_sync {\n\tDECLARE_HASHTABLE(fences, 4);\n};\n\nvoid amdgpu_sync_create(struct amdgpu_sync *sync);\nint amdgpu_sync_fence(struct amdgpu_sync *sync, struct dma_fence *f);\nint amdgpu_sync_resv(struct amdgpu_device *adev, struct amdgpu_sync *sync,\n\t\t     struct dma_resv *resv, enum amdgpu_sync_mode mode,\n\t\t     void *owner);\nstruct dma_fence *amdgpu_sync_peek_fence(struct amdgpu_sync *sync,\n\t\t\t\t     struct amdgpu_ring *ring);\nstruct dma_fence *amdgpu_sync_get_fence(struct amdgpu_sync *sync);\nint amdgpu_sync_clone(struct amdgpu_sync *source, struct amdgpu_sync *clone);\nint amdgpu_sync_push_to_job(struct amdgpu_sync *sync, struct amdgpu_job *job);\nint amdgpu_sync_wait(struct amdgpu_sync *sync, bool intr);\nvoid amdgpu_sync_free(struct amdgpu_sync *sync);\nint amdgpu_sync_init(void);\nvoid amdgpu_sync_fini(void);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

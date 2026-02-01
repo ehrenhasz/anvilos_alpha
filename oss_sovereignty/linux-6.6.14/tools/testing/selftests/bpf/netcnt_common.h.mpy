@@ -1,0 +1,9 @@
+{
+  "module_name": "netcnt_common.h",
+  "hash_id": "f2e6a9a320de26bfd9f3750e6128afe2ab909cc9c368a82cd8c93c77081fd49b",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/netcnt_common.h",
+  "human_readable_source": "\n#ifndef __NETCNT_COMMON_H\n#define __NETCNT_COMMON_H\n\n#include <linux/types.h>\n\n#define MAX_PERCPU_PACKETS 32\n\n \n#define SIZEOF_BPF_LOCAL_STORAGE_ELEM\t\t768\n\n \n#define BPF_LOCAL_STORAGE_MAX_VALUE_SIZE\t(0xFFFF - \\\n\t\t\t\t\t\t SIZEOF_BPF_LOCAL_STORAGE_ELEM)\n\n#define PCPU_MIN_UNIT_SIZE\t\t\t32768\n\nunion percpu_net_cnt {\n\tstruct {\n\t\t__u64 packets;\n\t\t__u64 bytes;\n\n\t\t__u64 prev_ts;\n\n\t\t__u64 prev_packets;\n\t\t__u64 prev_bytes;\n\t};\n\t__u8 data[PCPU_MIN_UNIT_SIZE];\n};\n\nunion net_cnt {\n\tstruct {\n\t\t__u64 packets;\n\t\t__u64 bytes;\n\t};\n\t__u8 data[BPF_LOCAL_STORAGE_MAX_VALUE_SIZE];\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

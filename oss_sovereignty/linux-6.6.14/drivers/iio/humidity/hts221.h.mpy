@@ -1,0 +1,9 @@
+{
+  "module_name": "hts221.h",
+  "hash_id": "9ee10246dd91719a587a4cb77ed10bdf3b7b944d6a84fee0061379724c22e041",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/iio/humidity/hts221.h",
+  "human_readable_source": " \n \n\n#ifndef HTS221_H\n#define HTS221_H\n\n#define HTS221_DEV_NAME\t\t\"hts221\"\n\n#include <linux/iio/iio.h>\n\nenum hts221_sensor_type {\n\tHTS221_SENSOR_H,\n\tHTS221_SENSOR_T,\n\tHTS221_SENSOR_MAX,\n};\n\nstruct hts221_sensor {\n\tu8 cur_avg_idx;\n\tint slope, b_gen;\n};\n\nstruct hts221_hw {\n\tconst char *name;\n\tstruct device *dev;\n\tstruct regmap *regmap;\n\n\tstruct iio_trigger *trig;\n\tint irq;\n\n\tstruct hts221_sensor sensors[HTS221_SENSOR_MAX];\n\n\tbool enabled;\n\tu8 odr;\n\t \n\tstruct {\n\t\t__le16 channels[2];\n\t\ts64 ts __aligned(8);\n\t} scan;\n};\n\nextern const struct dev_pm_ops hts221_pm_ops;\n\nint hts221_probe(struct device *dev, int irq, const char *name,\n\t\t struct regmap *regmap);\nint hts221_set_enable(struct hts221_hw *hw, bool enable);\nint hts221_allocate_buffers(struct iio_dev *iio_dev);\nint hts221_allocate_trigger(struct iio_dev *iio_dev);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

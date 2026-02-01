@@ -1,0 +1,9 @@
+{
+  "module_name": "privring.h",
+  "hash_id": "49c98a33872f81f21477e7a2f1d145851a0dec130847f2fa6e901077c9a5079e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/include/nvkm/subdev/privring.h",
+  "human_readable_source": " \n#ifndef __NVKM_PRIVRING_H__\n#define __NVKM_PRIVRING_H__\n#include <core/subdev.h>\n\nint gf100_privring_new(struct nvkm_device *, enum nvkm_subdev_type, int inst, struct nvkm_subdev **);\nint gf117_privring_new(struct nvkm_device *, enum nvkm_subdev_type, int inst, struct nvkm_subdev **);\nint gk104_privring_new(struct nvkm_device *, enum nvkm_subdev_type, int inst, struct nvkm_subdev **);\nint gk20a_privring_new(struct nvkm_device *, enum nvkm_subdev_type, int inst, struct nvkm_subdev **);\nint gm200_privring_new(struct nvkm_device *, enum nvkm_subdev_type, int inst, struct nvkm_subdev **);\nint gp10b_privring_new(struct nvkm_device *, enum nvkm_subdev_type, int inst, struct nvkm_subdev **);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

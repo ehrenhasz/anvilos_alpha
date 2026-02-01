@@ -1,0 +1,9 @@
+{
+  "module_name": "df_1_7_default.h",
+  "hash_id": "b79dbf773bd2dc8022006b1b463e294ed0b796b1ba5b8362cf9a22af76f17a33",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/include/asic_reg/df/df_1_7_default.h",
+  "human_readable_source": " \n#ifndef _df_1_7_DEFAULT_HEADER\n#define _df_1_7_DEFAULT_HEADER\n\n#define mmFabricConfigAccessControl_DEFAULT\t\t\t\t\t\t0x00000000\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

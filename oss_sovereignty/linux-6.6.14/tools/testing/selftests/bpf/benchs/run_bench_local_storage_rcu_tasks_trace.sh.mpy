@@ -1,0 +1,9 @@
+{
+  "module_name": "run_bench_local_storage_rcu_tasks_trace.sh",
+  "hash_id": "b2be0ab6de113c3ed2e5e3f92b4ffd68d87efd465e6959f2d2bc5f42dfb93760",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/benchs/run_bench_local_storage_rcu_tasks_trace.sh",
+  "human_readable_source": "#!/bin/bash\n# SPDX-License-Identifier: GPL-2.0\n\nkthread_pid=`pgrep rcu_tasks_trace_kthread`\n\nif [ -z $kthread_pid ]; then\n\techo \"error: Couldn't find rcu_tasks_trace_kthread\"\n\texit 1\nfi\n\n./bench --nr_procs 15000 --kthread_pid $kthread_pid -d 600 --quiet local-storage-tasks-trace\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

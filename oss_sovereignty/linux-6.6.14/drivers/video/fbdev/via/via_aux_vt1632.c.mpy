@@ -1,0 +1,9 @@
+{
+  "module_name": "via_aux_vt1632.c",
+  "hash_id": "07bcdb67664fbf861c04c9640316108ab1b38de057f3fb21c2d76b081470cc05",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/video/fbdev/via/via_aux_vt1632.c",
+  "human_readable_source": "\n \n \n\n#include <linux/slab.h>\n#include \"via_aux.h\"\n\n\nstatic const char *name = \"VT1632 DVI Transmitter\";\n\n\nstatic void probe(struct via_aux_bus *bus, u8 addr)\n{\n\tstruct via_aux_drv drv = {\n\t\t.bus\t=\tbus,\n\t\t.addr\t=\taddr,\n\t\t.name\t=\tname};\n\t \n\tconst u8 id[] = {0x06, 0x11, 0x92, 0x31}, len = ARRAY_SIZE(id);\n\tu8 tmp[ARRAY_SIZE(id)];\n\n\tif (!via_aux_read(&drv, 0x00, tmp, len) || memcmp(id, tmp, len))\n\t\treturn;\n\n\tprintk(KERN_INFO \"viafb: Found %s at address 0x%x\\n\", name, addr);\n\tvia_aux_add(&drv);\n}\n\nvoid via_aux_vt1632_probe(struct via_aux_bus *bus)\n{\n\tu8 i;\n\n\tfor (i = 0x08; i <= 0x0F; i++)\n\t\tprobe(bus, i);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

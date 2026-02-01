@@ -1,0 +1,9 @@
+{
+  "module_name": "btitest.h",
+  "hash_id": "e381b3b23aed2d8811c8650ed93142cceb59395063dcaaaa321a42b3b7613f0a",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/arm64/bti/btitest.h",
+  "human_readable_source": " \n \n\n#ifndef BTITEST_H\n#define BTITEST_H\n\n \nvoid call_using_br_x0(void (*)(void));\nvoid call_using_br_x16(void (*)(void));\nvoid call_using_blr(void (*)(void));\n\n \nvoid nohint_func(void);\nvoid bti_none_func(void);\nvoid bti_c_func(void);\nvoid bti_j_func(void);\nvoid bti_jc_func(void);\nvoid paciasp_func(void);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

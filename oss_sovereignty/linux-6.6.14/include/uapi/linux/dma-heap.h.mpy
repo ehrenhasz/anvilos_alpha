@@ -1,0 +1,9 @@
+{
+  "module_name": "dma-heap.h",
+  "hash_id": "da9c2864c5d192a72b4e3a6736b481a8beb0d3988da155554db6983bcc22a0e2",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/dma-heap.h",
+  "human_readable_source": " \n \n#ifndef _UAPI_LINUX_DMABUF_POOL_H\n#define _UAPI_LINUX_DMABUF_POOL_H\n\n#include <linux/ioctl.h>\n#include <linux/types.h>\n\n \n\n \n#define DMA_HEAP_VALID_FD_FLAGS (O_CLOEXEC | O_ACCMODE)\n\n \n#define DMA_HEAP_VALID_HEAP_FLAGS (0)\n\n \nstruct dma_heap_allocation_data {\n\t__u64 len;\n\t__u32 fd;\n\t__u32 fd_flags;\n\t__u64 heap_flags;\n};\n\n#define DMA_HEAP_IOC_MAGIC\t\t'H'\n\n \n#define DMA_HEAP_IOCTL_ALLOC\t_IOWR(DMA_HEAP_IOC_MAGIC, 0x0,\\\n\t\t\t\t      struct dma_heap_allocation_data)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

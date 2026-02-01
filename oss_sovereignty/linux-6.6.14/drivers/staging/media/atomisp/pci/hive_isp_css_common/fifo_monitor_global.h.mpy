@@ -1,0 +1,9 @@
+{
+  "module_name": "fifo_monitor_global.h",
+  "hash_id": "fd1a33e3872f3b77b5cc9ddfdfd285d2cacafb4aaa7b7be2bd94e403b51e5667",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/hive_isp_css_common/fifo_monitor_global.h",
+  "human_readable_source": " \n \n\n#ifndef __FIFO_MONITOR_GLOBAL_H_INCLUDED__\n#define __FIFO_MONITOR_GLOBAL_H_INCLUDED__\n\n#define IS_FIFO_MONITOR_VERSION_2\n\n \n#define HIVE_ISP_CSS_STREAM_SWITCH_ISP       0\n#define HIVE_ISP_CSS_STREAM_SWITCH_SP        1\n#define HIVE_ISP_CSS_STREAM_SWITCH_NONE      2\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

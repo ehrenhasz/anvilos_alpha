@@ -1,0 +1,9 @@
+{
+  "module_name": "guc_communication_ctb_abi.h",
+  "hash_id": "e3789555f81fde3d397f5b9dcbb0c8f5ef8082039ad284a9c46e6fdb4966ed11",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/gt/uc/abi/guc_communication_ctb_abi.h",
+  "human_readable_source": " \n \n\n#ifndef _ABI_GUC_COMMUNICATION_CTB_ABI_H\n#define _ABI_GUC_COMMUNICATION_CTB_ABI_H\n\n#include <linux/types.h>\n#include <linux/build_bug.h>\n\n#include \"guc_messages_abi.h\"\n\n \n\n \n\nstruct guc_ct_buffer_desc {\n\tu32 head;\n\tu32 tail;\n\tu32 status;\n#define GUC_CTB_STATUS_NO_ERROR\t\t\t\t0\n#define GUC_CTB_STATUS_OVERFLOW\t\t\t\tBIT(0)\n#define GUC_CTB_STATUS_UNDERFLOW\t\t\tBIT(1)\n#define GUC_CTB_STATUS_MISMATCH\t\t\t\tBIT(2)\n#define GUC_CTB_STATUS_UNUSED\t\t\t\tBIT(3)\n\tu32 reserved[13];\n} __packed;\nstatic_assert(sizeof(struct guc_ct_buffer_desc) == 64);\n\n \n\n#define GUC_CTB_HDR_LEN\t\t\t\t1u\n#define GUC_CTB_MSG_MIN_LEN\t\t\tGUC_CTB_HDR_LEN\n#define GUC_CTB_MSG_MAX_LEN\t\t\t256u\n#define GUC_CTB_MSG_0_FENCE\t\t\t(0xffffU << 16)\n#define GUC_CTB_MSG_0_FORMAT\t\t\t(0xf << 12)\n#define   GUC_CTB_FORMAT_HXG\t\t\t0u\n#define GUC_CTB_MSG_0_RESERVED\t\t\t(0xf << 8)\n#define GUC_CTB_MSG_0_NUM_DWORDS\t\t(0xff << 0)\n\n \n\n#define GUC_CTB_HXG_MSG_MIN_LEN\t\t(GUC_CTB_MSG_MIN_LEN + GUC_HXG_MSG_MIN_LEN)\n#define GUC_CTB_HXG_MSG_MAX_LEN\t\tGUC_CTB_MSG_MAX_LEN\n\n \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

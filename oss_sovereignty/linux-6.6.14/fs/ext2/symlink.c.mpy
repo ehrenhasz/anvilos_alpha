@@ -1,0 +1,9 @@
+{
+  "module_name": "symlink.c",
+  "hash_id": "3b38f45a6a872a605780cdcdc5822baa0d33a5d7693f5e9783d7ef69671c6745",
+  "original_prompt": "Ingested from linux-6.6.14/fs/ext2/symlink.c",
+  "human_readable_source": "\n \n\n#include \"ext2.h\"\n#include \"xattr.h\"\n\nconst struct inode_operations ext2_symlink_inode_operations = {\n\t.get_link\t= page_get_link,\n\t.getattr\t= ext2_getattr,\n\t.setattr\t= ext2_setattr,\n\t.listxattr\t= ext2_listxattr,\n};\n \nconst struct inode_operations ext2_fast_symlink_inode_operations = {\n\t.get_link\t= simple_get_link,\n\t.getattr\t= ext2_getattr,\n\t.setattr\t= ext2_setattr,\n\t.listxattr\t= ext2_listxattr,\n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

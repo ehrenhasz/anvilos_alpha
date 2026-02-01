@@ -1,0 +1,9 @@
+{
+  "module_name": "printf-frexpl.c",
+  "hash_id": "c00e6e875b69c77a47cf25fb2f7decb86c6cb025c50b849c876e0d27282729d3",
+  "original_prompt": "Ingested from coreutils-9.4/lib/printf-frexpl.c",
+  "human_readable_source": " \n# include \"printf-frexpl.h\"\n\n# include \"printf-frexp.h\"\n\nlong double\nprintf_frexpl (long double x, int *expptr)\n{\n  return printf_frexp (x, expptr);\n}\n\n#else\n\n# define USE_LONG_DOUBLE\n# include \"printf-frexp.c\"\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

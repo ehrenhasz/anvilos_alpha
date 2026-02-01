@@ -1,0 +1,9 @@
+{
+  "module_name": "qcom,turingcc-qcs404.h",
+  "hash_id": "5f76dbf58883ba888837a4aed121eb5a3035a6d8c4638bd56ce125252fecbbe6",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/clock/qcom,turingcc-qcs404.h",
+  "human_readable_source": " \n \n\n#ifndef _DT_BINDINGS_CLK_TURING_QCS404_H\n#define _DT_BINDINGS_CLK_TURING_QCS404_H\n\n#define TURING_Q6SS_Q6_AXIM_CLK\t\t0\n#define TURING_Q6SS_AHBM_AON_CLK\t1\n#define TURING_WRAPPER_AON_CLK\t\t2\n#define TURING_Q6SS_AHBS_AON_CLK\t3\n#define TURING_WRAPPER_QOS_AHBS_AON_CLK\t4\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

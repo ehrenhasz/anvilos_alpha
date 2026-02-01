@@ -1,0 +1,9 @@
+{
+  "module_name": "dcn321_resource.h",
+  "hash_id": "6e67ffabf0d15c6019482befb73cedc48f6fffaa55ecb57315214a1aaf1e98b3",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/dc/dcn321/dcn321_resource.h",
+  "human_readable_source": " \n\n#ifndef _DCN321_RESOURCE_H_\n#define _DCN321_RESOURCE_H_\n\n#include \"core_types.h\"\n\n#define TO_DCN321_RES_POOL(pool)\\\n\tcontainer_of(pool, struct dcn321_resource_pool, base)\n\nextern struct _vcs_dpi_ip_params_st dcn3_21_ip;\nextern struct _vcs_dpi_soc_bounding_box_st dcn3_21_soc;\n\nstruct dcn321_resource_pool {\n\tstruct resource_pool base;\n};\n\nstruct resource_pool *dcn321_create_resource_pool(\n\t\tconst struct dc_init_data *init_data,\n\t\tstruct dc *dc);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

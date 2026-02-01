@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "be4a890b8cea2df9282c2667826a909b2b09be81029569a9d53408b2686f1255",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/arch/sparc/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nifndef NO_DWARF\nPERF_HAVE_DWARF_REGS := 1\nendif\n\nPERF_HAVE_JITDUMP := 1\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

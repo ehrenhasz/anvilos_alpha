@@ -1,0 +1,9 @@
+{
+  "module_name": "dcn10_init.h",
+  "hash_id": "8dd0ffaa2bff4edae188c3dbbae4ba9e79c2c5ec9a72b44f971fdf448a12d83b",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/dc/dcn10/dcn10_init.h",
+  "human_readable_source": " \n\n#ifndef __DC_DCN10_INIT_H__\n#define __DC_DCN10_INIT_H__\n\nstruct dc;\n\nvoid dcn10_hw_sequencer_construct(struct dc *dc);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

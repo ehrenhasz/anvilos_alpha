@@ -1,0 +1,9 @@
+{
+  "module_name": "nftl.h",
+  "hash_id": "91a19aff33ab05aa1517402f00d03e80c9a6b3795134d3b1a15e1a7e0c9fe759",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/mtd/nftl.h",
+  "human_readable_source": " \n \n\n#ifndef __MTD_NFTL_H__\n#define __MTD_NFTL_H__\n\n#include <linux/mtd/mtd.h>\n#include <linux/mtd/blktrans.h>\n\n#include <mtd/nftl-user.h>\n\n \n#define BLOCK_NIL          0xffff  \n#define BLOCK_FREE         0xfffe  \n#define BLOCK_NOTEXPLORED  0xfffd  \n#define BLOCK_RESERVED     0xfffc  \n\nstruct NFTLrecord {\n\tstruct mtd_blktrans_dev mbd;\n\t__u16 MediaUnit, SpareMediaUnit;\n\t__u32 EraseSize;\n\tstruct NFTLMediaHeader MediaHdr;\n\tint usecount;\n\tunsigned char heads;\n\tunsigned char sectors;\n\tunsigned short cylinders;\n\t__u16 numvunits;\n\t__u16 lastEUN;                   \n\t__u16 numfreeEUNs;\n\t__u16 LastFreeEUN; \t\t \n\tint head,sect,cyl;\n\t__u16 *EUNtable; \t\t \n\t__u16 *ReplUnitTable; \t\t \n        unsigned int nb_blocks;\t\t \n        unsigned int nb_boot_blocks;\t \n        struct erase_info instr;\n};\n\nint NFTL_mount(struct NFTLrecord *s);\nint NFTL_formatblock(struct NFTLrecord *s, int block);\n\nint nftl_read_oob(struct mtd_info *mtd, loff_t offs, size_t len,\n\t\t  size_t *retlen, uint8_t *buf);\nint nftl_write_oob(struct mtd_info *mtd, loff_t offs, size_t len,\n\t\t   size_t *retlen, uint8_t *buf);\n\n#ifndef NFTL_MAJOR\n#define NFTL_MAJOR 93\n#endif\n\n#define MAX_NFTLS 16\n#define MAX_SECTORS_PER_UNIT 64\n#define NFTL_PARTN_BITS 4\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

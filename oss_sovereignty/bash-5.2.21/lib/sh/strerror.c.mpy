@@ -1,0 +1,9 @@
+{
+  "module_name": "strerror.c",
+  "hash_id": "9cbb93ae613807e5a92978bb66149651cd18f8e5135a892ae82212579ce1ec35",
+  "original_prompt": "Ingested from bash-5.2.21/lib/sh/strerror.c",
+  "human_readable_source": " \n\n \n   \n#include <config.h>\n\n#if !defined (HAVE_STRERROR)\n\n#include <bashtypes.h>\n#if defined (HAVE_SYS_PARAM_H)\n#  include <sys/param.h>\n#endif\n\n#if defined (HAVE_UNISTD_H)\n#  include <unistd.h>\n#endif\n\n#include <stdio.h>\n#include <errno.h>\n\n#include <shell.h>\n\n#if !defined (errno)\nextern int errno;\n#endif  \n\n \n#if defined (strerror)\n#  undef strerror\n#endif\n\nstatic char *errbase = \"Unknown system error \";\n\nchar *\nstrerror (e)\n     int e;\n{\n  static char emsg[40];\n#if defined (HAVE_SYS_ERRLIST)\n  extern int sys_nerr;\n  extern char *sys_errlist[];\n\n  if (e > 0 && e < sys_nerr)\n    return (sys_errlist[e]);\n  else\n#endif  \n    {\n      char *z;\n\n      z = itos (e);\n      strcpy (emsg, errbase);\n      strcat (emsg, z);\n      free (z);\n      return (&emsg[0]);\n    }\n}\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

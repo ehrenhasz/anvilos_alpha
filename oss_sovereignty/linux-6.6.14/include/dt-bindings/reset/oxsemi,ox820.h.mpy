@@ -1,0 +1,9 @@
+{
+  "module_name": "oxsemi,ox820.h",
+  "hash_id": "1ae2361c05f9d5ffe9815298f64c35443c6ed44d90821defce377e043e52d78e",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/reset/oxsemi,ox820.h",
+  "human_readable_source": " \n \n\n#ifndef DT_RESET_OXSEMI_OX820_H\n#define DT_RESET_OXSEMI_OX820_H\n\n#define RESET_SCU\t0\n#define RESET_LEON\t1\n#define RESET_ARM0\t2\n#define RESET_ARM1\t3\n#define RESET_USBHS\t4\n#define RESET_USBPHYA\t5\n#define RESET_MAC\t6\n#define RESET_PCIEA\t7\n#define RESET_SGDMA\t8\n#define RESET_CIPHER\t9\n#define RESET_DDR\t10\n#define RESET_SATA\t11\n#define RESET_SATA_LINK\t12\n#define RESET_SATA_PHY\t13\n#define RESET_PCIEPHY\t14\n#define RESET_NAND\t15\n#define RESET_GPIO\t16\n#define RESET_UART1\t17\n#define RESET_UART2\t18\n#define RESET_MISC\t19\n#define RESET_I2S\t20\n#define RESET_SD\t21\n#define RESET_MAC_2\t22\n#define RESET_PCIEB\t23\n#define RESET_VIDEO\t24\n#define RESET_DDR_PHY\t25\n#define RESET_USBPHYB\t26\n#define RESET_USBDEV\t27\n \n#define RESET_ARMDBG\t29\n#define RESET_PLLA\t30\n#define RESET_PLLB\t31\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

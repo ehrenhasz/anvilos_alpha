@@ -1,0 +1,9 @@
+{
+  "module_name": "sch_tbf_prio.sh",
+  "hash_id": "aa91a3f44ac51d76dea8c3025d77bb8ed4e45e5f4a44bc3d4bac6c479f15f692",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/drivers/net/mlxsw/sch_tbf_prio.sh",
+  "human_readable_source": "#!/bin/bash\n# SPDX-License-Identifier: GPL-2.0\n\nsch_tbf_pre_hook()\n{\n\tbail_on_lldpad \"configure DCB\" \"configure Qdiscs\"\n}\n\nlib_dir=$(dirname $0)/../../../net/forwarding\nTCFLAGS=skip_sw\nsource $lib_dir/sch_tbf_prio.sh\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

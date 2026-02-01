@@ -1,0 +1,9 @@
+{
+  "module_name": "example.c",
+  "hash_id": "25d3e258f5f92b7138ed229bc2dfaae9878f971321d7c32c33d5f0268d30bf6f",
+  "original_prompt": "Ingested from linux-6.6.14/samples/user_events/example.c",
+  "human_readable_source": "\n \n\n#include <errno.h>\n#include <sys/ioctl.h>\n#include <sys/mman.h>\n#include <sys/uio.h>\n#include <fcntl.h>\n#include <stdio.h>\n#include <unistd.h>\n#include <linux/user_events.h>\n\nconst char *data_file = \"/sys/kernel/tracing/user_events_data\";\nint enabled = 0;\n\nstatic int event_reg(int fd, const char *command, int *write, int *enabled)\n{\n\tstruct user_reg reg = {0};\n\n\treg.size = sizeof(reg);\n\treg.enable_bit = 31;\n\treg.enable_size = sizeof(*enabled);\n\treg.enable_addr = (__u64)enabled;\n\treg.name_args = (__u64)command;\n\n\tif (ioctl(fd, DIAG_IOCSREG, &reg) == -1)\n\t\treturn -1;\n\n\t*write = reg.write_index;\n\n\treturn 0;\n}\n\nint main(int argc, char **argv)\n{\n\tint data_fd, write;\n\tstruct iovec io[2];\n\t__u32 count = 0;\n\n\tdata_fd = open(data_file, O_RDWR);\n\n\tif (event_reg(data_fd, \"test u32 count\", &write, &enabled) == -1)\n\t\treturn errno;\n\n\t \n\tio[0].iov_base = &write;\n\tio[0].iov_len = sizeof(write);\n\tio[1].iov_base = &count;\n\tio[1].iov_len = sizeof(count);\nask:\n\tprintf(\"Press enter to check status...\\n\");\n\tgetchar();\n\n\t \n\tif (enabled) {\n\t\t \n\t\twritev(data_fd, (const struct iovec *)io, 2);\n\n\t\t \n\t\tcount++;\n\n\t\tprintf(\"Something was attached, wrote data\\n\");\n\t}\n\n\tgoto ask;\n\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

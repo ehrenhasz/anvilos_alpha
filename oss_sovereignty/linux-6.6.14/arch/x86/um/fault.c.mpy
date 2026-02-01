@@ -1,0 +1,9 @@
+{
+  "module_name": "fault.c",
+  "hash_id": "a17a96e2744261edf9d69917b00b5cfcbf5ed99bd59cc7cb76a70275780ca65f",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/um/fault.c",
+  "human_readable_source": " \n\n#include <sysdep/ptrace.h>\n\n \nstruct exception_table_entry\n{\n\tunsigned long insn;\n\tunsigned long fixup;\n};\n\nconst struct exception_table_entry *search_exception_tables(unsigned long add);\n\n \nint arch_fixup(unsigned long address, struct uml_pt_regs *regs)\n{\n\tconst struct exception_table_entry *fixup;\n\n\tfixup = search_exception_tables(address);\n\tif (fixup) {\n\t\tUPT_IP(regs) = fixup->fixup;\n\t\treturn 1;\n\t}\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

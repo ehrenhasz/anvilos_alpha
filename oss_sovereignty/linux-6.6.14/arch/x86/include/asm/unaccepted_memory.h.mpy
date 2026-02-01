@@ -1,0 +1,9 @@
+{
+  "module_name": "unaccepted_memory.h",
+  "hash_id": "d8e768e4018ce71f72dd8aa86a55bee506b18bce97bc8ce8b6af8498c4d2fd9b",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/include/asm/unaccepted_memory.h",
+  "human_readable_source": "#ifndef _ASM_X86_UNACCEPTED_MEMORY_H\n#define _ASM_X86_UNACCEPTED_MEMORY_H\n\n#include <linux/efi.h>\n#include <asm/tdx.h>\n#include <asm/sev.h>\n\nstatic inline void arch_accept_memory(phys_addr_t start, phys_addr_t end)\n{\n\t \n\tif (cpu_feature_enabled(X86_FEATURE_TDX_GUEST)) {\n\t\tif (!tdx_accept_memory(start, end))\n\t\t\tpanic(\"TDX: Failed to accept memory\\n\");\n\t} else if (cc_platform_has(CC_ATTR_GUEST_SEV_SNP)) {\n\t\tsnp_accept_memory(start, end);\n\t} else {\n\t\tpanic(\"Cannot accept memory: unknown platform\\n\");\n\t}\n}\n\nstatic inline struct efi_unaccepted_memory *efi_get_unaccepted_table(void)\n{\n\tif (efi.unaccepted == EFI_INVALID_TABLE_ADDR)\n\t\treturn NULL;\n\treturn __va(efi.unaccepted);\n}\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

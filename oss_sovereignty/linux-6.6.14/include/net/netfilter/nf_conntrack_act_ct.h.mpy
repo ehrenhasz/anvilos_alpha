@@ -1,0 +1,9 @@
+{
+  "module_name": "nf_conntrack_act_ct.h",
+  "hash_id": "ebea93d5dbf5d951c7acc03ee9b7f448bdc534dcbc8cfebb302c7c75be7dff4c",
+  "original_prompt": "Ingested from linux-6.6.14/include/net/netfilter/nf_conntrack_act_ct.h",
+  "human_readable_source": " \n\n#ifndef _NF_CONNTRACK_ACT_CT_H\n#define _NF_CONNTRACK_ACT_CT_H\n\n#include <net/netfilter/nf_conntrack.h>\n#include <linux/netfilter/nf_conntrack_common.h>\n#include <net/netfilter/nf_conntrack_extend.h>\n\nstruct nf_conn_act_ct_ext {\n\tint ifindex[IP_CT_DIR_MAX];\n};\n\nstatic inline struct nf_conn_act_ct_ext *nf_conn_act_ct_ext_find(const struct nf_conn *ct)\n{\n#if IS_ENABLED(CONFIG_NET_ACT_CT)\n\treturn nf_ct_ext_find(ct, NF_CT_EXT_ACT_CT);\n#else\n\treturn NULL;\n#endif\n}\n\nstatic inline void nf_conn_act_ct_ext_fill(struct sk_buff *skb, struct nf_conn *ct,\n\t\t\t\t\t   enum ip_conntrack_info ctinfo)\n{\n#if IS_ENABLED(CONFIG_NET_ACT_CT)\n\tstruct nf_conn_act_ct_ext *act_ct_ext;\n\n\tact_ct_ext = nf_conn_act_ct_ext_find(ct);\n\tif (dev_net(skb->dev) == &init_net && act_ct_ext)\n\t\tact_ct_ext->ifindex[CTINFO2DIR(ctinfo)] = skb->dev->ifindex;\n#endif\n}\n\nstatic inline struct\nnf_conn_act_ct_ext *nf_conn_act_ct_ext_add(struct sk_buff *skb,\n\t\t\t\t\t   struct nf_conn *ct,\n\t\t\t\t\t   enum ip_conntrack_info ctinfo)\n{\n#if IS_ENABLED(CONFIG_NET_ACT_CT)\n\tstruct nf_conn_act_ct_ext *act_ct = nf_ct_ext_find(ct, NF_CT_EXT_ACT_CT);\n\n\tif (act_ct)\n\t\treturn act_ct;\n\n\tact_ct = nf_ct_ext_add(ct, NF_CT_EXT_ACT_CT, GFP_ATOMIC);\n\tnf_conn_act_ct_ext_fill(skb, ct, ctinfo);\n\treturn act_ct;\n#else\n\treturn NULL;\n#endif\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

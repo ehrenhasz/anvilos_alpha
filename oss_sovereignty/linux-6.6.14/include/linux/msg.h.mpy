@@ -1,0 +1,9 @@
+{
+  "module_name": "msg.h",
+  "hash_id": "e21ec339cc00a7d631171e910ca54429ce41df17bd40959c9299c258f6310262",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/msg.h",
+  "human_readable_source": " \n#ifndef _LINUX_MSG_H\n#define _LINUX_MSG_H\n\n#include <linux/list.h>\n#include <uapi/linux/msg.h>\n\n \nstruct msg_msg {\n\tstruct list_head m_list;\n\tlong m_type;\n\tsize_t m_ts;\t\t \n\tstruct msg_msgseg *next;\n\tvoid *security;\n\t \n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

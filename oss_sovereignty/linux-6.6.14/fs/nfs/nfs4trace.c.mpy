@@ -1,0 +1,9 @@
+{
+  "module_name": "nfs4trace.c",
+  "hash_id": "5fefc01041c0f6335e272840ec744981d044551a7db14e7a47ee3de8efbbc32f",
+  "original_prompt": "Ingested from linux-6.6.14/fs/nfs/nfs4trace.c",
+  "human_readable_source": "\n \n#include <linux/nfs_fs.h>\n#include \"nfs4_fs.h\"\n#include \"internal.h\"\n#include \"nfs4session.h\"\n#include \"callback.h\"\n#include \"pnfs.h\"\n\n#define CREATE_TRACE_POINTS\n#include \"nfs4trace.h\"\n\n#ifdef CONFIG_NFS_V4_1\nEXPORT_TRACEPOINT_SYMBOL_GPL(nfs4_pnfs_read);\nEXPORT_TRACEPOINT_SYMBOL_GPL(nfs4_pnfs_write);\nEXPORT_TRACEPOINT_SYMBOL_GPL(nfs4_pnfs_commit_ds);\n\nEXPORT_TRACEPOINT_SYMBOL_GPL(pnfs_mds_fallback_pg_init_read);\nEXPORT_TRACEPOINT_SYMBOL_GPL(pnfs_mds_fallback_pg_init_write);\nEXPORT_TRACEPOINT_SYMBOL_GPL(pnfs_mds_fallback_pg_get_mirror_count);\nEXPORT_TRACEPOINT_SYMBOL_GPL(pnfs_mds_fallback_read_done);\nEXPORT_TRACEPOINT_SYMBOL_GPL(pnfs_mds_fallback_write_done);\nEXPORT_TRACEPOINT_SYMBOL_GPL(pnfs_mds_fallback_read_pagelist);\nEXPORT_TRACEPOINT_SYMBOL_GPL(pnfs_mds_fallback_write_pagelist);\n\nEXPORT_TRACEPOINT_SYMBOL_GPL(ff_layout_read_error);\nEXPORT_TRACEPOINT_SYMBOL_GPL(ff_layout_write_error);\nEXPORT_TRACEPOINT_SYMBOL_GPL(ff_layout_commit_error);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "stats.h",
+  "hash_id": "8c3ed4a71a32b8d2ec371949d04445b803ecb856afd23da3dc0176e2affd30dc",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/realtek/rtlwifi/stats.h",
+  "human_readable_source": " \n \n\n#ifndef __RTL_STATS_H__\n#define __RTL_STATS_H__\n\n#define\tPHY_RSSI_SLID_WIN_MAX\t\t\t100\n#define\tPHY_LINKQUALITY_SLID_WIN_MAX\t\t20\n#define\tPHY_BEACON_RSSI_SLID_WIN_MAX\t\t10\n\n \n#define\tRX_SMOOTH_FACTOR\t\t\t20\n\nu8 rtl_query_rxpwrpercentage(s8 antpower);\nu8 rtl_evm_db_to_percentage(s8 value);\nlong rtl_signal_scale_mapping(struct ieee80211_hw *hw, long currsig);\nvoid rtl_process_phyinfo(struct ieee80211_hw *hw, u8 *buffer,\n\t\t\t struct rtl_stats *pstatus);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

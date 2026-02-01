@@ -1,0 +1,9 @@
+{
+  "module_name": "test_free_pages.c",
+  "hash_id": "ba6dbf5b1a6e3d4d3c7fa302b74b61ccfa400f0d16eab6ebf57f9b0e1dc1db42",
+  "original_prompt": "Ingested from linux-6.6.14/lib/test_free_pages.c",
+  "human_readable_source": "\n \n\n#define pr_fmt(fmt)\tKBUILD_MODNAME \": \" fmt\n\n#include <linux/gfp.h>\n#include <linux/mm.h>\n#include <linux/module.h>\n\nstatic void test_free_pages(gfp_t gfp)\n{\n\tunsigned int i;\n\n\tfor (i = 0; i < 1000 * 1000; i++) {\n\t\tunsigned long addr = __get_free_pages(gfp, 3);\n\t\tstruct page *page = virt_to_page((void *)addr);\n\n\t\t \n\t\tget_page(page);\n\t\tfree_pages(addr, 3);\n\t\tput_page(page);\n\t}\n}\n\nstatic int m_in(void)\n{\n\tpr_info(\"Testing with GFP_KERNEL\\n\");\n\ttest_free_pages(GFP_KERNEL);\n\tpr_info(\"Testing with GFP_KERNEL | __GFP_COMP\\n\");\n\ttest_free_pages(GFP_KERNEL | __GFP_COMP);\n\tpr_info(\"Test completed\\n\");\n\n\treturn 0;\n}\n\nstatic void m_ex(void)\n{\n}\n\nmodule_init(m_in);\nmodule_exit(m_ex);\nMODULE_AUTHOR(\"Matthew Wilcox <willy@infradead.org>\");\nMODULE_LICENSE(\"GPL\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

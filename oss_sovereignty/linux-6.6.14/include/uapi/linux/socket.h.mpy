@@ -1,0 +1,9 @@
+{
+  "module_name": "socket.h",
+  "hash_id": "907aa798df07806c9c66b0a0514ec462da4bcde45a1f2456c589db3fe5b46991",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/socket.h",
+  "human_readable_source": " \n#ifndef _UAPI_LINUX_SOCKET_H\n#define _UAPI_LINUX_SOCKET_H\n\n \n#define _K_SS_MAXSIZE\t128\t \n\ntypedef unsigned short __kernel_sa_family_t;\n\n \nstruct __kernel_sockaddr_storage {\n\tunion {\n\t\tstruct {\n\t\t\t__kernel_sa_family_t\tss_family;  \n\t\t\t \n\t\t\tchar __data[_K_SS_MAXSIZE - sizeof(unsigned short)];\n\t\t\t\t \n\t\t\t\t \n\t\t};\n\t\tvoid *__align;  \n\t};\n};\n\n#define SOCK_SNDBUF_LOCK\t1\n#define SOCK_RCVBUF_LOCK\t2\n\n#define SOCK_BUF_LOCK_MASK (SOCK_SNDBUF_LOCK | SOCK_RCVBUF_LOCK)\n\n#define SOCK_TXREHASH_DEFAULT\t255\n#define SOCK_TXREHASH_DISABLED\t0\n#define SOCK_TXREHASH_ENABLED\t1\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

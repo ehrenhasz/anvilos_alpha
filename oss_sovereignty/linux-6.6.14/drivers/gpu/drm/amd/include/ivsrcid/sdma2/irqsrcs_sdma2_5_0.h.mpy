@@ -1,0 +1,9 @@
+{
+  "module_name": "irqsrcs_sdma2_5_0.h",
+  "hash_id": "425dbf77a4581731a377f08f306441015d5c1628c227bc1ddf7ce8b3d9f29e9e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/include/ivsrcid/sdma2/irqsrcs_sdma2_5_0.h",
+  "human_readable_source": " \n#ifndef __IRQSRCS_SDMA2_5_0_H__\n#define __IRQSRCS_SDMA2_5_0_H__\n\n\n#define SDMA2_5_0__SRCID__SDMA_ATOMIC_RTN_DONE\t\t\t\t217\t\t\n#define SDMA2_5_0__SRCID__SDMA_ATOMIC_TIMEOUT\t\t\t\t218\t\t\n#define SDMA2_5_0__SRCID__SDMA_IB_PREEMPT\t\t\t\t\t219\t\t\n#define SDMA2_5_0__SRCID__SDMA_ECC\t\t\t\t\t        220\t\t\n#define SDMA2_5_0__SRCID__SDMA_PAGE_FAULT\t\t\t\t\t221\t\t\n#define SDMA2_5_0__SRCID__SDMA_PAGE_NULL\t\t\t\t\t222\t\t\n#define SDMA2_5_0__SRCID__SDMA_XNACK\t\t\t\t\t    223\t\t\n#define SDMA2_5_0__SRCID__SDMA_TRAP\t\t\t\t\t        224\t\t\n#define SDMA2_5_0__SRCID__SDMA_SEM_INCOMPLETE_TIMEOUT\t\t225\t\t\n#define SDMA2_5_0__SRCID__SDMA_SEM_WAIT_FAIL_TIMEOUT\t\t226\t\t\n#define SDMA2_5_0__SRCID__SDMA_SRAM_ECC\t\t\t\t\t    228\t\t\n#define SDMA2_5_0__SRCID__SDMA_PREEMPT\t\t\t\t\t    240\t\t\n#define SDMA2_5_0__SRCID__SDMA_VM_HOLE\t\t\t\t\t    242\t\t\n#define SDMA2_5_0__SRCID__SDMA_CTXEMPTY\t\t\t\t\t    243\t\t\n#define SDMA2_5_0__SRCID__SDMA_DOORBELL_INVALID\t\t\t\t244\t\t\n#define SDMA2_5_0__SRCID__SDMA_FROZEN\t\t\t\t\t    245\t\t\n#define SDMA2_5_0__SRCID__SDMA_POLL_TIMEOUT\t\t\t\t\t246\t\t\n#define SDMA2_5_0__SRCID__SDMA_SRBMWRITE\t\t\t\t\t247\t\t\n\n#endif \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

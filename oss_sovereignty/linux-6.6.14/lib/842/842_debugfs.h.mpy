@@ -1,0 +1,9 @@
+{
+  "module_name": "842_debugfs.h",
+  "hash_id": "1fbc788ab942ba3797ebd46d176a69e3f06c113025d8609be450964c8e58f53e",
+  "original_prompt": "Ingested from linux-6.6.14/lib/842/842_debugfs.h",
+  "human_readable_source": " \n\n#ifndef __842_DEBUGFS_H__\n#define __842_DEBUGFS_H__\n\n#include <linux/debugfs.h>\n\nstatic bool sw842_template_counts;\nmodule_param_named(template_counts, sw842_template_counts, bool, 0444);\n\nstatic atomic_t template_count[OPS_MAX], template_repeat_count,\n\ttemplate_zeros_count, template_short_data_count, template_end_count;\n\nstatic struct dentry *sw842_debugfs_root;\n\nstatic int __init sw842_debugfs_create(void)\n{\n\tumode_t m = S_IRUGO | S_IWUSR;\n\tint i;\n\n\tif (!debugfs_initialized())\n\t\treturn -ENODEV;\n\n\tsw842_debugfs_root = debugfs_create_dir(MODULE_NAME, NULL);\n\n\tfor (i = 0; i < ARRAY_SIZE(template_count); i++) {\n\t\tchar name[32];\n\n\t\tsnprintf(name, 32, \"template_%02x\", i);\n\t\tdebugfs_create_atomic_t(name, m, sw842_debugfs_root,\n\t\t\t\t\t&template_count[i]);\n\t}\n\tdebugfs_create_atomic_t(\"template_repeat\", m, sw842_debugfs_root,\n\t\t\t\t&template_repeat_count);\n\tdebugfs_create_atomic_t(\"template_zeros\", m, sw842_debugfs_root,\n\t\t\t\t&template_zeros_count);\n\tdebugfs_create_atomic_t(\"template_short_data\", m, sw842_debugfs_root,\n\t\t\t\t&template_short_data_count);\n\tdebugfs_create_atomic_t(\"template_end\", m, sw842_debugfs_root,\n\t\t\t\t&template_end_count);\n\n\treturn 0;\n}\n\nstatic void __exit sw842_debugfs_remove(void)\n{\n\tdebugfs_remove_recursive(sw842_debugfs_root);\n}\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

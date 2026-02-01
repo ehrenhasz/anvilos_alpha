@@ -1,0 +1,9 @@
+{
+  "module_name": "ivpu_pm.h",
+  "hash_id": "6cf8eba0cb7124f8d8eac94b89b1a3f67d9ea5461d8ba035488d771f096a074c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/accel/ivpu/ivpu_pm.h",
+  "human_readable_source": " \n \n\n#ifndef __IVPU_PM_H__\n#define __IVPU_PM_H__\n\n#include <linux/types.h>\n\nstruct ivpu_device;\n\nstruct ivpu_pm_info {\n\tstruct ivpu_device *vdev;\n\tstruct work_struct recovery_work;\n\tatomic_t in_reset;\n\tatomic_t reset_counter;\n\tbool is_warmboot;\n\tu32 suspend_reschedule_counter;\n};\n\nint ivpu_pm_init(struct ivpu_device *vdev);\nvoid ivpu_pm_enable(struct ivpu_device *vdev);\nvoid ivpu_pm_disable(struct ivpu_device *vdev);\nvoid ivpu_pm_cancel_recovery(struct ivpu_device *vdev);\n\nint ivpu_pm_suspend_cb(struct device *dev);\nint ivpu_pm_resume_cb(struct device *dev);\nint ivpu_pm_runtime_suspend_cb(struct device *dev);\nint ivpu_pm_runtime_resume_cb(struct device *dev);\n\nvoid ivpu_pm_reset_prepare_cb(struct pci_dev *pdev);\nvoid ivpu_pm_reset_done_cb(struct pci_dev *pdev);\n\nint __must_check ivpu_rpm_get(struct ivpu_device *vdev);\nvoid ivpu_rpm_put(struct ivpu_device *vdev);\n\nvoid ivpu_pm_schedule_recovery(struct ivpu_device *vdev);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "cn_proc.h",
+  "hash_id": "fdffb46dc82b3f75b01de367c0fc967c0de287e4210bd3a7a9371ab2dddfa7b6",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/cn_proc.h",
+  "human_readable_source": " \n#ifndef CN_PROC_H\n#define CN_PROC_H\n\n#include <uapi/linux/cn_proc.h>\n\n#ifdef CONFIG_PROC_EVENTS\nvoid proc_fork_connector(struct task_struct *task);\nvoid proc_exec_connector(struct task_struct *task);\nvoid proc_id_connector(struct task_struct *task, int which_id);\nvoid proc_sid_connector(struct task_struct *task);\nvoid proc_ptrace_connector(struct task_struct *task, int which_id);\nvoid proc_comm_connector(struct task_struct *task);\nvoid proc_coredump_connector(struct task_struct *task);\nvoid proc_exit_connector(struct task_struct *task);\n#else\nstatic inline void proc_fork_connector(struct task_struct *task)\n{}\n\nstatic inline void proc_exec_connector(struct task_struct *task)\n{}\n\nstatic inline void proc_id_connector(struct task_struct *task,\n\t\t\t\t     int which_id)\n{}\n\nstatic inline void proc_sid_connector(struct task_struct *task)\n{}\n\nstatic inline void proc_comm_connector(struct task_struct *task)\n{}\n\nstatic inline void proc_ptrace_connector(struct task_struct *task,\n\t\t\t\t\t int ptrace_id)\n{}\n\nstatic inline void proc_coredump_connector(struct task_struct *task)\n{}\n\nstatic inline void proc_exit_connector(struct task_struct *task)\n{}\n#endif\t \n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

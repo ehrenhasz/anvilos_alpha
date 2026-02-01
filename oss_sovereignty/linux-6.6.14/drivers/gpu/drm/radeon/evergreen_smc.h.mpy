@@ -1,0 +1,9 @@
+{
+  "module_name": "evergreen_smc.h",
+  "hash_id": "67feb074a3308d45fa7386b13a2cd83cdf151b6b8828b505dd35d381fdfcdfd8",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/radeon/evergreen_smc.h",
+  "human_readable_source": " \n#ifndef __EVERGREEN_SMC_H__\n#define __EVERGREEN_SMC_H__\n\n#include \"rv770_smc.h\"\n\n#pragma pack(push, 1)\n\n#define SMC_EVERGREEN_MC_REGISTER_ARRAY_SIZE 16\n\nstruct SMC_Evergreen_MCRegisterAddress\n{\n    uint16_t s0;\n    uint16_t s1;\n};\n\ntypedef struct SMC_Evergreen_MCRegisterAddress SMC_Evergreen_MCRegisterAddress;\n\n\nstruct SMC_Evergreen_MCRegisterSet\n{\n    uint32_t value[SMC_EVERGREEN_MC_REGISTER_ARRAY_SIZE];\n};\n\ntypedef struct SMC_Evergreen_MCRegisterSet SMC_Evergreen_MCRegisterSet;\n\nstruct SMC_Evergreen_MCRegisters\n{\n    uint8_t                             last;\n    uint8_t                             reserved[3];\n    SMC_Evergreen_MCRegisterAddress     address[SMC_EVERGREEN_MC_REGISTER_ARRAY_SIZE];\n    SMC_Evergreen_MCRegisterSet         data[5];\n};\n\ntypedef struct SMC_Evergreen_MCRegisters SMC_Evergreen_MCRegisters;\n\n#define EVERGREEN_SMC_FIRMWARE_HEADER_LOCATION 0x100\n\n#define EVERGREEN_SMC_FIRMWARE_HEADER_softRegisters   0x8\n#define EVERGREEN_SMC_FIRMWARE_HEADER_stateTable      0xC\n#define EVERGREEN_SMC_FIRMWARE_HEADER_mcRegisterTable 0x20\n\n\n#pragma pack(pop)\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

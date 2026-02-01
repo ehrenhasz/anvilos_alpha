@@ -1,0 +1,9 @@
+{
+  "module_name": "gk104.c",
+  "hash_id": "e1742887c11ef49f776a6e28ca7c5359235e893b7cea6b7d53c706c06a7a1427",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/subdev/fb/gk104.c",
+  "human_readable_source": " \n#include \"gk104.h\"\n#include \"gf100.h\"\n#include \"ram.h\"\n\n \nconst struct nvkm_therm_clkgate_init\ngk104_fb_clkgate_blcg_init_unk_0[] = {\n\t{ 0x100d10, 1, 0x0000c244 },\n\t{ 0x100d30, 1, 0x0000c242 },\n\t{ 0x100d3c, 1, 0x00000242 },\n\t{ 0x100d48, 1, 0x00000242 },\n\t{ 0x100d1c, 1, 0x00000042 },\n\t{}\n};\n\nconst struct nvkm_therm_clkgate_init\ngk104_fb_clkgate_blcg_init_vm_0[] = {\n\t{ 0x100c98, 1, 0x00000242 },\n\t{}\n};\n\nconst struct nvkm_therm_clkgate_init\ngk104_fb_clkgate_blcg_init_main_0[] = {\n\t{ 0x10f000, 1, 0x00000042 },\n\t{ 0x17e030, 1, 0x00000044 },\n\t{ 0x17e040, 1, 0x00000044 },\n\t{}\n};\n\nconst struct nvkm_therm_clkgate_init\ngk104_fb_clkgate_blcg_init_bcast_0[] = {\n\t{ 0x17ea60, 4, 0x00000044 },\n\t{}\n};\n\nstatic const struct nvkm_therm_clkgate_pack\ngk104_fb_clkgate_pack[] = {\n\t{ gk104_fb_clkgate_blcg_init_unk_0 },\n\t{ gk104_fb_clkgate_blcg_init_vm_0 },\n\t{ gk104_fb_clkgate_blcg_init_main_0 },\n\t{ gk104_fb_clkgate_blcg_init_bcast_0 },\n\t{}\n};\n\nstatic const struct nvkm_fb_func\ngk104_fb = {\n\t.dtor = gf100_fb_dtor,\n\t.oneinit = gf100_fb_oneinit,\n\t.init = gf100_fb_init,\n\t.init_page = gf100_fb_init_page,\n\t.intr = gf100_fb_intr,\n\t.sysmem.flush_page_init = gf100_fb_sysmem_flush_page_init,\n\t.ram_new = gk104_ram_new,\n\t.default_bigpage = 17,\n\t.clkgate_pack = gk104_fb_clkgate_pack,\n};\n\nint\ngk104_fb_new(struct nvkm_device *device, enum nvkm_subdev_type type, int inst, struct nvkm_fb **pfb)\n{\n\treturn gf100_fb_new_(&gk104_fb, device, type, inst, pfb);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

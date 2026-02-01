@@ -1,0 +1,9 @@
+{
+  "module_name": "usnic_uiom_interval_tree.h",
+  "hash_id": "10334c719379dc09a17e2cfb044da53e6f79a0c70809b0df9fe70ec4ba48c930",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/infiniband/hw/usnic/usnic_uiom_interval_tree.h",
+  "human_readable_source": " \n\n#ifndef USNIC_UIOM_INTERVAL_TREE_H_\n#define USNIC_UIOM_INTERVAL_TREE_H_\n\n#include <linux/rbtree.h>\n\nstruct usnic_uiom_interval_node {\n\tstruct rb_node\t\t\trb;\n\tstruct list_head\t\tlink;\n\tunsigned long\t\t\tstart;\n\tunsigned long\t\t\tlast;\n\tunsigned long\t\t\t__subtree_last;\n\tunsigned int\t\t\tref_cnt;\n\tint\t\t\t\tflags;\n};\n\nextern void\nusnic_uiom_interval_tree_insert(struct usnic_uiom_interval_node *node,\n\t\t\t\t\tstruct rb_root_cached *root);\nextern void\nusnic_uiom_interval_tree_remove(struct usnic_uiom_interval_node *node,\n\t\t\t\t\tstruct rb_root_cached *root);\nextern struct usnic_uiom_interval_node *\nusnic_uiom_interval_tree_iter_first(struct rb_root_cached *root,\n\t\t\t\t\tunsigned long start,\n\t\t\t\t\tunsigned long last);\nextern struct usnic_uiom_interval_node *\nusnic_uiom_interval_tree_iter_next(struct usnic_uiom_interval_node *node,\n\t\t\tunsigned long start, unsigned long last);\n \nint usnic_uiom_insert_interval(struct rb_root_cached *root,\n\t\t\t\tunsigned long start, unsigned long last,\n\t\t\t\tint flags);\n \nvoid usnic_uiom_remove_interval(struct rb_root_cached *root,\n\t\t\t\tunsigned long start, unsigned long last,\n\t\t\t\tstruct list_head *removed);\n \nint usnic_uiom_get_intervals_diff(unsigned long start,\n\t\t\t\t\tunsigned long last, int flags,\n\t\t\t\t\tint flag_mask,\n\t\t\t\t\tstruct rb_root_cached *root,\n\t\t\t\t\tstruct list_head *diff_set);\n \nvoid usnic_uiom_put_interval_set(struct list_head *intervals);\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

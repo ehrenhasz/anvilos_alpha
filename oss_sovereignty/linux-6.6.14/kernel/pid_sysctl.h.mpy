@@ -1,0 +1,9 @@
+{
+  "module_name": "pid_sysctl.h",
+  "hash_id": "292ca6729001d01ff8d156341d15116a3d12af791a305db3e2be640541c62e73",
+  "original_prompt": "Ingested from linux-6.6.14/kernel/pid_sysctl.h",
+  "human_readable_source": " \n#ifndef LINUX_PID_SYSCTL_H\n#define LINUX_PID_SYSCTL_H\n\n#include <linux/pid_namespace.h>\n\n#if defined(CONFIG_SYSCTL) && defined(CONFIG_MEMFD_CREATE)\nstatic int pid_mfd_noexec_dointvec_minmax(struct ctl_table *table,\n\tint write, void *buf, size_t *lenp, loff_t *ppos)\n{\n\tstruct pid_namespace *ns = task_active_pid_ns(current);\n\tstruct ctl_table table_copy;\n\tint err, scope, parent_scope;\n\n\tif (write && !ns_capable(ns->user_ns, CAP_SYS_ADMIN))\n\t\treturn -EPERM;\n\n\ttable_copy = *table;\n\n\t \n\tparent_scope = pidns_memfd_noexec_scope(ns->parent);\n\t \n\tscope = max(READ_ONCE(ns->memfd_noexec_scope), parent_scope);\n\n\ttable_copy.data = &scope;\n\ttable_copy.extra1 = &parent_scope;\n\n\terr = proc_dointvec_minmax(&table_copy, write, buf, lenp, ppos);\n\tif (!err && write)\n\t\tWRITE_ONCE(ns->memfd_noexec_scope, scope);\n\treturn err;\n}\n\nstatic struct ctl_table pid_ns_ctl_table_vm[] = {\n\t{\n\t\t.procname\t= \"memfd_noexec\",\n\t\t.data\t\t= &init_pid_ns.memfd_noexec_scope,\n\t\t.maxlen\t\t= sizeof(init_pid_ns.memfd_noexec_scope),\n\t\t.mode\t\t= 0644,\n\t\t.proc_handler\t= pid_mfd_noexec_dointvec_minmax,\n\t\t.extra1\t\t= SYSCTL_ZERO,\n\t\t.extra2\t\t= SYSCTL_TWO,\n\t},\n\t{ }\n};\nstatic inline void register_pid_ns_sysctl_table_vm(void)\n{\n\tregister_sysctl(\"vm\", pid_ns_ctl_table_vm);\n}\n#else\nstatic inline void register_pid_ns_sysctl_table_vm(void) {}\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

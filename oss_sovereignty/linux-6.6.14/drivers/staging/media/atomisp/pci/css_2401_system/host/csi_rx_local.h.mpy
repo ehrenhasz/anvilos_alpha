@@ -1,0 +1,9 @@
+{
+  "module_name": "csi_rx_local.h",
+  "hash_id": "235980b7b06b07ff8bbaea65475e19a509e75f50a5849dfe37c497e4e0c05c95",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/css_2401_system/host/csi_rx_local.h",
+  "human_readable_source": " \n \n\n#ifndef __CSI_RX_LOCAL_H_INCLUDED__\n#define __CSI_RX_LOCAL_H_INCLUDED__\n\n#include \"csi_rx_global.h\"\n#define N_CSI_RX_BE_MIPI_COMP_FMT_REG\t\t4\n#define N_CSI_RX_BE_MIPI_CUSTOM_PEC\t\t12\n#define N_CSI_RX_BE_SHORT_PKT_LUT\t\t4\n#define N_CSI_RX_BE_LONG_PKT_LUT\t\t8\ntypedef struct csi_rx_fe_ctrl_state_s\t\tcsi_rx_fe_ctrl_state_t;\ntypedef struct csi_rx_fe_ctrl_lane_s\t\tcsi_rx_fe_ctrl_lane_t;\ntypedef struct csi_rx_be_ctrl_state_s\t\tcsi_rx_be_ctrl_state_t;\n \ntypedef struct csi_rx_be_ctrl_pec_s\t\tcsi_rx_be_ctrl_pec_t;\n\nstruct csi_rx_fe_ctrl_lane_s {\n\thrt_data\ttermen;\n\thrt_data\tsettle;\n};\n\nstruct csi_rx_fe_ctrl_state_s {\n\thrt_data\t\tenable;\n\thrt_data\t\tnof_enable_lanes;\n\thrt_data\t\terror_handling;\n\thrt_data\t\tstatus;\n\thrt_data\t\tstatus_dlane_hs;\n\thrt_data\t\tstatus_dlane_lp;\n\tcsi_rx_fe_ctrl_lane_t\tclane;\n\tcsi_rx_fe_ctrl_lane_t\tdlane[N_CSI_RX_DLANE_ID];\n};\n\nstruct csi_rx_be_ctrl_state_s {\n\thrt_data\t\tenable;\n\thrt_data\t\tstatus;\n\thrt_data\t\tcomp_format_reg[N_CSI_RX_BE_MIPI_COMP_FMT_REG];\n\thrt_data\t\traw16;\n\thrt_data\t\traw18;\n\thrt_data\t\tforce_raw8;\n\thrt_data\t\tirq_status;\n\thrt_data\t\tcustom_mode_enable;\n\thrt_data\t\tcustom_mode_data_state;\n\thrt_data\t\tpec[N_CSI_RX_BE_MIPI_CUSTOM_PEC];\n\thrt_data\t\tcustom_mode_valid_eop_config;\n\thrt_data\t\tglobal_lut_disregard_reg;\n\thrt_data\t\tpacket_status_stall;\n\thrt_data\t\tshort_packet_lut_entry[N_CSI_RX_BE_SHORT_PKT_LUT];\n\thrt_data\t\tlong_packet_lut_entry[N_CSI_RX_BE_LONG_PKT_LUT];\n};\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

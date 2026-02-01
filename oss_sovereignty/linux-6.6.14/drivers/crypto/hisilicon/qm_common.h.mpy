@@ -1,0 +1,9 @@
+{
+  "module_name": "qm_common.h",
+  "hash_id": "73814b6408f55ddc8bfcf744c32035082a6967ad0400721a1d2d7f9372a9c3fb",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/crypto/hisilicon/qm_common.h",
+  "human_readable_source": " \n \n#ifndef QM_COMMON_H\n#define QM_COMMON_H\n\n#define QM_DBG_READ_LEN\t\t256\n\nstruct qm_cqe {\n\t__le32 rsvd0;\n\t__le16 cmd_id;\n\t__le16 rsvd1;\n\t__le16 sq_head;\n\t__le16 sq_num;\n\t__le16 rsvd2;\n\t__le16 w7;\n};\n\nstruct qm_eqe {\n\t__le32 dw0;\n};\n\nstruct qm_aeqe {\n\t__le32 dw0;\n};\n\nstruct qm_sqc {\n\t__le16 head;\n\t__le16 tail;\n\t__le32 base_l;\n\t__le32 base_h;\n\t__le32 dw3;\n\t__le16 w8;\n\t__le16 rsvd0;\n\t__le16 pasid;\n\t__le16 w11;\n\t__le16 cq_num;\n\t__le16 w13;\n\t__le32 rsvd1;\n};\n\nstruct qm_cqc {\n\t__le16 head;\n\t__le16 tail;\n\t__le32 base_l;\n\t__le32 base_h;\n\t__le32 dw3;\n\t__le16 w8;\n\t__le16 rsvd0;\n\t__le16 pasid;\n\t__le16 w11;\n\t__le32 dw6;\n\t__le32 rsvd1;\n};\n\nstruct qm_eqc {\n\t__le16 head;\n\t__le16 tail;\n\t__le32 base_l;\n\t__le32 base_h;\n\t__le32 dw3;\n\t__le32 rsvd[2];\n\t__le32 dw6;\n};\n\nstruct qm_aeqc {\n\t__le16 head;\n\t__le16 tail;\n\t__le32 base_l;\n\t__le32 base_h;\n\t__le32 dw3;\n\t__le32 rsvd[2];\n\t__le32 dw6;\n};\n\nstatic const char * const qm_s[] = {\n\t\"init\", \"start\", \"close\", \"stop\",\n};\n\nvoid *hisi_qm_ctx_alloc(struct hisi_qm *qm, size_t ctx_size,\n\t\t\tdma_addr_t *dma_addr);\nvoid hisi_qm_ctx_free(struct hisi_qm *qm, size_t ctx_size,\n\t\t      const void *ctx_addr, dma_addr_t *dma_addr);\nvoid hisi_qm_show_last_dfx_regs(struct hisi_qm *qm);\nvoid hisi_qm_set_algqos_init(struct hisi_qm *qm);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

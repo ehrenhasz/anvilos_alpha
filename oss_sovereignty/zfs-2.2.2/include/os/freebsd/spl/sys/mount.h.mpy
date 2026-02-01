@@ -1,0 +1,9 @@
+{
+  "module_name": "mount.h",
+  "hash_id": "3c6404bf6ea1adc4c2ef603e16d2fec0d9eb10c74c13f7583a647e043361f3d5",
+  "original_prompt": "Ingested from zfs-2.2.2/include/os/freebsd/spl/sys/mount.h",
+  "human_readable_source": " \n\n#ifndef _OPENSOLARIS_SYS_MOUNT_H_\n#define\t_OPENSOLARIS_SYS_MOUNT_H_\n\n#include <sys/param.h>\n#include_next <sys/mount.h>\n#ifdef BUILDING_ZFS\n#include <sys/vfs.h>\n#endif\n#define\tMS_FORCE\tMNT_FORCE\n#define\tMS_REMOUNT\tMNT_UPDATE\n\ntypedef\tstruct fid\t\tfid_t;\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

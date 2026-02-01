@@ -1,0 +1,9 @@
+{
+  "module_name": "nv17.c",
+  "hash_id": "79ac0555164735100e1f65419d5d5f9605eaa927616989db8b5e3a97032d8c35",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/subdev/mc/nv17.c",
+  "human_readable_source": " \n#include \"priv.h\"\n\nconst struct nvkm_mc_map\nnv17_mc_reset[] = {\n\t{ 0x00001000, NVKM_ENGINE_GR },\n\t{ 0x00000100, NVKM_ENGINE_FIFO },\n\t{ 0x00000002, NVKM_ENGINE_MPEG },\n\t{}\n};\n\nconst struct nvkm_intr_data\nnv17_mc_intrs[] = {\n\t{ NVKM_ENGINE_DISP , 0, 0, 0x03010000, true },\n\t{ NVKM_ENGINE_GR   , 0, 0, 0x00001000, true },\n\t{ NVKM_ENGINE_FIFO , 0, 0, 0x00000100 },\n\t{ NVKM_ENGINE_MPEG , 0, 0, 0x00000001, true },\n\t{ NVKM_SUBDEV_BUS  , 0, 0, 0x10000000, true },\n\t{ NVKM_SUBDEV_TIMER, 0, 0, 0x00100000, true },\n\t{}\n};\n\nstatic const struct nvkm_mc_func\nnv17_mc = {\n\t.init = nv04_mc_init,\n\t.intr = &nv04_mc_intr,\n\t.intrs = nv17_mc_intrs,\n\t.device = &nv04_mc_device,\n\t.reset = nv17_mc_reset,\n};\n\nint\nnv17_mc_new(struct nvkm_device *device, enum nvkm_subdev_type type, int inst, struct nvkm_mc **pmc)\n{\n\treturn nvkm_mc_new_(&nv17_mc, device, type, inst, pmc);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

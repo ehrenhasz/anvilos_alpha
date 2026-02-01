@@ -1,0 +1,9 @@
+{
+  "module_name": "sockopt_multi.c",
+  "hash_id": "180177612f466cbfe99d4016ca8be0cfafcab3a4ebad57b04a9c63ce69411974",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/sockopt_multi.c",
+  "human_readable_source": "\n#include <netinet/in.h>\n#include <linux/bpf.h>\n#include <bpf/bpf_helpers.h>\n\nchar _license[] SEC(\"license\") = \"GPL\";\n\n__u32 page_size = 0;\n\nSEC(\"cgroup/getsockopt\")\nint _getsockopt_child(struct bpf_sockopt *ctx)\n{\n\t__u8 *optval_end = ctx->optval_end;\n\t__u8 *optval = ctx->optval;\n\n\tif (ctx->level != SOL_IP || ctx->optname != IP_TOS)\n\t\tgoto out;\n\n\tif (optval + 1 > optval_end)\n\t\treturn 0;  \n\n\tif (optval[0] != 0x80)\n\t\treturn 0;  \n\n\tctx->retval = 0;  \n\n\toptval[0] = 0x90;\n\tctx->optlen = 1;\n\n\treturn 1;\n\nout:\n\t \n\tif (ctx->optlen > page_size)\n\t\tctx->optlen = 0;\n\treturn 1;\n}\n\nSEC(\"cgroup/getsockopt\")\nint _getsockopt_parent(struct bpf_sockopt *ctx)\n{\n\t__u8 *optval_end = ctx->optval_end;\n\t__u8 *optval = ctx->optval;\n\n\tif (ctx->level != SOL_IP || ctx->optname != IP_TOS)\n\t\tgoto out;\n\n\tif (optval + 1 > optval_end)\n\t\treturn 0;  \n\n\tif (optval[0] != 0x90)\n\t\treturn 0;  \n\n\tctx->retval = 0;  \n\n\toptval[0] = 0xA0;\n\tctx->optlen = 1;\n\n\treturn 1;\n\nout:\n\t \n\tif (ctx->optlen > page_size)\n\t\tctx->optlen = 0;\n\treturn 1;\n}\n\nSEC(\"cgroup/setsockopt\")\nint _setsockopt(struct bpf_sockopt *ctx)\n{\n\t__u8 *optval_end = ctx->optval_end;\n\t__u8 *optval = ctx->optval;\n\n\tif (ctx->level != SOL_IP || ctx->optname != IP_TOS)\n\t\tgoto out;\n\n\tif (optval + 1 > optval_end)\n\t\treturn 0;  \n\n\toptval[0] += 0x10;\n\tctx->optlen = 1;\n\n\treturn 1;\n\nout:\n\t \n\tif (ctx->optlen > page_size)\n\t\tctx->optlen = 0;\n\treturn 1;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

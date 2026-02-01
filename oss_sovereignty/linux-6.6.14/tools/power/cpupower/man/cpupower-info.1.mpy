@@ -1,0 +1,9 @@
+{
+  "module_name": "cpupower-info.1",
+  "hash_id": "72937d4e2d7ee2ae9aea982b1edc2fd12a28cb1be8cf97cb06733ebed69b3813",
+  "original_prompt": "Ingested from linux-6.6.14/tools/power/cpupower/man/cpupower-info.1",
+  "human_readable_source": ".TH CPUPOWER\\-INFO \"1\" \"22/02/2011\" \"\" \"cpupower Manual\"\n.SH NAME\ncpupower\\-info \\- Shows processor power related kernel or hardware configurations\n.SH SYNOPSIS\n.ft B\n.B cpupower info [ \\-b ]\n\n.SH DESCRIPTION\n\\fBcpupower info \\fP shows kernel configurations or processor hardware\nregisters affecting processor power saving policies.\n\nSome options are platform wide, some affect single cores. By default values\nof core zero are displayed only. cpupower --cpu all cpuinfo will show the\nsettings of all cores, see cpupower(1) how to choose specific cores.\n\n.SH \"SEE ALSO\"\nOptions are described in detail in:\n\ncpupower(1), cpupower-set(1)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

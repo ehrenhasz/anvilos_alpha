@@ -1,0 +1,9 @@
+{
+  "module_name": "mm.h",
+  "hash_id": "f58829610af51c1a647e745bc5170624cc59e7c6aa0dfeab667174dc9fbc6cb6",
+  "original_prompt": "Ingested from linux-6.6.14/tools/include/linux/sched/mm.h",
+  "human_readable_source": "#ifndef _TOOLS_PERF_LINUX_SCHED_MM_H\n#define _TOOLS_PERF_LINUX_SCHED_MM_H\n\n#define might_alloc(gfp)\tdo { } while (0)\n\n#endif   \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

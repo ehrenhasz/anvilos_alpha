@@ -1,0 +1,9 @@
+{
+  "module_name": "pvrusb2-dvb.h",
+  "hash_id": "8666a00ccd63c6e22dd83db0dd7819a546a76d06d69d44e7d0615d86df803248",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/usb/pvrusb2/pvrusb2-dvb.h",
+  "human_readable_source": " \n#ifndef __PVRUSB2_DVB_H__\n#define __PVRUSB2_DVB_H__\n\n#include <media/dvb_frontend.h>\n#include <media/dvb_demux.h>\n#include <media/dvb_net.h>\n#include <media/dmxdev.h>\n#include \"pvrusb2-context.h\"\n\n#define PVR2_DVB_BUFFER_COUNT 32\n#define PVR2_DVB_BUFFER_SIZE PAGE_ALIGN(0x4000)\n\nstruct pvr2_dvb_adapter {\n\tstruct pvr2_channel\tchannel;\n\n\tstruct dvb_adapter\tdvb_adap;\n\tstruct dmxdev\t\tdmxdev;\n\tstruct dvb_demux\tdemux;\n\tstruct dvb_net\t\tdvb_net;\n\tstruct dvb_frontend\t*fe[2];\n\n\tstruct i2c_client\t*i2c_client_demod[2];\n\tstruct i2c_client\t*i2c_client_tuner;\n\n\tint\t\t\tfeedcount;\n\tint\t\t\tmax_feed_count;\n\n\tstruct task_struct\t*thread;\n\tstruct mutex\t\tlock;\n\n\tunsigned int\t\tstream_run:1;\n\n\twait_queue_head_t\tbuffer_wait_data;\n\tchar\t\t\t*buffer_storage[PVR2_DVB_BUFFER_COUNT];\n};\n\nstruct pvr2_dvb_props {\n\tint (*frontend_attach) (struct pvr2_dvb_adapter *);\n\tint (*tuner_attach) (struct pvr2_dvb_adapter *);\n};\n\nstruct pvr2_dvb_adapter *pvr2_dvb_create(struct pvr2_context *pvr);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

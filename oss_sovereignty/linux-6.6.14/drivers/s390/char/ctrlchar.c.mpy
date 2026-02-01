@@ -1,0 +1,9 @@
+{
+  "module_name": "ctrlchar.c",
+  "hash_id": "025ec8030229f3110944ff25bbdba845c2344cb6e8674dcc143dba2c6f6410d9",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/s390/char/ctrlchar.c",
+  "human_readable_source": "\n \n\n#include <linux/stddef.h>\n#include <asm/errno.h>\n#include <linux/sysrq.h>\n#include <linux/ctype.h>\n\n#include \"ctrlchar.h\"\n\n#ifdef CONFIG_MAGIC_SYSRQ\nstatic struct sysrq_work ctrlchar_sysrq;\n\nstatic void\nctrlchar_handle_sysrq(struct work_struct *work)\n{\n\tstruct sysrq_work *sysrq = container_of(work, struct sysrq_work, work);\n\n\thandle_sysrq(sysrq->key);\n}\n\nvoid schedule_sysrq_work(struct sysrq_work *sw)\n{\n\tINIT_WORK(&sw->work, ctrlchar_handle_sysrq);\n\tschedule_work(&sw->work);\n}\n#endif\n\n\n \nunsigned int\nctrlchar_handle(const unsigned char *buf, int len, struct tty_struct *tty)\n{\n\tif ((len < 2) || (len > 3))\n\t\treturn CTRLCHAR_NONE;\n\n\t \n\t \n\tif ((buf[0] != '^') && (buf[0] != '\\252'))\n\t\treturn CTRLCHAR_NONE;\n\n#ifdef CONFIG_MAGIC_SYSRQ\n\t \n\tif (len == 3 && buf[1] == '-') {\n\t\tctrlchar_sysrq.key = buf[2];\n\t\tschedule_sysrq_work(&ctrlchar_sysrq);\n\t\treturn CTRLCHAR_SYSRQ;\n\t}\n#endif\n\n\tif (len != 2)\n\t\treturn CTRLCHAR_NONE;\n\n\tswitch (tolower(buf[1])) {\n\tcase 'c':\n\t\treturn INTR_CHAR(tty) | CTRLCHAR_CTRL;\n\tcase 'd':\n\t\treturn EOF_CHAR(tty)  | CTRLCHAR_CTRL;\n\tcase 'z':\n\t\treturn SUSP_CHAR(tty) | CTRLCHAR_CTRL;\n\t}\n\treturn CTRLCHAR_NONE;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

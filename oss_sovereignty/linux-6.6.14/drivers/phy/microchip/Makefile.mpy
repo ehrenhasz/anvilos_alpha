@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "f364c10fb331ca423d75032d7f2f8bfcc04fac258f5f1724c6b0f4a35af4366e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/phy/microchip/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Makefile for the Microchip phy drivers.\n#\n\nobj-$(CONFIG_PHY_SPARX5_SERDES) := sparx5_serdes.o\nobj-$(CONFIG_PHY_LAN966X_SERDES) := lan966x_serdes.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

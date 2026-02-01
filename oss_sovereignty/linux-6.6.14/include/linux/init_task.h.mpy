@@ -1,0 +1,9 @@
+{
+  "module_name": "init_task.h",
+  "hash_id": "aa6c9c65d80c380e67a103028457339f1184410ac2f3c4ec353da15002739a76",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/init_task.h",
+  "human_readable_source": " \n#ifndef _LINUX__INIT_TASK_H\n#define _LINUX__INIT_TASK_H\n\n#include <linux/rcupdate.h>\n#include <linux/irqflags.h>\n#include <linux/utsname.h>\n#include <linux/lockdep.h>\n#include <linux/ftrace.h>\n#include <linux/ipc.h>\n#include <linux/pid_namespace.h>\n#include <linux/user_namespace.h>\n#include <linux/securebits.h>\n#include <linux/seqlock.h>\n#include <linux/rbtree.h>\n#include <linux/refcount.h>\n#include <linux/sched/autogroup.h>\n#include <net/net_namespace.h>\n#include <linux/sched/rt.h>\n#include <linux/livepatch.h>\n#include <linux/mm_types.h>\n\n#include <asm/thread_info.h>\n\nextern struct files_struct init_files;\nextern struct fs_struct init_fs;\nextern struct nsproxy init_nsproxy;\nextern struct cred init_cred;\n\n#ifndef CONFIG_VIRT_CPU_ACCOUNTING_NATIVE\n#define INIT_PREV_CPUTIME(x)\t.prev_cputime = {\t\t\t\\\n\t.lock = __RAW_SPIN_LOCK_UNLOCKED(x.prev_cputime.lock),\t\t\\\n},\n#else\n#define INIT_PREV_CPUTIME(x)\n#endif\n\n#define INIT_TASK_COMM \"swapper\"\n\n \n#ifdef CONFIG_ARCH_TASK_STRUCT_ON_STACK\n#define __init_task_data __section(\".data..init_task\")\n#else\n#define __init_task_data  \n#endif\n\n \n#define __init_thread_info __section(\".data..init_thread_info\")\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

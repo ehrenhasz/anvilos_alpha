@@ -1,0 +1,9 @@
+{
+  "module_name": "smuio_v13_0_6.c",
+  "hash_id": "d2824a8cb919fe3e02715219f5b2d234618c7db37875d001c8bc2d8c771d7a4d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/amdgpu/smuio_v13_0_6.c",
+  "human_readable_source": " \n#include \"amdgpu.h\"\n#include \"smuio_v13_0_6.h\"\n#include \"smuio/smuio_13_0_6_offset.h\"\n#include \"smuio/smuio_13_0_6_sh_mask.h\"\n\nstatic u32 smuio_v13_0_6_get_rom_index_offset(struct amdgpu_device *adev)\n{\n\treturn SOC15_REG_OFFSET(SMUIO, 0, regROM_INDEX);\n}\n\nstatic u32 smuio_v13_0_6_get_rom_data_offset(struct amdgpu_device *adev)\n{\n\treturn SOC15_REG_OFFSET(SMUIO, 0, regROM_DATA);\n}\n\nconst struct amdgpu_smuio_funcs smuio_v13_0_6_funcs = {\n\t.get_rom_index_offset = smuio_v13_0_6_get_rom_index_offset,\n\t.get_rom_data_offset = smuio_v13_0_6_get_rom_data_offset,\n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "870fdc16618e6d9f8d58de2077f3da585b96f113ea0521e6b3645900efa29ec3",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/phy/ralink/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-$(CONFIG_PHY_MT7621_PCI)\t+= phy-mt7621-pci.o\nobj-$(CONFIG_PHY_RALINK_USB)\t+= phy-ralink-usb.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

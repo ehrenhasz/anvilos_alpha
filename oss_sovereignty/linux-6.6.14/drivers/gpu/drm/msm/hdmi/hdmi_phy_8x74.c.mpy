@@ -1,0 +1,9 @@
+{
+  "module_name": "hdmi_phy_8x74.c",
+  "hash_id": "6a9b1c94f8f52639194872095c7d94df22a0b308de697c5f00b67dc045f90787",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/msm/hdmi/hdmi_phy_8x74.c",
+  "human_readable_source": "\n \n\n#include \"hdmi.h\"\n\nstatic void hdmi_phy_8x74_powerup(struct hdmi_phy *phy,\n\t\tunsigned long int pixclock)\n{\n\thdmi_phy_write(phy, REG_HDMI_8x74_ANA_CFG0,   0x1b);\n\thdmi_phy_write(phy, REG_HDMI_8x74_ANA_CFG1,   0xf2);\n\thdmi_phy_write(phy, REG_HDMI_8x74_BIST_CFG0,  0x0);\n\thdmi_phy_write(phy, REG_HDMI_8x74_BIST_PATN0, 0x0);\n\thdmi_phy_write(phy, REG_HDMI_8x74_BIST_PATN1, 0x0);\n\thdmi_phy_write(phy, REG_HDMI_8x74_BIST_PATN2, 0x0);\n\thdmi_phy_write(phy, REG_HDMI_8x74_BIST_PATN3, 0x0);\n\thdmi_phy_write(phy, REG_HDMI_8x74_PD_CTRL1,   0x20);\n}\n\nstatic void hdmi_phy_8x74_powerdown(struct hdmi_phy *phy)\n{\n\thdmi_phy_write(phy, REG_HDMI_8x74_PD_CTRL0, 0x7f);\n}\n\nstatic const char * const hdmi_phy_8x74_reg_names[] = {\n\t\"core-vdda\",\n\t\"vddio\",\n};\n\nstatic const char * const hdmi_phy_8x74_clk_names[] = {\n\t\"iface\", \"alt_iface\"\n};\n\nconst struct hdmi_phy_cfg msm_hdmi_phy_8x74_cfg = {\n\t.type = MSM_HDMI_PHY_8x74,\n\t.powerup = hdmi_phy_8x74_powerup,\n\t.powerdown = hdmi_phy_8x74_powerdown,\n\t.reg_names = hdmi_phy_8x74_reg_names,\n\t.num_regs = ARRAY_SIZE(hdmi_phy_8x74_reg_names),\n\t.clk_names = hdmi_phy_8x74_clk_names,\n\t.num_clks = ARRAY_SIZE(hdmi_phy_8x74_clk_names),\n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

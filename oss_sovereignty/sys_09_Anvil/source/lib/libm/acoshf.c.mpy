@@ -1,0 +1,9 @@
+{
+  "module_name": "acoshf.c",
+  "hash_id": "027b33ab2ffdee4f43c8272ba7f7db79a6645bc079cf5b26f4188ee7e20462a2",
+  "original_prompt": "Ingested from sys_09_Anvil/source/lib/libm/acoshf.c",
+  "human_readable_source": " \n \n\n \n \n\n#include \"libm.h\"\n\n#if FLT_EVAL_METHOD==2\n#undef sqrtf\n#define sqrtf sqrtl\n#elif FLT_EVAL_METHOD==1\n#undef sqrtf\n#define sqrtf sqrt\n#endif\n\n \nfloat acoshf(float x)\n{\n\tunion {float f; uint32_t i;} u = {x};\n\tuint32_t a = u.i & 0x7fffffff;\n\n\tif (a < 0x3f800000+(1<<23))\n\t\t \n\t\t \n\t\treturn log1pf(x-1 + sqrtf((x-1)*(x-1)+2*(x-1)));\n\tif (a < 0x3f800000+(12<<23))\n\t\t \n\t\treturn logf(2*x - 1/(x+sqrtf(x*x-1)));\n\t \n\treturn logf(x) + 0.693147180559945309417232121458176568f;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

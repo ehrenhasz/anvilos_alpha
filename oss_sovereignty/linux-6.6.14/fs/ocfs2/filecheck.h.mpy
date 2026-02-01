@@ -1,0 +1,9 @@
+{
+  "module_name": "filecheck.h",
+  "hash_id": "0e4a2cb9017d3b308e726c70d4c6f28fd040065e6d838172f4d67a90b7842129",
+  "original_prompt": "Ingested from linux-6.6.14/fs/ocfs2/filecheck.h",
+  "human_readable_source": " \n \n\n\n#ifndef FILECHECK_H\n#define FILECHECK_H\n\n#include <linux/types.h>\n#include <linux/list.h>\n\n\n \nenum {\n\tOCFS2_FILECHECK_ERR_SUCCESS = 0,\t \n\tOCFS2_FILECHECK_ERR_FAILED = 1000,\t \n\tOCFS2_FILECHECK_ERR_INPROGRESS,\t\t \n\tOCFS2_FILECHECK_ERR_READONLY,\t\t \n\tOCFS2_FILECHECK_ERR_INJBD,\t\t \n\tOCFS2_FILECHECK_ERR_INVALIDINO,\t\t \n\tOCFS2_FILECHECK_ERR_BLOCKECC,\t\t \n\tOCFS2_FILECHECK_ERR_BLOCKNO,\t\t \n\tOCFS2_FILECHECK_ERR_VALIDFLAG,\t\t \n\tOCFS2_FILECHECK_ERR_GENERATION,\t\t \n\tOCFS2_FILECHECK_ERR_UNSUPPORTED\t\t \n};\n\n#define OCFS2_FILECHECK_ERR_START\tOCFS2_FILECHECK_ERR_FAILED\n#define OCFS2_FILECHECK_ERR_END\t\tOCFS2_FILECHECK_ERR_UNSUPPORTED\n\nstruct ocfs2_filecheck {\n\tstruct list_head fc_head;\t \n\tspinlock_t fc_lock;\n\tunsigned int fc_max;\t \n\tunsigned int fc_size;\t \n\tunsigned int fc_done;\t \n};\n\n#define OCFS2_FILECHECK_MAXSIZE\t\t100\n#define OCFS2_FILECHECK_MINSIZE\t\t10\n\n \nenum {\n\tOCFS2_FILECHECK_TYPE_CHK = 0,\t \n\tOCFS2_FILECHECK_TYPE_FIX,\t \n\tOCFS2_FILECHECK_TYPE_SET = 100\t \n};\n\nstruct ocfs2_filecheck_sysfs_entry {\t \n\tstruct kobject fs_kobj;\n\tstruct completion fs_kobj_unregister;\n\tstruct ocfs2_filecheck *fs_fcheck;\n};\n\n\nint ocfs2_filecheck_create_sysfs(struct ocfs2_super *osb);\nvoid ocfs2_filecheck_remove_sysfs(struct ocfs2_super *osb);\n\n#endif   \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

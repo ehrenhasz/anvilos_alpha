@@ -1,0 +1,9 @@
+{
+  "module_name": "dirent.h",
+  "hash_id": "176d9aec49389d841ea006b58e43853e9e06aab2f6b1cbbefb5ea8ebaa05901b",
+  "original_prompt": "Ingested from zfs-2.2.2/include/os/freebsd/spl/sys/dirent.h",
+  "human_readable_source": " \n\n#ifndef _OPENSOLARIS_SYS_DIRENT_H_\n#define\t_OPENSOLARIS_SYS_DIRENT_H_\n\n#include <sys/types.h>\n\n#include_next <sys/dirent.h>\n\ntypedef\tstruct dirent\tdirent64_t;\ntypedef ino_t\t\tino64_t;\n\n#define\tdirent64\tdirent\n\n#define\td_ino\td_fileno\n\n#define\tDIRENT64_RECLEN(len)\t_GENERIC_DIRLEN(len)\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

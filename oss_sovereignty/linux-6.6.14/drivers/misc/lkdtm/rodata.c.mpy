@@ -1,0 +1,9 @@
+{
+  "module_name": "rodata.c",
+  "hash_id": "3f4cae0206f039b7b7e0e6cb03853e2540b1c57ef9f27da019679f5b37c89ae5",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/misc/lkdtm/rodata.c",
+  "human_readable_source": "\n \n#include \"lkdtm.h\"\n\nvoid noinstr lkdtm_rodata_do_nothing(void)\n{\n\t \n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

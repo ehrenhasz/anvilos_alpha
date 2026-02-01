@@ -1,0 +1,9 @@
+{
+  "module_name": "pti.h",
+  "hash_id": "253ee795686db7a13ffea70fbe2b793afdcbe7a2293f2cd928940506d06d72e9",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/include/asm/pti.h",
+  "human_readable_source": " \n#ifndef _ASM_X86_PTI_H\n#define _ASM_X86_PTI_H\n#ifndef __ASSEMBLY__\n\n#ifdef CONFIG_PAGE_TABLE_ISOLATION\nextern void pti_init(void);\nextern void pti_check_boottime_disable(void);\nextern void pti_finalize(void);\n#else\nstatic inline void pti_check_boottime_disable(void) { }\n#endif\n\n#endif  \n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

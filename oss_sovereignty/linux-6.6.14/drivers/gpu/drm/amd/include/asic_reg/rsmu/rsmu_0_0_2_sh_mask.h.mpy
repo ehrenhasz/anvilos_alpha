@@ -1,0 +1,9 @@
+{
+  "module_name": "rsmu_0_0_2_sh_mask.h",
+  "hash_id": "f96246b671b28e279c992630159784ef2166df61acea98a1035a8e89ad1e3e29",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/include/asic_reg/rsmu/rsmu_0_0_2_sh_mask.h",
+  "human_readable_source": " \n#ifndef _rsmu_0_0_2_SH_MASK_HEADER\n#define _rsmu_0_0_2_SH_MASK_HEADER\n\n\n#define\tRSMU_UMC_INDEX_REGISTER_NBIF_VG20_GPU__RSMU_UMC_INDEX_WREN__SHIFT\t\t\t\t0x0\n#define\tRSMU_UMC_INDEX_REGISTER_NBIF_VG20_GPU__RSMU_UMC_INDEX_INSTANCE__SHIFT\t\t\t\t0x10\n#define\tRSMU_UMC_INDEX_REGISTER_NBIF_VG20_GPU__RSMU_UMC_INDEX_MODE_EN__SHIFT\t\t\t\t0x1f\n#define\tRSMU_UMC_INDEX_REGISTER_NBIF_VG20_GPU__RSMU_UMC_INDEX_WREN_MASK\t\t\t\t\t0x0000FFFFL\n#define\tRSMU_UMC_INDEX_REGISTER_NBIF_VG20_GPU__RSMU_UMC_INDEX_INSTANCE_MASK\t\t\t\t0x000F0000L\n#define\tRSMU_UMC_INDEX_REGISTER_NBIF_VG20_GPU__RSMU_UMC_INDEX_MODE_EN_MASK\t\t\t\t0x80000000L\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

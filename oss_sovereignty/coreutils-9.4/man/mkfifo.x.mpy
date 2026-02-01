@@ -1,0 +1,9 @@
+{
+  "module_name": "mkfifo.x",
+  "hash_id": "5cc5c85945a7ae7b88b638f75a30bccc132353ac752a81128892f508ac6fc0b6",
+  "original_prompt": "Ingested from coreutils-9.4/man/mkfifo.x",
+  "human_readable_source": "[NAME]\nmkfifo \\- make FIFOs (named pipes)\n[DESCRIPTION]\n.\\\" Add any additional description here\n[SEE ALSO]\nmkfifo(3)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

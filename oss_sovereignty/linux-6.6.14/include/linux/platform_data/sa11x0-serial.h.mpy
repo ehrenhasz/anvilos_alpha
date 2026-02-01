@@ -1,0 +1,9 @@
+{
+  "module_name": "sa11x0-serial.h",
+  "hash_id": "60b819d07e05fb775da5de3247ab434a446ab8d76864fbd384e0d513f3cd7beb",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/platform_data/sa11x0-serial.h",
+  "human_readable_source": " \n \n#ifndef SA11X0_SERIAL_H\n#define SA11X0_SERIAL_H\n\nstruct uart_port;\nstruct uart_info;\n\n \nstruct sa1100_port_fns {\n\tvoid\t(*set_mctrl)(struct uart_port *, u_int);\n\tu_int\t(*get_mctrl)(struct uart_port *);\n\tvoid\t(*pm)(struct uart_port *, u_int, u_int);\n\tint\t(*set_wake)(struct uart_port *, u_int);\n};\n\n#ifdef CONFIG_SERIAL_SA1100\nvoid sa1100_register_uart_fns(struct sa1100_port_fns *fns);\nvoid sa1100_register_uart(int idx, int port);\n#else\nstatic inline void sa1100_register_uart_fns(struct sa1100_port_fns *fns)\n{\n}\nstatic inline void sa1100_register_uart(int idx, int port)\n{\n}\n#endif\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

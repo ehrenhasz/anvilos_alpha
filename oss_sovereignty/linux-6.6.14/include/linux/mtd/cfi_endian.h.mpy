@@ -1,0 +1,9 @@
+{
+  "module_name": "cfi_endian.h",
+  "hash_id": "c348d2437b77f580d7e9a7cba400c29e28ac587d0dc8426fadab4e0f63242503",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/mtd/cfi_endian.h",
+  "human_readable_source": " \n \n\n#include <asm/byteorder.h>\n\n#define CFI_HOST_ENDIAN 1\n#define CFI_LITTLE_ENDIAN 2\n#define CFI_BIG_ENDIAN 3\n\n#if !defined(CONFIG_MTD_CFI_ADV_OPTIONS) || defined(CONFIG_MTD_CFI_NOSWAP)\n#define CFI_DEFAULT_ENDIAN CFI_HOST_ENDIAN\n#elif defined(CONFIG_MTD_CFI_LE_BYTE_SWAP)\n#define CFI_DEFAULT_ENDIAN CFI_LITTLE_ENDIAN\n#elif defined(CONFIG_MTD_CFI_BE_BYTE_SWAP)\n#define CFI_DEFAULT_ENDIAN CFI_BIG_ENDIAN\n#else\n#error No CFI endianness defined\n#endif\n\n#define cfi_default(s) ((s)?:CFI_DEFAULT_ENDIAN)\n#define cfi_be(s) (cfi_default(s) == CFI_BIG_ENDIAN)\n#define cfi_le(s) (cfi_default(s) == CFI_LITTLE_ENDIAN)\n#define cfi_host(s) (cfi_default(s) == CFI_HOST_ENDIAN)\n\n#define cpu_to_cfi8(map, x) (x)\n#define cfi8_to_cpu(map, x) (x)\n#define cpu_to_cfi16(map, x) _cpu_to_cfi(16, (map)->swap, (x))\n#define cpu_to_cfi32(map, x) _cpu_to_cfi(32, (map)->swap, (x))\n#define cpu_to_cfi64(map, x) _cpu_to_cfi(64, (map)->swap, (x))\n#define cfi16_to_cpu(map, x) _cfi_to_cpu(16, (map)->swap, (x))\n#define cfi32_to_cpu(map, x) _cfi_to_cpu(32, (map)->swap, (x))\n#define cfi64_to_cpu(map, x) _cfi_to_cpu(64, (map)->swap, (x))\n\n#define _cpu_to_cfi(w, s, x) (cfi_host(s)?(x):_swap_to_cfi(w, s, x))\n#define _cfi_to_cpu(w, s, x) (cfi_host(s)?(x):_swap_to_cpu(w, s, x))\n#define _swap_to_cfi(w, s, x) (cfi_be(s)?cpu_to_be##w(x):cpu_to_le##w(x))\n#define _swap_to_cpu(w, s, x) (cfi_be(s)?be##w##_to_cpu(x):le##w##_to_cpu(x))\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

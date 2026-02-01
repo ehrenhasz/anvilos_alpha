@@ -1,0 +1,9 @@
+{
+  "module_name": "dp_tx.h",
+  "hash_id": "29dba6488afc188fd2a44d0a4c586108a8d1adccb40ca84b97a06c1ac9cc3011",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/ath/ath12k/dp_tx.h",
+  "human_readable_source": " \n \n\n#ifndef ATH12K_DP_TX_H\n#define ATH12K_DP_TX_H\n\n#include \"core.h\"\n#include \"hal_tx.h\"\n\nstruct ath12k_dp_htt_wbm_tx_status {\n\tbool acked;\n\tint ack_rssi;\n};\n\nint ath12k_dp_tx_htt_h2t_ver_req_msg(struct ath12k_base *ab);\nint ath12k_dp_tx(struct ath12k *ar, struct ath12k_vif *arvif,\n\t\t struct sk_buff *skb);\nvoid ath12k_dp_tx_completion_handler(struct ath12k_base *ab, int ring_id);\n\nint ath12k_dp_tx_htt_h2t_ppdu_stats_req(struct ath12k *ar, u32 mask);\nint\nath12k_dp_tx_htt_h2t_ext_stats_req(struct ath12k *ar, u8 type,\n\t\t\t\t   struct htt_ext_stats_cfg_params *cfg_params,\n\t\t\t\t   u64 cookie);\nint ath12k_dp_tx_htt_rx_monitor_mode_ring_config(struct ath12k *ar, bool reset);\n\nint ath12k_dp_tx_htt_rx_filter_setup(struct ath12k_base *ab, u32 ring_id,\n\t\t\t\t     int mac_id, enum hal_ring_type ring_type,\n\t\t\t\t     int rx_buf_size,\n\t\t\t\t     struct htt_rx_ring_tlv_filter *tlv_filter);\nvoid ath12k_dp_tx_put_bank_profile(struct ath12k_dp *dp, u8 bank_id);\nint ath12k_dp_tx_htt_tx_filter_setup(struct ath12k_base *ab, u32 ring_id,\n\t\t\t\t     int mac_id, enum hal_ring_type ring_type,\n\t\t\t\t     int tx_buf_size,\n\t\t\t\t     struct htt_tx_ring_tlv_filter *htt_tlv_filter);\nint ath12k_dp_tx_htt_tx_monitor_mode_ring_config(struct ath12k *ar, bool reset);\nint ath12k_dp_tx_htt_monitor_mode_ring_config(struct ath12k *ar, bool reset);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

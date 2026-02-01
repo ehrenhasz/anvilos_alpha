@@ -1,0 +1,9 @@
+{
+  "module_name": "bus.h",
+  "hash_id": "67f5246e95e42c306e5f331786e50b5e6a43717b4ffda492446583fe7c548762",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/subdev/i2c/bus.h",
+  "human_readable_source": " \n#ifndef __NVKM_I2C_BUS_H__\n#define __NVKM_I2C_BUS_H__\n#include \"pad.h\"\n\nstruct nvkm_i2c_bus_func {\n\tvoid (*init)(struct nvkm_i2c_bus *);\n\tvoid (*drive_scl)(struct nvkm_i2c_bus *, int state);\n\tvoid (*drive_sda)(struct nvkm_i2c_bus *, int state);\n\tint (*sense_scl)(struct nvkm_i2c_bus *);\n\tint (*sense_sda)(struct nvkm_i2c_bus *);\n\tint (*xfer)(struct nvkm_i2c_bus *, struct i2c_msg *, int num);\n};\n\nint nvkm_i2c_bus_ctor(const struct nvkm_i2c_bus_func *, struct nvkm_i2c_pad *,\n\t\t      int id, struct nvkm_i2c_bus *);\nint nvkm_i2c_bus_new_(const struct nvkm_i2c_bus_func *, struct nvkm_i2c_pad *,\n\t\t      int id, struct nvkm_i2c_bus **);\nvoid nvkm_i2c_bus_del(struct nvkm_i2c_bus **);\nvoid nvkm_i2c_bus_init(struct nvkm_i2c_bus *);\nvoid nvkm_i2c_bus_fini(struct nvkm_i2c_bus *);\n\nint nvkm_i2c_bit_xfer(struct nvkm_i2c_bus *, struct i2c_msg *, int);\n\nint nv04_i2c_bus_new(struct nvkm_i2c_pad *, int, u8, u8,\n\t\t     struct nvkm_i2c_bus **);\n\nint nv4e_i2c_bus_new(struct nvkm_i2c_pad *, int, u8, struct nvkm_i2c_bus **);\nint nv50_i2c_bus_new(struct nvkm_i2c_pad *, int, u8, struct nvkm_i2c_bus **);\nint gf119_i2c_bus_new(struct nvkm_i2c_pad *, int, u8, struct nvkm_i2c_bus **);\n\n#define BUS_MSG(b,l,f,a...) do {                                               \\\n\tstruct nvkm_i2c_bus *_bus = (b);                                       \\\n\tnvkm_##l(&_bus->pad->i2c->subdev, \"bus %04x: \"f\"\\n\", _bus->id, ##a);   \\\n} while(0)\n#define BUS_ERR(b,f,a...) BUS_MSG((b), error, f, ##a)\n#define BUS_DBG(b,f,a...) BUS_MSG((b), debug, f, ##a)\n#define BUS_TRACE(b,f,a...) BUS_MSG((b), trace, f, ##a)\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

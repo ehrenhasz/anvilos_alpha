@@ -1,0 +1,9 @@
+{
+  "module_name": "test-fstat.c",
+  "hash_id": "54668eeadaf492617dd35b1dca1d0c9fdeed258c4ce4e24d541410c7f0320b43",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-fstat.c",
+  "human_readable_source": " \n  {\n    struct stat statbuf;\n\n    errno = 0;\n    ASSERT (fstat (-1, &statbuf) == -1);\n    ASSERT (errno == EBADF);\n  }\n  {\n    struct stat statbuf;\n\n    close (99);\n    errno = 0;\n    ASSERT (fstat (99, &statbuf) == -1);\n    ASSERT (errno == EBADF);\n  }\n\n  return 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

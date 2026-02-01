@@ -1,0 +1,9 @@
+{
+  "module_name": "v4l2-fh.h",
+  "hash_id": "c17895036357daaffbf5b02485c5214d647dbf26ef779c1400e1fd5f9255eac0",
+  "original_prompt": "Ingested from linux-6.6.14/include/media/v4l2-fh.h",
+  "human_readable_source": " \n \n\n#ifndef V4L2_FH_H\n#define V4L2_FH_H\n\n#include <linux/fs.h>\n#include <linux/kconfig.h>\n#include <linux/list.h>\n#include <linux/videodev2.h>\n\nstruct video_device;\nstruct v4l2_ctrl_handler;\n\n \nstruct v4l2_fh {\n\tstruct list_head\tlist;\n\tstruct video_device\t*vdev;\n\tstruct v4l2_ctrl_handler *ctrl_handler;\n\tenum v4l2_priority\tprio;\n\n\t \n\twait_queue_head_t\twait;\n\tstruct mutex\t\tsubscribe_lock;\n\tstruct list_head\tsubscribed;\n\tstruct list_head\tavailable;\n\tunsigned int\t\tnavailable;\n\tu32\t\t\tsequence;\n\n\tstruct v4l2_m2m_ctx\t*m2m_ctx;\n};\n\n \nvoid v4l2_fh_init(struct v4l2_fh *fh, struct video_device *vdev);\n\n \nvoid v4l2_fh_add(struct v4l2_fh *fh);\n\n \nint v4l2_fh_open(struct file *filp);\n\n \nvoid v4l2_fh_del(struct v4l2_fh *fh);\n\n \nvoid v4l2_fh_exit(struct v4l2_fh *fh);\n\n \nint v4l2_fh_release(struct file *filp);\n\n \nint v4l2_fh_is_singular(struct v4l2_fh *fh);\n\n \nstatic inline int v4l2_fh_is_singular_file(struct file *filp)\n{\n\treturn v4l2_fh_is_singular(filp->private_data);\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

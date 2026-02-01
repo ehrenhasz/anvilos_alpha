@@ -1,0 +1,9 @@
+{
+  "module_name": "amdgpu_dm_irq_params.h",
+  "hash_id": "7553965ed5abe115ba79129e318c06d7ff9d9223ccf98debefacf71eff7b55b7",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm_irq_params.h",
+  "human_readable_source": " \n\n#ifndef __AMDGPU_DM_IRQ_PARAMS_H__\n#define __AMDGPU_DM_IRQ_PARAMS_H__\n\n#include \"amdgpu_dm_crc.h\"\n\nstruct dm_irq_params {\n\tu32 last_flip_vblank;\n\tstruct mod_vrr_params vrr_params;\n\tstruct dc_stream_state *stream;\n\tint active_planes;\n\tbool allow_psr_entry;\n\tstruct mod_freesync_config freesync_config;\n\n#ifdef CONFIG_DEBUG_FS\n\tenum amdgpu_dm_pipe_crc_source crc_src;\n#ifdef CONFIG_DRM_AMD_SECURE_DISPLAY\n\tstruct crc_window_param window_param;\n#endif\n#endif\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

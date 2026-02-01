@@ -1,0 +1,9 @@
+{
+  "module_name": "cyclades.h",
+  "hash_id": "740088099838c7553444a604189143ec2729f2fc140bcf576ebea407a74bded8",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/cyclades.h",
+  "human_readable_source": " \n\n#ifndef _UAPI_LINUX_CYCLADES_H\n#define _UAPI_LINUX_CYCLADES_H\n\n#warning \"Support for features provided by this header has been removed\"\n#warning \"Please consider updating your code\"\n\nstruct cyclades_monitor {\n\tunsigned long int_count;\n\tunsigned long char_count;\n\tunsigned long char_max;\n\tunsigned long char_last;\n};\n\n#define CYGETMON\t\t0x435901\n#define CYGETTHRESH\t\t0x435902\n#define CYSETTHRESH\t\t0x435903\n#define CYGETDEFTHRESH\t\t0x435904\n#define CYSETDEFTHRESH\t\t0x435905\n#define CYGETTIMEOUT\t\t0x435906\n#define CYSETTIMEOUT\t\t0x435907\n#define CYGETDEFTIMEOUT\t\t0x435908\n#define CYSETDEFTIMEOUT\t\t0x435909\n#define CYSETRFLOW\t\t0x43590a\n#define CYGETRFLOW\t\t0x43590b\n#define CYSETRTSDTR_INV\t\t0x43590c\n#define CYGETRTSDTR_INV\t\t0x43590d\n#define CYZSETPOLLCYCLE\t\t0x43590e\n#define CYZGETPOLLCYCLE\t\t0x43590f\n#define CYGETCD1400VER\t\t0x435910\n#define CYSETWAIT\t\t0x435912\n#define CYGETWAIT\t\t0x435913\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

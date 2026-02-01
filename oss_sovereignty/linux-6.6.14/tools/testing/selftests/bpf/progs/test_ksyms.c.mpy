@@ -1,0 +1,9 @@
+{
+  "module_name": "test_ksyms.c",
+  "hash_id": "e70a82576582df9997b8479ec541c10cb57446e33922e9f4a57c7d3c9c500e1c",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/test_ksyms.c",
+  "human_readable_source": "\n \n\n#include <stdbool.h>\n#include <linux/bpf.h>\n#include <bpf/bpf_helpers.h>\n\n__u64 out__bpf_link_fops = -1;\n__u64 out__bpf_link_fops1 = -1;\n__u64 out__btf_size = -1;\n__u64 out__per_cpu_start = -1;\n\nextern const void bpf_link_fops __ksym;\nextern const void __start_BTF __ksym;\nextern const void __stop_BTF __ksym;\nextern const void __per_cpu_start __ksym;\n \nextern const void bpf_link_fops1 __ksym __weak;\n\nSEC(\"raw_tp/sys_enter\")\nint handler(const void *ctx)\n{\n\tout__bpf_link_fops = (__u64)&bpf_link_fops;\n\tout__btf_size = (__u64)(&__stop_BTF - &__start_BTF);\n\tout__per_cpu_start = (__u64)&__per_cpu_start;\n\n\tout__bpf_link_fops1 = (__u64)&bpf_link_fops1;\n\n\treturn 0;\n}\n\nchar _license[] SEC(\"license\") = \"GPL\";\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

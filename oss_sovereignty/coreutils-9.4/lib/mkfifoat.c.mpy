@@ -1,0 +1,9 @@
+{
+  "module_name": "mkfifoat.c",
+  "hash_id": "8bec579153e88a341206810066455aa73b858e765a19f956b6d184aa55cc2f4c",
+  "original_prompt": "Ingested from coreutils-9.4/lib/mkfifoat.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n \n#include <sys/stat.h>\n\n#include <stdlib.h>\n\n#if HAVE_MKFIFOAT\n\n# include <errno.h>\n# include <fcntl.h>\n# include <string.h>\n\nint\nrpl_mkfifoat (int fd, char const *file, mode_t mode)\n#undef mkfifoat\n{\n   \n  size_t len = strlen (file);\n  if (len && file[len - 1] == '/')\n    {\n      struct stat st;\n\n      if (fstatat (fd, file, &st, AT_SYMLINK_NOFOLLOW) < 0)\n        {\n          if (errno == EOVERFLOW)\n             \n            errno = ENOTDIR;\n        }\n      else\n        {\n           \n          errno = EEXIST;\n        }\n      return -1;\n    }\n\n  return mkfifoat (fd, file, mode);\n}\n\n#else\n\n# if !HAVE_MKFIFO\n\n#  include <errno.h>\n\n \n\nint\nmkfifoat (_GL_UNUSED int fd, _GL_UNUSED char const *path,\n          _GL_UNUSED mode_t mode)\n{\n  errno = ENOSYS;\n  return -1;\n}\n\n# else  \n\n \n\n#  define AT_FUNC_NAME mkfifoat\n#  define AT_FUNC_F1 mkfifo\n#  define AT_FUNC_POST_FILE_PARAM_DECLS , mode_t mode\n#  define AT_FUNC_POST_FILE_ARGS        , mode\n#  include \"at-func.c\"\n#  undef AT_FUNC_NAME\n#  undef AT_FUNC_F1\n#  undef AT_FUNC_POST_FILE_PARAM_DECLS\n#  undef AT_FUNC_POST_FILE_ARGS\n\n# endif  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

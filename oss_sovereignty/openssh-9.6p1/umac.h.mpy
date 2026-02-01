@@ -1,0 +1,9 @@
+{
+  "module_name": "umac.h",
+  "hash_id": "112f504755781a35df52c78c945e2a149f33bff1b92939089ac26aa01558d1cf",
+  "original_prompt": "Ingested from openssh-9.6p1/umac.h",
+  "human_readable_source": " \n \n \n  \n\n#if 0\nint umac_reset(struct umac_ctx *ctx);\n \n#endif\n\nint umac_update(struct umac_ctx *ctx, const u_char *input, long len);\n \n\nint umac_final(struct umac_ctx *ctx, u_char tag[], const u_char nonce[8]);\n \n\nint umac_delete(struct umac_ctx *ctx);\n \n\n#if 0\nint umac(struct umac_ctx *ctx, u_char *input, \n         long len, u_char tag[],\n         u_char nonce[8]);\n \n#endif\n\n \n\n\n#if 0\ntypedef struct uhash_ctx *uhash_ctx_t;\n   \n   \n \nuhash_ctx_t uhash_alloc(u_char key[16]);\n   \n   \n   \n   \n   \n  \nint uhash_free(uhash_ctx_t ctx);\n\nint uhash_set_params(uhash_ctx_t ctx,\n                   void       *params);\n\nint uhash_reset(uhash_ctx_t ctx);\n\nint uhash_update(uhash_ctx_t ctx,\n               u_char       *input,\n               long        len);\n\nint uhash_final(uhash_ctx_t ctx,\n              u_char        output[]);\n\nint uhash(uhash_ctx_t ctx,\n        u_char       *input,\n        long        len,\n        u_char        output[]);\n\n#endif\n\n \nstruct umac_ctx *umac128_new(const u_char key[]);\nint umac128_update(struct umac_ctx *ctx, const u_char *input, long len);\nint umac128_final(struct umac_ctx *ctx, u_char tag[], const u_char nonce[8]);\nint umac128_delete(struct umac_ctx *ctx);\n\n#ifdef __cplusplus\n    }\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

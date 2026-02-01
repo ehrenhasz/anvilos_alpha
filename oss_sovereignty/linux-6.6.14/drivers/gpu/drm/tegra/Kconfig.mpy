@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "72fadcafb509319b56dedabbf25505fe2b6e74dfe26060241b316d755425b5dc",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/tegra/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig DRM_TEGRA\n\ttristate \"NVIDIA Tegra DRM\"\n\tdepends on ARCH_TEGRA || COMPILE_TEST\n\tdepends on COMMON_CLK\n\tdepends on DRM\n\tdepends on OF\n\tselect DRM_DISPLAY_DP_HELPER\n\tselect DRM_DISPLAY_HDMI_HELPER\n\tselect DRM_DISPLAY_HELPER\n\tselect DRM_DP_AUX_BUS\n\tselect DRM_KMS_HELPER\n\tselect DRM_MIPI_DSI\n\tselect DRM_PANEL\n\tselect FB_DMAMEM_HELPERS if DRM_FBDEV_EMULATION\n\tselect TEGRA_HOST1X\n\tselect INTERCONNECT\n\tselect IOMMU_IOVA\n\tselect CEC_CORE if CEC_NOTIFIER\n\tselect SND_SIMPLE_CARD if SND_SOC_TEGRA20_SPDIF\n\tselect SND_SOC_HDMI_CODEC if SND_SOC_TEGRA20_SPDIF\n\tselect SND_AUDIO_GRAPH_CARD if SND_SOC_TEGRA20_SPDIF\n\thelp\n\t  Choose this option if you have an NVIDIA Tegra SoC.\n\n\t  To compile this driver as a module, choose M here: the module\n\t  will be called tegra-drm.\n\nif DRM_TEGRA\n\nconfig DRM_TEGRA_DEBUG\n\tbool \"NVIDIA Tegra DRM debug support\"\n\thelp\n\t  Say yes here to enable debugging support.\n\nconfig DRM_TEGRA_STAGING\n\tbool \"Enable HOST1X interface\"\n\tdepends on STAGING\n\thelp\n\t  Say yes if HOST1X should be available for userspace DRM users.\n\n\t  If unsure, choose N.\n\nendif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

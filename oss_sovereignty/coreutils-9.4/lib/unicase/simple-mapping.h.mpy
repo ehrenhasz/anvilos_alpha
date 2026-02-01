@@ -1,0 +1,9 @@
+{
+  "module_name": "simple-mapping.h",
+  "hash_id": "b794825c16545e6eea61d54872296d41ba073cb6495e9c8be1b7e939e7a652ad",
+  "original_prompt": "Ingested from coreutils-9.4/lib/unicase/simple-mapping.h",
+  "human_readable_source": "/* Simple case mapping for Unicode characters.\n   Copyright (C) 2002, 2006, 2009-2023 Free Software Foundation, Inc.\n   Written by Bruno Haible <bruno@clisp.org>, 2009.\n\n   This file is free software: you can redistribute it and/or modify\n   it under the terms of the GNU Lesser General Public License as\n   published by the Free Software Foundation; either version 2.1 of the\n   License, or (at your option) any later version.\n\n   This file is distributed in the hope that it will be useful,\n   but WITHOUT ANY WARRANTY; without even the implied warranty of\n   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n   GNU Lesser General Public License for more details.\n\n   You should have received a copy of the GNU Lesser General Public License\n   along with this program.  If not, see <https:\n\nucs4_t\nFUNC (ucs4_t uc)\n{\n  unsigned int index1 = uc >> mapping_header_0;\n  if (index1 < mapping_header_1)\n    {\n      int lookup1 = u_mapping.level1[index1];\n      if (lookup1 >= 0)\n        {\n          unsigned int index2 = (uc >> mapping_header_2) & mapping_header_3;\n          int lookup2 = u_mapping.level2[lookup1 + index2];\n          if (lookup2 >= 0)\n            {\n              unsigned int index3 = (uc & mapping_header_4);\n              int lookup3 = u_mapping.level3[lookup2 + index3];\n\n              return uc + lookup3;\n            }\n        }\n    }\n  return uc;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

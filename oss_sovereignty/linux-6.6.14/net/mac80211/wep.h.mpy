@@ -1,0 +1,9 @@
+{
+  "module_name": "wep.h",
+  "hash_id": "0a9d86266868ca5a773d2171aeef59dcde9bcb3150968112f761e9a36cfef8ca",
+  "original_prompt": "Ingested from linux-6.6.14/net/mac80211/wep.h",
+  "human_readable_source": " \n \n\n#ifndef WEP_H\n#define WEP_H\n\n#include <linux/skbuff.h>\n#include <linux/types.h>\n#include \"ieee80211_i.h\"\n#include \"key.h\"\n\nvoid ieee80211_wep_init(struct ieee80211_local *local);\nint ieee80211_wep_encrypt_data(struct arc4_ctx *ctx, u8 *rc4key,\n\t\t\t\tsize_t klen, u8 *data, size_t data_len);\nint ieee80211_wep_encrypt(struct ieee80211_local *local,\n\t\t\t  struct sk_buff *skb,\n\t\t\t  const u8 *key, int keylen, int keyidx);\nint ieee80211_wep_decrypt_data(struct arc4_ctx *ctx, u8 *rc4key,\n\t\t\t       size_t klen, u8 *data, size_t data_len);\n\nieee80211_rx_result\nieee80211_crypto_wep_decrypt(struct ieee80211_rx_data *rx);\nieee80211_tx_result\nieee80211_crypto_wep_encrypt(struct ieee80211_tx_data *tx);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

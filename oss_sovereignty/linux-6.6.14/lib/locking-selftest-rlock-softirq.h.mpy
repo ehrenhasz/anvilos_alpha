@@ -1,0 +1,9 @@
+{
+  "module_name": "locking-selftest-rlock-softirq.h",
+  "hash_id": "56441c902acbd94a1267c06876f508eedbe8c43b830a29d1e402c059577766a7",
+  "original_prompt": "Ingested from linux-6.6.14/lib/locking-selftest-rlock-softirq.h",
+  "human_readable_source": "#include \"locking-selftest-rlock.h\"\n#include \"locking-selftest-softirq.h\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

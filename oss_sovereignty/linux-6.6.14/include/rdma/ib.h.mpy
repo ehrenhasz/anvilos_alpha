@@ -1,0 +1,9 @@
+{
+  "module_name": "ib.h",
+  "hash_id": "2bc176d2ec419bbf7b89be7d6c0bd0b6cc5c03ddbdebc48a5a9562074d955d92",
+  "original_prompt": "Ingested from linux-6.6.14/include/rdma/ib.h",
+  "human_readable_source": " \n \n\n#ifndef _RDMA_IB_H\n#define _RDMA_IB_H\n\n#include <linux/types.h>\n#include <linux/sched.h>\n#include <linux/cred.h>\n#include <linux/uaccess.h>\n#include <linux/fs.h>\n\nstruct ib_addr {\n\tunion {\n\t\t__u8\t\tuib_addr8[16];\n\t\t__be16\t\tuib_addr16[8];\n\t\t__be32\t\tuib_addr32[4];\n\t\t__be64\t\tuib_addr64[2];\n\t} ib_u;\n#define sib_addr8\t\tib_u.uib_addr8\n#define sib_addr16\t\tib_u.uib_addr16\n#define sib_addr32\t\tib_u.uib_addr32\n#define sib_addr64\t\tib_u.uib_addr64\n#define sib_raw\t\t\tib_u.uib_addr8\n#define sib_subnet_prefix\tib_u.uib_addr64[0]\n#define sib_interface_id\tib_u.uib_addr64[1]\n};\n\nstatic inline bool ib_addr_any(const struct ib_addr *a)\n{\n\treturn ((a->sib_addr64[0] | a->sib_addr64[1]) == 0);\n}\n\nstatic inline bool ib_addr_loopback(const struct ib_addr *a)\n{\n\treturn ((a->sib_addr32[0] | a->sib_addr32[1] |\n\t\t a->sib_addr32[2] | (a->sib_addr32[3] ^ htonl(1))) == 0);\n}\n\nstatic inline void ib_addr_set(struct ib_addr *addr,\n\t\t\t       __be32 w1, __be32 w2, __be32 w3, __be32 w4)\n{\n\taddr->sib_addr32[0] = w1;\n\taddr->sib_addr32[1] = w2;\n\taddr->sib_addr32[2] = w3;\n\taddr->sib_addr32[3] = w4;\n}\n\nstatic inline int ib_addr_cmp(const struct ib_addr *a1, const struct ib_addr *a2)\n{\n\treturn memcmp(a1, a2, sizeof(struct ib_addr));\n}\n\nstruct sockaddr_ib {\n\tunsigned short int\tsib_family;\t \n\t__be16\t\t\tsib_pkey;\n\t__be32\t\t\tsib_flowinfo;\n\tstruct ib_addr\t\tsib_addr;\n\t__be64\t\t\tsib_sid;\n\t__be64\t\t\tsib_sid_mask;\n\t__u64\t\t\tsib_scope_id;\n};\n\n \nstatic inline bool ib_safe_file_access(struct file *filp)\n{\n\treturn filp->f_cred == current_cred();\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

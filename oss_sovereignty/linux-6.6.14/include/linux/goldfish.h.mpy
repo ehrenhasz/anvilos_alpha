@@ -1,0 +1,9 @@
+{
+  "module_name": "goldfish.h",
+  "hash_id": "d948991a73a5cbabea5977a09d36959d6f36f921ead87bdc2d74667db1b86be0",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/goldfish.h",
+  "human_readable_source": " \n#ifndef __LINUX_GOLDFISH_H\n#define __LINUX_GOLDFISH_H\n\n#include <linux/kernel.h>\n#include <linux/types.h>\n#include <linux/io.h>\n\n \n\n#ifndef gf_ioread32\n#define gf_ioread32 ioread32\n#endif\n#ifndef gf_iowrite32\n#define gf_iowrite32 iowrite32\n#endif\n\nstatic inline void gf_write_ptr(const void *ptr, void __iomem *portl,\n\t\t\t\tvoid __iomem *porth)\n{\n\tconst unsigned long addr = (unsigned long)ptr;\n\n\tgf_iowrite32(lower_32_bits(addr), portl);\n#ifdef CONFIG_64BIT\n\tgf_iowrite32(upper_32_bits(addr), porth);\n#endif\n}\n\nstatic inline void gf_write_dma_addr(const dma_addr_t addr,\n\t\t\t\t     void __iomem *portl,\n\t\t\t\t     void __iomem *porth)\n{\n\tgf_iowrite32(lower_32_bits(addr), portl);\n#ifdef CONFIG_ARCH_DMA_ADDR_T_64BIT\n\tgf_iowrite32(upper_32_bits(addr), porth);\n#endif\n}\n\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

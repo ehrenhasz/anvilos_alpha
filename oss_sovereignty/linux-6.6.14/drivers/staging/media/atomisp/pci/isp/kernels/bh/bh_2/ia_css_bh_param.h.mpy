@@ -1,0 +1,9 @@
+{
+  "module_name": "ia_css_bh_param.h",
+  "hash_id": "4f04877f00360043e11cf368dfd3459c6e8800a57e197a88238ee5bd25d4138e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/isp/kernels/bh/bh_2/ia_css_bh_param.h",
+  "human_readable_source": " \n \n\n#ifndef __IA_CSS_HB_PARAM_H\n#define __IA_CSS_HB_PARAM_H\n\n#include \"type_support.h\"\n\n#ifndef PIPE_GENERATION\n#define __INLINE_HMEM__\n#include \"hmem.h\"\n#endif\n\n#include \"ia_css_bh_types.h\"\n\n \nstruct sh_css_isp_bh_params {\n\t \n\ts32 y_coef_r;\n\ts32 y_coef_g;\n\ts32 y_coef_b;\n};\n\n \nstruct sh_css_isp_bh_hmem_params {\n\tu32 bh[ISP_HIST_COMPONENTS][IA_CSS_HMEM_BH_UNIT_SIZE];\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

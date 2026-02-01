@@ -1,0 +1,9 @@
+{
+  "module_name": "test-fseek.c",
+  "hash_id": "2e6b09a95c3134e61a6b3afa3f7e0cc3e3290fd1af5ed4403f24efdd81fb07ed",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-fseek.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n \n#define _GL_NO_LARGE_FILES\n#include <stdio.h>\n\n#include \"signature.h\"\nSIGNATURE_CHECK (fseek, int, (FILE *, long, int));\n\n#include \"macros.h\"\n\n#ifndef FUNC_UNGETC_BROKEN\n# define FUNC_UNGETC_BROKEN 0\n#endif\n\nint\nmain (int argc, char **argv)\n{\n   \n  int expected = argc > 1 ? 0 : -1;\n  ASSERT (fseek (stdin, 0, SEEK_CUR) == expected);\n  if (argc > 1)\n    {\n       \n      int ch = fgetc (stdin);\n      ASSERT (ch == '#');\n      ASSERT (ungetc (ch, stdin) == ch);\n      ASSERT (fseek (stdin, 2, SEEK_SET) == 0);\n      ch = fgetc (stdin);\n      ASSERT (ch == '/');\n      if (2 < argc)\n        {\n          if (FUNC_UNGETC_BROKEN)\n            {\n              fputs (\"Skipping test: ungetc cannot handle arbitrary bytes\\n\",\n                     stderr);\n              return 77;\n            }\n           \n          ASSERT (ungetc (ch ^ 0xff, stdin) == (ch ^ 0xff));\n        }\n      ASSERT (fseek (stdin, 0, SEEK_END) == 0);\n      ASSERT (fgetc (stdin) == EOF);\n       \n      ASSERT (feof (stdin));\n      ASSERT (fseek (stdin, 0, SEEK_END) == 0);\n      ASSERT (!feof (stdin));\n    }\n  return 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

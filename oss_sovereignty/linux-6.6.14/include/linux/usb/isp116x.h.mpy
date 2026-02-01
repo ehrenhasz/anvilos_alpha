@@ -1,0 +1,9 @@
+{
+  "module_name": "isp116x.h",
+  "hash_id": "f572064bc4d94a893d882c35db267d80a65ddd5f36ccfaba0270979f91ccb5a2",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/usb/isp116x.h",
+  "human_readable_source": " \n \n\n#ifndef __LINUX_USB_ISP116X_H\n#define __LINUX_USB_ISP116X_H\n\nstruct isp116x_platform_data {\n\t \n\tunsigned sel15Kres:1;\n\t \n\tunsigned oc_enable:1;\n\t \n\tunsigned int_act_high:1;\n\t \n\tunsigned int_edge_triggered:1;\n\t \n\tunsigned remote_wakeup_enable:1;\n\t \n\tvoid (*delay) (struct device *dev, int delay);\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

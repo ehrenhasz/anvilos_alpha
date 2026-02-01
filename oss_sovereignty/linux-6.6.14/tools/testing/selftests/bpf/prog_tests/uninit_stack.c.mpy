@@ -1,0 +1,9 @@
+{
+  "module_name": "uninit_stack.c",
+  "hash_id": "f4d3aa94a83b164078b5fa53afc0b6f330c88f3b3e78d042c5d358feb4fa05ec",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/prog_tests/uninit_stack.c",
+  "human_readable_source": "\n\n#include <test_progs.h>\n#include \"uninit_stack.skel.h\"\n\nvoid test_uninit_stack(void)\n{\n\tRUN_TESTS(uninit_stack);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

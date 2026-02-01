@@ -1,0 +1,9 @@
+{
+  "module_name": "arm64.c",
+  "hash_id": "b8823ac179bb717f62a7c8b6f27694bcda37f942e94d3e786af6b6524b288fcb",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/util/libunwind/arm64.c",
+  "human_readable_source": "\n \n\n#define REMOTE_UNWIND_LIBUNWIND\n\n \n#define LIBUNWIND__ARCH_REG_ID(regnum) libunwind__arm64_reg_id(regnum)\n\n#include \"unwind.h\"\n#include \"libunwind-aarch64.h\"\n#define perf_event_arm_regs perf_event_arm64_regs\n#include <../../../arch/arm64/include/uapi/asm/perf_regs.h>\n#undef perf_event_arm_regs\n#include \"../../arch/arm64/util/unwind-libunwind.c\"\n\n \n#undef NO_LIBUNWIND_DEBUG_FRAME\n#ifdef NO_LIBUNWIND_DEBUG_FRAME_AARCH64\n#define NO_LIBUNWIND_DEBUG_FRAME\n#endif\n#include \"util/unwind-libunwind-local.c\"\n\nstruct unwind_libunwind_ops *\narm64_unwind_libunwind_ops = &_unwind_libunwind_ops;\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

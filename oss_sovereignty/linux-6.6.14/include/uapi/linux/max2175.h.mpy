@@ -1,0 +1,9 @@
+{
+  "module_name": "max2175.h",
+  "hash_id": "c4ab198be2f1f33e6ec86a34c40767b28f048cce7292bacf48ad3cf6cdad0c26",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/max2175.h",
+  "human_readable_source": " \n \n\n#ifndef __UAPI_MAX2175_H_\n#define __UAPI_MAX2175_H_\n\n#include <linux/v4l2-controls.h>\n\n#define V4L2_CID_MAX2175_I2S_ENABLE\t(V4L2_CID_USER_MAX217X_BASE + 0x01)\n#define V4L2_CID_MAX2175_HSLS\t\t(V4L2_CID_USER_MAX217X_BASE + 0x02)\n#define V4L2_CID_MAX2175_RX_MODE\t(V4L2_CID_USER_MAX217X_BASE + 0x03)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

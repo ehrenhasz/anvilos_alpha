@@ -1,0 +1,9 @@
+{
+  "module_name": "xdp_perf.c",
+  "hash_id": "df0b0dcb10a77c5f86d0f806370f5c7fe0eee069c7f6428784f1f184c4135215",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/prog_tests/xdp_perf.c",
+  "human_readable_source": "\n#include <test_progs.h>\n\nvoid test_xdp_perf(void)\n{\n\tconst char *file = \"./xdp_dummy.bpf.o\";\n\tstruct bpf_object *obj;\n\tchar in[128], out[128];\n\tint err, prog_fd;\n\tLIBBPF_OPTS(bpf_test_run_opts, topts,\n\t\t.data_in = in,\n\t\t.data_size_in = sizeof(in),\n\t\t.data_out = out,\n\t\t.data_size_out = sizeof(out),\n\t\t.repeat = 1000000,\n\t);\n\n\terr = bpf_prog_test_load(file, BPF_PROG_TYPE_XDP, &obj, &prog_fd);\n\tif (CHECK_FAIL(err))\n\t\treturn;\n\n\terr = bpf_prog_test_run_opts(prog_fd, &topts);\n\tASSERT_OK(err, \"test_run\");\n\tASSERT_EQ(topts.retval, XDP_PASS, \"test_run retval\");\n\tASSERT_EQ(topts.data_size_out, 128, \"test_run data_size_out\");\n\n\tbpf_object__close(obj);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

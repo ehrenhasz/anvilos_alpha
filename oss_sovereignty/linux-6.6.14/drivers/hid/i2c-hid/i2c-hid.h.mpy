@@ -1,0 +1,9 @@
+{
+  "module_name": "i2c-hid.h",
+  "hash_id": "81f5e4c267dee3e9f0179d0876eb0605796ed597cf2bacb08379b5c3f997922f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/hid/i2c-hid/i2c-hid.h",
+  "human_readable_source": " \n\n#ifndef I2C_HID_H\n#define I2C_HID_H\n\n#include <linux/i2c.h>\n\n#ifdef CONFIG_DMI\nstruct i2c_hid_desc *i2c_hid_get_dmi_i2c_hid_desc_override(uint8_t *i2c_name);\nchar *i2c_hid_get_dmi_hid_report_desc_override(uint8_t *i2c_name,\n\t\t\t\t\t       unsigned int *size);\nu32 i2c_hid_get_dmi_quirks(const u16 vendor, const u16 product);\n#else\nstatic inline struct i2c_hid_desc\n\t\t   *i2c_hid_get_dmi_i2c_hid_desc_override(uint8_t *i2c_name)\n{ return NULL; }\nstatic inline char *i2c_hid_get_dmi_hid_report_desc_override(uint8_t *i2c_name,\n\t\t\t\t\t\t\t     unsigned int *size)\n{ return NULL; }\nstatic inline u32 i2c_hid_get_dmi_quirks(const u16 vendor, const u16 product)\n{ return 0; }\n#endif\n\n \nstruct i2chid_ops {\n\tint (*power_up)(struct i2chid_ops *ops);\n\tvoid (*power_down)(struct i2chid_ops *ops);\n\tvoid (*shutdown_tail)(struct i2chid_ops *ops);\n};\n\nint i2c_hid_core_probe(struct i2c_client *client, struct i2chid_ops *ops,\n\t\t       u16 hid_descriptor_address, u32 quirks);\nvoid i2c_hid_core_remove(struct i2c_client *client);\n\nvoid i2c_hid_core_shutdown(struct i2c_client *client);\n\nextern const struct dev_pm_ops i2c_hid_core_pm;\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

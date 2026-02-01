@@ -1,0 +1,9 @@
+{
+  "module_name": "xmalloc.h",
+  "hash_id": "c8d4c89cf89ab626ce0d541a4083428078a3cf679967052bf6b3b7a88a11ab58",
+  "original_prompt": "Ingested from openssh-9.6p1/xmalloc.h",
+  "human_readable_source": " \n\n \n\nvoid\t*xmalloc(size_t);\nvoid\t*xcalloc(size_t, size_t);\nvoid\t*xreallocarray(void *, size_t, size_t);\nvoid\t*xrecallocarray(void *, size_t, size_t, size_t);\nchar\t*xstrdup(const char *);\nint\t xasprintf(char **, const char *, ...)\n    __attribute__((__format__ (printf, 2, 3))) __attribute__((__nonnull__ (2)));\nint\t xvasprintf(char **, const char *, va_list)\n    __attribute__((__nonnull__ (2)));\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

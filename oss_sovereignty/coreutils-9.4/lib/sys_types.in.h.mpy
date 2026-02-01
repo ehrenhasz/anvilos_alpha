@@ -1,0 +1,9 @@
+{
+  "module_name": "sys_types.in.h",
+  "hash_id": "478f0a223b6682c41df3a8dbb8befd1aeb486d5729af64cfa6308d07bf369c08",
+  "original_prompt": "Ingested from coreutils-9.4/lib/sys_types.in.h",
+  "human_readable_source": " \n#if !_GL_CONFIG_H_INCLUDED\n #error \"Please include config.h first.\"\n#endif\n\n#if defined _WIN32 && !defined __CYGWIN__ \\\n    && (defined __need_off_t || defined __need___off64_t \\\n        || defined __need_ssize_t || defined __need_time_t)\n\n \n\n#@INCLUDE_NEXT@ @NEXT_SYS_TYPES_H@\n\n#else\n \n\n#ifndef _@GUARD_PREFIX@_SYS_TYPES_H\n\n \n# define _GL_INCLUDING_SYS_TYPES_H\n#@INCLUDE_NEXT@ @NEXT_SYS_TYPES_H@\n# undef _GL_INCLUDING_SYS_TYPES_H\n\n#ifndef _@GUARD_PREFIX@_SYS_TYPES_H\n#define _@GUARD_PREFIX@_SYS_TYPES_H\n\n \n#if @WINDOWS_64_BIT_OFF_T@\n \n# if defined _MSC_VER\n#  define off_t __int64\n# else\n#  define off_t long long int\n# endif\n \n# define _GL_WINDOWS_64_BIT_OFF_T 1\n#endif\n\n \n#if @WINDOWS_STAT_INODES@\n\n# if @WINDOWS_STAT_INODES@ == 2\n \n\n \n#  if !defined GNULIB_defined_dev_t\ntypedef unsigned long long int rpl_dev_t;\n#   undef dev_t\n#   define dev_t rpl_dev_t\n#   define GNULIB_defined_dev_t 1\n#  endif\n\n \n#  if !defined GNULIB_defined_ino_t\n \ntypedef struct { unsigned long long int _gl_ino[2]; } rpl_ino_t;\n#   undef ino_t\n#   define ino_t rpl_ino_t\n#   define GNULIB_defined_ino_t 1\n#  endif\n\n# else  \n\n \n#  if !defined GNULIB_defined_ino_t\ntypedef unsigned long long int rpl_ino_t;\n#   undef ino_t\n#   define ino_t rpl_ino_t\n#   define GNULIB_defined_ino_t 1\n#  endif\n\n# endif\n\n \n# define _GL_WINDOWS_STAT_INODES @WINDOWS_STAT_INODES@\n\n#endif\n\n \n \n#if (defined _WIN32 && ! defined __CYGWIN__) && ! defined __GLIBC__\n# include <stddef.h>\n#endif\n\n#endif  \n#endif  \n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

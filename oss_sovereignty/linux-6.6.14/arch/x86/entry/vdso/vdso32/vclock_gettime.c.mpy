@@ -1,0 +1,9 @@
+{
+  "module_name": "vclock_gettime.c",
+  "hash_id": "dbf0f4726a767d6059b7721d45aae5faaa009c549509713adeeb54b557df2d30",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/entry/vdso/vdso32/vclock_gettime.c",
+  "human_readable_source": "\n#define BUILD_VDSO32\n#include \"fake_32bit_build.h\"\n#include \"../vclock_gettime.c\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

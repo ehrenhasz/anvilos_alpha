@@ -1,0 +1,9 @@
+{
+  "module_name": "ufs-fault-injection.h",
+  "hash_id": "a3c1ab183c5e13e9527153ba4c9361257a94f5cec806167f37b41215b14400cf",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/ufs/core/ufs-fault-injection.h",
+  "human_readable_source": " \n\n#ifndef _UFS_FAULT_INJECTION_H\n#define _UFS_FAULT_INJECTION_H\n\n#include <linux/kconfig.h>\n#include <linux/types.h>\n\n#ifdef CONFIG_SCSI_UFS_FAULT_INJECTION\nbool ufs_trigger_eh(void);\nbool ufs_fail_completion(void);\n#else\nstatic inline bool ufs_trigger_eh(void)\n{\n\treturn false;\n}\n\nstatic inline bool ufs_fail_completion(void)\n{\n\treturn false;\n}\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

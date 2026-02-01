@@ -1,0 +1,9 @@
+{
+  "module_name": "windows-recmutex.h",
+  "hash_id": "2a1e94755e1696cabd7b5ca36c6496e5029e693f140292fd8aa4d5a51f073f2b",
+  "original_prompt": "Ingested from coreutils-9.4/lib/windows-recmutex.h",
+  "human_readable_source": " \n\n#ifndef _WINDOWS_RECMUTEX_H\n#define _WINDOWS_RECMUTEX_H\n\n#define WIN32_LEAN_AND_MEAN   \n#include <windows.h>\n\n#include \"windows-initguard.h\"\n\n \n\ntypedef struct\n        {\n          glwthread_initguard_t guard;  \n          DWORD owner;\n          unsigned long depth;\n          CRITICAL_SECTION lock;\n        }\n        glwthread_recmutex_t;\n\n#define GLWTHREAD_RECMUTEX_INIT { GLWTHREAD_INITGUARD_INIT, 0, 0 }\n\n#ifdef __cplusplus\nextern \"C\" {\n#endif\n\nextern void glwthread_recmutex_init (glwthread_recmutex_t *mutex);\nextern int glwthread_recmutex_lock (glwthread_recmutex_t *mutex);\nextern int glwthread_recmutex_trylock (glwthread_recmutex_t *mutex);\nextern int glwthread_recmutex_unlock (glwthread_recmutex_t *mutex);\nextern int glwthread_recmutex_destroy (glwthread_recmutex_t *mutex);\n\n#ifdef __cplusplus\n}\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

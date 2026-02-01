@@ -1,0 +1,9 @@
+{
+  "module_name": "mtk_sip_svc.h",
+  "hash_id": "8f55738b05a61d581b8c3a11bebf8d3e5800ca3bbe7914a32f5354cdd66325e9",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/soc/mediatek/mtk_sip_svc.h",
+  "human_readable_source": " \n \n#ifndef __MTK_SIP_SVC_H\n#define __MTK_SIP_SVC_H\n\n \n#define SIP_SVC_E_SUCCESS               0\n#define SIP_SVC_E_NOT_SUPPORTED         -1\n#define SIP_SVC_E_INVALID_PARAMS        -2\n#define SIP_SVC_E_INVALID_RANGE         -3\n#define SIP_SVC_E_PERMISSION_DENIED     -4\n\n#ifdef CONFIG_ARM64\n#define MTK_SIP_SMC_CONVENTION          ARM_SMCCC_SMC_64\n#else\n#define MTK_SIP_SMC_CONVENTION          ARM_SMCCC_SMC_32\n#endif\n\n#define MTK_SIP_SMC_CMD(fn_id) \\\n\tARM_SMCCC_CALL_VAL(ARM_SMCCC_FAST_CALL, MTK_SIP_SMC_CONVENTION, \\\n\t\t\t   ARM_SMCCC_OWNER_SIP, fn_id)\n\n \n#define MTK_SIP_KERNEL_IOMMU_CONTROL\tMTK_SIP_SMC_CMD(0x514)\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

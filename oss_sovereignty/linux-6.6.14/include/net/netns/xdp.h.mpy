@@ -1,0 +1,9 @@
+{
+  "module_name": "xdp.h",
+  "hash_id": "7434230f2416dec45b7f69d36e2940a959088b6ef8f07ac68cd50f25d797d4d1",
+  "original_prompt": "Ingested from linux-6.6.14/include/net/netns/xdp.h",
+  "human_readable_source": " \n#ifndef __NETNS_XDP_H__\n#define __NETNS_XDP_H__\n\n#include <linux/mutex.h>\n#include <linux/types.h>\n\nstruct netns_xdp {\n\tstruct mutex\t\tlock;\n\tstruct hlist_head\tlist;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

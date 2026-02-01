@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "fdb5ed1931257259f174108d6095456f528b7f872442166a95369feade1abcf3",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/dma/ptdma/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# AMD Passthru DMA driver\n#\n\nobj-$(CONFIG_AMD_PTDMA) += ptdma.o\n\nptdma-objs := ptdma-dev.o ptdma-dmaengine.o ptdma-debugfs.o\n\nptdma-$(CONFIG_PCI) += ptdma-pci.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

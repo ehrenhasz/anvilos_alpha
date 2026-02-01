@@ -1,0 +1,9 @@
+{
+  "module_name": "p_move.c",
+  "hash_id": "38103998298872d87a4ead46ad8ce35ec6f9d0df8c0f32dea7c5178e06e64b96",
+  "original_prompt": "Ingested from ncurses-6.4/panel/p_move.c",
+  "human_readable_source": " \n\n \n\n \n#include \"panel.priv.h\"\n\nMODULE_ID(\"$Id: p_move.c,v 1.13 2020/05/24 01:40:20 anonymous.maarten Exp $\")\n\nPANEL_EXPORT(int)\nmove_panel(PANEL * pan, int starty, int startx)\n{\n  int rc = ERR;\n\n  T((T_CALLED(\"move_panel(%p,%d,%d)\"), (void *)pan, starty, startx));\n\n  if (pan)\n    {\n      GetHook(pan);\n      if (IS_LINKED(pan))\n\t{\n\t  Touchpan(pan);\n\t  PANEL_UPDATE(pan, (PANEL *) 0);\n\t}\n      rc = mvwin(pan->win, starty, startx);\n    }\n  returnCode(rc);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

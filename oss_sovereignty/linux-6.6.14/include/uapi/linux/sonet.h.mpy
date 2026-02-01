@@ -1,0 +1,9 @@
+{
+  "module_name": "sonet.h",
+  "hash_id": "af73ffaf8ddabc090c2f80a768a22a8d83102de14cc33015c7362dedda280c9d",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/sonet.h",
+  "human_readable_source": " \n \n \n \n \n\n#ifndef _UAPILINUX_SONET_H\n#define _UAPILINUX_SONET_H\n\n#define __SONET_ITEMS \\\n    __HANDLE_ITEM(section_bip); \t  \\\n    __HANDLE_ITEM(line_bip);\t\t  \\\n    __HANDLE_ITEM(path_bip);\t\t  \\\n    __HANDLE_ITEM(line_febe);\t\t  \\\n    __HANDLE_ITEM(path_febe);\t\t  \\\n    __HANDLE_ITEM(corr_hcs);\t\t  \\\n    __HANDLE_ITEM(uncorr_hcs);\t\t  \\\n    __HANDLE_ITEM(tx_cells);\t\t  \\\n    __HANDLE_ITEM(rx_cells);\t\t \n\nstruct sonet_stats {\n#define __HANDLE_ITEM(i) int i\n\t__SONET_ITEMS\n#undef __HANDLE_ITEM\n} __attribute__ ((packed));\n\n\n#define SONET_GETSTAT\t_IOR('a',ATMIOC_PHYTYP,struct sonet_stats)\n\t\t\t\t\t \n#define SONET_GETSTATZ\t_IOR('a',ATMIOC_PHYTYP+1,struct sonet_stats)\n\t\t\t\t\t \n#define SONET_SETDIAG\t_IOWR('a',ATMIOC_PHYTYP+2,int)\n\t\t\t\t\t \n#define SONET_CLRDIAG\t_IOWR('a',ATMIOC_PHYTYP+3,int)\n\t\t\t\t\t \n#define SONET_GETDIAG\t_IOR('a',ATMIOC_PHYTYP+4,int)\n\t\t\t\t\t \n#define SONET_SETFRAMING _IOW('a',ATMIOC_PHYTYP+5,int)\n\t\t\t\t\t \n#define SONET_GETFRAMING _IOR('a',ATMIOC_PHYTYP+6,int)\n\t\t\t\t\t \n#define SONET_GETFRSENSE _IOR('a',ATMIOC_PHYTYP+7, \\\n  unsigned char[SONET_FRSENSE_SIZE])\t \n\n#define SONET_INS_SBIP\t  1\t\t \n#define SONET_INS_LBIP\t  2\t\t \n#define SONET_INS_PBIP\t  4\t\t \n#define SONET_INS_FRAME\t  8\t\t \n#define SONET_INS_LOS\t 16\t\t \n#define SONET_INS_LAIS\t 32\t\t \n#define SONET_INS_PAIS\t 64\t\t \n#define SONET_INS_HCS\t128\t\t \n\n#define SONET_FRAME_SONET 0\t\t \n#define SONET_FRAME_SDH   1\t\t \n\n#define SONET_FRSENSE_SIZE 6\t\t \n\n\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

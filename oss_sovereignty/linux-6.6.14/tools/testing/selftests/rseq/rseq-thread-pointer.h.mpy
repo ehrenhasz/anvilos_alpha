@@ -1,0 +1,9 @@
+{
+  "module_name": "rseq-thread-pointer.h",
+  "hash_id": "f18244d8680a5d4128ce0f4249116e96bd53d3392e20b56c70e4f3be7e8b5833",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/rseq/rseq-thread-pointer.h",
+  "human_readable_source": " \n \n\n#ifndef _RSEQ_THREAD_POINTER\n#define _RSEQ_THREAD_POINTER\n\n#if defined(__x86_64__) || defined(__i386__)\n#include \"rseq-x86-thread-pointer.h\"\n#elif defined(__PPC__)\n#include \"rseq-ppc-thread-pointer.h\"\n#else\n#include \"rseq-generic-thread-pointer.h\"\n#endif\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

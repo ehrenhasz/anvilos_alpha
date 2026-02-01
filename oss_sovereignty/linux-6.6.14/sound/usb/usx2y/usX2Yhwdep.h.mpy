@@ -1,0 +1,9 @@
+{
+  "module_name": "usX2Yhwdep.h",
+  "hash_id": "25227d1688c2716c06fdf9d63952bbe5dccbe303b99df5fb16d298db85bbf89f",
+  "original_prompt": "Ingested from linux-6.6.14/sound/usb/usx2y/usX2Yhwdep.h",
+  "human_readable_source": " \n#ifndef USX2YHWDEP_H\n#define USX2YHWDEP_H\n\nint usx2y_hwdep_new(struct snd_card *card, struct usb_device *device);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

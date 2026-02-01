@@ -1,0 +1,9 @@
+{
+  "module_name": "dvb_dummy_fe.h",
+  "hash_id": "b7f016751f6605c30ac285d6118e60b770ce6ced855579f191c9def9ca95791a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/dvb-frontends/dvb_dummy_fe.h",
+  "human_readable_source": " \n \n\n#ifndef DVB_DUMMY_FE_H\n#define DVB_DUMMY_FE_H\n\n#include <linux/dvb/frontend.h>\n#include <media/dvb_frontend.h>\n\n#if IS_REACHABLE(CONFIG_DVB_DUMMY_FE)\nstruct dvb_frontend *dvb_dummy_fe_ofdm_attach(void);\nstruct dvb_frontend *dvb_dummy_fe_qpsk_attach(void);\nstruct dvb_frontend *dvb_dummy_fe_qam_attach(void);\n#else\nstatic inline struct dvb_frontend *dvb_dummy_fe_ofdm_attach(void)\n{\n\tpr_warn(\"%s: driver disabled by Kconfig\\n\", __func__);\n\treturn NULL;\n}\nstatic inline struct dvb_frontend *dvb_dummy_fe_qpsk_attach(void)\n{\n\tpr_warn(\"%s: driver disabled by Kconfig\\n\", __func__);\n\treturn NULL;\n}\nstatic inline struct dvb_frontend *dvb_dummy_fe_qam_attach(void)\n{\n\tpr_warn(\"%s: driver disabled by Kconfig\\n\", __func__);\n\treturn NULL;\n}\n#endif  \n\n#endif \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

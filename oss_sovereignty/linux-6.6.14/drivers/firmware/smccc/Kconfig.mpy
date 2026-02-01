@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "0af607d631387b916da766e02641e43a0d8d24288fec636ac70a8e113faf3919",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/firmware/smccc/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig HAVE_ARM_SMCCC\n\tbool\n\thelp\n\t  Include support for the Secure Monitor Call (SMC) and Hypervisor\n\t  Call (HVC) instructions on Armv7 and above architectures.\n\nconfig HAVE_ARM_SMCCC_DISCOVERY\n\tbool\n\tdepends on ARM_PSCI_FW\n\tdefault y\n\thelp\n\t SMCCC v1.0 lacked discoverability and hence PSCI v1.0 was updated\n\t to add SMCCC discovery mechanism though the PSCI firmware\n\t implementation of PSCI_FEATURES(SMCCC_VERSION) which returns\n\t success on firmware compliant to SMCCC v1.1 and above.\n\nconfig ARM_SMCCC_SOC_ID\n\tbool \"SoC bus device for the ARM SMCCC SOC_ID\"\n\tdepends on HAVE_ARM_SMCCC_DISCOVERY\n\tdefault y\n\tselect SOC_BUS\n\thelp\n\t  Include support for the SoC bus on the ARM SMCCC firmware based\n\t  platforms providing some sysfs information about the SoC variant.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

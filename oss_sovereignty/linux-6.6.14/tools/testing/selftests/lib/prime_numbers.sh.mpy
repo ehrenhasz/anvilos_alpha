@@ -1,0 +1,9 @@
+{
+  "module_name": "prime_numbers.sh",
+  "hash_id": "4b39c5b62acf2b6c5d5b67c4500ae4e4de09641b0256fa6506fdad477d62ae88",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/lib/prime_numbers.sh",
+  "human_readable_source": "#!/bin/sh\n# SPDX-License-Identifier: GPL-2.0\n# Checks fast/slow prime_number generation for inconsistencies\n$(dirname $0)/../kselftest/module.sh \"prime numbers\" prime_numbers selftest=65536\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "ltversion.m4",
+  "hash_id": "2a6baf40b64f34234e0b76c7ff62b01a1f6bbf60089f4f74506b49f800ffaf9e",
+  "original_prompt": "Ingested from zfs-2.2.2/config/ltversion.m4",
+  "human_readable_source": "# ltversion.m4 -- version numbers\t\t\t-*- Autoconf -*-\n#\n#   Copyright (C) 2004, 2011-2019, 2021-2022 Free Software Foundation,\n#   Inc.\n#   Written by Scott James Remnant, 2004\n#\n# This file is free software; the Free Software Foundation gives\n# unlimited permission to copy and/or distribute it, with or without\n# modifications, as long as this notice is preserved.\n\n# @configure_input@\n\n# serial 4245 ltversion.m4\n# This file is part of GNU Libtool\n\nm4_define([LT_PACKAGE_VERSION], [2.4.7])\nm4_define([LT_PACKAGE_REVISION], [2.4.7])\n\nAC_DEFUN([LTVERSION_VERSION],\n[macro_version='2.4.7'\nmacro_revision='2.4.7'\n_LT_DECL(, macro_version, 0, [Which release of libtool.m4 was used?])\n_LT_DECL(, macro_revision, 0)\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

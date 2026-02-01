@@ -1,0 +1,9 @@
+{
+  "module_name": "serialio.h",
+  "hash_id": "4cfaf688a43c3a53e66d84a86adc5cae36690bb6d83a17dafb2063f466d5143e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/accessibility/speakup/serialio.h",
+  "human_readable_source": " \n#ifndef _SPEAKUP_SERIAL_H\n#define _SPEAKUP_SERIAL_H\n\n#include <linux/serial.h>\t \n#include <linux/serial_reg.h>\t \n#include <linux/serial_core.h>\n\n#include \"spk_priv.h\"\n\n \nstruct old_serial_port {\n\tunsigned int uart;  \n\tunsigned int baud_base;\n\tunsigned int port;\n\tunsigned int irq;\n\tupf_t flags;  \n};\n\n \n#define SPK_SERIAL_TIMEOUT SPK_SYNTH_TIMEOUT\n \n#define SPK_XMITR_TIMEOUT 100000\n \n#define SPK_CTS_TIMEOUT 100000\n \n#define SPK_LO_TTY 0\n#define SPK_HI_TTY 3\n \n#define NUM_DISABLE_TIMEOUTS 3\n \n#define SPK_TIMEOUT 100\n\n#define spk_serial_tx_busy() \\\n\t(!uart_lsr_tx_empty(inb(speakup_info.port_tts + UART_LSR)))\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

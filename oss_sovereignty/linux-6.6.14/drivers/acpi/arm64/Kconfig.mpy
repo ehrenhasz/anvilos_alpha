@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "ed2f6f3db9f8585f50b0bde0578e8974762313fa1e3fe4e3cb4622404407cf96",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/acpi/arm64/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# ACPI Configuration for ARM64\n#\n\nconfig ACPI_IORT\n\tbool\n\nconfig ACPI_GTDT\n\tbool\n\nconfig ACPI_AGDI\n\tbool \"Arm Generic Diagnostic Dump and Reset Device Interface\"\n\tdepends on ARM_SDE_INTERFACE\n\thelp\n\t  Arm Generic Diagnostic Dump and Reset Device Interface (AGDI) is\n\t  a standard that enables issuing a non-maskable diagnostic dump and\n\t  reset command.\n\n\t  If set, the kernel parses AGDI table and listens for the command.\n\nconfig ACPI_APMT\n\tbool\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

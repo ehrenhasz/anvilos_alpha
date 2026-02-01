@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "7380c1f9e8a81d8b9b2683f38399fb2ba7ce3f00c730a236c8c7d49e7708491f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/smsc/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for the SMSC network device drivers.\n#\n\nobj-$(CONFIG_SMC9194) += smc9194.o\nobj-$(CONFIG_SMC91X) += smc91x.o\nobj-$(CONFIG_PCMCIA_SMC91C92) += smc91c92_cs.o\nobj-$(CONFIG_EPIC100) += epic100.o\nobj-$(CONFIG_SMSC9420) += smsc9420.o\nobj-$(CONFIG_SMSC911X) += smsc911x.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

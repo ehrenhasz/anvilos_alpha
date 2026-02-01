@@ -1,0 +1,9 @@
+{
+  "module_name": "radeon_legacy_encoders.h",
+  "hash_id": "c246128ea72eb5a9f662d3523d6d250602f543a8ae30f365ee84f0812c132e6f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/radeon/radeon_legacy_encoders.h",
+  "human_readable_source": " \n\n#ifndef __RADEON_LEGACY_ENCODERS_H__\n#define __RADEON_LEGACY_ENCODERS_H__\n\nvoid radeon_legacy_backlight_init(struct radeon_encoder *radeon_encoder,\n\t\t\t\t  struct drm_connector *drm_connector);\nvoid radeon_add_legacy_encoder(struct drm_device *dev, uint32_t encoder_enum,\n\t\t\t       uint32_t supported_device);\n\n#endif\t\t\t\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

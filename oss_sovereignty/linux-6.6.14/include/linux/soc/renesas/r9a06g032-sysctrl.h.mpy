@@ -1,0 +1,9 @@
+{
+  "module_name": "r9a06g032-sysctrl.h",
+  "hash_id": "ff169a740cc7ce1c459948d40a07ef92ec000cbadfe11ddecdb9573457786fd2",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/soc/renesas/r9a06g032-sysctrl.h",
+  "human_readable_source": " \n#ifndef __LINUX_SOC_RENESAS_R9A06G032_SYSCTRL_H__\n#define __LINUX_SOC_RENESAS_R9A06G032_SYSCTRL_H__\n\n#ifdef CONFIG_CLK_R9A06G032\nint r9a06g032_sysctrl_set_dmamux(u32 mask, u32 val);\n#else\nstatic inline int r9a06g032_sysctrl_set_dmamux(u32 mask, u32 val) { return -ENODEV; }\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

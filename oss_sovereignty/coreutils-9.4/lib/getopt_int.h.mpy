@@ -1,0 +1,9 @@
+{
+  "module_name": "getopt_int.h",
+  "hash_id": "572f15acbb9c68f8c6d9248f5625f1d2c8b316e3cd6141ba244d57fe9053f581",
+  "original_prompt": "Ingested from coreutils-9.4/lib/getopt_int.h",
+  "human_readable_source": " \n\n \n\nenum __ord\n  {\n    REQUIRE_ORDER, PERMUTE, RETURN_IN_ORDER\n  };\n\n \nstruct _getopt_data\n{\n   \n  int optind;\n  int opterr;\n  int optopt;\n  char *optarg;\n\n   \n\n   \n  int __initialized;\n\n   \n  char *__nextchar;\n\n   \n  enum __ord __ordering;\n\n   \n\n   \n\n  int __first_nonopt;\n  int __last_nonopt;\n};\n\n \n#define _GETOPT_DATA_INITIALIZER\t{ 1, 1 }\n\nextern int _getopt_internal_r (int ___argc, char **___argv,\n\t\t\t       const char *__shortopts,\n\t\t\t       const struct option *__longopts, int *__longind,\n\t\t\t       int __long_only, struct _getopt_data *__data,\n\t\t\t       int __posixly_correct);\n\nextern int _getopt_long_r (int ___argc, char **___argv,\n\t\t\t   const char *__shortopts,\n\t\t\t   const struct option *__longopts, int *__longind,\n\t\t\t   struct _getopt_data *__data);\n\nextern int _getopt_long_only_r (int ___argc, char **___argv,\n\t\t\t\tconst char *__shortopts,\n\t\t\t\tconst struct option *__longopts,\n\t\t\t\tint *__longind,\n\t\t\t\tstruct _getopt_data *__data);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "btf__core_reloc_arrays___diff_arr_dim.c",
+  "hash_id": "71073d7c35203a1cd0b6360707b6b8cfec1a72d1d7aea91fcc3a048467e1b717",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/btf__core_reloc_arrays___diff_arr_dim.c",
+  "human_readable_source": "#include \"core_reloc_types.h\"\n\nvoid f(struct core_reloc_arrays___diff_arr_dim x) {}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

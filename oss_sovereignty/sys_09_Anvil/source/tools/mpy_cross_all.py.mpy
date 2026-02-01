@@ -1,0 +1,9 @@
+{
+  "module_name": "mpy_cross_all.py",
+  "hash_id": "cb9cec71bac06fdc8f0ac97f2bcb1709c4e01554f7b3c27fdfef07fd656a6db0",
+  "original_prompt": "Ingested from sys_09_Anvil/source/tools/mpy_cross_all.py",
+  "human_readable_source": "#!/usr/bin/env python3\nimport argparse\nimport os\nimport os.path\n\nargparser = argparse.ArgumentParser(description=\"Compile all .py files to .mpy recursively\")\nargparser.add_argument(\"-o\", \"--out\", help=\"output directory (default: input dir)\")\nargparser.add_argument(\"--target\", help=\"select MicroPython target config\")\nargparser.add_argument(\"dir\", help=\"input directory\")\nargs = argparser.parse_args()\n\nTARGET_OPTS = {\n    \"unix\": \"\",\n    \"baremetal\": \"\",\n}\n\nargs.dir = args.dir.rstrip(\"/\")\n\nif not args.out:\n    args.out = args.dir\n\npath_prefix_len = len(args.dir) + 1\n\nfor path, subdirs, files in os.walk(args.dir):\n    for f in files:\n        if f.endswith(\".py\"):\n            fpath = path + \"/\" + f\n            # print(fpath)\n            out_fpath = args.out + \"/\" + fpath[path_prefix_len:-3] + \".mpy\"\n            out_dir = os.path.dirname(out_fpath)\n            if not os.path.isdir(out_dir):\n                os.makedirs(out_dir)\n            cmd = \"mpy-cross -v -v %s -s %s %s -o %s\" % (\n                TARGET_OPTS.get(args.target, \"\"),\n                fpath[path_prefix_len:],\n                fpath,\n                out_fpath,\n            )\n            # print(cmd)\n            res = os.system(cmd)\n            assert res == 0\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

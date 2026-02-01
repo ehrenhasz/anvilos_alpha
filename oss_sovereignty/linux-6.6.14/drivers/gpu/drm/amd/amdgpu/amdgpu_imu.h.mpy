@@ -1,0 +1,9 @@
+{
+  "module_name": "amdgpu_imu.h",
+  "hash_id": "cf1815e34ac1f22c3d1a45c1b44964d83fef419f31407451fc5df98f54362e52",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/amdgpu/amdgpu_imu.h",
+  "human_readable_source": " \n\n#ifndef __AMDGPU_IMU_H__\n#define __AMDGPU_IMU_H__\n\nenum imu_work_mode {\n\tDEBUG_MODE,\n\tMISSION_MODE\n};\n\nstruct amdgpu_imu_funcs {\n    int (*init_microcode)(struct amdgpu_device *adev);\n    int (*load_microcode)(struct amdgpu_device *adev);\n    void (*setup_imu)(struct amdgpu_device *adev);\n    int (*start_imu)(struct amdgpu_device *adev);\n    void (*program_rlc_ram)(struct amdgpu_device *adev);\n    int (*wait_for_reset_status)(struct amdgpu_device *adev);\n};\n\nstruct imu_rlc_ram_golden {\n    u32 hwip;\n    u32 instance;\n    u32 segment;\n    u32 reg;\n    u32 data;\n    u32 addr_mask;\n};\n\n#define IMU_RLC_RAM_GOLDEN_VALUE(ip, inst, reg, data, addr_mask) \\\n    { ip##_HWIP, inst, reg##_BASE_IDX, reg, data, addr_mask }\n\nstruct amdgpu_imu {\n    const struct amdgpu_imu_funcs *funcs;\n    enum imu_work_mode mode;\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

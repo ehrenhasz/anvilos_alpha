@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "54e86cb12ce925583d838fb0e25a1912ef521d61dbd1ca0dd8faef8efc452298",
+  "original_prompt": "Ingested from linux-6.6.14/fs/openpromfs/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Makefile for the Linux Sun Openprom filesystem routines.\n#\n\nobj-$(CONFIG_SUN_OPENPROMFS) += openpromfs.o\n\nopenpromfs-objs := inode.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

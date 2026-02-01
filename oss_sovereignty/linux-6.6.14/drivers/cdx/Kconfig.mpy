@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "db5b47e4288baee87d9d59fa9f119152ff23b01cf5357ae3a203f560ba475508",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/cdx/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# CDX bus configuration\n#\n# Copyright (C) 2022-2023, Advanced Micro Devices, Inc.\n#\n\nconfig CDX_BUS\n\tbool \"CDX Bus driver\"\n\tdepends on OF && ARM64\n\thelp\n\t  Driver to enable Composable DMA Transfer(CDX) Bus. CDX bus\n\t  exposes Fabric devices which uses composable DMA IP to the\n\t  APU. CDX bus provides a mechanism for scanning and probing\n\t  of CDX devices. CDX devices are memory mapped on system bus\n\t  for embedded CPUs. CDX bus uses CDX controller and firmware\n\t  to scan these CDX devices.\n\nsource \"drivers/cdx/controller/Kconfig\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

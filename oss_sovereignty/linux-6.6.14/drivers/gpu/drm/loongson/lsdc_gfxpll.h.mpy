@@ -1,0 +1,9 @@
+{
+  "module_name": "lsdc_gfxpll.h",
+  "hash_id": "fdd7e80348d0006aa61701be0f04881d80b14158478307ce4a64545b0f8d2714",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/loongson/lsdc_gfxpll.h",
+  "human_readable_source": " \n \n\n#ifndef __LSDC_GFXPLL_H__\n#define __LSDC_GFXPLL_H__\n\n#include <drm/drm_device.h>\n\nstruct loongson_gfxpll;\n\nstruct loongson_gfxpll_parms {\n\tunsigned int ref_clock;\n\tunsigned int div_ref;\n\tunsigned int loopc;\n\tunsigned int div_out_dc;\n\tunsigned int div_out_gmc;\n\tunsigned int div_out_gpu;\n};\n\nstruct loongson_gfxpll_funcs {\n\tint (*init)(struct loongson_gfxpll * const this);\n\n\tint (*update)(struct loongson_gfxpll * const this,\n\t\t      struct loongson_gfxpll_parms const *pin);\n\n\tvoid (*get_rates)(struct loongson_gfxpll * const this,\n\t\t\t  unsigned int *dc, unsigned int *gmc, unsigned int *gpu);\n\n\tvoid (*print)(struct loongson_gfxpll * const this,\n\t\t      struct drm_printer *printer, bool verbose);\n};\n\nstruct loongson_gfxpll {\n\tstruct drm_device *ddev;\n\tvoid __iomem *mmio;\n\n\t \n\tu32 reg_base;\n\t \n\tu32 reg_size;\n\n\tconst struct loongson_gfxpll_funcs *funcs;\n\n\tstruct loongson_gfxpll_parms parms;\n};\n\nint loongson_gfxpll_create(struct drm_device *ddev,\n\t\t\t   struct loongson_gfxpll **ppout);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

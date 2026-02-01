@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "099f89b76286d9b6112d45dbb92adf309ee8c8fbc4e628556de14d5e5eb4bf72",
+  "original_prompt": "Ingested from linux-6.6.14/sound/mips/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n# ALSA MIPS drivers\n\nmenuconfig SND_MIPS\n\tbool \"MIPS sound devices\"\n\tdepends on MIPS\n\tdefault y\n\thelp\n\t  Support for sound devices of MIPS architectures.\n\nif SND_MIPS\n\nconfig SND_SGI_O2\n\ttristate \"SGI O2 Audio\"\n\tdepends on SGI_IP32\n\tselect SND_PCM\n\thelp\n\t  Sound support for the SGI O2 Workstation.\n\nconfig SND_SGI_HAL2\n\ttristate \"SGI HAL2 Audio\"\n\tdepends on SGI_HAS_HAL2\n\tselect SND_PCM\n\thelp\n\t  Sound support for the SGI Indy and Indigo2 Workstation.\n\nconfig SND_N64\n\tbool \"N64 Audio\"\n\tdepends on MACH_NINTENDO64 && SND=y\n\tselect SND_PCM\n\thelp\n\t  Sound support for the N64.\n\nendif\t# SND_MIPS\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

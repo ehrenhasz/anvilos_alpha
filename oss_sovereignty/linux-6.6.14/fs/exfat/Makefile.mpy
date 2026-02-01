@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "01d0e8e2e0e4f4259b98f87428c048cd58564a881fb03a36115ec80c7e5aff20",
+  "original_prompt": "Ingested from linux-6.6.14/fs/exfat/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-or-later\n#\n# Makefile for the linux exFAT filesystem support.\n#\nobj-$(CONFIG_EXFAT_FS) += exfat.o\n\nexfat-y\t:= inode.o namei.o dir.o super.o fatent.o cache.o nls.o misc.o \\\n\t   file.o balloc.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

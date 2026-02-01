@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "b672c5d22d10e9ba9e02819faa278cbe5040b21ef90cff6c3a0a04d3adffd5dd",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/syscall_user_dispatch/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\ntop_srcdir = ../../../..\nINSTALL_HDR_PATH = $(top_srcdir)/usr\nLINUX_HDR_PATH = $(INSTALL_HDR_PATH)/include/\n\nCFLAGS += -Wall -I$(LINUX_HDR_PATH)\n\nTEST_GEN_PROGS := sud_test sud_benchmark\ninclude ../lib.mk\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

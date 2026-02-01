@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "bef29189b0908d6e7b41fcfb6576068d283c618af4bc815513aea30945f4c7f3",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/armada/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig DRM_ARMADA\n\ttristate \"DRM support for Marvell Armada SoCs\"\n\tdepends on DRM && HAVE_CLK && ARM && MMU\n\tselect DRM_KMS_HELPER\n\tselect FB_IOMEM_HELPERS if DRM_FBDEV_EMULATION\n\thelp\n\t  Support the \"LCD\" controllers found on the Marvell Armada 510\n\t  devices.  There are two controllers on the device, each controller\n\t  supports graphics and video overlays.\n\n\t  This driver provides no built-in acceleration; acceleration is\n\t  performed by other IP found on the SoC.  This driver provides\n\t  kernel mode setting and buffer management to userspace.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

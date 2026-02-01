@@ -1,0 +1,9 @@
+{
+  "module_name": "random.h",
+  "hash_id": "6122e9a5eb4f312888d6c94e397d6fdeac6d1dc3baea22198a37bf983bbf797d",
+  "original_prompt": "Ingested from zfs-2.2.2/include/os/linux/spl/sys/random.h",
+  "human_readable_source": " \n\n#ifndef _SPL_RANDOM_H\n#define\t_SPL_RANDOM_H\n\n#include <linux/module.h>\n#include <linux/random.h>\n\nstatic __inline__ int\nrandom_get_bytes(uint8_t *ptr, size_t len)\n{\n\tget_random_bytes((void *)ptr, (int)len);\n\treturn (0);\n}\n\nextern int random_get_pseudo_bytes(uint8_t *ptr, size_t len);\n\nstatic __inline__ uint32_t\nrandom_in_range(uint32_t range)\n{\n\tuint32_t r;\n\n\tASSERT(range != 0);\n\n\tif (range == 1)\n\t\treturn (0);\n\n\t(void) random_get_pseudo_bytes((uint8_t *)&r, sizeof (r));\n\n\treturn (r % range);\n}\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

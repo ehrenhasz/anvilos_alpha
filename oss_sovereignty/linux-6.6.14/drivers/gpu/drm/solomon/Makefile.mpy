@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "2540c98dab7a019aac2ca841fd334181faddf619894f3aca055db653b11f23dd",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/solomon/Makefile",
+  "human_readable_source": "obj-$(CONFIG_DRM_SSD130X)\t+= ssd130x.o\nobj-$(CONFIG_DRM_SSD130X_I2C)\t+= ssd130x-i2c.o\nobj-$(CONFIG_DRM_SSD130X_SPI)\t+= ssd130x-spi.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

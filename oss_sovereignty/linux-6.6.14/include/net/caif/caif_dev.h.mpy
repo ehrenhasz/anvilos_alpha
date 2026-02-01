@@ -1,0 +1,9 @@
+{
+  "module_name": "caif_dev.h",
+  "hash_id": "e6a66d436dbddfb42a9e1396e20fa06044265ef3f73e76544d7f2cf6c983a7c4",
+  "original_prompt": "Ingested from linux-6.6.14/include/net/caif/caif_dev.h",
+  "human_readable_source": " \n \n\n#ifndef CAIF_DEV_H_\n#define CAIF_DEV_H_\n\n#include <net/caif/caif_layer.h>\n#include <net/caif/cfcnfg.h>\n#include <net/caif/caif_device.h>\n#include <linux/caif/caif_socket.h>\n#include <linux/if.h>\n#include <linux/net.h>\n\n \nstruct caif_param {\n\tu16  size;\n\tu8   data[256];\n};\n\n \nstruct caif_connect_request {\n\tenum caif_protocol_type protocol;\n\tstruct sockaddr_caif sockaddr;\n\tenum caif_channel_priority priority;\n\tenum caif_link_selector link_selector;\n\tint ifindex;\n\tstruct caif_param param;\n};\n\n \nint caif_connect_client(struct net *net,\n\t\t\tstruct caif_connect_request *conn_req,\n\t\t\tstruct cflayer *client_layer, int *ifindex,\n\t\t\tint *headroom, int *tailroom);\n\n \nint caif_disconnect_client(struct net *net, struct cflayer *client_layer);\n\n\n \n\nvoid caif_client_register_refcnt(struct cflayer *adapt_layer,\n\t\t\t\t\tvoid (*hold)(struct cflayer *lyr),\n\t\t\t\t\tvoid (*put)(struct cflayer *lyr));\n \nvoid caif_free_client(struct cflayer *adap_layer);\n\n \nint caif_enroll_dev(struct net_device *dev, struct caif_dev_common *caifdev,\n\t\t\tstruct cflayer *link_support, int head_room,\n\t\t\tstruct cflayer **layer, int (**rcv_func)(\n\t\t\t\tstruct sk_buff *, struct net_device *,\n\t\t\t\tstruct packet_type *, struct net_device *));\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

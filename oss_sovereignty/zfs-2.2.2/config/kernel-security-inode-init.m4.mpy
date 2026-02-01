@@ -1,0 +1,9 @@
+{
+  "module_name": "kernel-security-inode-init.m4",
+  "hash_id": "53a1d86007709a85f4afb4a859ae23dfb21d0e02ef60a20348d6eaf7a71ef964",
+  "original_prompt": "Ingested from zfs-2.2.2/config/kernel-security-inode-init.m4",
+  "human_readable_source": "dnl #\ndnl # 3.2 API change\ndnl # The security_inode_init_security() API has been changed to include\ndnl # a filesystem specific callback to write security extended attributes.\ndnl # This was done to support the initialization of multiple LSM xattrs\ndnl # and the EVM xattr.\ndnl #\nAC_DEFUN([ZFS_AC_KERNEL_SRC_SECURITY_INODE_INIT_SECURITY_CALLBACK], [\n\tZFS_LINUX_TEST_SRC([security_inode_init_security], [\n\t\t#include <linux/security.h>\n\t],[\n\t\tstruct inode *ip __attribute__ ((unused)) = NULL;\n\t\tstruct inode *dip __attribute__ ((unused)) = NULL;\n\t\tconst struct qstr *str __attribute__ ((unused)) = NULL;\n\t\tinitxattrs func __attribute__ ((unused)) = NULL;\n\n\t\tsecurity_inode_init_security(ip, dip, str, func, NULL);\n\t])\n])\n\nAC_DEFUN([ZFS_AC_KERNEL_SECURITY_INODE_INIT_SECURITY_CALLBACK], [\n\tAC_MSG_CHECKING([whether security_inode_init_security wants callback])\n\tZFS_LINUX_TEST_RESULT([security_inode_init_security], [\n\t\tAC_MSG_RESULT(yes)\n\t],[\n\t\tZFS_LINUX_TEST_ERROR([security_inode_init_security callback])\n\t])\n])\n\nAC_DEFUN([ZFS_AC_KERNEL_SRC_SECURITY_INODE], [\n\tZFS_AC_KERNEL_SRC_SECURITY_INODE_INIT_SECURITY_CALLBACK\n])\n\nAC_DEFUN([ZFS_AC_KERNEL_SECURITY_INODE], [\n\tZFS_AC_KERNEL_SECURITY_INODE_INIT_SECURITY_CALLBACK\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

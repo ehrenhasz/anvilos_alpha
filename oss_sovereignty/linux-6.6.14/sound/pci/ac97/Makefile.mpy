@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "4c1185887938ac502a0383f58d592bd766f351751bb83ac4a240188d33433543",
+  "original_prompt": "Ingested from linux-6.6.14/sound/pci/ac97/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Makefile for ALSA\n# Copyright (c) 2001 by Jaroslav Kysela <perex@perex.cz>\n#\n\nsnd-ac97-codec-y := ac97_codec.o ac97_pcm.o\nsnd-ac97-codec-$(CONFIG_SND_PROC_FS) += ac97_proc.o\n\n# Toplevel Module Dependency\nobj-$(CONFIG_SND_AC97_CODEC) += snd-ac97-codec.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

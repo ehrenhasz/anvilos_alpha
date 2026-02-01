@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "c7a863b20186d346579f8d27e2df2d253d726c6aa81a9ad5aff0785f62f48682",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/mmc/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# MMC subsystem configuration\n#\n\nmenuconfig MMC\n\ttristate \"MMC/SD/SDIO card support\"\n\tdepends on HAS_IOMEM\n\thelp\n\t  This selects MultiMediaCard, Secure Digital and Secure\n\t  Digital I/O support.\n\n\t  If you want MMC/SD/SDIO support, you should say Y here and\n\t  also to your specific host controller driver.\n\nif MMC\n\nsource \"drivers/mmc/core/Kconfig\"\n\nsource \"drivers/mmc/host/Kconfig\"\n\nendif # MMC\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

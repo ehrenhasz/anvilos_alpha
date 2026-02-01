@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "b129a0e193a49d66ca196d3bbd0720a3c36f59ee9ae7ec08c714b66806530b49",
+  "original_prompt": "Ingested from linux-6.6.14/net/appletalk/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Makefile for the Linux AppleTalk layer.\n#\n\nobj-$(CONFIG_ATALK) += appletalk.o\n\nappletalk-y\t\t\t:= aarp.o ddp.o dev.o\nappletalk-$(CONFIG_PROC_FS)\t+= atalk_proc.o\nappletalk-$(CONFIG_SYSCTL)\t+= sysctl_net_atalk.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

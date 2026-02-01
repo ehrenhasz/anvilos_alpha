@@ -1,0 +1,9 @@
+{
+  "module_name": "Build",
+  "hash_id": "ababc3f27cb652ab672f4f5abadbbe08799f246de312dc776d772c24c291ecea",
+  "original_prompt": "Ingested from linux-6.6.14/tools/lib/api/fd/Build",
+  "human_readable_source": "libapi-y += array.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "ax88796c_spi.h",
+  "hash_id": "b898107d14144c8d97f3c9c70283efeea748c5f45b223cdec08516c3fc187998",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/asix/ax88796c_spi.h",
+  "human_readable_source": " \n \n\n#ifndef _AX88796C_SPI_H\n#define _AX88796C_SPI_H\n\n#include <linux/spi/spi.h>\n#include <linux/types.h>\n\n \n#define AX_SPICMD_WRITE_TXQ\t\t0x02\n#define AX_SPICMD_READ_REG\t\t0x03\n#define AX_SPICMD_READ_STATUS\t\t0x05\n#define AX_SPICMD_READ_RXQ\t\t0x0B\n#define AX_SPICMD_BIDIR_WRQ\t\t0xB2\n#define AX_SPICMD_WRITE_REG\t\t0xD8\n#define AX_SPICMD_EXIT_PWD\t\t0xAB\n\nextern const u8 ax88796c_rx_cmd_buf[];\nextern const u8 ax88796c_tx_cmd_buf[];\n\nstruct axspi_data {\n\tstruct spi_device\t*spi;\n\tstruct spi_message\trx_msg;\n\tstruct spi_transfer\tspi_rx_xfer[2];\n\tu8\t\t\tcmd_buf[6];\n\tu8\t\t\trx_buf[6];\n\tu8\t\t\tcomp;\n};\n\nstruct spi_status {\n\tu16 isr;\n\tu8 status;\n#\tdefine AX_STATUS_READY\t\t0x80\n};\n\nint axspi_read_rxq(struct axspi_data *ax_spi, void *data, int len);\nint axspi_write_txq(const struct axspi_data *ax_spi, void *data, int len);\nu16 axspi_read_reg(struct axspi_data *ax_spi, u8 reg);\nint axspi_write_reg(struct axspi_data *ax_spi, u8 reg, u16 value);\nint axspi_read_status(struct axspi_data *ax_spi, struct spi_status *status);\nint axspi_wakeup(struct axspi_data *ax_spi);\n\nstatic inline u16 AX_READ(struct axspi_data *ax_spi, u8 offset)\n{\n\treturn axspi_read_reg(ax_spi, offset);\n}\n\nstatic inline int AX_WRITE(struct axspi_data *ax_spi, u16 value, u8 offset)\n{\n\treturn axspi_write_reg(ax_spi, offset, value);\n}\n\nstatic inline int AX_READ_STATUS(struct axspi_data *ax_spi,\n\t\t\t\t struct spi_status *status)\n{\n\treturn axspi_read_status(ax_spi, status);\n}\n\nstatic inline int AX_WAKEUP(struct axspi_data *ax_spi)\n{\n\treturn axspi_wakeup(ax_spi);\n}\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

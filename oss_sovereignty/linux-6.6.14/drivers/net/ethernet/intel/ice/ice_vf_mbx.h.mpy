@@ -1,0 +1,9 @@
+{
+  "module_name": "ice_vf_mbx.h",
+  "hash_id": "81174696d137e3d538c43e529f8e360672a11206df9cdd330795721206b6a9c4",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/intel/ice/ice_vf_mbx.h",
+  "human_readable_source": " \n \n\n#ifndef _ICE_VF_MBX_H_\n#define _ICE_VF_MBX_H_\n\n#include \"ice_type.h\"\n#include \"ice_controlq.h\"\n\n \n#define ICE_ASYNC_VF_MSG_THRESHOLD\t63\n\n#ifdef CONFIG_PCI_IOV\nint\nice_aq_send_msg_to_vf(struct ice_hw *hw, u16 vfid, u32 v_opcode, u32 v_retval,\n\t\t      u8 *msg, u16 msglen, struct ice_sq_cd *cd);\n\nu32 ice_conv_link_speed_to_virtchnl(bool adv_link_support, u16 link_speed);\nint\nice_mbx_vf_state_handler(struct ice_hw *hw, struct ice_mbx_data *mbx_data,\n\t\t\t struct ice_mbx_vf_info *vf_info, bool *report_malvf);\nvoid ice_mbx_clear_malvf(struct ice_mbx_vf_info *vf_info);\nvoid ice_mbx_init_vf_info(struct ice_hw *hw, struct ice_mbx_vf_info *vf_info);\nvoid ice_mbx_init_snapshot(struct ice_hw *hw);\n#else  \nstatic inline int\nice_aq_send_msg_to_vf(struct ice_hw __always_unused *hw,\n\t\t      u16 __always_unused vfid, u32 __always_unused v_opcode,\n\t\t      u32 __always_unused v_retval, u8 __always_unused *msg,\n\t\t      u16 __always_unused msglen,\n\t\t      struct ice_sq_cd __always_unused *cd)\n{\n\treturn 0;\n}\n\nstatic inline u32\nice_conv_link_speed_to_virtchnl(bool __always_unused adv_link_support,\n\t\t\t\tu16 __always_unused link_speed)\n{\n\treturn 0;\n}\n\nstatic inline void ice_mbx_init_snapshot(struct ice_hw *hw)\n{\n}\n\n#endif  \n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

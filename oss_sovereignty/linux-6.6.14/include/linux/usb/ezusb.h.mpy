@@ -1,0 +1,9 @@
+{
+  "module_name": "ezusb.h",
+  "hash_id": "255de3e3fb85b453440423336adcabec5320413930f8c44c7c78d7641b472711",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/usb/ezusb.h",
+  "human_readable_source": " \n#ifndef __EZUSB_H\n#define __EZUSB_H\n\nextern int ezusb_fx1_set_reset(struct usb_device *dev, unsigned char reset_bit);\nextern int ezusb_fx1_ihex_firmware_download(struct usb_device *dev,\n\t\t\t\t\t    const char *firmware_path);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

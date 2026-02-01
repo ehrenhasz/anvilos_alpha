@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "bae868780d35e66c60c77a3d54d9b4e860e3a619cb721f50d03606fa622c478e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/crypto/intel/keembay/Makefile",
+  "human_readable_source": "#\n# Makefile for Intel Keem Bay OCS Crypto API Linux drivers\n#\nobj-$(CONFIG_CRYPTO_DEV_KEEMBAY_OCS_AES_SM4) += keembay-ocs-aes.o\nkeembay-ocs-aes-objs := keembay-ocs-aes-core.o ocs-aes.o\n\nobj-$(CONFIG_CRYPTO_DEV_KEEMBAY_OCS_ECC) += keembay-ocs-ecc.o\n\nobj-$(CONFIG_CRYPTO_DEV_KEEMBAY_OCS_HCU) += keembay-ocs-hcu.o\nkeembay-ocs-hcu-objs := keembay-ocs-hcu-core.o ocs-hcu.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

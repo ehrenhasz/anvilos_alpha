@@ -1,0 +1,9 @@
+{
+  "module_name": "test-inet_pton.c",
+  "hash_id": "c8b72e3fdbdaecaa2f5e214054b99f72ab4c2f28221b0855d6b4512721dafe88",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-inet_pton.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#include <arpa/inet.h>\n\n#include \"signature.h\"\nSIGNATURE_CHECK (inet_pton, int, (int, const char *, void *));\n\n#include <netinet/in.h>\n#include <sys/socket.h>\n\n#include \"macros.h\"\n\nint\nmain (void)\n{\n#if defined AF_INET  \n  {\n     \n    const char printable[] = \"129.13.115.2\";\n    struct in_addr internal;\n    int ret;\n\n    ret = inet_pton (AF_INET, printable, &internal);\n    ASSERT (ret == 1);\n     \n    ASSERT (((unsigned char *) &internal)[0] == 0x81);\n    ASSERT (((unsigned char *) &internal)[1] == 0x0D);\n    ASSERT (((unsigned char *) &internal)[2] == 0x73);\n    ASSERT (((unsigned char *) &internal)[3] == 0x02);\n# ifdef WORDS_BIGENDIAN\n    ASSERT (internal.s_addr == 0x810D7302);\n# else\n    ASSERT (internal.s_addr == 0x02730D81);\n# endif\n  }\n#endif\n\n  return 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

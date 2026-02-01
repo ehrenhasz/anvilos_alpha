@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "e06a655be35612c6d7f8d64dbcd3e0b306313602f99c35a75d6169d6a3fdd824",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/rtc/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nCFLAGS += -O3 -Wl,-no-as-needed -Wall\nLDLIBS += -lrt -lpthread -lm\n\nTEST_GEN_PROGS = rtctest\n\nTEST_GEN_PROGS_EXTENDED = setdate\n\nTEST_FILES := settings\n\ninclude ../lib.mk\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

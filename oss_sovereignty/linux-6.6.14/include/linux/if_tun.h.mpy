@@ -1,0 +1,9 @@
+{
+  "module_name": "if_tun.h",
+  "hash_id": "0c1ba8a8406a7731b3c8ea6b73ea4a6b5bd3d63e33af0c329c2d788fcb991399",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/if_tun.h",
+  "human_readable_source": " \n \n#ifndef __IF_TUN_H\n#define __IF_TUN_H\n\n#include <uapi/linux/if_tun.h>\n#include <uapi/linux/virtio_net.h>\n\n#define TUN_XDP_FLAG 0x1UL\n\n#define TUN_MSG_UBUF 1\n#define TUN_MSG_PTR  2\nstruct tun_msg_ctl {\n\tunsigned short type;\n\tunsigned short num;\n\tvoid *ptr;\n};\n\nstruct tun_xdp_hdr {\n\tint buflen;\n\tstruct virtio_net_hdr gso;\n};\n\n#if defined(CONFIG_TUN) || defined(CONFIG_TUN_MODULE)\nstruct socket *tun_get_socket(struct file *);\nstruct ptr_ring *tun_get_tx_ring(struct file *file);\nstatic inline bool tun_is_xdp_frame(void *ptr)\n{\n       return (unsigned long)ptr & TUN_XDP_FLAG;\n}\nstatic inline void *tun_xdp_to_ptr(struct xdp_frame *xdp)\n{\n       return (void *)((unsigned long)xdp | TUN_XDP_FLAG);\n}\nstatic inline struct xdp_frame *tun_ptr_to_xdp(void *ptr)\n{\n       return (void *)((unsigned long)ptr & ~TUN_XDP_FLAG);\n}\nvoid tun_ptr_free(void *ptr);\n#else\n#include <linux/err.h>\n#include <linux/errno.h>\nstruct file;\nstruct socket;\nstatic inline struct socket *tun_get_socket(struct file *f)\n{\n\treturn ERR_PTR(-EINVAL);\n}\nstatic inline struct ptr_ring *tun_get_tx_ring(struct file *f)\n{\n\treturn ERR_PTR(-EINVAL);\n}\nstatic inline bool tun_is_xdp_frame(void *ptr)\n{\n\treturn false;\n}\nstatic inline void *tun_xdp_to_ptr(struct xdp_frame *xdp)\n{\n\treturn NULL;\n}\nstatic inline struct xdp_frame *tun_ptr_to_xdp(void *ptr)\n{\n\treturn NULL;\n}\nstatic inline void tun_ptr_free(void *ptr)\n{\n}\n#endif  \n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

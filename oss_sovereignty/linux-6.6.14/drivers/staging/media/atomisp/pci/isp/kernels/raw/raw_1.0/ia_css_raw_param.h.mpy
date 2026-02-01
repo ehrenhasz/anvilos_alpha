@@ -1,0 +1,9 @@
+{
+  "module_name": "ia_css_raw_param.h",
+  "hash_id": "9d1a677043f262bd16785b43cedf090e7996083bae8ee85ce70db9d8558bd1b0",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/isp/kernels/raw/raw_1.0/ia_css_raw_param.h",
+  "human_readable_source": " \n \n\n#ifndef __IA_CSS_RAW_PARAM_H\n#define __IA_CSS_RAW_PARAM_H\n\n#include \"type_support.h\"\n\n#include \"dma.h\"\n\n \nstruct sh_css_isp_raw_isp_config {\n\tu32 width_a_over_b;\n\tstruct dma_port_config port_b;\n\tu32 inout_port_config;\n\tu32 input_needs_raw_binning;\n\tu32 format;  \n\tu32 required_bds_factor;\n\tu32 two_ppc;\n\tu32 stream_format;  \n\tu32 deinterleaved;\n\tu32 start_column;  \n\tu32 start_line;  \n\tu8 enable_left_padding;  \n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

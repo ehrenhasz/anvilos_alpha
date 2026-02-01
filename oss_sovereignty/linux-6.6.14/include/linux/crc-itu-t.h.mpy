@@ -1,0 +1,9 @@
+{
+  "module_name": "crc-itu-t.h",
+  "hash_id": "67182f69ea47e248a5b765cc544ecd70c5ffba8676b0633fcc73f8867ab778bc",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/crc-itu-t.h",
+  "human_readable_source": " \n \n\n#ifndef CRC_ITU_T_H\n#define CRC_ITU_T_H\n\n#include <linux/types.h>\n\nextern u16 const crc_itu_t_table[256];\n\nextern u16 crc_itu_t(u16 crc, const u8 *buffer, size_t len);\n\nstatic inline u16 crc_itu_t_byte(u16 crc, const u8 data)\n{\n\treturn (crc << 8) ^ crc_itu_t_table[((crc >> 8) ^ data) & 0xff];\n}\n\n#endif  \n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

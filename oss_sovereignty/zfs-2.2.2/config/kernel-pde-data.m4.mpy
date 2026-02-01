@@ -1,0 +1,9 @@
+{
+  "module_name": "kernel-pde-data.m4",
+  "hash_id": "7c66fd6d509aedf60fd9f66089a6dfcc1516a2302358c19b14d179b440b18bcf",
+  "original_prompt": "Ingested from zfs-2.2.2/config/kernel-pde-data.m4",
+  "human_readable_source": "dnl #\ndnl # 5.17 API: PDE_DATA() renamed to pde_data(),\ndnl # 359745d78351c6f5442435f81549f0207ece28aa (\"proc: remove PDE_DATA() completely\")\ndnl #\nAC_DEFUN([ZFS_AC_KERNEL_SRC_PDE_DATA], [\n\tZFS_LINUX_TEST_SRC([pde_data], [\n\t\t#include <linux/proc_fs.h>\n\t], [\n\t\tpde_data(NULL);\n\t])\n])\n\nAC_DEFUN([ZFS_AC_KERNEL_PDE_DATA], [\n\tAC_MSG_CHECKING([whether pde_data() is lowercase])\n\tZFS_LINUX_TEST_RESULT([pde_data], [\n\t\tAC_MSG_RESULT(yes)\n\t\tAC_DEFINE(SPL_PDE_DATA, pde_data, [pde_data() is pde_data()])\n\t], [\n\t\tAC_MSG_RESULT(no)\n\t\tAC_DEFINE(SPL_PDE_DATA, PDE_DATA, [pde_data() is PDE_DATA()])\n\t])\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

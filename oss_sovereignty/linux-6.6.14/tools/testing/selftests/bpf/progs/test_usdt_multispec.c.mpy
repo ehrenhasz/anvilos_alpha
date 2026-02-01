@@ -1,0 +1,9 @@
+{
+  "module_name": "test_usdt_multispec.c",
+  "hash_id": "6d4d86e0352e91297ca8f7abb8dda1c2e1bea795622435bf115bce4906446820",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/test_usdt_multispec.c",
+  "human_readable_source": "\n \n\n#include \"vmlinux.h\"\n#include <bpf/bpf_helpers.h>\n#include <bpf/usdt.bpf.h>\n\n \n\nextern int my_pid;\n\nint usdt_100_called;\nint usdt_100_sum;\n\nSEC(\"usdt//proc/self/exe:test:usdt_100\")\nint BPF_USDT(usdt_100, int x)\n{\n\tif (my_pid != (bpf_get_current_pid_tgid() >> 32))\n\t\treturn 0;\n\n\t__sync_fetch_and_add(&usdt_100_called, 1);\n\t__sync_fetch_and_add(&usdt_100_sum, x);\n\n\treturn 0;\n}\n\nchar _license[] SEC(\"license\") = \"GPL\";\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

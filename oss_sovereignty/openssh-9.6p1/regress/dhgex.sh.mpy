@@ -1,0 +1,9 @@
+{
+  "module_name": "dhgex.sh",
+  "hash_id": "2deade5db46043c73665ae2a77e5e96ed191356648004d36368d22a861b8271b",
+  "original_prompt": "Ingested from openssh-9.6p1/regress/dhgex.sh",
+  "human_readable_source": "#\t$OpenBSD: dhgex.sh,v 1.8 2023/03/02 08:14:52 dtucker Exp $\n#\tPlaced in the Public Domain.\n\ntid=\"dhgex\"\n\nLOG=${TEST_SSH_LOGFILE}\nrm -f ${LOG}\ncp $OBJ/sshd_proxy $OBJ/sshd_proxy_bak\n\nkexs=`${SSH} -Q kex | grep diffie-hellman-group-exchange`\n\nssh_test_dhgex()\n{\n\tbits=\"$1\"; shift\n\tcipher=\"$1\"; shift\n\tkex=\"$1\"; shift\n\n\tcp $OBJ/sshd_proxy_bak $OBJ/sshd_proxy\n\techo \"KexAlgorithms=$kex\" >> $OBJ/sshd_proxy\n\techo \"Ciphers=$cipher\" >> $OBJ/sshd_proxy\n\trm -f ${LOG}\n\topts=\"-oKexAlgorithms=$kex -oCiphers=$cipher\"\n\tmin=2048\n\tmax=8192\n\tgroupsz=\"$min<$bits<$max\"\n\tverbose \"$tid bits $bits $kex $cipher\"\n\t${SSH} ${opts} $@ -vvv -F ${OBJ}/ssh_proxy somehost true\n\tif [ $? -ne 0 ]; then\n\t\tfail \"ssh failed ($@)\"\n\tfi\n\t# check what we request\n\tgrep \"SSH2_MSG_KEX_DH_GEX_REQUEST($groupsz) sent\" ${LOG} >/dev/null\n\tif [ $? != 0 ]; then\n\t\tgot=\"`egrep 'SSH2_MSG_KEX_DH_GEX_REQUEST(.*) sent' ${LOG}`\"\n\t\tfail \"$tid unexpected GEX sizes, expected $groupsz, got '$got'\"\n\tfi\n\t# check what we got.\n\tgotbits=\"`awk 'BEGIN{FS=\"/\"}/bits set:/{print $2}' ${LOG} |\n\t    head -1 | tr -d '\\r\\n'`\"\n\ttrace \"expected '$bits' got '$gotbits'\"\n\tif [ -z \"$gotbits\" ] || [ \"$gotbits\" -lt \"$bits\" ]; then\n\t\tfatal \"$tid expected $bits bit group, got $gotbits\"\n\tfi\n}\n\ncheck()\n{\n\tbits=\"$1\"; shift\n\n\tfor c in $@; do\n\t\tfor k in $kexs; do\n\t\t\tssh_test_dhgex $bits $c $k\n\t\tdone\n\tdone\n}\n\ncheck 3072 3des-cbc  # 112 bits.\ncheck 3072 `${SSH} -Q cipher | grep 128`\ncheck 7680 `${SSH} -Q cipher | grep 192`\ncheck 8192 `${SSH} -Q cipher | grep 256`\ncheck 8192 chacha20-poly1305@openssh.com\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "bcm6362-reset.h",
+  "hash_id": "fc2595c9c06f663236f5763cc74bd2fbd1d9f2161b7ec1c0bbacb939da43f9cb",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/reset/bcm6362-reset.h",
+  "human_readable_source": " \n\n#ifndef __DT_BINDINGS_RESET_BCM6362_H\n#define __DT_BINDINGS_RESET_BCM6362_H\n\n#define BCM6362_RST_SPI\t\t0\n#define BCM6362_RST_IPSEC\t1\n#define BCM6362_RST_EPHY\t2\n#define BCM6362_RST_SAR\t\t3\n#define BCM6362_RST_ENETSW\t4\n#define BCM6362_RST_USBD\t5\n#define BCM6362_RST_USBH\t6\n#define BCM6362_RST_PCM\t\t7\n#define BCM6362_RST_PCIE_CORE\t8\n#define BCM6362_RST_PCIE\t9\n#define BCM6362_RST_PCIE_EXT\t10\n#define BCM6362_RST_WLAN_SHIM\t11\n#define BCM6362_RST_DDR_PHY\t12\n#define BCM6362_RST_FAP\t\t13\n#define BCM6362_RST_WLAN_UBUS\t14\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

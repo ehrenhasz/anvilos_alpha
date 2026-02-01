@@ -1,0 +1,9 @@
+{
+  "module_name": "90-zfs.rules.in",
+  "hash_id": "70ebe772850d8b15a934c58c829d94da586750c8700416ee4c4293a0f511f0a0",
+  "original_prompt": "Ingested from zfs-2.2.2/udev/rules.d/90-zfs.rules.in",
+  "human_readable_source": "SUBSYSTEM!=\"block|misc\", GOTO=\"zfs_end\"\nACTION!=\"add|change\", GOTO=\"zfs_end\"\n\nENV{ID_FS_TYPE}==\"zfs\", RUN+=\"/sbin/modprobe zfs\"\nENV{ID_FS_TYPE}==\"zfs_member\", RUN+=\"/sbin/modprobe zfs\"\n\nKERNEL==\"null\", SYMLINK+=\"root\"\nSYMLINK==\"null\", SYMLINK+=\"root\"\n\nKERNEL==\"zfs\", MODE=\"0666\", OPTIONS+=\"static_node=zfs\"\n\nLABEL=\"zfs_end\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

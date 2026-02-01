@@ -1,0 +1,9 @@
+{
+  "module_name": "cipher-chachapoly.h",
+  "hash_id": "a3e6c0b1fbb25c30ce15b28590a2f62910c306e1019470e91cde40e3386715ea",
+  "original_prompt": "Ingested from openssh-9.6p1/cipher-chachapoly.h",
+  "human_readable_source": " \n\n \n#ifndef CHACHA_POLY_AEAD_H\n#define CHACHA_POLY_AEAD_H\n\n#include <sys/types.h>\n#include \"chacha.h\"\n#include \"poly1305.h\"\n\n#define CHACHA_KEYLEN\t32  \n\nstruct chachapoly_ctx;\n\nstruct chachapoly_ctx *chachapoly_new(const u_char *key, u_int keylen)\n    __attribute__((__bounded__(__buffer__, 1, 2)));\nvoid chachapoly_free(struct chachapoly_ctx *cpctx);\n\nint\tchachapoly_crypt(struct chachapoly_ctx *cpctx, u_int seqnr,\n    u_char *dest, const u_char *src, u_int len, u_int aadlen, u_int authlen,\n    int do_encrypt);\nint\tchachapoly_get_length(struct chachapoly_ctx *cpctx,\n    u_int *plenp, u_int seqnr, const u_char *cp, u_int len)\n    __attribute__((__bounded__(__buffer__, 4, 5)));\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

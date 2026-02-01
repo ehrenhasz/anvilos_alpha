@@ -1,0 +1,9 @@
+{
+  "module_name": "manifest.py",
+  "hash_id": "dfcecffa43ea1faa94db6e1a0f628a3fa6c6cf86eb9945c187461ed7a4a887b8",
+  "original_prompt": "Ingested from sys_09_Anvil/source/manifest.py",
+  "human_readable_source": "freeze('/home/aimeat/anvilos/oss_sovereignty/sys_09_Anvil/source', 'anvil.py')\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

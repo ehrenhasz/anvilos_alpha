@@ -1,0 +1,9 @@
+{
+  "module_name": "cpumask_api.h",
+  "hash_id": "4dabddabd8652c634362c7866f5321cc4d63627a34001dab8d2014ee10920139",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/cpumask_api.h",
+  "human_readable_source": "#include <linux/cpumask.h>\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

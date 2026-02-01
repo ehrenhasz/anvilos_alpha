@@ -1,0 +1,9 @@
+{
+  "module_name": "tags_test.c",
+  "hash_id": "ce4cea39dfd67a92389ee1020aefddc4381857fc38743dd5a4704fe37f0a6226",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/arm64/tags/tags_test.c",
+  "human_readable_source": "\n\n#include <stdio.h>\n#include <stdlib.h>\n#include <unistd.h>\n#include <stdint.h>\n#include <sys/prctl.h>\n#include <sys/utsname.h>\n\n#define SHIFT_TAG(tag)\t\t((uint64_t)(tag) << 56)\n#define SET_TAG(ptr, tag)\t(((uint64_t)(ptr) & ~SHIFT_TAG(0xff)) | \\\n\t\t\t\t\tSHIFT_TAG(tag))\n\nint main(void)\n{\n\tstatic int tbi_enabled = 0;\n\tunsigned long tag = 0;\n\tstruct utsname *ptr;\n\tint err;\n\n\tif (prctl(PR_SET_TAGGED_ADDR_CTRL, PR_TAGGED_ADDR_ENABLE, 0, 0, 0) == 0)\n\t\ttbi_enabled = 1;\n\tptr = (struct utsname *)malloc(sizeof(*ptr));\n\tif (tbi_enabled)\n\t\ttag = 0x42;\n\tptr = (struct utsname *)SET_TAG(ptr, tag);\n\terr = uname(ptr);\n\tfree(ptr);\n\n\treturn err;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "encode_rs.c",
+  "hash_id": "349c27be328cefa6135cf612804865572e5726a59516c9a2eb7ae17dd4d9a2d3",
+  "original_prompt": "Ingested from linux-6.6.14/lib/reed_solomon/encode_rs.c",
+  "human_readable_source": "\n \n{\n\tstruct rs_codec *rs = rsc->codec;\n\tint i, j, pad;\n\tint nn = rs->nn;\n\tint nroots = rs->nroots;\n\tuint16_t *alpha_to = rs->alpha_to;\n\tuint16_t *index_of = rs->index_of;\n\tuint16_t *genpoly = rs->genpoly;\n\tuint16_t fb;\n\tuint16_t msk = (uint16_t) rs->nn;\n\n\t \n\tpad = nn - nroots - len;\n\tif (pad < 0 || pad >= nn)\n\t\treturn -ERANGE;\n\n\tfor (i = 0; i < len; i++) {\n\t\tfb = index_of[((((uint16_t) data[i])^invmsk) & msk) ^ par[0]];\n\t\t \n\t\tif (fb != nn) {\n\t\t\tfor (j = 1; j < nroots; j++) {\n\t\t\t\tpar[j] ^= alpha_to[rs_modnn(rs, fb +\n\t\t\t\t\t\t\t genpoly[nroots - j])];\n\t\t\t}\n\t\t}\n\t\t \n\t\tmemmove(&par[0], &par[1], sizeof(uint16_t) * (nroots - 1));\n\t\tif (fb != nn) {\n\t\t\tpar[nroots - 1] = alpha_to[rs_modnn(rs,\n\t\t\t\t\t\t\t    fb + genpoly[0])];\n\t\t} else {\n\t\t\tpar[nroots - 1] = 0;\n\t\t}\n\t}\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

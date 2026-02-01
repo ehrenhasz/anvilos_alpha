@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "8436c2e4d1dba5532d32f049d13be2037b5da9bf5f29d4565ce8c807db3cc906",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/clk/uniphier/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nobj-y\t+= clk-uniphier-core.o\n\nobj-y\t+= clk-uniphier-cpugear.o\nobj-y\t+= clk-uniphier-fixed-factor.o\nobj-y\t+= clk-uniphier-fixed-rate.o\nobj-y\t+= clk-uniphier-gate.o\nobj-y\t+= clk-uniphier-mux.o\n\nobj-y\t+= clk-uniphier-sys.o\nobj-y\t+= clk-uniphier-mio.o\nobj-y\t+= clk-uniphier-peri.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

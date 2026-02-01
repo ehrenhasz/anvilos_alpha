@@ -1,0 +1,9 @@
+{
+  "module_name": "slab.c",
+  "hash_id": "6e97ac66c71af7c03396f9f999c327fe8257410497dc35a787d6f03800965dcc",
+  "original_prompt": "Ingested from linux-6.6.14/tools/lib/slab.c",
+  "human_readable_source": "\n\n#include <stdio.h>\n#include <string.h>\n\n#include <urcu/uatomic.h>\n#include <linux/slab.h>\n#include <malloc.h>\n#include <linux/gfp.h>\n\nint kmalloc_nr_allocated;\nint kmalloc_verbose;\n\nvoid *kmalloc(size_t size, gfp_t gfp)\n{\n\tvoid *ret;\n\n\tif (!(gfp & __GFP_DIRECT_RECLAIM))\n\t\treturn NULL;\n\n\tret = malloc(size);\n\tuatomic_inc(&kmalloc_nr_allocated);\n\tif (kmalloc_verbose)\n\t\tprintf(\"Allocating %p from malloc\\n\", ret);\n\tif (gfp & __GFP_ZERO)\n\t\tmemset(ret, 0, size);\n\treturn ret;\n}\n\nvoid kfree(void *p)\n{\n\tif (!p)\n\t\treturn;\n\tuatomic_dec(&kmalloc_nr_allocated);\n\tif (kmalloc_verbose)\n\t\tprintf(\"Freeing %p to malloc\\n\", p);\n\tfree(p);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

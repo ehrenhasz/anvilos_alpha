@@ -1,0 +1,9 @@
+{
+  "module_name": "a8293.h",
+  "hash_id": "a2ba897c2516bc50a08d261e4c1082b8637dd9a86e95f6802f7e5c95f09ce900",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/dvb-frontends/a8293.h",
+  "human_readable_source": " \n \n\n#ifndef A8293_H\n#define A8293_H\n\n#include <media/dvb_frontend.h>\n\n \n\n \nstruct a8293_platform_data {\n\tstruct dvb_frontend *dvb_frontend;\n\tint volt_slew_nanos_per_mv;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

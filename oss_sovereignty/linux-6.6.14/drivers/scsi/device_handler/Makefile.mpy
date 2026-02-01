@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "231cfe9a9e30db5b1dd3a3ac97a4856940b97ce60b4ca6127a7bbea65cb59b35",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/scsi/device_handler/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# SCSI Device Handler\n#\nobj-$(CONFIG_SCSI_DH_RDAC)\t+= scsi_dh_rdac.o\nobj-$(CONFIG_SCSI_DH_HP_SW)\t+= scsi_dh_hp_sw.o\nobj-$(CONFIG_SCSI_DH_EMC)\t+= scsi_dh_emc.o\nobj-$(CONFIG_SCSI_DH_ALUA)\t+= scsi_dh_alua.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

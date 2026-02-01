@@ -1,0 +1,9 @@
+{
+  "module_name": "export-to-postgresql-record",
+  "hash_id": "b45a762d771e5208bf10f0c0ac506bda4ccccba51679d7ad535120dd23219d4c",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/scripts/python/bin/export-to-postgresql-record",
+  "human_readable_source": "#!/bin/bash\n\n#\n# export perf data to a postgresql database. Can cover\n# perf ip samples (excluding the tracepoints). No special\n# record requirements, just record what you want to export.\n#\nperf record $@\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

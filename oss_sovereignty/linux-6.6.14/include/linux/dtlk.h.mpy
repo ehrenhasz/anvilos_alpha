@@ -1,0 +1,9 @@
+{
+  "module_name": "dtlk.h",
+  "hash_id": "3de3fff6dbdd5f9fd11289cedfda3bf3c6fe3f2ed5aa48781725a57e8a349c31",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/dtlk.h",
+  "human_readable_source": " \n#define DTLK_MINOR\t0\n#define DTLK_IO_EXTENT\t0x02\n\n\t \n#define DTLK_INTERROGATE 0xa390\t \n#define DTLK_STATUS 0xa391\t \n\n\n#define DTLK_CLEAR 0x18\t\t \n\n#define DTLK_MAX_RETRIES (loops_per_jiffy/(10000/HZ))\n\n\t \n#define TTS_READABLE     0x80\t \n#define TTS_SPEAKING     0x40\t \n#define TTS_SPEAKING2    0x20\t \n#define TTS_WRITABLE     0x10\t \n#define TTS_ALMOST_FULL  0x08\t \n#define TTS_ALMOST_EMPTY 0x04\t \n\n\t \n#define LPC_5220_NORMAL 0x60\t \n#define LPC_5220_FAST 0x64\t \n#define LPC_D6_NORMAL 0x20\t \n#define LPC_D6_FAST 0x24\t \n\n\t \n#define LPC_SPEAKING     0x80\t \n#define LPC_BUFFER_LOW   0x40\t \n#define LPC_BUFFER_EMPTY 0x20\t \n\n\t\t\t\t \nstruct dtlk_settings\n{\n  unsigned short serial_number;\t \n  unsigned char rom_version[24];  \n  unsigned char mode;\t\t \n  unsigned char punc_level;\t \n  unsigned char formant_freq;\t \n  unsigned char pitch;\t\t \n  unsigned char speed;\t\t \n  unsigned char volume;\t\t \n  unsigned char tone;\t\t \n  unsigned char expression;\t \n  unsigned char ext_dict_loaded;  \n  unsigned char ext_dict_status;  \n  unsigned char free_ram;\t \n  unsigned char articulation;\t \n  unsigned char reverb;\t\t \n  unsigned char eob;\t\t \n  unsigned char has_indexing;\t \n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "c006efac3733b6202be06e5475e713a647506086354e10f6c70a8b131e1675a5",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/usb/gspca/gl860/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nobj-$(CONFIG_USB_GL860) += gspca_gl860.o\n\ngspca_gl860-objs := gl860.o \\\n\t\t    gl860-mi1320.o \\\n\t\t    gl860-ov2640.o \\\n\t\t    gl860-ov9655.o \\\n\t\t    gl860-mi2020.o\n\nccflags-y += -I$(srctree)/drivers/media/usb/gspca\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

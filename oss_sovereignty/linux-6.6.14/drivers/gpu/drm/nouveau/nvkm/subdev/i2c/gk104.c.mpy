@@ -1,0 +1,9 @@
+{
+  "module_name": "gk104.c",
+  "hash_id": "2347ca9bc155772b5fcff738c22cb95a7d6d24ff4f1835661b61782a10fceb3c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/subdev/i2c/gk104.c",
+  "human_readable_source": " \n#include \"priv.h\"\n#include \"pad.h\"\n\nvoid\ngk104_aux_stat(struct nvkm_i2c *i2c, u32 *hi, u32 *lo, u32 *rq, u32 *tx)\n{\n\tstruct nvkm_device *device = i2c->subdev.device;\n\tu32 intr = nvkm_rd32(device, 0x00dc60);\n\tu32 stat = nvkm_rd32(device, 0x00dc68) & intr, i;\n\tfor (i = 0, *hi = *lo = *rq = *tx = 0; i < 8; i++) {\n\t\tif ((stat & (1 << (i * 4)))) *hi |= 1 << i;\n\t\tif ((stat & (2 << (i * 4)))) *lo |= 1 << i;\n\t\tif ((stat & (4 << (i * 4)))) *rq |= 1 << i;\n\t\tif ((stat & (8 << (i * 4)))) *tx |= 1 << i;\n\t}\n\tnvkm_wr32(device, 0x00dc60, intr);\n}\n\nvoid\ngk104_aux_mask(struct nvkm_i2c *i2c, u32 type, u32 mask, u32 data)\n{\n\tstruct nvkm_device *device = i2c->subdev.device;\n\tu32 temp = nvkm_rd32(device, 0x00dc68), i;\n\tfor (i = 0; i < 8; i++) {\n\t\tif (mask & (1 << i)) {\n\t\t\tif (!(data & (1 << i))) {\n\t\t\t\ttemp &= ~(type << (i * 4));\n\t\t\t\tcontinue;\n\t\t\t}\n\t\t\ttemp |= type << (i * 4);\n\t\t}\n\t}\n\tnvkm_wr32(device, 0x00dc68, temp);\n}\n\nstatic const struct nvkm_i2c_func\ngk104_i2c = {\n\t.pad_x_new = gf119_i2c_pad_x_new,\n\t.pad_s_new = gf119_i2c_pad_s_new,\n\t.aux = 4,\n\t.aux_stat = gk104_aux_stat,\n\t.aux_mask = gk104_aux_mask,\n};\n\nint\ngk104_i2c_new(struct nvkm_device *device, enum nvkm_subdev_type type, int inst,\n\t      struct nvkm_i2c **pi2c)\n{\n\treturn nvkm_i2c_new_(&gk104_i2c, device, type, inst, pi2c);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "objdump-func",
+  "hash_id": "89ae7e47db2fcefa981a4ef911fb4819fabbd12a452ce2f1601a039e012339f9",
+  "original_prompt": "Ingested from linux-6.6.14/scripts/objdump-func",
+  "human_readable_source": "#!/bin/bash\n# SPDX-License-Identifier: GPL-2.0\n#\n# Disassemble a single function.\n#\n# usage: objdump-func <file> <func> [<func> ...]\n\nset -o errexit\nset -o nounset\n\nOBJDUMP=\"${CROSS_COMPILE:-}objdump\"\n\ncommand -v gawk >/dev/null 2>&1 || die \"gawk isn't installed\"\n\nusage() {\n\techo \"usage: objdump-func <file> <func> [<func> ...]\" >&2\n\texit 1\n}\n\n[[ $# -lt 2 ]] && usage\n\nOBJ=$1; shift\nFUNCS=(\"$@\")\n\n${OBJDUMP} -wdr $OBJ | gawk -M -v _funcs=\"${FUNCS[*]}\" '\n\tBEGIN { split(_funcs, funcs); }\n\t/^$/ { func_match=0; }\n\t/<.*>:/ {\n\t\tf = gensub(/.*<(.*)>:/, \"\\\\1\", 1);\n\t\tfor (i in funcs) {\n\t\t\t# match compiler-added suffixes like \".cold\", etc\n\t\t\tif (f ~ \"^\" funcs[i] \"(\\\\..*)?\") {\n\t\t\t\tfunc_match = 1;\n\t\t\t\tbase = strtonum(\"0x\" $1);\n\t\t\t\tbreak;\n\t\t\t}\n\t\t}\n\t}\n\t{\n\t\tif (func_match) {\n\t\t\taddr = strtonum(\"0x\" $1);\n\t\t\tprintf(\"%04x \", addr - base);\n\t\t\tprint;\n\t\t}\n\t}'\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

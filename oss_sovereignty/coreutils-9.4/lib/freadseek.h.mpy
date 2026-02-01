@@ -1,0 +1,9 @@
+{
+  "module_name": "freadseek.h",
+  "hash_id": "f8e021eb7e7144865781019a16c11088ccece862e94b52a96f476c5db748ef4f",
+  "original_prompt": "Ingested from coreutils-9.4/lib/freadseek.h",
+  "human_readable_source": " \n\nextern int freadseek (FILE *stream, size_t offset);\n\n#ifdef __cplusplus\n}\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "cityhash.h",
+  "hash_id": "8fd8f8ed3ade6f5c54e528fd30e3065f4ba02bfbe8287ab5064078afc888f7bf",
+  "original_prompt": "Ingested from zfs-2.2.2/include/cityhash.h",
+  "human_readable_source": "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n \n\n#ifndef\t_SYS_CITYHASH_H\n#define\t_SYS_CITYHASH_H extern __attribute__((visibility(\"default\")))\n\n#include <sys/zfs_context.h>\n\n#ifdef\t__cplusplus\nextern \"C\" {\n#endif\n\n_SYS_CITYHASH_H uint64_t cityhash4(uint64_t, uint64_t, uint64_t, uint64_t);\n\n#ifdef\t__cplusplus\n}\n#endif\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

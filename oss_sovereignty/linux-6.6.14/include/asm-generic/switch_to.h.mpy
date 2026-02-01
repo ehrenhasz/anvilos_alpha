@@ -1,0 +1,9 @@
+{
+  "module_name": "switch_to.h",
+  "hash_id": "3419fbe7fbe0c477a51424081cb92b05f638a7ddd9570b9a1b4961508b60109e",
+  "original_prompt": "Ingested from linux-6.6.14/include/asm-generic/switch_to.h",
+  "human_readable_source": " \n \n#ifndef __ASM_GENERIC_SWITCH_TO_H\n#define __ASM_GENERIC_SWITCH_TO_H\n\n#include <linux/thread_info.h>\n\n \nextern struct task_struct *__switch_to(struct task_struct *,\n\t\t\t\t       struct task_struct *);\n\n#define switch_to(prev, next, last)\t\t\t\t\t\\\n\tdo {\t\t\t\t\t\t\t\t\\\n\t\t((last) = __switch_to((prev), (next)));\t\t\t\\\n\t} while (0)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

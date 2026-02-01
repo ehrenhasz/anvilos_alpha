@@ -1,0 +1,9 @@
+{
+  "module_name": "st_gyro.h",
+  "hash_id": "1a78701114736f5e351bd30ce0e9acc8014a3ecd4b6a8d98ef1b416650be634d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/iio/gyro/st_gyro.h",
+  "human_readable_source": " \n \n\n#ifndef ST_GYRO_H\n#define ST_GYRO_H\n\n#include <linux/types.h>\n#include <linux/iio/common/st_sensors.h>\n\n#define L3G4200D_GYRO_DEV_NAME\t\t\"l3g4200d\"\n#define LSM330D_GYRO_DEV_NAME\t\t\"lsm330d_gyro\"\n#define LSM330DL_GYRO_DEV_NAME\t\t\"lsm330dl_gyro\"\n#define LSM330DLC_GYRO_DEV_NAME\t\t\"lsm330dlc_gyro\"\n#define L3GD20_GYRO_DEV_NAME\t\t\"l3gd20\"\n#define L3GD20H_GYRO_DEV_NAME\t\t\"l3gd20h\"\n#define L3G4IS_GYRO_DEV_NAME\t\t\"l3g4is_ui\"\n#define LSM330_GYRO_DEV_NAME\t\t\"lsm330_gyro\"\n#define LSM9DS0_GYRO_DEV_NAME\t\t\"lsm9ds0_gyro\"\n\n#ifdef CONFIG_IIO_BUFFER\nint st_gyro_allocate_ring(struct iio_dev *indio_dev);\nint st_gyro_trig_set_state(struct iio_trigger *trig, bool state);\n#define ST_GYRO_TRIGGER_SET_STATE (&st_gyro_trig_set_state)\n#else  \nstatic inline int st_gyro_allocate_ring(struct iio_dev *indio_dev)\n{\n\treturn 0;\n}\n#define ST_GYRO_TRIGGER_SET_STATE NULL\n#endif  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

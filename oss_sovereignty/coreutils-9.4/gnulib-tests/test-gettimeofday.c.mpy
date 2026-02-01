@@ -1,0 +1,9 @@
+{
+  "module_name": "test-gettimeofday.c",
+  "hash_id": "cd2b4b47e57b2b61595afdde7635d221723dd0bf50beb720fe35ac98baa23ef6",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-gettimeofday.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#include <sys/time.h>\n\n#include \"signature.h\"\nSIGNATURE_CHECK (gettimeofday, int,\n                 (struct timeval *, GETTIMEOFDAY_TIMEZONE *));\n\n#include <time.h>\n\n#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\n\n#include \"macros.h\"\n\nstatic void\ntest_clobber ()\n{\n  time_t t = 0;\n  struct tm *lt;\n  struct tm saved_lt;\n  struct timeval tv;\n  lt = localtime (&t);\n  saved_lt = *lt;\n  gettimeofday (&tv, NULL);\n  if (memcmp (lt, &saved_lt, sizeof (struct tm)) != 0)\n    {\n      fprintf (stderr, \"gettimeofday still clobbers the localtime buffer!\\n\");\n      exit (1);\n    }\n}\n\nstatic void\ntest_consistency ()\n{\n  struct timeval tv1;\n  time_t tt2;\n  struct timeval tv3;\n  time_t tt4;\n\n  ASSERT (gettimeofday (&tv1, NULL) == 0);\n  tt2 = time (NULL);\n  ASSERT (gettimeofday (&tv3, NULL) == 0);\n  tt4 = time (NULL);\n\n   \n  ASSERT (tv1.tv_sec < tv3.tv_sec\n          || (tv1.tv_sec == tv3.tv_sec && tv1.tv_usec <= tv3.tv_usec));\n\n   \n  ASSERT (tt2 <= tt4);\n\n   \n  /* Note: It's here that the dependency to the 'time' module is needed.\n     Without it, this assertion would sometimes fail on glibc systems, see\n     https:\n  ASSERT (tv1.tv_sec <= tt2);\n  ASSERT (tt2 <= tv3.tv_sec);\n  ASSERT (tv3.tv_sec <= tt4);\n}\n\nint\nmain (void)\n{\n  test_clobber ();\n  test_consistency ();\n\n  return 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

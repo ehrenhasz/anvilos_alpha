@@ -1,0 +1,9 @@
+{
+  "module_name": "zfs-scrub@.service.in",
+  "hash_id": "e5542b97253216a9aab2b06944b533082c4026065afced7760c1e5e2117d77c8",
+  "original_prompt": "Ingested from zfs-2.2.2/etc/systemd/system/zfs-scrub@.service.in",
+  "human_readable_source": "[Unit]\nDescription=zpool scrub on %i\nDocumentation=man:zpool-scrub(8)\nRequires=zfs.target\nAfter=zfs.target\nConditionACPower=true\nConditionPathIsDirectory=/sys/module/zfs\n\n[Service]\nEnvironmentFile=-@initconfdir@/zfs\nExecStart=/bin/sh -c '\\\nif @sbindir@/zpool status %i | grep -q \"scrub in progress\"; then\\\nexec @sbindir@/zpool wait -t scrub %i;\\\nelse exec @sbindir@/zpool scrub -w %i; fi'\nExecStop=-/bin/sh -c '@sbindir@/zpool scrub -p %i 2>/dev/null || true'\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

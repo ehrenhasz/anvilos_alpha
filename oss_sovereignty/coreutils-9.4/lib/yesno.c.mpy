@@ -1,0 +1,9 @@
+{
+  "module_name": "yesno.c",
+  "hash_id": "4f8c79671db4bc58ec9605038615ceaafce5d89d4333df82b5f8cebf56c843a3",
+  "original_prompt": "Ingested from coreutils-9.4/lib/yesno.c",
+  "human_readable_source": " \n\nbool\nyesno (void)\n{\n  bool yes;\n\n#if ENABLE_NLS\n  char *response = NULL;\n  size_t response_size = 0;\n  ssize_t response_len = getline (&response, &response_size, stdin);\n\n  if (response_len <= 0)\n    yes = false;\n  else\n    {\n       \n      if (response[response_len - 1] == '\\n')\n        response[response_len - 1] = '\\0';\n      yes = (0 < rpmatch (response));\n    }\n\n  free (response);\n#else\n   \n  int c = getchar ();\n  yes = (c == 'y' || c == 'Y');\n  while (c != '\\n' && c != EOF)\n    c = getchar ();\n#endif\n\n  return yes;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

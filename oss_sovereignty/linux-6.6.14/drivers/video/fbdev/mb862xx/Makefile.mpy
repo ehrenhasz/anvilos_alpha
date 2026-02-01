@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "93132f80cda50a9b6722ba40ae3709dceba8c68816593ed4d828b70f89c3ba5a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/video/fbdev/mb862xx/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Makefile for the MB862xx framebuffer driver\n#\n\nobj-$(CONFIG_FB_MB862XX) += mb862xxfb.o\n\nmb862xxfb-y := mb862xxfbdrv.o mb862xxfb_accel.o\nmb862xxfb-$(CONFIG_FB_MB862XX_I2C) += mb862xx-i2c.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

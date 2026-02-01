@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "ea99639405ae9f662a432062d18c67bff248832c282308f5b1c5c611a6d0251e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/pmdomain/tegra/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nobj-$(CONFIG_SOC_TEGRA_POWERGATE_BPMP)\t+= powergate-bpmp.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

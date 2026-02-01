@@ -1,0 +1,9 @@
+{
+  "module_name": "off_cpu.h",
+  "hash_id": "3870ff085276a0c0334264e1d786e7a883a50ce279e99013e62baeaed48e7af0",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/util/off_cpu.h",
+  "human_readable_source": "#ifndef PERF_UTIL_OFF_CPU_H\n#define PERF_UTIL_OFF_CPU_H\n\n#include <linux/perf_event.h>\n\nstruct evlist;\nstruct target;\nstruct perf_session;\nstruct record_opts;\n\n#define OFFCPU_EVENT  \"offcpu-time\"\n\n#define OFFCPU_SAMPLE_TYPES  (PERF_SAMPLE_IDENTIFIER | PERF_SAMPLE_IP | \\\n\t\t\t      PERF_SAMPLE_TID | PERF_SAMPLE_TIME | \\\n\t\t\t      PERF_SAMPLE_ID | PERF_SAMPLE_CPU | \\\n\t\t\t      PERF_SAMPLE_PERIOD | PERF_SAMPLE_CALLCHAIN | \\\n\t\t\t      PERF_SAMPLE_CGROUP)\n\n\n#ifdef HAVE_BPF_SKEL\nint off_cpu_prepare(struct evlist *evlist, struct target *target,\n\t\t    struct record_opts *opts);\nint off_cpu_write(struct perf_session *session);\n#else\nstatic inline int off_cpu_prepare(struct evlist *evlist __maybe_unused,\n\t\t\t\t  struct target *target __maybe_unused,\n\t\t\t\t  struct record_opts *opts __maybe_unused)\n{\n\treturn -1;\n}\n\nstatic inline int off_cpu_write(struct perf_session *session __maybe_unused)\n{\n\treturn -1;\n}\n#endif\n\n#endif   \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

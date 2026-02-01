@@ -1,0 +1,9 @@
+{
+  "module_name": ".gitignore",
+  "hash_id": "f74026b1fd33e6510fcaf3a00d5c8eaddc007df1ae65cf5c20a3b006ecd0b16b",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/powerpc/benchmarks/.gitignore",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\ngettimeofday\ncontext_switch\nfork\nexec_target\nmmap_bench\nfutex_bench\nnull_syscall\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

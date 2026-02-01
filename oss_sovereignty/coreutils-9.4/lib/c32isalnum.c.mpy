@@ -1,0 +1,9 @@
+{
+  "module_name": "c32isalnum.c",
+  "hash_id": "a8985269005a83b2b20b59b186492b68f5b9a84d35b0a1a42d57c4899ce33e9b",
+  "original_prompt": "Ingested from coreutils-9.4/lib/c32isalnum.c",
+  "human_readable_source": " \n#include <uchar.h>\n\n#define FUNC c32isalnum\n#define WCHAR_FUNC iswalnum\n#define UCS_FUNC uc_is_alnum\n#include \"c32is-impl.h\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

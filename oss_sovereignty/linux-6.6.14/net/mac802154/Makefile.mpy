@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "8f7e49eccbce87dd0a4bbd79446b478491a52fc026eb9c362d992703c961e2e6",
+  "original_prompt": "Ingested from linux-6.6.14/net/mac802154/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-$(CONFIG_MAC802154)\t+= mac802154.o\nmac802154-objs\t\t:= main.o rx.o tx.o mac_cmd.o mib.o \\\n\t\t\t   iface.o llsec.o util.o cfg.o scan.o trace.o\n\nCFLAGS_trace.o := -I$(src)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

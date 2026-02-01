@@ -1,0 +1,9 @@
+{
+  "module_name": "soc-acpi-intel-cfl-match.c",
+  "hash_id": "d3324ab94d213339022dd29b1891703e28c223f7f645f2a9e21dd076f1cc3d10",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/intel/common/soc-acpi-intel-cfl-match.c",
+  "human_readable_source": "\n \n\n#include <sound/soc-acpi.h>\n#include <sound/soc-acpi-intel-match.h>\n\nstruct snd_soc_acpi_mach snd_soc_acpi_intel_cfl_machines[] = {\n\t{},\n};\nEXPORT_SYMBOL_GPL(snd_soc_acpi_intel_cfl_machines);\n\nstruct snd_soc_acpi_mach snd_soc_acpi_intel_cfl_sdw_machines[] = {\n\t{}\n};\nEXPORT_SYMBOL_GPL(snd_soc_acpi_intel_cfl_sdw_machines);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "config",
+  "hash_id": "6ebac7cae8d9670594130b9fe30dedac43deb1f0e3c4c4454ebb694e6062e218",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/lkdtm/config",
+  "human_readable_source": "CONFIG_LKDTM=y\nCONFIG_DEBUG_LIST=y\nCONFIG_SLAB_FREELIST_HARDENED=y\nCONFIG_FORTIFY_SOURCE=y\nCONFIG_GCC_PLUGIN_STACKLEAK=y\nCONFIG_HARDENED_USERCOPY=y\nCONFIG_RANDOMIZE_KSTACK_OFFSET_DEFAULT=y\nCONFIG_INIT_ON_FREE_DEFAULT_ON=y\nCONFIG_INIT_ON_ALLOC_DEFAULT_ON=y\nCONFIG_UBSAN=y\nCONFIG_UBSAN_BOUNDS=y\nCONFIG_STACKPROTECTOR_STRONG=y\nCONFIG_SLUB_DEBUG=y\nCONFIG_SLUB_DEBUG_ON=y\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

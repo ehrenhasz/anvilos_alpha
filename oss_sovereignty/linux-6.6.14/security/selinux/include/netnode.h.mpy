@@ -1,0 +1,9 @@
+{
+  "module_name": "netnode.h",
+  "hash_id": "87781525dbf90943964db482d85a907df59872b83001a933b100d789c085ad0b",
+  "original_prompt": "Ingested from linux-6.6.14/security/selinux/include/netnode.h",
+  "human_readable_source": " \n \n\n \n\n#ifndef _SELINUX_NETNODE_H\n#define _SELINUX_NETNODE_H\n\n#include <linux/types.h>\n\nvoid sel_netnode_flush(void);\n\nint sel_netnode_sid(void *addr, u16 family, u32 *sid);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

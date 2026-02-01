@@ -1,0 +1,9 @@
+{
+  "module_name": "blk-wbt.h",
+  "hash_id": "328160c9427e88bb8716acffcc9555c16693c58f532cce21a5fca3b829a03088",
+  "original_prompt": "Ingested from linux-6.6.14/block/blk-wbt.h",
+  "human_readable_source": " \n#ifndef WB_THROTTLE_H\n#define WB_THROTTLE_H\n\n#ifdef CONFIG_BLK_WBT\n\nint wbt_init(struct gendisk *disk);\nvoid wbt_disable_default(struct gendisk *disk);\nvoid wbt_enable_default(struct gendisk *disk);\n\nu64 wbt_get_min_lat(struct request_queue *q);\nvoid wbt_set_min_lat(struct request_queue *q, u64 val);\nbool wbt_disabled(struct request_queue *);\n\nvoid wbt_set_write_cache(struct request_queue *, bool);\n\nu64 wbt_default_latency_nsec(struct request_queue *);\n\n#else\n\nstatic inline void wbt_disable_default(struct gendisk *disk)\n{\n}\nstatic inline void wbt_enable_default(struct gendisk *disk)\n{\n}\nstatic inline void wbt_set_write_cache(struct request_queue *q, bool wc)\n{\n}\n\n#endif  \n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

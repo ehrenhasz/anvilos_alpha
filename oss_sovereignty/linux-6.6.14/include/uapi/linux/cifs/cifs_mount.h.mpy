@@ -1,0 +1,9 @@
+{
+  "module_name": "cifs_mount.h",
+  "hash_id": "53a64d738adeb8b84700c65526cbe5e0a217bcaf4f3986416c1968fe68e53457",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/cifs/cifs_mount.h",
+  "human_readable_source": " \n \n#ifndef _CIFS_MOUNT_H\n#define _CIFS_MOUNT_H\n\n \n#define CIFS_MAX_DOMAINNAME_LEN 256  \n#define CIFS_MAX_USERNAME_LEN   256  \n#define CIFS_MAX_PASSWORD_LEN   512  \n#define CIFS_MAX_SHARE_LEN      256  \n#define CIFS_NI_MAXHOST        1024  \n\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

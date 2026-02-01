@@ -1,0 +1,9 @@
+{
+  "module_name": "add_unless",
+  "hash_id": "5f9713c2b4d36506d5eb20874221c212ebaf7d8dfb4be389391d84e4eff71751",
+  "original_prompt": "Ingested from linux-6.6.14/scripts/atomic/kerneldoc/add_unless",
+  "human_readable_source": "if [ -z \"${pfx}\" ]; then\n\tdesc_return=\"Return: @true if @v was updated, @false otherwise.\"\nfi\n\ncat <<EOF\n/**\n * ${class}${atomicname}() - atomic add unless value with ${desc_order} ordering\n * @v: pointer to ${atomic}_t\n * @a: ${int} value to add\n * @u: ${int} value to compare with\n *\n * If (@v != @u), atomically updates @v to (@v + @a) with ${desc_order} ordering.\n *\n * ${desc_noinstr}\n *\n * ${desc_return}\n */\nEOF\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

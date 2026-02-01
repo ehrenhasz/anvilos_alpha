@@ -1,0 +1,9 @@
+{
+  "module_name": "objlist.c",
+  "hash_id": "9d1e60c3c9672e0cf928f3ac1407d3bb4a9e74dc7f0dd725560dbb1f8e4ba2f3",
+  "original_prompt": "Ingested from zfs-2.2.2/module/zfs/objlist.c",
+  "human_readable_source": " \n \n\n#include\t<sys/objlist.h>\n#include\t<sys/zfs_context.h>\n\nobjlist_t *\nobjlist_create(void)\n{\n\tobjlist_t *list = kmem_alloc(sizeof (*list), KM_SLEEP);\n\tlist_create(&list->ol_list, sizeof (objlist_node_t),\n\t    offsetof(objlist_node_t, on_node));\n\tlist->ol_last_lookup = 0;\n\treturn (list);\n}\n\nvoid\nobjlist_destroy(objlist_t *list)\n{\n\tfor (objlist_node_t *n = list_remove_head(&list->ol_list);\n\t    n != NULL; n = list_remove_head(&list->ol_list)) {\n\t\tkmem_free(n, sizeof (*n));\n\t}\n\tlist_destroy(&list->ol_list);\n\tkmem_free(list, sizeof (*list));\n}\n\n \nboolean_t\nobjlist_exists(objlist_t *list, uint64_t object)\n{\n\tobjlist_node_t *node = list_head(&list->ol_list);\n\tASSERT3U(object, >=, list->ol_last_lookup);\n\tlist->ol_last_lookup = object;\n\twhile (node != NULL && node->on_object < object) {\n\t\tVERIFY3P(node, ==, list_remove_head(&list->ol_list));\n\t\tkmem_free(node, sizeof (*node));\n\t\tnode = list_head(&list->ol_list);\n\t}\n\treturn (node != NULL && node->on_object == object);\n}\n\n \nvoid\nobjlist_insert(objlist_t *list, uint64_t object)\n{\n\tobjlist_node_t *node = kmem_zalloc(sizeof (*node), KM_SLEEP);\n\tnode->on_object = object;\n#ifdef ZFS_DEBUG\n\tobjlist_node_t *last_object = list_tail(&list->ol_list);\n\tuint64_t last_objnum = (last_object != NULL ? last_object->on_object :\n\t    0);\n\tASSERT3U(node->on_object, >, last_objnum);\n#endif\n\tlist_insert_tail(&list->ol_list, node);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

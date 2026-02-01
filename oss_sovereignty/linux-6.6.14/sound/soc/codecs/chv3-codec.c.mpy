@@ -1,0 +1,9 @@
+{
+  "module_name": "chv3-codec.c",
+  "hash_id": "b75c76cbc922886eb11a07c337f0bc1c57c2869b14fbe248d7d5b9796c913da0",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/codecs/chv3-codec.c",
+  "human_readable_source": "\n#include <linux/module.h>\n#include <sound/soc.h>\n\nstatic struct snd_soc_dai_driver chv3_codec_dai = {\n\t.name = \"chv3-codec-hifi\",\n\t.capture = {\n\t\t.stream_name = \"Capture\",\n\t\t.channels_min = 8,\n\t\t.channels_max = 8,\n\t\t.rates = SNDRV_PCM_RATE_CONTINUOUS,\n\t\t.formats = SNDRV_PCM_FMTBIT_S32_LE,\n\t},\n};\n\nstatic const struct snd_soc_component_driver soc_component_dev_chv3_codec = {\n};\n\nstatic int chv3_codec_probe(struct platform_device *pdev)\n{\n\treturn devm_snd_soc_register_component(&pdev->dev,\n\t\t&soc_component_dev_chv3_codec, &chv3_codec_dai, 1);\n}\n\nstatic const struct of_device_id chv3_codec_of_match[] = {\n\t{ .compatible = \"google,chv3-codec\", },\n\t{ }\n};\n\nstatic struct platform_driver chv3_codec_platform_driver = {\n\t.driver = {\n\t\t.name = \"chv3-codec\",\n\t\t.of_match_table = chv3_codec_of_match,\n\t},\n\t.probe = chv3_codec_probe,\n};\nmodule_platform_driver(chv3_codec_platform_driver);\n\nMODULE_DESCRIPTION(\"ASoC Chameleon v3 codec driver\");\nMODULE_AUTHOR(\"Pawel Anikiel <pan@semihalf.com>\");\nMODULE_LICENSE(\"GPL\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "intel_hfi.h",
+  "hash_id": "2a8e841c444e5483dd102b2ce4f3ba680f65fbb3c7d2427fa5aa68c0a96c2296",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/thermal/intel/intel_hfi.h",
+  "human_readable_source": " \n#ifndef _INTEL_HFI_H\n#define _INTEL_HFI_H\n\n#if defined(CONFIG_INTEL_HFI_THERMAL)\nvoid __init intel_hfi_init(void);\nvoid intel_hfi_online(unsigned int cpu);\nvoid intel_hfi_offline(unsigned int cpu);\nvoid intel_hfi_process_event(__u64 pkg_therm_status_msr_val);\n#else\nstatic inline void intel_hfi_init(void) { }\nstatic inline void intel_hfi_online(unsigned int cpu) { }\nstatic inline void intel_hfi_offline(unsigned int cpu) { }\nstatic inline void intel_hfi_process_event(__u64 pkg_therm_status_msr_val) { }\n#endif  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

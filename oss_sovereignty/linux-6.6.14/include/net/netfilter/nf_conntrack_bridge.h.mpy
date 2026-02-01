@@ -1,0 +1,9 @@
+{
+  "module_name": "nf_conntrack_bridge.h",
+  "hash_id": "ef2b4baff052c27a53c6cbc7bd67a1aac821d4405f02d32139b0ebebdf6c3553",
+  "original_prompt": "Ingested from linux-6.6.14/include/net/netfilter/nf_conntrack_bridge.h",
+  "human_readable_source": "#ifndef NF_CONNTRACK_BRIDGE_\n#define NF_CONNTRACK_BRIDGE_\n\n#include <linux/module.h>\n#include <linux/types.h>\n#include <uapi/linux/if_ether.h>\n\nstruct nf_hook_ops;\n\nstruct nf_ct_bridge_info {\n\tstruct nf_hook_ops\t*ops;\n\tunsigned int\t\tops_size;\n\tstruct module\t\t*me;\n};\n\nvoid nf_ct_bridge_register(struct nf_ct_bridge_info *info);\nvoid nf_ct_bridge_unregister(struct nf_ct_bridge_info *info);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

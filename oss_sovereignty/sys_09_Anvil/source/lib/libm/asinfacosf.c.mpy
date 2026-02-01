@@ -1,0 +1,9 @@
+{
+  "module_name": "asinfacosf.c",
+  "hash_id": "b633332c8c524bb06a8e1021aaa8dd4505ac173955110c39732e4c0bc65d8e5e",
+  "original_prompt": "Ingested from sys_09_Anvil/source/lib/libm/asinfacosf.c",
+  "human_readable_source": " \n \n\n \n \n\n \n \n \n\n#include \"libm.h\"\n\n\nstatic const float\npio2_hi = 1.5707962513e+00f,  \npio2_lo = 7.5497894159e-08f;  \n\nstatic const float\n \npS0 =  1.6666586697e-01f,\npS1 = -4.2743422091e-02f,\npS2 = -8.6563630030e-03f,\nqS1 = -7.0662963390e-01f;\n\nstatic float R(float z)\n{\n\tfloat_t p, q;\n\tp = z*(pS0+z*(pS1+z*pS2));\n\tq = 1.0f+z*qS1;\n\treturn p/q;\n}\n\nfloat asinf(float x)\n{\n\t\n\tfloat s,z;\n\tuint32_t hx,ix;\n\n\tGET_FLOAT_WORD(hx, x);\n\tix = hx & 0x7fffffff;\n\tif (ix >= 0x3f800000) {   \n\t\tif (ix == 0x3f800000)   \n\t\t\treturn x*pio2_hi + 0x1p-120f;   \n\t\treturn 0/(x-x);   \n\t}\n\tif (ix < 0x3f000000) {   \n\t\t \n\t\tif (ix < 0x39800000 && ix >= 0x00800000)\n\t\t\treturn x;\n\t\treturn x + x*R(x*x);\n\t}\n\t \n\tz = (1 - fabsf(x))*0.5f;\n\ts = sqrtf(z);\n\tx = pio2_hi - (2*(s+s*R(z)) - pio2_lo); \n\tif (hx >> 31)\n\t\treturn -x;\n\treturn x;\n}\n\n \n \n\n \n \n\n \n \n \n\nfloat acosf(float x)\n{\n\tfloat z,w,s,c,df;\n\tuint32_t hx,ix;\n\n\tGET_FLOAT_WORD(hx, x);\n\tix = hx & 0x7fffffff;\n\t \n\tif (ix >= 0x3f800000) {\n\t\tif (ix == 0x3f800000) {\n\t\t\tif (hx >> 31)\n\t\t\t\treturn 2*pio2_hi + 0x1p-120f;\n\t\t\treturn 0;\n\t\t}\n\t\treturn 0/(x-x);\n\t}\n\t \n\tif (ix < 0x3f000000) {\n\t\tif (ix <= 0x32800000)  \n\t\t\treturn pio2_hi + 0x1p-120f;\n\t\treturn pio2_hi - (x - (pio2_lo-x*R(x*x)));\n\t}\n\t \n\tif (hx >> 31) {\n\t\tz = (1+x)*0.5f;\n\t\ts = sqrtf(z);\n\t\tw = R(z)*s-pio2_lo;\n\t\treturn 2*(pio2_hi - (s+w));\n\t}\n\t \n\tz = (1-x)*0.5f;\n\ts = sqrtf(z);\n\tGET_FLOAT_WORD(hx,s);\n\tSET_FLOAT_WORD(df,hx&0xfffff000);\n\tc = (z-df*df)/(s+df);\n\tw = R(z)*s+c;\n\treturn 2*(df+w);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

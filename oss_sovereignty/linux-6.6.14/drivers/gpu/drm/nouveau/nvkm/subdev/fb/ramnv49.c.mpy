@@ -1,0 +1,9 @@
+{
+  "module_name": "ramnv49.c",
+  "hash_id": "138d4e825adbd470fa031e09410cf9bf627489f71bb3a6148ec46e55c4e23984",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/subdev/fb/ramnv49.c",
+  "human_readable_source": " \n#include \"ramnv40.h\"\n\nint\nnv49_ram_new(struct nvkm_fb *fb, struct nvkm_ram **pram)\n{\n\tstruct nvkm_device *device = fb->subdev.device;\n\tu32  size = nvkm_rd32(device, 0x10020c) & 0xff000000;\n\tu32 fb914 = nvkm_rd32(device, 0x100914);\n\tenum nvkm_ram_type type = NVKM_RAM_TYPE_UNKNOWN;\n\tint ret;\n\n\tswitch (fb914 & 0x00000003) {\n\tcase 0x00000000: type = NVKM_RAM_TYPE_DDR1 ; break;\n\tcase 0x00000001: type = NVKM_RAM_TYPE_DDR2 ; break;\n\tcase 0x00000002: type = NVKM_RAM_TYPE_GDDR3; break;\n\tcase 0x00000003: break;\n\t}\n\n\tret = nv40_ram_new_(fb, type, size, pram);\n\tif (ret)\n\t\treturn ret;\n\n\t(*pram)->parts = (nvkm_rd32(device, 0x100200) & 0x00000003) + 1;\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

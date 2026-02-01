@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "4937373ba1e06f555bac5e9c648ebf6a89473853a9079d6804069899f29d7834",
+  "original_prompt": "Ingested from linux-6.6.14/kernel/irq/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n\nobj-y := irqdesc.o handle.o manage.o spurious.o resend.o chip.o dummychip.o devres.o\nobj-$(CONFIG_IRQ_TIMINGS) += timings.o\nifeq ($(CONFIG_TEST_IRQ_TIMINGS),y)\n\tCFLAGS_timings.o += -DDEBUG\nendif\nobj-$(CONFIG_GENERIC_IRQ_CHIP) += generic-chip.o\nobj-$(CONFIG_GENERIC_IRQ_PROBE) += autoprobe.o\nobj-$(CONFIG_IRQ_DOMAIN) += irqdomain.o\nobj-$(CONFIG_IRQ_SIM) += irq_sim.o\nobj-$(CONFIG_PROC_FS) += proc.o\nobj-$(CONFIG_GENERIC_PENDING_IRQ) += migration.o\nobj-$(CONFIG_GENERIC_IRQ_MIGRATION) += cpuhotplug.o\nobj-$(CONFIG_PM_SLEEP) += pm.o\nobj-$(CONFIG_GENERIC_MSI_IRQ) += msi.o\nobj-$(CONFIG_GENERIC_IRQ_IPI) += ipi.o\nobj-$(CONFIG_GENERIC_IRQ_IPI_MUX) += ipi-mux.o\nobj-$(CONFIG_SMP) += affinity.o\nobj-$(CONFIG_GENERIC_IRQ_DEBUGFS) += debugfs.o\nobj-$(CONFIG_GENERIC_IRQ_MATRIX_ALLOCATOR) += matrix.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "cacheflush.h",
+  "hash_id": "cacec946069fb6ab7833e7589a18e890eab1852ddf3152274344b6d8539a674d",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/cacheflush.h",
+  "human_readable_source": " \n#ifndef _LINUX_CACHEFLUSH_H\n#define _LINUX_CACHEFLUSH_H\n\n#include <asm/cacheflush.h>\n\nstruct folio;\n\n#if ARCH_IMPLEMENTS_FLUSH_DCACHE_PAGE\n#ifndef flush_dcache_folio\nvoid flush_dcache_folio(struct folio *folio);\n#endif\n#else\nstatic inline void flush_dcache_folio(struct folio *folio)\n{\n}\n#define flush_dcache_folio flush_dcache_folio\n#endif  \n\n#ifndef flush_icache_pages\nstatic inline void flush_icache_pages(struct vm_area_struct *vma,\n\t\t\t\t     struct page *page, unsigned int nr)\n{\n}\n#endif\n\n#define flush_icache_page(vma, page)\tflush_icache_pages(vma, page, 1)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

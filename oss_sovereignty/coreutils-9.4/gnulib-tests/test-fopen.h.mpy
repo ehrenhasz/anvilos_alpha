@@ -1,0 +1,9 @@
+{
+  "module_name": "test-fopen.h",
+  "hash_id": "6e53abdf63befc6778c11b3f33338b96034cd79e4d196f5f97d19ced6dfaf055",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-fopen.h",
+  "human_readable_source": " \n\n \n\n#include <errno.h>\n#include <unistd.h>\n\n#include \"macros.h\"\n\n \n#if __GNUC__ >= 10\n# pragma GCC diagnostic ignored \"-Wanalyzer-file-leak\"\n#endif\n\n \n\nstatic int\ntest_fopen (void)\n{\n  FILE *f;\n   \n  unlink (BASE \"file\");\n\n   \n  errno = 0;\n  ASSERT (fopen (BASE \"file\", \"r\") == NULL);\n  ASSERT (errno == ENOENT);\n\n   \n  f = fopen (BASE \"file\", \"w\");\n  ASSERT (f);\n  ASSERT (fclose (f) == 0);\n\n   \n  errno = 0;\n  ASSERT (fopen (BASE \"file/\", \"r\") == NULL);\n  ASSERT (errno == ENOTDIR || errno == EISDIR || errno == EINVAL);\n\n  errno = 0;\n  ASSERT (fopen (BASE \"file/\", \"r+\") == NULL);\n  ASSERT (errno == ENOTDIR || errno == EISDIR || errno == EINVAL);\n\n   \n  errno = 0;\n  ASSERT (fopen (\"nonexist.ent/\", \"w\") == NULL);\n  ASSERT (errno == ENOTDIR || errno == EISDIR || errno == ENOENT\n          || errno == EINVAL);\n\n   \n  errno = 0;\n  ASSERT (fopen (\".\", \"w\") == NULL);\n  ASSERT (errno == EISDIR || errno == EINVAL || errno == EACCES);\n\n  errno = 0;\n  ASSERT (fopen (\"./\", \"w\") == NULL);\n  ASSERT (errno == EISDIR || errno == EINVAL || errno == EACCES);\n\n  errno = 0;\n  ASSERT (fopen (\".\", \"r+\") == NULL);\n  ASSERT (errno == EISDIR || errno == EINVAL || errno == EACCES);\n\n  errno = 0;\n  ASSERT (fopen (\"./\", \"r+\") == NULL);\n  ASSERT (errno == EISDIR || errno == EINVAL || errno == EACCES);\n\n   \n  f = fopen (\"/dev/null\", \"r\");\n  ASSERT (f);\n  ASSERT (fclose (f) == 0);\n  f = fopen (\"/dev/null\", \"w\");\n  ASSERT (f);\n  ASSERT (fclose (f) == 0);\n\n   \n  ASSERT (unlink (BASE \"file\") == 0);\n\n  return 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

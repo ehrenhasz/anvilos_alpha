@@ -1,0 +1,9 @@
+{
+  "module_name": "kernel-group-info.m4",
+  "hash_id": "94791deb15c999a6d5a80fbf55f4ee804000690632b19208ff5c5be75e6e0dbb",
+  "original_prompt": "Ingested from zfs-2.2.2/config/kernel-group-info.m4",
+  "human_readable_source": "dnl #\ndnl # 4.9 API change\ndnl # group_info changed from 2d array via >blocks to 1d array via ->gid\ndnl #\nAC_DEFUN([ZFS_AC_KERNEL_SRC_GROUP_INFO_GID], [\n\tZFS_LINUX_TEST_SRC([group_info_gid], [\n\t\t#include <linux/cred.h>\n\t],[\n\t\tstruct group_info gi __attribute__ ((unused)) = {};\n\t\tgi.gid[0] = KGIDT_INIT(0);\n\t])\n])\n\nAC_DEFUN([ZFS_AC_KERNEL_GROUP_INFO_GID], [\n\tAC_MSG_CHECKING([whether group_info->gid exists])\n\tZFS_LINUX_TEST_RESULT([group_info_gid], [\n\t\tAC_MSG_RESULT(yes)\n\t\tAC_DEFINE(HAVE_GROUP_INFO_GID, 1, [group_info->gid exists])\n\t],[\n\t\tAC_MSG_RESULT(no)\n\t])\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

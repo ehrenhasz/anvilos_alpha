@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "a1324910650f2fecd0f05257b124b8172a5f5d4c99459cd340ed6a4e8c23ccc8",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/gud/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n\ngud-y\t\t\t\t:= gud_drv.o gud_pipe.o gud_connector.o\nobj-$(CONFIG_DRM_GUD)\t\t+= gud.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

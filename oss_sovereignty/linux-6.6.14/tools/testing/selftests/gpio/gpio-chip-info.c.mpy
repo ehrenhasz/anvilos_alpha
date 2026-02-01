@@ -1,0 +1,9 @@
+{
+  "module_name": "gpio-chip-info.c",
+  "hash_id": "7d95f3755f23f8d510adac3a013a001be739decb735096a0433766a8ecc712fe",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/gpio/gpio-chip-info.c",
+  "human_readable_source": "\n \n\n#include <fcntl.h>\n#include <linux/gpio.h>\n#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\n#include <sys/ioctl.h>\n#include <sys/types.h>\n\nstatic void print_usage(void)\n{\n\tprintf(\"usage:\\n\");\n\tprintf(\"  gpio-chip-info <chip path> [name|label|num-lines]\\n\");\n}\n\nint main(int argc, char **argv)\n{\n\tstruct gpiochip_info info;\n\tint fd, ret;\n\n\tif (argc != 3) {\n\t\tprint_usage();\n\t\treturn EXIT_FAILURE;\n\t}\n\n\tfd = open(argv[1], O_RDWR);\n\tif (fd < 0) {\n\t\tperror(\"unable to open the GPIO chip\");\n\t\treturn EXIT_FAILURE;\n\t}\n\n\tmemset(&info, 0, sizeof(info));\n\tret = ioctl(fd, GPIO_GET_CHIPINFO_IOCTL, &info);\n\tif (ret) {\n\t\tperror(\"chip info ioctl failed\");\n\t\treturn EXIT_FAILURE;\n\t}\n\n\tif (strcmp(argv[2], \"name\") == 0) {\n\t\tprintf(\"%s\\n\", info.name);\n\t} else if (strcmp(argv[2], \"label\") == 0) {\n\t\tprintf(\"%s\\n\", info.label);\n\t} else if (strcmp(argv[2], \"num-lines\") == 0) {\n\t\tprintf(\"%u\\n\", info.lines);\n\t} else {\n\t\tfprintf(stderr, \"unknown command: %s\\n\", argv[2]);\n\t\treturn EXIT_FAILURE;\n\t}\n\n\treturn EXIT_SUCCESS;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

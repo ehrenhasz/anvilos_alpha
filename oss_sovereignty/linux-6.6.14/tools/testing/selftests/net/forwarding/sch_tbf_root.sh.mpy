@@ -1,0 +1,9 @@
+{
+  "module_name": "sch_tbf_root.sh",
+  "hash_id": "cbf703c4d906627d82e9a8100fcb28bab17237307e2907635ec5f47b98df1fdc",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/net/forwarding/sch_tbf_root.sh",
+  "human_readable_source": "#!/bin/bash\n# SPDX-License-Identifier: GPL-2.0\n\nALL_TESTS=\"\n\tping_ipv4\n\ttbf_test\n\"\n: ${lib_dir:=.}\nsource $lib_dir/sch_tbf_core.sh\n\ntbf_test_one()\n{\n\tlocal bs=$1; shift\n\n\ttc qdisc replace dev $swp2 root handle 108: tbf \\\n\t   rate 400Mbit burst $bs limit 1M\n\tdo_tbf_test 10 400 $bs\n}\n\ntbf_test()\n{\n\ttbf_test_one 128K\n\ttc qdisc del dev $swp2 root\n}\n\nif type -t sch_tbf_pre_hook >/dev/null; then\n\tsch_tbf_pre_hook\nfi\n\ntrap cleanup EXIT\n\nsetup_prepare\nsetup_wait\n\ntests_run\n\nexit $EXIT_STATUS\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "nf_conntrack_ftp.h",
+  "hash_id": "1e47526dfb57025266a65592f067273c97a8c9dc72f76f54f524304107df0cdf",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/netfilter/nf_conntrack_ftp.h",
+  "human_readable_source": " \n#ifndef _NF_CONNTRACK_FTP_H\n#define _NF_CONNTRACK_FTP_H\n\n#include <linux/netfilter.h>\n#include <linux/skbuff.h>\n#include <linux/types.h>\n#include <net/netfilter/nf_conntrack_expect.h>\n#include <uapi/linux/netfilter/nf_conntrack_ftp.h>\n#include <uapi/linux/netfilter/nf_conntrack_tuple_common.h>\n\n#define FTP_PORT\t21\n\n#define NF_CT_FTP_SEQ_PICKUP\t(1 << 0)\n\n#define NUM_SEQ_TO_REMEMBER 2\n \nstruct nf_ct_ftp_master {\n\t \n\tu_int32_t seq_aft_nl[IP_CT_DIR_MAX][NUM_SEQ_TO_REMEMBER];\n\t \n\tu_int16_t seq_aft_nl_num[IP_CT_DIR_MAX];\n\t \n\tu_int16_t flags[IP_CT_DIR_MAX];\n};\n\n \nextern unsigned int (*nf_nat_ftp_hook)(struct sk_buff *skb,\n\t\t\t\t       enum ip_conntrack_info ctinfo,\n\t\t\t\t       enum nf_ct_ftp_type type,\n\t\t\t\t       unsigned int protoff,\n\t\t\t\t       unsigned int matchoff,\n\t\t\t\t       unsigned int matchlen,\n\t\t\t\t       struct nf_conntrack_expect *exp);\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

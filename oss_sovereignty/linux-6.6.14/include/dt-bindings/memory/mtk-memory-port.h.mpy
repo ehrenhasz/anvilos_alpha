@@ -1,0 +1,9 @@
+{
+  "module_name": "mtk-memory-port.h",
+  "hash_id": "20511a1ed0eea5032641967f62616d1f6f673a418c55893ec8a82e94ec409c6e",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/memory/mtk-memory-port.h",
+  "human_readable_source": " \n \n#ifndef __DT_BINDINGS_MEMORY_MTK_MEMORY_PORT_H_\n#define __DT_BINDINGS_MEMORY_MTK_MEMORY_PORT_H_\n\n#define MTK_LARB_NR_MAX\t\t\t32\n\n#define MTK_M4U_ID(larb, port)\t\t(((larb) << 5) | (port))\n#define MTK_M4U_TO_LARB(id)\t\t(((id) >> 5) & 0x1f)\n#define MTK_M4U_TO_PORT(id)\t\t((id) & 0x1f)\n\n#define MTK_IFAIOMMU_PERI_ID(port)\tMTK_M4U_ID(0, port)\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

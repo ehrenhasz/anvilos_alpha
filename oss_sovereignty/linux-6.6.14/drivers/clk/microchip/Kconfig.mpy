@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "69106f888af28e91783e18d2999b6e26e5d3a21afd3b99e13b76f2fa4a34c9f3",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/clk/microchip/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n\nconfig COMMON_CLK_PIC32\n\tdef_bool COMMON_CLK && MACH_PIC32\n\nconfig MCHP_CLK_MPFS\n\tbool \"Clk driver for PolarFire SoC\"\n\tdepends on ARCH_MICROCHIP_POLARFIRE || COMPILE_TEST\n\tdefault ARCH_MICROCHIP_POLARFIRE\n\tselect AUXILIARY_BUS\n\thelp\n\t  Supports Clock Configuration for PolarFire SoC\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

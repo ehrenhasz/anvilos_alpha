@@ -1,0 +1,9 @@
+{
+  "module_name": "LOCK04.boot",
+  "hash_id": "44e158448674c508b76034ac68423dc1543af6df287190854ebfd5ed8af18e71",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/rcutorture/configs/lock/LOCK04.boot",
+  "human_readable_source": "locktorture.torture_type=rw_lock\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

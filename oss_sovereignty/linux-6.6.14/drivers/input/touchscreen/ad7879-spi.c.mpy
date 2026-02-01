@@ -1,0 +1,9 @@
+{
+  "module_name": "ad7879-spi.c",
+  "hash_id": "ddb029c403345c408487a004bb9116884c6693bec2bd300b497924d8ad98d3a9",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/input/touchscreen/ad7879-spi.c",
+  "human_readable_source": "\n \n\n#include <linux/input.h>\t \n#include <linux/pm.h>\n#include <linux/spi/spi.h>\n#include <linux/module.h>\n#include <linux/of.h>\n#include <linux/regmap.h>\n\n#include \"ad7879.h\"\n\n#define AD7879_DEVID\t\t0x7A\t \n\n#define MAX_SPI_FREQ_HZ      5000000\n\n#define AD7879_CMD_MAGIC     0xE0\n#define AD7879_CMD_READ      BIT(2)\n\nstatic const struct regmap_config ad7879_spi_regmap_config = {\n\t.reg_bits = 16,\n\t.val_bits = 16,\n\t.max_register = 15,\n\t.read_flag_mask = AD7879_CMD_MAGIC | AD7879_CMD_READ,\n\t.write_flag_mask = AD7879_CMD_MAGIC,\n};\n\nstatic int ad7879_spi_probe(struct spi_device *spi)\n{\n\tstruct regmap *regmap;\n\n\t \n\tif (spi->max_speed_hz > MAX_SPI_FREQ_HZ) {\n\t\tdev_err(&spi->dev, \"SPI CLK %d Hz?\\n\", spi->max_speed_hz);\n\t\treturn -EINVAL;\n\t}\n\n\tregmap = devm_regmap_init_spi(spi, &ad7879_spi_regmap_config);\n\tif (IS_ERR(regmap))\n\t\treturn PTR_ERR(regmap);\n\n\treturn ad7879_probe(&spi->dev, regmap, spi->irq, BUS_SPI, AD7879_DEVID);\n}\n\n#ifdef CONFIG_OF\nstatic const struct of_device_id ad7879_spi_dt_ids[] = {\n\t{ .compatible = \"adi,ad7879\", },\n\t{ }\n};\nMODULE_DEVICE_TABLE(of, ad7879_spi_dt_ids);\n#endif\n\nstatic struct spi_driver ad7879_spi_driver = {\n\t.driver = {\n\t\t.name\t= \"ad7879\",\n\t\t.pm\t= &ad7879_pm_ops,\n\t\t.of_match_table = of_match_ptr(ad7879_spi_dt_ids),\n\t},\n\t.probe\t\t= ad7879_spi_probe,\n};\n\nmodule_spi_driver(ad7879_spi_driver);\n\nMODULE_AUTHOR(\"Michael Hennerich <michael.hennerich@analog.com>\");\nMODULE_DESCRIPTION(\"AD7879(-1) touchscreen SPI bus driver\");\nMODULE_LICENSE(\"GPL\");\nMODULE_ALIAS(\"spi:ad7879\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

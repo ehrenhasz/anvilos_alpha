@@ -1,0 +1,9 @@
+{
+  "module_name": ".gitignore",
+  "hash_id": "6ccf9a0f5a1081fdb8cbd59a22646f6ced1bdbbee20167d1c66a49e8d78da881",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/riscv/vector/.gitignore",
+  "human_readable_source": "vstate_exec_nolibc\nvstate_prctl\nv_initval_nolibc\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

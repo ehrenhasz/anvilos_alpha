@@ -1,0 +1,9 @@
+{
+  "module_name": "spi_oc_tiny.h",
+  "hash_id": "fa27d770e7636e95a49bcf79f6d593e76f09897acf07e8747a065e503407233c",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/spi/spi_oc_tiny.h",
+  "human_readable_source": " \n#ifndef _LINUX_SPI_SPI_OC_TINY_H\n#define _LINUX_SPI_SPI_OC_TINY_H\n\n \nstruct tiny_spi_platform_data {\n\tunsigned int freq;\n\tunsigned int baudwidth;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

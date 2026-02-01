@@ -1,0 +1,9 @@
+{
+  "module_name": "readme",
+  "hash_id": "0c0de8e3e09ce1a99eb0ca78c1050dfb3e45729257239ec35dc4e1e277742acc",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/sm750fb/readme",
+  "human_readable_source": "Introduction:\n\tSM750 of Silicon MOtion is pci express display controller device.\n\tThe SM750 embedded graphics features include:\n\t- dual display\n\t- 2D acceleration\n\t- 16MB integrated video memory\n\nAbout the kernel module parameter of driver:\n\n\tUse 1280,8bpp index color and 60 hz mode:\n\tinsmod ./sm750fb.ko g_option=\"1280x1024-8@60\"\n\n\tDisable MTRR,Disable 2d acceleration,Disable hardware cursor,\n\tand use a 800x600 mode :\n\tinsmod ./sm750fb.ko g_option=\"noaccel:nomtrr:nohwc:800x600\"\n\n\tdual frame buffer for driver with \"dual\" parameter\n\tinsmod ./sm750fb.ko g_option=\"dual,800x600:1024x768\"\n\tit will create fb0 and fb1 (or fb1,fb2 if fb0 already exist) under /dev\n\tand user can use con2fb to link fbX and ttyX\n\n\tNotes:\n\t1) if you build the driver with built-in method, the parameter\n\t\tyou edited in the grub config file will be also the\n\t\tsame format as above modular method,but additionally add\n\t\t\"video=sm750fb:\"\n\t\tahead of parameters,so,it looks like:\n\t\tvideo=sm750fb:noaccel,1280x1024@60,otherparam,etc...\n\t\tit equal to modular method with below command:\n\t\tinsmod ./sm750fb.ko g_option=\"noaccel:1280x1024@60:otherparm:etc...\"\n\n\t2) if you put 800x600 into the parameter without bpp and\n\t\trefresh rate, kernel driver will defaulty use 16bpp and 60hz\n\nImportant:\n\tif you have vesafb enabled in your config then /dev/fb0 will be created by vesafb\n\tand this driver will use fb1, fb2. In that case, you need to configure your X-server\n\tto use fb1. Another simple althernative is to disable vesafb from your config.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

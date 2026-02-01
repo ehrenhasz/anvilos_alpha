@@ -1,0 +1,9 @@
+{
+  "module_name": "aic79xx_pci.h",
+  "hash_id": "4efd3b600b5e8c4c057aff65d45bb0172dc6df06b3e416dc91149dc3722a3259",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/scsi/aic7xxx/aic79xx_pci.h",
+  "human_readable_source": " \n#ifndef _AIC79XX_PCI_H_\n#define _AIC79XX_PCI_H_\n\n#define ID_ALL_MASK\t\t\t0xFFFFFFFFFFFFFFFFull\n#define ID_ALL_IROC_MASK\t\t0xFF7FFFFFFFFFFFFFull\n#define ID_DEV_VENDOR_MASK\t\t0xFFFFFFFF00000000ull\n#define ID_9005_GENERIC_MASK\t\t0xFFF0FFFF00000000ull\n#define ID_9005_GENERIC_IROC_MASK\t0xFF70FFFF00000000ull\n\n#define ID_AIC7901\t\t\t0x800F9005FFFF9005ull\n#define ID_AHA_29320A\t\t\t0x8000900500609005ull\n#define ID_AHA_29320ALP\t\t\t0x8017900500449005ull\n#define ID_AHA_29320LPE\t\t\t0x8017900500459005ull\n\n#define ID_AIC7901A\t\t\t0x801E9005FFFF9005ull\n#define ID_AHA_29320LP\t\t\t0x8014900500449005ull\n\n#define ID_AIC7902\t\t\t0x801F9005FFFF9005ull\n#define ID_AIC7902_B\t\t\t0x801D9005FFFF9005ull\n#define ID_AHA_39320\t\t\t0x8010900500409005ull\n#define ID_AHA_29320\t\t\t0x8012900500429005ull\n#define ID_AHA_29320B\t\t\t0x8013900500439005ull\n#define ID_AHA_39320_B\t\t\t0x8015900500409005ull\n#define ID_AHA_39320_B_DELL\t\t0x8015900501681028ull\n#define ID_AHA_39320A\t\t\t0x8016900500409005ull\n#define ID_AHA_39320D\t\t\t0x8011900500419005ull\n#define ID_AHA_39320D_B\t\t\t0x801C900500419005ull\n#define ID_AHA_39320D_HP\t\t0x8011900500AC0E11ull\n#define ID_AHA_39320D_B_HP\t\t0x801C900500AC0E11ull\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

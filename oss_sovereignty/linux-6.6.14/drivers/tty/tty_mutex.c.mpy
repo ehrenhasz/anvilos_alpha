@@ -1,0 +1,9 @@
+{
+  "module_name": "tty_mutex.c",
+  "hash_id": "dca175fcd7e01bae725c8d55dfcadfd710f72c65c7048391f7f0d37df7aa3701",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/tty/tty_mutex.c",
+  "human_readable_source": "\n#include <linux/tty.h>\n#include <linux/module.h>\n#include <linux/kallsyms.h>\n#include <linux/semaphore.h>\n#include <linux/sched.h>\n#include \"tty.h\"\n\n \n\n \n\nvoid tty_lock(struct tty_struct *tty)\n{\n\ttty_kref_get(tty);\n\tmutex_lock(&tty->legacy_mutex);\n}\nEXPORT_SYMBOL(tty_lock);\n\nint tty_lock_interruptible(struct tty_struct *tty)\n{\n\tint ret;\n\n\ttty_kref_get(tty);\n\tret = mutex_lock_interruptible(&tty->legacy_mutex);\n\tif (ret)\n\t\ttty_kref_put(tty);\n\treturn ret;\n}\n\nvoid tty_unlock(struct tty_struct *tty)\n{\n\tmutex_unlock(&tty->legacy_mutex);\n\ttty_kref_put(tty);\n}\nEXPORT_SYMBOL(tty_unlock);\n\nvoid tty_lock_slave(struct tty_struct *tty)\n{\n\tif (tty && tty != tty->link)\n\t\ttty_lock(tty);\n}\n\nvoid tty_unlock_slave(struct tty_struct *tty)\n{\n\tif (tty && tty != tty->link)\n\t\ttty_unlock(tty);\n}\n\nvoid tty_set_lock_subclass(struct tty_struct *tty)\n{\n\tlockdep_set_subclass(&tty->legacy_mutex, TTY_LOCK_SLAVE);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

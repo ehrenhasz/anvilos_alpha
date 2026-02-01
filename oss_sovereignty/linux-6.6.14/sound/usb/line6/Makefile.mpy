@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "c833c69c13eb014f91c4bffd5912b03d1b41e960c4bdfc6afe31b1cbfe126d1c",
+  "original_prompt": "Ingested from linux-6.6.14/sound/usb/line6/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nsnd-usb-line6-y := \t\t\\\n\t\tcapture.o\t\\\n\t\tdriver.o\t\\\n\t\tmidi.o\t\t\\\n\t\tmidibuf.o\t\\\n\t\tpcm.o\t\t\\\n\t\tplayback.o\n\nsnd-usb-pod-y := pod.o\nsnd-usb-podhd-y := podhd.o\nsnd-usb-toneport-y := toneport.o\nsnd-usb-variax-y := variax.o\n\nobj-$(CONFIG_SND_USB_LINE6)\t+= snd-usb-line6.o\nobj-$(CONFIG_SND_USB_POD)\t+= snd-usb-pod.o\nobj-$(CONFIG_SND_USB_PODHD)\t+= snd-usb-podhd.o\nobj-$(CONFIG_SND_USB_TONEPORT)\t+= snd-usb-toneport.o\nobj-$(CONFIG_SND_USB_VARIAX)\t+= snd-usb-variax.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

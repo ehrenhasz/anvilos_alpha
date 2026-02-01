@@ -1,0 +1,9 @@
+{
+  "module_name": "float.c",
+  "hash_id": "6d6d9ee8f3d1a75d127f8da9dd4a42b19cdcd1d7c8d090610dbc9285a3c351c4",
+  "original_prompt": "Ingested from coreutils-9.4/lib/float.c",
+  "human_readable_source": " \n#include <float.h>\n\n#if (defined _ARCH_PPC || defined _POWER) && (defined _AIX || defined __linux__) && (LDBL_MANT_DIG == 106) && defined __GNUC__\nconst union gl_long_double_union gl_LDBL_MAX =\n  { { DBL_MAX, DBL_MAX / (double)134217728UL / (double)134217728UL } };\n#elif defined __i386__\nconst union gl_long_double_union gl_LDBL_MAX =\n  { { 0xFFFFFFFF, 0xFFFFFFFF, 32766 } };\n#else\n \ntypedef int dummy;\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

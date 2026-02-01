@@ -1,0 +1,9 @@
+{
+  "module_name": "profiler1.c",
+  "hash_id": "edc2d497f66d34f44f8941bb27db85d553c25c5c328d343495bc866200f93f5c",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/profiler1.c",
+  "human_readable_source": "\n \n#define UNROLL\n#define INLINE __always_inline\n#include \"profiler.inc.h\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

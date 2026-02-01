@@ -1,0 +1,9 @@
+{
+  "module_name": "call.S",
+  "hash_id": "96612268e437b9e4b2d3342c2f68782800e913eef2e3ee470442be885daaf991",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/sgx/call.S",
+  "human_readable_source": " \n \n\n\t.text\n\n\t.global sgx_enter_enclave\nsgx_enter_enclave:\n\t.cfi_startproc\n\tpush\t%r15\n\t.cfi_adjust_cfa_offset\t8\n\t.cfi_rel_offset\t\t%r15, 0\n\tpush\t%r14\n\t.cfi_adjust_cfa_offset\t8\n\t.cfi_rel_offset\t\t%r14, 0\n\tpush\t%r13\n\t.cfi_adjust_cfa_offset\t8\n\t.cfi_rel_offset\t\t%r13, 0\n\tpush\t%r12\n\t.cfi_adjust_cfa_offset\t8\n\t.cfi_rel_offset\t\t%r12, 0\n\tpush\t%rbx\n\t.cfi_adjust_cfa_offset\t8\n\t.cfi_rel_offset\t\t%rbx, 0\n\tpush\t$0\n\t.cfi_adjust_cfa_offset\t8\n\tpush\t0x38(%rsp)\n\t.cfi_adjust_cfa_offset\t8\n\tcall\t*vdso_sgx_enter_enclave(%rip)\n\tadd\t$0x10, %rsp\n\t.cfi_adjust_cfa_offset\t-0x10\n\tpop\t%rbx\n\t.cfi_adjust_cfa_offset\t-8\n\tpop\t%r12\n\t.cfi_adjust_cfa_offset\t-8\n\tpop\t%r13\n\t.cfi_adjust_cfa_offset\t-8\n\tpop\t%r14\n\t.cfi_adjust_cfa_offset\t-8\n\tpop\t%r15\n\t.cfi_adjust_cfa_offset\t-8\n\tret\n\t.cfi_endproc\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "msgbuf.h",
+  "hash_id": "6b5f5921b4c252378d384b77f56a4ee62d6ae738d3441a68b485dfb4a8986e0a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/broadcom/brcm80211/brcmfmac/msgbuf.h",
+  "human_readable_source": "\n \n#ifndef BRCMFMAC_MSGBUF_H\n#define BRCMFMAC_MSGBUF_H\n\n#ifdef CONFIG_BRCMFMAC_PROTO_MSGBUF\n\n#define BRCMF_H2D_MSGRING_CONTROL_SUBMIT_MAX_ITEM\t64\n#define BRCMF_H2D_MSGRING_RXPOST_SUBMIT_MAX_ITEM\t1024\n#define BRCMF_D2H_MSGRING_CONTROL_COMPLETE_MAX_ITEM\t64\n#define BRCMF_D2H_MSGRING_TX_COMPLETE_MAX_ITEM\t\t1024\n#define BRCMF_D2H_MSGRING_RX_COMPLETE_MAX_ITEM\t\t1024\n#define BRCMF_H2D_TXFLOWRING_MAX_ITEM\t\t\t512\n\n#define BRCMF_H2D_MSGRING_CONTROL_SUBMIT_ITEMSIZE\t40\n#define BRCMF_H2D_MSGRING_RXPOST_SUBMIT_ITEMSIZE\t32\n#define BRCMF_D2H_MSGRING_CONTROL_COMPLETE_ITEMSIZE\t24\n#define BRCMF_D2H_MSGRING_TX_COMPLETE_ITEMSIZE_PRE_V7\t16\n#define BRCMF_D2H_MSGRING_TX_COMPLETE_ITEMSIZE\t\t24\n#define BRCMF_D2H_MSGRING_RX_COMPLETE_ITEMSIZE_PRE_V7\t32\n#define BRCMF_D2H_MSGRING_RX_COMPLETE_ITEMSIZE\t\t40\n#define BRCMF_H2D_TXFLOWRING_ITEMSIZE\t\t\t48\n\nstruct msgbuf_buf_addr {\n\t__le32\t\tlow_addr;\n\t__le32\t\thigh_addr;\n};\n\nint brcmf_proto_msgbuf_rx_trigger(struct device *dev);\nvoid brcmf_msgbuf_delete_flowring(struct brcmf_pub *drvr, u16 flowid);\nint brcmf_proto_msgbuf_attach(struct brcmf_pub *drvr);\nvoid brcmf_proto_msgbuf_detach(struct brcmf_pub *drvr);\n#else\nstatic inline int brcmf_proto_msgbuf_attach(struct brcmf_pub *drvr)\n{\n\treturn 0;\n}\nstatic inline void brcmf_proto_msgbuf_detach(struct brcmf_pub *drvr) {}\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

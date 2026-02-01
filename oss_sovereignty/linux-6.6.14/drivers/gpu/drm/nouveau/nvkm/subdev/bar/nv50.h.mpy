@@ -1,0 +1,9 @@
+{
+  "module_name": "nv50.h",
+  "hash_id": "ea822a4c77ee086873f3413ccded0c5c8cc6bae306cc478f82594248c1750881",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/subdev/bar/nv50.h",
+  "human_readable_source": " \n#ifndef __NV50_BAR_H__\n#define __NV50_BAR_H__\n#define nv50_bar(p) container_of((p), struct nv50_bar, base)\n#include \"priv.h\"\n\nstruct nv50_bar {\n\tstruct nvkm_bar base;\n\tu32 pgd_addr;\n\tstruct nvkm_gpuobj *mem;\n\tstruct nvkm_gpuobj *pad;\n\tstruct nvkm_gpuobj *pgd;\n\tstruct nvkm_vmm *bar1_vmm;\n\tstruct nvkm_gpuobj *bar1;\n\tstruct nvkm_vmm *bar2_vmm;\n\tstruct nvkm_gpuobj *bar2;\n};\n\nint nv50_bar_new_(const struct nvkm_bar_func *, struct nvkm_device *, enum nvkm_subdev_type,\n\t\t  int, u32 pgd_addr, struct nvkm_bar **);\nvoid *nv50_bar_dtor(struct nvkm_bar *);\nint nv50_bar_oneinit(struct nvkm_bar *);\nvoid nv50_bar_init(struct nvkm_bar *);\nvoid nv50_bar_bar1_init(struct nvkm_bar *);\nvoid nv50_bar_bar1_wait(struct nvkm_bar *);\nstruct nvkm_vmm *nv50_bar_bar1_vmm(struct nvkm_bar *);\nvoid nv50_bar_bar2_init(struct nvkm_bar *);\nstruct nvkm_vmm *nv50_bar_bar2_vmm(struct nvkm_bar *);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

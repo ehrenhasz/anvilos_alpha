@@ -1,0 +1,9 @@
+{
+  "module_name": "sunserialcore.h",
+  "hash_id": "ad773dc19bc6e7d28854537aeda39ded8623b7078a8e70aedda8f59a61114dec",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/sunserialcore.h",
+  "human_readable_source": " \n \n\n#ifndef _SERIAL_SUN_H\n#define _SERIAL_SUN_H\n\n#include <linux/device.h>\n#include <linux/serial_core.h>\n#include <linux/console.h>\n\n \n#define SUNKBD_RESET\t\t0xff\n#define SUNKBD_L1\t\t0x01\n#define SUNKBD_UP\t\t0x80\n#define SUNKBD_A\t\t0x4d\n\nextern unsigned int suncore_mouse_baud_cflag_next(unsigned int, int *);\nextern int suncore_mouse_baud_detection(unsigned char, int);\n\nextern int sunserial_register_minors(struct uart_driver *, int);\nextern void sunserial_unregister_minors(struct uart_driver *, int);\n\nextern int sunserial_console_match(struct console *, struct device_node *,\n\t\t\t\t   struct uart_driver *, int, bool);\nextern void sunserial_console_termios(struct console *,\n\t\t\t\t      struct device_node *);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

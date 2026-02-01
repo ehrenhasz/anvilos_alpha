@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "8ececf9d403a5ad2944f6b039cf69b0ea45c3b2d867d43c7948fd0b25dd709c9",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/soc/loongson/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0+\n#\n# Makefile for the Linux Kernel SoC Loongson-2 specific device drivers\n#\n\nobj-$(CONFIG_LOONGSON2_GUTS)\t\t+= loongson2_guts.o\nobj-$(CONFIG_LOONGSON2_PM)\t\t+= loongson2_pm.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

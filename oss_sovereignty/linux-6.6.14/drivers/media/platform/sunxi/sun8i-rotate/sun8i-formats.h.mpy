@@ -1,0 +1,9 @@
+{
+  "module_name": "sun8i-formats.h",
+  "hash_id": "36527b2be3432a9f5740d7cf3aba038e65e5239ef8593998d5b99dfe69df941a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/platform/sunxi/sun8i-rotate/sun8i-formats.h",
+  "human_readable_source": " \n \n\n#ifndef _SUN8I_FORMATS_H_\n#define _SUN8I_FORMATS_H_\n\n#include <linux/videodev2.h>\n\n#define ROTATE_FLAG_YUV    BIT(0)\n#define ROTATE_FLAG_OUTPUT BIT(1)\n\nstruct rotate_format {\n\tu32 fourcc;\n\tu32 hw_format;\n\tint planes;\n\tint bpp[3];\n\tint hsub;\n\tint vsub;\n\tunsigned int flags;\n};\n\nconst struct rotate_format *rotate_find_format(u32 pixelformat);\nint rotate_enum_fmt(struct v4l2_fmtdesc *f, bool dst);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "ceph_debug.h",
+  "hash_id": "6b76bfff4ec8bd3149d26ec829a99ef08a65782b8a17e301631ad2192e157686",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/ceph/ceph_debug.h",
+  "human_readable_source": " \n#ifndef _FS_CEPH_DEBUG_H\n#define _FS_CEPH_DEBUG_H\n\n#define pr_fmt(fmt) KBUILD_MODNAME \": \" fmt\n\n#include <linux/string.h>\n\n#ifdef CONFIG_CEPH_LIB_PRETTYDEBUG\n\n \n\n# if defined(DEBUG) || defined(CONFIG_DYNAMIC_DEBUG)\n#  define dout(fmt, ...)\t\t\t\t\t\t\\\n\tpr_debug(\"%.*s %12.12s:%-4d : \" fmt,\t\t\t\t\\\n\t\t 8 - (int)sizeof(KBUILD_MODNAME), \"    \",\t\t\\\n\t\t kbasename(__FILE__), __LINE__, ##__VA_ARGS__)\n# else\n \n#  define dout(fmt, ...)\tdo {\t\t\t\t\\\n\t\tif (0)\t\t\t\t\t\t\\\n\t\t\tprintk(KERN_DEBUG fmt, ##__VA_ARGS__);\t\\\n\t} while (0)\n# endif\n\n#else\n\n \n# define dout(fmt, ...)\tpr_debug(\" \" fmt, ##__VA_ARGS__)\n\n#endif\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

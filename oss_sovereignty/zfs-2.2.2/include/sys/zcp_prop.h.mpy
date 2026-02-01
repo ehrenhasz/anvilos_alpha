@@ -1,0 +1,9 @@
+{
+  "module_name": "zcp_prop.h",
+  "hash_id": "d72e3c1bc64e4931771fd9c9d4d52414b90dc9f9e7a6411188d7c80eb33be992",
+  "original_prompt": "Ingested from zfs-2.2.2/include/sys/zcp_prop.h",
+  "human_readable_source": " \n\n \n\n#ifndef _SYS_ZCP_PROP_H\n#define\t_SYS_ZCP_PROP_H\n\n#ifdef\t__cplusplus\nextern \"C\" {\n#endif\n\nint zcp_load_get_lib(lua_State *state);\nboolean_t prop_valid_for_ds(dsl_dataset_t *ds, zfs_prop_t zfs_prop);\n\n#ifdef\t__cplusplus\n}\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

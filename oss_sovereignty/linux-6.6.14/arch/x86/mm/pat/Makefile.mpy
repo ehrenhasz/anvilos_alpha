@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "c0cf9586adea6621025faae129c4b9a58484caf37abc49aa5f29971daac89ee0",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/mm/pat/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n\nobj-y\t\t\t\t:= set_memory.o memtype.o\n\nobj-$(CONFIG_X86_PAT)\t\t+= memtype_interval.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

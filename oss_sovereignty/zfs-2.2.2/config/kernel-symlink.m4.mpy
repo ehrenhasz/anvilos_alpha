@@ -1,0 +1,9 @@
+{
+  "module_name": "kernel-symlink.m4",
+  "hash_id": "32640546bd1b5f4ec8beb846024f9f7b5b8e6a45a841985141416b64f084523f",
+  "original_prompt": "Ingested from zfs-2.2.2/config/kernel-symlink.m4",
+  "human_readable_source": "AC_DEFUN([ZFS_AC_KERNEL_SRC_SYMLINK], [\n\tdnl #\n\tdnl # 6.3 API change that changed the first arg\n\tdnl # to struct mnt_idmap*\n\tdnl #\n\tZFS_LINUX_TEST_SRC([symlink_mnt_idmap], [\n\t\t#include <linux/fs.h>\n\t\t#include <linux/sched.h>\n\t\tint tmp_symlink(struct mnt_idmap *idmap,\n\t\t    struct inode *inode ,struct dentry *dentry,\n\t\t    const char *path) { return 0; }\n\n\t\tstatic const struct inode_operations\n\t\t\tiops __attribute__ ((unused)) = {\n\t\t\t.symlink                = tmp_symlink,\n\t\t};\n\t],[])\n\tdnl #\n\tdnl # 5.12 API change that added the struct user_namespace* arg\n\tdnl # to the front of this function type's arg list.\n\tdnl #\n\tZFS_LINUX_TEST_SRC([symlink_userns], [\n\t\t#include <linux/fs.h>\n\t\t#include <linux/sched.h>\n\n\t\tint tmp_symlink(struct user_namespace *userns,\n\t\t    struct inode *inode ,struct dentry *dentry,\n\t\t    const char *path) { return 0; }\n\n\t\tstatic const struct inode_operations\n\t\t\tiops __attribute__ ((unused)) = {\n\t\t\t.symlink\t\t= tmp_symlink,\n\t\t};\n\t],[])\n])\n\nAC_DEFUN([ZFS_AC_KERNEL_SYMLINK], [\n\tAC_MSG_CHECKING([whether iops->symlink() takes struct mnt_idmap*])\n\tZFS_LINUX_TEST_RESULT([symlink_mnt_idmap], [\n\t\tAC_MSG_RESULT(yes)\n\t\tAC_DEFINE(HAVE_IOPS_SYMLINK_IDMAP, 1,\n\t\t    [iops->symlink() takes struct mnt_idmap*])\n\t],[\n\t\tAC_MSG_CHECKING([whether iops->symlink() takes struct user_namespace*])\n\t\tZFS_LINUX_TEST_RESULT([symlink_userns], [\n\t\t\tAC_MSG_RESULT(yes)\n\t\t\tAC_DEFINE(HAVE_IOPS_SYMLINK_USERNS, 1,\n\t\t\t    [iops->symlink() takes struct user_namespace*])\n\t\t],[\n\t\t\tAC_MSG_RESULT(no)\n\t\t])\n\t])\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

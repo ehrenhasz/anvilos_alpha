@@ -1,0 +1,9 @@
+{
+  "module_name": "nommu_context.h",
+  "hash_id": "9154c9525af223c9cb26dbfe7a6d4b85ec5ffc424403c3a885a92110527c6b9c",
+  "original_prompt": "Ingested from linux-6.6.14/include/asm-generic/nommu_context.h",
+  "human_readable_source": " \n#ifndef __ASM_GENERIC_NOMMU_H\n#define __ASM_GENERIC_NOMMU_H\n\n \n#include <asm-generic/mm_hooks.h>\n\nstatic inline void switch_mm(struct mm_struct *prev,\n\t\t\tstruct mm_struct *next,\n\t\t\tstruct task_struct *tsk)\n{\n}\n\n#include <asm-generic/mmu_context.h>\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

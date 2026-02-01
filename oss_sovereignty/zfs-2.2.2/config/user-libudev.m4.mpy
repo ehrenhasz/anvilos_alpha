@@ -1,0 +1,9 @@
+{
+  "module_name": "user-libudev.m4",
+  "hash_id": "83fc1281fbfbc180499c62fb24eec401f9ff86c7fd7f0e54d291b30c228715b0",
+  "original_prompt": "Ingested from zfs-2.2.2/config/user-libudev.m4",
+  "human_readable_source": "dnl #\ndnl # Check for libudev - needed for vdev auto-online and auto-replace\ndnl #\nAC_DEFUN([ZFS_AC_CONFIG_USER_LIBUDEV], [\n\tZFS_AC_FIND_SYSTEM_LIBRARY(LIBUDEV, [libudev], [libudev.h], [], [udev], [], [user_libudev=yes], [user_libudev=no])\n\n\tAS_IF([test \"x$user_libudev\" = xyes], [\n\t    AX_SAVE_FLAGS\n\n\t    CFLAGS=\"$CFLAGS $LIBUDEV_CFLAGS\"\n\t    LIBS=\"$LIBUDEV_LIBS $LIBS\"\n\n\t    AC_CHECK_FUNCS([udev_device_get_is_initialized])\n\n\t    AX_RESTORE_FLAGS\n\t])\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "pwc-misc.c",
+  "hash_id": "d8e4febd42ae8e059c8f9327932fde71847415bd7aba2117421d8ad758870a37",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/usb/pwc/pwc-misc.c",
+  "human_readable_source": "\n \n\n\n#include \"pwc.h\"\n\nconst int pwc_image_sizes[PSZ_MAX][2] =\n{\n\t{ 128,  96 },  \n\t{ 160, 120 },  \n\t{ 176, 144 },  \n\t{ 320, 240 },  \n\t{ 352, 288 },  \n\t{ 640, 480 },  \n};\n\n \nint pwc_get_size(struct pwc_device *pdev, int width, int height)\n{\n\tint i;\n\n\t \n\tfor (i = PSZ_MAX - 1; i >= 0; i--) {\n\t\tif (!(pdev->image_mask & (1 << i)))\n\t\t\tcontinue;\n\n\t\tif (pwc_image_sizes[i][0] <= width &&\n\t\t    pwc_image_sizes[i][1] <= height)\n\t\t\treturn i;\n\t}\n\n\t \n\tfor (i = 0; i < PSZ_MAX; i++) {\n\t\tif (pdev->image_mask & (1 << i))\n\t\t\treturn i;\n\t}\n\n\t \n\treturn 0;\n}\n\n \nvoid pwc_construct(struct pwc_device *pdev)\n{\n\tif (DEVICE_USE_CODEC1(pdev->type)) {\n\n\t\tpdev->image_mask = 1 << PSZ_SQCIF | 1 << PSZ_QCIF | 1 << PSZ_CIF;\n\t\tpdev->vcinterface = 2;\n\t\tpdev->vendpoint = 4;\n\t\tpdev->frame_header_size = 0;\n\t\tpdev->frame_trailer_size = 0;\n\n\t} else if (DEVICE_USE_CODEC3(pdev->type)) {\n\n\t\tpdev->image_mask = 1 << PSZ_QSIF | 1 << PSZ_SIF | 1 << PSZ_VGA;\n\t\tpdev->vcinterface = 3;\n\t\tpdev->vendpoint = 5;\n\t\tpdev->frame_header_size = TOUCAM_HEADER_SIZE;\n\t\tpdev->frame_trailer_size = TOUCAM_TRAILER_SIZE;\n\n\t} else   {\n\n\t\tpdev->image_mask = 1 << PSZ_SQCIF | 1 << PSZ_QSIF | 1 << PSZ_QCIF | 1 << PSZ_SIF | 1 << PSZ_CIF | 1 << PSZ_VGA;\n\t\tpdev->vcinterface = 3;\n\t\tpdev->vendpoint = 4;\n\t\tpdev->frame_header_size = 0;\n\t\tpdev->frame_trailer_size = 0;\n\t}\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

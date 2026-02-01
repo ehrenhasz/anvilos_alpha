@@ -1,0 +1,9 @@
+{
+  "module_name": "head.c",
+  "hash_id": "5322c7848055b305c891ed9792c22a588f5d9c7eee3eb2e49c9cb7055390cccd",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvif/head.c",
+  "human_readable_source": " \n#include <nvif/head.h>\n#include <nvif/disp.h>\n#include <nvif/printf.h>\n\n#include <nvif/class.h>\n#include <nvif/if0013.h>\n\nint\nnvif_head_vblank_event_ctor(struct nvif_head *head, const char *name, nvif_event_func func,\n\t\t\t    bool wait, struct nvif_event *event)\n{\n\tint ret = nvif_event_ctor(&head->object, name ?: \"nvifHeadVBlank\", nvif_head_id(head),\n\t\t\t\t  func, wait, NULL, 0, event);\n\tNVIF_ERRON(ret, &head->object, \"[NEW EVENT:VBLANK]\");\n\treturn ret;\n}\n\nvoid\nnvif_head_dtor(struct nvif_head *head)\n{\n\tnvif_object_dtor(&head->object);\n}\n\nint\nnvif_head_ctor(struct nvif_disp *disp, const char *name, int id, struct nvif_head *head)\n{\n\tstruct nvif_head_v0 args;\n\tint ret;\n\n\targs.version = 0;\n\targs.id = id;\n\n\tret = nvif_object_ctor(&disp->object, name ? name : \"nvifHead\", id, NVIF_CLASS_HEAD,\n\t\t\t       &args, sizeof(args), &head->object);\n\tNVIF_ERRON(ret, &disp->object, \"[NEW head id:%d]\", args.id);\n\treturn ret;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

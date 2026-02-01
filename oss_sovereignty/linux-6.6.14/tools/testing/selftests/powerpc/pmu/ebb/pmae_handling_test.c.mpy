@@ -1,0 +1,9 @@
+{
+  "module_name": "pmae_handling_test.c",
+  "hash_id": "6d6906996f4b413953cbc118d4c0e56894d177152d9fb5183c95deb9d011ca44",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/powerpc/pmu/ebb/pmae_handling_test.c",
+  "human_readable_source": "\n \n\n#include <sched.h>\n#include <signal.h>\n#include <stdbool.h>\n#include <stdio.h>\n#include <stdlib.h>\n\n#include \"ebb.h\"\n\n\n \n\nstatic bool mmcr0_mismatch;\nstatic uint64_t before, after;\n\nstatic void syscall_ebb_callee(void)\n{\n\tuint64_t val;\n\n\tval = mfspr(SPRN_BESCR);\n\tif (!(val & BESCR_PMEO)) {\n\t\tebb_state.stats.spurious++;\n\t\tgoto out;\n\t}\n\n\tebb_state.stats.ebb_count++;\n\tcount_pmc(1, sample_period);\n\n\tbefore = mfspr(SPRN_MMCR0);\n\n\t \n\tsched_yield();\n\n\tafter = mfspr(SPRN_MMCR0);\n\tif (before != after)\n\t\tmmcr0_mismatch = true;\n\nout:\n\treset_ebb();\n}\n\nstatic int test_body(void)\n{\n\tstruct event event;\n\n\tSKIP_IF(!ebb_is_supported());\n\n\tevent_init_named(&event, 0x1001e, \"cycles\");\n\tevent_leader_ebb_init(&event);\n\n\tevent.attr.exclude_kernel = 1;\n\tevent.attr.exclude_hv = 1;\n\tevent.attr.exclude_idle = 1;\n\n\tFAIL_IF(event_open(&event));\n\n\tsetup_ebb_handler(syscall_ebb_callee);\n\tebb_global_enable();\n\n\tFAIL_IF(ebb_event_enable(&event));\n\n\tmtspr(SPRN_PMC1, pmc_sample_period(sample_period));\n\n\twhile (ebb_state.stats.ebb_count < 20 && !mmcr0_mismatch)\n\t\tFAIL_IF(core_busy_loop());\n\n\tebb_global_disable();\n\tebb_freeze_pmcs();\n\n\tdump_ebb_state();\n\n\tif (mmcr0_mismatch)\n\t\tprintf(\"Saw MMCR0 before 0x%lx after 0x%lx\\n\", before, after);\n\n\tevent_close(&event);\n\n\tFAIL_IF(ebb_state.stats.ebb_count == 0);\n\tFAIL_IF(mmcr0_mismatch);\n\n\treturn 0;\n}\n\nint pmae_handling(void)\n{\n\treturn eat_cpu(test_body);\n}\n\nint main(void)\n{\n\treturn test_harness(pmae_handling, \"pmae_handling\");\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

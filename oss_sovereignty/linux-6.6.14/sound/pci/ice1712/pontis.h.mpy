@@ -1,0 +1,9 @@
+{
+  "module_name": "pontis.h",
+  "hash_id": "85ab3e7fdaf93793ea823d59e83d9ac24408756cd4b323e797f9b7267f7975a9",
+  "original_prompt": "Ingested from linux-6.6.14/sound/pci/ice1712/pontis.h",
+  "human_readable_source": " \n#ifndef __SOUND_PONTIS_H\n#define __SOUND_PONTIS_H\n\n       \n\n#define PONTIS_DEVICE_DESC \t       \"{Pontis,MS300},\"\n\n#define VT1720_SUBDEVICE_PONTIS_MS300\t0x00020002\t \n\nextern struct snd_ice1712_card_info  snd_vt1720_pontis_cards[];\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

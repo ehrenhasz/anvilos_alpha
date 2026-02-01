@@ -1,0 +1,9 @@
+{
+  "module_name": "vmci_resource.h",
+  "hash_id": "1327d3fdf3649575a731be932721337ca58f926932f8a056610c4d70bf631544",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/misc/vmw_vmci/vmci_resource.h",
+  "human_readable_source": " \n \n\n#ifndef _VMCI_RESOURCE_H_\n#define _VMCI_RESOURCE_H_\n\n#include <linux/vmw_vmci_defs.h>\n#include <linux/types.h>\n\n#include \"vmci_context.h\"\n\n\nenum vmci_resource_type {\n\tVMCI_RESOURCE_TYPE_ANY,\n\tVMCI_RESOURCE_TYPE_API,\n\tVMCI_RESOURCE_TYPE_GROUP,\n\tVMCI_RESOURCE_TYPE_DATAGRAM,\n\tVMCI_RESOURCE_TYPE_DOORBELL,\n\tVMCI_RESOURCE_TYPE_QPAIR_GUEST,\n\tVMCI_RESOURCE_TYPE_QPAIR_HOST\n};\n\nstruct vmci_resource {\n\tstruct vmci_handle handle;\n\tenum vmci_resource_type type;\n\tstruct hlist_node node;\n\tstruct kref kref;\n\tstruct completion done;\n};\n\n\nint vmci_resource_add(struct vmci_resource *resource,\n\t\t      enum vmci_resource_type resource_type,\n\t\t      struct vmci_handle handle);\n\nvoid vmci_resource_remove(struct vmci_resource *resource);\n\nstruct vmci_resource *\nvmci_resource_by_handle(struct vmci_handle resource_handle,\n\t\t\tenum vmci_resource_type resource_type);\n\nstruct vmci_resource *vmci_resource_get(struct vmci_resource *resource);\nint vmci_resource_put(struct vmci_resource *resource);\n\nstruct vmci_handle vmci_resource_handle(struct vmci_resource *resource);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

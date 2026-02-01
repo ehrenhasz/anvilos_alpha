@@ -1,0 +1,9 @@
+{
+  "module_name": "ice_gnss.h",
+  "hash_id": "8f7a06dc55525de202d67aa9cf00eddba5b6b2c623b2bb659fe34f17a0f579e3",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/intel/ice/ice_gnss.h",
+  "human_readable_source": " \n \n\n#ifndef _ICE_GNSS_H_\n#define _ICE_GNSS_H_\n\n#define ICE_E810T_GNSS_I2C_BUS\t\t0x2\n#define ICE_GNSS_POLL_DATA_DELAY_TIME\t(HZ / 50)  \n#define ICE_GNSS_TIMER_DELAY_TIME\t(HZ / 10)  \n#define ICE_GNSS_TTY_WRITE_BUF\t\t250\n#define ICE_MAX_I2C_DATA_SIZE\t\tFIELD_MAX(ICE_AQC_I2C_DATA_SIZE_M)\n#define ICE_MAX_I2C_WRITE_BYTES\t\t4\n\n \n#define ICE_GNSS_UBX_I2C_BUS_ADDR\t0x42\n \n#define ICE_GNSS_UBX_DATA_LEN_H\t\t0xFD\n#define ICE_GNSS_UBX_DATA_LEN_WIDTH\t2\n#define ICE_GNSS_UBX_EMPTY_DATA\t\t0xFF\n \n#define ICE_GNSS_UBX_WRITE_BYTES\t(ICE_MAX_I2C_WRITE_BYTES + 1)\n\n \nstruct gnss_serial {\n\tstruct ice_pf *back;\n\tstruct kthread_worker *kworker;\n\tstruct kthread_delayed_work read_work;\n};\n\n#if IS_ENABLED(CONFIG_GNSS)\nvoid ice_gnss_init(struct ice_pf *pf);\nvoid ice_gnss_exit(struct ice_pf *pf);\nbool ice_gnss_is_gps_present(struct ice_hw *hw);\n#else\nstatic inline void ice_gnss_init(struct ice_pf *pf) { }\nstatic inline void ice_gnss_exit(struct ice_pf *pf) { }\nstatic inline bool ice_gnss_is_gps_present(struct ice_hw *hw)\n{\n\treturn false;\n}\n#endif  \n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

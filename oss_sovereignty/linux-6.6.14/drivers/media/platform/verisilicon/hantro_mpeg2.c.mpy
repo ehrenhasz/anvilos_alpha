@@ -1,0 +1,9 @@
+{
+  "module_name": "hantro_mpeg2.c",
+  "hash_id": "32e60773403e0ca40435d54bde4944fa81e49413e54fe395eaecd8442acfb186",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/platform/verisilicon/hantro_mpeg2.c",
+  "human_readable_source": "\n \n\n#include \"hantro.h\"\n\nstatic const u8 zigzag[64] = {\n\t0,   1,  8, 16,  9,  2,  3, 10,\n\t17, 24, 32, 25, 18, 11,  4,  5,\n\t12, 19, 26, 33, 40, 48, 41, 34,\n\t27, 20, 13,  6,  7, 14, 21, 28,\n\t35, 42, 49, 56, 57, 50, 43, 36,\n\t29, 22, 15, 23, 30, 37, 44, 51,\n\t58, 59, 52, 45, 38, 31, 39, 46,\n\t53, 60, 61, 54, 47, 55, 62, 63\n};\n\nvoid hantro_mpeg2_dec_copy_qtable(u8 *qtable,\n\t\t\t\t  const struct v4l2_ctrl_mpeg2_quantisation *ctrl)\n{\n\tint i, n;\n\n\tif (!qtable || !ctrl)\n\t\treturn;\n\n\tfor (i = 0; i < ARRAY_SIZE(zigzag); i++) {\n\t\tn = zigzag[i];\n\t\tqtable[n + 0] = ctrl->intra_quantiser_matrix[i];\n\t\tqtable[n + 64] = ctrl->non_intra_quantiser_matrix[i];\n\t\tqtable[n + 128] = ctrl->chroma_intra_quantiser_matrix[i];\n\t\tqtable[n + 192] = ctrl->chroma_non_intra_quantiser_matrix[i];\n\t}\n}\n\nint hantro_mpeg2_dec_init(struct hantro_ctx *ctx)\n{\n\tstruct hantro_dev *vpu = ctx->dev;\n\n\tctx->mpeg2_dec.qtable.size = ARRAY_SIZE(zigzag) * 4;\n\tctx->mpeg2_dec.qtable.cpu =\n\t\tdma_alloc_coherent(vpu->dev,\n\t\t\t\t   ctx->mpeg2_dec.qtable.size,\n\t\t\t\t   &ctx->mpeg2_dec.qtable.dma,\n\t\t\t\t   GFP_KERNEL);\n\tif (!ctx->mpeg2_dec.qtable.cpu)\n\t\treturn -ENOMEM;\n\treturn 0;\n}\n\nvoid hantro_mpeg2_dec_exit(struct hantro_ctx *ctx)\n{\n\tstruct hantro_dev *vpu = ctx->dev;\n\n\tdma_free_coherent(vpu->dev,\n\t\t\t  ctx->mpeg2_dec.qtable.size,\n\t\t\t  ctx->mpeg2_dec.qtable.cpu,\n\t\t\t  ctx->mpeg2_dec.qtable.dma);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

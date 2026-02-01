@@ -1,0 +1,9 @@
+{
+  "module_name": "cmsis_version.h",
+  "hash_id": "d5da794d7399c5252490f976e3fd8ee93411541d39ffc9099d3e6352c1ae17e2",
+  "original_prompt": "Ingested from sys_09_Anvil/source/lib/cmsis/inc/cmsis_version.h",
+  "human_readable_source": " \n \n\n#if   defined ( __ICCARM__ )\n  #pragma system_include          \n#elif defined (__clang__)\n  #pragma clang system_header    \n#endif\n\n#ifndef __CMSIS_VERSION_H\n#define __CMSIS_VERSION_H\n\n \n#define __CM_CMSIS_VERSION_MAIN  ( 5U)                                       \n#define __CM_CMSIS_VERSION_SUB   ( 6U)                                       \n#define __CM_CMSIS_VERSION       ((__CM_CMSIS_VERSION_MAIN << 16U) | \\\n                                   __CM_CMSIS_VERSION_SUB           )        \n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

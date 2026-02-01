@@ -1,0 +1,9 @@
+{
+  "module_name": "test-fopen-gnu.c",
+  "hash_id": "31bb4b03eb41b7b5e3daab8b36516fbebf034d53d0153d4a9cca0775eaee9fa7",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-fopen-gnu.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n \n#include <stdio.h>\n\n#include <errno.h>\n#include <fcntl.h>\n#include <unistd.h>\n\n#include \"macros.h\"\n\n#define BASE \"test-fopen-gnu.t\"\n\n \n#define DATA \"abc\\x1axyz\"\n\nint\nmain (void)\n{\n  FILE *f;\n  int fd;\n  int flags;\n  char buf[16];\n\n   \n  unlink (BASE \"file\");\n  unlink (BASE \"binary\");\n\n   \n  f = fopen (BASE \"file\", \"w\");\n  ASSERT (f);\n  fd = fileno (f);\n  ASSERT (fd >= 0);\n  flags = fcntl (fd, F_GETFD);\n  ASSERT (flags >= 0);\n  ASSERT ((flags & FD_CLOEXEC) == 0);\n  ASSERT (fclose (f) == 0);\n\n   \n  f = fopen (BASE \"file\", \"we\");\n  ASSERT (f);\n  fd = fileno (f);\n  ASSERT (fd >= 0);\n  flags = fcntl (fd, F_GETFD);\n  ASSERT (flags >= 0);\n  ASSERT ((flags & FD_CLOEXEC) != 0);\n  ASSERT (fclose (f) == 0);\n\n   \n  f = fopen (BASE \"file\", \"ax\");\n  ASSERT (f == NULL);\n  ASSERT (errno == EEXIST);\n\n   \n  f = fopen (BASE \"binary\", \"wbe\");\n  ASSERT (f);\n  ASSERT (fwrite (DATA, 1, sizeof (DATA)-1, f) == sizeof (DATA)-1);\n  ASSERT (fclose (f) == 0);\n\n  f = fopen (BASE \"binary\", \"rbe\");\n  ASSERT (f);\n  ASSERT (fread (buf, 1, sizeof (buf), f) == sizeof (DATA)-1);\n  ASSERT (fclose (f) == 0);\n\n   \n  ASSERT (unlink (BASE \"file\") == 0);\n  ASSERT (unlink (BASE \"binary\") == 0);\n\n  return 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

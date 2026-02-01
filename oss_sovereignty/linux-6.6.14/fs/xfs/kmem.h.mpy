@@ -1,0 +1,9 @@
+{
+  "module_name": "kmem.h",
+  "hash_id": "70a2129e0e955dfa582be46305579da4ba97f2d6c5bccf9a4799943849e40dac",
+  "original_prompt": "Ingested from linux-6.6.14/fs/xfs/kmem.h",
+  "human_readable_source": " \n \n#ifndef __XFS_SUPPORT_KMEM_H__\n#define __XFS_SUPPORT_KMEM_H__\n\n#include <linux/slab.h>\n#include <linux/sched.h>\n#include <linux/mm.h>\n#include <linux/vmalloc.h>\n\n \n\ntypedef unsigned __bitwise xfs_km_flags_t;\n#define KM_NOFS\t\t((__force xfs_km_flags_t)0x0004u)\n#define KM_MAYFAIL\t((__force xfs_km_flags_t)0x0008u)\n#define KM_ZERO\t\t((__force xfs_km_flags_t)0x0010u)\n#define KM_NOLOCKDEP\t((__force xfs_km_flags_t)0x0020u)\n\n \nstatic inline gfp_t\nkmem_flags_convert(xfs_km_flags_t flags)\n{\n\tgfp_t\tlflags;\n\n\tBUG_ON(flags & ~(KM_NOFS | KM_MAYFAIL | KM_ZERO | KM_NOLOCKDEP));\n\n\tlflags = GFP_KERNEL | __GFP_NOWARN;\n\tif (flags & KM_NOFS)\n\t\tlflags &= ~__GFP_FS;\n\n\t \n\tif (flags & KM_MAYFAIL)\n\t\tlflags |= __GFP_RETRY_MAYFAIL;\n\n\tif (flags & KM_ZERO)\n\t\tlflags |= __GFP_ZERO;\n\n\tif (flags & KM_NOLOCKDEP)\n\t\tlflags |= __GFP_NOLOCKDEP;\n\n\treturn lflags;\n}\n\nextern void *kmem_alloc(size_t, xfs_km_flags_t);\nstatic inline void  kmem_free(const void *ptr)\n{\n\tkvfree(ptr);\n}\n\n\nstatic inline void *\nkmem_zalloc(size_t size, xfs_km_flags_t flags)\n{\n\treturn kmem_alloc(size, flags | KM_ZERO);\n}\n\n \nstatic inline struct page *\nkmem_to_page(void *addr)\n{\n\tif (is_vmalloc_addr(addr))\n\t\treturn vmalloc_to_page(addr);\n\treturn virt_to_page(addr);\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

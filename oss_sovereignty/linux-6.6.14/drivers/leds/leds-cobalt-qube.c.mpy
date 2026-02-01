@@ -1,0 +1,9 @@
+{
+  "module_name": "leds-cobalt-qube.c",
+  "hash_id": "88800f0d0c3155a8c337de04905e54367d8f22381b71b1d47bbb7a06043adf50",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/leds/leds-cobalt-qube.c",
+  "human_readable_source": "\n \n#include <linux/io.h>\n#include <linux/ioport.h>\n#include <linux/leds.h>\n#include <linux/module.h>\n#include <linux/platform_device.h>\n#include <linux/types.h>\n\n#define LED_FRONT_LEFT\t0x01\n#define LED_FRONT_RIGHT\t0x02\n\nstatic void __iomem *led_port;\nstatic u8 led_value;\n\nstatic void qube_front_led_set(struct led_classdev *led_cdev,\n\t\t\t       enum led_brightness brightness)\n{\n\tif (brightness)\n\t\tled_value = LED_FRONT_LEFT | LED_FRONT_RIGHT;\n\telse\n\t\tled_value = ~(LED_FRONT_LEFT | LED_FRONT_RIGHT);\n\twriteb(led_value, led_port);\n}\n\nstatic struct led_classdev qube_front_led = {\n\t.name\t\t\t= \"qube::front\",\n\t.brightness\t\t= LED_FULL,\n\t.brightness_set\t\t= qube_front_led_set,\n\t.default_trigger\t= \"default-on\",\n};\n\nstatic int cobalt_qube_led_probe(struct platform_device *pdev)\n{\n\tstruct resource *res;\n\n\tres = platform_get_resource(pdev, IORESOURCE_MEM, 0);\n\tif (!res)\n\t\treturn -EBUSY;\n\n\tled_port = devm_ioremap(&pdev->dev, res->start, resource_size(res));\n\tif (!led_port)\n\t\treturn -ENOMEM;\n\n\tled_value = LED_FRONT_LEFT | LED_FRONT_RIGHT;\n\twriteb(led_value, led_port);\n\n\treturn devm_led_classdev_register(&pdev->dev, &qube_front_led);\n}\n\nstatic struct platform_driver cobalt_qube_led_driver = {\n\t.probe\t= cobalt_qube_led_probe,\n\t.driver\t= {\n\t\t.name\t= \"cobalt-qube-leds\",\n\t},\n};\n\nmodule_platform_driver(cobalt_qube_led_driver);\n\nMODULE_LICENSE(\"GPL\");\nMODULE_DESCRIPTION(\"Front LED support for Cobalt Server\");\nMODULE_AUTHOR(\"Florian Fainelli <florian@openwrt.org>\");\nMODULE_ALIAS(\"platform:cobalt-qube-leds\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "xt_DSCP.h",
+  "hash_id": "db24ecf27903100e7ba10d6b2244bf54a445639a8470e812c59fd82d9e739fad",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/netfilter/xt_DSCP.h",
+  "human_readable_source": " \n \n#ifndef _XT_DSCP_TARGET_H\n#define _XT_DSCP_TARGET_H\n#include <linux/netfilter/xt_dscp.h>\n#include <linux/types.h>\n\n \nstruct xt_DSCP_info {\n\t__u8 dscp;\n};\n\nstruct xt_tos_target_info {\n\t__u8 tos_value;\n\t__u8 tos_mask;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

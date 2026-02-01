@@ -1,0 +1,9 @@
+{
+  "module_name": "user-libcrypto.m4",
+  "hash_id": "29d3566b3df68736334fb015496901e45317f18f8038b498415edc5b52a74f97",
+  "original_prompt": "Ingested from zfs-2.2.2/config/user-libcrypto.m4",
+  "human_readable_source": "dnl #\ndnl # Check for libcrypto. Used for userspace password derivation via PBKDF2.\ndnl #\nAC_DEFUN([ZFS_AC_CONFIG_USER_LIBCRYPTO], [\n\tZFS_AC_FIND_SYSTEM_LIBRARY(LIBCRYPTO, [libcrypto], [openssl/evp.h], [], [crypto], [PKCS5_PBKDF2_HMAC_SHA1], [], [\n\t\tAC_MSG_FAILURE([\n\t\t*** evp.h missing, libssl-devel package required])])\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "fa27c4c3857f6dc45dd9facd742140aa44165e25c614f6e233ded3b4687f0d34",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/clk/nxp/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-$(CONFIG_ARCH_LPC18XX)\t+= clk-lpc18xx-cgu.o\nobj-$(CONFIG_ARCH_LPC18XX)\t+= clk-lpc18xx-ccu.o\nobj-$(CONFIG_ARCH_LPC18XX)\t+= clk-lpc18xx-creg.o\nobj-$(CONFIG_ARCH_LPC32XX)\t+= clk-lpc32xx.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

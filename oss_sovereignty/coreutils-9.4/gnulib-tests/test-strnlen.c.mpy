@@ -1,0 +1,9 @@
+{
+  "module_name": "test-strnlen.c",
+  "hash_id": "04ce913514647ddd9a1ad07c58b8f68a10972be32eeebaa5fa19b645c711f2c8",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-strnlen.c",
+  "human_readable_source": " \n  ASSERT (strnlen (\"a\", 0) == 0);\n  ASSERT (strnlen (\"a\", 1) == 1);\n  ASSERT (strnlen (\"a\", 2) == 1);\n  ASSERT (strnlen (\"\", 0x100000) == 0);\n\n   \n  for (i = 0; i < 512; i++)\n    {\n      char *start = page_boundary - i;\n      size_t j = i;\n      memset (start, 'x', i);\n      do\n        {\n          if (i != j)\n            {\n              start[j] = 0;\n              ASSERT (strnlen (start, i + j) == j);\n            }\n          ASSERT (strnlen (start, i) == j);\n          ASSERT (strnlen (start, j) == j);\n        }\n      while (j--);\n    }\n\n  return 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

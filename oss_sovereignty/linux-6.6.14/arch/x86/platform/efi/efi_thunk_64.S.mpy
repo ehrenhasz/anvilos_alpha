@@ -1,0 +1,9 @@
+{
+  "module_name": "efi_thunk_64.S",
+  "hash_id": "3815ea42a750f6b323f5500b8636e2902679e561fc3157b1d04a018bc1a5d889",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/platform/efi/efi_thunk_64.S",
+  "human_readable_source": " \n \n\n#include <linux/linkage.h>\n#include <linux/objtool.h>\n#include <asm/page_types.h>\n#include <asm/segment.h>\n\n\t.text\n\t.code64\nSYM_FUNC_START(__efi64_thunk)\nSTACK_FRAME_NON_STANDARD __efi64_thunk\n\tpush\t%rbp\n\tpush\t%rbx\n\n\t \n\tmovq\t%rsp, %rax\n\tmovq\tefi_mixed_mode_stack_pa(%rip), %rsp\n\tpush\t%rax\n\n\t \n\tsubq\t$0x24, %rsp\n\tmovq\t0x18(%rax), %rbp\n\tmovq\t0x20(%rax), %rbx\n\tmovq\t0x28(%rax), %rax\n\tmovl\t%ebp, 0x18(%rsp)\n\tmovl\t%ebx, 0x1c(%rsp)\n\tmovl\t%eax, 0x20(%rsp)\n\n\t \n\tmovq\t$__START_KERNEL_map, %rax\n\tsubq\tphys_base(%rip), %rax\n\n\tleaq\t1f(%rip), %rbp\n\tleaq\t2f(%rip), %rbx\n\tsubq\t%rax, %rbp\n\tsubq\t%rax, %rbx\n\n\tmovl\t%ebx, 0x0(%rsp)\t\t \n\tmovl\t%esi, 0x4(%rsp)\n\tmovl\t%edx, 0x8(%rsp)\n\tmovl\t%ecx, 0xc(%rsp)\n\tmovl\t%r8d, 0x10(%rsp)\n\tmovl\t%r9d, 0x14(%rsp)\n\n\t \n\tpushq\t$__KERNEL32_CS\n\tpushq\t%rdi\t\t\t \n\tlretq\n\n\t \n\t \n\t \n\tRET\nSYM_FUNC_END(__efi64_thunk)\n\n\t.section \".rodata\", \"a\", @progbits\n\t.balign\t16\nSYM_DATA_START(__efi64_thunk_ret_tramp)\n1:\tmovq\t0x20(%rsp), %rsp\n\tpop\t%rbx\n\tpop\t%rbp\n\tret\n\tint3\n\n\t.code32\n2:\tpushl\t$__KERNEL_CS\n\tpushl\t%ebp\n\tlret\nSYM_DATA_END(__efi64_thunk_ret_tramp)\n\n\t.bss\n\t.balign 8\nSYM_DATA(efi_mixed_mode_stack_pa, .quad 0)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

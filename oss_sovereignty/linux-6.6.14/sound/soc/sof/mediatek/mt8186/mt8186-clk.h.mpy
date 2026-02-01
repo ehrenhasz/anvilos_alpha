@@ -1,0 +1,9 @@
+{
+  "module_name": "mt8186-clk.h",
+  "hash_id": "2d8a91a4747994466376a215008acbb2b49c7d2b3f8d077be0eb87654ea4bab7",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/sof/mediatek/mt8186/mt8186-clk.h",
+  "human_readable_source": " \n\n \n\n#ifndef __MT8186_CLK_H\n#define __MT8186_CLK_H\n\nstruct snd_sof_dev;\n\n \nenum adsp_clk_id {\n\tCLK_TOP_AUDIODSP,\n\tCLK_TOP_ADSP_BUS,\n\tADSP_CLK_MAX\n};\n\nint mt8186_adsp_init_clock(struct snd_sof_dev *sdev);\nint mt8186_adsp_clock_on(struct snd_sof_dev *sdev);\nvoid mt8186_adsp_clock_off(struct snd_sof_dev *sdev);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

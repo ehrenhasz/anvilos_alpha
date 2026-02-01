@@ -1,0 +1,9 @@
+{
+  "module_name": "vdev_label_os.c",
+  "hash_id": "f2998103d5e22b8f51a16d57db24e678fbc9ce0c65dc1b291d43be0d18f0cd95",
+  "original_prompt": "Ingested from zfs-2.2.2/module/os/freebsd/zfs/vdev_label_os.c",
+  "human_readable_source": " \n\n#include <sys/zfs_context.h>\n#include <sys/spa.h>\n#include <sys/spa_impl.h>\n#include <sys/dmu.h>\n#include <sys/zap.h>\n#include <sys/vdev.h>\n#include <sys/vdev_os.h>\n#include <sys/vdev_impl.h>\n#include <sys/uberblock_impl.h>\n#include <sys/metaslab.h>\n#include <sys/metaslab_impl.h>\n#include <sys/zio.h>\n#include <sys/dsl_scan.h>\n#include <sys/abd.h>\n#include <sys/fs/zfs.h>\n\nint\nvdev_label_write_pad2(vdev_t *vd, const char *buf, size_t size)\n{\n\tspa_t *spa = vd->vdev_spa;\n\tzio_t *zio;\n\tabd_t *pad2;\n\tint flags = ZIO_FLAG_CONFIG_WRITER | ZIO_FLAG_CANFAIL;\n\tint error;\n\n\tif (size > VDEV_PAD_SIZE)\n\t\treturn (EINVAL);\n\n\tif (!vd->vdev_ops->vdev_op_leaf)\n\t\treturn (ENODEV);\n\tif (vdev_is_dead(vd))\n\t\treturn (ENXIO);\n\n\tASSERT3U(spa_config_held(spa, SCL_ALL, RW_WRITER), ==, SCL_ALL);\n\n\tpad2 = abd_alloc_for_io(VDEV_PAD_SIZE, B_TRUE);\n\tabd_zero(pad2, VDEV_PAD_SIZE);\n\tabd_copy_from_buf(pad2, buf, size);\n\nretry:\n\tzio = zio_root(spa, NULL, NULL, flags);\n\tvdev_label_write(zio, vd, 0, pad2,\n\t    offsetof(vdev_label_t, vl_be),\n\t    VDEV_PAD_SIZE, NULL, NULL, flags);\n\terror = zio_wait(zio);\n\tif (error != 0 && !(flags & ZIO_FLAG_TRYHARD)) {\n\t\tflags |= ZIO_FLAG_TRYHARD;\n\t\tgoto retry;\n\t}\n\n\tabd_free(pad2);\n\treturn (error);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

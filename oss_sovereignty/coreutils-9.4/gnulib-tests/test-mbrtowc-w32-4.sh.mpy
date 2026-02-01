@@ -1,0 +1,9 @@
+{
+  "module_name": "test-mbrtowc-w32-4.sh",
+  "hash_id": "330bcf7bc7d94462f237173c5a2c3a3222d77c92d985275dc7dc535428ade428",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-mbrtowc-w32-4.sh",
+  "human_readable_source": "#!/bin/sh\n\n# Test some UTF-8 locales.\n${CHECKER} ./test-mbrtowc-w32${EXEEXT} French_France Japanese_Japan Chinese_Taiwan Chinese_China 65001\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

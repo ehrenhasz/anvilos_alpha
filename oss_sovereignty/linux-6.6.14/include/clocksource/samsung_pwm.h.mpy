@@ -1,0 +1,9 @@
+{
+  "module_name": "samsung_pwm.h",
+  "hash_id": "aea7dd31b426287cc27df978931703220830d415712fc988b68ec8a3111ae5c2",
+  "original_prompt": "Ingested from linux-6.6.14/include/clocksource/samsung_pwm.h",
+  "human_readable_source": " \n \n#ifndef __CLOCKSOURCE_SAMSUNG_PWM_H\n#define __CLOCKSOURCE_SAMSUNG_PWM_H\n\n#include <linux/spinlock.h>\n\n#define SAMSUNG_PWM_NUM\t\t5\n\n \n#ifdef CONFIG_CLKSRC_SAMSUNG_PWM\nextern spinlock_t samsung_pwm_lock;\n#endif\n\nstruct samsung_pwm_variant {\n\tu8 bits;\n\tu8 div_base;\n\tu8 tclk_mask;\n\tu8 output_mask;\n\tbool has_tint_cstat;\n};\n\nvoid samsung_pwm_clocksource_init(void __iomem *base,\n\t\t\t\t  unsigned int *irqs,\n\t\t\t\t  const struct samsung_pwm_variant *variant);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

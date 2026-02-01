@@ -1,0 +1,9 @@
+{
+  "module_name": "hmcdrv_dev.h",
+  "hash_id": "76a60891251df17d3ce315b69279620d4cde571b068a90dd6623e4f456230d82",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/s390/char/hmcdrv_dev.h",
+  "human_readable_source": " \n \n\n#ifndef __HMCDRV_DEV_H__\n#define __HMCDRV_DEV_H__\n\nint hmcdrv_dev_init(void);\nvoid hmcdrv_dev_exit(void);\n\n#endif\t  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

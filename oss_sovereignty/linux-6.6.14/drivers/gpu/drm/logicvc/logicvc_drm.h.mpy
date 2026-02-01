@@ -1,0 +1,9 @@
+{
+  "module_name": "logicvc_drm.h",
+  "hash_id": "9b0a08c9fc0be1d0e9467b8c97ff545955e232e83e76e29410f55b82970d6d2e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/logicvc/logicvc_drm.h",
+  "human_readable_source": " \n \n\n#ifndef _LOGICVC_DRM_H_\n#define _LOGICVC_DRM_H_\n\n#include <linux/regmap.h>\n#include <linux/types.h>\n#include <drm/drm_device.h>\n\n#define LOGICVC_DISPLAY_INTERFACE_RGB\t\t\t0\n#define LOGICVC_DISPLAY_INTERFACE_ITU656\t\t1\n#define LOGICVC_DISPLAY_INTERFACE_LVDS_4BITS\t\t2\n#define LOGICVC_DISPLAY_INTERFACE_LVDS_4BITS_CAMERA\t3\n#define LOGICVC_DISPLAY_INTERFACE_LVDS_3BITS\t\t4\n#define LOGICVC_DISPLAY_INTERFACE_DVI\t\t\t5\n\n#define LOGICVC_DISPLAY_COLORSPACE_RGB\t\t0\n#define LOGICVC_DISPLAY_COLORSPACE_YUV422\t1\n#define LOGICVC_DISPLAY_COLORSPACE_YUV444\t2\n\n#define logicvc_drm(d) \\\n\tcontainer_of(d, struct logicvc_drm, drm_dev)\n\nstruct logicvc_crtc;\nstruct logicvc_interface;\n\nstruct logicvc_drm_config {\n\tu32 display_interface;\n\tu32 display_colorspace;\n\tu32 display_depth;\n\tu32 row_stride;\n\tbool dithering;\n\tbool background_layer;\n\tbool layers_configurable;\n\tu32 layers_count;\n};\n\nstruct logicvc_drm_caps {\n\tunsigned int major;\n\tunsigned int minor;\n\tchar level;\n\tbool layer_address;\n};\n\nstruct logicvc_drm {\n\tconst struct logicvc_drm_caps *caps;\n\tstruct logicvc_drm_config config;\n\n\tstruct drm_device drm_dev;\n\tphys_addr_t reserved_mem_base;\n\tstruct regmap *regmap;\n\n\tstruct clk *vclk;\n\tstruct clk *vclk2;\n\tstruct clk *lvdsclk;\n\tstruct clk *lvdsclkn;\n\n\tstruct list_head layers_list;\n\tstruct logicvc_crtc *crtc;\n\tstruct logicvc_interface *interface;\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

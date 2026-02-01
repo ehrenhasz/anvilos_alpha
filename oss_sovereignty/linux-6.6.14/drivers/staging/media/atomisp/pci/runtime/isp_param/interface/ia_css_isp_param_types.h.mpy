@@ -1,0 +1,9 @@
+{
+  "module_name": "ia_css_isp_param_types.h",
+  "hash_id": "91cd2068e8f8389564ac4af3d1c33bbcc4fd394ab3c550cf634c77616d40fd04",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/runtime/isp_param/interface/ia_css_isp_param_types.h",
+  "human_readable_source": " \n \n\n#ifndef _IA_CSS_ISP_PARAM_TYPES_H_\n#define _IA_CSS_ISP_PARAM_TYPES_H_\n\n#include \"ia_css_types.h\"\n#include <platform_support.h>\n#include <system_global.h>\n\n \n#define IA_CSS_ISP_DMEM IA_CSS_ISP_DMEM0\n#define IA_CSS_ISP_VMEM IA_CSS_ISP_VMEM0\n\n \n#define IA_CSS_NUM_ISP_MEMORIES IA_CSS_NUM_MEMORIES\n\n \nenum ia_css_param_class {\n\tIA_CSS_PARAM_CLASS_PARAM  = 0,\t \n\tIA_CSS_PARAM_CLASS_CONFIG = 1,\t \n\tIA_CSS_PARAM_CLASS_STATE  = 2,   \n#if 0  \n\tIA_CSS_PARAM_CLASS_FRAME  = 3,   \n#endif\n};\n\n#define IA_CSS_NUM_PARAM_CLASSES (IA_CSS_PARAM_CLASS_STATE + 1)\n\n \nstruct ia_css_isp_parameter {\n\tu32 offset;  \n\tu32 size;    \n};\n\n \nstruct ia_css_isp_param_host_segments {\n\tstruct ia_css_host_data params[IA_CSS_NUM_PARAM_CLASSES][IA_CSS_NUM_MEMORIES];\n};\n\n \nstruct ia_css_isp_param_css_segments {\n\tstruct ia_css_data      params[IA_CSS_NUM_PARAM_CLASSES][IA_CSS_NUM_MEMORIES];\n};\n\n \nstruct ia_css_isp_param_isp_segments {\n\tstruct ia_css_isp_data  params[IA_CSS_NUM_PARAM_CLASSES][IA_CSS_NUM_MEMORIES];\n};\n\n \nstruct ia_css_isp_param_memory_offsets {\n\tu32 offsets[IA_CSS_NUM_PARAM_CLASSES];   \n};\n\n \nunion ia_css_all_memory_offsets {\n\tstruct {\n\t\tCSS_ALIGN(struct ia_css_memory_offsets\t      *param, 8);\n\t\tCSS_ALIGN(struct ia_css_config_memory_offsets *config, 8);\n\t\tCSS_ALIGN(struct ia_css_state_memory_offsets  *state, 8);\n\t} offsets;\n\tstruct {\n\t\tCSS_ALIGN(void *ptr, 8);\n\t} array[IA_CSS_NUM_PARAM_CLASSES];\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

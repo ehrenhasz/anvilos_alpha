@@ -1,0 +1,9 @@
+{
+  "module_name": "test-faccessat.c",
+  "hash_id": "60f9ce77fd3749834a4460a2ff339e19a29a39197dc8911854214966808afa75",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-faccessat.c",
+  "human_readable_source": " \n  {\n    errno = 0;\n    ASSERT (faccessat (-1, \"foo\", F_OK, 0) == -1);\n    ASSERT (errno == EBADF);\n  }\n  {\n    close (99);\n    errno = 0;\n    ASSERT (faccessat (99, \"foo\", F_OK, 0) == -1);\n    ASSERT (errno == EBADF);\n  }\n\n   \n  unlink (BASE \"file\");\n  ASSERT (faccessat (AT_FDCWD, \".\", X_OK, 0) == 0);\n  ASSERT (faccessat (AT_FDCWD, \"./\", X_OK, 0) == 0);\n  ASSERT (close (open (BASE \"file\", O_CREAT | O_WRONLY, 0)) == 0);\n  ASSERT (faccessat (AT_FDCWD, BASE \"file\", F_OK, 0) == 0);\n  ASSERT (faccessat (AT_FDCWD, BASE \"file/\", F_OK, 0) != 0);\n  unlink (BASE \"link1\");\n  if (symlink (\".\", BASE \"link1\") == 0)\n    {\n      ASSERT (faccessat (AT_FDCWD, BASE \"link1\", X_OK, 0) == 0);\n      ASSERT (faccessat (AT_FDCWD, BASE \"link1/\", X_OK, 0) == 0);\n\n      unlink (BASE \"link2\");\n      ASSERT (symlink (BASE \"file\", BASE \"link2\") == 0);\n      ASSERT (faccessat (AT_FDCWD, BASE \"link2\", F_OK, 0) == 0);\n      ASSERT (faccessat (AT_FDCWD, BASE \"link2/\", F_OK, 0) != 0);\n      unlink (BASE \"link2\");\n\n      unlink (BASE \"link3\");\n      ASSERT (symlink (BASE \"no-such-file\", BASE \"link3\") == 0);\n      ASSERT (faccessat (AT_FDCWD, BASE \"link3\", F_OK, 0) != 0);\n      ASSERT (faccessat (AT_FDCWD, BASE \"link3/\", F_OK, 0) != 0);\n      unlink (BASE \"link3\");\n    }\n  unlink (BASE \"link1\");\n  unlink (BASE \"file\");\n\n  return 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

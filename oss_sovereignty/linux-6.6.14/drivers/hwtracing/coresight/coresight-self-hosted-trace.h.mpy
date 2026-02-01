@@ -1,0 +1,9 @@
+{
+  "module_name": "coresight-self-hosted-trace.h",
+  "hash_id": "0603be19e5bc203b2cd2202aa9d37ec8d8590c848d89a2e88cc512ad6143bea4",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/hwtracing/coresight/coresight-self-hosted-trace.h",
+  "human_readable_source": " \n \n\n#ifndef __CORESIGHT_SELF_HOSTED_TRACE_H\n#define __CORESIGHT_SELF_HOSTED_TRACE_H\n\n#include <asm/sysreg.h>\n\nstatic inline u64 read_trfcr(void)\n{\n\treturn read_sysreg_s(SYS_TRFCR_EL1);\n}\n\nstatic inline void write_trfcr(u64 val)\n{\n\twrite_sysreg_s(val, SYS_TRFCR_EL1);\n\tisb();\n}\n\nstatic inline u64 cpu_prohibit_trace(void)\n{\n\tu64 trfcr = read_trfcr();\n\n\t \n\twrite_trfcr(trfcr & ~(TRFCR_ELx_ExTRE | TRFCR_ELx_E0TRE));\n\t \n\treturn trfcr;\n}\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "hardware.h",
+  "hash_id": "648d2d94f7fdcb4cafb300413415a7ce79c78cc0c9b7dbb894e15ff8dbf8fd04",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/tty/ipwireless/hardware.h",
+  "human_readable_source": " \n \n\n#ifndef _IPWIRELESS_CS_HARDWARE_H_\n#define _IPWIRELESS_CS_HARDWARE_H_\n\n#include <linux/types.h>\n#include <linux/sched.h>\n#include <linux/interrupt.h>\n\n#define IPW_CONTROL_LINE_CTS 0x0001\n#define IPW_CONTROL_LINE_DCD 0x0002\n#define IPW_CONTROL_LINE_DSR 0x0004\n#define IPW_CONTROL_LINE_RI  0x0008\n#define IPW_CONTROL_LINE_DTR 0x0010\n#define IPW_CONTROL_LINE_RTS 0x0020\n\nstruct ipw_hardware;\nstruct ipw_network;\n\nstruct ipw_hardware *ipwireless_hardware_create(void);\nvoid ipwireless_hardware_free(struct ipw_hardware *hw);\nirqreturn_t ipwireless_interrupt(int irq, void *dev_id);\nint ipwireless_set_DTR(struct ipw_hardware *hw, unsigned int channel_idx,\n\t\tint state);\nint ipwireless_set_RTS(struct ipw_hardware *hw, unsigned int channel_idx,\n\t\tint state);\nint ipwireless_send_packet(struct ipw_hardware *hw,\n\t\t\t    unsigned int channel_idx,\n\t\t\t    const unsigned char *data,\n\t\t\t    unsigned int length,\n\t\t\t    void (*packet_sent_callback) (void *cb,\n\t\t\t\t\t\t\t  unsigned int length),\n\t\t\t    void *sent_cb_data);\nvoid ipwireless_associate_network(struct ipw_hardware *hw,\n\t\tstruct ipw_network *net);\nvoid ipwireless_stop_interrupts(struct ipw_hardware *hw);\nvoid ipwireless_init_hardware_v1(struct ipw_hardware *hw,\n\t\t\t\t unsigned int base_port,\n\t\t\t\t void __iomem *attr_memory,\n\t\t\t\t void __iomem *common_memory,\n\t\t\t\t int is_v2_card,\n\t\t\t\t void (*reboot_cb) (void *data),\n\t\t\t\t void *reboot_cb_data);\nvoid ipwireless_init_hardware_v2_v3(struct ipw_hardware *hw);\nvoid ipwireless_sleep(unsigned int tenths);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "vega20_baco.h",
+  "hash_id": "58c996870d1bbc6e6444c92c70dee0b841d7d395585561f049ae7b9969042c4e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/pm/powerplay/hwmgr/vega20_baco.h",
+  "human_readable_source": " \n#ifndef __VEGA20_BACO_H__\n#define __VEGA20_BACO_H__\n#include \"hwmgr.h\"\n#include \"common_baco.h\"\n\nextern int vega20_baco_get_capability(struct pp_hwmgr *hwmgr, bool *cap);\nextern int vega20_baco_get_state(struct pp_hwmgr *hwmgr, enum BACO_STATE *state);\nextern int vega20_baco_set_state(struct pp_hwmgr *hwmgr, enum BACO_STATE state);\nextern int vega20_baco_apply_vdci_flush_workaround(struct pp_hwmgr *hwmgr);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

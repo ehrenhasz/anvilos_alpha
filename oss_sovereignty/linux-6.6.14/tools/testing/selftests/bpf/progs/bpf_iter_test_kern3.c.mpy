@@ -1,0 +1,9 @@
+{
+  "module_name": "bpf_iter_test_kern3.c",
+  "hash_id": "830ce033f8435745dc76b1495877259f096703310cefa9ded711ca98ed552369",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/bpf_iter_test_kern3.c",
+  "human_readable_source": "\n \n#include \"bpf_iter.h\"\n#include <bpf/bpf_helpers.h>\n\nchar _license[] SEC(\"license\") = \"GPL\";\n\nSEC(\"iter/task\")\nint dump_task(struct bpf_iter__task *ctx)\n{\n\tstruct seq_file *seq = ctx->meta->seq;\n\tstruct task_struct *task = ctx->task;\n\tint tgid;\n\n\ttgid = task->tgid;\n\tbpf_seq_write(seq, &tgid, sizeof(tgid));\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

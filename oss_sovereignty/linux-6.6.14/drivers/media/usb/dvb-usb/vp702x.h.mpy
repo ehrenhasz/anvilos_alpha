@@ -1,0 +1,9 @@
+{
+  "module_name": "vp702x.h",
+  "hash_id": "6f12acf19d604fbb39be95cefad95daa5d14b916f20846d85ce598b08a1a4e31",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/usb/dvb-usb/vp702x.h",
+  "human_readable_source": " \n#ifndef _DVB_USB_VP7021_H_\n#define _DVB_USB_VP7021_H_\n\n#define DVB_USB_LOG_PREFIX \"vp702x\"\n#include \"dvb-usb.h\"\n\nextern int dvb_usb_vp702x_debug;\n#define deb_info(args...) dprintk(dvb_usb_vp702x_debug,0x01,args)\n#define deb_xfer(args...) dprintk(dvb_usb_vp702x_debug,0x02,args)\n#define deb_rc(args...)   dprintk(dvb_usb_vp702x_debug,0x04,args)\n#define deb_fe(args...)   dprintk(dvb_usb_vp702x_debug,0x08,args)\n\n \n\n \n#define REQUEST_OUT\t\t0xB2\n#define REQUEST_IN\t\t0xB3\n\n \n\n#define GET_TUNER_STATUS\t0x05\n \n\n#define GET_SYSTEM_STRING\t0x06\n \n\n#define SET_DISEQC_CMD\t\t0x08\n \n\n#define SET_LNB_POWER\t\t0x09\n \n\n#define GET_MAC_ADDRESS\t\t0x0A\n \n \n\n#define SET_PID_FILTER\t\t0x11\n \n\n \n\n \n#define READ_REMOTE_REQ\t\t0xB4\n \n\n#define READ_PID_NUMBER_REQ\t0xB5\n \n\n#define WRITE_EEPROM_REQ\t0xB6\n \n\n#define READ_EEPROM_REQ\t\t0xB7\n \n\n#define READ_STATUS\t\t0xB8\n \n\n#define READ_TUNER_REG_REQ\t0xB9\n \n\n#define READ_FX2_REG_REQ\t0xBA\n \n\n#define WRITE_FX2_REG_REQ\t0xBB\n \n\n#define SET_TUNER_POWER_REQ\t0xBC\n \n\n#define WRITE_TUNER_REG_REQ\t0xBD\n \n\n#define RESET_TUNER\t\t0xBE\n \n\nstruct vp702x_device_state {\n\tstruct mutex buf_mutex;\n\tint buf_len;\n\tu8 *buf;\n};\n\n\nextern struct dvb_frontend * vp702x_fe_attach(struct dvb_usb_device *d);\n\nextern int vp702x_usb_inout_op(struct dvb_usb_device *d, u8 *o, int olen, u8 *i, int ilen, int msec);\nextern int vp702x_usb_in_op(struct dvb_usb_device *d, u8 req, u16 value, u16 index, u8 *b, int blen);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

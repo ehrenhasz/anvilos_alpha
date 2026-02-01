@@ -1,0 +1,9 @@
+{
+  "module_name": "cxd2880_devio_spi.h",
+  "hash_id": "0763601043c3079efbeb6020f6a358937297c8094e1218e42ffbb03ee7a270a2",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/dvb-frontends/cxd2880/cxd2880_devio_spi.h",
+  "human_readable_source": " \n \n\n#ifndef CXD2880_DEVIO_SPI_H\n#define CXD2880_DEVIO_SPI_H\n\n#include \"cxd2880_common.h\"\n#include \"cxd2880_io.h\"\n#include \"cxd2880_spi.h\"\n\n#include \"cxd2880_tnrdmd.h\"\n\nint cxd2880_io_spi_create(struct cxd2880_io *io,\n\t\t\t  struct cxd2880_spi *spi,\n\t\t\t  u8 slave_select);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

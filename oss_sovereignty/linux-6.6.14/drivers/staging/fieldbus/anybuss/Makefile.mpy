@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "d1babb997c8cc13c24ed3b7781150183f9a1b75c19935ea6d75e077befefc857",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/fieldbus/anybuss/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for anybuss drivers.\n#\n\nobj-$(CONFIG_HMS_ANYBUSS_BUS)\t+= anybuss_core.o\nanybuss_core-y\t\t\t+= host.o\n\nobj-$(CONFIG_ARCX_ANYBUS_CONTROLLER) += arcx-anybus.o\nobj-$(CONFIG_HMS_PROFINET)\t+= hms-profinet.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

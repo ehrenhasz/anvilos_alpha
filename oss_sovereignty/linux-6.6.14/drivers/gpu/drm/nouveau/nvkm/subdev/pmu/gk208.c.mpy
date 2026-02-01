@@ -1,0 +1,9 @@
+{
+  "module_name": "gk208.c",
+  "hash_id": "9ac388d91e9ad1fe6989d53e2036127c4a542bd9ec2b43a1fe079510b42c543c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/subdev/pmu/gk208.c",
+  "human_readable_source": " \n#include \"priv.h\"\n#include \"fuc/gk208.fuc5.h\"\n\nstatic const struct nvkm_pmu_func\ngk208_pmu = {\n\t.flcn = &gt215_pmu_flcn,\n\t.code.data = gk208_pmu_code,\n\t.code.size = sizeof(gk208_pmu_code),\n\t.data.data = gk208_pmu_data,\n\t.data.size = sizeof(gk208_pmu_data),\n\t.enabled = gf100_pmu_enabled,\n\t.reset = gf100_pmu_reset,\n\t.init = gt215_pmu_init,\n\t.fini = gt215_pmu_fini,\n\t.intr = gt215_pmu_intr,\n\t.send = gt215_pmu_send,\n\t.recv = gt215_pmu_recv,\n\t.pgob = gk110_pmu_pgob,\n};\n\nstatic const struct nvkm_pmu_fwif\ngk208_pmu_fwif[] = {\n\t{ -1, gf100_pmu_nofw, &gk208_pmu },\n\t{}\n};\n\nint\ngk208_pmu_new(struct nvkm_device *device, enum nvkm_subdev_type type, int inst,\n\t      struct nvkm_pmu **ppmu)\n{\n\treturn nvkm_pmu_new_(gk208_pmu_fwif, device, type, inst, ppmu);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

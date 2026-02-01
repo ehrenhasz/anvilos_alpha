@@ -1,0 +1,9 @@
+{
+  "module_name": "systemd.m4",
+  "hash_id": "0e5eb88d7bc38885c2a197bc779cbbb72e202ce2cf02b14315aafd25d636b9bc",
+  "original_prompt": "Ingested from coreutils-9.4/m4/systemd.m4",
+  "human_readable_source": "# systemd.m4 serial 3\ndnl Copyright (C) 2023 Free Software Foundation, Inc.\ndnl This file is free software; the Free Software Foundation\ndnl gives unlimited permission to copy and/or distribute it,\ndnl with or without modifications, as long as this notice is preserved.\n\n# Sets SYSTEMD_CHOICE to 'yes' or 'no', depending on the preferred use of\n# systemd APIs.\nAC_DEFUN([gl_SYSTEMD_CHOICE],\n[\n  AC_MSG_CHECKING([whether to use systemd APIs])\n  AC_ARG_ENABLE([systemd],\n    [  --enable-systemd        use systemd APIs],\n    [SYSTEMD_CHOICE=\"$enableval\"],\n    [SYSTEMD_CHOICE=no])\n  AC_MSG_RESULT([$SYSTEMD_CHOICE])\n  AC_SUBST([SYSTEMD_CHOICE])\n])\n\n# Pre-built package name for the libsystemd library:\n# - On Debian and Debian-based systems: libsystemd-dev\n# - On Red Hat distributions: systemd-devel\n# - Other: https://repology.org/project/systemd/versions\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

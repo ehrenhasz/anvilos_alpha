@@ -1,0 +1,9 @@
+{
+  "module_name": "dfltcc.c",
+  "hash_id": "d0e5c2a8b5e7d73b00628933d60f0d2dddaf1c4139d53e46985888ef76f1df7e",
+  "original_prompt": "Ingested from linux-6.6.14/lib/zlib_dfltcc/dfltcc.c",
+  "human_readable_source": "\n \n\n#include <linux/export.h>\n#include <linux/module.h>\n#include \"dfltcc_util.h\"\n#include \"dfltcc.h\"\n\nchar *oesc_msg(\n    char *buf,\n    int oesc\n)\n{\n    if (oesc == 0x00)\n        return NULL;  \n    else {\n#ifdef STATIC\n        return NULL;  \n#else\n        sprintf(buf, \"Operation-Ending-Supplemental Code is 0x%.2X\", oesc);\n        return buf;\n#endif\n    }\n}\n\nvoid dfltcc_reset_state(struct dfltcc_state *dfltcc_state) {\n     \n    if (is_dfltcc_enabled()) {\n        dfltcc(DFLTCC_QAF, &dfltcc_state->param, NULL, NULL, NULL, NULL, NULL);\n        memmove(&dfltcc_state->af, &dfltcc_state->param, sizeof(dfltcc_state->af));\n    } else\n        memset(&dfltcc_state->af, 0, sizeof(dfltcc_state->af));\n\n     \n    memset(&dfltcc_state->param, 0, sizeof(dfltcc_state->param));\n    dfltcc_state->param.nt = 1;\n    dfltcc_state->param.ribm = DFLTCC_RIBM;\n}\n\nMODULE_LICENSE(\"GPL\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

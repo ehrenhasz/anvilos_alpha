@@ -1,0 +1,9 @@
+{
+  "module_name": "string.h",
+  "hash_id": "5cad0e7e2606bb00f0b0eac6fddb18df05daf594d81862461457fdc19bbd48e4",
+  "original_prompt": "Ingested from linux-6.6.14/tools/include/linux/string.h",
+  "human_readable_source": " \n#ifndef _TOOLS_LINUX_STRING_H_\n#define _TOOLS_LINUX_STRING_H_\n\n#include <linux/types.h>\t \n#include <string.h>\n\nvoid *memdup(const void *src, size_t len);\n\nchar **argv_split(const char *str, int *argcp);\nvoid argv_free(char **argv);\n\nint strtobool(const char *s, bool *res);\n\n \n#if defined(__GLIBC__) && !defined(__UCLIBC__)\n\n#if __GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 6)\n#pragma GCC diagnostic push\n#pragma GCC diagnostic ignored \"-Wredundant-decls\"\n#endif\nextern size_t strlcpy(char *dest, const char *src, size_t size);\n#if __GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 6)\n#pragma GCC diagnostic pop\n#endif\n#endif\n\nchar *str_error_r(int errnum, char *buf, size_t buflen);\n\nchar *strreplace(char *s, char old, char new);\n\n \nstatic inline bool strstarts(const char *str, const char *prefix)\n{\n\treturn strncmp(str, prefix, strlen(prefix)) == 0;\n}\n\nextern char * __must_check skip_spaces(const char *);\n\nextern char *strim(char *);\n\nextern void *memchr_inv(const void *start, int c, size_t bytes);\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

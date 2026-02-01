@@ -1,0 +1,9 @@
+{
+  "module_name": "gf100.c",
+  "hash_id": "852f9c189ecf12faba732ded32deb3fccbe734f889f5a5e60c510fb1e8ad055c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/subdev/bus/gf100.c",
+  "human_readable_source": " \n#include \"priv.h\"\n\nstatic void\ngf100_bus_intr(struct nvkm_bus *bus)\n{\n\tstruct nvkm_subdev *subdev = &bus->subdev;\n\tstruct nvkm_device *device = subdev->device;\n\tu32 stat = nvkm_rd32(device, 0x001100) & nvkm_rd32(device, 0x001140);\n\n\tif (stat & 0x0000000e) {\n\t\tu32 addr = nvkm_rd32(device, 0x009084);\n\t\tu32 data = nvkm_rd32(device, 0x009088);\n\n\t\tnvkm_error_ratelimited(subdev,\n\t\t\t\t       \"MMIO %s of %08x FAULT at %06x [ %s%s%s]\\n\",\n\t\t\t\t       (addr & 0x00000002) ? \"write\" : \"read\", data,\n\t\t\t\t       (addr & 0x00fffffc),\n\t\t\t\t       (stat & 0x00000002) ? \"!ENGINE \" : \"\",\n\t\t\t\t       (stat & 0x00000004) ? \"PRIVRING \" : \"\",\n\t\t\t\t       (stat & 0x00000008) ? \"TIMEOUT \" : \"\");\n\n\t\tnvkm_wr32(device, 0x009084, 0x00000000);\n\t\tnvkm_wr32(device, 0x001100, (stat & 0x0000000e));\n\t\tstat &= ~0x0000000e;\n\t}\n\n\tif (stat) {\n\t\tnvkm_error(subdev, \"intr %08x\\n\", stat);\n\t\tnvkm_mask(device, 0x001140, stat, 0x00000000);\n\t}\n}\n\nstatic void\ngf100_bus_init(struct nvkm_bus *bus)\n{\n\tstruct nvkm_device *device = bus->subdev.device;\n\tnvkm_wr32(device, 0x001100, 0xffffffff);\n\tnvkm_wr32(device, 0x001140, 0x0000000e);\n}\n\nstatic const struct nvkm_bus_func\ngf100_bus = {\n\t.init = gf100_bus_init,\n\t.intr = gf100_bus_intr,\n};\n\nint\ngf100_bus_new(struct nvkm_device *device, enum nvkm_subdev_type type, int inst,\n\t      struct nvkm_bus **pbus)\n{\n\treturn nvkm_bus_new_(&gf100_bus, device, type, inst, pbus);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "20d8069bc1c37d59f01e6b5047e7b9b8760c478c39e89ec023eef7bd1ee17eda",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/mtd/nand/raw/brcmnand/Kconfig",
+  "human_readable_source": "config MTD_NAND_BRCMNAND\n\ttristate \"Broadcom STB NAND controller\"\n\tdepends on ARM || ARM64 || MIPS || COMPILE_TEST\n\tdepends on HAS_IOMEM\n\thelp\n\t  Enables the Broadcom NAND controller driver. The controller was\n\t  originally designed for Set-Top Box but is used on various BCM7xxx,\n\t  BCM3xxx, BCM63xxx, iProc/Cygnus and more.\n\nif MTD_NAND_BRCMNAND\n\nconfig MTD_NAND_BRCMNAND_BCM63XX\n\ttristate \"Broadcom BCM63xx NAND controller glue\"\n\tdefault BCM63XX\n\thelp\n\t  Enables the BRCMNAND glue driver to register the NAND controller\n\t  on Broadcom BCM63xx MIPS-based DSL platforms.\n\nconfig MTD_NAND_BRCMNAND_BCMA\n\ttristate \"Broadcom BCMA NAND controller\"\n\tdepends on BCMA_NFLASH\n\tdepends on BCMA\n\thelp\n\t  Enables the BRCMNAND controller over BCMA on BCM47186/BCM5358 SoCs.\n\t  The glue driver will take care of performing the low-level I/O\n\t  operations to interface the BRCMNAND controller over the BCMA bus.\n\nconfig MTD_NAND_BRCMNAND_BCMBCA\n\ttristate \"Broadcom BCMBCA NAND controller glue\"\n\tdefault ARCH_BCMBCA\n\thelp\n\t  Enables the BRCMNAND glue driver to register the NAND controller\n\t  on Broadcom BCA platforms.\n\nconfig MTD_NAND_BRCMNAND_BRCMSTB\n\ttristate \"Broadcom STB Nand controller glue\"\n\tdefault ARCH_BRCMSTB\n\thelp\n\t  Enables the BRCMNAND glue driver to register the NAND controller\n\t  on Broadcom STB platforms.\n\nconfig MTD_NAND_BRCMNAND_IPROC\n\ttristate \"Broadcom iProc NAND controller glue\"\n\tdefault ARCH_BCM_IPROC\n\thelp\n\t  Enables the BRCMNAND controller glue driver to register the NAND\n\t  controller on Broadcom iProc platforms.\n\nendif # MTD_NAND_BRCMNAND\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

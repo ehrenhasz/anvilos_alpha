@@ -1,0 +1,9 @@
+{
+  "module_name": "rtc-core.h",
+  "hash_id": "944339b11c8b1ba4683de494c8b149d1acafa654b4b18e469e386d2e9d556d0d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/rtc/rtc-core.h",
+  "human_readable_source": " \n#ifdef CONFIG_RTC_INTF_DEV\n\nextern void __init rtc_dev_init(void);\nextern void rtc_dev_prepare(struct rtc_device *rtc);\n\n#else\n\nstatic inline void rtc_dev_init(void)\n{\n}\n\nstatic inline void rtc_dev_prepare(struct rtc_device *rtc)\n{\n}\n\n#endif\n\n#ifdef CONFIG_RTC_INTF_PROC\n\nextern void rtc_proc_add_device(struct rtc_device *rtc);\nextern void rtc_proc_del_device(struct rtc_device *rtc);\n\n#else\n\nstatic inline void rtc_proc_add_device(struct rtc_device *rtc)\n{\n}\n\nstatic inline void rtc_proc_del_device(struct rtc_device *rtc)\n{\n}\n\n#endif\n\n#ifdef CONFIG_RTC_INTF_SYSFS\nconst struct attribute_group **rtc_get_dev_attribute_groups(void);\n#else\nstatic inline const struct attribute_group **rtc_get_dev_attribute_groups(void)\n{\n\treturn NULL;\n}\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "vmm.h",
+  "hash_id": "0a5c42b9bc935de5b1bdbe1f2dcc6f4f8a8170641586588748e04f9be037bfd9",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/include/nvif/vmm.h",
+  "human_readable_source": "#ifndef __NVIF_VMM_H__\n#define __NVIF_VMM_H__\n#include <nvif/object.h>\nstruct nvif_mem;\nstruct nvif_mmu;\n\nenum nvif_vmm_type {\n\tUNMANAGED,\n\tMANAGED,\n\tRAW,\n};\n\nenum nvif_vmm_get {\n\tADDR,\n\tPTES,\n\tLAZY\n};\n\nstruct nvif_vma {\n\tu64 addr;\n\tu64 size;\n};\n\nstruct nvif_vmm {\n\tstruct nvif_object object;\n\tu64 start;\n\tu64 limit;\n\n\tstruct {\n\t\tu8 shift;\n\t\tbool sparse:1;\n\t\tbool vram:1;\n\t\tbool host:1;\n\t\tbool comp:1;\n\t} *page;\n\tint page_nr;\n};\n\nint nvif_vmm_ctor(struct nvif_mmu *, const char *name, s32 oclass,\n\t\t  enum nvif_vmm_type, u64 addr, u64 size, void *argv, u32 argc,\n\t\t  struct nvif_vmm *);\nvoid nvif_vmm_dtor(struct nvif_vmm *);\nint nvif_vmm_get(struct nvif_vmm *, enum nvif_vmm_get, bool sparse,\n\t\t u8 page, u8 align, u64 size, struct nvif_vma *);\nvoid nvif_vmm_put(struct nvif_vmm *, struct nvif_vma *);\nint nvif_vmm_map(struct nvif_vmm *, u64 addr, u64 size, void *argv, u32 argc,\n\t\t struct nvif_mem *, u64 offset);\nint nvif_vmm_unmap(struct nvif_vmm *, u64);\n\nint nvif_vmm_raw_get(struct nvif_vmm *vmm, u64 addr, u64 size, u8 shift);\nint nvif_vmm_raw_put(struct nvif_vmm *vmm, u64 addr, u64 size, u8 shift);\nint nvif_vmm_raw_map(struct nvif_vmm *vmm, u64 addr, u64 size, u8 shift,\n\t\t     void *argv, u32 argc, struct nvif_mem *mem, u64 offset);\nint nvif_vmm_raw_unmap(struct nvif_vmm *vmm, u64 addr, u64 size,\n\t\t       u8 shift, bool sparse);\nint nvif_vmm_raw_sparse(struct nvif_vmm *vmm, u64 addr, u64 size, bool ref);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "2baa8cd5482650274ff73b7c2151e84dfeb3c20547d7132048001c27ecb80952",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/ata/pata_parport/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n\nobj-$(CONFIG_PATA_PARPORT)      += pata_parport.o\n\nobj-$(CONFIG_PATA_PARPORT_ATEN)\t+= aten.o\nobj-$(CONFIG_PATA_PARPORT_BPCK)\t+= bpck.o\nobj-$(CONFIG_PATA_PARPORT_COMM)\t+= comm.o\nobj-$(CONFIG_PATA_PARPORT_DSTR)\t+= dstr.o\nobj-$(CONFIG_PATA_PARPORT_KBIC)\t+= kbic.o\nobj-$(CONFIG_PATA_PARPORT_EPAT)\t+= epat.o\nobj-$(CONFIG_PATA_PARPORT_EPIA)\t+= epia.o\nobj-$(CONFIG_PATA_PARPORT_FRPW)\t+= frpw.o\nobj-$(CONFIG_PATA_PARPORT_FRIQ)\t+= friq.o\nobj-$(CONFIG_PATA_PARPORT_FIT2)\t+= fit2.o\nobj-$(CONFIG_PATA_PARPORT_FIT3)\t+= fit3.o\nobj-$(CONFIG_PATA_PARPORT_ON20)\t+= on20.o\nobj-$(CONFIG_PATA_PARPORT_ON26)\t+= on26.o\nobj-$(CONFIG_PATA_PARPORT_KTTI)\t+= ktti.o\nobj-$(CONFIG_PATA_PARPORT_BPCK6) += bpck6.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

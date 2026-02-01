@@ -1,0 +1,9 @@
+{
+  "module_name": "c8sectpfe-debugfs.h",
+  "hash_id": "4d68ba6fe23ff5aed47cc411a02bb07a42b697cc8fae7013d2cb6a2dbbe0c844",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/platform/st/sti/c8sectpfe/c8sectpfe-debugfs.h",
+  "human_readable_source": " \n \n\n#ifndef __C8SECTPFE_DEBUG_H\n#define __C8SECTPFE_DEBUG_H\n\n#include \"c8sectpfe-core.h\"\n\nvoid c8sectpfe_debugfs_init(struct c8sectpfei *);\nvoid c8sectpfe_debugfs_exit(struct c8sectpfei *);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

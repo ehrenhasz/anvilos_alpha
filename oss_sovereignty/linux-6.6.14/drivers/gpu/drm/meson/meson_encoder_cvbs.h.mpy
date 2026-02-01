@@ -1,0 +1,9 @@
+{
+  "module_name": "meson_encoder_cvbs.h",
+  "hash_id": "5424a360d412d9247ab3a97b0b4c6639af1bd8c29a707ee62c95b4651573943d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/meson/meson_encoder_cvbs.h",
+  "human_readable_source": " \n \n\n#ifndef __MESON_VENC_CVBS_H\n#define __MESON_VENC_CVBS_H\n\n#include \"meson_drv.h\"\n#include \"meson_venc.h\"\n\nstruct meson_cvbs_mode {\n\tstruct meson_cvbs_enci_mode *enci;\n\tstruct drm_display_mode mode;\n};\n\n#define MESON_CVBS_MODES_COUNT\t2\n\n \nextern struct meson_cvbs_mode meson_cvbs_modes[MESON_CVBS_MODES_COUNT];\n\nint meson_encoder_cvbs_init(struct meson_drm *priv);\nvoid meson_encoder_cvbs_remove(struct meson_drm *priv);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

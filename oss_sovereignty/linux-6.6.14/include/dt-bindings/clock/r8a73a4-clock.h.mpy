@@ -1,0 +1,9 @@
+{
+  "module_name": "r8a73a4-clock.h",
+  "hash_id": "d507cd1314f58ff03ebd78b6aacef86146b0c474fa1d605bb210e98337486d9b",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/clock/r8a73a4-clock.h",
+  "human_readable_source": " \n \n\n#ifndef __DT_BINDINGS_CLOCK_R8A73A4_H__\n#define __DT_BINDINGS_CLOCK_R8A73A4_H__\n\n \n#define R8A73A4_CLK_MAIN\t0\n#define R8A73A4_CLK_PLL0\t1\n#define R8A73A4_CLK_PLL1\t2\n#define R8A73A4_CLK_PLL2\t3\n#define R8A73A4_CLK_PLL2S\t4\n#define R8A73A4_CLK_PLL2H\t5\n#define R8A73A4_CLK_Z\t\t6\n#define R8A73A4_CLK_Z2\t\t7\n#define R8A73A4_CLK_I\t\t8\n#define R8A73A4_CLK_M3\t\t9\n#define R8A73A4_CLK_B\t\t10\n#define R8A73A4_CLK_M1\t\t11\n#define R8A73A4_CLK_M2\t\t12\n#define R8A73A4_CLK_ZX\t\t13\n#define R8A73A4_CLK_ZS\t\t14\n#define R8A73A4_CLK_HP\t\t15\n\n \n#define R8A73A4_CLK_DMAC\t18\n#define R8A73A4_CLK_SCIFB3\t17\n#define R8A73A4_CLK_SCIFB2\t16\n#define R8A73A4_CLK_SCIFB1\t7\n#define R8A73A4_CLK_SCIFB0\t6\n#define R8A73A4_CLK_SCIFA0\t4\n#define R8A73A4_CLK_SCIFA1\t3\n\n \n#define R8A73A4_CLK_CMT1\t29\n#define R8A73A4_CLK_IIC1\t23\n#define R8A73A4_CLK_IIC0\t18\n#define R8A73A4_CLK_IIC7\t17\n#define R8A73A4_CLK_IIC6\t16\n#define R8A73A4_CLK_MMCIF0\t15\n#define R8A73A4_CLK_SDHI0\t14\n#define R8A73A4_CLK_SDHI1\t13\n#define R8A73A4_CLK_SDHI2\t12\n#define R8A73A4_CLK_MMCIF1\t5\n#define R8A73A4_CLK_IIC2\t0\n\n \n#define R8A73A4_CLK_IIC3\t11\n#define R8A73A4_CLK_IIC4\t10\n#define R8A73A4_CLK_IIC5\t9\n#define R8A73A4_CLK_INTC_SYS\t8\n#define R8A73A4_CLK_IRQC\t7\n\n \n#define R8A73A4_CLK_THERMAL\t22\n#define R8A73A4_CLK_IIC8\t15\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

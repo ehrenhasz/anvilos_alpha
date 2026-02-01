@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "db3cfda65a0df2d52fa1ff170e2e63dca68be5ec79b84a94def6368304d38b44",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/acpi/pmic/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n\nobj-$(CONFIG_PMIC_OPREGION)\t\t+= intel_pmic.o\nobj-$(CONFIG_BYTCRC_PMIC_OPREGION)\t+= intel_pmic_bytcrc.o\nobj-$(CONFIG_CHTCRC_PMIC_OPREGION)\t+= intel_pmic_chtcrc.o\nobj-$(CONFIG_XPOWER_PMIC_OPREGION)\t+= intel_pmic_xpower.o\nobj-$(CONFIG_BXT_WC_PMIC_OPREGION)\t+= intel_pmic_bxtwc.o\nobj-$(CONFIG_CHT_WC_PMIC_OPREGION)\t+= intel_pmic_chtwc.o\nobj-$(CONFIG_CHT_DC_TI_PMIC_OPREGION)\t+= intel_pmic_chtdc_ti.o\nobj-$(CONFIG_TPS68470_PMIC_OPREGION)\t+= tps68470_pmic.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "packing.h",
+  "hash_id": "e0287591391350dfe37da02f65f3bfd2adfd2c648b34e1dafc9fdfbbe915afcc",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/packing.h",
+  "human_readable_source": " \n#ifndef _LINUX_PACKING_H\n#define _LINUX_PACKING_H\n\n#include <linux/types.h>\n#include <linux/bitops.h>\n\n#define QUIRK_MSB_ON_THE_RIGHT\tBIT(0)\n#define QUIRK_LITTLE_ENDIAN\tBIT(1)\n#define QUIRK_LSW32_IS_FIRST\tBIT(2)\n\nenum packing_op {\n\tPACK,\n\tUNPACK,\n};\n\n \nint packing(void *pbuf, u64 *uval, int startbit, int endbit, size_t pbuflen,\n\t    enum packing_op op, u8 quirks);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

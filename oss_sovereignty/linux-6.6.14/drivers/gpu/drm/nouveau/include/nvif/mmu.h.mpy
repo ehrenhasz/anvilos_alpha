@@ -1,0 +1,9 @@
+{
+  "module_name": "mmu.h",
+  "hash_id": "0305db649535f9bf952c7ecbf428880cc0a75466070cc9b5a7f599aca6cb5f4d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/include/nvif/mmu.h",
+  "human_readable_source": "#ifndef __NVIF_MMU_H__\n#define __NVIF_MMU_H__\n#include <nvif/object.h>\n\nstruct nvif_mmu {\n\tstruct nvif_object object;\n\tu8  dmabits;\n\tu8  heap_nr;\n\tu8  type_nr;\n\tu8  kind_inv;\n\tu16 kind_nr;\n\ts32 mem;\n\n\tstruct {\n\t\tu64 size;\n\t} *heap;\n\n\tstruct {\n#define NVIF_MEM_VRAM                                                      0x01\n#define NVIF_MEM_HOST                                                      0x02\n#define NVIF_MEM_COMP                                                      0x04\n#define NVIF_MEM_DISP                                                      0x08\n#define NVIF_MEM_KIND                                                      0x10\n#define NVIF_MEM_MAPPABLE                                                  0x20\n#define NVIF_MEM_COHERENT                                                  0x40\n#define NVIF_MEM_UNCACHED                                                  0x80\n\t\tu8 type;\n\t\tu8 heap;\n\t} *type;\n\n\tu8 *kind;\n};\n\nint nvif_mmu_ctor(struct nvif_object *, const char *name, s32 oclass,\n\t\t  struct nvif_mmu *);\nvoid nvif_mmu_dtor(struct nvif_mmu *);\n\nstatic inline bool\nnvif_mmu_kind_valid(struct nvif_mmu *mmu, u8 kind)\n{\n\tif (kind) {\n\t\tif (kind >= mmu->kind_nr || mmu->kind[kind] == mmu->kind_inv)\n\t\t\treturn false;\n\t}\n\treturn true;\n}\n\nstatic inline int\nnvif_mmu_type(struct nvif_mmu *mmu, u8 mask)\n{\n\tint i;\n\tfor (i = 0; i < mmu->type_nr; i++) {\n\t\tif ((mmu->type[i].type & mask) == mask)\n\t\t\treturn i;\n\t}\n\treturn -EINVAL;\n}\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

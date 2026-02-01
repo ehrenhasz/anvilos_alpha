@@ -1,0 +1,9 @@
+{
+  "module_name": "posix_types.h",
+  "hash_id": "305bf3d184768f7ea6817e858af4bf78d82384e52a8ff320b73d32b94e8ba750",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/posix_types.h",
+  "human_readable_source": " \n#ifndef _LINUX_POSIX_TYPES_H\n#define _LINUX_POSIX_TYPES_H\n\n#include <linux/stddef.h>\n\n \n\n \n#undef __FD_SETSIZE\n#define __FD_SETSIZE\t1024\n\ntypedef struct {\n\tunsigned long fds_bits[__FD_SETSIZE / (8 * sizeof(long))];\n} __kernel_fd_set;\n\n \ntypedef void (*__kernel_sighandler_t)(int);\n\n \ntypedef int __kernel_key_t;\ntypedef int __kernel_mqd_t;\n\n#include <asm/posix_types.h>\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

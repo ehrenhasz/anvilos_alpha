@@ -1,0 +1,9 @@
+{
+  "module_name": "ddk750_swi2c.h",
+  "hash_id": "591269568e1140c14f0a015e7f3adddc2aa479970778d34f91321278d393e602",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/sm750fb/ddk750_swi2c.h",
+  "human_readable_source": " \n \n\n#ifndef _SWI2C_H_\n#define _SWI2C_H_\n\n \n#define DEFAULT_I2C_SCL                     30\n#define DEFAULT_I2C_SDA                     31\n\n \nlong sm750_sw_i2c_init(unsigned char clk_gpio, unsigned char data_gpio);\n\n \nunsigned char sm750_sw_i2c_read_reg(unsigned char addr, unsigned char reg);\n\n \nlong sm750_sw_i2c_write_reg(unsigned char addr,\n\t\t\t    unsigned char reg,\n\t\t\t    unsigned char data);\n\n#endif   \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

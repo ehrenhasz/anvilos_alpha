@@ -1,0 +1,9 @@
+{
+  "module_name": "topology.c",
+  "hash_id": "d5760bd613d9bef5d07f2f59ee1537b9759611e4a93bd2e6620c318143f18c94",
+  "original_prompt": "Ingested from linux-6.6.14/tools/power/cpupower/utils/helpers/topology.c",
+  "human_readable_source": "\n \n\n \n \n\n#include <stdlib.h>\n#include <stdio.h>\n#include <unistd.h>\n#include <errno.h>\n#include <fcntl.h>\n\n#include <cpuidle.h>\n\n \n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

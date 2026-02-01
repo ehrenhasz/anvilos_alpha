@@ -1,0 +1,9 @@
+{
+  "module_name": "trace_printk.c",
+  "hash_id": "8ff19e0b433adda30eeedaeb068c20e9df6e6764b97f1b68226387f3b3b1c333",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/trace_printk.c",
+  "human_readable_source": "\n\n\n#include \"vmlinux.h\"\n#include <bpf/bpf_helpers.h>\n#include <bpf/bpf_tracing.h>\n#include \"bpf_misc.h\"\n\nchar _license[] SEC(\"license\") = \"GPL\";\n\nint trace_printk_ret = 0;\nint trace_printk_ran = 0;\n\nconst char fmt[] = \"Testing,testing %d\\n\";\n\nSEC(\"fentry/\" SYS_PREFIX \"sys_nanosleep\")\nint sys_enter(void *ctx)\n{\n\ttrace_printk_ret = bpf_trace_printk(fmt, sizeof(fmt),\n\t\t\t\t\t    ++trace_printk_ran);\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

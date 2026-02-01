@@ -1,0 +1,9 @@
+{
+  "module_name": "lib_insnstr.c",
+  "hash_id": "b482aa8cdc07b4ce835cb515340c14dd1a49dd8ed2fe0f67a9f915a01d08c6f8",
+  "original_prompt": "Ingested from ncurses-6.4/ncurses/base/lib_insnstr.c",
+  "human_readable_source": " \n\n \n\n \n\n#include <curses.priv.h>\n#include <ctype.h>\n\nMODULE_ID(\"$Id: lib_insnstr.c,v 1.8 2022/05/21 17:35:15 tom Exp $\")\n\nNCURSES_EXPORT(int)\nwinsnstr(WINDOW *win, const char *s, int n)\n{\n    int code = ERR;\n    const unsigned char *str = (const unsigned char *) s;\n\n    T((T_CALLED(\"winsnstr(%p,%s,%d)\"), (void *) win, _nc_visbufn(s, n), n));\n\n    if (win != 0 && str != 0) {\n\tSCREEN *sp = _nc_screen_of(win);\n#if USE_WIDEC_SUPPORT\n\t \n\tif (sp->_screen_unicode) {\n\t    size_t nn = (n > 0) ? (size_t) n : strlen(s);\n\t    wchar_t *buffer = typeMalloc(wchar_t, nn + 1);\n\t    if (buffer != 0) {\n\t\tmbstate_t state;\n\t\tsize_t n3;\n\t\tinit_mb(state);\n\t\tn3 = mbstowcs(buffer, s, nn);\n\t\tif (n3 != (size_t) (-1)) {\n\t\t    buffer[n3] = '\\0';\n\t\t    code = wins_nwstr(win, buffer, (int) n3);\n\t\t}\n\t\tfree(buffer);\n\t    }\n\t}\n\tif (code == ERR)\n#endif\n\t{\n\t    NCURSES_SIZE_T oy = win->_cury;\n\t    NCURSES_SIZE_T ox = win->_curx;\n\t    const unsigned char *cp;\n\n\t    for (cp = str; (n <= 0 || (cp - str) < n) && *cp; cp++) {\n\t\t_nc_insert_ch(sp, win, (chtype) UChar(*cp));\n\t    }\n\t    win->_curx = ox;\n\t    win->_cury = oy;\n\t    _nc_synchook(win);\n\t    code = OK;\n\t}\n    }\n    returnCode(code);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

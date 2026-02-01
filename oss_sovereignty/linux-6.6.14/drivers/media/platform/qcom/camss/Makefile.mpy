@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "61d02eee10c0ba4341f5ddd411f027267a0de17e584ca1cc546327f0e894269b",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/platform/qcom/camss/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n# Makefile for Qualcomm CAMSS driver\n\nqcom-camss-objs += \\\n\t\tcamss.o \\\n\t\tcamss-csid.o \\\n\t\tcamss-csid-4-1.o \\\n\t\tcamss-csid-4-7.o \\\n\t\tcamss-csid-gen2.o \\\n\t\tcamss-csiphy-2ph-1-0.o \\\n\t\tcamss-csiphy-3ph-1-0.o \\\n\t\tcamss-csiphy.o \\\n\t\tcamss-ispif.o \\\n\t\tcamss-vfe-4-1.o \\\n\t\tcamss-vfe-4-7.o \\\n\t\tcamss-vfe-4-8.o \\\n\t\tcamss-vfe-170.o \\\n\t\tcamss-vfe-480.o \\\n\t\tcamss-vfe-gen1.o \\\n\t\tcamss-vfe.o \\\n\t\tcamss-video.o \\\n\nobj-$(CONFIG_VIDEO_QCOM_CAMSS) += qcom-camss.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

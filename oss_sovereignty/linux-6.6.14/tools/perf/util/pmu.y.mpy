@@ -1,0 +1,9 @@
+{
+  "module_name": "pmu.y",
+  "hash_id": "cff977917591851a191478f25c7f8397046628fce72da07e90bfc2d3611232d9",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/util/pmu.y",
+  "human_readable_source": "%define api.pure full\n%parse-param {void *format}\n%parse-param {void *scanner}\n%lex-param {void* scanner}\n\n%{\n\n#include <linux/compiler.h>\n#include <linux/list.h>\n#include <linux/bitmap.h>\n#include <string.h>\n#include \"pmu.h\"\n#include \"pmu-bison.h\"\n\nint perf_pmu_lex(YYSTYPE * yylval_param , void *yyscanner);\n\n#define ABORT_ON(val) \\\ndo { \\\n        if (val) \\\n                YYABORT; \\\n} while (0)\n\nstatic void perf_pmu_error(void *format, void *scanner, const char *msg);\n\nstatic void perf_pmu__set_format(unsigned long *bits, long from, long to)\n{\n\tlong b;\n\n\tif (!to)\n\t\tto = from;\n\n\tmemset(bits, 0, BITS_TO_BYTES(PERF_PMU_FORMAT_BITS));\n\tfor (b = from; b <= to; b++)\n\t\t__set_bit(b, bits);\n}\n\n%}\n\n%token PP_CONFIG\n%token PP_VALUE PP_ERROR\n%type <num> PP_VALUE\n%type <bits> bit_term\n%type <bits> bits\n\n%union\n{\n\tunsigned long num;\n\tDECLARE_BITMAP(bits, PERF_PMU_FORMAT_BITS);\n}\n\n%%\n\nformat:\nformat format_term\n|\nformat_term\n\nformat_term:\nPP_CONFIG ':' bits\n{\n\tperf_pmu_format__set_value(format, PERF_PMU_FORMAT_VALUE_CONFIG, $3);\n}\n|\nPP_CONFIG PP_VALUE ':' bits\n{\n\tperf_pmu_format__set_value(format, $2, $4);\n}\n\nbits:\nbits ',' bit_term\n{\n\tbitmap_or($$, $1, $3, 64);\n}\n|\nbit_term\n{\n\tmemcpy($$, $1, sizeof($1));\n}\n\nbit_term:\nPP_VALUE '-' PP_VALUE\n{\n\tperf_pmu__set_format($$, $1, $3);\n}\n|\nPP_VALUE\n{\n\tperf_pmu__set_format($$, $1, 0);\n}\n\n%%\n\nstatic void perf_pmu_error(void *format __maybe_unused,\n\t\t\t   void *scanner __maybe_unused,\n\t\t\t   const char *msg __maybe_unused)\n{\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

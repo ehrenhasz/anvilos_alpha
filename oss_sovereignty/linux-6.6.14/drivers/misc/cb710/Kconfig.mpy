@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "801fcfcb8c1f03f2bd643926bafce1db6ac4c788ec477d4bcbb10489d6a73123",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/misc/cb710/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig CB710_CORE\n\ttristate \"ENE CB710/720 Flash memory card reader support\"\n\tdepends on PCI\n\thelp\n\t  This option enables support for PCI ENE CB710/720 Flash memory card\n\t  reader found in some laptops (ie. some versions of HP Compaq nx9500).\n\n\t  You will also have to select some flash card format drivers (MMC/SD,\n\t  MemoryStick).\n\n\t  This driver can also be built as a module. If so, the module\n\t  will be called cb710.\n\nconfig CB710_DEBUG\n\tbool \"Enable driver debugging\"\n\tdepends on CB710_CORE != n\n\thelp\n\t  This is an option for use by developers; most people should\n\t  say N here.  This adds a lot of debugging output to dmesg.\n\nconfig CB710_DEBUG_ASSUMPTIONS\n\tbool\n\tdepends on CB710_CORE != n\n\tdefault y\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "fgraph-retval.tc",
+  "hash_id": "552716ba4d5a6b414b75d73badc0e9f7711364a60605c6373f9de7608c692752",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/ftrace/test.d/ftrace/fgraph-retval.tc",
+  "human_readable_source": "#!/bin/sh\n# SPDX-License-Identifier: GPL-2.0\n# description: ftrace - function graph print function return value\n# requires: options/funcgraph-retval options/funcgraph-retval-hex function_graph:tracer\n\n# Make sure that funcgraph-retval works\n\nfail() { # msg\n    echo $1\n    exit_fail\n}\n\ndisable_tracing\nclear_trace\n\n# get self PID, can not use $$, because it is PPID\nread PID _ < /proc/self/stat\n\n[ -f set_ftrace_filter ] && echo proc_reg_write > set_ftrace_filter\n[ -f set_ftrace_pid ] && echo ${PID} > set_ftrace_pid\necho function_graph > current_tracer\necho 1 > options/funcgraph-retval\n\nset +e\nenable_tracing\necho > /proc/interrupts\ndisable_tracing\nset -e\n\n: \"Test printing the error code in signed decimal format\"\necho 0 > options/funcgraph-retval-hex\ncount=`cat trace | grep 'proc_reg_write' | grep '= -5' | wc -l`\nif [ $count -eq 0 ]; then\n    fail \"Return value can not be printed in signed decimal format\"\nfi\n\n: \"Test printing the error code in hexadecimal format\"\necho 1 > options/funcgraph-retval-hex\ncount=`cat trace | grep 'proc_reg_write' | grep 'fffffffb' | wc -l`\nif [ $count -eq 0 ]; then\n    fail \"Return value can not be printed in hexadecimal format\"\nfi\n\nexit 0\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

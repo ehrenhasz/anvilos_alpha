@@ -1,0 +1,9 @@
+{
+  "module_name": "vortex.c",
+  "hash_id": "e1c68740a58763705a747fb4300a96c8e1e656903be887430f0f5021317114a3",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/kernel/cpu/vortex.c",
+  "human_readable_source": "\n#include <linux/kernel.h>\n#include <asm/processor.h>\n#include \"cpu.h\"\n\n \n\nstatic const struct cpu_dev vortex_cpu_dev = {\n\t.c_vendor\t= \"Vortex\",\n\t.c_ident\t= { \"Vortex86 SoC\" },\n\t.legacy_models\t= {\n\t\t{\n\t\t\t.family = 5,\n\t\t\t.model_names = {\n\t\t\t\t[2] = \"Vortex86DX\",\n\t\t\t\t[8] = \"Vortex86MX\",\n\t\t\t},\n\t\t},\n\t\t{\n\t\t\t.family = 6,\n\t\t\t.model_names = {\n\t\t\t\t \n\t\t\t\t[0] = \"Vortex86EX\",\n\t\t\t},\n\t\t},\n\t},\n\t.c_x86_vendor\t= X86_VENDOR_VORTEX,\n};\n\ncpu_dev_register(vortex_cpu_dev);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "LOCK05.boot",
+  "hash_id": "b5c5e8cb1802b9be54b057b01483ffb8c32ba2ced155c92a79c0edf079dddb91",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/rcutorture/configs/lock/LOCK05.boot",
+  "human_readable_source": "locktorture.torture_type=rtmutex_lock\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

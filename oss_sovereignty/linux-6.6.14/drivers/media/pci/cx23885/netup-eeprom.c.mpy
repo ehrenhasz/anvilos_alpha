@@ -1,0 +1,9 @@
+{
+  "module_name": "netup-eeprom.c",
+  "hash_id": "040018e06ccffb087cb4124ceee1d0e1c6bb66c94cfe540b4b5edf67d18216ac",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/pci/cx23885/netup-eeprom.c",
+  "human_readable_source": "\n\n \n\n#\n#include \"cx23885.h\"\n#include \"netup-eeprom.h\"\n\n#define EEPROM_I2C_ADDR 0x50\n\nint netup_eeprom_read(struct i2c_adapter *i2c_adap, u8 addr)\n{\n\tint ret;\n\tunsigned char buf[2];\n\n\t \n\tstruct i2c_msg msg[] = {\n\t\t{\n\t\t\t.addr\t= EEPROM_I2C_ADDR,\n\t\t\t.flags\t= 0,\n\t\t\t.buf\t= &buf[0],\n\t\t\t.len\t= 1\n\t\t}, {\n\t\t\t.addr\t= EEPROM_I2C_ADDR,\n\t\t\t.flags\t= I2C_M_RD,\n\t\t\t.buf\t= &buf[1],\n\t\t\t.len\t= 1\n\t\t}\n\n\t};\n\n\tbuf[0] = addr;\n\tbuf[1] = 0x0;\n\n\tret = i2c_transfer(i2c_adap, msg, 2);\n\n\tif (ret != 2) {\n\t\tpr_err(\"eeprom i2c read error, status=%d\\n\", ret);\n\t\treturn -1;\n\t}\n\n\treturn buf[1];\n};\n\nint netup_eeprom_write(struct i2c_adapter *i2c_adap, u8 addr, u8 data)\n{\n\tint ret;\n\tunsigned char bufw[2];\n\n\t \n\tstruct i2c_msg msg[] = {\n\t\t{\n\t\t\t.addr\t= EEPROM_I2C_ADDR,\n\t\t\t.flags\t= 0,\n\t\t\t.buf\t= &bufw[0],\n\t\t\t.len\t= 2\n\t\t}\n\t};\n\n\tbufw[0] = addr;\n\tbufw[1] = data;\n\n\tret = i2c_transfer(i2c_adap, msg, 1);\n\n\tif (ret != 1) {\n\t\tpr_err(\"eeprom i2c write error, status=%d\\n\", ret);\n\t\treturn -1;\n\t}\n\n\tmdelay(10);  \n\treturn 0;\n};\n\nvoid netup_get_card_info(struct i2c_adapter *i2c_adap,\n\t\t\t\tstruct netup_card_info *cinfo)\n{\n\tint i, j;\n\n\tcinfo->rev =  netup_eeprom_read(i2c_adap, 63);\n\n\tfor (i = 64, j = 0; i < 70; i++, j++)\n\t\tcinfo->port[0].mac[j] =  netup_eeprom_read(i2c_adap, i);\n\n\tfor (i = 70, j = 0; i < 76; i++, j++)\n\t\tcinfo->port[1].mac[j] =  netup_eeprom_read(i2c_adap, i);\n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

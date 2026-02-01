@@ -1,0 +1,9 @@
+{
+  "module_name": "serial_ctrl.c",
+  "hash_id": "20c3ea8d3ffb763192fbd2a592b7dd793d277d6c2f2eb1e57bf742c83fbf8a21",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/tty/serial/serial_ctrl.c",
+  "human_readable_source": "\n \n\n#include <linux/device.h>\n#include <linux/module.h>\n#include <linux/pm_runtime.h>\n#include <linux/serial_core.h>\n#include <linux/spinlock.h>\n\n#include \"serial_base.h\"\n\nstatic int serial_ctrl_probe(struct device *dev)\n{\n\tpm_runtime_enable(dev);\n\n\treturn 0;\n}\n\nstatic int serial_ctrl_remove(struct device *dev)\n{\n\tpm_runtime_disable(dev);\n\n\treturn 0;\n}\n\n \nint serial_ctrl_register_port(struct uart_driver *drv, struct uart_port *port)\n{\n\treturn serial_core_register_port(drv, port);\n}\n\nvoid serial_ctrl_unregister_port(struct uart_driver *drv, struct uart_port *port)\n{\n\tserial_core_unregister_port(drv, port);\n}\n\nstatic struct device_driver serial_ctrl_driver = {\n\t.name = \"ctrl\",\n\t.suppress_bind_attrs = true,\n\t.probe = serial_ctrl_probe,\n\t.remove = serial_ctrl_remove,\n};\n\nint serial_base_ctrl_init(void)\n{\n\treturn serial_base_driver_register(&serial_ctrl_driver);\n}\n\nvoid serial_base_ctrl_exit(void)\n{\n\tserial_base_driver_unregister(&serial_ctrl_driver);\n}\n\nMODULE_AUTHOR(\"Tony Lindgren <tony@atomide.com>\");\nMODULE_DESCRIPTION(\"Serial core controller driver\");\nMODULE_LICENSE(\"GPL\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

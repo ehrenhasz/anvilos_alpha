@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "04c05144e61093b134432ecae34dc7a5f52d745520d77ed5889f27e2eabfd45a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/ti/wl18xx/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nwl18xx-objs\t= main.o acx.o tx.o io.o debugfs.o scan.o cmd.o event.o\n\nobj-$(CONFIG_WL18XX)\t\t+= wl18xx.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

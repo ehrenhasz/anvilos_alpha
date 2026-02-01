@@ -1,0 +1,9 @@
+{
+  "module_name": "mdp5_mixer.h",
+  "hash_id": "5423912cb0596e951b4bd62ff462c0523712367d7da605cdeb76c10eae86853b",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/msm/disp/mdp5/mdp5_mixer.h",
+  "human_readable_source": " \n \n\n#ifndef __MDP5_LM_H__\n#define __MDP5_LM_H__\n\n \nstruct mdp5_hw_mixer {\n\tint idx;\n\n\tconst char *name;\n\n\tint lm;\t\t\t \n\tuint32_t caps;\n\tint pp;\n\tint dspp;\n\n\tuint32_t flush_mask;       \n};\n\n \nstruct mdp5_hw_mixer_state {\n\tstruct drm_crtc *hwmixer_to_crtc[8];\n};\n\nstruct mdp5_hw_mixer *mdp5_mixer_init(const struct mdp5_lm_instance *lm);\nvoid mdp5_mixer_destroy(struct mdp5_hw_mixer *lm);\nint mdp5_mixer_assign(struct drm_atomic_state *s, struct drm_crtc *crtc,\n\t\t      uint32_t caps, struct mdp5_hw_mixer **mixer,\n\t\t      struct mdp5_hw_mixer **r_mixer);\nint mdp5_mixer_release(struct drm_atomic_state *s,\n\t\t       struct mdp5_hw_mixer *mixer);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

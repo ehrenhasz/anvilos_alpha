@@ -1,0 +1,9 @@
+{
+  "module_name": "conftypes.h",
+  "hash_id": "b7a347ad75047d9d3876ec06e7e0c3f1780b1c269796f65c5646afb6c2c19fae",
+  "original_prompt": "Ingested from bash-5.2.21/conftypes.h",
+  "human_readable_source": " \n\n \n\n#if !defined (_CONFTYPES_H_)\n#define _CONFTYPES_H_\n\n \n#if !defined (RHAPSODY) && !defined (MACOSX)\n#  define HOSTTYPE\tCONF_HOSTTYPE\n#  define OSTYPE\tCONF_OSTYPE\n#  define MACHTYPE\tCONF_MACHTYPE\n#else  \n#  if   defined(__powerpc__) || defined(__ppc__)\n#    define HOSTTYPE \"powerpc\"\n#  elif defined(__i386__)\n#    define HOSTTYPE \"i386\"\n#  else\n#    define HOSTTYPE CONF_HOSTTYPE\n#  endif\n\n#  define OSTYPE CONF_OSTYPE\n#  define VENDOR CONF_VENDOR\n\n#  define MACHTYPE HOSTTYPE \"-\" VENDOR \"-\" OSTYPE\n#endif  \n\n#ifndef HOSTTYPE\n#  define HOSTTYPE \"unknown\"\n#endif\n\n#ifndef OSTYPE\n#  define OSTYPE \"unknown\"\n#endif\n\n#ifndef MACHTYPE\n#  define MACHTYPE \"unknown\"\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

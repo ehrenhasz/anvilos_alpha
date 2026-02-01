@@ -1,0 +1,9 @@
+{
+  "module_name": "tegra124-car.h",
+  "hash_id": "c2ef9d050d226124691b3bd090d9189f92dbb3a2a6eb17158d1886efd9f5ed10",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/clock/tegra124-car.h",
+  "human_readable_source": " \n \n\n#include <dt-bindings/clock/tegra124-car-common.h>\n\n#ifndef _DT_BINDINGS_CLOCK_TEGRA124_CAR_H\n#define _DT_BINDINGS_CLOCK_TEGRA124_CAR_H\n\n#define TEGRA124_CLK_PLL_X\t\t227\n#define TEGRA124_CLK_PLL_X_OUT0\t\t228\n\n#define TEGRA124_CLK_CCLK_G\t\t262\n#define TEGRA124_CLK_CCLK_LP\t\t263\n\n#define TEGRA124_CLK_CLK_MAX\t\t315\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

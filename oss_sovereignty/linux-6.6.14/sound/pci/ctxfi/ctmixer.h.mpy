@@ -1,0 +1,9 @@
+{
+  "module_name": "ctmixer.h",
+  "hash_id": "5c9b2f95214c3af65488ca3b608b5a6b48b065e178c813e15ded9c362d086ea9",
+  "original_prompt": "Ingested from linux-6.6.14/sound/pci/ctxfi/ctmixer.h",
+  "human_readable_source": " \n \n\n#ifndef CTMIXER_H\n#define CTMIXER_H\n\n#include \"ctatc.h\"\n#include \"ctresource.h\"\n\n#define INIT_VOL\t0x1c00\n\nenum MIXER_PORT_T {\n\tMIX_WAVE_FRONT,\n\tMIX_WAVE_REAR,\n\tMIX_WAVE_CENTLFE,\n\tMIX_WAVE_SURROUND,\n\tMIX_SPDIF_OUT,\n\tMIX_PCMO_FRONT,\n\tMIX_MIC_IN,\n\tMIX_LINE_IN,\n\tMIX_SPDIF_IN,\n\tMIX_PCMI_FRONT,\n\tMIX_PCMI_REAR,\n\tMIX_PCMI_CENTLFE,\n\tMIX_PCMI_SURROUND,\n\n\tNUM_MIX_PORTS\n};\n\n \nstruct ct_mixer {\n\tstruct ct_atc *atc;\n\n\tvoid **amixers;\t\t \n\tvoid **sums;\t\t \n\tunsigned int switch_state;  \n\n\tint (*get_output_ports)(struct ct_mixer *mixer, enum MIXER_PORT_T type,\n\t\t\t\t  struct rsc **rleft, struct rsc **rright);\n\n\tint (*set_input_left)(struct ct_mixer *mixer,\n\t\t\t      enum MIXER_PORT_T type, struct rsc *rsc);\n\tint (*set_input_right)(struct ct_mixer *mixer,\n\t\t\t       enum MIXER_PORT_T type, struct rsc *rsc);\n#ifdef CONFIG_PM_SLEEP\n\tint (*resume)(struct ct_mixer *mixer);\n#endif\n};\n\nint ct_alsa_mix_create(struct ct_atc *atc,\n\t\t       enum CTALSADEVS device,\n\t\t       const char *device_name);\nint ct_mixer_create(struct ct_atc *atc, struct ct_mixer **rmixer);\nint ct_mixer_destroy(struct ct_mixer *mixer);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "ccu-sun8i-a83t.h",
+  "hash_id": "054cca2c7e8e1bd4f5c58ad57ce1fc219ca3b2f010019213c0e64b1c7795fab5",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/clk/sunxi-ng/ccu-sun8i-a83t.h",
+  "human_readable_source": " \n \n\n#ifndef _CCU_SUN8I_A83T_H_\n#define _CCU_SUN8I_A83T_H_\n\n#include <dt-bindings/clock/sun8i-a83t-ccu.h>\n#include <dt-bindings/reset/sun8i-a83t-ccu.h>\n\n#define CLK_PLL_C0CPUX\t\t0\n#define CLK_PLL_C1CPUX\t\t1\n#define CLK_PLL_AUDIO\t\t2\n#define CLK_PLL_VIDEO0\t\t3\n#define CLK_PLL_VE\t\t4\n#define CLK_PLL_DDR\t\t5\n\n \n\n#define CLK_PLL_GPU\t\t7\n#define CLK_PLL_HSIC\t\t8\n\n \n\n#define CLK_PLL_VIDEO1\t\t10\n\n \n\n#define CLK_AXI0\t\t13\n#define CLK_AXI1\t\t14\n#define CLK_AHB1\t\t15\n#define CLK_AHB2\t\t16\n#define CLK_APB1\t\t17\n#define CLK_APB2\t\t18\n\n \n\n#define CLK_CCI400\t\t58\n\n \n\n#define CLK_DRAM\t\t82\n\n \n\n#define CLK_MBUS\t\t95\n\n \n\n#define CLK_NUMBER\t\t(CLK_GPU_HYD + 1)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

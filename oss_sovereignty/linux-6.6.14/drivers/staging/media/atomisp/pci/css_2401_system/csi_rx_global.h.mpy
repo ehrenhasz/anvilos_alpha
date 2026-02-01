@@ -1,0 +1,9 @@
+{
+  "module_name": "csi_rx_global.h",
+  "hash_id": "34bfc9acab9cb90721389cbd2b82b61dbf2652e4f113713ae787d8eb918ef1f5",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/css_2401_system/csi_rx_global.h",
+  "human_readable_source": " \n \n\n#ifndef __CSI_RX_GLOBAL_H_INCLUDED__\n#define __CSI_RX_GLOBAL_H_INCLUDED__\n\n#include <type_support.h>\n\ntypedef enum {\n\tCSI_MIPI_PACKET_TYPE_UNDEFINED = 0,\n\tCSI_MIPI_PACKET_TYPE_LONG,\n\tCSI_MIPI_PACKET_TYPE_SHORT,\n\tCSI_MIPI_PACKET_TYPE_RESERVED,\n\tN_CSI_MIPI_PACKET_TYPE\n} csi_mipi_packet_type_t;\n\ntypedef struct csi_rx_backend_lut_entry_s\tcsi_rx_backend_lut_entry_t;\nstruct csi_rx_backend_lut_entry_s {\n\tu32\tlong_packet_entry;\n\tu32\tshort_packet_entry;\n};\n\ntypedef struct csi_rx_backend_cfg_s csi_rx_backend_cfg_t;\nstruct csi_rx_backend_cfg_s {\n\t \n\tcsi_rx_backend_lut_entry_t lut_entry;\n\n\t \n\tcsi_mipi_packet_type_t csi_mipi_packet_type;\n\n\tstruct {\n\t\tbool     comp_enable;\n\t\tu32 virtual_channel;\n\t\tu32 data_type;\n\t\tu32 comp_scheme;\n\t\tu32 comp_predictor;\n\t\tu32 comp_bit_idx;\n\t} csi_mipi_cfg;\n};\n\ntypedef struct csi_rx_frontend_cfg_s csi_rx_frontend_cfg_t;\nstruct csi_rx_frontend_cfg_s {\n\tu32 active_lanes;\n};\n\nextern const u32 N_SHORT_PACKET_LUT_ENTRIES[N_CSI_RX_BACKEND_ID];\nextern const u32 N_LONG_PACKET_LUT_ENTRIES[N_CSI_RX_BACKEND_ID];\nextern const u32 N_CSI_RX_FE_CTRL_DLANES[N_CSI_RX_FRONTEND_ID];\n \nextern const u32 N_CSI_RX_BE_SID_WIDTH[N_CSI_RX_BACKEND_ID];\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

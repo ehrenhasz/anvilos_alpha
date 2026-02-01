@@ -1,0 +1,9 @@
+{
+  "module_name": "ledtrig-disk.c",
+  "hash_id": "cbe9178893a9a1ef0770f87fd857686a27aa5e7af95da77a3e03df230c0dd4f9",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/leds/trigger/ledtrig-disk.c",
+  "human_readable_source": "\n \n\n#include <linux/kernel.h>\n#include <linux/init.h>\n#include <linux/leds.h>\n\n#define BLINK_DELAY 30\n\nDEFINE_LED_TRIGGER(ledtrig_disk);\nDEFINE_LED_TRIGGER(ledtrig_disk_read);\nDEFINE_LED_TRIGGER(ledtrig_disk_write);\n\nvoid ledtrig_disk_activity(bool write)\n{\n\tled_trigger_blink_oneshot(ledtrig_disk, BLINK_DELAY, BLINK_DELAY, 0);\n\tif (write)\n\t\tled_trigger_blink_oneshot(ledtrig_disk_write,\n\t\t\t\t\t  BLINK_DELAY, BLINK_DELAY, 0);\n\telse\n\t\tled_trigger_blink_oneshot(ledtrig_disk_read,\n\t\t\t\t\t  BLINK_DELAY, BLINK_DELAY, 0);\n}\nEXPORT_SYMBOL(ledtrig_disk_activity);\n\nstatic int __init ledtrig_disk_init(void)\n{\n\tled_trigger_register_simple(\"disk-activity\", &ledtrig_disk);\n\tled_trigger_register_simple(\"disk-read\", &ledtrig_disk_read);\n\tled_trigger_register_simple(\"disk-write\", &ledtrig_disk_write);\n\n\treturn 0;\n}\ndevice_initcall(ledtrig_disk_init);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

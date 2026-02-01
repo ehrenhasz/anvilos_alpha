@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "c16b3063a9d9bba4defc47dc3933fc0b31e9776ec9009a4a15200a7ff6aefb16",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/hwspinlock/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Generic Hardware Spinlock framework\n#\n\nobj-$(CONFIG_HWSPINLOCK)\t\t+= hwspinlock_core.o\nobj-$(CONFIG_HWSPINLOCK_OMAP)\t\t+= omap_hwspinlock.o\nobj-$(CONFIG_HWSPINLOCK_QCOM)\t\t+= qcom_hwspinlock.o\nobj-$(CONFIG_HWSPINLOCK_SPRD)\t\t+= sprd_hwspinlock.o\nobj-$(CONFIG_HWSPINLOCK_STM32)\t\t+= stm32_hwspinlock.o\nobj-$(CONFIG_HWSPINLOCK_SUN6I)\t\t+= sun6i_hwspinlock.o\nobj-$(CONFIG_HSEM_U8500)\t\t+= u8500_hsem.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

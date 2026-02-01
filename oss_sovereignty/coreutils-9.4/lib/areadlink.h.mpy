@@ -1,0 +1,9 @@
+{
+  "module_name": "areadlink.h",
+  "hash_id": "82ca018d950ca925a3d38cd15fd48bc6c572b573b25b9208549f35dae9cae004",
+  "original_prompt": "Ingested from coreutils-9.4/lib/areadlink.h",
+  "human_readable_source": " \n\n#include <stdlib.h>\n\nextern char *areadlink (char const *filename)\n  _GL_ATTRIBUTE_DEALLOC_FREE;\nextern char *areadlink_with_size (char const *filename, size_t size_hint)\n  _GL_ATTRIBUTE_DEALLOC_FREE;\n\n#if GNULIB_AREADLINKAT\nextern char *areadlinkat (int fd, char const *filename)\n  _GL_ATTRIBUTE_DEALLOC_FREE;\n#endif\n\n#if GNULIB_AREADLINKAT_WITH_SIZE\nextern char *areadlinkat_with_size (int fd, char const *filename,\n                                    size_t size_hint)\n  _GL_ATTRIBUTE_DEALLOC_FREE;\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

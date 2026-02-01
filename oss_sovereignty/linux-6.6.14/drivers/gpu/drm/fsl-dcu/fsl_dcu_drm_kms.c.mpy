@@ -1,0 +1,9 @@
+{
+  "module_name": "fsl_dcu_drm_kms.c",
+  "hash_id": "865308e2a0d550598cabe8678f82700d9ad1f32f3a3093ec87f485251cd3886f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/fsl-dcu/fsl_dcu_drm_kms.c",
+  "human_readable_source": "\n \n\n#include <drm/drm_atomic_helper.h>\n#include <drm/drm_gem_framebuffer_helper.h>\n#include <drm/drm_probe_helper.h>\n\n#include \"fsl_dcu_drm_crtc.h\"\n#include \"fsl_dcu_drm_drv.h\"\n\nstatic const struct drm_mode_config_funcs fsl_dcu_drm_mode_config_funcs = {\n\t.atomic_check = drm_atomic_helper_check,\n\t.atomic_commit = drm_atomic_helper_commit,\n\t.fb_create = drm_gem_fb_create,\n};\n\nint fsl_dcu_drm_modeset_init(struct fsl_dcu_drm_device *fsl_dev)\n{\n\tint ret;\n\n\tdrm_mode_config_init(fsl_dev->drm);\n\n\tfsl_dev->drm->mode_config.min_width = 0;\n\tfsl_dev->drm->mode_config.min_height = 0;\n\tfsl_dev->drm->mode_config.max_width = 2031;\n\tfsl_dev->drm->mode_config.max_height = 2047;\n\tfsl_dev->drm->mode_config.funcs = &fsl_dcu_drm_mode_config_funcs;\n\n\tret = fsl_dcu_drm_crtc_create(fsl_dev);\n\tif (ret)\n\t\tgoto err;\n\n\tret = fsl_dcu_drm_encoder_create(fsl_dev, &fsl_dev->crtc);\n\tif (ret)\n\t\tgoto err;\n\n\tret = fsl_dcu_create_outputs(fsl_dev);\n\tif (ret)\n\t\tgoto err;\n\n\tdrm_mode_config_reset(fsl_dev->drm);\n\tdrm_kms_helper_poll_init(fsl_dev->drm);\n\n\treturn 0;\n\nerr:\n\tdrm_mode_config_cleanup(fsl_dev->drm);\n\treturn ret;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "spmi.h",
+  "hash_id": "a21ee047441881917eb38fb7e3d91373796b28f3dd1c490b3b0ccfe38465d91d",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/spmi/spmi.h",
+  "human_readable_source": " \n \n#ifndef __DT_BINDINGS_SPMI_H\n#define __DT_BINDINGS_SPMI_H\n\n#define SPMI_USID\t0\n#define SPMI_GSID\t1\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

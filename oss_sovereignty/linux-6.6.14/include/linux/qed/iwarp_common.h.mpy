@@ -1,0 +1,9 @@
+{
+  "module_name": "iwarp_common.h",
+  "hash_id": "a28eb03e613ba2ca11caafbe3293ab8a5aa51b72bde97009375295ba6d643e95",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/qed/iwarp_common.h",
+  "human_readable_source": " \n \n\n#ifndef __IWARP_COMMON__\n#define __IWARP_COMMON__\n\n#include <linux/qed/rdma_common.h>\n\n \n \n \n\n#define IWARP_ACTIVE_MODE 0\n#define IWARP_PASSIVE_MODE 1\n\n#define IWARP_SHARED_QUEUE_PAGE_SIZE\t\t(0x8000)\n#define IWARP_SHARED_QUEUE_PAGE_RQ_PBL_OFFSET\t(0x4000)\n#define IWARP_SHARED_QUEUE_PAGE_RQ_PBL_MAX_SIZE\t(0x1000)\n#define IWARP_SHARED_QUEUE_PAGE_SQ_PBL_OFFSET\t(0x5000)\n#define IWARP_SHARED_QUEUE_PAGE_SQ_PBL_MAX_SIZE\t(0x3000)\n\n#define IWARP_REQ_MAX_INLINE_DATA_SIZE\t\t(128)\n#define IWARP_REQ_MAX_SINGLE_SQ_WQE_SIZE\t(176)\n\n#define IWARP_MAX_QPS\t\t\t\t(64 * 1024)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

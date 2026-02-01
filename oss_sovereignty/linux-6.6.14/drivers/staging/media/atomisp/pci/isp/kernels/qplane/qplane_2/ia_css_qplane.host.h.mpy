@@ -1,0 +1,9 @@
+{
+  "module_name": "ia_css_qplane.host.h",
+  "hash_id": "2ac5b412492dfdc60a169878e96ce8e4118066c9d09c841d04d565da86c9ff40",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/isp/kernels/qplane/qplane_2/ia_css_qplane.host.h",
+  "human_readable_source": " \n \n\n#ifndef __IA_CSS_QPLANE_HOST_H\n#define __IA_CSS_QPLANE_HOST_H\n\n#include <ia_css_frame_public.h>\n#include <ia_css_binary.h>\n\n#if 0\n \n#include \"sh_css_internal.h\"\t \n#endif\n\n#include \"ia_css_qplane_types.h\"\n#include \"ia_css_qplane_param.h\"\n\nint ia_css_qplane_config(struct sh_css_isp_qplane_isp_config      *to,\n\t\t\t const struct ia_css_qplane_configuration *from,\n\t\t\t unsigned int size);\n\nint ia_css_qplane_configure(const struct sh_css_sp_pipeline *pipe,\n\t\t\t    const struct ia_css_binary      *binary,\n\t\t\t    const struct ia_css_frame_info  *from);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

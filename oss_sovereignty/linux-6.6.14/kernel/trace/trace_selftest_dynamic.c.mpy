@@ -1,0 +1,9 @@
+{
+  "module_name": "trace_selftest_dynamic.c",
+  "hash_id": "dfdfb7ac2cd240c2c93568438befed06ce6cacc3903def346ec0af6ad8875c41",
+  "original_prompt": "Ingested from linux-6.6.14/kernel/trace/trace_selftest_dynamic.c",
+  "human_readable_source": "\n#include <linux/compiler.h>\n#include \"trace.h\"\n\nnoinline __noclone int DYN_FTRACE_TEST_NAME(void)\n{\n\t \n\treturn 0;\n}\n\nnoinline __noclone int DYN_FTRACE_TEST_NAME2(void)\n{\n\t \n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

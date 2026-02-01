@@ -1,0 +1,9 @@
+{
+  "module_name": "xt_SYNPROXY.h",
+  "hash_id": "4ee6dbb235e28badfa50d5cc40c7c217865170233af2f0cbebe0bdae926fbf5a",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/netfilter/xt_SYNPROXY.h",
+  "human_readable_source": " \n#ifndef _XT_SYNPROXY_H\n#define _XT_SYNPROXY_H\n\n#include <linux/netfilter/nf_synproxy.h>\n\n#define XT_SYNPROXY_OPT_MSS\t\tNF_SYNPROXY_OPT_MSS\n#define XT_SYNPROXY_OPT_WSCALE\t\tNF_SYNPROXY_OPT_WSCALE\n#define XT_SYNPROXY_OPT_SACK_PERM\tNF_SYNPROXY_OPT_SACK_PERM\n#define XT_SYNPROXY_OPT_TIMESTAMP\tNF_SYNPROXY_OPT_TIMESTAMP\n#define XT_SYNPROXY_OPT_ECN\t\tNF_SYNPROXY_OPT_ECN\n\n#define xt_synproxy_info\t\tnf_synproxy_info\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "pathchk.x",
+  "hash_id": "75ded47bb76d28390af2ae61256c867696c437895f4639102678a9f222edadc2",
+  "original_prompt": "Ingested from coreutils-9.4/man/pathchk.x",
+  "human_readable_source": "[NAME]\npathchk \\- check whether file names are valid or portable\n[DESCRIPTION]\n.\\\" Add any additional description here\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

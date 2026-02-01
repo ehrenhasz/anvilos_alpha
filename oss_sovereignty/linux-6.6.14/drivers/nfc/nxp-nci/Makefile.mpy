@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "98e9f1e833217005a739bf140563ff5eceaedb74bb4e401cb9fa2b7c96e2f22f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/nfc/nxp-nci/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Makefile for NXP-NCI NFC driver\n#\n\nnxp-nci-objs = core.o firmware.o\nnxp-nci_i2c-objs = i2c.o\n\nobj-$(CONFIG_NFC_NXP_NCI) += nxp-nci.o\nobj-$(CONFIG_NFC_NXP_NCI_I2C) += nxp-nci_i2c.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

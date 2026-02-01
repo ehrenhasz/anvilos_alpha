@@ -1,0 +1,9 @@
+{
+  "module_name": "lib_longname.c",
+  "hash_id": "4a49200cc382ade816feff5206727f1fdfc77b175ef0f4965a4242e7cd168e1a",
+  "original_prompt": "Ingested from ncurses-6.4/ncurses/tinfo/lib_longname.c",
+  "human_readable_source": " \n\n \n\n \n\n#include <curses.priv.h>\n\nMODULE_ID(\"$Id: lib_longname.c,v 1.15 2021/04/03 22:36:21 tom Exp $\")\n\n#if USE_REENTRANT\nNCURSES_EXPORT(char *)\nNCURSES_SP_NAME(longname) (NCURSES_SP_DCL0)\n{\n    static char empty[] =\n    {'\\0'};\n\n    T((T_CALLED(\"longname(%p)\"), (void *) SP_PARM));\n\n    if (SP_PARM) {\n\tchar *ptr;\n\n\tfor (ptr = SP_PARM->_ttytype + strlen(SP_PARM->_ttytype);\n\t     ptr > SP_PARM->_ttytype;\n\t     ptr--)\n\t    if (*ptr == '|')\n\t\treturnPtr(ptr + 1);\n\treturnPtr(SP_PARM->_ttytype);\n    }\n    return empty;\n}\n\n#if NCURSES_SP_FUNCS\nNCURSES_EXPORT(char *)\nlongname(void)\n{\n    return NCURSES_SP_NAME(longname) (CURRENT_SCREEN);\n}\n#endif\n\n#else\n\n \n#if NCURSES_SP_FUNCS\nNCURSES_EXPORT(char *)\nNCURSES_SP_NAME(longname) (NCURSES_SP_DCL0)\n{\n    (void) SP_PARM;\n    return longname();\n}\n#endif\n\nNCURSES_EXPORT(char *)\nlongname(void)\n{\n    char *ptr;\n\n    T((T_CALLED(\"longname()\")));\n\n    for (ptr = ttytype + strlen(ttytype);\n\t ptr > ttytype;\n\t ptr--)\n\tif (*ptr == '|')\n\t    returnPtr(ptr + 1);\n    returnPtr(ttytype);\n}\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "watch",
+  "hash_id": "427d940b05c9dd594ea2382a7652ddd0199a12c0513c96c1e6a89a0bde9b141a",
+  "original_prompt": "Ingested from ncurses-6.4/package/debian-mingw/watch",
+  "human_readable_source": "version=3\n\nopts=passive ftp://ftp.invisible-island.net/ncurses/current/ncurses\\.tar.gz \\\n debian  uupdate\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "cb1749ec972e60ae84ddc46dadefe6c69f2a158ca9afa6ced8a715b86ad3c1da",
+  "original_prompt": "Ingested from linux-6.6.14/tools/usb/ffs-aio-example/multibuff/host_app/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nCC = gcc\nLIBUSB_CFLAGS = $(shell pkg-config --cflags libusb-1.0)\nLIBUSB_LIBS = $(shell pkg-config --libs libusb-1.0)\nWARNINGS = -Wall -Wextra\nCFLAGS = $(LIBUSB_CFLAGS) $(WARNINGS)\nLDFLAGS = $(LIBUSB_LIBS)\n\nall: test\n%: %.c\n\t$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)\n\nclean:\n\t$(RM) test\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

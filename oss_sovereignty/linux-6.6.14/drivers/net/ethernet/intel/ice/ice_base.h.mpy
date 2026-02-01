@@ -1,0 +1,9 @@
+{
+  "module_name": "ice_base.h",
+  "hash_id": "b470db90994cf3eb4e92ed16d5194f327ef0f7f26d4de2dd5f2de24fdd0ce69d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/intel/ice/ice_base.h",
+  "human_readable_source": " \n \n\n#ifndef _ICE_BASE_H_\n#define _ICE_BASE_H_\n\n#include \"ice.h\"\n\nint ice_vsi_cfg_rxq(struct ice_rx_ring *ring);\nint __ice_vsi_get_qs(struct ice_qs_cfg *qs_cfg);\nint\nice_vsi_ctrl_one_rx_ring(struct ice_vsi *vsi, bool ena, u16 rxq_idx, bool wait);\nint ice_vsi_wait_one_rx_ring(struct ice_vsi *vsi, bool ena, u16 rxq_idx);\nint ice_vsi_alloc_q_vectors(struct ice_vsi *vsi);\nvoid ice_vsi_map_rings_to_vectors(struct ice_vsi *vsi);\nvoid ice_vsi_free_q_vectors(struct ice_vsi *vsi);\nint\nice_vsi_cfg_txq(struct ice_vsi *vsi, struct ice_tx_ring *ring,\n\t\tstruct ice_aqc_add_tx_qgrp *qg_buf);\nvoid ice_cfg_itr(struct ice_hw *hw, struct ice_q_vector *q_vector);\nvoid\nice_cfg_txq_interrupt(struct ice_vsi *vsi, u16 txq, u16 msix_idx, u16 itr_idx);\nvoid\nice_cfg_rxq_interrupt(struct ice_vsi *vsi, u16 rxq, u16 msix_idx, u16 itr_idx);\nvoid ice_trigger_sw_intr(struct ice_hw *hw, struct ice_q_vector *q_vector);\nint\nice_vsi_stop_tx_ring(struct ice_vsi *vsi, enum ice_disq_rst_src rst_src,\n\t\t     u16 rel_vmvf_num, struct ice_tx_ring *ring,\n\t\t     struct ice_txq_meta *txq_meta);\nvoid\nice_fill_txq_meta(struct ice_vsi *vsi, struct ice_tx_ring *ring,\n\t\t  struct ice_txq_meta *txq_meta);\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

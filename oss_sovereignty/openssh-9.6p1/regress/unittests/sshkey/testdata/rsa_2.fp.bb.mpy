@@ -1,0 +1,9 @@
+{
+  "module_name": "rsa_2.fp.bb",
+  "hash_id": "df1e7092b642717b28843b1467d78618917747fa14730c90a3f9057f7c44e562",
+  "original_prompt": "Ingested from openssh-9.6p1/regress/unittests/sshkey/testdata/rsa_2.fp.bb",
+  "human_readable_source": "xogit-gupof-mydon-hocep-zuval-feson-rarif-cefar-tobar-ryvap-kuxex\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

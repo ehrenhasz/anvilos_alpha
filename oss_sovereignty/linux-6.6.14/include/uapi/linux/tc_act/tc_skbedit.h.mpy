@@ -1,0 +1,9 @@
+{
+  "module_name": "tc_skbedit.h",
+  "hash_id": "04a0756f01af15cb7895348b557ea89baba39d0982ff8fcf4cd983b936c28adf",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/tc_act/tc_skbedit.h",
+  "human_readable_source": " \n \n\n#ifndef __LINUX_TC_SKBEDIT_H\n#define __LINUX_TC_SKBEDIT_H\n\n#include <linux/pkt_cls.h>\n\n#define SKBEDIT_F_PRIORITY\t\t0x1\n#define SKBEDIT_F_QUEUE_MAPPING\t\t0x2\n#define SKBEDIT_F_MARK\t\t\t0x4\n#define SKBEDIT_F_PTYPE\t\t\t0x8\n#define SKBEDIT_F_MASK\t\t\t0x10\n#define SKBEDIT_F_INHERITDSFIELD\t0x20\n#define SKBEDIT_F_TXQ_SKBHASH\t\t0x40\n\nstruct tc_skbedit {\n\ttc_gen;\n};\n\nenum {\n\tTCA_SKBEDIT_UNSPEC,\n\tTCA_SKBEDIT_TM,\n\tTCA_SKBEDIT_PARMS,\n\tTCA_SKBEDIT_PRIORITY,\n\tTCA_SKBEDIT_QUEUE_MAPPING,\n\tTCA_SKBEDIT_MARK,\n\tTCA_SKBEDIT_PAD,\n\tTCA_SKBEDIT_PTYPE,\n\tTCA_SKBEDIT_MASK,\n\tTCA_SKBEDIT_FLAGS,\n\tTCA_SKBEDIT_QUEUE_MAPPING_MAX,\n\t__TCA_SKBEDIT_MAX\n};\n#define TCA_SKBEDIT_MAX (__TCA_SKBEDIT_MAX - 1)\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

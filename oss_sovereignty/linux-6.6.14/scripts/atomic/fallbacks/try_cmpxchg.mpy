@@ -1,0 +1,9 @@
+{
+  "module_name": "try_cmpxchg",
+  "hash_id": "2bc80fd131353a61302946ae585528296f3fb8599771aa01c16e17fdb49ad701",
+  "original_prompt": "Ingested from linux-6.6.14/scripts/atomic/fallbacks/try_cmpxchg",
+  "human_readable_source": "cat <<EOF\n\t${int} r, o = *old;\n\tr = raw_${atomic}_cmpxchg${order}(v, o, new);\n\tif (unlikely(r != o))\n\t\t*old = r;\n\treturn likely(r == o);\nEOF\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "devm-helpers.h",
+  "hash_id": "58dd6c679ceb7b20db0dd50477fe8208de3e32cfaae81c17f60ad153d1947234",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/devm-helpers.h",
+  "human_readable_source": " \n#ifndef __LINUX_DEVM_HELPERS_H\n#define __LINUX_DEVM_HELPERS_H\n\n \n\n#include <linux/device.h>\n#include <linux/workqueue.h>\n\nstatic inline void devm_delayed_work_drop(void *res)\n{\n\tcancel_delayed_work_sync(res);\n}\n\n \nstatic inline int devm_delayed_work_autocancel(struct device *dev,\n\t\t\t\t\t       struct delayed_work *w,\n\t\t\t\t\t       work_func_t worker)\n{\n\tINIT_DELAYED_WORK(w, worker);\n\treturn devm_add_action(dev, devm_delayed_work_drop, w);\n}\n\nstatic inline void devm_work_drop(void *res)\n{\n\tcancel_work_sync(res);\n}\n\n \nstatic inline int devm_work_autocancel(struct device *dev,\n\t\t\t\t       struct work_struct *w,\n\t\t\t\t       work_func_t worker)\n{\n\tINIT_WORK(w, worker);\n\treturn devm_add_action(dev, devm_work_drop, w);\n}\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

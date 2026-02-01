@@ -1,0 +1,9 @@
+{
+  "module_name": "pmc.h",
+  "hash_id": "8cff599f166d9cd81b09d3001fd23530cdb22a43ff3e94760e9404c03c0e85e2",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/ath/wil6210/pmc.h",
+  "human_readable_source": " \n \n\n#include <linux/types.h>\n\n#define PCM_DATA_INVALID_DW_VAL (0xB0BA0000)\n\nvoid wil_pmc_init(struct wil6210_priv *wil);\nvoid wil_pmc_alloc(struct wil6210_priv *wil,\n\t\t   int num_descriptors, int descriptor_size);\nvoid wil_pmc_free(struct wil6210_priv *wil, int send_pmc_cmd);\nint wil_pmc_last_cmd_status(struct wil6210_priv *wil);\nssize_t wil_pmc_read(struct file *, char __user *, size_t, loff_t *);\nloff_t wil_pmc_llseek(struct file *filp, loff_t off, int whence);\nint wil_pmcring_read(struct seq_file *s, void *data);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

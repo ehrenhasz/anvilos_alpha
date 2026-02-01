@@ -1,0 +1,9 @@
+{
+  "module_name": "mxl111sf-demod.h",
+  "hash_id": "7abff6e3b66458d3805196b87dca60c9b526ebe2475fc8c763fd3572ffdf8269",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/usb/dvb-usb-v2/mxl111sf-demod.h",
+  "human_readable_source": " \n \n\n#ifndef __MXL111SF_DEMOD_H__\n#define __MXL111SF_DEMOD_H__\n\n#include <media/dvb_frontend.h>\n#include \"mxl111sf.h\"\n\nstruct mxl111sf_demod_config {\n\tint (*read_reg)(struct mxl111sf_state *state, u8 addr, u8 *data);\n\tint (*write_reg)(struct mxl111sf_state *state, u8 addr, u8 data);\n\tint (*program_regs)(struct mxl111sf_state *state,\n\t\t\t    struct mxl111sf_reg_ctrl_info *ctrl_reg_info);\n};\n\n#if IS_ENABLED(CONFIG_DVB_USB_MXL111SF)\nextern\nstruct dvb_frontend *mxl111sf_demod_attach(struct mxl111sf_state *mxl_state,\n\t\t\t\t   const struct mxl111sf_demod_config *cfg);\n#else\nstatic inline\nstruct dvb_frontend *mxl111sf_demod_attach(struct mxl111sf_state *mxl_state,\n\t\t\t\t   const struct mxl111sf_demod_config *cfg)\n{\n\tprintk(KERN_WARNING \"%s: driver disabled by Kconfig\\n\", __func__);\n\treturn NULL;\n}\n#endif  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "msr.h",
+  "hash_id": "d65a7932aa592fe56caaddd3526c8147284e844bdd9f79fe85abe3b782c2288d",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/boot/msr.h",
+  "human_readable_source": " \n \n\n#ifndef BOOT_MSR_H\n#define BOOT_MSR_H\n\n#include <asm/shared/msr.h>\n\n \nstatic inline void boot_rdmsr(unsigned int reg, struct msr *m)\n{\n\tasm volatile(\"rdmsr\" : \"=a\" (m->l), \"=d\" (m->h) : \"c\" (reg));\n}\n\nstatic inline void boot_wrmsr(unsigned int reg, const struct msr *m)\n{\n\tasm volatile(\"wrmsr\" : : \"c\" (reg), \"a\"(m->l), \"d\" (m->h) : \"memory\");\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

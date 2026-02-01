@@ -1,0 +1,9 @@
+{
+  "module_name": "adf_cfg_user.h",
+  "hash_id": "046e9a90d263ef5ee8fe00173efd4e673c361e01db55d57b3ba9f4e063e50b64",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/crypto/intel/qat/qat_common/adf_cfg_user.h",
+  "human_readable_source": " \n \n#ifndef ADF_CFG_USER_H_\n#define ADF_CFG_USER_H_\n\n#include \"adf_cfg_common.h\"\n#include \"adf_cfg_strings.h\"\n\nstruct adf_user_cfg_key_val {\n\tchar key[ADF_CFG_MAX_KEY_LEN_IN_BYTES];\n\tchar val[ADF_CFG_MAX_VAL_LEN_IN_BYTES];\n\tunion {\n\t\tstruct adf_user_cfg_key_val *next;\n\t\t__u64 padding3;\n\t};\n\tenum adf_cfg_val_type type;\n} __packed;\n\nstruct adf_user_cfg_section {\n\tchar name[ADF_CFG_MAX_SECTION_LEN_IN_BYTES];\n\tunion {\n\t\tstruct adf_user_cfg_key_val *params;\n\t\t__u64 padding1;\n\t};\n\tunion {\n\t\tstruct adf_user_cfg_section *next;\n\t\t__u64 padding3;\n\t};\n} __packed;\n\nstruct adf_user_cfg_ctl_data {\n\tunion {\n\t\tstruct adf_user_cfg_section *config_section;\n\t\t__u64 padding;\n\t};\n\t__u8 device_id;\n} __packed;\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

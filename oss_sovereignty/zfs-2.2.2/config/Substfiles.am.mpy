@@ -1,0 +1,9 @@
+{
+  "module_name": "Substfiles.am",
+  "hash_id": "582636eae0c108e187ccc9cf68f9046b9566bd0f73751f266a5802fbd10ee555",
+  "original_prompt": "Ingested from zfs-2.2.2/config/Substfiles.am",
+  "human_readable_source": "subst_sed_cmd = \\\n\t-e 's|@abs_top_srcdir[@]|$(abs_top_srcdir)|g' \\\n\t-e 's|@bindir[@]|$(bindir)|g' \\\n\t-e 's|@datadir[@]|$(datadir)|g' \\\n\t-e 's|@initconfdir[@]|$(initconfdir)|g' \\\n\t-e 's|@initdir[@]|$(initdir)|g' \\\n\t-e 's|@mounthelperdir[@]|$(mounthelperdir)|g' \\\n\t-e 's|@pammoduledir[@]|$(pammoduledir)|g' \\\n\t-e 's|@runstatedir[@]|$(runstatedir)|g' \\\n\t-e 's|@sbindir[@]|$(sbindir)|g' \\\n\t-e 's|@sysconfdir[@]|$(sysconfdir)|g' \\\n\t-e 's|@systemdgeneratordir[@]|$(systemdgeneratordir)|g' \\\n\t-e 's|@systemdunitdir[@]|$(systemdunitdir)|g' \\\n\t-e 's|@udevdir[@]|$(udevdir)|g' \\\n\t-e 's|@udevruledir[@]|$(udevruledir)|g' \\\n\t-e 's|@zfsexecdir[@]|$(zfsexecdir)|g' \\\n\t\\\n\t-e 's|@ASAN_ENABLED[@]|$(ASAN_ENABLED)|g' \\\n\t-e 's|@DEFAULT_INIT_NFS_SERVER[@]|$(DEFAULT_INIT_NFS_SERVER)|g' \\\n\t-e 's|@DEFAULT_INIT_SHELL[@]|$(DEFAULT_INIT_SHELL)|g' \\\n\t-e 's|@LIBFETCH_DYNAMIC[@]|$(LIBFETCH_DYNAMIC)|g' \\\n\t-e 's|@LIBFETCH_SONAME[@]|$(LIBFETCH_SONAME)|g' \\\n\t-e 's|@PYTHON[@]|$(PYTHON)|g' \\\n\t-e 's|@PYTHON_SHEBANG[@]|$(PYTHON_SHEBANG)|g' \\\n\t-e 's|@UBSAN_ENABLED[@]|$(UBSAN_ENABLED)|g' \\\n\t-e 's|@VERSION[@]|$(VERSION)|g'\n\ndefine SUBST\n$(1) : $(2)$(1).in Makefile;\n\t$$(AM_V_GEN)set -e; \\\n\t$$(MKDIR_P) $$(@D); \\\n\t$$(RM) $$@~; \\\n\t$$(SED) $$(subst_sed_cmd) $$< >$$@~; \\\n\tif grep -E '@[a-zA-Z0-9_]+@' $$@~ >&2; then \\\n\t\techo \"Undefined substitution\" >&2; \\\n\t\texit 1; \\\n\tfi; \\\n\t[ -x $$< ] && chmod +x $$@~; \\\n\tmv -f $$@~ $$@\nendef\n\nSUBSTFILES =\nCLEANFILES += $(SUBSTFILES)\ndist_noinst_DATA += $(SUBSTFILES:=.in)\n\n$(call SUBST,%,)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

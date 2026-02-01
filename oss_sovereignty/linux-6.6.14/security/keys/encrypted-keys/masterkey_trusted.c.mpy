@@ -1,0 +1,9 @@
+{
+  "module_name": "masterkey_trusted.c",
+  "hash_id": "a435ade735ea426e54d6e52286b7d41849a9d1e2a565e6f546aa739cf23e0940",
+  "original_prompt": "Ingested from linux-6.6.14/security/keys/encrypted-keys/masterkey_trusted.c",
+  "human_readable_source": "\n \n\n#include <linux/uaccess.h>\n#include <linux/err.h>\n#include <keys/trusted-type.h>\n#include <keys/encrypted-type.h>\n#include \"encrypted.h\"\n\n \nstruct key *request_trusted_key(const char *trusted_desc,\n\t\t\t\tconst u8 **master_key, size_t *master_keylen)\n{\n\tstruct trusted_key_payload *tpayload;\n\tstruct key *tkey;\n\n\ttkey = request_key(&key_type_trusted, trusted_desc, NULL);\n\tif (IS_ERR(tkey))\n\t\tgoto error;\n\n\tdown_read(&tkey->sem);\n\ttpayload = tkey->payload.data[0];\n\t*master_key = tpayload->key;\n\t*master_keylen = tpayload->key_len;\nerror:\n\treturn tkey;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

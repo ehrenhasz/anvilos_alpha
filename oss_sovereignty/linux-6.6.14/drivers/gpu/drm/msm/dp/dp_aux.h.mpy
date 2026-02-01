@@ -1,0 +1,9 @@
+{
+  "module_name": "dp_aux.h",
+  "hash_id": "0348a81b1106422067b293b3771b31b5e30608f8018525a747fe17f83521615d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/msm/dp/dp_aux.h",
+  "human_readable_source": " \n \n\n#ifndef _DP_AUX_H_\n#define _DP_AUX_H_\n\n#include \"dp_catalog.h\"\n#include <drm/display/drm_dp_helper.h>\n\nint dp_aux_register(struct drm_dp_aux *dp_aux);\nvoid dp_aux_unregister(struct drm_dp_aux *dp_aux);\nirqreturn_t dp_aux_isr(struct drm_dp_aux *dp_aux);\nvoid dp_aux_init(struct drm_dp_aux *dp_aux);\nvoid dp_aux_deinit(struct drm_dp_aux *dp_aux);\nvoid dp_aux_reconfig(struct drm_dp_aux *dp_aux);\n\nstruct drm_dp_aux *dp_aux_get(struct device *dev, struct dp_catalog *catalog,\n\t\t\t      bool is_edp);\nvoid dp_aux_put(struct drm_dp_aux *aux);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

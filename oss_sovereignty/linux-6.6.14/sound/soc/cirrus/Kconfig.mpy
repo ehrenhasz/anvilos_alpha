@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "a39fc7d86616a3d7eec22c833f7cee195aa3929369863d304a8e01dde1143b0f",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/cirrus/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig SND_EP93XX_SOC\n\ttristate \"SoC Audio support for the Cirrus Logic EP93xx series\"\n\tdepends on ARCH_EP93XX || COMPILE_TEST\n\tselect SND_SOC_GENERIC_DMAENGINE_PCM\n\thelp\n\t  Say Y or M if you want to add support for codecs attached to\n\t  the EP93xx I2S or AC97 interfaces.\n\nconfig SND_EP93XX_SOC_I2S\n\ttristate \"I2S controller support for the Cirrus Logic EP93xx series\"\n\tdepends on SND_EP93XX_SOC\n\thelp\n\t  Say Y or M if you want to add support for codecs attached to\n\t  the EP93xx I2S interface.\n\nif SND_EP93XX_SOC_I2S\n\nconfig SND_EP93XX_SOC_I2S_WATCHDOG\n\tbool \"IRQ based underflow watchdog workaround\"\n\tdefault y\n\thelp\n\t  I2S controller on EP93xx seems to have undocumented HW issue.\n\t  Underflow of internal I2S controller FIFO could confuse the\n\t  state machine and the whole stream can be shifted by one byte\n\t  until I2S is disabled. This option enables IRQ based watchdog\n\t  which disables and re-enables I2S in case of underflow and\n\t  fills FIFO with zeroes.\n\n\t  If you are unsure how to answer this question, answer Y.\n\nendif # if SND_EP93XX_SOC_I2S\n\nconfig SND_EP93XX_SOC_EDB93XX\n\ttristate \"SoC Audio support for Cirrus Logic EDB93xx boards\"\n\tdepends on SND_EP93XX_SOC && (MACH_EDB9301 || MACH_EDB9302 || MACH_EDB9302A || MACH_EDB9307A || MACH_EDB9315A)\n\tselect SND_EP93XX_SOC_I2S\n\tselect SND_SOC_CS4271_I2C if I2C\n\tselect SND_SOC_CS4271_SPI if SPI_MASTER\n\thelp\n\t  Say Y or M here if you want to add support for I2S audio on the\n\t  Cirrus Logic EDB93xx boards.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "b2sum.h",
+  "hash_id": "d042891dc3939ee343cff28ed4efbd6716483a639c308b3138f6471e1d679841",
+  "original_prompt": "Ingested from coreutils-9.4/src/blake2/b2sum.h",
+  "human_readable_source": " \n\nint blake2b_stream (FILE *stream, void *resstream, size_t outbytes)\n  _GL_ATTRIBUTE_NONNULL ((1));\ntypedef int ( *blake2fn )( FILE *, void *, size_t );\n#define BLAKE2S_OUTBYTES 32\n#define BLAKE2B_OUTBYTES 64\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

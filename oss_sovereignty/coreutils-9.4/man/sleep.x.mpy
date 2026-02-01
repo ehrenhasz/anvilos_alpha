@@ -1,0 +1,9 @@
+{
+  "module_name": "sleep.x",
+  "hash_id": "39386a873843abaa66ee357afa4bfc4092bc8832dcb22bf24b9f084eef7eed89",
+  "original_prompt": "Ingested from coreutils-9.4/man/sleep.x",
+  "human_readable_source": "[NAME]\nsleep \\- delay for a specified amount of time\n[DESCRIPTION]\n.\\\" Add any additional description here\n[SEE ALSO]\nsleep(3)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

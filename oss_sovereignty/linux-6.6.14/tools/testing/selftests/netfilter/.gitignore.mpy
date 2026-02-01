@@ -1,0 +1,9 @@
+{
+  "module_name": ".gitignore",
+  "hash_id": "c995421315ba76a05f1d2ce802f8db2804d44102f068a8344a5eacfef792099d",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/netfilter/.gitignore",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nnf-queue\nconnect_close\naudit_logread\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

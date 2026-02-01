@@ -1,0 +1,9 @@
+{
+  "module_name": "pgtable_32_types.h",
+  "hash_id": "120d7d61c7bdd04f7e982c1b241220b32577c8dc2177a3d62f92a8fab9fdea48",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/include/asm/pgtable_32_types.h",
+  "human_readable_source": " \n#ifndef _ASM_X86_PGTABLE_32_TYPES_H\n#define _ASM_X86_PGTABLE_32_TYPES_H\n\n \n#ifdef CONFIG_X86_PAE\n# include <asm/pgtable-3level_types.h>\n# define PMD_SIZE\t(1UL << PMD_SHIFT)\n# define PMD_MASK\t(~(PMD_SIZE - 1))\n#else\n# include <asm/pgtable-2level_types.h>\n#endif\n\n#define pgtable_l5_enabled() 0\n\n#define PGDIR_SIZE\t(1UL << PGDIR_SHIFT)\n#define PGDIR_MASK\t(~(PGDIR_SIZE - 1))\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

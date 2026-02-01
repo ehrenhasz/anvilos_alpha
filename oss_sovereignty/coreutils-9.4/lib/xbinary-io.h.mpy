@@ -1,0 +1,9 @@
+{
+  "module_name": "xbinary-io.h",
+  "hash_id": "485b2fe70a23fdc2f55f677c33d94e7ba7dc0b74885bef8d24583dc03dc4c16b",
+  "original_prompt": "Ingested from coreutils-9.4/lib/xbinary-io.h",
+  "human_readable_source": " \n#if !_GL_CONFIG_H_INCLUDED\n #error \"Please include config.h first.\"\n#endif\n\n#include \"binary-io.h\"\n\n_GL_INLINE_HEADER_BEGIN\n#ifndef XBINARY_IO_INLINE\n# define XBINARY_IO_INLINE _GL_INLINE\n#endif\n\n#if O_BINARY\nextern _Noreturn void xset_binary_mode_error (void);\n#else\nXBINARY_IO_INLINE void xset_binary_mode_error (void) {}\n#endif\n\n \n\nXBINARY_IO_INLINE void\nxset_binary_mode (int fd, int mode)\n{\n  if (set_binary_mode (fd, mode) < 0)\n    xset_binary_mode_error ();\n}\n\n_GL_INLINE_HEADER_END\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

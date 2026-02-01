@@ -1,0 +1,9 @@
+{
+  "module_name": "hpimsgx.h",
+  "hash_id": "de00570f4688e2bde78e2d1eeabc7bf855f0a45f8e456b2e6fae44ecbce14354",
+  "original_prompt": "Ingested from linux-6.6.14/sound/pci/asihpi/hpimsgx.h",
+  "human_readable_source": " \n \n\n#ifndef _HPIMSGX_H_\n#define _HPIMSGX_H_\n\n#include \"hpi_internal.h\"\n\n#define HPIMSGX_ALLADAPTERS     (0xFFFF)\n\nvoid hpi_send_recv_ex(struct hpi_message *phm, struct hpi_response *phr,\n\tvoid *h_owner);\n\n#define HPI_MESSAGE_LOWER_LAYER hpi_send_recv_ex\n\n#endif\t\t\t\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

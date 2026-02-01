@@ -1,0 +1,9 @@
+{
+  "module_name": "guestmount.txt",
+  "hash_id": "09ca1dc2848b73389db4865eae662b24ea86839e560bcf69d2a253cab1cc1fee",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/Documentation/guestmount.txt",
+  "human_readable_source": "--guestmount=<path>::\n\tGuest OS root file system mount directory. Users mount guest OS\n\troot directories under <path> by a specific filesystem access method,\n\ttypically, sshfs.\n\tFor example, start 2 guest OS, one's pid is 8888 and the other's is 9999:\n[verse]\n\t$ mkdir \\~/guestmount\n\t$ cd \\~/guestmount\n\t$ sshfs -o allow_other,direct_io -p 5551 localhost:/ 8888/\n\t$ sshfs -o allow_other,direct_io -p 5552 localhost:/ 9999/\n\t$ perf {GMEXAMPLECMD} --guestmount=~/guestmount {GMEXAMPLESUBCMD}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

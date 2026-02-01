@@ -1,0 +1,9 @@
+{
+  "module_name": "vmap.h",
+  "hash_id": "0dec1eaf4a59f13d016788402d30d54e909734bfd9b9574c068a8b04cb9976bc",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/include/nvkm/subdev/bios/vmap.h",
+  "human_readable_source": " \n#ifndef __NVBIOS_VMAP_H__\n#define __NVBIOS_VMAP_H__\nstruct nvbios_vmap {\n\tu8  max0;\n\tu8  max1;\n\tu8  max2;\n};\n\nu32 nvbios_vmap_table(struct nvkm_bios *, u8 *ver, u8 *hdr, u8 *cnt, u8 *len);\nu32 nvbios_vmap_parse(struct nvkm_bios *, u8 *ver, u8 *hdr, u8 *cnt, u8 *len,\n\t\t      struct nvbios_vmap *);\n\nstruct nvbios_vmap_entry {\n\tu8  mode;\n\tu8  link;\n\tu32 min;\n\tu32 max;\n\ts32 arg[6];\n};\n\nu32 nvbios_vmap_entry(struct nvkm_bios *, int idx, u8 *ver, u8 *len);\nu32 nvbios_vmap_entry_parse(struct nvkm_bios *, int idx, u8 *ver, u8 *len,\n\t\t\t    struct nvbios_vmap_entry *);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

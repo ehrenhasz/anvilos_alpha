@@ -1,0 +1,9 @@
+{
+  "module_name": "i915_mm.h",
+  "hash_id": "44b7b0000d0f702f4bb2ea5370d4dbeffeea061e5e27516b238290fe2911b210",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/i915_mm.h",
+  "human_readable_source": " \n \n\n#ifndef __I915_MM_H__\n#define __I915_MM_H__\n\n#include <linux/bug.h>\n#include <linux/types.h>\n\nstruct vm_area_struct;\nstruct io_mapping;\nstruct scatterlist;\n\n#if IS_ENABLED(CONFIG_X86)\nint remap_io_mapping(struct vm_area_struct *vma,\n\t\t     unsigned long addr, unsigned long pfn, unsigned long size,\n\t\t     struct io_mapping *iomap);\n#else\nstatic inline\nint remap_io_mapping(struct vm_area_struct *vma,\n\t\t     unsigned long addr, unsigned long pfn, unsigned long size,\n\t\t     struct io_mapping *iomap)\n{\n\tWARN_ONCE(1, \"Architecture has no drm_cache.c support\\n\");\n\treturn 0;\n}\n#endif\n\nint remap_io_sg(struct vm_area_struct *vma,\n\t\tunsigned long addr, unsigned long size,\n\t\tstruct scatterlist *sgl, resource_size_t iobase);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

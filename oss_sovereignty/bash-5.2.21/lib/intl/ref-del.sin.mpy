@@ -1,0 +1,9 @@
+{
+  "module_name": "ref-del.sin",
+  "hash_id": "198824b0b352a13902cd11b04d603dab9687fe1e38c21f2c998396429c878d9a",
+  "original_prompt": "Ingested from bash-5.2.21/lib/intl/ref-del.sin",
+  "human_readable_source": "# Remove this package from a list of references stored in a text file.\n#\n#   Copyright (C) 2000 Free Software Foundation, Inc.\n#\n#   This program is free software: you can redistribute it and/or modify\n#   it under the terms of the GNU General Public License as published by\n#   the Free Software Foundation, either version 3 of the License, or\n#   (at your option) any later version.\n#\n#   This program is distributed in the hope that it will be useful,\n#   but WITHOUT ANY WARRANTY; without even the implied warranty of\n#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n#   GNU General Public License for more details.\n#\n#   You should have received a copy of the GNU General Public License\n#   along with this program.  If not, see <http://www.gnu.org/licenses/>.\n#\n# Written by Bruno Haible <haible@clisp.cons.org>.\n#\n/^# Packages using this file: / {\n  s/# Packages using this file://\n  s/ @PACKAGE@ / /\n  s/^/# Packages using this file:/\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

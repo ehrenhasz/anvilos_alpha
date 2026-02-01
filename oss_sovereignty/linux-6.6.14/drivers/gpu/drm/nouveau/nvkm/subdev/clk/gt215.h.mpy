@@ -1,0 +1,9 @@
+{
+  "module_name": "gt215.h",
+  "hash_id": "ac3843b61fca798f710683a111676c2720d0d430c870c0c839e9aa1392c8db99",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/subdev/clk/gt215.h",
+  "human_readable_source": " \n#ifndef __NVKM_CLK_NVA3_H__\n#define __NVKM_CLK_NVA3_H__\n#include \"priv.h\"\n\nstruct gt215_clk_info {\n\tu32 clk;\n\tu32 pll;\n\tenum {\n\t\tNVA3_HOST_277,\n\t\tNVA3_HOST_CLK,\n\t} host_out;\n\tu32 fb_delay;\n};\n\nint  gt215_pll_info(struct nvkm_clk *, int, u32, u32, struct gt215_clk_info *);\nint  gt215_clk_pre(struct nvkm_clk *, unsigned long *flags);\nvoid gt215_clk_post(struct nvkm_clk *, unsigned long *flags);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

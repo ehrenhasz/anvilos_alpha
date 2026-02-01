@@ -1,0 +1,9 @@
+{
+  "module_name": "amlogic,meson-a1-reset.h",
+  "hash_id": "b87a35c5190213badb03ff5875ff2cf7b2be1e577a32107ba29eb56948ccab31",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/reset/amlogic,meson-a1-reset.h",
+  "human_readable_source": " \n\n#ifndef _DT_BINDINGS_AMLOGIC_MESON_A1_RESET_H\n#define _DT_BINDINGS_AMLOGIC_MESON_A1_RESET_H\n\n \n \n#define RESET_AM2AXI_VAD\t\t1\n \n#define RESET_PSRAM\t\t\t4\n#define RESET_PAD_CTRL\t\t\t5\n \n#define RESET_TEMP_SENSOR\t\t7\n#define RESET_AM2AXI_DEV\t\t8\n \n#define RESET_SPICC_A\t\t\t10\n#define RESET_MSR_CLK\t\t\t11\n#define RESET_AUDIO\t\t\t12\n#define RESET_ANALOG_CTRL\t\t13\n#define RESET_SAR_ADC\t\t\t14\n#define RESET_AUDIO_VAD\t\t\t15\n#define RESET_CEC\t\t\t16\n#define RESET_PWM_EF\t\t\t17\n#define RESET_PWM_CD\t\t\t18\n#define RESET_PWM_AB\t\t\t19\n \n#define RESET_IR_CTRL\t\t\t21\n#define RESET_I2C_S_A\t\t\t22\n \n#define RESET_I2C_M_D\t\t\t24\n#define RESET_I2C_M_C\t\t\t25\n#define RESET_I2C_M_B\t\t\t26\n#define RESET_I2C_M_A\t\t\t27\n#define RESET_I2C_PROD_AHB\t\t28\n#define RESET_I2C_PROD\t\t\t29\n \n\n \n#define RESET_ACODEC\t\t\t32\n#define RESET_DMA\t\t\t33\n#define RESET_SD_EMMC_A\t\t\t34\n \n#define RESET_USBCTRL\t\t\t36\n \n#define RESET_USBPHY\t\t\t38\n \n#define RESET_RSA\t\t\t42\n#define RESET_DMC\t\t\t43\n \n#define RESET_IRQ_CTRL\t\t\t45\n \n#define RESET_NIC_VAD\t\t\t47\n#define RESET_NIC_AXI\t\t\t48\n#define RESET_RAMA\t\t\t49\n#define RESET_RAMB\t\t\t50\n \n#define RESET_ROM\t\t\t53\n#define RESET_SPIFC\t\t\t54\n#define RESET_GIC\t\t\t55\n#define RESET_UART_C\t\t\t56\n#define RESET_UART_B\t\t\t57\n#define RESET_UART_A\t\t\t58\n#define RESET_OSC_RING\t\t\t59\n \n\n \n \n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

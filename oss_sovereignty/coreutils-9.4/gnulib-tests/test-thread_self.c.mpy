@@ -1,0 +1,9 @@
+{
+  "module_name": "test-thread_self.c",
+  "hash_id": "2ec0ad6cfd71520d443725ec22ef7070fd9ffca0a8ace13c8d1f71b4d75a54ce",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-thread_self.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#include \"glthread/thread.h\"\n\ngl_thread_t main_thread;\n\nint\nmain ()\n{\n   \n   \n#if !defined _AIX\n  main_thread = gl_thread_self ();\n#endif\n\n  return 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

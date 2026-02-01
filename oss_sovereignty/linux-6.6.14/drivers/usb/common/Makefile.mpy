@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "eeae0b6773820b1a7618ad42dd1a011aec789a73cb84b7c6aebc521a5c5569fa",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/usb/common/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for the usb common parts.\n#\n\nobj-$(CONFIG_USB_COMMON)\t  += usb-common.o\nusb-common-y\t\t\t  += common.o\nusb-common-$(CONFIG_TRACING)\t  += debug.o\nusb-common-$(CONFIG_USB_LED_TRIG) += led.o\n\nobj-$(CONFIG_USB_CONN_GPIO)\t+= usb-conn-gpio.o\nobj-$(CONFIG_USB_OTG_FSM) += usb-otg-fsm.o\nobj-$(CONFIG_USB_ULPI_BUS)\t+= ulpi.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

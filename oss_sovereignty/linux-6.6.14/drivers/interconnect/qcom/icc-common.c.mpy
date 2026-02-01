@@ -1,0 +1,9 @@
+{
+  "module_name": "icc-common.c",
+  "hash_id": "8564dcd277ecba39f84dee3bd04107c00ca99135861ed107fd98d84152c064b5",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/interconnect/qcom/icc-common.c",
+  "human_readable_source": "\n \n\n#include <linux/of.h>\n#include <linux/slab.h>\n#include <linux/module.h>\n\n#include \"icc-common.h\"\n\nstruct icc_node_data *qcom_icc_xlate_extended(struct of_phandle_args *spec, void *data)\n{\n\tstruct icc_node_data *ndata;\n\tstruct icc_node *node;\n\n\tnode = of_icc_xlate_onecell(spec, data);\n\tif (IS_ERR(node))\n\t\treturn ERR_CAST(node);\n\n\tndata = kzalloc(sizeof(*ndata), GFP_KERNEL);\n\tif (!ndata)\n\t\treturn ERR_PTR(-ENOMEM);\n\n\tndata->node = node;\n\n\tif (spec->args_count == 2)\n\t\tndata->tag = spec->args[1];\n\n\tif (spec->args_count > 2)\n\t\tpr_warn(\"%pOF: Too many arguments, path tag is not parsed\\n\", spec->np);\n\n\treturn ndata;\n}\nEXPORT_SYMBOL_GPL(qcom_icc_xlate_extended);\n\nMODULE_LICENSE(\"GPL\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

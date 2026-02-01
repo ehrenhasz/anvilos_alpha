@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "6c28075e981d976ab2fd15874af1f225e6c4e6d9e66ef6077c6a7c415d9672d2",
+  "original_prompt": "Ingested from linux-6.6.14/kernel/gcov/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nccflags-y := -DSRCTREE='\"$(srctree)\"' -DOBJTREE='\"$(objtree)\"'\n\nobj-y := base.o fs.o\nobj-$(CONFIG_CC_IS_GCC) += gcc_base.o gcc_4_7.o\nCFLAGS_gcc_base.o += -Wno-missing-prototypes -Wno-missing-declarations\nobj-$(CONFIG_CC_IS_CLANG) += clang.o\nCFLAGS_clang.o += -Wno-missing-prototypes -Wno-missing-declarations\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

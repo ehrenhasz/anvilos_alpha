@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "c43ec0b64dc65c69dda1eba3e0e609a5d69f9261f266bd667924bccffd3d01c7",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ieee802154/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nobj-$(CONFIG_IEEE802154_FAKELB) += fakelb.o\nobj-$(CONFIG_IEEE802154_AT86RF230) += at86rf230.o\nobj-$(CONFIG_IEEE802154_MRF24J40) += mrf24j40.o\nobj-$(CONFIG_IEEE802154_CC2520) += cc2520.o\nobj-$(CONFIG_IEEE802154_ATUSB) += atusb.o\nobj-$(CONFIG_IEEE802154_ADF7242) += adf7242.o\nobj-$(CONFIG_IEEE802154_CA8210) += ca8210.o\nobj-$(CONFIG_IEEE802154_MCR20A) += mcr20a.o\nobj-$(CONFIG_IEEE802154_HWSIM) += mac802154_hwsim.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

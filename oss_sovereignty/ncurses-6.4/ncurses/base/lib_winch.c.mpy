@@ -1,0 +1,9 @@
+{
+  "module_name": "lib_winch.c",
+  "hash_id": "24d88a96183f029f70684fcf57664aae7b333ad5822715b510d9554fb099bce8",
+  "original_prompt": "Ingested from ncurses-6.4/ncurses/base/lib_winch.c",
+  "human_readable_source": " \n\n \n\n \n\n#include <curses.priv.h>\n\nMODULE_ID(\"$Id: lib_winch.c,v 1.9 2020/02/02 23:34:34 tom Exp $\")\n\nNCURSES_EXPORT(chtype)\nwinch(WINDOW *win)\n{\n    T((T_CALLED(\"winch(%p)\"), (void *) win));\n    if (win != 0) {\n\treturnChtype((chtype) CharOf(win->_line[win->_cury].text[win->_curx])\n\t\t     | AttrOf(win->_line[win->_cury].text[win->_curx]));\n    } else {\n\treturnChtype(0);\n    }\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "nvidia_cspmu.h",
+  "hash_id": "8365d07b61631c5491a6500590e379398fe1fc28d09557960125e38097be6487",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/perf/arm_cspmu/nvidia_cspmu.h",
+  "human_readable_source": " \n\n \n\n#ifndef __NVIDIA_CSPMU_H__\n#define __NVIDIA_CSPMU_H__\n\n#include \"arm_cspmu.h\"\n\n \nint nv_cspmu_init_ops(struct arm_cspmu *cspmu);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "common-debug.h",
+  "hash_id": "309fc7290d69e5781062e13ca61e0e5e19b09a511d1c74fcb0b5f39b94c6bcae",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/ath/ath9k/common-debug.h",
+  "human_readable_source": " \n\n\n\n \nstruct ath_rx_stats {\n\tu32 rx_pkts_all;\n\tu32 rx_bytes_all;\n\tu32 crc_err;\n\tu32 decrypt_crc_err;\n\tu32 phy_err;\n\tu32 mic_err;\n\tu32 pre_delim_crc_err;\n\tu32 post_delim_crc_err;\n\tu32 decrypt_busy_err;\n\tu32 phy_err_stats[ATH9K_PHYERR_MAX];\n\tu32 rx_len_err;\n\tu32 rx_oom_err;\n\tu32 rx_rate_err;\n\tu32 rx_too_many_frags_err;\n\tu32 rx_beacons;\n\tu32 rx_frags;\n\tu32 rx_spectral;\n\tu32 rx_spectral_sample_good;\n\tu32 rx_spectral_sample_err;\n};\n\n#ifdef CONFIG_ATH9K_COMMON_DEBUG\nvoid ath9k_cmn_debug_modal_eeprom(struct dentry *debugfs_phy,\n\t\t\t\t  struct ath_hw *ah);\nvoid ath9k_cmn_debug_base_eeprom(struct dentry *debugfs_phy,\n\t\t\t\t struct ath_hw *ah);\nvoid ath9k_cmn_debug_stat_rx(struct ath_rx_stats *rxstats,\n\t\t\t     struct ath_rx_status *rs);\nvoid ath9k_cmn_debug_recv(struct dentry *debugfs_phy,\n\t\t\t  struct ath_rx_stats *rxstats);\nvoid ath9k_cmn_debug_phy_err(struct dentry *debugfs_phy,\n\t\t\t     struct ath_rx_stats *rxstats);\n#else\nstatic inline void ath9k_cmn_debug_modal_eeprom(struct dentry *debugfs_phy,\n\t\t\t\t\t\tstruct ath_hw *ah)\n{\n}\n\nstatic inline void ath9k_cmn_debug_base_eeprom(struct dentry *debugfs_phy,\n\t\t\t\t\t       struct ath_hw *ah)\n{\n}\n\nstatic inline void ath9k_cmn_debug_stat_rx(struct ath_rx_stats *rxstats,\n\t\t\t\t\t   struct ath_rx_status *rs)\n{\n}\n\nstatic inline void ath9k_cmn_debug_recv(struct dentry *debugfs_phy,\n\t\t\t\t\tstruct ath_rx_stats *rxstats)\n{\n}\n\nstatic inline void ath9k_cmn_debug_phy_err(struct dentry *debugfs_phy,\n\t\t\t\t\t   struct ath_rx_stats *rxstats)\n{\n}\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

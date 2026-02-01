@@ -1,0 +1,9 @@
+{
+  "module_name": "nmi.h",
+  "hash_id": "2306978441a753e12e13b11e24555d79c60117e3b7f450a8835ac60bb0e1cca0",
+  "original_prompt": "Ingested from linux-6.6.14/include/trace/events/nmi.h",
+  "human_readable_source": " \n#undef TRACE_SYSTEM\n#define TRACE_SYSTEM nmi\n\n#if !defined(_TRACE_NMI_H) || defined(TRACE_HEADER_MULTI_READ)\n#define _TRACE_NMI_H\n\n#include <linux/ktime.h>\n#include <linux/tracepoint.h>\n\nTRACE_EVENT(nmi_handler,\n\n\tTP_PROTO(void *handler, s64 delta_ns, int handled),\n\n\tTP_ARGS(handler, delta_ns, handled),\n\n\tTP_STRUCT__entry(\n\t\t__field(\tvoid *,\t\thandler\t)\n\t\t__field(\ts64,\t\tdelta_ns)\n\t\t__field(\tint,\t\thandled\t)\n\t),\n\n\tTP_fast_assign(\n\t\t__entry->handler = handler;\n\t\t__entry->delta_ns = delta_ns;\n\t\t__entry->handled = handled;\n\t),\n\n\tTP_printk(\"%ps() delta_ns: %lld handled: %d\",\n\t\t__entry->handler,\n\t\t__entry->delta_ns,\n\t\t__entry->handled)\n);\n\n#endif  \n\n \n#include <trace/define_trace.h>\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

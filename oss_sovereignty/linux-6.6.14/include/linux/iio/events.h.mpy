@@ -1,0 +1,9 @@
+{
+  "module_name": "events.h",
+  "hash_id": "f9ebef6ba11b27c0239854e387904a483178eae9c3f2dbcc901dfb9e61048aef",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/iio/events.h",
+  "human_readable_source": " \n \n#ifndef _IIO_EVENTS_H_\n#define _IIO_EVENTS_H_\n\n#include <linux/iio/types.h>\n#include <uapi/linux/iio/events.h>\n\n \n\n#define IIO_EVENT_CODE(chan_type, diff, modifier, direction,\t\t\\\n\t\t       type, chan, chan1, chan2)\t\t\t\\\n\t(((u64)type << 56) | ((u64)diff << 55) |\t\t\t\\\n\t ((u64)direction << 48) | ((u64)modifier << 40) |\t\t\\\n\t ((u64)chan_type << 32) | (((u16)chan2) << 16) | ((u16)chan1) | \\\n\t ((u16)chan))\n\n\n \n\n#define IIO_MOD_EVENT_CODE(chan_type, number, modifier,\t\t\\\n\t\t\t   type, direction)\t\t\t\t\\\n\tIIO_EVENT_CODE(chan_type, 0, modifier, direction, type, number, 0, 0)\n\n \n\n#define IIO_UNMOD_EVENT_CODE(chan_type, number, type, direction)\t\\\n\tIIO_EVENT_CODE(chan_type, 0, 0, direction, type, number, 0, 0)\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

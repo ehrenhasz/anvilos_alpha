@@ -1,0 +1,9 @@
+{
+  "module_name": "pyexec.h",
+  "hash_id": "4f856e031ff4fbe7a1d9313b2d77d3209efa028e69e00efa99a5c2686fc0671a",
+  "original_prompt": "Ingested from sys_09_Anvil/source/shared/runtime/pyexec.h",
+  "human_readable_source": " \n#ifndef MICROPY_INCLUDED_LIB_UTILS_PYEXEC_H\n#define MICROPY_INCLUDED_LIB_UTILS_PYEXEC_H\n\n#include \"py/obj.h\"\n\ntypedef enum {\n    PYEXEC_MODE_FRIENDLY_REPL,\n    PYEXEC_MODE_RAW_REPL,\n} pyexec_mode_kind_t;\n\nextern pyexec_mode_kind_t pyexec_mode_kind;\n\n\n\n\nextern int pyexec_system_exit;\n\n#define PYEXEC_FORCED_EXIT (0x100)\n\nint pyexec_raw_repl(void);\nint pyexec_friendly_repl(void);\nint pyexec_file(const char *filename);\nint pyexec_file_if_exists(const char *filename);\nint pyexec_frozen_module(const char *name, bool allow_keyboard_interrupt);\nvoid pyexec_event_repl_init(void);\nint pyexec_event_repl_process_char(int c);\nextern uint8_t pyexec_repl_active;\n\n#if MICROPY_REPL_INFO\nmp_obj_t pyb_set_repl_info(mp_obj_t o_value);\nMP_DECLARE_CONST_FUN_OBJ_1(pyb_set_repl_info_obj);\n#endif\n\n#endif \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "tcan4x5x.h",
+  "hash_id": "9d491fb2eab2ed9e68d94ce309b08bc04f7790ad20683777f380dfd08f8beee2",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/can/m_can/tcan4x5x.h",
+  "human_readable_source": " \n\n#ifndef _TCAN4X5X_H\n#define _TCAN4X5X_H\n\n#include <linux/gpio/consumer.h>\n#include <linux/regmap.h>\n#include <linux/regulator/consumer.h>\n#include <linux/spi/spi.h>\n\n#include \"m_can.h\"\n\n#define TCAN4X5X_SANITIZE_SPI 1\n\nstruct __packed tcan4x5x_buf_cmd {\n\tu8 cmd;\n\t__be16 addr;\n\tu8 len;\n};\n\nstruct tcan4x5x_map_buf {\n\tstruct tcan4x5x_buf_cmd cmd;\n\tu8 data[256 * sizeof(u32)];\n} ____cacheline_aligned;\n\nstruct tcan4x5x_priv {\n\tstruct m_can_classdev cdev;\n\n\tstruct regmap *regmap;\n\tstruct spi_device *spi;\n\n\tstruct gpio_desc *reset_gpio;\n\tstruct gpio_desc *device_wake_gpio;\n\tstruct gpio_desc *device_state_gpio;\n\tstruct regulator *power;\n\n\tstruct tcan4x5x_map_buf map_buf_rx;\n\tstruct tcan4x5x_map_buf map_buf_tx;\n};\n\nstatic inline void\ntcan4x5x_spi_cmd_set_len(struct tcan4x5x_buf_cmd *cmd, u8 len)\n{\n\t \n\tcmd->len = len >> 2;\n}\n\nint tcan4x5x_regmap_init(struct tcan4x5x_priv *priv);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "m48t59.h",
+  "hash_id": "1a92745f2185e813d3a8da0b44c2e995bf26bfbc0d0b7113c143d3f9a03e00a2",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/rtc/m48t59.h",
+  "human_readable_source": " \n \n\n#ifndef _LINUX_RTC_M48T59_H_\n#define _LINUX_RTC_M48T59_H_\n\n \n#define M48T59_YEAR\t\t0xf\n#define M48T59_MONTH\t\t0xe\n#define M48T59_MDAY\t\t0xd\t \n#define M48T59_WDAY\t\t0xc\t \n#define M48T59_WDAY_CB\t\t\t0x20\t \n#define M48T59_WDAY_CEB\t\t\t0x10\t \n#define M48T59_HOUR\t\t0xb\n#define M48T59_MIN\t\t0xa\n#define M48T59_SEC\t\t0x9\n#define M48T59_CNTL\t\t0x8\n#define M48T59_CNTL_READ\t\t0x40\n#define M48T59_CNTL_WRITE\t\t0x80\n#define M48T59_WATCHDOG\t\t0x7\n#define M48T59_INTR\t\t0x6\n#define M48T59_INTR_AFE\t\t\t0x80\t \n#define M48T59_INTR_ABE\t\t\t0x20\n#define M48T59_ALARM_DATE\t0x5\n#define M48T59_ALARM_HOUR\t0x4\n#define M48T59_ALARM_MIN\t0x3\n#define M48T59_ALARM_SEC\t0x2\n#define M48T59_UNUSED\t\t0x1\n#define M48T59_FLAGS\t\t0x0\n#define M48T59_FLAGS_WDT\t\t0x80\t \n#define M48T59_FLAGS_AF\t\t\t0x40\t \n#define M48T59_FLAGS_BF\t\t\t0x10\t \n\n#define M48T59RTC_TYPE_M48T59\t0  \n#define M48T59RTC_TYPE_M48T02\t1\n#define M48T59RTC_TYPE_M48T08\t2\n\nstruct m48t59_plat_data {\n\t \n\tvoid (*write_byte)(struct device *dev, u32 ofs, u8 val);\n\tunsigned char (*read_byte)(struct device *dev, u32 ofs);\n\n\tint type;  \n\n\t \n\tvoid __iomem *ioaddr;\n\t \n\tunsigned int offset;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

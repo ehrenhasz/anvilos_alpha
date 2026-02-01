@@ -1,0 +1,9 @@
+{
+  "module_name": "dst_ca.h",
+  "hash_id": "735f6b456883261333f299597a6283ea35b4b03f437168cfc414680b7c5ad082",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/pci/bt8xx/dst_ca.h",
+  "human_readable_source": " \n \n\n#ifndef _DST_CA_H_\n#define _DST_CA_H_\n\n#define RETRIES\t\t\t5\n\n\n#define\tCA_APP_INFO_ENQUIRY\t0x9f8020\n#define\tCA_APP_INFO\t\t0x9f8021\n#define\tCA_ENTER_MENU\t\t0x9f8022\n#define CA_INFO_ENQUIRY\t\t0x9f8030\n#define\tCA_INFO\t\t\t0x9f8031\n#define CA_PMT\t\t\t0x9f8032\n#define CA_PMT_REPLY\t\t0x9f8033\n\n#define CA_CLOSE_MMI\t\t0x9f8800\n#define CA_DISPLAY_CONTROL\t0x9f8801\n#define CA_DISPLAY_REPLY\t0x9f8802\n#define CA_TEXT_LAST\t\t0x9f8803\n#define CA_TEXT_MORE\t\t0x9f8804\n#define CA_KEYPAD_CONTROL\t0x9f8805\n#define CA_KEYPRESS\t\t0x9f8806\n\n#define CA_ENQUIRY\t\t0x9f8807\n#define CA_ANSWER\t\t0x9f8808\n#define CA_MENU_LAST\t\t0x9f8809\n#define CA_MENU_MORE\t\t0x9f880a\n#define CA_MENU_ANSWER\t\t0x9f880b\n#define CA_LIST_LAST\t\t0x9f880c\n#define CA_LIST_MORE\t\t0x9f880d\n\n\nstruct dst_ca_private {\n\tstruct dst_state *dst;\n\tstruct dvb_device *dvbdev;\n};\n\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

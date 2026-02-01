@@ -1,0 +1,9 @@
+{
+  "module_name": "exception.json",
+  "hash_id": "faebc1627d532e42ace2cf55c887783361643cac52d750d77a69506aa24cb19e",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/pmu-events/arch/arm64/fujitsu/a64fx/exception.json",
+  "human_readable_source": "[\n  {\n    \"ArchStdEvent\": \"EXC_TAKEN\"\n  },\n  {\n    \"ArchStdEvent\": \"EXC_UNDEF\"\n  },\n  {\n    \"ArchStdEvent\": \"EXC_SVC\"\n  },\n  {\n    \"ArchStdEvent\": \"EXC_PABORT\"\n  },\n  {\n    \"ArchStdEvent\": \"EXC_DABORT\"\n  },\n  {\n    \"ArchStdEvent\": \"EXC_IRQ\"\n  },\n  {\n    \"ArchStdEvent\": \"EXC_FIQ\"\n  },\n  {\n    \"ArchStdEvent\": \"EXC_SMC\"\n  },\n  {\n    \"ArchStdEvent\": \"EXC_HVC\"\n  }\n]\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

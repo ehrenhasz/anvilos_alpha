@@ -1,0 +1,9 @@
+{
+  "module_name": "umc_v6_1.h",
+  "hash_id": "52b3ef8d6981c10da18b4fb74b40513edf005ec16d9afd167ed9a6c1d5b7a316",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/amdgpu/umc_v6_1.h",
+  "human_readable_source": " \n#ifndef __UMC_V6_1_H__\n#define __UMC_V6_1_H__\n\n#include \"soc15_common.h\"\n#include \"amdgpu.h\"\n\n \n#define UMC_V6_1_HBM_MEMORY_CHANNEL_WIDTH\t128\n \n#define UMC_V6_1_CHANNEL_INSTANCE_NUM\t\t4\n \n#define UMC_V6_1_UMC_INSTANCE_NUM\t\t8\n \n#define UMC_V6_1_TOTAL_CHANNEL_NUM\t(UMC_V6_1_CHANNEL_INSTANCE_NUM * UMC_V6_1_UMC_INSTANCE_NUM)\n \n#define UMC_V6_1_PER_CHANNEL_OFFSET_VG20\t0x800\n#define UMC_V6_1_PER_CHANNEL_OFFSET_ARCT\t0x400\n\n \n#define UMC_V6_1_CE_CNT_MAX\t\t0xffff\n \n#define UMC_V6_1_CE_INT_THRESHOLD\t0xffff\n \n#define UMC_V6_1_CE_CNT_INIT\t(UMC_V6_1_CE_CNT_MAX - UMC_V6_1_CE_INT_THRESHOLD)\n\nextern struct amdgpu_umc_ras umc_v6_1_ras;\nextern const uint32_t\n\tumc_v6_1_channel_idx_tbl[UMC_V6_1_UMC_INSTANCE_NUM][UMC_V6_1_CHANNEL_INSTANCE_NUM];\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

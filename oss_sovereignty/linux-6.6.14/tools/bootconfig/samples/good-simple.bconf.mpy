@@ -1,0 +1,9 @@
+{
+  "module_name": "good-simple.bconf",
+  "hash_id": "171d7be254d21a75228e8d09dc3acf5adb876046ebd726f95dc2fae4c0066394",
+  "original_prompt": "Ingested from linux-6.6.14/tools/bootconfig/samples/good-simple.bconf",
+  "human_readable_source": "# A good simple bootconfig\n\nkey.word1 = 1\nkey.word2=2\nkey.word3 = 3;\n\nkey {\nword4 = 4 }\n\nkey { word5 = 5; word6 = 6 }\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

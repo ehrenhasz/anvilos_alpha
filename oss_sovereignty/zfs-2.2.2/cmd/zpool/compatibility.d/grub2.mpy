@@ -1,0 +1,9 @@
+{
+  "module_name": "grub2",
+  "hash_id": "7254bbd1a5e2ee7ab8e16ca99b9db67ecf528a5aff278ab69ff06553f042e9f4",
+  "original_prompt": "Ingested from zfs-2.2.2/cmd/zpool/compatibility.d/grub2",
+  "human_readable_source": "# Features which are supported by GRUB2\nallocation_classes\nasync_destroy\nblock_cloning\nbookmarks\ndevice_rebuild\nembedded_data\nempty_bpobj\nenabled_txg\nextensible_dataset\nfilesystem_limits\nhole_birth\nlarge_blocks\nlivelist\nlog_spacemap\nlz4_compress\nproject_quota\nresilver_defer\nspacemap_histogram\nspacemap_v2\nuserobj_accounting\nzilsaxattr\nzpool_checkpoint\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

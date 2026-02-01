@@ -1,0 +1,9 @@
+{
+  "module_name": "actions,s700-reset.h",
+  "hash_id": "33a5f2c109a7e4d5314d44e90c2f22b7ce4df5a41a8d47d87c299e1b5d1e8f52",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/reset/actions,s700-reset.h",
+  "human_readable_source": "\n\n\n\n\n\n#ifndef __DT_BINDINGS_ACTIONS_S700_RESET_H\n#define __DT_BINDINGS_ACTIONS_S700_RESET_H\n\n#define RESET_AUDIO\t\t\t\t0\n#define RESET_CSI\t\t\t\t1\n#define RESET_DE\t\t\t\t2\n#define RESET_DSI\t\t\t\t3\n#define RESET_GPIO\t\t\t\t4\n#define RESET_I2C0\t\t\t\t5\n#define RESET_I2C1\t\t\t\t6\n#define RESET_I2C2\t\t\t\t7\n#define RESET_I2C3\t\t\t\t8\n#define RESET_KEY\t\t\t\t9\n#define RESET_LCD0\t\t\t\t10\n#define RESET_SI\t\t\t\t11\n#define RESET_SPI0\t\t\t\t12\n#define RESET_SPI1\t\t\t\t13\n#define RESET_SPI2\t\t\t\t14\n#define RESET_SPI3\t\t\t\t15\n#define RESET_UART0\t\t\t\t16\n#define RESET_UART1\t\t\t\t17\n#define RESET_UART2\t\t\t\t18\n#define RESET_UART3\t\t\t\t19\n#define RESET_UART4\t\t\t\t20\n#define RESET_UART5\t\t\t\t21\n#define RESET_UART6\t\t\t\t22\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

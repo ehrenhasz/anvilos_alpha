@@ -1,0 +1,9 @@
+{
+  "module_name": "profile2linkerlist.pl",
+  "hash_id": "246fbad638ba13f77e223849b4d9a3af53c44ec4f8d3ddc27dab9d077cf06d52",
+  "original_prompt": "Ingested from linux-6.6.14/scripts/profile2linkerlist.pl",
+  "human_readable_source": "#!/usr/bin/env perl\n# SPDX-License-Identifier: GPL-2.0\n\n#\n# Takes a (sorted) output of readprofile and turns it into a list suitable for\n# linker scripts\n#\n# usage:\n#\t readprofile | sort -rn | perl profile2linkerlist.pl > functionlist\n#\nuse strict;\n\nwhile (<>) {\n  my $line = $_;\n\n  $_ =~ /\\W*[0-9]+\\W*([a-zA-Z\\_0-9]+)\\W*[0-9]+/;\n\n  print \"*(.text.$1)\\n\"\n      unless ($line =~ /unknown/) || ($line =~ /total/);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

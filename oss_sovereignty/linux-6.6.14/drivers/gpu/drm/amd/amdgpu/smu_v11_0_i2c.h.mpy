@@ -1,0 +1,9 @@
+{
+  "module_name": "smu_v11_0_i2c.h",
+  "hash_id": "a011dec00534b883a2a43ac5c669144c5c4c7fcb3677a412e6a8e980fcce69dd",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/amdgpu/smu_v11_0_i2c.h",
+  "human_readable_source": " \n\n#ifndef SMU_V11_I2C_CONTROL_H\n#define SMU_V11_I2C_CONTROL_H\n\n#include <linux/types.h>\n\nstruct amdgpu_device;\n\nint smu_v11_0_i2c_control_init(struct amdgpu_device *adev);\nvoid smu_v11_0_i2c_control_fini(struct amdgpu_device *adev);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

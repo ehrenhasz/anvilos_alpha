@@ -1,0 +1,9 @@
+{
+  "module_name": "clk-ssp.c",
+  "hash_id": "3e68632376c5f6734056579afacd5d9c90f542aa992c0c043f15ce3858811744",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/clk/mxs/clk-ssp.c",
+  "human_readable_source": "\n \n\n#include <linux/kernel.h>\n#include <linux/init.h>\n#include <linux/clk.h>\n#include <linux/module.h>\n#include <linux/device.h>\n#include <linux/io.h>\n#include <linux/spi/mxs-spi.h>\n\nvoid mxs_ssp_set_clk_rate(struct mxs_ssp *ssp, unsigned int rate)\n{\n\tunsigned int ssp_clk, ssp_sck;\n\tu32 clock_divide, clock_rate;\n\tu32 val;\n\n\tssp_clk = clk_get_rate(ssp->clk);\n\n\tfor (clock_divide = 2; clock_divide <= 254; clock_divide += 2) {\n\t\tclock_rate = DIV_ROUND_UP(ssp_clk, rate * clock_divide);\n\t\tclock_rate = (clock_rate > 0) ? clock_rate - 1 : 0;\n\t\tif (clock_rate <= 255)\n\t\t\tbreak;\n\t}\n\n\tif (clock_divide > 254) {\n\t\tdev_err(ssp->dev,\n\t\t\t\"%s: cannot set clock to %d\\n\", __func__, rate);\n\t\treturn;\n\t}\n\n\tssp_sck = ssp_clk / clock_divide / (1 + clock_rate);\n\n\tval = readl(ssp->base + HW_SSP_TIMING(ssp));\n\tval &= ~(BM_SSP_TIMING_CLOCK_DIVIDE | BM_SSP_TIMING_CLOCK_RATE);\n\tval |= BF_SSP(clock_divide, TIMING_CLOCK_DIVIDE);\n\tval |= BF_SSP(clock_rate, TIMING_CLOCK_RATE);\n\twritel(val, ssp->base + HW_SSP_TIMING(ssp));\n\n\tssp->clk_rate = ssp_sck;\n\n\tdev_dbg(ssp->dev,\n\t\t\"%s: clock_divide %d, clock_rate %d, ssp_clk %d, rate_actual %d, rate_requested %d\\n\",\n\t\t__func__, clock_divide, clock_rate, ssp_clk, ssp_sck, rate);\n}\nEXPORT_SYMBOL_GPL(mxs_ssp_set_clk_rate);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

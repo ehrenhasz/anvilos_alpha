@@ -1,0 +1,9 @@
+{
+  "module_name": "adf_gen2_pfvf.h",
+  "hash_id": "bd856ae46638b8f31b1413188e8c9d60968a0eabc61829f9d2d6abae189d1f53",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/crypto/intel/qat/qat_common/adf_gen2_pfvf.h",
+  "human_readable_source": " \n \n#ifndef ADF_GEN2_PFVF_H\n#define ADF_GEN2_PFVF_H\n\n#include <linux/types.h>\n#include \"adf_accel_devices.h\"\n\n#define ADF_GEN2_ERRSOU3 (0x3A000 + 0x0C)\n#define ADF_GEN2_ERRSOU5 (0x3A000 + 0xD8)\n#define ADF_GEN2_ERRMSK3 (0x3A000 + 0x1C)\n#define ADF_GEN2_ERRMSK5 (0x3A000 + 0xDC)\n\n#if defined(CONFIG_PCI_IOV)\nvoid adf_gen2_init_pf_pfvf_ops(struct adf_pfvf_ops *pfvf_ops);\nvoid adf_gen2_init_vf_pfvf_ops(struct adf_pfvf_ops *pfvf_ops);\n#else\nstatic inline void adf_gen2_init_pf_pfvf_ops(struct adf_pfvf_ops *pfvf_ops)\n{\n\tpfvf_ops->enable_comms = adf_pfvf_comms_disabled;\n}\n\nstatic inline void adf_gen2_init_vf_pfvf_ops(struct adf_pfvf_ops *pfvf_ops)\n{\n\tpfvf_ops->enable_comms = adf_pfvf_comms_disabled;\n}\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

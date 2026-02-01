@@ -1,0 +1,9 @@
+{
+  "module_name": "socket_type.c",
+  "hash_id": "d2c41fa617796c5e7655b631622c6180674c20995a02fba540648d51231dcc8b",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/trace/beauty/socket_type.c",
+  "human_readable_source": "\n#include <sys/types.h>\n#include <sys/socket.h>\n\n#ifndef SOCK_DCCP\n# define SOCK_DCCP\t\t6\n#endif\n\n#ifndef SOCK_CLOEXEC\n# define SOCK_CLOEXEC\t\t02000000\n#endif\n\n#ifndef SOCK_NONBLOCK\n# define SOCK_NONBLOCK\t\t00004000\n#endif\n\n#ifndef SOCK_TYPE_MASK\n#define SOCK_TYPE_MASK 0xf\n#endif\n\nstatic size_t syscall_arg__scnprintf_socket_type(char *bf, size_t size, struct syscall_arg *arg)\n{\n\tbool show_prefix = arg->show_string_prefix;\n\tconst char *prefix = \"SOCK_\";\n\tsize_t printed;\n\tint type = arg->val,\n\t    flags = type & ~SOCK_TYPE_MASK;\n\n\ttype &= SOCK_TYPE_MASK;\n\t \n\tswitch (type) {\n#define\tP_SK_TYPE(n) case SOCK_##n: printed = scnprintf(bf, size, \"%s%s\", show_prefix ? prefix : \"\", #n); break;\n\tP_SK_TYPE(STREAM);\n\tP_SK_TYPE(DGRAM);\n\tP_SK_TYPE(RAW);\n\tP_SK_TYPE(RDM);\n\tP_SK_TYPE(SEQPACKET);\n\tP_SK_TYPE(DCCP);\n\tP_SK_TYPE(PACKET);\n#undef P_SK_TYPE\n\tdefault:\n\t\tprinted = scnprintf(bf, size, \"%#x\", type);\n\t}\n\n#define\tP_SK_FLAG(n) \\\n\tif (flags & SOCK_##n) { \\\n\t\tprinted += scnprintf(bf + printed, size - printed, \"|%s\", #n); \\\n\t\tflags &= ~SOCK_##n; \\\n\t}\n\n\tP_SK_FLAG(CLOEXEC);\n\tP_SK_FLAG(NONBLOCK);\n#undef P_SK_FLAG\n\n\tif (flags)\n\t\tprinted += scnprintf(bf + printed, size - printed, \"|%#x\", flags);\n\n\treturn printed;\n}\n\n#define SCA_SK_TYPE syscall_arg__scnprintf_socket_type\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "c88c6c21c44b8818e63b5cbc7cf8988763dba308459983869472b89578b8af10",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/block/rnbd/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-or-later\n\nconfig BLK_DEV_RNBD\n\tbool\n\nconfig BLK_DEV_RNBD_CLIENT\n\ttristate \"RDMA Network Block Device driver client\"\n\tdepends on INFINIBAND_RTRS_CLIENT\n\tselect BLK_DEV_RNBD\n\tselect SG_POOL\n\thelp\n\t  RNBD client is a network block device driver using rdma transport.\n\n\t  RNBD client allows for mapping of a remote block devices over\n\t  RTRS protocol from a target system where RNBD server is running.\n\n\t  If unsure, say N.\n\nconfig BLK_DEV_RNBD_SERVER\n\ttristate \"RDMA Network Block Device driver server\"\n\tdepends on INFINIBAND_RTRS_SERVER\n\tselect BLK_DEV_RNBD\n\thelp\n\t  RNBD server is the server side of RNBD using rdma transport.\n\n\t  RNBD server allows for exporting local block devices to a remote client\n\t  over RTRS protocol.\n\n\t  If unsure, say N.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

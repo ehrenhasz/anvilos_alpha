@@ -1,0 +1,9 @@
+{
+  "module_name": "sign_key.S",
+  "hash_id": "ae55ccd8dbfad3f00ed78ad76da5484db0cf12e1c38a2ef1f84a9a89da182882",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/sgx/sign_key.S",
+  "human_readable_source": " \n \n\n    .section \".rodata\", \"a\"\n\nsign_key:\n    .globl sign_key\n    .incbin \"sign_key.pem\"\nsign_key_end:\n    .globl sign_key_end\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

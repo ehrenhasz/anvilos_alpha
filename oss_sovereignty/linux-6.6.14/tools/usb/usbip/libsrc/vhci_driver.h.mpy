@@ -1,0 +1,9 @@
+{
+  "module_name": "vhci_driver.h",
+  "hash_id": "41bdf1446eb5bd8862d2fa9cb979fd5588b80a4adbd3caf5938cdd51fe8c4a39",
+  "original_prompt": "Ingested from linux-6.6.14/tools/usb/usbip/libsrc/vhci_driver.h",
+  "human_readable_source": " \n \n\n#ifndef __VHCI_DRIVER_H\n#define __VHCI_DRIVER_H\n\n#include <libudev.h>\n#include <stdint.h>\n\n#include \"usbip_common.h\"\n\n#define USBIP_VHCI_BUS_TYPE \"platform\"\n#define USBIP_VHCI_DEVICE_NAME \"vhci_hcd.0\"\n\nenum hub_speed {\n\tHUB_SPEED_HIGH = 0,\n\tHUB_SPEED_SUPER,\n};\n\nstruct usbip_imported_device {\n\tenum hub_speed hub;\n\tuint8_t port;\n\tuint32_t status;\n\n\tuint32_t devid;\n\n\tuint8_t busnum;\n\tuint8_t devnum;\n\n\t \n\tstruct usbip_usb_device udev;\n};\n\nstruct usbip_vhci_driver {\n\n\t \n\tstruct udev_device *hc_device;\n\n\tint ncontrollers;\n\tint nports;\n\tstruct usbip_imported_device idev[];\n};\n\n\nextern struct usbip_vhci_driver *vhci_driver;\n\nint usbip_vhci_driver_open(void);\nvoid usbip_vhci_driver_close(void);\n\nint  usbip_vhci_refresh_device_list(void);\n\n\nint usbip_vhci_get_free_port(uint32_t speed);\nint usbip_vhci_attach_device2(uint8_t port, int sockfd, uint32_t devid,\n\t\tuint32_t speed);\n\n \nint usbip_vhci_attach_device(uint8_t port, int sockfd, uint8_t busnum,\n\t\tuint8_t devnum, uint32_t speed);\n\nint usbip_vhci_detach_device(uint8_t port);\n\nint usbip_vhci_imported_device_dump(struct usbip_imported_device *idev);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "36a0aa9e141a0120a2324e9383e769f50699da78ec1bdb7572627e7580acbf3c",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/mediatek/mt2701/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n# platform driver\nsnd-soc-mt2701-afe-objs := mt2701-afe-pcm.o mt2701-afe-clock-ctrl.o\nobj-$(CONFIG_SND_SOC_MT2701) += snd-soc-mt2701-afe.o\n\n# machine driver\nobj-$(CONFIG_SND_SOC_MT2701_CS42448) += mt2701-cs42448.o\nobj-$(CONFIG_SND_SOC_MT2701_WM8960) += mt2701-wm8960.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

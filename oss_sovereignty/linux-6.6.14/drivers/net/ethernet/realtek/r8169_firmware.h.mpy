@@ -1,0 +1,9 @@
+{
+  "module_name": "r8169_firmware.h",
+  "hash_id": "0ab63f3b9a5db24d19c031b0dc37b75de8e7eab9b383846ce57ac40001f3b506",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/realtek/r8169_firmware.h",
+  "human_readable_source": " \n \n\n#include <linux/device.h>\n#include <linux/firmware.h>\n\nstruct rtl8169_private;\ntypedef void (*rtl_fw_write_t)(struct rtl8169_private *tp, int reg, int val);\ntypedef int (*rtl_fw_read_t)(struct rtl8169_private *tp, int reg);\n\n#define RTL_VER_SIZE\t\t32\n\nstruct rtl_fw {\n\trtl_fw_write_t phy_write;\n\trtl_fw_read_t phy_read;\n\trtl_fw_write_t mac_mcu_write;\n\trtl_fw_read_t mac_mcu_read;\n\tconst struct firmware *fw;\n\tconst char *fw_name;\n\tstruct device *dev;\n\n\tchar version[RTL_VER_SIZE];\n\n\tstruct rtl_fw_phy_action {\n\t\t__le32 *code;\n\t\tsize_t size;\n\t} phy_action;\n};\n\nint rtl_fw_request_firmware(struct rtl_fw *rtl_fw);\nvoid rtl_fw_release_firmware(struct rtl_fw *rtl_fw);\nvoid rtl_fw_write_firmware(struct rtl8169_private *tp, struct rtl_fw *rtl_fw);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

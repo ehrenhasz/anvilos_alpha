@@ -1,0 +1,9 @@
+{
+  "module_name": "bbm.h",
+  "hash_id": "06741d816ca2724237910d4ebca7574e5807041b3ab865a42261c1a10c60b72d",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/mtd/bbm.h",
+  "human_readable_source": " \n \n#ifndef __LINUX_MTD_BBM_H\n#define __LINUX_MTD_BBM_H\n\n \n#define NAND_MAX_CHIPS\t\t8\n\n \nstruct nand_bbt_descr {\n\tint options;\n\tint pages[NAND_MAX_CHIPS];\n\tint offs;\n\tint veroffs;\n\tuint8_t version[NAND_MAX_CHIPS];\n\tint len;\n\tint maxblocks;\n\tint reserved_block_code;\n\tuint8_t *pattern;\n};\n\n \n\n \n#define NAND_BBT_NRBITS_MSK\t0x0000000F\n#define NAND_BBT_1BIT\t\t0x00000001\n#define NAND_BBT_2BIT\t\t0x00000002\n#define NAND_BBT_4BIT\t\t0x00000004\n#define NAND_BBT_8BIT\t\t0x00000008\n \n#define NAND_BBT_LASTBLOCK\t0x00000010\n \n#define NAND_BBT_ABSPAGE\t0x00000020\n \n#define NAND_BBT_PERCHIP\t0x00000080\n \n#define NAND_BBT_VERSION\t0x00000100\n \n#define NAND_BBT_CREATE\t\t0x00000200\n \n#define NAND_BBT_CREATE_EMPTY\t0x00000400\n \n#define NAND_BBT_WRITE\t\t0x00002000\n \n#define NAND_BBT_SAVECONTENT\t0x00004000\n\n \n#define NAND_BBT_USE_FLASH\t0x00020000\n \n#define NAND_BBT_NO_OOB\t\t0x00040000\n \n#define NAND_BBT_NO_OOB_BBM\t0x00080000\n\n \n#define NAND_BBT_DYNAMICSTRUCT\t0x80000000\n\n \n#define NAND_BBT_SCAN_MAXBLOCKS\t4\n\n \n#define ONENAND_BBT_READ_ERROR\t\t1\n#define ONENAND_BBT_READ_ECC_ERROR\t2\n#define ONENAND_BBT_READ_FATAL_ERROR\t4\n\n \nstruct bbm_info {\n\tint bbt_erase_shift;\n\tint options;\n\n\tuint8_t *bbt;\n\n\tint (*isbad_bbt)(struct mtd_info *mtd, loff_t ofs, int allowbbt);\n\n\t \n\tstruct nand_bbt_descr *badblock_pattern;\n\n\tvoid *priv;\n};\n\n \nextern int onenand_default_bbt(struct mtd_info *mtd);\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "m5602_s5k83a.h",
+  "hash_id": "72a45919f9bc770a893d26a2532ea6d0764f4e3ccea6a8e422142795d9ee0831",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/usb/gspca/m5602/m5602_s5k83a.h",
+  "human_readable_source": " \n \n\n#ifndef M5602_S5K83A_H_\n#define M5602_S5K83A_H_\n\n#include \"m5602_sensor.h\"\n\n#define S5K83A_FLIP\t\t\t0x01\n#define S5K83A_HFLIP_TUNE\t\t0x03\n#define S5K83A_VFLIP_TUNE\t\t0x05\n#define S5K83A_BRIGHTNESS\t\t0x0a\n#define S5K83A_EXPOSURE\t\t\t0x18\n#define S5K83A_GAIN\t\t\t0x1b\n#define S5K83A_PAGE_MAP\t\t\t0xec\n\n#define S5K83A_DEFAULT_GAIN\t\t0x71\n#define S5K83A_DEFAULT_BRIGHTNESS\t0x7e\n#define S5K83A_DEFAULT_EXPOSURE\t\t0x00\n#define S5K83A_MAXIMUM_EXPOSURE\t\t0x3c\n#define S5K83A_FLIP_MASK\t\t0x10\n#define S5K83A_GPIO_LED_MASK\t\t0x10\n#define S5K83A_GPIO_ROTATION_MASK\t0x40\n\n \n\n \nextern int force_sensor;\nextern bool dump_sensor;\n\nint s5k83a_probe(struct sd *sd);\nint s5k83a_init(struct sd *sd);\nint s5k83a_init_controls(struct sd *sd);\nint s5k83a_start(struct sd *sd);\nint s5k83a_stop(struct sd *sd);\nvoid s5k83a_disconnect(struct sd *sd);\n\nstatic const struct m5602_sensor s5k83a = {\n\t.name = \"S5K83A\",\n\t.probe = s5k83a_probe,\n\t.init = s5k83a_init,\n\t.init_controls = s5k83a_init_controls,\n\t.start = s5k83a_start,\n\t.stop = s5k83a_stop,\n\t.disconnect = s5k83a_disconnect,\n\t.i2c_slave_id = 0x5a,\n\t.i2c_regW = 2,\n};\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

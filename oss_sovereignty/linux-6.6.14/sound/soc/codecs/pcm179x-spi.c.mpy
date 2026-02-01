@@ -1,0 +1,9 @@
+{
+  "module_name": "pcm179x-spi.c",
+  "hash_id": "dababf543f5e120808bfd535e799702c8c4cb318a9a3bbcbc7bcaa4634e154e6",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/codecs/pcm179x-spi.c",
+  "human_readable_source": "\n \n\n#include <linux/module.h>\n#include <linux/of.h>\n#include <linux/spi/spi.h>\n#include <linux/regmap.h>\n\n#include \"pcm179x.h\"\n\nstatic int pcm179x_spi_probe(struct spi_device *spi)\n{\n\tstruct regmap *regmap;\n\tint ret;\n\n\tregmap = devm_regmap_init_spi(spi, &pcm179x_regmap_config);\n\tif (IS_ERR(regmap)) {\n\t\tret = PTR_ERR(regmap);\n\t\tdev_err(&spi->dev, \"Failed to allocate regmap: %d\\n\", ret);\n\t\treturn ret;\n\t}\n\n\treturn pcm179x_common_init(&spi->dev, regmap);\n}\n\nstatic const struct of_device_id pcm179x_of_match[] __maybe_unused = {\n\t{ .compatible = \"ti,pcm1792a\", },\n\t{ }\n};\nMODULE_DEVICE_TABLE(of, pcm179x_of_match);\n\nstatic const struct spi_device_id pcm179x_spi_ids[] = {\n\t{ \"pcm1792a\", 0 },\n\t{ \"pcm179x\", 0 },\n\t{ },\n};\nMODULE_DEVICE_TABLE(spi, pcm179x_spi_ids);\n\nstatic struct spi_driver pcm179x_spi_driver = {\n\t.driver = {\n\t\t.name = \"pcm179x\",\n\t\t.of_match_table = of_match_ptr(pcm179x_of_match),\n\t},\n\t.id_table = pcm179x_spi_ids,\n\t.probe = pcm179x_spi_probe,\n};\n\nmodule_spi_driver(pcm179x_spi_driver);\n\nMODULE_DESCRIPTION(\"ASoC PCM179X SPI driver\");\nMODULE_AUTHOR(\"Michael Trimarchi <michael@amarulasolutions.com>\");\nMODULE_LICENSE(\"GPL\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

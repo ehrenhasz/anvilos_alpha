@@ -1,0 +1,9 @@
+{
+  "module_name": "gethostid.c",
+  "hash_id": "18249720065eb7619c61b75c2fde924544f2f83ab1e0bec62384a83cea065f3e",
+  "original_prompt": "Ingested from zfs-2.2.2/lib/libspl/os/linux/gethostid.c",
+  "human_readable_source": " \n \n\n#include <fcntl.h>\n#include <stdlib.h>\n#include <stdio.h>\n#include <sys/types.h>\n#include <sys/stat.h>\n#include <sys/systeminfo.h>\n\nstatic unsigned long\nget_spl_hostid(void)\n{\n\tFILE *f;\n\tunsigned long hostid;\n\tchar *env;\n\n\t \n\tenv = getenv(\"ZFS_HOSTID\");\n\tif (env)\n\t\treturn (strtoull(env, NULL, 0));\n\n\tf = fopen(\"/proc/sys/kernel/spl/hostid\", \"re\");\n\tif (!f)\n\t\treturn (0);\n\n\tif (fscanf(f, \"%lx\", &hostid) != 1)\n\t\thostid = 0;\n\n\tfclose(f);\n\n\treturn (hostid);\n}\n\nunsigned long\nget_system_hostid(void)\n{\n\tunsigned long hostid = get_spl_hostid();\n\tuint32_t system_hostid;\n\n\t \n\tif (hostid == 0) {\n\t\tint fd = open(\"/etc/hostid\", O_RDONLY | O_CLOEXEC);\n\t\tif (fd >= 0) {\n\t\t\tif (read(fd, &system_hostid, sizeof (system_hostid))\n\t\t\t    != sizeof (system_hostid))\n\t\t\t\thostid = 0;\n\t\t\telse\n\t\t\t\thostid = system_hostid;\n\t\t\t(void) close(fd);\n\t\t}\n\t}\n\n\treturn (hostid & HOSTID_MASK);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "arm-smmu-qcom-debug.c",
+  "hash_id": "982e03e1e231ea1596838b6f6c26d23e1d8f5280dafc55ecd149716755c2092f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/iommu/arm/arm-smmu/arm-smmu-qcom-debug.c",
+  "human_readable_source": "\n \n\n#include <linux/device.h>\n#include <linux/firmware/qcom/qcom_scm.h>\n#include <linux/ratelimit.h>\n\n#include \"arm-smmu.h\"\n#include \"arm-smmu-qcom.h\"\n\nvoid qcom_smmu_tlb_sync_debug(struct arm_smmu_device *smmu)\n{\n\tint ret;\n\tu32 tbu_pwr_status, sync_inv_ack, sync_inv_progress;\n\tstruct qcom_smmu *qsmmu = container_of(smmu, struct qcom_smmu, smmu);\n\tconst struct qcom_smmu_config *cfg;\n\tstatic DEFINE_RATELIMIT_STATE(rs, DEFAULT_RATELIMIT_INTERVAL,\n\t\t\t\t      DEFAULT_RATELIMIT_BURST);\n\n\tif (__ratelimit(&rs)) {\n\t\tdev_err(smmu->dev, \"TLB sync timed out -- SMMU may be deadlocked\\n\");\n\n\t\tcfg = qsmmu->cfg;\n\t\tif (!cfg)\n\t\t\treturn;\n\n\t\tret = qcom_scm_io_readl(smmu->ioaddr + cfg->reg_offset[QCOM_SMMU_TBU_PWR_STATUS],\n\t\t\t\t\t&tbu_pwr_status);\n\t\tif (ret)\n\t\t\tdev_err(smmu->dev,\n\t\t\t\t\"Failed to read TBU power status: %d\\n\", ret);\n\n\t\tret = qcom_scm_io_readl(smmu->ioaddr + cfg->reg_offset[QCOM_SMMU_STATS_SYNC_INV_TBU_ACK],\n\t\t\t\t\t&sync_inv_ack);\n\t\tif (ret)\n\t\t\tdev_err(smmu->dev,\n\t\t\t\t\"Failed to read TBU sync/inv ack status: %d\\n\", ret);\n\n\t\tret = qcom_scm_io_readl(smmu->ioaddr + cfg->reg_offset[QCOM_SMMU_MMU2QSS_AND_SAFE_WAIT_CNTR],\n\t\t\t\t\t&sync_inv_progress);\n\t\tif (ret)\n\t\t\tdev_err(smmu->dev,\n\t\t\t\t\"Failed to read TCU syn/inv progress: %d\\n\", ret);\n\n\t\tdev_err(smmu->dev,\n\t\t\t\"TBU: power_status %#x sync_inv_ack %#x sync_inv_progress %#x\\n\",\n\t\t\ttbu_pwr_status, sync_inv_ack, sync_inv_progress);\n\t}\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

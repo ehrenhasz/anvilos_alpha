@@ -1,0 +1,9 @@
+{
+  "module_name": "basic_stx_ldx.c",
+  "hash_id": "833b5439fb29e1331833307366cfc84e4a64a54e6c7f76f0c79ede615a56a487",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/verifier/basic_stx_ldx.c",
+  "human_readable_source": "{\n\t\"invalid src register in STX\",\n\t.insns = {\n\tBPF_STX_MEM(BPF_B, BPF_REG_10, -1, -1),\n\tBPF_EXIT_INSN(),\n\t},\n\t.errstr = \"R15 is invalid\",\n\t.result = REJECT,\n},\n{\n\t\"invalid dst register in STX\",\n\t.insns = {\n\tBPF_STX_MEM(BPF_B, 14, BPF_REG_10, -1),\n\tBPF_EXIT_INSN(),\n\t},\n\t.errstr = \"R14 is invalid\",\n\t.result = REJECT,\n},\n{\n\t\"invalid dst register in ST\",\n\t.insns = {\n\tBPF_ST_MEM(BPF_B, 14, -1, -1),\n\tBPF_EXIT_INSN(),\n\t},\n\t.errstr = \"R14 is invalid\",\n\t.result = REJECT,\n},\n{\n\t\"invalid src register in LDX\",\n\t.insns = {\n\tBPF_LDX_MEM(BPF_B, BPF_REG_0, 12, 0),\n\tBPF_EXIT_INSN(),\n\t},\n\t.errstr = \"R12 is invalid\",\n\t.result = REJECT,\n},\n{\n\t\"invalid dst register in LDX\",\n\t.insns = {\n\tBPF_LDX_MEM(BPF_B, 11, BPF_REG_1, 0),\n\tBPF_EXIT_INSN(),\n\t},\n\t.errstr = \"R11 is invalid\",\n\t.result = REJECT,\n},\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

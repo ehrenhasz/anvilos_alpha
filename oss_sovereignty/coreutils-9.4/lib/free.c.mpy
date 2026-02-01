@@ -1,0 +1,9 @@
+{
+  "module_name": "free.c",
+  "hash_id": "6369161b7712931634397dd90d54f83d09a92194e174e2cc6a06b070c0d83b1a",
+  "original_prompt": "Ingested from coreutils-9.4/lib/free.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n \n#include <stdlib.h>\n\n \n#if !HAVE_FREE_POSIX\n\n# include <errno.h>\n\nvoid\nrpl_free (void *p)\n# undef free\n{\n# if defined __GNUC__ && !defined __clang__\n   \n  int err[2];\n  err[0] = errno;\n  err[1] = errno;\n  errno = 0;\n  free (p);\n  errno = err[errno == 0];\n# else\n  int err = errno;\n  free (p);\n  errno = err;\n# endif\n}\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

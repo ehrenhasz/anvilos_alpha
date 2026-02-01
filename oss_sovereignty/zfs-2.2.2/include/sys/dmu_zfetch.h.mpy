@@ -1,0 +1,9 @@
+{
+  "module_name": "dmu_zfetch.h",
+  "hash_id": "9604643ba7b73a9270f8dc8d673ddaaa000367a9e8ca21a5e3a77af1567bc467",
+  "original_prompt": "Ingested from zfs-2.2.2/include/sys/dmu_zfetch.h",
+  "human_readable_source": " \n \n\n \n\n#ifndef\t_DMU_ZFETCH_H\n#define\t_DMU_ZFETCH_H\n\n#include <sys/zfs_context.h>\n\n#ifdef\t__cplusplus\nextern \"C\" {\n#endif\n\nstruct dnode;\t\t\t\t \n\ntypedef struct zfetch {\n\tkmutex_t\tzf_lock;\t \n\tlist_t\t\tzf_stream;\t \n\tstruct dnode\t*zf_dnode;\t \n\tint\t\tzf_numstreams;\t \n} zfetch_t;\n\ntypedef struct zstream {\n\tuint64_t\tzs_blkid;\t \n\tunsigned int\tzs_pf_dist;\t \n\tunsigned int\tzs_ipf_dist;\t \n\tuint64_t\tzs_pf_start;\t \n\tuint64_t\tzs_pf_end;\t \n\tuint64_t\tzs_ipf_start;\t \n\tuint64_t\tzs_ipf_end;\t \n\n\tlist_node_t\tzs_node;\t \n\thrtime_t\tzs_atime;\t \n\tzfetch_t\t*zs_fetch;\t \n\tboolean_t\tzs_missed;\t \n\tboolean_t\tzs_more;\t \n\tzfs_refcount_t\tzs_callers;\t \n\t \n\tzfs_refcount_t\tzs_refs;\n} zstream_t;\n\nvoid\t\tzfetch_init(void);\nvoid\t\tzfetch_fini(void);\n\nvoid\t\tdmu_zfetch_init(zfetch_t *, struct dnode *);\nvoid\t\tdmu_zfetch_fini(zfetch_t *);\nzstream_t\t*dmu_zfetch_prepare(zfetch_t *, uint64_t, uint64_t, boolean_t,\n    boolean_t);\nvoid\t\tdmu_zfetch_run(zstream_t *, boolean_t, boolean_t);\nvoid\t\tdmu_zfetch(zfetch_t *, uint64_t, uint64_t, boolean_t, boolean_t,\n    boolean_t);\n\n\n#ifdef\t__cplusplus\n}\n#endif\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

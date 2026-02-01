@@ -1,0 +1,9 @@
+{
+  "module_name": "ocelot.h",
+  "hash_id": "2164c9024fd43dd088af1bcba99b814a51cd18dafdb3ac2514deeb24a421c2eb",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/mfd/ocelot.h",
+  "human_readable_source": " \n \n\n#ifndef _MFD_OCELOT_H\n#define _MFD_OCELOT_H\n\n#include <linux/kconfig.h>\n\nstruct device;\nstruct regmap;\nstruct resource;\n\n \nstruct ocelot_ddata {\n\tstruct regmap *gcb_regmap;\n\tstruct regmap *cpuorg_regmap;\n\tint spi_padding_bytes;\n\tvoid *dummy_buf;\n};\n\nint ocelot_chip_reset(struct device *dev);\nint ocelot_core_init(struct device *dev);\n\n \nstruct regmap *ocelot_spi_init_regmap(struct device *dev,\n\t\t\t\t      const struct resource *res);\n\n#define OCELOT_SPI_BYTE_ORDER_LE 0x00000000\n#define OCELOT_SPI_BYTE_ORDER_BE 0x81818181\n\n#ifdef __LITTLE_ENDIAN\n#define OCELOT_SPI_BYTE_ORDER OCELOT_SPI_BYTE_ORDER_LE\n#else\n#define OCELOT_SPI_BYTE_ORDER OCELOT_SPI_BYTE_ORDER_BE\n#endif\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "psample.h",
+  "hash_id": "e6988357e41bd2f2a575660c7593d0033059f566d6217f22213626e8b1fda106",
+  "original_prompt": "Ingested from linux-6.6.14/include/net/psample.h",
+  "human_readable_source": " \n#ifndef __NET_PSAMPLE_H\n#define __NET_PSAMPLE_H\n\n#include <uapi/linux/psample.h>\n#include <linux/list.h>\n\nstruct psample_group {\n\tstruct list_head list;\n\tstruct net *net;\n\tu32 group_num;\n\tu32 refcount;\n\tu32 seq;\n\tstruct rcu_head rcu;\n};\n\nstruct psample_metadata {\n\tu32 trunc_size;\n\tint in_ifindex;\n\tint out_ifindex;\n\tu16 out_tc;\n\tu64 out_tc_occ;\t \n\tu64 latency;\t \n\tu8 out_tc_valid:1,\n\t   out_tc_occ_valid:1,\n\t   latency_valid:1,\n\t   unused:5;\n};\n\nstruct psample_group *psample_group_get(struct net *net, u32 group_num);\nvoid psample_group_take(struct psample_group *group);\nvoid psample_group_put(struct psample_group *group);\n\nstruct sk_buff;\n\n#if IS_ENABLED(CONFIG_PSAMPLE)\n\nvoid psample_sample_packet(struct psample_group *group, struct sk_buff *skb,\n\t\t\t   u32 sample_rate, const struct psample_metadata *md);\n\n#else\n\nstatic inline void psample_sample_packet(struct psample_group *group,\n\t\t\t\t\t struct sk_buff *skb, u32 sample_rate,\n\t\t\t\t\t const struct psample_metadata *md)\n{\n}\n\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

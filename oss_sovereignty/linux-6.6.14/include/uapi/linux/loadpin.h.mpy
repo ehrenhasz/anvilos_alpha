@@ -1,0 +1,9 @@
+{
+  "module_name": "loadpin.h",
+  "hash_id": "5a7c9a88d4895a4173486326f72f21abb4068e0658d12b8fa0be30b38f17e737",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/loadpin.h",
+  "human_readable_source": " \n \n\n#ifndef _UAPI_LINUX_LOOP_LOADPIN_H\n#define _UAPI_LINUX_LOOP_LOADPIN_H\n\n#define LOADPIN_IOC_MAGIC\t'L'\n\n \n#define LOADPIN_IOC_SET_TRUSTED_VERITY_DIGESTS _IOW(LOADPIN_IOC_MAGIC, 0x00, unsigned int)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

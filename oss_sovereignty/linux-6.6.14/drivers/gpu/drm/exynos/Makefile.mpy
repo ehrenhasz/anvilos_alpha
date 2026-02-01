@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "91360d4288576a50fb652de8d7eda0049dc4140737d2cabee87959f4467226b4",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/exynos/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for the drm device driver.  This driver provides support for the\n# Direct Rendering Infrastructure (DRI) in XFree86 4.1.0 and higher.\n\nexynosdrm-y := exynos_drm_drv.o exynos_drm_crtc.o exynos_drm_fb.o \\\n\t\texynos_drm_gem.o exynos_drm_plane.o exynos_drm_dma.o\n\nexynosdrm-$(CONFIG_DRM_FBDEV_EMULATION) += exynos_drm_fbdev.o\nexynosdrm-$(CONFIG_DRM_EXYNOS_FIMD)\t+= exynos_drm_fimd.o\nexynosdrm-$(CONFIG_DRM_EXYNOS5433_DECON)\t+= exynos5433_drm_decon.o\nexynosdrm-$(CONFIG_DRM_EXYNOS7_DECON)\t+= exynos7_drm_decon.o\nexynosdrm-$(CONFIG_DRM_EXYNOS_DPI)\t+= exynos_drm_dpi.o\nexynosdrm-$(CONFIG_DRM_EXYNOS_DSI)\t+= exynos_drm_dsi.o\nexynosdrm-$(CONFIG_DRM_EXYNOS_DP)\t+= exynos_dp.o\nexynosdrm-$(CONFIG_DRM_EXYNOS_MIXER)\t+= exynos_mixer.o\nexynosdrm-$(CONFIG_DRM_EXYNOS_HDMI)\t+= exynos_hdmi.o\nexynosdrm-$(CONFIG_DRM_EXYNOS_VIDI)\t+= exynos_drm_vidi.o\nexynosdrm-$(CONFIG_DRM_EXYNOS_G2D)\t+= exynos_drm_g2d.o\nexynosdrm-$(CONFIG_DRM_EXYNOS_IPP)\t+= exynos_drm_ipp.o\nexynosdrm-$(CONFIG_DRM_EXYNOS_FIMC)\t+= exynos_drm_fimc.o\nexynosdrm-$(CONFIG_DRM_EXYNOS_ROTATOR)\t+= exynos_drm_rotator.o\nexynosdrm-$(CONFIG_DRM_EXYNOS_SCALER)\t+= exynos_drm_scaler.o\nexynosdrm-$(CONFIG_DRM_EXYNOS_GSC)\t+= exynos_drm_gsc.o\nexynosdrm-$(CONFIG_DRM_EXYNOS_MIC)     += exynos_drm_mic.o\n\nobj-$(CONFIG_DRM_EXYNOS)\t\t+= exynosdrm.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

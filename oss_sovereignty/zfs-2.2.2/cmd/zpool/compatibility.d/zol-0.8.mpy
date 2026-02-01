@@ -1,0 +1,9 @@
+{
+  "module_name": "zol-0.8",
+  "hash_id": "b93b016a9ab98553250d20a9d3e8aca5dc61a63e1aa2433b13b6bdd73e7e8a58",
+  "original_prompt": "Ingested from zfs-2.2.2/cmd/zpool/compatibility.d/zol-0.8",
+  "human_readable_source": "# Features supported by ZFSonLinux v0.8\nallocation_classes\nasync_destroy\nbookmark_v2\nbookmarks\ndevice_removal\nedonr\nembedded_data\nempty_bpobj\nenabled_txg\nencryption\nextensible_dataset\nfilesystem_limits\nhole_birth\nlarge_blocks\nlarge_dnode\nlz4_compress\nmulti_vdev_crash_dump\nobsolete_counts\nproject_quota\nresilver_defer\nsha512\nskein\nspacemap_histogram\nspacemap_v2\nuserobj_accounting\nzpool_checkpoint\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

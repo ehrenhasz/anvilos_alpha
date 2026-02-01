@@ -1,0 +1,9 @@
+{
+  "module_name": "sun4i_rgb.h",
+  "hash_id": "720f0674e98c914379256fa028e8352b8c3d6cb2339b06f081212f17b51b833d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/sun4i/sun4i_rgb.h",
+  "human_readable_source": " \n \n\n#ifndef _SUN4I_RGB_H_\n#define _SUN4I_RGB_H_\n\nint sun4i_rgb_init(struct drm_device *drm, struct sun4i_tcon *tcon);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

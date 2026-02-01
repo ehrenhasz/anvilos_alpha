@@ -1,0 +1,9 @@
+{
+  "module_name": "sysfs.c",
+  "hash_id": "c2dc4c5f270b348f552188f6f41b83b1bd277f7085f2036bc1149aba351de477",
+  "original_prompt": "Ingested from linux-6.6.14/sound/aoa/soundbus/sysfs.c",
+  "human_readable_source": "\n#include <linux/kernel.h>\n#include <linux/of.h>\n#include <linux/stat.h>\n \n#include \"soundbus.h\"\n\nstatic ssize_t modalias_show(struct device *dev, struct device_attribute *attr,\n\t\t\t     char *buf)\n{\n\tstruct soundbus_dev *sdev = to_soundbus_device(dev);\n\tstruct platform_device *of = &sdev->ofdev;\n\n\tif (*sdev->modalias)\n\t\treturn sysfs_emit(buf, \"%s\\n\", sdev->modalias);\n\telse\n\t\treturn sysfs_emit(buf, \"of:N%pOFn%c%s\\n\",\n\t\t\t\t  of->dev.of_node, 'T',\n\t\t\t\t  of_node_get_device_type(of->dev.of_node));\n}\nstatic DEVICE_ATTR_RO(modalias);\n\nstatic ssize_t name_show(struct device *dev,\n\t\t\t struct device_attribute *attr, char *buf)\n{\n\tstruct soundbus_dev *sdev = to_soundbus_device(dev);\n\tstruct platform_device *of = &sdev->ofdev;\n\n\treturn sysfs_emit(buf, \"%pOFn\\n\", of->dev.of_node);\n}\nstatic DEVICE_ATTR_RO(name);\n\nstatic ssize_t type_show(struct device *dev,\n\t\t\t struct device_attribute *attr, char *buf)\n{\n\tstruct soundbus_dev *sdev = to_soundbus_device(dev);\n\tstruct platform_device *of = &sdev->ofdev;\n\n\treturn sysfs_emit(buf, \"%s\\n\", of_node_get_device_type(of->dev.of_node));\n}\nstatic DEVICE_ATTR_RO(type);\n\nstruct attribute *soundbus_dev_attrs[] = {\n\t&dev_attr_name.attr,\n\t&dev_attr_type.attr,\n\t&dev_attr_modalias.attr,\n\tNULL,\n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "serial-omap.h",
+  "hash_id": "8a389619bccb44474cff59a54fcaa466044607af063fabd7250c80f4808862f1",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/platform_data/serial-omap.h",
+  "human_readable_source": " \n \n\n#ifndef __OMAP_SERIAL_H__\n#define __OMAP_SERIAL_H__\n\n#include <linux/serial_core.h>\n#include <linux/device.h>\n#include <linux/pm_qos.h>\n\n#define OMAP_SERIAL_DRIVER_NAME\t\"omap_uart\"\n\n \n#define OMAP_SERIAL_NAME\t\"ttyO\"\n\nstruct omap_uart_port_info {\n\tbool\t\t\tdma_enabled;\t \n\tunsigned int\t\tuartclk;\t \n\tupf_t\t\t\tflags;\t\t \n\tunsigned int\t\tdma_rx_buf_size;\n\tunsigned int\t\tdma_rx_timeout;\n\tunsigned int\t\tautosuspend_timeout;\n\tunsigned int\t\tdma_rx_poll_rate;\n\n\tint (*get_context_loss_count)(struct device *);\n\tvoid (*enable_wakeup)(struct device *, bool);\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

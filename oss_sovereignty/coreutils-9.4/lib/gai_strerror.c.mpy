@@ -1,0 +1,9 @@
+{
+  "module_name": "gai_strerror.c",
+  "hash_id": "73234615906cc8dfb0f56a633f1da8effb0ba6910ba797049b642acb597d24a4",
+  "original_prompt": "Ingested from coreutils-9.4/lib/gai_strerror.c",
+  "human_readable_source": " \n\nstatic struct\n  {\n    int code;\n    const char *msg;\n  }\nvalues[] =\n  {\n    { EAI_ADDRFAMILY, N_(\"Address family for hostname not supported\") },\n    { EAI_AGAIN, N_(\"Temporary failure in name resolution\") },\n    { EAI_BADFLAGS, N_(\"Bad value for ai_flags\") },\n    { EAI_FAIL, N_(\"Non-recoverable failure in name resolution\") },\n    { EAI_FAMILY, N_(\"ai_family not supported\") },\n    { EAI_MEMORY, N_(\"Memory allocation failure\") },\n    { EAI_NODATA, N_(\"No address associated with hostname\") },\n    { EAI_NONAME, N_(\"Name or service not known\") },\n    { EAI_SERVICE, N_(\"Servname not supported for ai_socktype\") },\n    { EAI_SOCKTYPE, N_(\"ai_socktype not supported\") },\n    { EAI_SYSTEM, N_(\"System error\") },\n    { EAI_OVERFLOW, N_(\"Argument buffer too small\") },\n#ifdef EAI_INPROGRESS\n    { EAI_INPROGRESS, N_(\"Processing request in progress\") },\n    { EAI_CANCELED, N_(\"Request canceled\") },\n    { EAI_NOTCANCELED, N_(\"Request not canceled\") },\n    { EAI_ALLDONE, N_(\"All requests done\") },\n    { EAI_INTR, N_(\"Interrupted by a signal\") },\n    { EAI_IDN_ENCODE, N_(\"Parameter string not correctly encoded\") }\n#endif\n  };\n\nconst char *\ngai_strerror (int code)\n{\n  size_t i;\n  for (i = 0; i < sizeof (values) / sizeof (values[0]); ++i)\n    if (values[i].code == code)\n      return _(values[i].msg);\n\n  return _(\"Unknown error\");\n}\n# ifdef _LIBC\nlibc_hidden_def (gai_strerror)\n# endif\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

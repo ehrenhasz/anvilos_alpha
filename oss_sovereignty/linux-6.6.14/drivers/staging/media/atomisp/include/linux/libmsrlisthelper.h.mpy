@@ -1,0 +1,9 @@
+{
+  "module_name": "libmsrlisthelper.h",
+  "hash_id": "a2a179ed463cd8df81e134593076d47c986b6d88f3df99cb4fa4c0888f7e417d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/include/linux/libmsrlisthelper.h",
+  "human_readable_source": " \n \n#ifndef __LIBMSRLISTHELPER_H__\n#define __LIBMSRLISTHELPER_H__\n\nstruct i2c_client;\nstruct firmware;\n\nint load_msr_list(struct i2c_client *client, char *path,\n\t\t  const struct firmware **fw);\nint apply_msr_data(struct i2c_client *client, const struct firmware *fw);\nvoid release_msr_list(struct i2c_client *client,\n\t\t      const struct firmware *fw);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

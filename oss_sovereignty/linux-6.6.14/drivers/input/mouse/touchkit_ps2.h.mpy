@@ -1,0 +1,9 @@
+{
+  "module_name": "touchkit_ps2.h",
+  "hash_id": "1f99f9b6f1e280c8e6c5cc7ec01230cb1da94281889b9c1d8767869b08a685e0",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/input/mouse/touchkit_ps2.h",
+  "human_readable_source": " \n \n\n#ifndef _TOUCHKIT_PS2_H\n#define _TOUCHKIT_PS2_H\n\nint touchkit_ps2_detect(struct psmouse *psmouse, bool set_properties);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

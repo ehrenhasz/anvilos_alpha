@@ -1,0 +1,9 @@
+{
+  "module_name": "exec-cmd.h",
+  "hash_id": "8bae8071ac6508ff5e4e63270a6b302433ccd5abee76e653a285368ed6a16c9b",
+  "original_prompt": "Ingested from linux-6.6.14/tools/lib/subcmd/exec-cmd.h",
+  "human_readable_source": " \n#ifndef __SUBCMD_EXEC_CMD_H\n#define __SUBCMD_EXEC_CMD_H\n\nextern void exec_cmd_init(const char *exec_name, const char *prefix,\n\t\t\t  const char *exec_path, const char *exec_path_env);\n\nextern void set_argv_exec_path(const char *exec_path);\nextern const char *extract_argv0_path(const char *path);\nextern void setup_path(void);\nextern int execv_cmd(const char **argv);  \nextern int execl_cmd(const char *cmd, ...);\n \nextern char *get_argv_exec_path(void);\nextern char *system_path(const char *path);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

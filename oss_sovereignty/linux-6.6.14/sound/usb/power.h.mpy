@@ -1,0 +1,9 @@
+{
+  "module_name": "power.h",
+  "hash_id": "2711f305c5d843b5d619d989676a6fe553ecf1fce4ac3f602315afc98f3dd954",
+  "original_prompt": "Ingested from linux-6.6.14/sound/usb/power.h",
+  "human_readable_source": " \n#ifndef __USBAUDIO_POWER_H\n#define __USBAUDIO_POWER_H\n\nstruct snd_usb_power_domain {\n\tint pd_id;               \n\tint pd_d1d0_rec;         \n\tint pd_d2d0_rec;         \n};\n\nenum {\n\tUAC3_PD_STATE_D0,\n\tUAC3_PD_STATE_D1,\n\tUAC3_PD_STATE_D2,\n};\n\nint snd_usb_power_domain_set(struct snd_usb_audio *chip,\n\t\t\t     struct snd_usb_power_domain *pd,\n\t\t\t     unsigned char state);\nstruct snd_usb_power_domain *\nsnd_usb_find_power_domain(struct usb_host_interface *ctrl_iface,\n\t\t\t  unsigned char id);\n\nint snd_usb_autoresume(struct snd_usb_audio *chip);\nvoid snd_usb_autosuspend(struct snd_usb_audio *chip);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

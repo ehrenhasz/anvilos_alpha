@@ -1,0 +1,9 @@
+{
+  "module_name": "m_item_val.c",
+  "hash_id": "fad8e928ac5d6fdf4e26385ecab2a48890d275ef1b6aa2bde3cb4b273de833ee",
+  "original_prompt": "Ingested from ncurses-6.4/menu/m_item_val.c",
+  "human_readable_source": " \n\n \n\n \n\n#include \"menu.priv.h\"\n\nMODULE_ID(\"$Id: m_item_val.c,v 1.20 2021/06/17 21:11:08 tom Exp $\")\n\n \nMENU_EXPORT(int)\nset_item_value(ITEM *item, bool value)\n{\n  T((T_CALLED(\"set_item_value(%p,%d)\"), (void *)item, value));\n  if (item)\n    {\n      MENU *menu = item->imenu;\n\n      if ((!(item->opt & O_SELECTABLE)) ||\n\t  (menu && (menu->opt & O_ONEVALUE)))\n\tRETURN(E_REQUEST_DENIED);\n\n      if (item->value ^ value)\n\t{\n\t  item->value = value ? TRUE : FALSE;\n\t  if (menu)\n\t    {\n\t      if (menu->status & _POSTED)\n\t\t{\n\t\t  Move_And_Post_Item(menu, item);\n\t\t  _nc_Show_Menu(menu);\n\t\t}\n\t    }\n\t}\n    }\n  else\n    _nc_Default_Item.value = value;\n\n  RETURN(E_OK);\n}\n\n \nMENU_EXPORT(bool)\nitem_value(const ITEM *item)\n{\n  T((T_CALLED(\"item_value(%p)\"), (const void *)item));\n  returnBool((Normalize_Item(item)->value) ? TRUE : FALSE);\n}\n\n \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

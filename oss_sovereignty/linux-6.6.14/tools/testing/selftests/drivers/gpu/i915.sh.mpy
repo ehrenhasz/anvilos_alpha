@@ -1,0 +1,9 @@
+{
+  "module_name": "i915.sh",
+  "hash_id": "66d8b9e4d47ddea192f5a6c71bfe590f255bc3c1a7572fdfe3c5f79ff7e6c9a2",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/drivers/gpu/i915.sh",
+  "human_readable_source": "#!/bin/sh\n# SPDX-License-Identifier: GPL-2.0\n# Runs hardware independent tests for i915 (drivers/gpu/drm/i915)\n\nif ! /sbin/modprobe -q -r i915; then\n\techo \"drivers/gpu/i915: [SKIP]\"\n\texit 77\nfi\n\nif /sbin/modprobe -q i915 mock_selftests=-1; then\n\t/sbin/modprobe -q -r i915\n\techo \"drivers/gpu/i915: ok\"\nelse\n\techo \"drivers/gpu/i915: [FAIL]\"\n\texit 1\nfi\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

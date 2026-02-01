@@ -1,0 +1,9 @@
+{
+  "module_name": "tc-driver.c",
+  "hash_id": "79f90b8de066eee4335291c0b347410d8df2095eb1909a06d3e4401fe201e35a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/tc/tc-driver.c",
+  "human_readable_source": " \n\n#include <linux/init.h>\n#include <linux/module.h>\n#include <linux/tc.h>\n\n \nint tc_register_driver(struct tc_driver *tdrv)\n{\n\treturn driver_register(&tdrv->driver);\n}\nEXPORT_SYMBOL(tc_register_driver);\n\n \nvoid tc_unregister_driver(struct tc_driver *tdrv)\n{\n\tdriver_unregister(&tdrv->driver);\n}\nEXPORT_SYMBOL(tc_unregister_driver);\n\n \nstatic const struct tc_device_id *tc_match_device(struct tc_driver *tdrv,\n\t\t\t\t\t\t  struct tc_dev *tdev)\n{\n\tconst struct tc_device_id *id = tdrv->id_table;\n\n\tif (id) {\n\t\twhile (id->name[0] || id->vendor[0]) {\n\t\t\tif (strcmp(tdev->name, id->name) == 0 &&\n\t\t\t    strcmp(tdev->vendor, id->vendor) == 0)\n\t\t\t\treturn id;\n\t\t\tid++;\n\t\t}\n\t}\n\treturn NULL;\n}\n\n \nstatic int tc_bus_match(struct device *dev, struct device_driver *drv)\n{\n\tstruct tc_dev *tdev = to_tc_dev(dev);\n\tstruct tc_driver *tdrv = to_tc_driver(drv);\n\tconst struct tc_device_id *id;\n\n\tid = tc_match_device(tdrv, tdev);\n\tif (id)\n\t\treturn 1;\n\n\treturn 0;\n}\n\nstruct bus_type tc_bus_type = {\n\t.name\t= \"tc\",\n\t.match\t= tc_bus_match,\n};\nEXPORT_SYMBOL(tc_bus_type);\n\nstatic int __init tc_driver_init(void)\n{\n\treturn bus_register(&tc_bus_type);\n}\n\npostcore_initcall(tc_driver_init);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

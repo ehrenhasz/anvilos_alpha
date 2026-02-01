@@ -1,0 +1,9 @@
+{
+  "module_name": "umc_6_0_offset.h",
+  "hash_id": "f094a201a3d5e6035828805a5bb4a3434f8b3a770ebd84a8d4416165c9c99060",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/include/asic_reg/umc/umc_6_0_offset.h",
+  "human_readable_source": " \n\n#ifndef _umc_6_0_OFFSET_H_\n#define _umc_6_0_OFFSET_H_\n\n#define mmUMCCH0_0_EccCtrl\t\t\t\t0x0053\n#define mmUMCCH0_0_EccCtrl_BASE_IDX\t\t\t0\n#define mmUMCCH1_0_EccCtrl\t\t\t\t0x0853\n#define mmUMCCH1_0_EccCtrl_BASE_IDX\t\t\t0\n#define mmUMCCH2_0_EccCtrl\t\t\t\t0x1053\n#define mmUMCCH2_0_EccCtrl_BASE_IDX\t\t\t0\n#define mmUMCCH3_0_EccCtrl\t\t\t\t0x1853\n#define mmUMCCH3_0_EccCtrl_BASE_IDX\t\t\t0\n\n#define mmUMCCH0_0_UMC_CONFIG\t\t\t\t0x0040\n#define mmUMCCH0_0_UMC_CONFIG_BASE_IDX\t\t\t0\n#define mmUMCCH1_0_UMC_CONFIG\t\t\t\t0x0840\n#define mmUMCCH1_0_UMC_CONFIG_BASE_IDX\t\t\t0\n#define mmUMCCH2_0_UMC_CONFIG\t\t\t\t0x1040\n#define mmUMCCH2_0_UMC_CONFIG_BASE_IDX\t\t\t0\n#define mmUMCCH3_0_UMC_CONFIG\t\t\t\t0x1840\n#define mmUMCCH3_0_UMC_CONFIG_BASE_IDX\t\t\t0\n\n#define mmUMCCH0_0_UmcLocalCap\t\t\t\t0x0306\n#define mmUMCCH0_0_UmcLocalCap_BASE_IDX\t\t\t0\n#define mmUMCCH1_0_UmcLocalCap\t\t\t\t0x0b06\n#define mmUMCCH1_0_UmcLocalCap_BASE_IDX\t\t\t0\n#define mmUMCCH2_0_UmcLocalCap\t\t\t\t0x1306\n#define mmUMCCH2_0_UmcLocalCap_BASE_IDX\t\t\t0\n#define mmUMCCH3_0_UmcLocalCap\t\t\t\t0x1b06\n#define mmUMCCH3_0_UmcLocalCap_BASE_IDX\t\t\t0\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

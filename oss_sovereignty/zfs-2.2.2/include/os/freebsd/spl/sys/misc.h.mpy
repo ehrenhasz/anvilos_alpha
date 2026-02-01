@@ -1,0 +1,9 @@
+{
+  "module_name": "misc.h",
+  "hash_id": "0a593c37596c4c6b449d96cb992a2bcd2fa424d83cc0823934a08678784fc5a2",
+  "original_prompt": "Ingested from zfs-2.2.2/include/os/freebsd/spl/sys/misc.h",
+  "human_readable_source": " \n\n#ifndef _OPENSOLARIS_SYS_MISC_H_\n#define\t_OPENSOLARIS_SYS_MISC_H_\n\n#include <sys/limits.h>\n#include <sys/filio.h>\n\n#define\tMAXUID\tUID_MAX\n\n#define\t_ACL_ACLENT_ENABLED\t0x1\n#define\t_ACL_ACE_ENABLED\t0x2\n\n#define\t_FIOFFS\t\t(INT_MIN)\n#define\t_FIOGDIO\t(INT_MIN+1)\n#define\t_FIOSDIO\t(INT_MIN+2)\n\n#define\tF_SEEK_DATA\tFIOSEEKDATA\n#define\tF_SEEK_HOLE\tFIOSEEKHOLE\n\nstruct opensolaris_utsname {\n\tchar\t*sysname;\n\tchar\t*nodename;\n\tchar\t*release;\n\tchar\tversion[32];\n\tchar\t*machine;\n};\n\n#define\ttask_io_account_read(n)\n#define\ttask_io_account_write(n)\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

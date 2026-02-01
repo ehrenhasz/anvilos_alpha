@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile-keyspan_pda_fw",
+  "hash_id": "b841ff04f9cef12361af37c54fce44fed8db69a5b7563d3e4261a285d4f820ee",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/usb/serial/Makefile-keyspan_pda_fw",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n\n# some rules to handle the quirks of the 'as31' assembler, like\n# insisting upon fixed suffixes for the input and output files,\n# and its lack of preprocessor support\n\nall: keyspan_pda_fw.h\n\n%.asm: %.S\n\tgcc -x assembler-with-cpp -P -E -o $@ $<\n\n%.hex: %.asm\n\tas31 -l $<\n\tmv $*.obj $@\n\n%_fw.h: %.hex ezusb_convert.pl\n\tperl ezusb_convert.pl $* < $< > $@\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

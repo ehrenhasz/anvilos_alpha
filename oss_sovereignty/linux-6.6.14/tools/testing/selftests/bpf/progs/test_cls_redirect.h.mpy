@@ -1,0 +1,9 @@
+{
+  "module_name": "test_cls_redirect.h",
+  "hash_id": "c83e0ec94f85c4bb02c07ac362db86279e2d4b21107f32d8a3d199f7cc59b1e1",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/test_cls_redirect.h",
+  "human_readable_source": " \n \n\n#include <stdbool.h>\n#include <stddef.h>\n#include <stdint.h>\n#include <string.h>\n\n#include <linux/if_ether.h>\n#include <linux/in.h>\n#include <linux/ip.h>\n#include <linux/ipv6.h>\n#include <linux/udp.h>\n\n \n#ifdef offsetof\n#undef offsetof\n#define offsetof(type, member) __builtin_offsetof(type, member)\n#endif\n\nstruct gre_base_hdr {\n\tuint16_t flags;\n\tuint16_t protocol;\n} __attribute__((packed));\n\nstruct guehdr {\n#if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__\n\tuint8_t hlen : 5, control : 1, variant : 2;\n#else\n\tuint8_t variant : 2, control : 1, hlen : 5;\n#endif\n\tuint8_t proto_ctype;\n\tuint16_t flags;\n};\n\nstruct unigue {\n#if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__\n\tuint8_t _r : 2, last_hop_gre : 1, forward_syn : 1, version : 4;\n#else\n\tuint8_t version : 4, forward_syn : 1, last_hop_gre : 1, _r : 2;\n#endif\n\tuint8_t reserved;\n\tuint8_t next_hop;\n\tuint8_t hop_count;\n\t\n} __attribute__((packed));\n\ntypedef struct {\n\tstruct ethhdr eth;\n\tstruct iphdr ip;\n\tstruct gre_base_hdr gre;\n} __attribute__((packed)) encap_gre_t;\n\ntypedef struct {\n\tstruct ethhdr eth;\n\tstruct iphdr ip;\n\tstruct udphdr udp;\n\tstruct guehdr gue;\n\tstruct unigue unigue;\n} __attribute__((packed)) encap_headers_t;\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

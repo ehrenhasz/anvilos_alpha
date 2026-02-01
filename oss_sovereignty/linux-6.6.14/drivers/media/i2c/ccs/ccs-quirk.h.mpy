@@ -1,0 +1,9 @@
+{
+  "module_name": "ccs-quirk.h",
+  "hash_id": "546f083372b38a6d5f10c775aa4c7289a6c90c1dcd2fc46c459de0c8997af229",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/i2c/ccs/ccs-quirk.h",
+  "human_readable_source": " \n \n\n#ifndef __CCS_QUIRK__\n#define __CCS_QUIRK__\n\nstruct ccs_sensor;\n\n \nstruct ccs_quirk {\n\tint (*limits)(struct ccs_sensor *sensor);\n\tint (*post_poweron)(struct ccs_sensor *sensor);\n\tint (*pre_streamon)(struct ccs_sensor *sensor);\n\tint (*post_streamoff)(struct ccs_sensor *sensor);\n\tunsigned long (*pll_flags)(struct ccs_sensor *sensor);\n\tint (*init)(struct ccs_sensor *sensor);\n\tint (*reg_access)(struct ccs_sensor *sensor, bool write, u32 *reg,\n\t\t\t  u32 *val);\n\tunsigned long flags;\n};\n\n#define CCS_QUIRK_FLAG_8BIT_READ_ONLY\t\t\t(1 << 0)\n\nstruct ccs_reg_8 {\n\tu16 reg;\n\tu8 val;\n};\n\n#define CCS_MK_QUIRK_REG_8(_reg, _val) \\\n\t{\t\t\t\t\\\n\t\t.reg = (u16)_reg,\t\\\n\t\t.val = _val,\t\t\\\n\t}\n\n#define ccs_call_quirk(sensor, _quirk, ...)\t\t\t\t\\\n\t((sensor)->minfo.quirk &&\t\t\t\t\t\\\n\t (sensor)->minfo.quirk->_quirk ?\t\t\t\t\\\n\t (sensor)->minfo.quirk->_quirk(sensor, ##__VA_ARGS__) : 0)\n\n#define ccs_needs_quirk(sensor, _quirk)\t\t\\\n\t((sensor)->minfo.quirk ?\t\t\t\\\n\t (sensor)->minfo.quirk->flags & _quirk : 0)\n\nextern const struct ccs_quirk smiapp_jt8ev1_quirk;\nextern const struct ccs_quirk smiapp_imx125es_quirk;\nextern const struct ccs_quirk smiapp_jt8ew9_quirk;\nextern const struct ccs_quirk smiapp_tcm8500md_quirk;\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

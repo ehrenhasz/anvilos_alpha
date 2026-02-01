@@ -1,0 +1,9 @@
+{
+  "module_name": "bfs.h",
+  "hash_id": "0476998d2947fc30b2544dd0e121f7610ba9a8e3a3650a95ddcd2a2d6a40b2fa",
+  "original_prompt": "Ingested from linux-6.6.14/fs/bfs/bfs.h",
+  "human_readable_source": " \n \n#ifndef _FS_BFS_BFS_H\n#define _FS_BFS_BFS_H\n\n#include <linux/bfs_fs.h>\n\n \n#define BFS_MAX_LASTI\t513\n\n \nstruct bfs_sb_info {\n\tunsigned long si_blocks;\n\tunsigned long si_freeb;\n\tunsigned long si_freei;\n\tunsigned long si_lf_eblk;\n\tunsigned long si_lasti;\n\tDECLARE_BITMAP(si_imap, BFS_MAX_LASTI+1);\n\tstruct mutex bfs_lock;\n};\n\n \nstruct bfs_inode_info {\n\tunsigned long i_dsk_ino;  \n\tunsigned long i_sblock;\n\tunsigned long i_eblock;\n\tstruct inode vfs_inode;\n};\n\nstatic inline struct bfs_sb_info *BFS_SB(struct super_block *sb)\n{\n\treturn sb->s_fs_info;\n}\n\nstatic inline struct bfs_inode_info *BFS_I(struct inode *inode)\n{\n\treturn container_of(inode, struct bfs_inode_info, vfs_inode);\n}\n\n\n#define printf(format, args...) \\\n\tprintk(KERN_ERR \"BFS-fs: %s(): \" format, __func__, ## args)\n\n \nextern struct inode *bfs_iget(struct super_block *sb, unsigned long ino);\nextern void bfs_dump_imap(const char *, struct super_block *);\n\n \nextern const struct inode_operations bfs_file_inops;\nextern const struct file_operations bfs_file_operations;\nextern const struct address_space_operations bfs_aops;\n\n \nextern const struct inode_operations bfs_dir_inops;\nextern const struct file_operations bfs_dir_operations;\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

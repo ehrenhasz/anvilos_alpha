@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "7b6fdd8162c293c73e63db99c50c81c5d05586ceb9928e8ace100fc46f99811e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/marvell/octeontx2/nic/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for Marvell's RVU Ethernet device drivers\n#\n\nobj-$(CONFIG_OCTEONTX2_PF) += rvu_nicpf.o otx2_ptp.o\nobj-$(CONFIG_OCTEONTX2_VF) += rvu_nicvf.o otx2_ptp.o\n\nrvu_nicpf-y := otx2_pf.o otx2_common.o otx2_txrx.o otx2_ethtool.o \\\n               otx2_flows.o otx2_tc.o cn10k.o otx2_dmac_flt.o \\\n               otx2_devlink.o qos_sq.o qos.o\nrvu_nicvf-y := otx2_vf.o otx2_devlink.o\n\nrvu_nicpf-$(CONFIG_DCB) += otx2_dcbnl.o\nrvu_nicvf-$(CONFIG_DCB) += otx2_dcbnl.o\nrvu_nicpf-$(CONFIG_MACSEC) += cn10k_macsec.o\n\nccflags-y += -I$(srctree)/drivers/net/ethernet/marvell/octeontx2/af\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

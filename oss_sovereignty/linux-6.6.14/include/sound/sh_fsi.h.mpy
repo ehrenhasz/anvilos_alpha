@@ -1,0 +1,9 @@
+{
+  "module_name": "sh_fsi.h",
+  "hash_id": "945eec768c4209ba676a75820b4ee2a785139f98bf01f213d3eff0033b4d9583",
+  "original_prompt": "Ingested from linux-6.6.14/include/sound/sh_fsi.h",
+  "human_readable_source": " \n#ifndef __SOUND_FSI_H\n#define __SOUND_FSI_H\n\n#include <linux/clk.h>\n#include <sound/soc.h>\n\n \n#define SH_FSI_FMT_SPDIF\t\t(1 << 0)  \n#define SH_FSI_ENABLE_STREAM_MODE\t(1 << 1)  \n#define SH_FSI_CLK_CPG\t\t\t(1 << 2)  \n\nstruct sh_fsi_port_info {\n\tunsigned long flags;\n\tint tx_id;\n\tint rx_id;\n};\n\nstruct sh_fsi_platform_info {\n\tstruct sh_fsi_port_info port_a;\n\tstruct sh_fsi_port_info port_b;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

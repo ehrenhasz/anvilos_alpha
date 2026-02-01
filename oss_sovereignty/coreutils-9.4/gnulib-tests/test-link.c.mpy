@@ -1,0 +1,9 @@
+{
+  "module_name": "test-link.c",
+  "hash_id": "5805a2b818758d45b2408d001b026394a7443b557179e00329250dad06bf0a08",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-link.c",
+  "human_readable_source": " \n  ignore_value (system (\"rm -rf \" BASE \"*\"));\n\n  return test_link (link, true);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

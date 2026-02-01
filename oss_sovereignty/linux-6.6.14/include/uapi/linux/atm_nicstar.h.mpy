@@ -1,0 +1,9 @@
+{
+  "module_name": "atm_nicstar.h",
+  "hash_id": "ce967efce8c63cb3e4374fd87d4fb0ff2b0ae1e074991078fd6b34360bd44dbb",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/atm_nicstar.h",
+  "human_readable_source": " \n \n\n\n#ifndef LINUX_ATM_NICSTAR_H\n#define LINUX_ATM_NICSTAR_H\n\n \n\n#include <linux/atmapi.h>\n#include <linux/atmioc.h>\n\n#define NS_GETPSTAT\t_IOWR('a',ATMIOC_SARPRV+1,struct atmif_sioc)\n\t\t\t\t\t\t \n#define NS_SETBUFLEV\t_IOW('a',ATMIOC_SARPRV+2,struct atmif_sioc)\n\t\t\t\t\t\t \n#define NS_ADJBUFLEV\t_IO('a',ATMIOC_SARPRV+3)\n\t\t\t\t\t\t \n\ntypedef struct buf_nr\n{\n   unsigned min;\n   unsigned init;\n   unsigned max;\n}buf_nr;\n\n\ntypedef struct pool_levels\n{\n   int buftype;\n   int count;\t\t \n   buf_nr level;\n} pool_levels;\n\n \n#define NS_BUFTYPE_SMALL 1\n#define NS_BUFTYPE_LARGE 2\n#define NS_BUFTYPE_HUGE 3\n#define NS_BUFTYPE_IOVEC 4\n\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

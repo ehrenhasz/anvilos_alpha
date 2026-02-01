@@ -1,0 +1,9 @@
+{
+  "module_name": "1920x1080.S",
+  "hash_id": "c7deca02bfb54be37c9451686cf763096ab9a2bd7be2296df04c9435da789923",
+  "original_prompt": "Ingested from linux-6.6.14/tools/edid/1920x1080.S",
+  "human_readable_source": " \n\n \n#define VERSION 1\n#define REVISION 3\n\n \n#define CLOCK 148500  \n#define XPIX 1920\n#define YPIX 1080\n#define XY_RATIO XY_RATIO_16_9\n#define XBLANK 280\n#define YBLANK 45\n#define XOFFSET 88\n#define XPULSE 44\n#define YOFFSET 4\n#define YPULSE 5\n#define DPI 96\n#define VFREQ 60  \n#define TIMING_NAME \"Linux FHD\"\n \n#define HSYNC_POL 1\n#define VSYNC_POL 1\n\n#include \"edid.S\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

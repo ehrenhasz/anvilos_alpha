@@ -1,0 +1,9 @@
+{
+  "module_name": "cpumask.h",
+  "hash_id": "8b2a0513ad75d8f58c11aba728ed518cde53b089afc0b57aa3c843a9d0cfadcd",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/include/asm/cpumask.h",
+  "human_readable_source": " \n#ifndef _ASM_X86_CPUMASK_H\n#define _ASM_X86_CPUMASK_H\n#ifndef __ASSEMBLY__\n#include <linux/cpumask.h>\n\nextern void setup_cpu_local_masks(void);\n\n \n#if NR_CPUS > 1\nstatic __always_inline bool arch_cpu_online(int cpu)\n{\n\treturn arch_test_bit(cpu, cpumask_bits(cpu_online_mask));\n}\n\nstatic __always_inline void arch_cpumask_clear_cpu(int cpu, struct cpumask *dstp)\n{\n\tarch_clear_bit(cpumask_check(cpu), cpumask_bits(dstp));\n}\n#else\nstatic __always_inline bool arch_cpu_online(int cpu)\n{\n\treturn cpu == 0;\n}\n\nstatic __always_inline void arch_cpumask_clear_cpu(int cpu, struct cpumask *dstp)\n{\n\treturn;\n}\n#endif\n\n#define arch_cpu_is_offline(cpu)\tunlikely(!arch_cpu_online(cpu))\n\n#endif  \n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

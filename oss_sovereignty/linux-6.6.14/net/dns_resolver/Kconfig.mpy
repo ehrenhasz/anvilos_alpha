@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "78fe6ae1e321ac4889d2f4d339ec3081e77781ad9f0f50b193aed8eb368378fc",
+  "original_prompt": "Ingested from linux-6.6.14/net/dns_resolver/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Configuration for DNS Resolver\n#\nconfig DNS_RESOLVER\n\ttristate \"DNS Resolver support\"\n\tdepends on KEYS\n\thelp\n\t  Saying Y here will include support for the DNS Resolver key type\n\t  which can be used to make upcalls to perform DNS lookups in\n\t  userspace.\n\n\t  DNS Resolver is used to query DNS server for information.  Examples\n\t  being resolving a UNC hostname element to an IP address for CIFS or\n\t  performing a DNS query for AFSDB records so that AFS can locate a\n\t  cell's volume location database servers.\n\n\t  DNS Resolver is used by the CIFS and AFS modules, and would support\n\t  SMB2 later.  DNS Resolver is supported by the userspace upcall\n\t  helper \"/sbin/dns.resolver\" via /etc/request-key.conf.\n\n\t  See <file:Documentation/networking/dns_resolver.rst> for further\n\t  information.\n\n\t  To compile this as a module, choose M here: the module will be called\n\t  dnsresolver.\n\n\t  If unsure, say N.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

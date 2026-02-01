@@ -1,0 +1,9 @@
+{
+  "module_name": "i915_gem_pm.h",
+  "hash_id": "bebc3ba65479d8622be14860b354695626f9f6e4a182326a38f78a868e76c70a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/gem/i915_gem_pm.h",
+  "human_readable_source": " \n\n#ifndef __I915_GEM_PM_H__\n#define __I915_GEM_PM_H__\n\n#include <linux/types.h>\n\nstruct drm_i915_private;\nstruct work_struct;\n\nvoid i915_gem_resume(struct drm_i915_private *i915);\n\nvoid i915_gem_idle_work_handler(struct work_struct *work);\n\nvoid i915_gem_suspend(struct drm_i915_private *i915);\nvoid i915_gem_suspend_late(struct drm_i915_private *i915);\nint i915_gem_backup_suspend(struct drm_i915_private *i915);\n\nint i915_gem_freeze(struct drm_i915_private *i915);\nint i915_gem_freeze_late(struct drm_i915_private *i915);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

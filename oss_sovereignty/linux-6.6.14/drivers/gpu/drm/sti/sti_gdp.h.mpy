@@ -1,0 +1,9 @@
+{
+  "module_name": "sti_gdp.h",
+  "hash_id": "20387c2cfccd2b054fb6fb39c1a10c43ca792e61f9b7ebec644e6d47034f6942",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/sti/sti_gdp.h",
+  "human_readable_source": " \n \n\n#ifndef _STI_GDP_H_\n#define _STI_GDP_H_\n\n#include <linux/types.h>\n\n#include <drm/drm_plane.h>\n\nstruct drm_device;\nstruct device;\n\nstruct drm_plane *sti_gdp_create(struct drm_device *drm_dev,\n\t\t\t\t struct device *dev, int desc,\n\t\t\t\t void __iomem *baseaddr,\n\t\t\t\t unsigned int possible_crtcs,\n\t\t\t\t enum drm_plane_type type);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

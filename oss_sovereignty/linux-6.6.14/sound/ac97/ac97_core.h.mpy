@@ -1,0 +1,9 @@
+{
+  "module_name": "ac97_core.h",
+  "hash_id": "4aeefe2334c296755f076fffa85b543dd20afe09b28d5262c66fc3dc047d411c",
+  "original_prompt": "Ingested from linux-6.6.14/sound/ac97/ac97_core.h",
+  "human_readable_source": " \n \n\nunsigned int snd_ac97_bus_scan_one(struct ac97_controller *adrv,\n\t\t\t\t   unsigned int codec_num);\n\nstatic inline bool ac97_ids_match(unsigned int id1, unsigned int id2,\n\t\t\t\t  unsigned int mask)\n{\n\treturn (id1 & mask) == (id2 & mask);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

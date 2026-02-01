@@ -1,0 +1,9 @@
+{
+  "module_name": "io_bitmap.h",
+  "hash_id": "7bffac476a2e2e319a9d259019b79984dab14b468a4849925fee494885a88e39",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/include/asm/io_bitmap.h",
+  "human_readable_source": " \n#ifndef _ASM_X86_IOBITMAP_H\n#define _ASM_X86_IOBITMAP_H\n\n#include <linux/refcount.h>\n#include <asm/processor.h>\n\nstruct io_bitmap {\n\tu64\t\tsequence;\n\trefcount_t\trefcnt;\n\t \n\tunsigned int\tmax;\n\tunsigned long\tbitmap[IO_BITMAP_LONGS];\n};\n\nstruct task_struct;\n\n#ifdef CONFIG_X86_IOPL_IOPERM\nvoid io_bitmap_share(struct task_struct *tsk);\nvoid io_bitmap_exit(struct task_struct *tsk);\n\nstatic inline void native_tss_invalidate_io_bitmap(void)\n{\n\t \n\tthis_cpu_write(cpu_tss_rw.x86_tss.io_bitmap_base,\n\t\t       IO_BITMAP_OFFSET_INVALID);\n}\n\nvoid native_tss_update_io_bitmap(void);\n\n#ifdef CONFIG_PARAVIRT_XXL\n#include <asm/paravirt.h>\n#else\n#define tss_update_io_bitmap native_tss_update_io_bitmap\n#define tss_invalidate_io_bitmap native_tss_invalidate_io_bitmap\n#endif\n\n#else\nstatic inline void io_bitmap_share(struct task_struct *tsk) { }\nstatic inline void io_bitmap_exit(struct task_struct *tsk) { }\nstatic inline void tss_update_io_bitmap(void) { }\n#endif\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

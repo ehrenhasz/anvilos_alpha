@@ -1,0 +1,9 @@
+{
+  "module_name": "iommu-omap.h",
+  "hash_id": "14210d4e7d1ddee3f1866104b32d3cfa7aa405dea31ccd6f8a77d0eb0c50a679",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/platform_data/iommu-omap.h",
+  "human_readable_source": " \n \n\n#include <linux/platform_device.h>\n\nstruct iommu_platform_data {\n\tconst char *reset_name;\n\tint (*assert_reset)(struct platform_device *pdev, const char *name);\n\tint (*deassert_reset)(struct platform_device *pdev, const char *name);\n\tint (*device_enable)(struct platform_device *pdev);\n\tint (*device_idle)(struct platform_device *pdev);\n\tint (*set_pwrdm_constraint)(struct platform_device *pdev, bool request,\n\t\t\t\t    u8 *pwrst);\n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

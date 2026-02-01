@@ -1,0 +1,9 @@
+{
+  "module_name": "net_failover.h",
+  "hash_id": "ef14579d4b26be50b5f47b331aaaaed5be8ce0b9c15e2c1bb0307cb54154b668",
+  "original_prompt": "Ingested from linux-6.6.14/include/net/net_failover.h",
+  "human_readable_source": " \n \n\n#ifndef _NET_FAILOVER_H\n#define _NET_FAILOVER_H\n\n#include <net/failover.h>\n\n \nstruct net_failover_info {\n\t \n\tstruct net_device __rcu *primary_dev;\n\n\t \n\tstruct net_device __rcu *standby_dev;\n\n\t \n\tstruct rtnl_link_stats64 primary_stats;\n\n\t \n\tstruct rtnl_link_stats64 standby_stats;\n\n\t \n\tstruct rtnl_link_stats64 failover_stats;\n\n\t \n\tspinlock_t stats_lock;\n};\n\nstruct failover *net_failover_create(struct net_device *standby_dev);\nvoid net_failover_destroy(struct failover *failover);\n\n#define FAILOVER_VLAN_FEATURES\t(NETIF_F_HW_CSUM | NETIF_F_SG | \\\n\t\t\t\t NETIF_F_FRAGLIST | NETIF_F_ALL_TSO | \\\n\t\t\t\t NETIF_F_HIGHDMA | NETIF_F_LRO)\n\n#define FAILOVER_ENC_FEATURES\t(NETIF_F_HW_CSUM | NETIF_F_SG | \\\n\t\t\t\t NETIF_F_RXCSUM | NETIF_F_ALL_TSO)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

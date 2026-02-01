@@ -1,0 +1,9 @@
+{
+  "module_name": "test_static_linked1.c",
+  "hash_id": "6fd30534f00481cb2aae8fe24492cc31c8fb71498303a74565a53c65d11d9edc",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/test_static_linked1.c",
+  "human_readable_source": "\n \n\n#include <linux/bpf.h>\n#include <bpf/bpf_helpers.h>\n\n \nstatic volatile long static_var1 = 2;\nstatic volatile int static_var2 = 3;\nint var1 = -1;\n \nconst volatile int rovar1;\n\n \nstatic __noinline int subprog(int x)\n{\n\t \n\treturn x * 2;\n}\n\nSEC(\"raw_tp/sys_enter\")\nint handler1(const void *ctx)\n{\n\tvar1 = subprog(rovar1) + static_var1 + static_var2;\n\n\treturn 0;\n}\n\nchar LICENSE[] SEC(\"license\") = \"GPL\";\nint VERSION SEC(\"version\") = 1;\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

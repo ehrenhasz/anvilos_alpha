@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "74694a5b7cff7de817fc1f74b25c064b52ae0870363df67371e53d15cb7501a4",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/test-drivers/vidtv/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n\ndvb-vidtv-tuner-objs := vidtv_tuner.o\ndvb-vidtv-demod-objs := vidtv_demod.o\ndvb-vidtv-bridge-objs := vidtv_bridge.o vidtv_common.o vidtv_ts.o vidtv_psi.o \\\n\t\t\t vidtv_pes.o vidtv_s302m.o vidtv_channel.o vidtv_mux.o\n\nobj-$(CONFIG_DVB_VIDTV)\t+= dvb-vidtv-tuner.o dvb-vidtv-demod.o \\\n\t\t\t   dvb-vidtv-bridge.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

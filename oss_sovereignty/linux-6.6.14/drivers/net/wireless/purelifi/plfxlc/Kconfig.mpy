@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "2f835f3c5ade2552da612a9694c307a48a4ccfc38cb5f881e1cf44a995b0a42b",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/purelifi/plfxlc/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig PLFXLC\n\ttristate \"pureLiFi X, XL, XC device support\"\n\tdepends on CFG80211 && MAC80211 && USB\n\thelp\n\t   This option adds support for pureLiFi LiFi USB wireless\n\t   adapters. The pureLiFi X, XL, XC USB devices are based on\n\t   802.11 OFDM PHY but uses light as the transmission medium.\n\t   The driver supports common 802.11 encryption/authentication\n\t   methods including Open, WPA, WPA2-Personal and\n\t   WPA2-Enterprise (802.1X).\n\n\t   To compile this driver as a module, choose m here. The module will\n\t   be called plfxlc.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

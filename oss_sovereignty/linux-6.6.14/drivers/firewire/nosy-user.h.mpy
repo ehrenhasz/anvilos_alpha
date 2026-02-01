@@ -1,0 +1,9 @@
+{
+  "module_name": "nosy-user.h",
+  "hash_id": "601785a8c17a73cd898781a1927afe50b9724a0b0bc18333d3ec058c926d8c37",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/firewire/nosy-user.h",
+  "human_readable_source": " \n#ifndef __nosy_user_h\n#define __nosy_user_h\n\n#include <linux/ioctl.h>\n#include <linux/types.h>\n\n#define NOSY_IOC_GET_STATS _IOR('&', 0, struct nosy_stats)\n#define NOSY_IOC_START     _IO('&', 1)\n#define NOSY_IOC_STOP      _IO('&', 2)\n#define NOSY_IOC_FILTER    _IOW('&', 2, __u32)\n\nstruct nosy_stats {\n\t__u32 total_packet_count;\n\t__u32 lost_packet_count;\n};\n\n \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

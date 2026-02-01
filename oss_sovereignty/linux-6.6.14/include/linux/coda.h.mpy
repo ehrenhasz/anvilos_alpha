@@ -1,0 +1,9 @@
+{
+  "module_name": "coda.h",
+  "hash_id": "eaccfcd38a62ef334824beab49feffa12cc9369c226fc567b3ba676de7907ba6",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/coda.h",
+  "human_readable_source": " \n\n \n\n \n\n \n#ifndef _CODA_HEADER_\n#define _CODA_HEADER_\n\ntypedef unsigned long long u_quad_t;\n\n#include <uapi/linux/coda.h>\n#endif \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "c47a74dbf40bf33253becdf3b6efbe46362637c9b5e19c84be2f67394a27371f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/iio/amplifiers/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Makefile iio/amplifiers\n#\n\n# When adding new entries keep the list in alphabetical order\nobj-$(CONFIG_AD8366) += ad8366.o\nobj-$(CONFIG_ADA4250) += ada4250.o\nobj-$(CONFIG_HMC425) += hmc425a.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

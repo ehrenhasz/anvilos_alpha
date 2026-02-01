@@ -1,0 +1,9 @@
+{
+  "module_name": "r8a77980-sysc.h",
+  "hash_id": "547e3712ad5f5c88104ff9a847fcf79121150570a688a7581bd81cfe343886cc",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/power/r8a77980-sysc.h",
+  "human_readable_source": " \n#ifndef __DT_BINDINGS_POWER_R8A77980_SYSC_H__\n#define __DT_BINDINGS_POWER_R8A77980_SYSC_H__\n\n \n\n#define R8A77980_PD_A2SC2\t\t0\n#define R8A77980_PD_A2SC3\t\t1\n#define R8A77980_PD_A2SC4\t\t2\n#define R8A77980_PD_A2DP0\t\t3\n#define R8A77980_PD_A2DP1\t\t4\n#define R8A77980_PD_CA53_CPU0\t\t5\n#define R8A77980_PD_CA53_CPU1\t\t6\n#define R8A77980_PD_CA53_CPU2\t\t7\n#define R8A77980_PD_CA53_CPU3\t\t8\n#define R8A77980_PD_A2CN\t\t10\n#define R8A77980_PD_A3VIP0\t\t11\n#define R8A77980_PD_A2IR5\t\t12\n#define R8A77980_PD_CR7\t\t\t13\n#define R8A77980_PD_A2IR4\t\t15\n#define R8A77980_PD_CA53_SCU\t\t21\n#define R8A77980_PD_A2IR0\t\t23\n#define R8A77980_PD_A3IR\t\t24\n#define R8A77980_PD_A3VIP1\t\t25\n#define R8A77980_PD_A3VIP2\t\t26\n#define R8A77980_PD_A2IR1\t\t27\n#define R8A77980_PD_A2IR2\t\t28\n#define R8A77980_PD_A2IR3\t\t29\n#define R8A77980_PD_A2SC0\t\t30\n#define R8A77980_PD_A2SC1\t\t31\n\n \n#define R8A77980_PD_ALWAYS_ON\t\t32\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

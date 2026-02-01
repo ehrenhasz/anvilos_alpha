@@ -1,0 +1,9 @@
+{
+  "module_name": "mmc_spi.h",
+  "hash_id": "12cb8267a768ffa125d4d3ac7fd3ae6d8292156b9310fb9aa891038d128dfa9e",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/spi/mmc_spi.h",
+  "human_readable_source": " \n#ifndef __LINUX_SPI_MMC_SPI_H\n#define __LINUX_SPI_MMC_SPI_H\n\n#include <linux/spi/spi.h>\n#include <linux/interrupt.h>\n\nstruct device;\nstruct mmc_host;\n\n \nstruct mmc_spi_platform_data {\n\t \n\tint (*init)(struct device *,\n\t\tirqreturn_t (*)(int, void *),\n\t\tvoid *);\n\tvoid (*exit)(struct device *, void *);\n\n\t \n\tunsigned long caps;\n\tunsigned long caps2;\n\n\t \n\tu16 detect_delay;\n\n\t \n\tu16 powerup_msecs;\t\t \n\tu32 ocr_mask;\t\t\t \n\tvoid (*setpower)(struct device *, unsigned int maskval);\n};\n\nextern struct mmc_spi_platform_data *mmc_spi_get_pdata(struct spi_device *spi);\nextern void mmc_spi_put_pdata(struct spi_device *spi);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

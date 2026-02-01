@@ -1,0 +1,9 @@
+{
+  "module_name": "true.c",
+  "hash_id": "9298a48bbcaa05e0c0455f2eaf0aab19669ec03f52c2089f367fbf3c212f78eb",
+  "original_prompt": "Ingested from coreutils-9.4/src/true.c",
+  "human_readable_source": " \n#ifndef EXIT_STATUS\n# define EXIT_STATUS EXIT_SUCCESS\n#endif\n\n#if EXIT_STATUS == EXIT_SUCCESS\n# define PROGRAM_NAME \"true\"\n#else\n# define PROGRAM_NAME \"false\"\n#endif\n\n#define AUTHORS proper_name (\"Jim Meyering\")\n\nvoid\nusage (int status)\n{\n  printf (_(\"\\\nUsage: %s [ignored command line arguments]\\n\\\n  or:  %s OPTION\\n\\\n\"),\n          program_name, program_name);\n  printf (\"%s\\n\\n\",\n          _(EXIT_STATUS == EXIT_SUCCESS\n            ? N_(\"Exit with a status code indicating success.\")\n            : N_(\"Exit with a status code indicating failure.\")));\n  fputs (HELP_OPTION_DESCRIPTION, stdout);\n  fputs (VERSION_OPTION_DESCRIPTION, stdout);\n  printf (USAGE_BUILTIN_WARNING, PROGRAM_NAME);\n  emit_ancillary_info (PROGRAM_NAME);\n  exit (status);\n}\n\nint\nmain (int argc, char **argv)\n{\n  /* Recognize --help or --version only if it's the only command-line\n     argument.  */\n  if (argc == 2)\n    {\n      initialize_main (&argc, &argv);\n      set_program_name (argv[0]);\n      setlocale (LC_ALL, \"\");\n      bindtextdomain (PACKAGE, LOCALEDIR);\n      textdomain (PACKAGE);\n\n      /* Note true(1) will return EXIT_FAILURE in the\n         edge case where writes fail with GNU specific options.  */\n      atexit (close_stdout);\n\n      if (STREQ (argv[1], \"--help\"))\n        usage (EXIT_STATUS);\n\n      if (STREQ (argv[1], \"--version\"))\n        version_etc (stdout, PROGRAM_NAME, PACKAGE_NAME, Version, AUTHORS,\n                     (char *) nullptr);\n    }\n\n  return EXIT_STATUS;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

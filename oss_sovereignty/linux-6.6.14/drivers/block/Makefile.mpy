@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "a01fce90e3a054e2e0db2138b855eba6c81c342c68122f93b5a0c390941b404c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/block/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for the kernel block device drivers.\n#\n# 12 June 2000, Christoph Hellwig <hch@infradead.org>\n# Rewritten to use lists instead of if-statements.\n# \n\n# needed for trace events\nccflags-y\t\t\t\t+= -I$(src)\n\nobj-$(CONFIG_MAC_FLOPPY)\t+= swim3.o\nobj-$(CONFIG_BLK_DEV_SWIM)\t+= swim_mod.o\nobj-$(CONFIG_BLK_DEV_FD)\t+= floppy.o\nobj-$(CONFIG_AMIGA_FLOPPY)\t+= amiflop.o\nobj-$(CONFIG_PS3_DISK)\t\t+= ps3disk.o\nobj-$(CONFIG_PS3_VRAM)\t\t+= ps3vram.o\nobj-$(CONFIG_ATARI_FLOPPY)\t+= ataflop.o\nobj-$(CONFIG_AMIGA_Z2RAM)\t+= z2ram.o\nobj-$(CONFIG_N64CART)\t\t+= n64cart.o\nobj-$(CONFIG_BLK_DEV_RAM)\t+= brd.o\nobj-$(CONFIG_BLK_DEV_LOOP)\t+= loop.o\nobj-$(CONFIG_CDROM_PKTCDVD)\t+= pktcdvd.o\nobj-$(CONFIG_SUNVDC)\t\t+= sunvdc.o\n\nobj-$(CONFIG_BLK_DEV_NBD)\t+= nbd.o\nobj-$(CONFIG_VIRTIO_BLK)\t+= virtio_blk.o\n\nobj-$(CONFIG_XEN_BLKDEV_FRONTEND)\t+= xen-blkfront.o\nobj-$(CONFIG_XEN_BLKDEV_BACKEND)\t+= xen-blkback/\nobj-$(CONFIG_BLK_DEV_DRBD)     += drbd/\nobj-$(CONFIG_BLK_DEV_RBD)     += rbd.o\nobj-$(CONFIG_BLK_DEV_PCIESSD_MTIP32XX)\t+= mtip32xx/\n\nobj-$(CONFIG_ZRAM) += zram/\nobj-$(CONFIG_BLK_DEV_RNBD)\t+= rnbd/\n\nobj-$(CONFIG_BLK_DEV_NULL_BLK)\t+= null_blk/\n\nobj-$(CONFIG_BLK_DEV_UBLK)\t\t\t+= ublk_drv.o\n\nswim_mod-y\t:= swim.o swim_asm.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

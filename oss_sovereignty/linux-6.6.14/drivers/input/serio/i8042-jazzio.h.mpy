@@ -1,0 +1,9 @@
+{
+  "module_name": "i8042-jazzio.h",
+  "hash_id": "382c4a0a7ae7634d47d17a6de9bcb2739993087ac0af741a5f6c80ab126f8e85",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/input/serio/i8042-jazzio.h",
+  "human_readable_source": " \n#ifndef _I8042_JAZZ_H\n#define _I8042_JAZZ_H\n\n#include <asm/jazz.h>\n\n\n \n\n#define I8042_KBD_PHYS_DESC \"R4030/serio0\"\n#define I8042_AUX_PHYS_DESC \"R4030/serio1\"\n#define I8042_MUX_PHYS_DESC \"R4030/serio%d\"\n\n \n\n#define I8042_KBD_IRQ JAZZ_KEYBOARD_IRQ\n#define I8042_AUX_IRQ JAZZ_MOUSE_IRQ\n\n#define I8042_COMMAND_REG\t((unsigned long)&jazz_kh->command)\n#define I8042_STATUS_REG\t((unsigned long)&jazz_kh->command)\n#define I8042_DATA_REG\t\t((unsigned long)&jazz_kh->data)\n\nstatic inline int i8042_read_data(void)\n{\n\treturn jazz_kh->data;\n}\n\nstatic inline int i8042_read_status(void)\n{\n\treturn jazz_kh->command;\n}\n\nstatic inline void i8042_write_data(int val)\n{\n\tjazz_kh->data = val;\n}\n\nstatic inline void i8042_write_command(int val)\n{\n\tjazz_kh->command = val;\n}\n\nstatic inline int i8042_platform_init(void)\n{\n#if 0\n\t \n\tif (!request_mem_region(JAZZ_KEYBOARD_ADDRESS, 2, \"i8042\"))\n\t\treturn -EBUSY;\n#endif\n\n\treturn 0;\n}\n\nstatic inline void i8042_platform_exit(void)\n{\n#if 0\n\trelease_mem_region(JAZZ_KEYBOARD_ADDRESS, 2);\n#endif\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

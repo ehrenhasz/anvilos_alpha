@@ -1,0 +1,9 @@
+{
+  "module_name": "acl.h",
+  "hash_id": "db9103ced99ab3a11b97eb6c842c8153e1e55c497b5cb48cb7f438ead97ffaf3",
+  "original_prompt": "Ingested from linux-6.6.14/fs/nfsd/acl.h",
+  "human_readable_source": " \n\n#ifndef LINUX_NFS4_ACL_H\n#define LINUX_NFS4_ACL_H\n\nstruct nfs4_acl;\nstruct svc_fh;\nstruct svc_rqst;\nstruct nfsd_attrs;\nenum nfs_ftype4;\n\nint nfs4_acl_bytes(int entries);\nint nfs4_acl_get_whotype(char *, u32);\n__be32 nfs4_acl_write_who(struct xdr_stream *xdr, int who);\n\nint nfsd4_get_nfs4_acl(struct svc_rqst *rqstp, struct dentry *dentry,\n\t\tstruct nfs4_acl **acl);\n__be32 nfsd4_acl_to_attr(enum nfs_ftype4 type, struct nfs4_acl *acl,\n\t\t\t struct nfsd_attrs *attr);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

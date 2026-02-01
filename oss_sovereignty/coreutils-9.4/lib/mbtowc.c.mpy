@@ -1,0 +1,9 @@
+{
+  "module_name": "mbtowc.c",
+  "hash_id": "5681bd0a51782ca4e11781438cdf8ad5a47eab9a2433c99d11fa866a3e176cdf",
+  "original_prompt": "Ingested from coreutils-9.4/lib/mbtowc.c",
+  "human_readable_source": "/* Convert multibyte character to wide character.\n   Copyright (C) 2011-2023 Free Software Foundation, Inc.\n   Written by Bruno Haible <bruno@clisp.org>, 2011.\n\n   This file is free software: you can redistribute it and/or modify\n   it under the terms of the GNU Lesser General Public License as\n   published by the Free Software Foundation; either version 2.1 of the\n   License, or (at your option) any later version.\n\n   This file is distributed in the hope that it will be useful,\n   but WITHOUT ANY WARRANTY; without even the implied warranty of\n   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n   GNU Lesser General Public License for more details.\n\n   You should have received a copy of the GNU Lesser General Public License\n   along with this program.  If not, see <https:\n\n#include <config.h>\n\n#include <stdlib.h>\n\n#include <errno.h>\n#include <string.h>\n#include <wchar.h>\n\n#include \"mbtowc-impl.h\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

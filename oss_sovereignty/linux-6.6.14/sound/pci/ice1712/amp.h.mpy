@@ -1,0 +1,9 @@
+{
+  "module_name": "amp.h",
+  "hash_id": "5c8ce8113ed7860d1ab7099bcc8267138c9a2906db03d7f62cd0b3a9820a406c",
+  "original_prompt": "Ingested from linux-6.6.14/sound/pci/ice1712/amp.h",
+  "human_readable_source": " \n#ifndef __SOUND_AMP_H\n#define __SOUND_AMP_H\n\n       \n\n#define  AMP_AUDIO2000_DEVICE_DESC \t       \"{AMP Ltd,AUDIO2000},\"\\\n\t\t\t\t\t       \"{Chaintech,AV-710},\"\n\n#if 0\n#define VT1724_SUBDEVICE_AUDIO2000\t0x12142417\t \n#else\n#define VT1724_SUBDEVICE_AUDIO2000\t0x00030003\t \n#endif\n#define VT1724_SUBDEVICE_AV710\t\t0x12142417\t \n\n \n#define WM_DEV\t\t0x36\n\n#define WM_ATTEN_L\t0x00\n#define WM_ATTEN_R\t0x01\n#define WM_DAC_CTRL\t0x02\n#define WM_INT_CTRL\t0x03\n\nextern struct snd_ice1712_card_info  snd_vt1724_amp_cards[];\n\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

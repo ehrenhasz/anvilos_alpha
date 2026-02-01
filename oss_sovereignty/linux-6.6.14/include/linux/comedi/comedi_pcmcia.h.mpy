@@ -1,0 +1,9 @@
+{
+  "module_name": "comedi_pcmcia.h",
+  "hash_id": "26d4b8f609a692c04aa78a87a147de3f447f6d6e7ad14b18a40c98edcfd31e07",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/comedi/comedi_pcmcia.h",
+  "human_readable_source": " \n \n\n#ifndef _COMEDI_PCMCIA_H\n#define _COMEDI_PCMCIA_H\n\n#include <pcmcia/cistpl.h>\n#include <pcmcia/ds.h>\n#include <linux/comedi/comedidev.h>\n\nstruct pcmcia_device *comedi_to_pcmcia_dev(struct comedi_device *dev);\n\nint comedi_pcmcia_enable(struct comedi_device *dev,\n\t\t\t int (*conf_check)(struct pcmcia_device *p_dev,\n\t\t\t\t\t   void *priv_data));\nvoid comedi_pcmcia_disable(struct comedi_device *dev);\n\nint comedi_pcmcia_auto_config(struct pcmcia_device *link,\n\t\t\t      struct comedi_driver *driver);\nvoid comedi_pcmcia_auto_unconfig(struct pcmcia_device *link);\n\nint comedi_pcmcia_driver_register(struct comedi_driver *comedi_driver,\n\t\t\t\t  struct pcmcia_driver *pcmcia_driver);\nvoid comedi_pcmcia_driver_unregister(struct comedi_driver *comedi_driver,\n\t\t\t\t     struct pcmcia_driver *pcmcia_driver);\n\n \n#define module_comedi_pcmcia_driver(__comedi_driver, __pcmcia_driver) \\\n\tmodule_driver(__comedi_driver, comedi_pcmcia_driver_register, \\\n\t\t\tcomedi_pcmcia_driver_unregister, &(__pcmcia_driver))\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

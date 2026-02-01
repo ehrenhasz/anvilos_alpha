@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "ad72b1c9cdeaf711e922ca04e1ca4684c66211798eb26c35ec37aa71854a33f4",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/mediatek/mt6797/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n\n# platform driver\nsnd-soc-mt6797-afe-objs := \\\n\tmt6797-afe-pcm.o \\\n\tmt6797-afe-clk.o \\\n\tmt6797-dai-pcm.o \\\n\tmt6797-dai-hostless.o \\\n\tmt6797-dai-adda.o\n\nobj-$(CONFIG_SND_SOC_MT6797) += snd-soc-mt6797-afe.o\n\n# machine driver\nobj-$(CONFIG_SND_SOC_MT6797_MT6351) += mt6797-mt6351.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

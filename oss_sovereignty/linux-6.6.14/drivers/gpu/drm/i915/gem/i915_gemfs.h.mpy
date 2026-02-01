@@ -1,0 +1,9 @@
+{
+  "module_name": "i915_gemfs.h",
+  "hash_id": "fd709007bb5cad5bc558a9f1c09c2c192b2ef33819b5215d4f7af33c1ea5d87c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/gem/i915_gemfs.h",
+  "human_readable_source": " \n\n#ifndef __I915_GEMFS_H__\n#define __I915_GEMFS_H__\n\nstruct drm_i915_private;\n\nvoid i915_gemfs_init(struct drm_i915_private *i915);\nvoid i915_gemfs_fini(struct drm_i915_private *i915);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

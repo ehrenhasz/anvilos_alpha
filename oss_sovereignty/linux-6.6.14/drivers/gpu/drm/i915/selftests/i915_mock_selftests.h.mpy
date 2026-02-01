@@ -1,0 +1,9 @@
+{
+  "module_name": "i915_mock_selftests.h",
+  "hash_id": "c35c9c2ed081e563df444a8f2f9efa1631d209918f4458d1db3511d413ece968",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/selftests/i915_mock_selftests.h",
+  "human_readable_source": " \n\n#ifndef selftest\n#define selftest(x, y)\n#endif\n\n \nselftest(sanitycheck, i915_mock_sanitycheck)  \nselftest(shmem, shmem_utils_mock_selftests)\nselftest(fence, i915_sw_fence_mock_selftests)\nselftest(scatterlist, scatterlist_mock_selftests)\nselftest(syncmap, i915_syncmap_mock_selftests)\nselftest(uncore, intel_uncore_mock_selftests)\nselftest(ring, intel_ring_mock_selftests)\nselftest(engine, intel_engine_cs_mock_selftests)\nselftest(timelines, intel_timeline_mock_selftests)\nselftest(requests, i915_request_mock_selftests)\nselftest(objects, i915_gem_object_mock_selftests)\nselftest(phys, i915_gem_phys_mock_selftests)\nselftest(dmabuf, i915_gem_dmabuf_mock_selftests)\nselftest(vma, i915_vma_mock_selftests)\nselftest(evict, i915_gem_evict_mock_selftests)\nselftest(gtt, i915_gem_gtt_mock_selftests)\nselftest(hugepages, i915_gem_huge_page_mock_selftests)\nselftest(memory_region, intel_memory_region_mock_selftests)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

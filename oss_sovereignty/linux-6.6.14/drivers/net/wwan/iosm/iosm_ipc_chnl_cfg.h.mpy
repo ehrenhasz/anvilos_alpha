@@ -1,0 +1,9 @@
+{
+  "module_name": "iosm_ipc_chnl_cfg.h",
+  "hash_id": "485108bbcc4016e2e0cd1840c1eb6d81ea800048d8543d89e4ea4a7c293c8472",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wwan/iosm/iosm_ipc_chnl_cfg.h",
+  "human_readable_source": " \n\n#ifndef IOSM_IPC_CHNL_CFG_H\n#define IOSM_IPC_CHNL_CFG_H\n\n#include \"iosm_ipc_mux.h\"\n\n \n#define IPC_MEM_TDS_TRC 32\n\n \n#define IPC_MEM_MAX_DL_TRC_BUF_SIZE 8192\n\n \nenum ipc_channel_id {\n\tIPC_MEM_IP_CHL_ID_0 = 0,\n\tIPC_MEM_CTRL_CHL_ID_1,\n\tIPC_MEM_CTRL_CHL_ID_2,\n\tIPC_MEM_CTRL_CHL_ID_3,\n\tIPC_MEM_CTRL_CHL_ID_4,\n\tIPC_MEM_CTRL_CHL_ID_5,\n\tIPC_MEM_CTRL_CHL_ID_6,\n\tIPC_MEM_CTRL_CHL_ID_7,\n};\n\n \nstruct ipc_chnl_cfg {\n\tu32 id;\n\tu32 ul_pipe;\n\tu32 dl_pipe;\n\tu32 ul_nr_of_entries;\n\tu32 dl_nr_of_entries;\n\tu32 dl_buf_size;\n\tu32 wwan_port_type;\n\tu32 accumulation_backoff;\n};\n\n \nint ipc_chnl_cfg_get(struct ipc_chnl_cfg *chnl_cfg, int index);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

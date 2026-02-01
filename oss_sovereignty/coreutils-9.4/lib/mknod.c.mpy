@@ -1,0 +1,9 @@
+{
+  "module_name": "mknod.c",
+  "hash_id": "8dab9f7c9067802af908801b9b7bd6e126aec31059778263d546b03c14d3ab0c",
+  "original_prompt": "Ingested from coreutils-9.4/lib/mknod.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#include <sys/stat.h>\n\n#include <errno.h>\n#include <string.h>\n\n#if !HAVE_MKNOD\n \n\nint\nmknod (_GL_UNUSED char const *name, _GL_UNUSED mode_t mode,\n       _GL_UNUSED dev_t dev)\n{\n  errno = ENOSYS;\n  return -1;\n}\n\n#else  \n\n# undef mknod\n\n \n\nint\nrpl_mknod (char const *name, mode_t mode, dev_t dev)\n{\n# if MKFIFO_TRAILING_SLASH_BUG\n   \n  if (!S_ISDIR (mode))\n    {\n      size_t len = strlen (name);\n      if (len && name[len - 1] == '/')\n        {\n          struct stat st;\n          if (stat (name, &st) == 0 || errno == EOVERFLOW)\n            errno = EEXIST;\n          return -1;\n        }\n    }\n# endif\n# if MKNOD_FIFO_BUG\n   \n  if (S_ISFIFO (mode) && dev == 0)\n    return mkfifo (name, mode & ~S_IFIFO);\n# endif\n  return mknod (name, mode, dev);\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "60f19939075442e2b008de3a5f324304a30c94452770dfd34fbb8fcc77a270d6",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/dc/dcn314/Makefile",
+  "human_readable_source": "#\n# (c) Copyright 2022 Advanced Micro Devices, Inc. All the rights reserved\n#\n#  All rights reserved.  This notice is intended as a precaution against\n#  inadvertent publication and does not imply publication or any waiver\n#  of confidentiality.  The year included in the foregoing notice is the\n#  year of creation of the work.\n#\n#  Authors: AMD\n#\n# Makefile for dcn314.\n\nDCN314 = dcn314_resource.o dcn314_hwseq.o dcn314_init.o \\\n\t\tdcn314_dio_stream_encoder.o dcn314_dccg.o dcn314_optc.o\n\nAMD_DAL_DCN314 = $(addprefix $(AMDDALPATH)/dc/dcn314/,$(DCN314))\n\nAMD_DISPLAY_FILES += $(AMD_DAL_DCN314)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

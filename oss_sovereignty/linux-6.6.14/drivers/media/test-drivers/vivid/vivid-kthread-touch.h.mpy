@@ -1,0 +1,9 @@
+{
+  "module_name": "vivid-kthread-touch.h",
+  "hash_id": "8de1fc034eb0c10b358ac8992d67bc8724629139e7c9e9fb4b4184fc35e0dac6",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/test-drivers/vivid/vivid-kthread-touch.h",
+  "human_readable_source": " \n \n\n#ifndef _VIVID_KTHREAD_CAP_H_\n#define _VIVID_KTHREAD_CAP_H_\n\nint vivid_start_generating_touch_cap(struct vivid_dev *dev);\nvoid vivid_stop_generating_touch_cap(struct vivid_dev *dev);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

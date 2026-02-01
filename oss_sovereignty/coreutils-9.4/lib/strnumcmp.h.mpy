@@ -1,0 +1,9 @@
+{
+  "module_name": "strnumcmp.h",
+  "hash_id": "171129f96f77b007a93441cc924bfb61c579c504954d373280df77d8d42cbd37",
+  "original_prompt": "Ingested from coreutils-9.4/lib/strnumcmp.h",
+  "human_readable_source": "int strintcmp (char const *, char const *)\n  _GL_ATTRIBUTE_NONNULL () _GL_ATTRIBUTE_PURE;\nint strnumcmp (char const *, char const *, int, int)\n  _GL_ATTRIBUTE_NONNULL () _GL_ATTRIBUTE_PURE;\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

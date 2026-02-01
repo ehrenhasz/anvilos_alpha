@@ -1,0 +1,9 @@
+{
+  "module_name": "btf__core_reloc_enumval.c",
+  "hash_id": "3736ac141d854be000937ca396b28b468a190d4ae8d4371429e26a99cea6fccc",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/btf__core_reloc_enumval.c",
+  "human_readable_source": "#include \"core_reloc_types.h\"\n\nvoid f(struct core_reloc_enumval x) {}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

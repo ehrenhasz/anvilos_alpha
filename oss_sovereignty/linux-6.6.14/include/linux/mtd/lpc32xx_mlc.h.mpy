@@ -1,0 +1,9 @@
+{
+  "module_name": "lpc32xx_mlc.h",
+  "hash_id": "66b3a8421d3d68ed3717e008d79a6bed453622b979f184b49c1947e2452ff5f2",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/mtd/lpc32xx_mlc.h",
+  "human_readable_source": " \n \n\n#ifndef __LINUX_MTD_LPC32XX_MLC_H\n#define __LINUX_MTD_LPC32XX_MLC_H\n\n#include <linux/dmaengine.h>\n\nstruct lpc32xx_mlc_platform_data {\n\tbool (*dma_filter)(struct dma_chan *chan, void *filter_param);\n};\n\n#endif   \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

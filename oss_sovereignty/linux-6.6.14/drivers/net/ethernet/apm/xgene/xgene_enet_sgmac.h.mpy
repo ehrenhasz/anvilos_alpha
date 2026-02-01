@@ -1,0 +1,9 @@
+{
+  "module_name": "xgene_enet_sgmac.h",
+  "hash_id": "3442705c4c031d666d948f2aca03b1a4f6033e3fee75bffb60fe8210d6712600",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/apm/xgene/xgene_enet_sgmac.h",
+  "human_readable_source": " \n \n\n#ifndef __XGENE_ENET_SGMAC_H__\n#define __XGENE_ENET_SGMAC_H__\n\n#define PHY_ADDR(src)\t\t(((src)<<8) & GENMASK(12, 8))\n#define REG_ADDR(src)\t\t((src) & GENMASK(4, 0))\n#define PHY_CONTROL(src)\t((src) & GENMASK(15, 0))\n#define LINK_SPEED(src)\t\t(((src) & GENMASK(11, 10)) >> 10)\n#define INT_PHY_ADDR\t\t\t0x1e\n#define SGMII_TBI_CONTROL_ADDR\t\t0x44\n#define SGMII_CONTROL_ADDR\t\t0x00\n#define SGMII_STATUS_ADDR\t\t0x04\n#define SGMII_BASE_PAGE_ABILITY_ADDR\t0x14\n#define AUTO_NEG_COMPLETE\t\tBIT(5)\n#define LINK_STATUS\t\t\tBIT(2)\n#define LINK_UP\t\t\t\tBIT(15)\n#define MPA_IDLE_WITH_QMI_EMPTY\t\tBIT(12)\n#define SG_RX_DV_GATE_REG_0_ADDR\t0x05fc\n#define SGMII_EN\t\t\t0x1\n\nenum xgene_phy_speed {\n\tPHY_SPEED_10,\n\tPHY_SPEED_100,\n\tPHY_SPEED_1000\n};\n\nextern const struct xgene_mac_ops xgene_sgmac_ops;\nextern const struct xgene_port_ops xgene_sgport_ops;\n\n#endif   \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "eisa.c",
+  "hash_id": "6e8f5518efb8d84739e8940492a55c13be71b3da42a38608f8055eac029e11b1",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/kernel/eisa.c",
+  "human_readable_source": "\n \n#include <linux/ioport.h>\n#include <linux/eisa.h>\n#include <linux/io.h>\n\n#include <xen/xen.h>\n\nstatic __init int eisa_bus_probe(void)\n{\n\tvoid __iomem *p;\n\n\tif (xen_pv_domain() && !xen_initial_domain())\n\t\treturn 0;\n\n\tp = ioremap(0x0FFFD9, 4);\n\tif (p && readl(p) == 'E' + ('I' << 8) + ('S' << 16) + ('A' << 24))\n\t\tEISA_bus = 1;\n\tiounmap(p);\n\treturn 0;\n}\nsubsys_initcall(eisa_bus_probe);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

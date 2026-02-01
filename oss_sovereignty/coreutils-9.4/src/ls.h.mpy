@@ -1,0 +1,9 @@
+{
+  "module_name": "ls.h",
+  "hash_id": "0da34f7e5f3f0dfd4585359a7292cb5565af641bf5d2dc54824e0f7048766e07",
+  "original_prompt": "Ingested from coreutils-9.4/src/ls.h",
+  "human_readable_source": " \n#define LS_LS 1\n\n \n#define LS_MULTI_COL 2\n\n \n#define LS_LONG_FORMAT 3\n\nextern int ls_mode;\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

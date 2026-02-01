@@ -1,0 +1,9 @@
+{
+  "module_name": "tcp_states.h",
+  "hash_id": "f973b8a5a95bc4dca9461e31cf8e4094e2c53b338ea995bb98f1840ebf30040c",
+  "original_prompt": "Ingested from linux-6.6.14/include/net/tcp_states.h",
+  "human_readable_source": " \n \n#ifndef _LINUX_TCP_STATES_H\n#define _LINUX_TCP_STATES_H\n\nenum {\n\tTCP_ESTABLISHED = 1,\n\tTCP_SYN_SENT,\n\tTCP_SYN_RECV,\n\tTCP_FIN_WAIT1,\n\tTCP_FIN_WAIT2,\n\tTCP_TIME_WAIT,\n\tTCP_CLOSE,\n\tTCP_CLOSE_WAIT,\n\tTCP_LAST_ACK,\n\tTCP_LISTEN,\n\tTCP_CLOSING,\t \n\tTCP_NEW_SYN_RECV,\n\n\tTCP_MAX_STATES\t \n};\n\n#define TCP_STATE_MASK\t0xF\n\n#define TCP_ACTION_FIN\t(1 << TCP_CLOSE)\n\nenum {\n\tTCPF_ESTABLISHED = (1 << TCP_ESTABLISHED),\n\tTCPF_SYN_SENT\t = (1 << TCP_SYN_SENT),\n\tTCPF_SYN_RECV\t = (1 << TCP_SYN_RECV),\n\tTCPF_FIN_WAIT1\t = (1 << TCP_FIN_WAIT1),\n\tTCPF_FIN_WAIT2\t = (1 << TCP_FIN_WAIT2),\n\tTCPF_TIME_WAIT\t = (1 << TCP_TIME_WAIT),\n\tTCPF_CLOSE\t = (1 << TCP_CLOSE),\n\tTCPF_CLOSE_WAIT\t = (1 << TCP_CLOSE_WAIT),\n\tTCPF_LAST_ACK\t = (1 << TCP_LAST_ACK),\n\tTCPF_LISTEN\t = (1 << TCP_LISTEN),\n\tTCPF_CLOSING\t = (1 << TCP_CLOSING),\n\tTCPF_NEW_SYN_RECV = (1 << TCP_NEW_SYN_RECV),\n};\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

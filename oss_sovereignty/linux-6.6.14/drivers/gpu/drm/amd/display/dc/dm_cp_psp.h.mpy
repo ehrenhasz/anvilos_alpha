@@ -1,0 +1,9 @@
+{
+  "module_name": "dm_cp_psp.h",
+  "hash_id": "0a6a8e0327375fd0e45e7e0caab2a48889f7ab063fc4189bb113c90a6debbc6a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/dc/dm_cp_psp.h",
+  "human_readable_source": " \n\n#ifndef DM_CP_PSP_IF__H\n#define DM_CP_PSP_IF__H\n\nstruct dc_link;\n\nstruct cp_psp_stream_config {\n\tuint8_t otg_inst;\n\tuint8_t dig_be;\n\tuint8_t dig_fe;\n\tuint8_t link_enc_idx;\n\tuint8_t stream_enc_idx;\n\tuint8_t dio_output_idx;\n\tuint8_t phy_idx;\n\tuint8_t assr_enabled;\n\tuint8_t mst_enabled;\n\tuint8_t dp2_enabled;\n\tuint8_t usb4_enabled;\n\tvoid *dm_stream_ctx;\n\tbool dpms_off;\n};\n\nstruct cp_psp_funcs {\n\tbool (*enable_assr)(void *handle, struct dc_link *link);\n\tvoid (*update_stream_config)(void *handle, struct cp_psp_stream_config *config);\n};\n\nstruct cp_psp {\n\tvoid *handle;\n\tstruct cp_psp_funcs funcs;\n};\n\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

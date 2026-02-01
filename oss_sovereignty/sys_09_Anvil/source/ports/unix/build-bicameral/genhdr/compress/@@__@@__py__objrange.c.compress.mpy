@@ -1,0 +1,9 @@
+{
+  "module_name": "@@__@@__py__objrange.c.compress",
+  "hash_id": "d3bb13fb3b2870295f925cf2b8e5391fcabb32fc04ea8f2b4340b42aed6747c9",
+  "original_prompt": "Ingested from sys_09_Anvil/source/ports/unix/build-bicameral/genhdr/compress/@@__@@__py__objrange.c.compress",
+  "human_readable_source": "zero step\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

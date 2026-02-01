@@ -1,0 +1,9 @@
+{
+  "module_name": "via_aux_vt1622.c",
+  "hash_id": "9bad54ee50627349f86a2762008330c649137e6a277fac5f00f48f294f68e572",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/video/fbdev/via/via_aux_vt1622.c",
+  "human_readable_source": "\n \n \n\n#include <linux/slab.h>\n#include \"via_aux.h\"\n\n\nstatic const char *name = \"VT1622(M) Digital TV Encoder\";\n\n\nstatic void probe(struct via_aux_bus *bus, u8 addr)\n{\n\tstruct via_aux_drv drv = {\n\t\t.bus\t=\tbus,\n\t\t.addr\t=\taddr,\n\t\t.name\t=\tname};\n\tu8 tmp;\n\n\tif (!via_aux_read(&drv, 0x1B, &tmp, 1) ||  tmp != 0x03)\n\t\treturn;\n\n\tprintk(KERN_INFO \"viafb: Found %s at address 0x%x\\n\", name, addr);\n\tvia_aux_add(&drv);\n}\n\nvoid via_aux_vt1622_probe(struct via_aux_bus *bus)\n{\n\tprobe(bus, 0x20);\n\tprobe(bus, 0x21);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

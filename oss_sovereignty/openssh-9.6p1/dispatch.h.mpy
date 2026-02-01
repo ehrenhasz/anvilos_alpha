@@ -1,0 +1,9 @@
+{
+  "module_name": "dispatch.h",
+  "hash_id": "3eacd5e1768e72814ac2ca594897b41fdcff499cc5174e611a317672d20045cd",
+  "original_prompt": "Ingested from openssh-9.6p1/dispatch.h",
+  "human_readable_source": " \n\n \n\n#ifndef DISPATCH_H\n#define DISPATCH_H\n\n#define DISPATCH_MAX\t255\n\nenum {\n\tDISPATCH_BLOCK,\n\tDISPATCH_NONBLOCK\n};\n\nstruct ssh;\n\ntypedef int dispatch_fn(int, u_int32_t, struct ssh *);\n\nint\tdispatch_protocol_error(int, u_int32_t, struct ssh *);\nint\tdispatch_protocol_ignore(int, u_int32_t, struct ssh *);\nvoid\tssh_dispatch_init(struct ssh *, dispatch_fn *);\nvoid\tssh_dispatch_set(struct ssh *, int, dispatch_fn *);\nvoid\tssh_dispatch_range(struct ssh *, u_int, u_int, dispatch_fn *);\nint\tssh_dispatch_run(struct ssh *, int, volatile sig_atomic_t *);\nvoid\tssh_dispatch_run_fatal(struct ssh *, int, volatile sig_atomic_t *);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

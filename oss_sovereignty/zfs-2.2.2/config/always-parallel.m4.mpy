@@ -1,0 +1,9 @@
+{
+  "module_name": "always-parallel.m4",
+  "hash_id": "ae7e1a8df605a8ee0db46296bb43b0c13a37891263d7db86abd78f4eaab4b718",
+  "original_prompt": "Ingested from zfs-2.2.2/config/always-parallel.m4",
+  "human_readable_source": "dnl #\ndnl # Check if GNU parallel is available.\ndnl #\nAC_DEFUN([ZFS_AC_CONFIG_ALWAYS_PARALLEL], [\n\tAC_CHECK_PROG([PARALLEL], [parallel], [yes])\n\n\tAM_CONDITIONAL([HAVE_PARALLEL], [test \"x$PARALLEL\" = \"xyes\"])\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

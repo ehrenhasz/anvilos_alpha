@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "a1fe055bd2ad8c2f221bc52f3e0b66cc2fbc9f9feb0657011243262871ff5618",
+  "original_prompt": "Ingested from linux-6.6.14/tools/bpf/bpftool/Documentation/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)\ninclude ../../../scripts/Makefile.include\n\nINSTALL ?= install\nRM ?= rm -f\nRMDIR ?= rmdir --ignore-fail-on-non-empty\n\nifeq ($(V),1)\n  Q =\nelse\n  Q = @\nendif\n\nprefix ?= /usr/local\nmandir ?= $(prefix)/man\nman8dir = $(mandir)/man8\n\nMAN8_RST = $(wildcard bpftool*.rst)\n\n_DOC_MAN8 = $(patsubst %.rst,%.8,$(MAN8_RST))\nDOC_MAN8 = $(addprefix $(OUTPUT),$(_DOC_MAN8))\n\nman: man8\nman8: $(DOC_MAN8)\n\nRST2MAN_DEP := $(shell command -v rst2man 2>/dev/null)\nRST2MAN_OPTS += --verbose --strip-comments\n\nlist_pages = $(sort $(basename $(filter-out $(1),$(MAN8_RST))))\nsee_also = $(subst \" \",, \\\n\t\"\\n\" \\\n\t\"SEE ALSO\\n\" \\\n\t\"========\\n\" \\\n\t\"\\t**bpf**\\ (2),\\n\" \\\n\t\"\\t**bpf-helpers**\\\\ (7)\" \\\n\t$(foreach page,$(call list_pages,$(1)),\",\\n\\t**$(page)**\\\\ (8)\") \\\n\t\"\\n\")\n\n$(OUTPUT)%.8: %.rst\nifndef RST2MAN_DEP\n\t$(error \"rst2man not found, but required to generate man pages\")\nendif\n\t$(QUIET_GEN)( cat $< ; printf \"%b\" $(call see_also,$<) ) | rst2man $(RST2MAN_OPTS) > $@\n\nclean:\n\t$(call QUIET_CLEAN, Documentation)\n\t$(Q)$(RM) $(DOC_MAN8)\n\ninstall: man\n\t$(call QUIET_INSTALL, Documentation-man)\n\t$(Q)$(INSTALL) -d -m 755 $(DESTDIR)$(man8dir)\n\t$(Q)$(INSTALL) -m 644 $(DOC_MAN8) $(DESTDIR)$(man8dir)\n\nuninstall:\n\t$(call QUIET_UNINST, Documentation-man)\n\t$(Q)$(RM) $(addprefix $(DESTDIR)$(man8dir)/,$(_DOC_MAN8))\n\t$(Q)$(RMDIR) $(DESTDIR)$(man8dir)\n\n.PHONY: man man8 clean install uninstall\n.DEFAULT_GOAL := man\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

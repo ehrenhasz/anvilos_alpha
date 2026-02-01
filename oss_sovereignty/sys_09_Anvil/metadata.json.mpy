@@ -1,0 +1,9 @@
+{
+  "module_name": "metadata.json",
+  "hash_id": "e2dbf1fd963d4a11f25f64e97fcae75175d278456d227b4f2982f728face802b",
+  "original_prompt": "Ingested from sys_09_Anvil/metadata.json",
+  "human_readable_source": "{\n  \"name\": \"sys_09_Anvil\",\n  \"description\": \"The Sovereign Compiler. Transforms python logic into static AI Machine Code.\",\n  \"version\": \"1.0.0\",\n  \"build_script\": \"oss_sovereignty/sys_09_Anvil/anvil.build.sh\",\n  \"dependencies\": []\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

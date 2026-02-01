@@ -1,0 +1,9 @@
+{
+  "module_name": "base64.h",
+  "hash_id": "f74adf1b6e2d8428a356e80e12979bed59e784d768f5f0362f0634b9ed4d71ce",
+  "original_prompt": "Ingested from coreutils-9.4/lib/base64.h",
+  "human_readable_source": " \n#if !_GL_CONFIG_H_INCLUDED\n #error \"Please include config.h first.\"\n#endif\n\n \n# include <idx.h>\n\n# ifdef __cplusplus\nextern \"C\" {\n# endif\n\n \n# define BASE64_LENGTH(inlen) ((((inlen) + 2) / 3) * 4)\n\nstruct base64_decode_context\n{\n  int i;\n  char buf[4];\n};\n\nextern bool isbase64 (char ch) _GL_ATTRIBUTE_CONST;\n\nextern void base64_encode (const char *restrict in, idx_t inlen,\n                           char *restrict out, idx_t outlen);\n\nextern idx_t base64_encode_alloc (const char *in, idx_t inlen, char **out);\n\nextern void base64_decode_ctx_init (struct base64_decode_context *ctx);\n\nextern bool base64_decode_ctx (struct base64_decode_context *ctx,\n                               const char *restrict in, idx_t inlen,\n                               char *restrict out, idx_t *outlen);\n\nextern bool base64_decode_alloc_ctx (struct base64_decode_context *ctx,\n                                     const char *in, idx_t inlen,\n                                     char **out, idx_t *outlen);\n\n#define base64_decode(in, inlen, out, outlen) \\\n        base64_decode_ctx (NULL, in, inlen, out, outlen)\n\n#define base64_decode_alloc(in, inlen, out, outlen) \\\n        base64_decode_alloc_ctx (NULL, in, inlen, out, outlen)\n\n# ifdef __cplusplus\n}\n# endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

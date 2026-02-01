@@ -1,0 +1,9 @@
+{
+  "module_name": "zram02.sh",
+  "hash_id": "efbdf0c2d45d3e5412b5e79fedabbd2a80992ef861549ad171e920b66bbaf8fe",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/zram/zram02.sh",
+  "human_readable_source": "#!/bin/bash\n# SPDX-License-Identifier: GPL-2.0-or-later\n# Copyright (c) 2015 Oracle and/or its affiliates. All Rights Reserved.\n#\n# Test checks that we can create swap zram device.\n#\n# Author: Alexey Kodanev <alexey.kodanev@oracle.com>\n# Modified: Naresh Kamboju <naresh.kamboju@linaro.org>\n\nTCID=\"zram02\"\nERR_CODE=0\n\n. ./zram_lib.sh\n\n# Test will create the following number of zram devices:\ndev_num=1\n# This is a list of parameters for zram devices.\n# Number of items must be equal to 'dev_num' parameter.\nzram_max_streams=\"2\"\n\n# The zram sysfs node 'disksize' value can be either in bytes,\n# or you can use mem suffixes. But in some old kernels, mem\n# suffixes are not supported, for example, in RHEL6.6GA's kernel\n# layer, it uses strict_strtoull() to parse disksize which does\n# not support mem suffixes, in some newer kernels, they use\n# memparse() which supports mem suffixes. So here we just use\n# bytes to make sure everything works correctly.\nzram_sizes=\"1048576\" # 1M\nzram_mem_limits=\"1M\"\n\ncheck_prereqs\nzram_load\nzram_max_streams\nzram_set_disksizes\nzram_set_memlimit\nzram_makeswap\nzram_swapoff\nzram_cleanup\n\nif [ $ERR_CODE -ne 0 ]; then\n\techo \"$TCID : [FAIL]\"\nelse\n\techo \"$TCID : [PASS]\"\nfi\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

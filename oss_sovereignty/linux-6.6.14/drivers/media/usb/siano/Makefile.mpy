@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "66d99785949218a2e5ec706ee1f8b173a71acfd97493d4a7406be04b3095e16a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/usb/siano/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-$(CONFIG_SMS_USB_DRV) += smsusb.o\n\nccflags-y += -I $(srctree)/drivers/media/common/siano\nccflags-y += $(extra-cflags-y) $(extra-cflags-m)\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

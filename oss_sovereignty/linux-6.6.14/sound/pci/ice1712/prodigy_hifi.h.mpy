@@ -1,0 +1,9 @@
+{
+  "module_name": "prodigy_hifi.h",
+  "hash_id": "b35d8fffb9d805a8f564d8af90b6abc9deb17e2e297012ee1104d03444681321",
+  "original_prompt": "Ingested from linux-6.6.14/sound/pci/ice1712/prodigy_hifi.h",
+  "human_readable_source": " \n#ifndef __SOUND_PRODIGY_HIFI_H\n#define __SOUND_PRODIGY_HIFI_H\n\n       \n\n#define PRODIGY_HIFI_DEVICE_DESC \t       \"{Audiotrak,Prodigy 7.1 HIFI},\"\\\n                                           \"{Audiotrak Prodigy HD2},\"\\\n                                           \"{Hercules Fortissimo IV},\"\n\n#define VT1724_SUBDEVICE_PRODIGY_HIFI\t0x38315441\t \n#define VT1724_SUBDEVICE_PRODIGY_HD2\t0x37315441\t \n#define VT1724_SUBDEVICE_FORTISSIMO4\t0x81160100\t \n\n\nextern struct snd_ice1712_card_info  snd_vt1724_prodigy_hifi_cards[];\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

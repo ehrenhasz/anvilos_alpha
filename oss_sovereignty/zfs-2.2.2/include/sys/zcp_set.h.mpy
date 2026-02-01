@@ -1,0 +1,9 @@
+{
+  "module_name": "zcp_set.h",
+  "hash_id": "692e385573d23000f468572bed10f7f3f223b559928c95ffae90c039bb88ef82",
+  "original_prompt": "Ingested from zfs-2.2.2/include/sys/zcp_set.h",
+  "human_readable_source": " \n\n \n\n#ifndef _SYS_ZCP_SET_H\n#define\t_SYS_ZCP_SET_H\n\n#include <sys/dmu_tx.h>\n#include <sys/dsl_pool.h>\n\n#ifdef  __cplusplus\nextern \"C\" {\n#endif\n\ntypedef struct zcp_set_prop_arg {\n\tlua_State\t*state;\n\tconst char\t*dsname;\n\tconst char\t*prop;\n\tconst char\t*val;\n} zcp_set_prop_arg_t;\n\nint zcp_set_prop_check(void *arg, dmu_tx_t *tx);\nvoid zcp_set_prop_sync(void *arg, dmu_tx_t *tx);\n\n#ifdef  __cplusplus\n}\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

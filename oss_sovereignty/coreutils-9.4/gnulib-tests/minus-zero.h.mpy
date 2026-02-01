@@ -1,0 +1,9 @@
+{
+  "module_name": "minus-zero.h",
+  "hash_id": "14293d808825b08fb472a51769a9d220d6ec7eb5b1fffd2bc40719f0da23512f",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/minus-zero.h",
+  "human_readable_source": " \n\n#include <float.h>\n\n\n \n\n \n#if defined __hpux || defined __sgi || defined __ICC\nstatic float\ncompute_minus_zerof (void)\n{\n  return -FLT_MIN * FLT_MIN;\n}\n# define minus_zerof compute_minus_zerof ()\n#else\nfloat minus_zerof = -0.0f;\n#endif\n\n\n \n\n \n#if defined __hpux || defined __sgi || defined __ICC\nstatic double\ncompute_minus_zerod (void)\n{\n  return -DBL_MIN * DBL_MIN;\n}\n# define minus_zerod compute_minus_zerod ()\n#else\ndouble minus_zerod = -0.0;\n#endif\n\n\n \n\n \n#if defined __hpux || defined __sgi || defined __ICC\nstatic long double\ncompute_minus_zerol (void)\n{\n  return -LDBL_MIN * LDBL_MIN;\n}\n# define minus_zerol compute_minus_zerol ()\n#else\nlong double minus_zerol = -0.0L;\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

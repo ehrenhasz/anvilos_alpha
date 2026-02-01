@@ -1,0 +1,9 @@
+{
+  "module_name": "MP+fencewmbonceonce+fencermbonceonce.litmus",
+  "hash_id": "6a0ad8a68e7b0a2def87fee95154ecdc973a89786443fb339c9884db3e63f99f",
+  "original_prompt": "Ingested from linux-6.6.14/tools/memory-model/litmus-tests/MP+fencewmbonceonce+fencermbonceonce.litmus",
+  "human_readable_source": "C MP+fencewmbonceonce+fencermbonceonce\n\n(*\n * Result: Never\n *\n * This litmus test demonstrates that smp_wmb() and smp_rmb() provide\n * sufficient ordering for the message-passing pattern.  However, it\n * is usually better to use smp_store_release() and smp_load_acquire().\n *)\n\n{}\n\nP0(int *buf, int *flag) // Producer\n{\n\tWRITE_ONCE(*buf, 1);\n\tsmp_wmb();\n\tWRITE_ONCE(*flag, 1);\n}\n\nP1(int *buf, int *flag) // Consumer\n{\n\tint r0;\n\tint r1;\n\n\tr0 = READ_ONCE(*flag);\n\tsmp_rmb();\n\tr1 = READ_ONCE(*buf);\n}\n\nexists (1:r0=1 /\\ 1:r1=0) (* Bad outcome. *)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

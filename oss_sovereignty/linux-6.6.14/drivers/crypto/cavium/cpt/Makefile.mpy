@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "99777fc898bdde1ae410a93694055741572fef68e207ea507f3a8ccc191c19b4",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/crypto/cavium/cpt/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-$(CONFIG_CAVIUM_CPT) += cptpf.o cptvf.o\ncptpf-objs := cptpf_main.o cptpf_mbox.o\ncptvf-objs := cptvf_main.o cptvf_reqmanager.o cptvf_mbox.o cptvf_algs.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "10bd5b38f4cefe7beb41d60d53ddd3fe270e7ca2ac658761a01d6fe958b24460",
+  "original_prompt": "Ingested from linux-6.6.14/net/mac80211/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nobj-$(CONFIG_MAC80211) += mac80211.o\n\n# mac80211 objects\nmac80211-y := \\\n\tmain.o status.o \\\n\tdriver-ops.o \\\n\tsta_info.o \\\n\twep.o \\\n\taead_api.o \\\n\twpa.o \\\n\tscan.o offchannel.o \\\n\tht.o agg-tx.o agg-rx.o \\\n\tvht.o \\\n\the.o \\\n\ts1g.o \\\n\tibss.o \\\n\tiface.o \\\n\tlink.o \\\n\trate.o \\\n\tmichael.o \\\n\ttkip.o \\\n\taes_cmac.o \\\n\taes_gmac.o \\\n\tfils_aead.o \\\n\tcfg.o \\\n\tethtool.o \\\n\trx.o \\\n\tspectmgmt.o \\\n\ttx.o \\\n\tkey.o \\\n\tutil.o \\\n\twme.o \\\n\tchan.o \\\n\ttrace.o mlme.o \\\n\ttdls.o \\\n\tocb.o \\\n\tairtime.o \\\n\teht.o\n\nmac80211-$(CONFIG_MAC80211_LEDS) += led.o\nmac80211-$(CONFIG_MAC80211_DEBUGFS) += \\\n\tdebugfs.o \\\n\tdebugfs_sta.o \\\n\tdebugfs_netdev.o \\\n\tdebugfs_key.o\n\nmac80211-$(CONFIG_MAC80211_MESH) += \\\n\tmesh.o \\\n\tmesh_pathtbl.o \\\n\tmesh_plink.o \\\n\tmesh_hwmp.o \\\n\tmesh_sync.o \\\n\tmesh_ps.o\n\nmac80211-$(CONFIG_PM) += pm.o\n\nCFLAGS_trace.o := -I$(src)\n\nrc80211_minstrel-y := \\\n\trc80211_minstrel_ht.o\n\nrc80211_minstrel-$(CONFIG_MAC80211_DEBUGFS) += \\\n\trc80211_minstrel_ht_debugfs.o\n\nmac80211-$(CONFIG_MAC80211_RC_MINSTREL) += $(rc80211_minstrel-y)\n\nccflags-y += -DDEBUG\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

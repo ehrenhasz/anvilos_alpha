@@ -1,0 +1,9 @@
+{
+  "module_name": "atomic.h",
+  "hash_id": "fc9c305b2156657106a7b1f79674cb1ccd8e0939c2f0ada70470955ad58ce212",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/futex/include/atomic.h",
+  "human_readable_source": " \n \n\n#ifndef _ATOMIC_H\n#define _ATOMIC_H\n\ntypedef struct {\n\tvolatile int val;\n} atomic_t;\n\n#define ATOMIC_INITIALIZER { 0 }\n\n \nstatic inline int\natomic_cmpxchg(atomic_t *addr, int oldval, int newval)\n{\n\treturn __sync_val_compare_and_swap(&addr->val, oldval, newval);\n}\n\n \nstatic inline int\natomic_inc(atomic_t *addr)\n{\n\treturn __sync_add_and_fetch(&addr->val, 1);\n}\n\n \nstatic inline int\natomic_dec(atomic_t *addr)\n{\n\treturn __sync_sub_and_fetch(&addr->val, 1);\n}\n\n \nstatic inline int\natomic_set(atomic_t *addr, int newval)\n{\n\taddr->val = newval;\n\treturn newval;\n}\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

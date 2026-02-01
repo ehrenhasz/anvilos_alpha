@@ -1,0 +1,9 @@
+{
+  "module_name": "recursion-depth.c",
+  "hash_id": "23e9d361809445379f8aacd7db7d49903e78bed110dc180a1d9ba28aa833d018",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/exec/recursion-depth.c",
+  "human_readable_source": " \n \n#include <errno.h>\n#include <sched.h>\n#include <stdio.h>\n#include <string.h>\n#include <sys/types.h>\n#include <sys/stat.h>\n#include <fcntl.h>\n#include <sys/mount.h>\n#include <unistd.h>\n\nint main(void)\n{\n\tif (unshare(CLONE_NEWNS) == -1) {\n\t\tif (errno == ENOSYS || errno == EPERM) {\n\t\t\tfprintf(stderr, \"error: unshare, errno %d\\n\", errno);\n\t\t\treturn 4;\n\t\t}\n\t\tfprintf(stderr, \"error: unshare, errno %d\\n\", errno);\n\t\treturn 1;\n\t}\n\tif (mount(NULL, \"/\", NULL, MS_PRIVATE|MS_REC, NULL) == -1) {\n\t\tfprintf(stderr, \"error: mount '/', errno %d\\n\", errno);\n\t\treturn 1;\n\t}\n\t \n\tif (mount(NULL, \"/tmp\", \"ramfs\", 0, NULL) == -1) {\n\t\tfprintf(stderr, \"error: mount ramfs, errno %d\\n\", errno);\n\t\treturn 1;\n\t}\n\n#define FILENAME \"/tmp/1\"\n\n\tint fd = creat(FILENAME, 0700);\n\tif (fd == -1) {\n\t\tfprintf(stderr, \"error: creat, errno %d\\n\", errno);\n\t\treturn 1;\n\t}\n#define S \"#!\" FILENAME \"\\n\"\n\tif (write(fd, S, strlen(S)) != strlen(S)) {\n\t\tfprintf(stderr, \"error: write, errno %d\\n\", errno);\n\t\treturn 1;\n\t}\n\tclose(fd);\n\n\tint rv = execve(FILENAME, NULL, NULL);\n\tif (rv == -1 && errno == ELOOP) {\n\t\treturn 0;\n\t}\n\tfprintf(stderr, \"error: execve, rv %d, errno %d\\n\", rv, errno);\n\treturn 1;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

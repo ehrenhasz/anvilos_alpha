@@ -1,0 +1,9 @@
+{
+  "module_name": "bad-nonprintable.bconf",
+  "hash_id": "76a52c7bc19fa830527efac4b4f3daa74b206d32e6fcce4126e769215e2c3dc7",
+  "original_prompt": "Ingested from linux-6.6.14/tools/bootconfig/samples/bad-nonprintable.bconf",
+  "human_readable_source": "# Non printable\nkey = \"\u0002\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

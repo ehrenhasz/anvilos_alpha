@@ -1,0 +1,9 @@
+{
+  "module_name": "xfail.tc",
+  "hash_id": "de2c4ad6c686cdef006b9aaf29aedf009b4360e762562136ff1cc2b9f992ef33",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/ftrace/samples/xfail.tc",
+  "human_readable_source": "#!/bin/sh\n# description: xfail-case example\ncat non-exist-file || exit_xfail\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

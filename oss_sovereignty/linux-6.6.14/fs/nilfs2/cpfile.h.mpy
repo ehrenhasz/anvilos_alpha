@@ -1,0 +1,9 @@
+{
+  "module_name": "cpfile.h",
+  "hash_id": "c0a0b25c7e7f6ed07727280037995fd89184653cd235a77fb168ed994d3e8ec3",
+  "original_prompt": "Ingested from linux-6.6.14/fs/nilfs2/cpfile.h",
+  "human_readable_source": " \n \n\n#ifndef _NILFS_CPFILE_H\n#define _NILFS_CPFILE_H\n\n#include <linux/fs.h>\n#include <linux/buffer_head.h>\n#include <linux/nilfs2_api.h>\t\t \n#include <linux/nilfs2_ondisk.h>\t \n\n\nint nilfs_cpfile_get_checkpoint(struct inode *, __u64, int,\n\t\t\t\tstruct nilfs_checkpoint **,\n\t\t\t\tstruct buffer_head **);\nvoid nilfs_cpfile_put_checkpoint(struct inode *, __u64, struct buffer_head *);\nint nilfs_cpfile_delete_checkpoints(struct inode *, __u64, __u64);\nint nilfs_cpfile_delete_checkpoint(struct inode *, __u64);\nint nilfs_cpfile_change_cpmode(struct inode *, __u64, int);\nint nilfs_cpfile_is_snapshot(struct inode *, __u64);\nint nilfs_cpfile_get_stat(struct inode *, struct nilfs_cpstat *);\nssize_t nilfs_cpfile_get_cpinfo(struct inode *, __u64 *, int, void *,\n\t\t\t\tunsigned int, size_t);\n\nint nilfs_cpfile_read(struct super_block *sb, size_t cpsize,\n\t\t      struct nilfs_inode *raw_inode, struct inode **inodep);\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "mod_vmid.h",
+  "hash_id": "3d16304e2c8cfa17b86d7b48436ce52df704e1f1d3f6ff36cea5ae4120176ab0",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/modules/inc/mod_vmid.h",
+  "human_readable_source": " \n\n#ifndef MOD_VMID_H_\n#define MOD_VMID_H_\n\n#define MAX_VMID 16\n\n#include \"dc.h\"\n\nstruct mod_vmid {\n\tint dummy;\n};\n\nuint8_t mod_vmid_get_for_ptb(struct mod_vmid *mod_vmid, uint64_t ptb);\nvoid mod_vmid_reset(struct mod_vmid *mod_vmid);\nstruct mod_vmid *mod_vmid_create(\n\t\tstruct dc *dc,\n\t\tunsigned int num_vmid,\n\t\tstruct dc_virtual_addr_space_config *va_config);\n\nvoid mod_vmid_destroy(struct mod_vmid *mod_vmid);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

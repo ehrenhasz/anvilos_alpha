@@ -1,0 +1,9 @@
+{
+  "module_name": "isp.h",
+  "hash_id": "cd2fad69eed588b3d600ada2937607cb12daf1044b289a6133caff79ddf4c143",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/hive_isp_css_include/isp.h",
+  "human_readable_source": " \n \n\n#ifndef __ISP_H_INCLUDED__\n#define __ISP_H_INCLUDED__\n\n \n\n#include \"system_local.h\"\n#include \"isp_local.h\"\n\n#ifndef __INLINE_ISP__\n#define STORAGE_CLASS_ISP_H extern\n#define STORAGE_CLASS_ISP_C\n#include \"isp_public.h\"\n#else   \n#define STORAGE_CLASS_ISP_H static inline\n#define STORAGE_CLASS_ISP_C static inline\n#include \"isp_private.h\"\n#endif  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

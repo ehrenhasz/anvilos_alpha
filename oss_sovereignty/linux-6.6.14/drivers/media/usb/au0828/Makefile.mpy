@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "a353ccff49ac3adbf3aa0eda74cec6a3e135f7d44bf507c1b10fdbafa208d047",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/usb/au0828/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nau0828-objs\t:= au0828-core.o au0828-i2c.o au0828-cards.o au0828-dvb.o\n\nifeq ($(CONFIG_VIDEO_AU0828_V4L2),y)\n  au0828-objs   += au0828-video.o au0828-vbi.o\nendif\n\nifeq ($(CONFIG_VIDEO_AU0828_RC),y)\n  au0828-objs   += au0828-input.o\nendif\n\nobj-$(CONFIG_VIDEO_AU0828) += au0828.o\n\nccflags-y += -I $(srctree)/drivers/media/tuners\nccflags-y += -I $(srctree)/drivers/media/dvb-frontends\n\nccflags-y += $(extra-cflags-y) $(extra-cflags-m)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

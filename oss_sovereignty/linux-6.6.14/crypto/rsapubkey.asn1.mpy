@@ -1,0 +1,9 @@
+{
+  "module_name": "rsapubkey.asn1",
+  "hash_id": "b3b05179be6326901bb1c97e29e261845af382a910c7ee7f27c652eb7b69a75e",
+  "original_prompt": "Ingested from linux-6.6.14/crypto/rsapubkey.asn1",
+  "human_readable_source": "RsaPubKey ::= SEQUENCE {\n\tn INTEGER ({ rsa_get_n }),\n\te INTEGER ({ rsa_get_e })\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

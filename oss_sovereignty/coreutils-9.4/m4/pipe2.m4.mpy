@@ -1,0 +1,9 @@
+{
+  "module_name": "pipe2.m4",
+  "hash_id": "5ef204751c559798e5c155063066b2429c5a982fb28ebb2a50379b7fa5701212",
+  "original_prompt": "Ingested from coreutils-9.4/m4/pipe2.m4",
+  "human_readable_source": "# pipe2.m4 serial 4\ndnl Copyright (C) 2009-2023 Free Software Foundation, Inc.\ndnl This file is free software; the Free Software Foundation\ndnl gives unlimited permission to copy and/or distribute it,\ndnl with or without modifications, as long as this notice is preserved.\n\nAC_DEFUN([gl_FUNC_PIPE2],\n[\n  AC_REQUIRE([gl_UNISTD_H_DEFAULTS])\n\n  dnl Persuade glibc <unistd.h> to declare pipe2().\n  AC_REQUIRE([AC_USE_SYSTEM_EXTENSIONS])\n\n  gl_CHECK_FUNCS_ANDROID([pipe2], [[#include <unistd.h>]])\n  if test $ac_cv_func_pipe2 != yes; then\n    HAVE_PIPE2=0\n    case \"$gl_cv_onwards_func_pipe2\" in\n      future*) REPLACE_PIPE2=1 ;;\n    esac\n  else\n    REPLACE_PIPE2=1\n  fi\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

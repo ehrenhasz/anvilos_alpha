@@ -1,0 +1,9 @@
+{
+  "module_name": "dmub_replay.h",
+  "hash_id": "27afed163161467ac3ca9c8003baa7a1a58d9d9d70450977b0762a614872914d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/dc/dce/dmub_replay.h",
+  "human_readable_source": " \n\n#ifndef _DMUB_REPLAY_H_\n#define _DMUB_REPLAY_H_\n\n#include \"dc_types.h\"\n#include \"dmub_cmd.h\"\nstruct dc_link;\nstruct dmub_replay_funcs;\n\nstruct dmub_replay {\n\tstruct dc_context *ctx;\n\tconst struct dmub_replay_funcs *funcs;\n};\n\nstruct dmub_replay_funcs {\n\tvoid (*replay_get_state)(struct dmub_replay *dmub, enum replay_state *state,\n\t\tuint8_t panel_inst);\n\tvoid (*replay_enable)(struct dmub_replay *dmub, bool enable, bool wait,\n\t\tuint8_t panel_inst);\n\tbool (*replay_copy_settings)(struct dmub_replay *dmub, struct dc_link *link,\n\t\tstruct replay_context *replay_context, uint8_t panel_inst);\n\tvoid (*replay_set_power_opt)(struct dmub_replay *dmub, unsigned int power_opt,\n\t\tuint8_t panel_inst);\n\tvoid (*replay_set_coasting_vtotal)(struct dmub_replay *dmub, uint16_t coasting_vtotal,\n\t\tuint8_t panel_inst);\n\tvoid (*replay_residency)(struct dmub_replay *dmub,\n\t\tuint8_t panel_inst, uint32_t *residency, const bool is_start, const bool is_alpm);\n};\n\nstruct dmub_replay *dmub_replay_create(struct dc_context *ctx);\nvoid dmub_replay_destroy(struct dmub_replay **dmub);\n\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

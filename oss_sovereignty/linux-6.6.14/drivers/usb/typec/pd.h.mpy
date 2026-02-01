@@ -1,0 +1,9 @@
+{
+  "module_name": "pd.h",
+  "hash_id": "ff6f6365ec7e40c90772e02ef23baf543f10d2945605085eac08c6c03a78c99f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/usb/typec/pd.h",
+  "human_readable_source": " \n\n#ifndef __USB_POWER_DELIVERY__\n#define __USB_POWER_DELIVERY__\n\n#include <linux/device.h>\n#include <linux/usb/typec.h>\n\nstruct usb_power_delivery {\n\tstruct device dev;\n\tint id;\n\tu16 revision;\n\tu16 version;\n};\n\nstruct usb_power_delivery_capabilities {\n\tstruct device dev;\n\tstruct usb_power_delivery *pd;\n\tenum typec_role role;\n};\n\n#define to_usb_power_delivery_capabilities(o) container_of(o, struct usb_power_delivery_capabilities, dev)\n#define to_usb_power_delivery(o) container_of(o, struct usb_power_delivery, dev)\n\nstruct usb_power_delivery *usb_power_delivery_find(const char *name);\n\nint usb_power_delivery_init(void);\nvoid usb_power_delivery_exit(void);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

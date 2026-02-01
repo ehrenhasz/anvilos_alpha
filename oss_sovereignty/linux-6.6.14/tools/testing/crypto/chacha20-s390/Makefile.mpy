@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "53aaa9c4cef56cfcdaedfe045faf9c8b86740c9bd16877e80f0f692a36035c8b",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/crypto/chacha20-s390/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Copyright (C) 2022 Red Hat, Inc.\n# Author: Vladis Dronov <vdronoff@gmail.com>\n\nobj-m += test_cipher.o\ntest_cipher-y := test-cipher.o\n\nall:\n\tmake -C /lib/modules/$(shell uname -r)/build/ M=$(PWD) modules\nclean:\n\tmake -C /lib/modules/$(shell uname -r)/build/ M=$(PWD) clean\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

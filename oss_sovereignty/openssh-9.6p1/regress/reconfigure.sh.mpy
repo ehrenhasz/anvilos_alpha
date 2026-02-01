@@ -1,0 +1,9 @@
+{
+  "module_name": "reconfigure.sh",
+  "hash_id": "19ce1bd39d149e50c6357a738ed8c4e4549a7367535225de26d76cfe7a19b037",
+  "original_prompt": "Ingested from openssh-9.6p1/regress/reconfigure.sh",
+  "human_readable_source": "#\t$OpenBSD: reconfigure.sh,v 1.9 2021/06/10 09:46:28 dtucker Exp $\n#\tPlaced in the Public Domain.\n\ntid=\"simple connect after reconfigure\"\n\n# we need the full path to sshd for -HUP\nif test \"x$USE_VALGRIND\" = \"x\" ; then\n\tcase $SSHD in\n\t/*)\n\t\t# full path is OK\n\t\t;;\n\t*)\n\t\t# otherwise make fully qualified\n\t\tSSHD=$OBJ/$SSHD\n\tesac\nfi\n\nstart_sshd\n\ntrace \"connect before restart\"\n${SSH} -F $OBJ/ssh_config somehost true\nif [ $? -ne 0 ]; then\n\tfail \"ssh connect with failed before reconfigure\"\nfi\n\nPID=`$SUDO cat $PIDFILE`\nrm -f $PIDFILE\n$SUDO kill -HUP $PID\n\ntrace \"wait for sshd to restart\"\ni=0;\nwhile [ ! -f $PIDFILE -a $i -lt 10 ]; do\n\ti=`expr $i + 1`\n\tsleep $i\ndone\n\ntest -f $PIDFILE || fatal \"sshd did not restart\"\n\ntrace \"connect after restart\"\n${SSH} -F $OBJ/ssh_config somehost true\nif [ $? -ne 0 ]; then\n\tfail \"ssh connect with failed after reconfigure\"\nfi\n\ntrace \"reconfigure with active clients\"\n${SSH} -F $OBJ/ssh_config somehost sleep 10  # authenticated client\n${NC} -d 127.0.0.1 $PORT >/dev/null &  # unauthenticated client\nPID=`$SUDO cat $PIDFILE`\nrm -f $PIDFILE\n$SUDO kill -HUP $PID\n\ntrace \"wait for sshd to restart\"\ni=0;\nwhile [ ! -f $PIDFILE -a $i -lt 10 ]; do\n\ti=`expr $i + 1`\n\tsleep $i\ndone\n\ntest -f $PIDFILE || fatal \"sshd did not restart\"\n\ntrace \"connect after restart with active clients\"\n${SSH} -F $OBJ/ssh_config somehost true\nif [ $? -ne 0 ]; then\n\tfail \"ssh connect with failed after reconfigure\"\nfi\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

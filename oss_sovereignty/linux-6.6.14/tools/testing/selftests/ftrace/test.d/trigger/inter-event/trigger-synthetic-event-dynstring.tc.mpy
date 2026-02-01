@@ -1,0 +1,9 @@
+{
+  "module_name": "trigger-synthetic-event-dynstring.tc",
+  "hash_id": "aace8884fdf4b778055e04937acf5e398c5c494acf2cf356a87b04449beef598",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/ftrace/test.d/trigger/inter-event/trigger-synthetic-event-dynstring.tc",
+  "human_readable_source": "#!/bin/sh\n# SPDX-License-Identifier: GPL-2.0\n# description: event trigger - test inter-event histogram trigger trace action with dynamic string param\n# requires: set_event synthetic_events events/sched/sched_process_exec/hist \"' >> synthetic_events\":README ping:program\n\nfail() { #msg\n    echo $1\n    exit_fail\n}\n\necho \"Test create synthetic event\"\n\necho 'ping_test_latency u64 lat; char filename[]' > synthetic_events\nif [ ! -d events/synthetic/ping_test_latency ]; then\n    fail \"Failed to create ping_test_latency synthetic event\"\nfi\n\necho \"Test create histogram for synthetic event using trace action and dynamic strings\"\necho \"Test histogram dynamic string variables,simple expression support and trace action\"\n\necho 'hist:key=pid:filenamevar=filename:ts0=common_timestamp.usecs' > events/sched/sched_process_exec/trigger\necho 'hist:key=pid:lat=common_timestamp.usecs-$ts0:onmatch(sched.sched_process_exec).ping_test_latency($lat,$filenamevar) if comm == \"ping\"' > events/sched/sched_process_exit/trigger\necho 'hist:keys=filename,lat:sort=filename,lat' > events/synthetic/ping_test_latency/trigger\n\nping $LOCALHOST -c 5\n\nif ! grep -q \"ping\" events/synthetic/ping_test_latency/hist; then\n    fail \"Failed to create dynamic string trace action inter-event histogram\"\nfi\n\nexit 0\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

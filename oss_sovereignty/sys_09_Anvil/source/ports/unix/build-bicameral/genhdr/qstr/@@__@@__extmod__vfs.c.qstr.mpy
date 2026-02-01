@@ -1,0 +1,9 @@
+{
+  "module_name": "@@__@@__extmod__vfs.c.qstr",
+  "hash_id": "53c5d2ac2baee011762f01d15148f397676df77b27c5c5f49a41ef775a570f67",
+  "original_prompt": "Ingested from sys_09_Anvil/source/ports/unix/build-bicameral/genhdr/qstr/@@__@@__extmod__vfs.c.qstr",
+  "human_readable_source": "Q(stat)\nQ(readonly)\nQ(mkfs)\nQ(mount)\nQ(mount)\nQ(umount)\nQ(file)\nQ(mode)\nQ(r)\nQ(buffering)\nQ(encoding)\nQ(open)\nQ(_slash_)\nQ(chdir)\nQ(chdir)\nQ(_slash_)\nQ(getcwd)\nQ(_slash_)\nQ(ilistdir)\nQ(ilistdir)\nQ(mkdir)\nQ(remove)\nQ(rename)\nQ(rmdir)\nQ(stat)\nQ(_slash_)\nQ(statvfs)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "setup.c",
+  "hash_id": "b9e8731db027fcfa9fe791fc63e31cbdafc575910fac2fe6fbd4a5e6bf5ad7d3",
+  "original_prompt": "Ingested from linux-6.6.14/security/landlock/setup.c",
+  "human_readable_source": "\n \n\n#include <linux/init.h>\n#include <linux/lsm_hooks.h>\n\n#include \"common.h\"\n#include \"cred.h\"\n#include \"fs.h\"\n#include \"ptrace.h\"\n#include \"setup.h\"\n\nbool landlock_initialized __ro_after_init = false;\n\nstruct lsm_blob_sizes landlock_blob_sizes __ro_after_init = {\n\t.lbs_cred = sizeof(struct landlock_cred_security),\n\t.lbs_file = sizeof(struct landlock_file_security),\n\t.lbs_inode = sizeof(struct landlock_inode_security),\n\t.lbs_superblock = sizeof(struct landlock_superblock_security),\n};\n\nstatic int __init landlock_init(void)\n{\n\tlandlock_add_cred_hooks();\n\tlandlock_add_ptrace_hooks();\n\tlandlock_add_fs_hooks();\n\tlandlock_initialized = true;\n\tpr_info(\"Up and running.\\n\");\n\treturn 0;\n}\n\nDEFINE_LSM(LANDLOCK_NAME) = {\n\t.name = LANDLOCK_NAME,\n\t.init = landlock_init,\n\t.blobs = &landlock_blob_sizes,\n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

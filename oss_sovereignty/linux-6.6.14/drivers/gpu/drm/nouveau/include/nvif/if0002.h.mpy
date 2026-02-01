@@ -1,0 +1,9 @@
+{
+  "module_name": "if0002.h",
+  "hash_id": "09cb97b4a784576e682e3eb28db6bf5f7bd1612a48133bf94d4a84534c41f1cc",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/include/nvif/if0002.h",
+  "human_readable_source": " \n#ifndef __NVIF_IF0002_H__\n#define __NVIF_IF0002_H__\n\n#define NVIF_PERFMON_V0_QUERY_DOMAIN                                       0x00\n#define NVIF_PERFMON_V0_QUERY_SIGNAL                                       0x01\n#define NVIF_PERFMON_V0_QUERY_SOURCE                                       0x02\n\nstruct nvif_perfmon_query_domain_v0 {\n\t__u8  version;\n\t__u8  id;\n\t__u8  counter_nr;\n\t__u8  iter;\n\t__u16 signal_nr;\n\t__u8  pad05[2];\n\tchar  name[64];\n};\n\nstruct nvif_perfmon_query_signal_v0 {\n\t__u8  version;\n\t__u8  domain;\n\t__u16 iter;\n\t__u8  signal;\n\t__u8  source_nr;\n\t__u8  pad05[2];\n\tchar  name[64];\n};\n\nstruct nvif_perfmon_query_source_v0 {\n\t__u8  version;\n\t__u8  domain;\n\t__u8  signal;\n\t__u8  iter;\n\t__u8  pad04[4];\n\t__u32 source;\n\t__u32 mask;\n\tchar  name[64];\n};\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

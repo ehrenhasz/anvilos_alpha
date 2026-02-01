@@ -1,0 +1,9 @@
+{
+  "module_name": "test_lirc_mode2.sh",
+  "hash_id": "0d01cab030d5a73b5aa3b15e1e6a170e5abb83fb54f1d476e0800bde62f8d055",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/test_lirc_mode2.sh",
+  "human_readable_source": "#!/bin/bash\n# SPDX-License-Identifier: GPL-2.0\n\n# Kselftest framework requirement - SKIP code is 4.\nksft_skip=4\nret=$ksft_skip\n\nmsg=\"skip all tests:\"\nif [ $UID != 0 ]; then\n\techo $msg please run this as root >&2\n\texit $ksft_skip\nfi\n\nGREEN='\\033[0;92m'\nRED='\\033[0;31m'\nNC='\\033[0m' # No Color\n\nmodprobe rc-loopback\n\nfor i in /sys/class/rc/rc*\ndo\n\tif grep -q DRV_NAME=rc-loopback $i/uevent\n\tthen\n\t\tLIRCDEV=$(grep DEVNAME= $i/lirc*/uevent | sed sQDEVNAME=Q/dev/Q)\n\t\tINPUTDEV=$(grep DEVNAME= $i/input*/event*/uevent | sed sQDEVNAME=Q/dev/Q)\n\tfi\ndone\n\nif [ -n \"$LIRCDEV\" ];\nthen\n\tTYPE=lirc_mode2\n\t./test_lirc_mode2_user $LIRCDEV $INPUTDEV\n\tret=$?\n\tif [ $ret -ne 0 ]; then\n\t\techo -e ${RED}\"FAIL: $TYPE\"${NC}\n\telse\n\t\techo -e ${GREEN}\"PASS: $TYPE\"${NC}\n\tfi\nfi\n\nexit $ret\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

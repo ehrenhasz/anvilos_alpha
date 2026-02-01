@@ -1,0 +1,9 @@
+{
+  "module_name": "nina_bsp.h",
+  "hash_id": "17a02ec13bae83e3c8a562c65e5441230de19304da95c64a0ddeee238defe6ef",
+  "original_prompt": "Ingested from sys_09_Anvil/source/drivers/ninaw10/nina_bsp.h",
+  "human_readable_source": " \n#ifndef MICROPY_INCLUDED_DRIVERS_NINAW10_NINA_BSP_H\n#define MICROPY_INCLUDED_DRIVERS_NINAW10_NINA_BSP_H\n\nint nina_bsp_init(void);\nint nina_bsp_deinit(void);\nint nina_bsp_atomic_enter(void);\nint nina_bsp_atomic_exit(void);\nint nina_bsp_read_irq(void);\nint nina_bsp_spi_slave_select(uint32_t timeout);\nint nina_bsp_spi_slave_deselect(void);\nint nina_bsp_spi_transfer(const uint8_t *tx_buf, uint8_t *rx_buf, uint32_t size);\n\n#endif \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

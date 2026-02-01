@@ -1,0 +1,9 @@
+{
+  "module_name": "ccu-rst.h",
+  "hash_id": "ad1fc7b889515915bce2ccc695813f6c5b2ddc5d7bc56ffd1221307710a02b8a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/clk/baikal-t1/ccu-rst.h",
+  "human_readable_source": " \n \n#ifndef __CLK_BT1_CCU_RST_H__\n#define __CLK_BT1_CCU_RST_H__\n\n#include <linux/of.h>\n#include <linux/regmap.h>\n#include <linux/reset-controller.h>\n\nstruct ccu_rst_info;\n\n \nenum ccu_rst_type {\n\tCCU_RST_TRIG,\n\tCCU_RST_DIR,\n};\n\n \nstruct ccu_rst_init_data {\n\tstruct regmap *sys_regs;\n\tstruct device_node *np;\n};\n\n \nstruct ccu_rst {\n\tstruct reset_controller_dev rcdev;\n\tstruct regmap *sys_regs;\n\tconst struct ccu_rst_info *rsts_info;\n};\n#define to_ccu_rst(_rcdev) container_of(_rcdev, struct ccu_rst, rcdev)\n\n#ifdef CONFIG_CLK_BT1_CCU_RST\n\nstruct ccu_rst *ccu_rst_hw_register(const struct ccu_rst_init_data *init);\n\nvoid ccu_rst_hw_unregister(struct ccu_rst *rst);\n\n#else\n\nstatic inline\nstruct ccu_rst *ccu_rst_hw_register(const struct ccu_rst_init_data *init)\n{\n\treturn NULL;\n}\n\nstatic inline void ccu_rst_hw_unregister(struct ccu_rst *rst) {}\n\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

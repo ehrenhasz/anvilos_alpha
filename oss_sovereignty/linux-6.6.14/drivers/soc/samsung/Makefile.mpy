@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "1d8b3b28abbbbd2901f68e6d806c53a313ab34e8f0e888114252028c6f59442c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/soc/samsung/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n\nobj-$(CONFIG_EXYNOS_ASV_ARM)\t+= exynos5422-asv.o\nobj-$(CONFIG_EXYNOS_CHIPID)\t+= exynos_chipid.o\nexynos_chipid-y\t\t\t+= exynos-chipid.o exynos-asv.o\n\nobj-$(CONFIG_EXYNOS_USI)\t+= exynos-usi.o\n\nobj-$(CONFIG_EXYNOS_PMU)\t+= exynos-pmu.o\n\nobj-$(CONFIG_EXYNOS_PMU_ARM_DRIVERS)\t+= exynos3250-pmu.o exynos4-pmu.o \\\n\t\t\t\t\texynos5250-pmu.o exynos5420-pmu.o\nobj-$(CONFIG_EXYNOS_REGULATOR_COUPLER) += exynos-regulator-coupler.o\n\nobj-$(CONFIG_SAMSUNG_PM_CHECK)\t+= s3c-pm-check.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

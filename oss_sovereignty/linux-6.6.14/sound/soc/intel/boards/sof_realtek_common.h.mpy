@@ -1,0 +1,9 @@
+{
+  "module_name": "sof_realtek_common.h",
+  "hash_id": "220b06e9e0a512c3d0bd0d0b337636ee2ab97414166e67334bc3643f157efa71",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/intel/boards/sof_realtek_common.h",
+  "human_readable_source": " \n \n\n \n#ifndef __SOF_REALTEK_COMMON_H\n#define __SOF_REALTEK_COMMON_H\n\n#include <sound/soc.h>\n\n#define RT1011_CODEC_DAI\t\"rt1011-aif\"\n#define RT1011_DEV0_NAME\t\"i2c-10EC1011:00\"\n#define RT1011_DEV1_NAME\t\"i2c-10EC1011:01\"\n#define RT1011_DEV2_NAME\t\"i2c-10EC1011:02\"\n#define RT1011_DEV3_NAME\t\"i2c-10EC1011:03\"\n\nvoid sof_rt1011_dai_link(struct snd_soc_dai_link *link);\nvoid sof_rt1011_codec_conf(struct snd_soc_card *card);\n\n#define RT1015P_CODEC_DAI\t\"HiFi\"\n#define RT1015P_DEV0_NAME\t\"RTL1015:00\"\n#define RT1015P_DEV1_NAME\t\"RTL1015:01\"\n\nvoid sof_rt1015p_dai_link(struct snd_soc_dai_link *link);\nvoid sof_rt1015p_codec_conf(struct snd_soc_card *card);\n\n#define RT1015_CODEC_DAI\t\"rt1015-aif\"\n#define RT1015_DEV0_NAME\t\"i2c-10EC1015:00\"\n#define RT1015_DEV1_NAME\t\"i2c-10EC1015:01\"\n\nvoid sof_rt1015_dai_link(struct snd_soc_dai_link *link);\nvoid sof_rt1015_codec_conf(struct snd_soc_card *card);\n\n#define RT1308_CODEC_DAI\t\"rt1308-aif\"\n#define RT1308_DEV0_NAME\t\"i2c-10EC1308:00\"\nvoid sof_rt1308_dai_link(struct snd_soc_dai_link *link);\n\n#define RT1019P_CODEC_DAI\t\"HiFi\"\n#define RT1019P_DEV0_NAME\t\"RTL1019:00\"\n\nvoid sof_rt1019p_dai_link(struct snd_soc_dai_link *link);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

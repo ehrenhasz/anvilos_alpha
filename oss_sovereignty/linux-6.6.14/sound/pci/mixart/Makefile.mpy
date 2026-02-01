@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "c25eb6e2c6144c5ffc5e60b74bdb610beb4dd438c7a882e779fdc8d3ec7262ec",
+  "original_prompt": "Ingested from linux-6.6.14/sound/pci/mixart/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Makefile for ALSA\n# Copyright (c) 2001 by Jaroslav Kysela <perex@perex.cz>\n#\n\nsnd-mixart-objs := mixart.o mixart_core.o mixart_hwdep.o mixart_mixer.o\n\nobj-$(CONFIG_SND_MIXART) += snd-mixart.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

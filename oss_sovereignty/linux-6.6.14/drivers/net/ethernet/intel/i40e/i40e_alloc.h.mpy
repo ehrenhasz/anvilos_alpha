@@ -1,0 +1,9 @@
+{
+  "module_name": "i40e_alloc.h",
+  "hash_id": "0832ab7add0c3314c8c1f3f014379826b061fa1d51d6a3f7bc7a5359c070de5f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/intel/i40e/i40e_alloc.h",
+  "human_readable_source": " \n \n\n#ifndef _I40E_ALLOC_H_\n#define _I40E_ALLOC_H_\n\nstruct i40e_hw;\n\n \nenum i40e_memory_type {\n\ti40e_mem_arq_buf = 0,\t\t \n\ti40e_mem_asq_buf = 1,\n\ti40e_mem_atq_buf = 2,\t\t \n\ti40e_mem_arq_ring = 3,\t\t \n\ti40e_mem_atq_ring = 4,\t\t \n\ti40e_mem_pd = 5,\t\t \n\ti40e_mem_bp = 6,\t\t \n\ti40e_mem_bp_jumbo = 7,\t\t \n\ti40e_mem_reserved\n};\n\n \nint i40e_allocate_dma_mem(struct i40e_hw *hw,\n\t\t\t  struct i40e_dma_mem *mem,\n\t\t\t  enum i40e_memory_type type,\n\t\t\t  u64 size, u32 alignment);\nint i40e_free_dma_mem(struct i40e_hw *hw,\n\t\t      struct i40e_dma_mem *mem);\nint i40e_allocate_virt_mem(struct i40e_hw *hw,\n\t\t\t   struct i40e_virt_mem *mem,\n\t\t\t   u32 size);\nint i40e_free_virt_mem(struct i40e_hw *hw,\n\t\t       struct i40e_virt_mem *mem);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

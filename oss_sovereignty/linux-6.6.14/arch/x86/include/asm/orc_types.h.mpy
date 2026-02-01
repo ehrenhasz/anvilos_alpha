@@ -1,0 +1,9 @@
+{
+  "module_name": "orc_types.h",
+  "hash_id": "a6fe212e3595168f2c93dcc388292fee353f22b153c392e36ece47c1b523e808",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/include/asm/orc_types.h",
+  "human_readable_source": " \n \n\n#ifndef _ORC_TYPES_H\n#define _ORC_TYPES_H\n\n#include <linux/types.h>\n#include <linux/compiler.h>\n\n \n#define ORC_REG_UNDEFINED\t\t0\n#define ORC_REG_PREV_SP\t\t\t1\n#define ORC_REG_DX\t\t\t2\n#define ORC_REG_DI\t\t\t3\n#define ORC_REG_BP\t\t\t4\n#define ORC_REG_SP\t\t\t5\n#define ORC_REG_R10\t\t\t6\n#define ORC_REG_R13\t\t\t7\n#define ORC_REG_BP_INDIRECT\t\t8\n#define ORC_REG_SP_INDIRECT\t\t9\n#define ORC_REG_MAX\t\t\t15\n\n#define ORC_TYPE_UNDEFINED\t\t0\n#define ORC_TYPE_END_OF_STACK\t\t1\n#define ORC_TYPE_CALL\t\t\t2\n#define ORC_TYPE_REGS\t\t\t3\n#define ORC_TYPE_REGS_PARTIAL\t\t4\n\n#ifndef __ASSEMBLY__\n#include <asm/byteorder.h>\n\n \nstruct orc_entry {\n\ts16\t\tsp_offset;\n\ts16\t\tbp_offset;\n#if defined(__LITTLE_ENDIAN_BITFIELD)\n\tunsigned\tsp_reg:4;\n\tunsigned\tbp_reg:4;\n\tunsigned\ttype:3;\n\tunsigned\tsignal:1;\n#elif defined(__BIG_ENDIAN_BITFIELD)\n\tunsigned\tbp_reg:4;\n\tunsigned\tsp_reg:4;\n\tunsigned\tunused:4;\n\tunsigned\tsignal:1;\n\tunsigned\ttype:3;\n#endif\n} __packed;\n\n#endif  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

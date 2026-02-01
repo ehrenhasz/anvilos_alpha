@@ -1,0 +1,9 @@
+{
+  "module_name": "ipsec.c",
+  "hash_id": "78a750534d7e9ba8b4d4c353092a272cc7b2dec8c2de3ec119b64b8711d91b63",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/netronome/nfp/nfdk/ipsec.c",
+  "human_readable_source": "\n \n\n#include <net/xfrm.h>\n\n#include \"../nfp_net.h\"\n#include \"nfdk.h\"\n\nu64 nfp_nfdk_ipsec_tx(u64 flags, struct sk_buff *skb)\n{\n\tstruct xfrm_state *x = xfrm_input_state(skb);\n\tstruct iphdr *iph = ip_hdr(skb);\n\n\tif (x->xso.dev && (x->xso.dev->features & NETIF_F_HW_ESP_TX_CSUM)) {\n\t\tif (iph->version == 4)\n\t\t\tflags |= NFDK_DESC_TX_L3_CSUM;\n\t\tflags |= NFDK_DESC_TX_L4_CSUM;\n\t}\n\n\treturn flags;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

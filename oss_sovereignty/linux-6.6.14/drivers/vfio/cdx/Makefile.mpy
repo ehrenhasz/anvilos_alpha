@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "eb4c6428d124c5befb92d83ab0ead6ad4e49f7eddbeaf08252d453c2ab66b772",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/vfio/cdx/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Copyright (C) 2022-2023, Advanced Micro Devices, Inc.\n#\n\nobj-$(CONFIG_VFIO_CDX) += vfio-cdx.o\n\nvfio-cdx-objs := main.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "trace_synth.h",
+  "hash_id": "3d7f4ad94d3a328b497a3bbe2054a6d98173a11dbab8de46c3dfb966c1e8e548",
+  "original_prompt": "Ingested from linux-6.6.14/kernel/trace/trace_synth.h",
+  "human_readable_source": "\n#ifndef __TRACE_SYNTH_H\n#define __TRACE_SYNTH_H\n\n#include \"trace_dynevent.h\"\n\n#define SYNTH_SYSTEM\t\t\"synthetic\"\n#define SYNTH_FIELDS_MAX\t64\n\n#define STR_VAR_LEN_MAX\t\tMAX_FILTER_STR_VAL  \n\nstruct synth_field {\n\tchar *type;\n\tchar *name;\n\tsize_t size;\n\tunsigned int offset;\n\tunsigned int field_pos;\n\tbool is_signed;\n\tbool is_string;\n\tbool is_dynamic;\n\tbool is_stack;\n};\n\nstruct synth_event {\n\tstruct dyn_event\t\t\tdevent;\n\tint\t\t\t\t\tref;\n\tchar\t\t\t\t\t*name;\n\tstruct synth_field\t\t\t**fields;\n\tunsigned int\t\t\t\tn_fields;\n\tstruct synth_field\t\t\t**dynamic_fields;\n\tunsigned int\t\t\t\tn_dynamic_fields;\n\tunsigned int\t\t\t\tn_u64;\n\tstruct trace_event_class\t\tclass;\n\tstruct trace_event_call\t\t\tcall;\n\tstruct tracepoint\t\t\t*tp;\n\tstruct module\t\t\t\t*mod;\n};\n\nextern struct synth_event *find_synth_event(const char *name);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

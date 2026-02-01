@@ -1,0 +1,9 @@
+{
+  "module_name": "reciprocal_div.h",
+  "hash_id": "16098271e9ffbe5ec00a6d0058ea62dd79a6a7ddd51ac66c6111daf359df0e65",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/reciprocal_div.h",
+  "human_readable_source": " \n#ifndef _LINUX_RECIPROCAL_DIV_H\n#define _LINUX_RECIPROCAL_DIV_H\n\n#include <linux/types.h>\n\n \n\nstruct reciprocal_value {\n\tu32 m;\n\tu8 sh1, sh2;\n};\n\n \nstruct reciprocal_value reciprocal_value(u32 d);\n\nstatic inline u32 reciprocal_divide(u32 a, struct reciprocal_value R)\n{\n\tu32 t = (u32)(((u64)a * R.m) >> 32);\n\treturn (t + ((a - t) >> R.sh1)) >> R.sh2;\n}\n\nstruct reciprocal_value_adv {\n\tu32 m;\n\tu8 sh, exp;\n\tbool is_wide_m;\n};\n\n \nstruct reciprocal_value_adv reciprocal_value_adv(u32 d, u8 prec);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

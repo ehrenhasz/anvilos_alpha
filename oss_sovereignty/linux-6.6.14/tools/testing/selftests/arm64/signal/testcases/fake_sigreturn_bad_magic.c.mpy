@@ -1,0 +1,9 @@
+{
+  "module_name": "fake_sigreturn_bad_magic.c",
+  "hash_id": "b696cac61da0851292880cbf4ea00defc0777e86e1f02e0fa3c0f8ffcd9b8a65",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/arm64/signal/testcases/fake_sigreturn_bad_magic.c",
+  "human_readable_source": "\n \n\n#include <signal.h>\n#include <ucontext.h>\n\n#include \"test_signals_utils.h\"\n#include \"testcases.h\"\n\nstruct fake_sigframe sf;\n\nstatic int fake_sigreturn_bad_magic_run(struct tdescr *td,\n\t\t\t\t\tsiginfo_t *si, ucontext_t *uc)\n{\n\tstruct _aarch64_ctx *shead = GET_SF_RESV_HEAD(sf), *head;\n\n\t \n\tif (!get_current_context(td, &sf.uc, sizeof(sf.uc)))\n\t\treturn 1;\n\n\t \n\thead = get_starting_head(shead, HDR_SZ * 2, GET_SF_RESV_SIZE(sf), NULL);\n\tif (!head)\n\t\treturn 0;\n\n\t \n\thead->magic = KSFT_BAD_MAGIC;\n\thead->size = HDR_SZ;\n\twrite_terminator_record(GET_RESV_NEXT_HEAD(head));\n\n\tASSERT_BAD_CONTEXT(&sf.uc);\n\tfake_sigreturn(&sf, sizeof(sf), 0);\n\n\treturn 1;\n}\n\nstruct tdescr tde = {\n\t\t.name = \"FAKE_SIGRETURN_BAD_MAGIC\",\n\t\t.descr = \"Trigger a sigreturn with a sigframe with a bad magic\",\n\t\t.sig_ok = SIGSEGV,\n\t\t.timeout = 3,\n\t\t.run = fake_sigreturn_bad_magic_run,\n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

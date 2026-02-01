@@ -1,0 +1,9 @@
+{
+  "module_name": "tca6416_keypad.h",
+  "hash_id": "f41e5892bc9b60dc69af6f449f7423ef92c6d49c2c8f3297186a269771093677",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/tca6416_keypad.h",
+  "human_readable_source": " \n \n\n#ifndef _TCA6416_KEYS_H\n#define _TCA6416_KEYS_H\n\n#include <linux/types.h>\n\nstruct tca6416_button {\n\t \n\tint code;\t\t \n\tint active_low;\n\tint type;\t\t \n};\n\nstruct tca6416_keys_platform_data {\n\tstruct tca6416_button *buttons;\n\tint nbuttons;\n\tunsigned int rep:1;\t \n\tuint16_t pinmask;\n\tuint16_t invert;\n\tint use_polling;\t \n};\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

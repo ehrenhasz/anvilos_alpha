@@ -1,0 +1,9 @@
+{
+  "module_name": "pinctrl-wmt.h",
+  "hash_id": "5889213135d47711968308c6d9a736c09688fe4fff0ee3cd7ab3582bc7b47774",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/pinctrl/vt8500/pinctrl-wmt.h",
+  "human_readable_source": " \n \n\n#include <linux/gpio/driver.h>\n\n \n#define NO_REG\t0xFFFF\n\n#define WMT_PINCTRL_BANK(__en, __dir, __dout, __din, __pen, __pcfg)\t\\\n{\t\t\t\t\t\t\t\t\t\\\n\t.reg_en\t\t= __en,\t\t\t\t\t\t\\\n\t.reg_dir\t= __dir,\t\t\t\t\t\\\n\t.reg_data_out\t= __dout,\t\t\t\t\t\\\n\t.reg_data_in\t= __din,\t\t\t\t\t\\\n\t.reg_pull_en\t= __pen,\t\t\t\t\t\\\n\t.reg_pull_cfg\t= __pcfg,\t\t\t\t\t\\\n}\n\n \n#define WMT_PIN(__bank, __offset)\t((__bank << 5) | __offset)\n#define WMT_BANK_FROM_PIN(__pin)\t(__pin >> 5)\n#define WMT_BIT_FROM_PIN(__pin)\t\t(__pin & 0x1f)\n\n#define WMT_GROUP(__name, __data)\t\t\\\n{\t\t\t\t\t\t\\\n\t.name = __name,\t\t\t\t\\\n\t.pins = __data,\t\t\t\t\\\n\t.npins = ARRAY_SIZE(__data),\t\t\\\n}\n\nstruct wmt_pinctrl_bank_registers {\n\tu32\treg_en;\n\tu32\treg_dir;\n\tu32\treg_data_out;\n\tu32\treg_data_in;\n\n\tu32\treg_pull_en;\n\tu32\treg_pull_cfg;\n};\n\nstruct wmt_pinctrl_group {\n\tconst char *name;\n\tconst unsigned int *pins;\n\tconst unsigned npins;\n};\n\nstruct wmt_pinctrl_data {\n\tstruct device *dev;\n\tstruct pinctrl_dev *pctl_dev;\n\n\t \n\tvoid __iomem *base;\n\tconst struct wmt_pinctrl_bank_registers *banks;\n\tconst struct pinctrl_pin_desc *pins;\n\tconst char * const *groups;\n\n\tu32 nbanks;\n\tu32 npins;\n\tu32 ngroups;\n\n\tstruct gpio_chip gpio_chip;\n\tstruct pinctrl_gpio_range gpio_range;\n};\n\nint wmt_pinctrl_probe(struct platform_device *pdev,\n\t\t      struct wmt_pinctrl_data *data);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

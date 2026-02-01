@@ -1,0 +1,9 @@
+{
+  "module_name": "cedrus_video.h",
+  "hash_id": "91783f9970ae363c4fe9ebe4028a052f2668f2cc5f648591514b28b0f997b6f1",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/sunxi/cedrus/cedrus_video.h",
+  "human_readable_source": " \n \n\n#ifndef _CEDRUS_VIDEO_H_\n#define _CEDRUS_VIDEO_H_\n\nstruct cedrus_format {\n\tu32\t\tpixelformat;\n\tu32\t\tdirections;\n\tunsigned int\tcapabilities;\n};\n\nextern const struct v4l2_ioctl_ops cedrus_ioctl_ops;\n\nint cedrus_queue_init(void *priv, struct vb2_queue *src_vq,\n\t\t      struct vb2_queue *dst_vq);\nvoid cedrus_prepare_format(struct v4l2_pix_format *pix_fmt);\nvoid cedrus_reset_cap_format(struct cedrus_ctx *ctx);\nvoid cedrus_reset_out_format(struct cedrus_ctx *ctx);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

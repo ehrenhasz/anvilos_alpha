@@ -1,0 +1,9 @@
+{
+  "module_name": "ksyms_common.c",
+  "hash_id": "2c9a88fcb179eedf297bd08d478e7d47f1940430d19d0708623e7c62af590db5",
+  "original_prompt": "Ingested from linux-6.6.14/kernel/ksyms_common.c",
+  "human_readable_source": "\n \n#include <linux/kallsyms.h>\n#include <linux/security.h>\n\nstatic inline int kallsyms_for_perf(void)\n{\n#ifdef CONFIG_PERF_EVENTS\n\textern int sysctl_perf_event_paranoid;\n\n\tif (sysctl_perf_event_paranoid <= 1)\n\t\treturn 1;\n#endif\n\treturn 0;\n}\n\n \nbool kallsyms_show_value(const struct cred *cred)\n{\n\tswitch (kptr_restrict) {\n\tcase 0:\n\t\tif (kallsyms_for_perf())\n\t\t\treturn true;\n\t\tfallthrough;\n\tcase 1:\n\t\tif (security_capable(cred, &init_user_ns, CAP_SYSLOG,\n\t\t\t\t     CAP_OPT_NOAUDIT) == 0)\n\t\t\treturn true;\n\t\tfallthrough;\n\tdefault:\n\t\treturn false;\n\t}\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

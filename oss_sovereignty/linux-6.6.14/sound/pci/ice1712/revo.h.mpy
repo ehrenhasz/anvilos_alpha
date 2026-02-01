@@ -1,0 +1,9 @@
+{
+  "module_name": "revo.h",
+  "hash_id": "02c737d4db25b0707623af31ed026539e84432f6c16ddeaf5af12bdac8c44362",
+  "original_prompt": "Ingested from linux-6.6.14/sound/pci/ice1712/revo.h",
+  "human_readable_source": " \n#ifndef __SOUND_REVO_H\n#define __SOUND_REVO_H\n\n       \n\n#define REVO_DEVICE_DESC \\\n\t\t\"{MidiMan M Audio,Revolution 7.1},\"\\\n\t\t\"{MidiMan M Audio,Revolution 5.1},\"\\\n\t\t\"{MidiMan M Audio,Audiophile 192},\"\n\n#define VT1724_SUBDEVICE_REVOLUTION71\t0x12143036\n#define VT1724_SUBDEVICE_REVOLUTION51\t0x12143136\n#define VT1724_SUBDEVICE_AUDIOPHILE192\t0x12143236\n\n \nextern struct snd_ice1712_card_info snd_vt1724_revo_cards[];\n\n\n \n\n#define VT1724_REVO_CCLK\t0x02\n#define VT1724_REVO_CDIN\t0x04\t \n#define VT1724_REVO_CDOUT\t0x08\n#define VT1724_REVO_CS0\t\t0x10\t \n#define VT1724_REVO_CS1\t\t0x20\t \n#define VT1724_REVO_CS2\t\t0x40\t \n#define VT1724_REVO_I2C_DATA    0x40     \n#define VT1724_REVO_I2C_CLOCK   0x80     \n#define VT1724_REVO_CS3\t\t0x80\t \n#define VT1724_REVO_MUTE\t(1<<22)\t \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

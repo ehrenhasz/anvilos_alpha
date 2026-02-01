@@ -1,0 +1,9 @@
+{
+  "module_name": "rm3100.h",
+  "hash_id": "9800aa7733f2a5aef42b488db650930b2ec1b1fbcf342ab5b4ded9beee229e2a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/iio/magnetometer/rm3100.h",
+  "human_readable_source": " \n \n\n#ifndef RM3100_CORE_H\n#define RM3100_CORE_H\n\n#include <linux/regmap.h>\n\nextern const struct regmap_access_table rm3100_readable_table;\nextern const struct regmap_access_table rm3100_writable_table;\nextern const struct regmap_access_table rm3100_volatile_table;\n\nint rm3100_common_probe(struct device *dev, struct regmap *regmap, int irq);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

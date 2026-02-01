@@ -1,0 +1,9 @@
+{
+  "module_name": "numa_balancing.h",
+  "hash_id": "ac56e179b6430e1acad4a25fa2f8ecadabd206816d12bd5c86547a9ec6207bca",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/sched/numa_balancing.h",
+  "human_readable_source": " \n#ifndef _LINUX_SCHED_NUMA_BALANCING_H\n#define _LINUX_SCHED_NUMA_BALANCING_H\n\n \n\n#include <linux/sched.h>\n\n#define TNF_MIGRATED\t0x01\n#define TNF_NO_GROUP\t0x02\n#define TNF_SHARED\t0x04\n#define TNF_FAULT_LOCAL\t0x08\n#define TNF_MIGRATE_FAIL 0x10\n\n#ifdef CONFIG_NUMA_BALANCING\nextern void task_numa_fault(int last_node, int node, int pages, int flags);\nextern pid_t task_numa_group_id(struct task_struct *p);\nextern void set_numabalancing_state(bool enabled);\nextern void task_numa_free(struct task_struct *p, bool final);\nextern bool should_numa_migrate_memory(struct task_struct *p, struct page *page,\n\t\t\t\t\tint src_nid, int dst_cpu);\n#else\nstatic inline void task_numa_fault(int last_node, int node, int pages,\n\t\t\t\t   int flags)\n{\n}\nstatic inline pid_t task_numa_group_id(struct task_struct *p)\n{\n\treturn 0;\n}\nstatic inline void set_numabalancing_state(bool enabled)\n{\n}\nstatic inline void task_numa_free(struct task_struct *p, bool final)\n{\n}\nstatic inline bool should_numa_migrate_memory(struct task_struct *p,\n\t\t\t\tstruct page *page, int src_nid, int dst_cpu)\n{\n\treturn true;\n}\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

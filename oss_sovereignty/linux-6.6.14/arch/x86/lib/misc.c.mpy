@@ -1,0 +1,9 @@
+{
+  "module_name": "misc.c",
+  "hash_id": "119748957759154ba3c84c4fc76189c657fb353d29e07fc8ba910a3e3170c4c1",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/lib/misc.c",
+  "human_readable_source": "\n#include <asm/misc.h>\n\n \nint num_digits(int val)\n{\n\tlong long m = 10;\n\tint d = 1;\n\n\tif (val < 0) {\n\t\td++;\n\t\tval = -val;\n\t}\n\n\twhile (val >= m) {\n\t\tm *= 10;\n\t\td++;\n\t}\n\treturn d;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

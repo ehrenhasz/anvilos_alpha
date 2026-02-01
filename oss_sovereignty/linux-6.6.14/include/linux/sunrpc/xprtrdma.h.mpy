@@ -1,0 +1,9 @@
+{
+  "module_name": "xprtrdma.h",
+  "hash_id": "b59f24f0b2a67a0b2edcce206d17200682e634bcbfe2aa2b0375c135752c5a0e",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/sunrpc/xprtrdma.h",
+  "human_readable_source": " \n \n\n#ifndef _LINUX_SUNRPC_XPRTRDMA_H\n#define _LINUX_SUNRPC_XPRTRDMA_H\n\n \n#define RPCRDMA_MIN_SLOT_TABLE\t(4U)\n#define RPCRDMA_DEF_SLOT_TABLE\t(128U)\n#define RPCRDMA_MAX_SLOT_TABLE\t(16384U)\n\n#define RPCRDMA_MIN_INLINE  (1024)\t \n#define RPCRDMA_DEF_INLINE  (4096)\t \n#define RPCRDMA_MAX_INLINE  (65536)\t \n\n \nenum rpcrdma_memreg {\n\tRPCRDMA_BOUNCEBUFFERS = 0,\n\tRPCRDMA_REGISTER,\n\tRPCRDMA_MEMWINDOWS,\n\tRPCRDMA_MEMWINDOWS_ASYNC,\n\tRPCRDMA_MTHCAFMR,\n\tRPCRDMA_FRWR,\n\tRPCRDMA_ALLPHYSICAL,\n\tRPCRDMA_LAST\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

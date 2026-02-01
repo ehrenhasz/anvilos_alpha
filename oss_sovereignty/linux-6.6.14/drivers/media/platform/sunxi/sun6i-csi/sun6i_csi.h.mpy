@@ -1,0 +1,9 @@
+{
+  "module_name": "sun6i_csi.h",
+  "hash_id": "3e79e01f0f57b556556429073bce64abe26588c193cb5a14cd58cd7fe573652b",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi.h",
+  "human_readable_source": " \n \n\n#ifndef _SUN6I_CSI_H_\n#define _SUN6I_CSI_H_\n\n#include <media/v4l2-device.h>\n#include <media/videobuf2-v4l2.h>\n\n#include \"sun6i_csi_bridge.h\"\n#include \"sun6i_csi_capture.h\"\n\n#define SUN6I_CSI_NAME\t\t\"sun6i-csi\"\n#define SUN6I_CSI_DESCRIPTION\t\"Allwinner A31 CSI Device\"\n\nenum sun6i_csi_port {\n\tSUN6I_CSI_PORT_PARALLEL\t\t= 0,\n\tSUN6I_CSI_PORT_MIPI_CSI2\t= 1,\n\tSUN6I_CSI_PORT_ISP\t\t= 2,\n};\n\nstruct sun6i_csi_buffer {\n\tstruct vb2_v4l2_buffer\t\tv4l2_buffer;\n\tstruct list_head\t\tlist;\n};\n\nstruct sun6i_csi_v4l2 {\n\tstruct v4l2_device\t\tv4l2_dev;\n\tstruct media_device\t\tmedia_dev;\n};\n\nstruct sun6i_csi_device {\n\tstruct device\t\t\t*dev;\n\tstruct v4l2_device\t\t*v4l2_dev;\n\tstruct media_device\t\t*media_dev;\n\n\tstruct sun6i_csi_v4l2\t\tv4l2;\n\tstruct sun6i_csi_bridge\t\tbridge;\n\tstruct sun6i_csi_capture\tcapture;\n\n\tstruct regmap\t\t\t*regmap;\n\tstruct clk\t\t\t*clock_mod;\n\tstruct clk\t\t\t*clock_ram;\n\tstruct reset_control\t\t*reset;\n\n\tbool\t\t\t\tisp_available;\n};\n\nstruct sun6i_csi_variant {\n\tunsigned long\tclock_mod_rate;\n};\n\n \n\nint sun6i_csi_isp_complete(struct sun6i_csi_device *csi_dev,\n\t\t\t   struct v4l2_device *v4l2_dev);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

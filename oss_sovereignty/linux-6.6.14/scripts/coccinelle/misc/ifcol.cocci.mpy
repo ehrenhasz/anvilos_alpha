@@ -1,0 +1,9 @@
+{
+  "module_name": "ifcol.cocci",
+  "hash_id": "f8a486e66482d1a98284b1864495ce5d3fde4f121f2ba6f33b492da5f44be3cb",
+  "original_prompt": "Ingested from linux-6.6.14/scripts/coccinelle/misc/ifcol.cocci",
+  "human_readable_source": "// SPDX-License-Identifier: GPL-2.0-only\n/// Find confusingly indented code in or after an if.  An if branch should\n/// be indented.  The code following an if should not be indented.\n/// Sometimes, code after an if that is indented is actually intended to be\n/// part of the if branch.\n///\n//# This has a high rate of false positives, because Coccinelle's column\n//# calculation does not distinguish between spaces and tabs, so code that\n//# is not visually aligned may be considered to be in the same column.\n//\n// Confidence: Low\n// Copyright: (C) 2010 Nicolas Palix, DIKU.\n// Copyright: (C) 2010 Julia Lawall, DIKU.\n// Copyright: (C) 2010 Gilles Muller, INRIA/LiP6.\n// URL: https://coccinelle.gitlabpages.inria.fr/website\n// Comments:\n// Options: --no-includes --include-headers\n\nvirtual org\nvirtual report\n\n@r disable braces4@\nposition p1,p2;\nstatement S1,S2;\n@@\n\n(\nif (...) { ... }\n|\nif (...) S1@p1 S2@p2\n)\n\n@script:python depends on org@\np1 << r.p1;\np2 << r.p2;\n@@\n\nif (p1[0].column == p2[0].column):\n  cocci.print_main(\"branch\",p1)\n  cocci.print_secs(\"after\",p2)\n\n@script:python depends on report@\np1 << r.p1;\np2 << r.p2;\n@@\n\nif (p1[0].column == p2[0].column):\n  msg = \"code aligned with following code on line %s\" % (p2[0].line)\n  coccilib.report.print_report(p1[0],msg)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "fld_opts.c",
+  "hash_id": "1f073a580ebffd3eba7d094921fafe79d597c23bc50547096a219191540f6191",
+  "original_prompt": "Ingested from ncurses-6.4/form/fld_opts.c",
+  "human_readable_source": " \n\n \n\n#include \"form.priv.h\"\n\nMODULE_ID(\"$Id: fld_opts.c,v 1.16 2021/06/17 21:20:30 tom Exp $\")\n\n \n\n \nFORM_EXPORT(int)\nset_field_opts(FIELD *field, Field_Options opts)\n{\n  int res = E_BAD_ARGUMENT;\n\n  T((T_CALLED(\"set_field_opts(%p,%d)\"), (void *)field, opts));\n\n  opts &= ALL_FIELD_OPTS;\n  if (!(opts & ~ALL_FIELD_OPTS))\n    res = _nc_Synchronize_Options(Normalize_Field(field), opts);\n  RETURN(res);\n}\n\n \nFORM_EXPORT(Field_Options)\nfield_opts(const FIELD *field)\n{\n  T((T_CALLED(\"field_opts(%p)\"), (const void *)field));\n\n  returnCode(ALL_FIELD_OPTS & Normalize_Field(field)->opts);\n}\n\n \nFORM_EXPORT(int)\nfield_opts_on(FIELD *field, Field_Options opts)\n{\n  int res = E_BAD_ARGUMENT;\n\n  T((T_CALLED(\"field_opts_on(%p,%d)\"), (void *)field, opts));\n\n  opts &= ALL_FIELD_OPTS;\n  if (!(opts & ~ALL_FIELD_OPTS))\n    {\n      Normalize_Field(field);\n      res = _nc_Synchronize_Options(field, field->opts | opts);\n    }\n  RETURN(res);\n}\n\n \nFORM_EXPORT(int)\nfield_opts_off(FIELD *field, Field_Options opts)\n{\n  int res = E_BAD_ARGUMENT;\n\n  T((T_CALLED(\"field_opts_off(%p,%d)\"), (void *)field, opts));\n\n  opts &= ALL_FIELD_OPTS;\n  if (!(opts & ~ALL_FIELD_OPTS))\n    {\n      Normalize_Field(field);\n      res = _nc_Synchronize_Options(field, field->opts & ~opts);\n    }\n  RETURN(res);\n}\n\n \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

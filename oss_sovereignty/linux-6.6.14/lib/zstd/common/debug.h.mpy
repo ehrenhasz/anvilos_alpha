@@ -1,0 +1,9 @@
+{
+  "module_name": "debug.h",
+  "hash_id": "b25f1b4453e29115c3f0001b9bcfe98709d606eaa98b97990d79ac5ed856927e",
+  "original_prompt": "Ingested from linux-6.6.14/lib/zstd/common/debug.h",
+  "human_readable_source": " \n\n\n \n\n#ifndef DEBUG_H_12987983217\n#define DEBUG_H_12987983217\n\n\n\n \n#define DEBUG_STATIC_ASSERT(c) (void)sizeof(char[(c) ? 1 : -1])\n\n\n \n#ifndef DEBUGLEVEL\n#  define DEBUGLEVEL 0\n#endif\n\n\n \n\n#if (DEBUGLEVEL>=1)\n#  define ZSTD_DEPS_NEED_ASSERT\n#  include \"zstd_deps.h\"\n#else\n#  ifndef assert    \n#    define assert(condition) ((void)0)    \n#  endif\n#endif\n\n#if (DEBUGLEVEL>=2)\n#  define ZSTD_DEPS_NEED_IO\n#  include \"zstd_deps.h\"\nextern int g_debuglevel;  \n\n#  define RAWLOG(l, ...) {                                       \\\n                if (l<=g_debuglevel) {                           \\\n                    ZSTD_DEBUG_PRINT(__VA_ARGS__);               \\\n            }   }\n#  define DEBUGLOG(l, ...) {                                     \\\n                if (l<=g_debuglevel) {                           \\\n                    ZSTD_DEBUG_PRINT(__FILE__ \": \" __VA_ARGS__); \\\n                    ZSTD_DEBUG_PRINT(\" \\n\");                     \\\n            }   }\n#else\n#  define RAWLOG(l, ...)      {}     \n#  define DEBUGLOG(l, ...)    {}     \n#endif\n\n\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

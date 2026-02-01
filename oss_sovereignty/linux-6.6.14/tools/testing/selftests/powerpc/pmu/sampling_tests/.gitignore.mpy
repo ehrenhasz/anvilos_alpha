@@ -1,0 +1,9 @@
+{
+  "module_name": ".gitignore",
+  "hash_id": "74e7f21b17355a2d90740c7b2e6ea699daf7c4f6d2935c461ea92672705e8e3b",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/powerpc/pmu/sampling_tests/.gitignore",
+  "human_readable_source": "bhrb_filter_map_test\nbhrb_no_crash_wo_pmu_test\nintr_regs_no_crash_wo_pmu_test\nmmcr0_cc56run_test\nmmcr0_exceptionbits_test\nmmcr0_fc56_pmc1ce_test\nmmcr0_fc56_pmc56_test\nmmcr0_pmccext_test\nmmcr0_pmcjce_test\nmmcr1_comb_test\nmmcr1_sel_unit_cache_test\nmmcr2_fcs_fch_test\nmmcr2_l2l3_test\nmmcr3_src_test\nmmcra_bhrb_any_test\nmmcra_bhrb_cond_test\nmmcra_bhrb_disable_no_branch_test\nmmcra_bhrb_disable_test\nmmcra_bhrb_ind_call_test\nmmcra_thresh_cmp_test\nmmcra_thresh_marked_sample_test\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

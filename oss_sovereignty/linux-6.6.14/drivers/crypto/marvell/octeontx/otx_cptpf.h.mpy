@@ -1,0 +1,9 @@
+{
+  "module_name": "otx_cptpf.h",
+  "hash_id": "039affd445c1cfa68e288892f993b3d9866a38f770af2db301f8149d9380443a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/crypto/marvell/octeontx/otx_cptpf.h",
+  "human_readable_source": " \n\n#ifndef __OTX_CPTPF_H\n#define __OTX_CPTPF_H\n\n#include <linux/types.h>\n#include <linux/device.h>\n#include \"otx_cptpf_ucode.h\"\n\n \nstruct otx_cpt_device {\n\tvoid __iomem *reg_base;  \n\tstruct pci_dev *pdev;\t \n\tstruct otx_cpt_eng_grps eng_grps; \n\tstruct list_head list;\n\tu8 pf_type;\t \n\tu8 max_vfs;\t \n\tu8 vfs_enabled;\t \n};\n\nvoid otx_cpt_mbox_intr_handler(struct otx_cpt_device *cpt, int mbx);\nvoid otx_cpt_disable_all_cores(struct otx_cpt_device *cpt);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

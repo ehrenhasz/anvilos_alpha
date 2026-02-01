@@ -1,0 +1,9 @@
+{
+  "module_name": "xchg",
+  "hash_id": "b51da3c002b056f77a32f9abdd5c95a7dfd5afff85f8ad95036bcae12784bdf7",
+  "original_prompt": "Ingested from linux-6.6.14/scripts/atomic/fallbacks/xchg",
+  "human_readable_source": "cat <<EOF\n\treturn raw_xchg${order}(&v->counter, new);\nEOF\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

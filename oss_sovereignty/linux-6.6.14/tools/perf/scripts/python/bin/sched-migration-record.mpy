@@ -1,0 +1,9 @@
+{
+  "module_name": "sched-migration-record",
+  "hash_id": "df185404c8205d8b8491abeb4181777a297647a23cd918fc62480a63e7895c45",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/scripts/python/bin/sched-migration-record",
+  "human_readable_source": "#!/bin/bash\nperf record -m 16384 -e sched:sched_wakeup -e sched:sched_wakeup_new -e sched:sched_switch -e sched:sched_migrate_task $@\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

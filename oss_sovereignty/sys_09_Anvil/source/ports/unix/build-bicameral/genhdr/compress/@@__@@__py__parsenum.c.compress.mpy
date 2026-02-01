@@ -1,0 +1,9 @@
+{
+  "module_name": "@@__@@__py__parsenum.c.compress",
+  "hash_id": "cc58c9ad15d458e4afcfc4403d8600eb270d76fd693e2cb3749a05ebc0a04d8a",
+  "original_prompt": "Ingested from sys_09_Anvil/source/ports/unix/build-bicameral/genhdr/compress/@@__@@__py__parsenum.c.compress",
+  "human_readable_source": "int() arg 2 must be >= 2 and <= 36\ninvalid syntax for integer with base %d\ndecimal numbers not supported\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

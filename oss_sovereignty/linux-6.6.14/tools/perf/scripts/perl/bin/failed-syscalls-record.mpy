@@ -1,0 +1,9 @@
+{
+  "module_name": "failed-syscalls-record",
+  "hash_id": "58f7d5a744a606c9a390f6b8f188d213e47f7e20316288d13a92a340dd45663c",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/scripts/perl/bin/failed-syscalls-record",
+  "human_readable_source": "#!/bin/bash\n(perf record -e raw_syscalls:sys_exit $@ || \\\n perf record -e syscalls:sys_exit $@) 2> /dev/null\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

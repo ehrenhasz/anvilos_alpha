@@ -1,0 +1,9 @@
+{
+  "module_name": "ni_daq_dio24.c",
+  "hash_id": "d7b38d60e85c275d4ea68a74141a6ae0c64af0272468845e900ea1833175b1ca",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/comedi/drivers/ni_daq_dio24.c",
+  "human_readable_source": "\n \n\n \n\n#include <linux/module.h>\n#include <linux/comedi/comedi_pcmcia.h>\n#include <linux/comedi/comedi_8255.h>\n\nstatic int dio24_auto_attach(struct comedi_device *dev,\n\t\t\t     unsigned long context)\n{\n\tstruct pcmcia_device *link = comedi_to_pcmcia_dev(dev);\n\tstruct comedi_subdevice *s;\n\tint ret;\n\n\tlink->config_flags |= CONF_AUTO_SET_IO;\n\tret = comedi_pcmcia_enable(dev, NULL);\n\tif (ret)\n\t\treturn ret;\n\tdev->iobase = link->resource[0]->start;\n\n\tret = comedi_alloc_subdevices(dev, 1);\n\tif (ret)\n\t\treturn ret;\n\n\t \n\ts = &dev->subdevices[0];\n\treturn subdev_8255_init(dev, s, NULL, 0x00);\n}\n\nstatic struct comedi_driver driver_dio24 = {\n\t.driver_name\t= \"ni_daq_dio24\",\n\t.module\t\t= THIS_MODULE,\n\t.auto_attach\t= dio24_auto_attach,\n\t.detach\t\t= comedi_pcmcia_disable,\n};\n\nstatic int dio24_cs_attach(struct pcmcia_device *link)\n{\n\treturn comedi_pcmcia_auto_config(link, &driver_dio24);\n}\n\nstatic const struct pcmcia_device_id dio24_cs_ids[] = {\n\tPCMCIA_DEVICE_MANF_CARD(0x010b, 0x475c),\t \n\tPCMCIA_DEVICE_NULL\n};\nMODULE_DEVICE_TABLE(pcmcia, dio24_cs_ids);\n\nstatic struct pcmcia_driver dio24_cs_driver = {\n\t.name\t\t= \"ni_daq_dio24\",\n\t.owner\t\t= THIS_MODULE,\n\t.id_table\t= dio24_cs_ids,\n\t.probe\t\t= dio24_cs_attach,\n\t.remove\t\t= comedi_pcmcia_auto_unconfig,\n};\nmodule_comedi_pcmcia_driver(driver_dio24, dio24_cs_driver);\n\nMODULE_AUTHOR(\"Daniel Vecino Castel <dvecino@able.es>\");\nMODULE_DESCRIPTION(\n\t\"Comedi driver for National Instruments PCMCIA DAQ-Card DIO-24\");\nMODULE_LICENSE(\"GPL\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

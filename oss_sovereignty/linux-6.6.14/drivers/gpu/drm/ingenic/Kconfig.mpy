@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "0d3c8fb82b31ecd57a266073aa6890377c5e049265fcd4c14552eb6dda873322",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/ingenic/Kconfig",
+  "human_readable_source": "config DRM_INGENIC\n\ttristate \"DRM Support for Ingenic SoCs\"\n\tdepends on MIPS || COMPILE_TEST\n\tdepends on DRM\n\tdepends on CMA\n\tdepends on OF\n\tdepends on COMMON_CLK\n\tselect DRM_BRIDGE\n\tselect DRM_PANEL_BRIDGE\n\tselect DRM_KMS_HELPER\n\tselect DRM_GEM_DMA_HELPER\n\tselect REGMAP\n\tselect REGMAP_MMIO\n\tselect VT_HW_CONSOLE_BINDING if FRAMEBUFFER_CONSOLE\n\thelp\n\t  Choose this option for DRM support for the Ingenic SoCs.\n\n\t  If M is selected the module will be called ingenic-drm.\n\nif DRM_INGENIC\n\nconfig DRM_INGENIC_IPU\n\tbool \"IPU support for Ingenic SoCs\"\n\thelp\n\t  Choose this option to enable support for the IPU found in Ingenic SoCs.\n\n\t  The Image Processing Unit (IPU) will appear as a second primary plane.\n\nconfig DRM_INGENIC_DW_HDMI\n\ttristate \"Ingenic specific support for Synopsys DW HDMI\"\n\tdepends on MACH_JZ4780\n\tselect DRM_DW_HDMI\n\thelp\n\t  Choose this option to enable Synopsys DesignWare HDMI based driver.\n\t  If you want to enable HDMI on Ingenic JZ4780 based SoC, you should\n\t  select this option.\n\nendif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "core.h",
+  "hash_id": "cc9fe209b161f2d858340efbcdcc8fe1ae3900e1b5ed700428f8bef81f0537a5",
+  "original_prompt": "Ingested from linux-6.6.14/kernel/livepatch/core.h",
+  "human_readable_source": " \n#ifndef _LIVEPATCH_CORE_H\n#define _LIVEPATCH_CORE_H\n\n#include <linux/livepatch.h>\n\nextern struct mutex klp_mutex;\nextern struct list_head klp_patches;\n\n#define klp_for_each_patch_safe(patch, tmp_patch)\t\t\\\n\tlist_for_each_entry_safe(patch, tmp_patch, &klp_patches, list)\n\n#define klp_for_each_patch(patch)\t\\\n\tlist_for_each_entry(patch, &klp_patches, list)\n\nvoid klp_free_patch_async(struct klp_patch *patch);\nvoid klp_free_replaced_patches_async(struct klp_patch *new_patch);\nvoid klp_unpatch_replaced_patches(struct klp_patch *new_patch);\nvoid klp_discard_nops(struct klp_patch *new_patch);\n\nstatic inline bool klp_is_object_loaded(struct klp_object *obj)\n{\n\treturn !obj->name || obj->mod;\n}\n\nstatic inline int klp_pre_patch_callback(struct klp_object *obj)\n{\n\tint ret = 0;\n\n\tif (obj->callbacks.pre_patch)\n\t\tret = (*obj->callbacks.pre_patch)(obj);\n\n\tobj->callbacks.post_unpatch_enabled = !ret;\n\n\treturn ret;\n}\n\nstatic inline void klp_post_patch_callback(struct klp_object *obj)\n{\n\tif (obj->callbacks.post_patch)\n\t\t(*obj->callbacks.post_patch)(obj);\n}\n\nstatic inline void klp_pre_unpatch_callback(struct klp_object *obj)\n{\n\tif (obj->callbacks.pre_unpatch)\n\t\t(*obj->callbacks.pre_unpatch)(obj);\n}\n\nstatic inline void klp_post_unpatch_callback(struct klp_object *obj)\n{\n\tif (obj->callbacks.post_unpatch_enabled &&\n\t    obj->callbacks.post_unpatch)\n\t\t(*obj->callbacks.post_unpatch)(obj);\n\n\tobj->callbacks.post_unpatch_enabled = false;\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

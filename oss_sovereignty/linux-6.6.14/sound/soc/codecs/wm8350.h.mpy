@@ -1,0 +1,9 @@
+{
+  "module_name": "wm8350.h",
+  "hash_id": "40b4ce11df5904b147005972737814bbdbd8774786b71c09e002ba012420c1f6",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/codecs/wm8350.h",
+  "human_readable_source": " \n \n\n#ifndef _WM8350_H\n#define _WM8350_H\n\n#include <sound/soc.h>\n#include <linux/mfd/wm8350/audio.h>\n\nenum wm8350_jack {\n\tWM8350_JDL = 1,\n\tWM8350_JDR = 2,\n};\n\nint wm8350_hp_jack_detect(struct snd_soc_component *component, enum wm8350_jack which,\n\t\t\t  struct snd_soc_jack *jack, int report);\nint wm8350_mic_jack_detect(struct snd_soc_component *component,\n\t\t\t   struct snd_soc_jack *jack,\n\t\t\t   int detect_report, int short_report);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

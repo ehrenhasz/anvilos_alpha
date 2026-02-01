@@ -1,0 +1,9 @@
+{
+  "module_name": "qfprom.xml.h",
+  "hash_id": "449b641a9380c4657e1608e324d80e1e52dced19fcd93a9782ad67d26278759e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/msm/hdmi/qfprom.xml.h",
+  "human_readable_source": "#ifndef QFPROM_XML\n#define QFPROM_XML\n\n \n\n\n#define REG_QFPROM_CONFIG_ROW0_LSB\t\t\t\t0x00000238\n#define QFPROM_CONFIG_ROW0_LSB_HDMI_DISABLE\t\t\t0x00200000\n#define QFPROM_CONFIG_ROW0_LSB_HDCP_DISABLE\t\t\t0x00400000\n\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

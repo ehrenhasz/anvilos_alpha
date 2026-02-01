@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "0d02b87f104171db033ec9dc1d0b220b1a8886af87c9110522efd72eda7da300",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/dc/dcn302/Makefile",
+  "human_readable_source": "#\n# (c) Copyright 2020 Advanced Micro Devices, Inc. All the rights reserved\n#\n#  Authors: AMD\n#\n# Makefile for dcn302.\n\nDCN3_02 = dcn302_init.o dcn302_hwseq.o dcn302_resource.o\n\nAMD_DAL_DCN3_02 = $(addprefix $(AMDDALPATH)/dc/dcn302/,$(DCN3_02))\n\nAMD_DISPLAY_FILES += $(AMD_DAL_DCN3_02)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

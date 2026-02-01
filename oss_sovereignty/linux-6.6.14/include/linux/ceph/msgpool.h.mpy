@@ -1,0 +1,9 @@
+{
+  "module_name": "msgpool.h",
+  "hash_id": "d26b7ea84656207d80a923e24ece3ea118fc5809a969547dd092cf3a67a6f94c",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/ceph/msgpool.h",
+  "human_readable_source": " \n#ifndef _FS_CEPH_MSGPOOL\n#define _FS_CEPH_MSGPOOL\n\n#include <linux/mempool.h>\n\n \nstruct ceph_msgpool {\n\tconst char *name;\n\tmempool_t *pool;\n\tint type;                \n\tint front_len;           \n\tint max_data_items;\n};\n\nint ceph_msgpool_init(struct ceph_msgpool *pool, int type,\n\t\t      int front_len, int max_data_items, int size,\n\t\t      const char *name);\nextern void ceph_msgpool_destroy(struct ceph_msgpool *pool);\nstruct ceph_msg *ceph_msgpool_get(struct ceph_msgpool *pool, int front_len,\n\t\t\t\t  int max_data_items);\nextern void ceph_msgpool_put(struct ceph_msgpool *, struct ceph_msg *);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

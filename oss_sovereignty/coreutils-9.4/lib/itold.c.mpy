@@ -1,0 +1,9 @@
+{
+  "module_name": "itold.c",
+  "hash_id": "5931001503b75f644bc4c1d515bc8cd2d68746957fa5f9ea18bca756b7471268",
+  "original_prompt": "Ingested from coreutils-9.4/lib/itold.c",
+  "human_readable_source": " \n#include <float.h>\n\nvoid\n_Qp_itoq (long double *result, int a)\n{\n   \n  *result = (double) a;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

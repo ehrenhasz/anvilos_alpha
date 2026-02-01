@@ -1,0 +1,9 @@
+{
+  "module_name": "ia_css_bnr_param.h",
+  "hash_id": "a84674881e116c2be339745dbb86efa3ea432f3d9be60c5322f0404a50922838",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/isp/kernels/bnr/bnr_1.0/ia_css_bnr_param.h",
+  "human_readable_source": " \n \n\n#ifndef __IA_CSS_BNR_PARAM_H\n#define __IA_CSS_BNR_PARAM_H\n\n#include \"type_support.h\"\n\n \nstruct sh_css_isp_bnr_params {\n\ts32 gain_all;\n\ts32 gain_dir;\n\ts32 threshold_low;\n\ts32 threshold_width_log2;\n\ts32 threshold_width;\n\ts32 clip;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "nv46.c",
+  "hash_id": "80bad40e4f39cbc677a3fad246f0c72ba0049aa1b0183dececb469044c278ce1",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/subdev/fb/nv46.c",
+  "human_readable_source": " \n#include \"priv.h\"\n#include \"ram.h\"\n\nvoid\nnv46_fb_tile_init(struct nvkm_fb *fb, int i, u32 addr, u32 size, u32 pitch,\n\t\t  u32 flags, struct nvkm_fb_tile *tile)\n{\n\t \n\tif (!(flags & 4)) tile->addr = (0 << 3);\n\telse              tile->addr = (1 << 3);\n\n\ttile->addr |= 0x00000001;  \n\ttile->addr |= addr;\n\ttile->limit = max(1u, addr + size) - 1;\n\ttile->pitch = pitch;\n}\n\nstatic const struct nvkm_fb_func\nnv46_fb = {\n\t.init = nv44_fb_init,\n\t.tile.regions = 15,\n\t.tile.init = nv46_fb_tile_init,\n\t.tile.fini = nv20_fb_tile_fini,\n\t.tile.prog = nv44_fb_tile_prog,\n\t.ram_new = nv44_ram_new,\n};\n\nint\nnv46_fb_new(struct nvkm_device *device, enum nvkm_subdev_type type, int inst, struct nvkm_fb **pfb)\n{\n\treturn nvkm_fb_new_(&nv46_fb, device, type, inst, pfb);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

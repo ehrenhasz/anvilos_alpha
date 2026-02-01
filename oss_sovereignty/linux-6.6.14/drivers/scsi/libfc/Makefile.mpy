@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "ea3d29b42e927727d2b6b819b52cd1a78f0cb1e86b7743a7c4aa8b25bd301959",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/scsi/libfc/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n# $Id: Makefile\n\nobj-$(CONFIG_LIBFC) += libfc.o\n\nlibfc-objs := \\\n\tfc_libfc.o \\\n\tfc_disc.o \\\n\tfc_exch.o \\\n\tfc_elsct.o \\\n\tfc_frame.o \\\n\tfc_lport.o \\\n\tfc_rport.o \\\n\tfc_fcp.o \\\n\tfc_npiv.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

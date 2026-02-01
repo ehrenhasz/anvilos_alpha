@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "093ac23a09e084d07468c813d2f06f379170b1d5757e10be613ca72b073a4263",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/platform/amlogic/meson-ge2d/Kconfig",
+  "human_readable_source": "config VIDEO_MESON_GE2D\n\ttristate \"Amlogic 2D Graphic Acceleration Unit\"\n\tdepends on V4L_MEM2MEM_DRIVERS\n\tdepends on VIDEO_DEV\n\tdepends on ARCH_MESON || COMPILE_TEST\n\tselect VIDEOBUF2_DMA_CONTIG\n\tselect V4L2_MEM2MEM_DEV\n\thelp\n\t  This is a v4l2 driver for Amlogic GE2D 2D graphics accelerator.\n\t  GE2D is a standalone 2D graphic acceleration unit, with color converter,\n\t  image scaling, BitBLT & alpha blending operations.\n\n\t  To compile this driver as a module choose m here.\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "ioam6_iptunnel.h",
+  "hash_id": "8e9b5103ab02f11fa4853f7fa13fd6fb037e57372adda4f75442ac9954e79759",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/ioam6_iptunnel.h",
+  "human_readable_source": " \n \n#ifndef _LINUX_IOAM6_IPTUNNEL_H\n#define _LINUX_IOAM6_IPTUNNEL_H\n\n#include <uapi/linux/ioam6_iptunnel.h>\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

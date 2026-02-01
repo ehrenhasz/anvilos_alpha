@@ -1,0 +1,9 @@
+{
+  "module_name": "blk-pm.h",
+  "hash_id": "befb0280e82f1f1e7077c578095fb6730b8bcf392593c87a9afcda0e04dab0d4",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/blk-pm.h",
+  "human_readable_source": " \n\n#ifndef _BLK_PM_H_\n#define _BLK_PM_H_\n\nstruct device;\nstruct request_queue;\n\n \n#ifdef CONFIG_PM\nextern void blk_pm_runtime_init(struct request_queue *q, struct device *dev);\nextern int blk_pre_runtime_suspend(struct request_queue *q);\nextern void blk_post_runtime_suspend(struct request_queue *q, int err);\nextern void blk_pre_runtime_resume(struct request_queue *q);\nextern void blk_post_runtime_resume(struct request_queue *q);\nextern void blk_set_runtime_active(struct request_queue *q);\n#else\nstatic inline void blk_pm_runtime_init(struct request_queue *q,\n\t\t\t\t       struct device *dev) {}\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

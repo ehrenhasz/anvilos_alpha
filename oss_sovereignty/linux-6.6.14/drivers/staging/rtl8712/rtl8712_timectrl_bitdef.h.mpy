@@ -1,0 +1,9 @@
+{
+  "module_name": "rtl8712_timectrl_bitdef.h",
+  "hash_id": "02ccf52ea6c4faf330f43d923cb01dd6188faed10d25c86e0ecf1aef8519a181",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/rtl8712/rtl8712_timectrl_bitdef.h",
+  "human_readable_source": " \n \n#ifndef __RTL8712_TIMECTRL_BITDEF_H__\n#define __RTL8712_TIMECTRL_BITDEF_H__\n\n \n \n \n\n \n#define\t_TUBASE_MSK\t\t\t0x07FF\n\n \n#define\t_SIFS_CCK_TRX_MSK\t\t0xFF00\n#define\t_SIFS_CCK_TRX_SHT\t\t0x8\n#define\t_SIFS_CCK_CTX_MSK\t\t0x00FF\n#define\t_SIFS_CCK_CTX_SHT\t\t0\n\n \n#define\t_SIFS_OFDM_TRX_MSK\t\t0xFF00\n#define\t_SIFS_OFDM_TRX_SHT\t\t0x8\n#define\t_SIFS_OFDM_CTX_MSK\t\t0x00FF\n#define\t_SIFS_OFDM_CTX_SHT\t\t0\n\n \n \n \n \n \n\n \n#define\t_ENSWBCN\t\t\t\tBIT(15)\n#define\t_DRVERLY_TU_MSK\t\t\t0x0FF0\n#define\t_DRVERLY_TU_SHT\t\t\t4\n#define\t_DRVERLY_US_MSK\t\t\t0x000F\n#define\t_DRVERLY_US_SHT\t\t\t0\n\n \n#define\t_BCNDMATIM_MSK\t\t\t0x03FF\n\n \n \n\n#endif  \n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

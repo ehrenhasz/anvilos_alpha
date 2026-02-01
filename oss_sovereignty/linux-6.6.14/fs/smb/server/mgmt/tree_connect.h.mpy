@@ -1,0 +1,9 @@
+{
+  "module_name": "tree_connect.h",
+  "hash_id": "8ca9f87d50799376eff1e403c515f4ff8219c8b360a946c429e071cd45581cb3",
+  "original_prompt": "Ingested from linux-6.6.14/fs/smb/server/mgmt/tree_connect.h",
+  "human_readable_source": " \n \n\n#ifndef __TREE_CONNECT_MANAGEMENT_H__\n#define __TREE_CONNECT_MANAGEMENT_H__\n\n#include <linux/hashtable.h>\n\n#include \"../ksmbd_netlink.h\"\n\nstruct ksmbd_share_config;\nstruct ksmbd_user;\nstruct ksmbd_conn;\n\nenum {\n\tTREE_NEW = 0,\n\tTREE_CONNECTED,\n\tTREE_DISCONNECTED\n};\n\nstruct ksmbd_tree_connect {\n\tint\t\t\t\tid;\n\n\tunsigned int\t\t\tflags;\n\tstruct ksmbd_share_config\t*share_conf;\n\tstruct ksmbd_user\t\t*user;\n\n\tstruct list_head\t\tlist;\n\n\tint\t\t\t\tmaximal_access;\n\tbool\t\t\t\tposix_extensions;\n\tatomic_t\t\t\trefcount;\n\twait_queue_head_t\t\trefcount_q;\n\tunsigned int\t\t\tt_state;\n};\n\nstruct ksmbd_tree_conn_status {\n\tunsigned int\t\t\tret;\n\tstruct ksmbd_tree_connect\t*tree_conn;\n};\n\nstatic inline int test_tree_conn_flag(struct ksmbd_tree_connect *tree_conn,\n\t\t\t\t      int flag)\n{\n\treturn tree_conn->flags & flag;\n}\n\nstruct ksmbd_session;\n\nstruct ksmbd_tree_conn_status\nksmbd_tree_conn_connect(struct ksmbd_conn *conn, struct ksmbd_session *sess,\n\t\t\tconst char *share_name);\nvoid ksmbd_tree_connect_put(struct ksmbd_tree_connect *tcon);\n\nint ksmbd_tree_conn_disconnect(struct ksmbd_session *sess,\n\t\t\t       struct ksmbd_tree_connect *tree_conn);\n\nstruct ksmbd_tree_connect *ksmbd_tree_conn_lookup(struct ksmbd_session *sess,\n\t\t\t\t\t\t  unsigned int id);\n\nint ksmbd_tree_conn_session_logoff(struct ksmbd_session *sess);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

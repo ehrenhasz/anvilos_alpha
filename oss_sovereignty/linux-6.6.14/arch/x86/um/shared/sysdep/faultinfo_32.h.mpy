@@ -1,0 +1,9 @@
+{
+  "module_name": "faultinfo_32.h",
+  "hash_id": "9123bf4f00a0c6aa13609a984de9a49a18b45e371143b16dfa54e74b9550efaf",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/um/shared/sysdep/faultinfo_32.h",
+  "human_readable_source": " \n\n#ifndef __FAULTINFO_I386_H\n#define __FAULTINFO_I386_H\n\n \nstruct faultinfo {\n        int error_code;  \n        unsigned long cr2;  \n        int trap_no;  \n};\n\n#define FAULT_WRITE(fi) ((fi).error_code & 2)\n#define FAULT_ADDRESS(fi) ((fi).cr2)\n\n \n#define SEGV_IS_FIXABLE(fi)\t((fi)->trap_no == 14)\n\n#define PTRACE_FULL_FAULTINFO 0\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

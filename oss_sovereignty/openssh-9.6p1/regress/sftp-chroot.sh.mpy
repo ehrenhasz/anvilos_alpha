@@ -1,0 +1,9 @@
+{
+  "module_name": "sftp-chroot.sh",
+  "hash_id": "2928e452356455e81d60de4436f5142d7bea847b87eb5fe0c6a1fcd570bb5f20",
+  "original_prompt": "Ingested from openssh-9.6p1/regress/sftp-chroot.sh",
+  "human_readable_source": "#\t$OpenBSD: sftp-chroot.sh,v 1.9 2023/05/12 06:37:42 djm Exp $\n#\tPlaced in the Public Domain.\n\ntid=\"sftp in chroot\"\n\nCHROOT=/var/run\nFILENAME=testdata_${USER}.$$\nPRIVDATA=${CHROOT}/${FILENAME}\ntrap \"${SUDO} rm -f ${PRIVDATA}\" 0\n\nif [ -z \"$SUDO\" -a ! -w /var/run ]; then\n\tskip \"need SUDO to create file in /var/run, test won't work without\"\nfi\n\nif ! $OBJ/check-perm -m chroot \"$CHROOT\" ; then\n  skip \"$CHROOT is unsuitable as ChrootDirectory\"\nfi\n\n$SUDO sh -c \"echo mekmitastdigoat > $PRIVDATA\" || \\\n\tfatal \"create $PRIVDATA failed\"\n\necho \"ForceCommand internal-sftp -d /\" >> $OBJ/sshd_config\n\nstart_sshd -oChrootDirectory=$CHROOT\n\nverbose \"test $tid: get\"\n${SFTP} -S \"$SSH\" -F $OBJ/ssh_config host:/${FILENAME} $COPY \\\n    >>$TEST_REGRESS_LOGFILE 2>&1 || \\\n\tfatal \"Fetch ${FILENAME} failed\"\ncmp $PRIVDATA $COPY || fail \"$PRIVDATA $COPY differ\"\n\nstop_sshd\n\nverbose \"test $tid: match\"\ncat << EOF >> $OBJ/sshd_config\nMatch All\n\tChrootDirectory $CHROOT\nEOF\nstart_sshd\n$SUDO sh -c \"echo orpheanbeholder > $PRIVDATA\" || \\\n\tfatal \"create $PRIVDATA failed\"\n${SFTP} -S \"$SSH\" -F $OBJ/ssh_config host:/${FILENAME} $COPY \\\n    >>$TEST_REGRESS_LOGFILE 2>&1 || \\\n\tfatal \"Fetch ${FILENAME} failed\"\ncmp $PRIVDATA $COPY || fail \"$PRIVDATA $COPY differ\"\n\nstop_sshd\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

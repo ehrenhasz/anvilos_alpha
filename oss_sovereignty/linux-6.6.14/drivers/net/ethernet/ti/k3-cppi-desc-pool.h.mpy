@@ -1,0 +1,9 @@
+{
+  "module_name": "k3-cppi-desc-pool.h",
+  "hash_id": "79033afcd2026f78fd7e77b58edc86a457ae857d6ac3c6989c722d35de8ced88",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/ti/k3-cppi-desc-pool.h",
+  "human_readable_source": " \n \n\n#ifndef K3_CPPI_DESC_POOL_H_\n#define K3_CPPI_DESC_POOL_H_\n\n#include <linux/device.h>\n#include <linux/types.h>\n\nstruct k3_cppi_desc_pool;\n\nvoid k3_cppi_desc_pool_destroy(struct k3_cppi_desc_pool *pool);\nstruct k3_cppi_desc_pool *\nk3_cppi_desc_pool_create_name(struct device *dev, size_t size,\n\t\t\t      size_t desc_size,\n\t\t\t      const char *name);\n#define k3_cppi_desc_pool_create(dev, size, desc_size) \\\n\t\tk3_cppi_desc_pool_create_name(dev, size, desc_size, NULL)\ndma_addr_t\nk3_cppi_desc_pool_virt2dma(struct k3_cppi_desc_pool *pool, void *addr);\nvoid *\nk3_cppi_desc_pool_dma2virt(struct k3_cppi_desc_pool *pool, dma_addr_t dma);\nvoid *k3_cppi_desc_pool_alloc(struct k3_cppi_desc_pool *pool);\nvoid k3_cppi_desc_pool_free(struct k3_cppi_desc_pool *pool, void *addr);\nsize_t k3_cppi_desc_pool_avail(struct k3_cppi_desc_pool *pool);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

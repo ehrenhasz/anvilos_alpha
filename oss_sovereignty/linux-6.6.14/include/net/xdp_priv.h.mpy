@@ -1,0 +1,9 @@
+{
+  "module_name": "xdp_priv.h",
+  "hash_id": "91bca646e4bad50e9c820be84a85a720eca8f45a663314322cf4cb0b43565bbc",
+  "original_prompt": "Ingested from linux-6.6.14/include/net/xdp_priv.h",
+  "human_readable_source": " \n#ifndef __LINUX_NET_XDP_PRIV_H__\n#define __LINUX_NET_XDP_PRIV_H__\n\n#include <linux/rhashtable.h>\n#include <net/xdp.h>\n\n \nstruct xdp_mem_allocator {\n\tstruct xdp_mem_info mem;\n\tunion {\n\t\tvoid *allocator;\n\t\tstruct page_pool *page_pool;\n\t};\n\tstruct rhash_head node;\n\tstruct rcu_head rcu;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

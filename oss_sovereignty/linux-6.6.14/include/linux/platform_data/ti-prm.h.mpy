@@ -1,0 +1,9 @@
+{
+  "module_name": "ti-prm.h",
+  "hash_id": "21152a2bf5b447a99961391e9f67c29494f8ac2c59f1a60a0724476f7e3e06fc",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/platform_data/ti-prm.h",
+  "human_readable_source": " \n \n\n#ifndef _LINUX_PLATFORM_DATA_TI_PRM_H\n#define _LINUX_PLATFORM_DATA_TI_PRM_H\n\nstruct clockdomain;\n\nstruct ti_prm_platform_data {\n\tvoid (*clkdm_deny_idle)(struct clockdomain *clkdm);\n\tvoid (*clkdm_allow_idle)(struct clockdomain *clkdm);\n\tstruct clockdomain * (*clkdm_lookup)(const char *name);\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

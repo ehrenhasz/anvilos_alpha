@@ -1,0 +1,9 @@
+{
+  "module_name": "cr4_cpuid_sync_test.c",
+  "hash_id": "b1f115ff593e4d43f8fdd9fa41fcc0ef4052f52a42ccf3a3e9a519cdb7962960",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/kvm/x86_64/cr4_cpuid_sync_test.c",
+  "human_readable_source": "\n \n\n#include <fcntl.h>\n#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\n#include <sys/ioctl.h>\n\n#include \"test_util.h\"\n\n#include \"kvm_util.h\"\n#include \"processor.h\"\n\nstatic inline bool cr4_cpuid_is_sync(void)\n{\n\tuint64_t cr4 = get_cr4();\n\n\treturn (this_cpu_has(X86_FEATURE_OSXSAVE) == !!(cr4 & X86_CR4_OSXSAVE));\n}\n\nstatic void guest_code(void)\n{\n\tuint64_t cr4;\n\n\t \n\tcr4 = get_cr4();\n\tcr4 |= X86_CR4_OSXSAVE;\n\tset_cr4(cr4);\n\n\t \n\tGUEST_ASSERT(cr4_cpuid_is_sync());\n\n\t \n\tGUEST_SYNC(0);\n\n\t \n\tGUEST_ASSERT(cr4_cpuid_is_sync());\n\n\tGUEST_DONE();\n}\n\nint main(int argc, char *argv[])\n{\n\tstruct kvm_vcpu *vcpu;\n\tstruct kvm_vm *vm;\n\tstruct kvm_sregs sregs;\n\tstruct ucall uc;\n\n\tTEST_REQUIRE(kvm_cpu_has(X86_FEATURE_XSAVE));\n\n\tvm = vm_create_with_one_vcpu(&vcpu, guest_code);\n\n\twhile (1) {\n\t\tvcpu_run(vcpu);\n\t\tTEST_ASSERT_KVM_EXIT_REASON(vcpu, KVM_EXIT_IO);\n\n\t\tswitch (get_ucall(vcpu, &uc)) {\n\t\tcase UCALL_SYNC:\n\t\t\t \n\t\t\tvcpu_sregs_get(vcpu, &sregs);\n\t\t\tsregs.cr4 &= ~X86_CR4_OSXSAVE;\n\t\t\tvcpu_sregs_set(vcpu, &sregs);\n\t\t\tbreak;\n\t\tcase UCALL_ABORT:\n\t\t\tREPORT_GUEST_ASSERT(uc);\n\t\t\tbreak;\n\t\tcase UCALL_DONE:\n\t\t\tgoto done;\n\t\tdefault:\n\t\t\tTEST_FAIL(\"Unknown ucall %lu\", uc.cmd);\n\t\t}\n\t}\n\ndone:\n\tkvm_vm_free(vm);\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

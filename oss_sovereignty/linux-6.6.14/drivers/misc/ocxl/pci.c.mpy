@@ -1,0 +1,9 @@
+{
+  "module_name": "pci.c",
+  "hash_id": "121c3b33cefa96b267a6101a27dbb725aed1227fa581ed6096b1503be9d211a3",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/misc/ocxl/pci.c",
+  "human_readable_source": "\n\n#include <linux/module.h>\n#include \"ocxl_internal.h\"\n\n \nstatic const struct pci_device_id ocxl_pci_tbl[] = {\n\t{ PCI_DEVICE(PCI_VENDOR_ID_IBM, 0x062B), },\n\t{ }\n};\nMODULE_DEVICE_TABLE(pci, ocxl_pci_tbl);\n\nstatic int ocxl_probe(struct pci_dev *dev, const struct pci_device_id *id)\n{\n\tint rc;\n\tstruct ocxl_afu *afu, *tmp;\n\tstruct ocxl_fn *fn;\n\tstruct list_head *afu_list;\n\n\tfn = ocxl_function_open(dev);\n\tif (IS_ERR(fn))\n\t\treturn PTR_ERR(fn);\n\n\tpci_set_drvdata(dev, fn);\n\n\tafu_list = ocxl_function_afu_list(fn);\n\n\tlist_for_each_entry_safe(afu, tmp, afu_list, list) {\n\t\t\n\t\trc = ocxl_file_register_afu(afu);\n\t\tif (rc) {\n\t\t\tdev_err(&dev->dev, \"Failed to register AFU '%s' index %d\",\n\t\t\t\t\tafu->config.name, afu->config.idx);\n\t\t}\n\t}\n\n\treturn 0;\n}\n\nstatic void ocxl_remove(struct pci_dev *dev)\n{\n\tstruct ocxl_fn *fn;\n\tstruct ocxl_afu *afu;\n\tstruct list_head *afu_list;\n\n\tfn = pci_get_drvdata(dev);\n\tafu_list = ocxl_function_afu_list(fn);\n\n\tlist_for_each_entry(afu, afu_list, list) {\n\t\tocxl_file_unregister_afu(afu);\n\t}\n\n\tocxl_function_close(fn);\n}\n\nstruct pci_driver ocxl_pci_driver = {\n\t.name = \"ocxl\",\n\t.id_table = ocxl_pci_tbl,\n\t.probe = ocxl_probe,\n\t.remove = ocxl_remove,\n\t.shutdown = ocxl_remove,\n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

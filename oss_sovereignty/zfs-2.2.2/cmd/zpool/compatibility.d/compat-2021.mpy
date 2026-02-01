@@ -1,0 +1,9 @@
+{
+  "module_name": "compat-2021",
+  "hash_id": "29108979f229878b19a9f18fe54cb6a9a5581d91cff64cef0d116d8760ffb9bf",
+  "original_prompt": "Ingested from zfs-2.2.2/cmd/zpool/compatibility.d/compat-2021",
+  "human_readable_source": "# Features supported by all Tier 1 platforms as of 2021\nasync_destroy\nbookmarks\ndevice_removal\nembedded_data\nempty_bpobj\nenabled_txg\nextensible_dataset\nfilesystem_limits\nhole_birth\nlarge_blocks\nlz4_compress\nmulti_vdev_crash_dump\nobsolete_counts\nsha512\nskein\nspacemap_histogram\nspacemap_v2\nzpool_checkpoint\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

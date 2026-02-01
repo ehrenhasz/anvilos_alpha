@@ -1,0 +1,9 @@
+{
+  "module_name": "davinci.h",
+  "hash_id": "63917b9061c935362f583b6e13e5cfb8281264c37d1d0e52b16fe5127bbbc504",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/clk/davinci.h",
+  "human_readable_source": "\n \n\n#ifndef __LINUX_CLK_DAVINCI_PLL_H___\n#define __LINUX_CLK_DAVINCI_PLL_H___\n\n#include <linux/device.h>\n#include <linux/regmap.h>\n\n \n\n#ifdef CONFIG_ARCH_DAVINCI_DA830\nint da830_pll_init(struct device *dev, void __iomem *base, struct regmap *cfgchip);\n#endif\n#ifdef CONFIG_ARCH_DAVINCI_DA850\nint da850_pll0_init(struct device *dev, void __iomem *base, struct regmap *cfgchip);\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

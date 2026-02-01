@@ -1,0 +1,9 @@
+{
+  "module_name": "always-shellcheck.m4",
+  "hash_id": "dc3d2062ad2761a1af75c794f2eef47757aef53a185a6fd4703076c71742198a",
+  "original_prompt": "Ingested from zfs-2.2.2/config/always-shellcheck.m4",
+  "human_readable_source": "dnl #\ndnl # Check if shellcheck and/or checkbashisms are available.\ndnl #\nAC_DEFUN([ZFS_AC_CONFIG_ALWAYS_SHELLCHECK], [\n\tAC_CHECK_PROG([SHELLCHECK], [shellcheck], [yes])\n\tAC_CHECK_PROG([CHECKBASHISMS], [checkbashisms], [yes])\n\n\tAM_CONDITIONAL([HAVE_SHELLCHECK], [test \"x$SHELLCHECK\" = \"xyes\"])\n\tAM_CONDITIONAL([HAVE_CHECKBASHISMS], [test \"x$CHECKBASHISMS\" = \"xyes\"])\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

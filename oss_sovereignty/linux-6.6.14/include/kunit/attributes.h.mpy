@@ -1,0 +1,9 @@
+{
+  "module_name": "attributes.h",
+  "hash_id": "48fbee8476e80acfb566156c166f81b9162291f82260865e12a9993a0f7810e0",
+  "original_prompt": "Ingested from linux-6.6.14/include/kunit/attributes.h",
+  "human_readable_source": " \n \n\n#ifndef _KUNIT_ATTRIBUTES_H\n#define _KUNIT_ATTRIBUTES_H\n\n \nstruct kunit_attr_filter {\n\tstruct kunit_attr *attr;\n\tchar *input;\n};\n\n \nconst char *kunit_attr_filter_name(struct kunit_attr_filter filter);\n\n \nvoid kunit_print_attr(void *test_or_suite, bool is_test, unsigned int test_level);\n\n \nint kunit_get_filter_count(char *input);\n\n \nstruct kunit_attr_filter kunit_next_attr_filter(char **filters, int *err);\n\n \nstruct kunit_suite *kunit_filter_attr_tests(const struct kunit_suite *const suite,\n\t\tstruct kunit_attr_filter filter, char *action, int *err);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

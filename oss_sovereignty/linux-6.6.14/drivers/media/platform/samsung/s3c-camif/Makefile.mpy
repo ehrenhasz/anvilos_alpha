@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "2d2e34642bd917ed533f0b46816cac85ebf2b911d6ff8af45434a405b3f68b09",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/platform/samsung/s3c-camif/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n# Makefile for s3c244x/s3c64xx CAMIF driver\n\ns3c-camif-objs := camif-core.o camif-capture.o camif-regs.o\n\nobj-$(CONFIG_VIDEO_S3C_CAMIF) += s3c-camif.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

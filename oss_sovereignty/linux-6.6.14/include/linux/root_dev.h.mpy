@@ -1,0 +1,9 @@
+{
+  "module_name": "root_dev.h",
+  "hash_id": "f9f9f72e3b5460f042f3986e7ae81318d53e857662ea46533aba45e19b0b90b6",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/root_dev.h",
+  "human_readable_source": " \n#ifndef _ROOT_DEV_H_\n#define _ROOT_DEV_H_\n\n#include <linux/major.h>\n#include <linux/types.h>\n#include <linux/kdev_t.h>\n\nenum {\n\tRoot_NFS = MKDEV(UNNAMED_MAJOR, 255),\n\tRoot_CIFS = MKDEV(UNNAMED_MAJOR, 254),\n\tRoot_Generic = MKDEV(UNNAMED_MAJOR, 253),\n\tRoot_RAM0 = MKDEV(RAMDISK_MAJOR, 0),\n};\n\nextern dev_t ROOT_DEV;\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

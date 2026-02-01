@@ -1,0 +1,9 @@
+{
+  "module_name": "test_custom_sec_handlers.c",
+  "hash_id": "2d5cdfb86af3a12d1c94c8cb5ae1504911a7232ea02c82e5beafd9fcb82f88fe",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/test_custom_sec_handlers.c",
+  "human_readable_source": "\n \n\n#include \"vmlinux.h\"\n#include <bpf/bpf_helpers.h>\n#include <bpf/bpf_tracing.h>\n\nconst volatile int my_pid;\n\nbool abc1_called;\nbool abc2_called;\nbool custom1_called;\nbool custom2_called;\nbool kprobe1_called;\nbool xyz_called;\n\nSEC(\"abc\")\nint abc1(void *ctx)\n{\n\tabc1_called = true;\n\treturn 0;\n}\n\nSEC(\"abc/whatever\")\nint abc2(void *ctx)\n{\n\tabc2_called = true;\n\treturn 0;\n}\n\nSEC(\"custom\")\nint custom1(void *ctx)\n{\n\tcustom1_called = true;\n\treturn 0;\n}\n\nSEC(\"custom/something\")\nint custom2(void *ctx)\n{\n\tcustom2_called = true;\n\treturn 0;\n}\n\nSEC(\"kprobe\")\nint kprobe1(void *ctx)\n{\n\tkprobe1_called = true;\n\treturn 0;\n}\n\nSEC(\"xyz/blah\")\nint xyz(void *ctx)\n{\n\tint whatever;\n\n\t \n\tbpf_copy_from_user(&whatever, sizeof(whatever), NULL);\n\txyz_called = true;\n\treturn 0;\n}\n\nchar _license[] SEC(\"license\") = \"GPL\";\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

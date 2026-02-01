@@ -1,0 +1,9 @@
+{
+  "module_name": "gdm_endian.c",
+  "hash_id": "d9d9c61443734c5f98585026346910ce5ca8a84e216cbad678728c0e321bdd13",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/gdm724x/gdm_endian.c",
+  "human_readable_source": "\n \n\n#include <linux/kernel.h>\n#include \"gdm_endian.h\"\n\n__dev16 gdm_cpu_to_dev16(u8 dev_ed, u16 x)\n{\n\tif (dev_ed == ENDIANNESS_LITTLE)\n\t\treturn (__force __dev16)cpu_to_le16(x);\n\telse\n\t\treturn (__force __dev16)cpu_to_be16(x);\n}\n\nu16 gdm_dev16_to_cpu(u8 dev_ed, __dev16 x)\n{\n\tif (dev_ed == ENDIANNESS_LITTLE)\n\t\treturn le16_to_cpu((__force __le16)x);\n\telse\n\t\treturn be16_to_cpu((__force __be16)x);\n}\n\n__dev32 gdm_cpu_to_dev32(u8 dev_ed, u32 x)\n{\n\tif (dev_ed == ENDIANNESS_LITTLE)\n\t\treturn (__force __dev32)cpu_to_le32(x);\n\telse\n\t\treturn (__force __dev32)cpu_to_be32(x);\n}\n\nu32 gdm_dev32_to_cpu(u8 dev_ed, __dev32 x)\n{\n\tif (dev_ed == ENDIANNESS_LITTLE)\n\t\treturn le32_to_cpu((__force __le32)x);\n\telse\n\t\treturn be32_to_cpu((__force __be32)x);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

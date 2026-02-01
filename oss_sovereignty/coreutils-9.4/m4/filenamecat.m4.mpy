@@ -1,0 +1,9 @@
+{
+  "module_name": "filenamecat.m4",
+  "hash_id": "b28c2587be12ed33a884b836373e4b5ce3934f076e3e912cf726cbc042026183",
+  "original_prompt": "Ingested from coreutils-9.4/m4/filenamecat.m4",
+  "human_readable_source": "# filenamecat.m4 serial 12\ndnl Copyright (C) 2002-2006, 2009-2023 Free Software Foundation, Inc.\ndnl This file is free software; the Free Software Foundation\ndnl gives unlimited permission to copy and/or distribute it,\ndnl with or without modifications, as long as this notice is preserved.\n\nAC_DEFUN([gl_FILE_NAME_CONCAT],\n[\n  AC_REQUIRE([gl_FILE_NAME_CONCAT_LGPL])\n])\n\nAC_DEFUN([gl_FILE_NAME_CONCAT_LGPL],\n[\n  dnl Prerequisites of lib/filenamecat-lgpl.c.\n  gl_CHECK_FUNCS_ANDROID([mempcpy], [[#include <string.h>]])\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "ia_css_norm.host.c",
+  "hash_id": "1d3608d48d1d672eb44f5e3613d549907a4f7f72dab69caf0a0e853f3f84470a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/isp/kernels/norm/norm_1.0/ia_css_norm.host.c",
+  "human_readable_source": "\n \n\n#include \"ia_css_norm.host.h\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

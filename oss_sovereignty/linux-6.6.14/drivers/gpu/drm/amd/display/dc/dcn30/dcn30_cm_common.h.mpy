@@ -1,0 +1,9 @@
+{
+  "module_name": "dcn30_cm_common.h",
+  "hash_id": "250a344f495a4d721f92b2e02e259c40524d8e1216baf1d5b5133476c715ea9d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/dc/dcn30/dcn30_cm_common.h",
+  "human_readable_source": " \n\n#include \"dcn10/dcn10_cm_common.h\"\n\n#ifndef __DAL_DCN30_CM_COMMON_H__\n#define __DAL_DCN30_CM_COMMON_H__\n\n#define TF_HELPER_REG_FIELD_LIST_DCN3(type) \\\n\tTF_HELPER_REG_FIELD_LIST(type);\\\n\ttype field_region_start_base;\\\n\ttype field_offset\n\nstruct DCN3_xfer_func_shift {\n\tTF_HELPER_REG_FIELD_LIST_DCN3(uint8_t);\n};\n\nstruct DCN3_xfer_func_mask {\n\tTF_HELPER_REG_FIELD_LIST_DCN3(uint32_t);\n};\n\nstruct dcn3_xfer_func_reg {\n\tstruct DCN3_xfer_func_shift shifts;\n\tstruct DCN3_xfer_func_mask masks;\n\n\tTF_HELPER_REG_LIST;\n\tuint32_t offset_b;\n\tuint32_t offset_g;\n\tuint32_t offset_r;\n\tuint32_t start_base_cntl_b;\n\tuint32_t start_base_cntl_g;\n\tuint32_t start_base_cntl_r;\n};\n\nvoid cm_helper_program_gamcor_xfer_func(\n\tstruct dc_context *ctx,\n\tconst struct pwl_params *params,\n\tconst struct dcn3_xfer_func_reg *reg);\n\nbool cm3_helper_translate_curve_to_hw_format(\n\tconst struct dc_transfer_func *output_tf,\n\tstruct pwl_params *lut_params, bool fixpoint);\n\nbool cm3_helper_translate_curve_to_degamma_hw_format(\n\t\t\t\tconst struct dc_transfer_func *output_tf,\n\t\t\t\tstruct pwl_params *lut_params);\n\nbool cm3_helper_convert_to_custom_float(\n\t\tstruct pwl_result_data *rgb_resulted,\n\t\tstruct curve_points3 *corner_points,\n\t\tuint32_t hw_points_num,\n\t\tbool fixpoint);\n\nbool is_rgb_equal(const struct pwl_result_data *rgb, uint32_t num);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

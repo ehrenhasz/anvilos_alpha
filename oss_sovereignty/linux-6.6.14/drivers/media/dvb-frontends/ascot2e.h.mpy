@@ -1,0 +1,9 @@
+{
+  "module_name": "ascot2e.h",
+  "hash_id": "0475747c6591e313ed2d59168159ec818e95f61d73af0c5dff14e7d5e7ab7c31",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/dvb-frontends/ascot2e.h",
+  "human_readable_source": " \n \n\n#ifndef __DVB_ASCOT2E_H__\n#define __DVB_ASCOT2E_H__\n\n#include <linux/dvb/frontend.h>\n#include <linux/i2c.h>\n\n \nstruct ascot2e_config {\n\tu8\ti2c_address;\n\tu8\txtal_freq_mhz;\n\tvoid\t*set_tuner_priv;\n\tint\t(*set_tuner_callback)(void *, int);\n};\n\n#if IS_REACHABLE(CONFIG_DVB_ASCOT2E)\n \nextern struct dvb_frontend *ascot2e_attach(struct dvb_frontend *fe,\n\t\t\t\t\tconst struct ascot2e_config *config,\n\t\t\t\t\tstruct i2c_adapter *i2c);\n#else\nstatic inline struct dvb_frontend *ascot2e_attach(struct dvb_frontend *fe,\n\t\t\t\t\tconst struct ascot2e_config *config,\n\t\t\t\t\tstruct i2c_adapter *i2c)\n{\n\tprintk(KERN_WARNING \"%s: driver disabled by Kconfig\\n\", __func__);\n\treturn NULL;\n}\n#endif\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

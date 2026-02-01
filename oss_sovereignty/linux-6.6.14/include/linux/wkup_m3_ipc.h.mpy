@@ -1,0 +1,9 @@
+{
+  "module_name": "wkup_m3_ipc.h",
+  "hash_id": "07bf8dbbc6818b3404f96647e3363d0213e95c1634ed358d2ca7cb9886b8338d",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/wkup_m3_ipc.h",
+  "human_readable_source": " \n \n\n#ifndef _LINUX_WKUP_M3_IPC_H\n#define _LINUX_WKUP_M3_IPC_H\n\n#define WKUP_M3_DEEPSLEEP\t1\n#define WKUP_M3_STANDBY\t\t2\n#define WKUP_M3_IDLE\t\t3\n\n#include <linux/mailbox_client.h>\n\nstruct wkup_m3_ipc_ops;\n\nstruct wkup_m3_ipc {\n\tstruct rproc *rproc;\n\n\tvoid __iomem *ipc_mem_base;\n\tstruct device *dev;\n\n\tint mem_type;\n\tunsigned long resume_addr;\n\tint vtt_conf;\n\tint isolation_conf;\n\tint state;\n\tu32 halt;\n\n\tunsigned long volt_scale_offsets;\n\tconst char *sd_fw_name;\n\n\tstruct completion sync_complete;\n\tstruct mbox_client mbox_client;\n\tstruct mbox_chan *mbox;\n\n\tstruct wkup_m3_ipc_ops *ops;\n\tint is_rtc_only;\n\tstruct dentry *dbg_path;\n};\n\nstruct wkup_m3_wakeup_src {\n\tint irq_nr;\n\tchar src[10];\n};\n\nstruct wkup_m3_scale_data_header {\n\tu16 magic;\n\tu8 sleep_offset;\n\tu8 wake_offset;\n} __packed;\n\nstruct wkup_m3_ipc_ops {\n\tvoid (*set_mem_type)(struct wkup_m3_ipc *m3_ipc, int mem_type);\n\tvoid (*set_resume_address)(struct wkup_m3_ipc *m3_ipc, void *addr);\n\tint (*prepare_low_power)(struct wkup_m3_ipc *m3_ipc, int state);\n\tint (*finish_low_power)(struct wkup_m3_ipc *m3_ipc);\n\tint (*request_pm_status)(struct wkup_m3_ipc *m3_ipc);\n\tconst char *(*request_wake_src)(struct wkup_m3_ipc *m3_ipc);\n\tvoid (*set_rtc_only)(struct wkup_m3_ipc *m3_ipc);\n};\n\nstruct wkup_m3_ipc *wkup_m3_ipc_get(void);\nvoid wkup_m3_ipc_put(struct wkup_m3_ipc *m3_ipc);\nvoid wkup_m3_set_rtc_only_mode(void);\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

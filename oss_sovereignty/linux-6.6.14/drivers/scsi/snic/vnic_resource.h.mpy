@@ -1,0 +1,9 @@
+{
+  "module_name": "vnic_resource.h",
+  "hash_id": "1510f90367f61bff2ce95be26affab767be7ee69f89d96f138191ca49e35e5a3",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/scsi/snic/vnic_resource.h",
+  "human_readable_source": " \n \n\n#ifndef _VNIC_RESOURCE_H_\n#define _VNIC_RESOURCE_H_\n\n#define VNIC_RES_MAGIC\t\t0x766E6963L\t \n#define VNIC_RES_VERSION\t0x00000000L\n\n \nenum vnic_res_type {\n\tRES_TYPE_EOL,\t\t\t \n\tRES_TYPE_WQ,\t\t\t \n\tRES_TYPE_RQ,\t\t\t \n\tRES_TYPE_CQ,\t\t\t \n\tRES_TYPE_RSVD1,\n\tRES_TYPE_NIC_CFG,\t\t \n\tRES_TYPE_RSVD2,\n\tRES_TYPE_RSVD3,\n\tRES_TYPE_RSVD4,\n\tRES_TYPE_RSVD5,\n\tRES_TYPE_INTR_CTRL,\t\t \n\tRES_TYPE_INTR_TABLE,\t\t \n\tRES_TYPE_INTR_PBA,\t\t \n\tRES_TYPE_INTR_PBA_LEGACY,\t \n\tRES_TYPE_RSVD6,\n\tRES_TYPE_RSVD7,\n\tRES_TYPE_DEVCMD,\t\t \n\tRES_TYPE_PASS_THRU_PAGE,\t \n\tRES_TYPE_SUBVNIC,\t\t \n\tRES_TYPE_MQ_WQ,\t\t\t \n\tRES_TYPE_MQ_RQ,\t\t\t \n\tRES_TYPE_MQ_CQ,\t\t\t \n\tRES_TYPE_DEPRECATED1,\t\t \n\tRES_TYPE_DEPRECATED2,\t\t \n\tRES_TYPE_DEVCMD2,\t\t \n\n\tRES_TYPE_MAX,\t\t\t \n};\n\nstruct vnic_resource_header {\n\tu32 magic;\n\tu32 version;\n};\n\nstruct vnic_resource {\n\tu8 type;\n\tu8 bar;\n\tu8 pad[2];\n\tu32 bar_offset;\n\tu32 count;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

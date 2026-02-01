@@ -1,0 +1,9 @@
+{
+  "module_name": "if_ltalk.h",
+  "hash_id": "329744fecd094a94ba5f769a53f4da713437ef1535546b2766cf88813fddac19",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/if_ltalk.h",
+  "human_readable_source": " \n#ifndef _UAPI__LINUX_LTALK_H\n#define _UAPI__LINUX_LTALK_H\n\n#define LTALK_HLEN\t\t1\n#define LTALK_MTU\t\t600\n#define LTALK_ALEN\t\t1\n\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

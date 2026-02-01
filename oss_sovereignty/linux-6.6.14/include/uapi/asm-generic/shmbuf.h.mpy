@@ -1,0 +1,9 @@
+{
+  "module_name": "shmbuf.h",
+  "hash_id": "2917449eab83a4bad16e999ca6ed046544e7fd6830007ae9eae07de6bffd4728",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/asm-generic/shmbuf.h",
+  "human_readable_source": " \n#ifndef __ASM_GENERIC_SHMBUF_H\n#define __ASM_GENERIC_SHMBUF_H\n\n#include <asm/bitsperlong.h>\n#include <asm/ipcbuf.h>\n#include <asm/posix_types.h>\n\n \n\nstruct shmid64_ds {\n\tstruct ipc64_perm\tshm_perm;\t \n\t__kernel_size_t\t\tshm_segsz;\t \n#if __BITS_PER_LONG == 64\n\tlong\t\t\tshm_atime;\t \n\tlong\t\t\tshm_dtime;\t \n\tlong\t\t\tshm_ctime;\t \n#else\n\tunsigned long\t\tshm_atime;\t \n\tunsigned long\t\tshm_atime_high;\n\tunsigned long\t\tshm_dtime;\t \n\tunsigned long\t\tshm_dtime_high;\n\tunsigned long\t\tshm_ctime;\t \n\tunsigned long\t\tshm_ctime_high;\n#endif\n\t__kernel_pid_t\t\tshm_cpid;\t \n\t__kernel_pid_t\t\tshm_lpid;\t \n\tunsigned long\t\tshm_nattch;\t \n\tunsigned long\t\t__unused4;\n\tunsigned long\t\t__unused5;\n};\n\nstruct shminfo64 {\n\tunsigned long\t\tshmmax;\n\tunsigned long\t\tshmmin;\n\tunsigned long\t\tshmmni;\n\tunsigned long\t\tshmseg;\n\tunsigned long\t\tshmall;\n\tunsigned long\t\t__unused1;\n\tunsigned long\t\t__unused2;\n\tunsigned long\t\t__unused3;\n\tunsigned long\t\t__unused4;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

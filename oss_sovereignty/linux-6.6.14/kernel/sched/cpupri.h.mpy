@@ -1,0 +1,9 @@
+{
+  "module_name": "cpupri.h",
+  "hash_id": "9093ac0ac8a00964e44206b2de50e042f0aaf430b545e74f5d2c69ca66fe9af6",
+  "original_prompt": "Ingested from linux-6.6.14/kernel/sched/cpupri.h",
+  "human_readable_source": " \n\n#define CPUPRI_NR_PRIORITIES\t(MAX_RT_PRIO+1)\n\n#define CPUPRI_INVALID\t\t-1\n#define CPUPRI_NORMAL\t\t 0\n \n#define CPUPRI_HIGHER\t\t100\n\nstruct cpupri_vec {\n\tatomic_t\t\tcount;\n\tcpumask_var_t\t\tmask;\n};\n\nstruct cpupri {\n\tstruct cpupri_vec\tpri_to_cpu[CPUPRI_NR_PRIORITIES];\n\tint\t\t\t*cpu_to_pri;\n};\n\n#ifdef CONFIG_SMP\nint  cpupri_find(struct cpupri *cp, struct task_struct *p,\n\t\t struct cpumask *lowest_mask);\nint  cpupri_find_fitness(struct cpupri *cp, struct task_struct *p,\n\t\t\t struct cpumask *lowest_mask,\n\t\t\t bool (*fitness_fn)(struct task_struct *p, int cpu));\nvoid cpupri_set(struct cpupri *cp, int cpu, int pri);\nint  cpupri_init(struct cpupri *cp);\nvoid cpupri_cleanup(struct cpupri *cp);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

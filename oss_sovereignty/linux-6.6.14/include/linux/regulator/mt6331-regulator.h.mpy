@@ -1,0 +1,9 @@
+{
+  "module_name": "mt6331-regulator.h",
+  "hash_id": "e2defb01a7690153a8150d389309ca9f86795505f1583f0ffa6b5395485ccd70",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/regulator/mt6331-regulator.h",
+  "human_readable_source": " \n \n\n#ifndef __LINUX_REGULATOR_MT6331_H\n#define __LINUX_REGULATOR_MT6331_H\n\nenum {\n\t \n\tMT6331_ID_VDVFS11 = 0,\n\tMT6331_ID_VDVFS12,\n\tMT6331_ID_VDVFS13,\n\tMT6331_ID_VDVFS14,\n\tMT6331_ID_VCORE2,\n\tMT6331_ID_VIO18,\n\t \n\tMT6331_ID_VTCXO1,\n\tMT6331_ID_VTCXO2,\n\tMT6331_ID_AVDD32_AUD,\n\tMT6331_ID_VAUXA32,\n\tMT6331_ID_VCAMA,\n\tMT6331_ID_VIO28,\n\tMT6331_ID_VCAM_AF,\n\tMT6331_ID_VMC,\n\tMT6331_ID_VMCH,\n\tMT6331_ID_VEMC33,\n\tMT6331_ID_VGP1,\n\tMT6331_ID_VSIM1,\n\tMT6331_ID_VSIM2,\n\tMT6331_ID_VMIPI,\n\tMT6331_ID_VIBR,\n\tMT6331_ID_VGP4,\n\tMT6331_ID_VCAMD,\n\tMT6331_ID_VUSB10,\n\tMT6331_ID_VCAM_IO,\n\tMT6331_ID_VSRAM_DVFS1,\n\tMT6331_ID_VGP2,\n\tMT6331_ID_VGP3,\n\tMT6331_ID_VRTC,\n\tMT6331_ID_VDIG18,\n\tMT6331_ID_VREG_MAX\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

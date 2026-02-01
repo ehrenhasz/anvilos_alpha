@@ -1,0 +1,9 @@
+{
+  "module_name": "docs",
+  "hash_id": "57bb905d0f2ccecbb9d81d40daa17e1e05b109c833ddc766edb0b59561088f20",
+  "original_prompt": "Ingested from ncurses-6.4/Ada95/package/debian/docs",
+  "human_readable_source": "README\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

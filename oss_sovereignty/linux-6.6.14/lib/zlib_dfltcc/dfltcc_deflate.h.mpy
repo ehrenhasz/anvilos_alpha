@@ -1,0 +1,9 @@
+{
+  "module_name": "dfltcc_deflate.h",
+  "hash_id": "39c3b0244b2676efd4cc0e6ba9caaea5625b84560e8de4fd8b6385ae046120f2",
+  "original_prompt": "Ingested from linux-6.6.14/lib/zlib_dfltcc/dfltcc_deflate.h",
+  "human_readable_source": "\n#ifndef DFLTCC_DEFLATE_H\n#define DFLTCC_DEFLATE_H\n\n#include \"dfltcc.h\"\n\n \nint dfltcc_can_deflate(z_streamp strm);\nint dfltcc_deflate(z_streamp strm,\n                   int flush,\n                   block_state *result);\nvoid dfltcc_reset_deflate_state(z_streamp strm);\n\n#define DEFLATE_RESET_HOOK(strm) \\\n    dfltcc_reset_deflate_state((strm))\n\n#define DEFLATE_HOOK dfltcc_deflate\n\n#define DEFLATE_NEED_CHECKSUM(strm) (!dfltcc_can_deflate((strm)))\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

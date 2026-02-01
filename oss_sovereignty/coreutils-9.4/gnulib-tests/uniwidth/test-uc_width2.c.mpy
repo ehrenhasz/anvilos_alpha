@@ -1,0 +1,9 @@
+{
+  "module_name": "test-uc_width2.c",
+  "hash_id": "6c55f0c6f04921b420f3e29655aca01cc5681ccb0a9f1e3f3eefdf5081cd86b6",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/uniwidth/test-uc_width2.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#include \"uniwidth.h\"\n\n#include <stdio.h>\n\n#include \"macros.h\"\n\n \nstatic char current_width;\n \nstatic ucs4_t current_start;\nstatic ucs4_t current_end;\n\nstatic void\nfinish_interval (void)\n{\n  if (current_width != 0)\n    {\n      if (current_start == current_end)\n        printf (\"%04X\\t\\t%c\\n\", (unsigned) current_start, current_width);\n      else\n        printf (\"%04X..%04X\\t%c\\n\", (unsigned) current_start,\n                (unsigned) current_end, current_width);\n      current_width = 0;\n    }\n}\n\nstatic void\nadd_to_interval (ucs4_t uc, char width)\n{\n  if (current_width == width && uc == current_end + 1)\n    current_end = uc;\n  else\n    {\n      finish_interval ();\n      current_width = width;\n      current_start = current_end = uc;\n    }\n}\n\nint\nmain ()\n{\n  ucs4_t uc;\n\n  for (uc = 0; uc < 0x110000; uc++)\n    {\n      int w1 = uc_width (uc, \"UTF-8\");\n      int w2 = uc_width (uc, \"GBK\");\n      char width =\n        (w1 == 0 && w2 == 0 ? '0' :\n         w1 == 1 && w2 == 1 ? '1' :\n         w1 == 1 && w2 == 2 ? 'A' :\n         w1 == 2 && w2 == 2 ? '2' :\n         0);\n      if (width == 0)\n        {\n           \n          ASSERT (w1 < 0 && w2 < 0);\n        }\n      else\n        add_to_interval (uc, width);\n    }\n  finish_interval ();\n\n  return 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

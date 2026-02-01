@@ -1,0 +1,9 @@
+{
+  "module_name": "module.c",
+  "hash_id": "f85cd788b80ab13d31567d38fa75e653888d206742444823a0a5c00eefa9df8b",
+  "original_prompt": "Ingested from linux-6.6.14/net/sunrpc/xprtrdma/module.c",
+  "human_readable_source": "\n \n\n \n\n#include <linux/types.h>\n#include <linux/compiler.h>\n#include <linux/module.h>\n#include <linux/init.h>\n#include <linux/sunrpc/svc_rdma.h>\n\n#include <asm/swab.h>\n\n#include \"xprt_rdma.h\"\n\n#define CREATE_TRACE_POINTS\n#include <trace/events/rpcrdma.h>\n\nMODULE_AUTHOR(\"Open Grid Computing and Network Appliance, Inc.\");\nMODULE_DESCRIPTION(\"RPC/RDMA Transport\");\nMODULE_LICENSE(\"Dual BSD/GPL\");\nMODULE_ALIAS(\"svcrdma\");\nMODULE_ALIAS(\"xprtrdma\");\nMODULE_ALIAS(\"rpcrdma6\");\n\nstatic void __exit rpc_rdma_cleanup(void)\n{\n\txprt_rdma_cleanup();\n\tsvc_rdma_cleanup();\n}\n\nstatic int __init rpc_rdma_init(void)\n{\n\tint rc;\n\n\trc = svc_rdma_init();\n\tif (rc)\n\t\tgoto out;\n\n\trc = xprt_rdma_init();\n\tif (rc)\n\t\tsvc_rdma_cleanup();\n\nout:\n\treturn rc;\n}\n\nmodule_init(rpc_rdma_init);\nmodule_exit(rpc_rdma_cleanup);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

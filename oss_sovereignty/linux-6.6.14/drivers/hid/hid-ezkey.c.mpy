@@ -1,0 +1,9 @@
+{
+  "module_name": "hid-ezkey.c",
+  "hash_id": "7428602624af67e1fe7d13759c1b29ba1e59194aba444e24852c45e3cf3e560f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/hid/hid-ezkey.c",
+  "human_readable_source": "\n \n\n \n\n#include <linux/device.h>\n#include <linux/input.h>\n#include <linux/hid.h>\n#include <linux/module.h>\n\n#include \"hid-ids.h\"\n\n#define ez_map_rel(c)\thid_map_usage(hi, usage, bit, max, EV_REL, (c))\n#define ez_map_key(c)\thid_map_usage(hi, usage, bit, max, EV_KEY, (c))\n\nstatic int ez_input_mapping(struct hid_device *hdev, struct hid_input *hi,\n\t\tstruct hid_field *field, struct hid_usage *usage,\n\t\tunsigned long **bit, int *max)\n{\n\tif ((usage->hid & HID_USAGE_PAGE) != HID_UP_CONSUMER)\n\t\treturn 0;\n\n\tswitch (usage->hid & HID_USAGE) {\n\tcase 0x230: ez_map_key(BTN_MOUSE);\tbreak;\n\tcase 0x231: ez_map_rel(REL_WHEEL);\tbreak;\n\t \n\tcase 0x232: ez_map_rel(REL_HWHEEL);\tbreak;\n\tdefault:\n\t\treturn 0;\n\t}\n\treturn 1;\n}\n\nstatic int ez_event(struct hid_device *hdev, struct hid_field *field,\n\t\tstruct hid_usage *usage, __s32 value)\n{\n\tif (!(hdev->claimed & HID_CLAIMED_INPUT) || !field->hidinput ||\n\t\t\t!usage->type)\n\t\treturn 0;\n\n\t \n\tif (usage->type == EV_REL && usage->code == REL_HWHEEL) {\n\t\tstruct input_dev *input = field->hidinput->input;\n\t\tinput_event(input, usage->type, REL_WHEEL, -value);\n\t\treturn 1;\n\t}\n\n\treturn 0;\n}\n\nstatic const struct hid_device_id ez_devices[] = {\n\t{ HID_USB_DEVICE(USB_VENDOR_ID_EZKEY, USB_DEVICE_ID_BTC_8193) },\n\t{ }\n};\nMODULE_DEVICE_TABLE(hid, ez_devices);\n\nstatic struct hid_driver ez_driver = {\n\t.name = \"ezkey\",\n\t.id_table = ez_devices,\n\t.input_mapping = ez_input_mapping,\n\t.event = ez_event,\n};\nmodule_hid_driver(ez_driver);\n\nMODULE_LICENSE(\"GPL\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

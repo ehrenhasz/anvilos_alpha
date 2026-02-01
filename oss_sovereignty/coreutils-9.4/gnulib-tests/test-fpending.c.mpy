@@ -1,0 +1,9 @@
+{
+  "module_name": "test-fpending.c",
+  "hash_id": "b66fa8ed57cdd1c7220b758b38ee894ec99f73c0b83246e01328342aad61e6ab",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-fpending.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#include \"fpending.h\"\n\n#include <stdio.h>\n#include <stdlib.h>\n\n#include \"macros.h\"\n\nint\nmain (void)\n{\n  ASSERT (__fpending (stdout) == 0);\n\n  fputs (\"foo\", stdout);\n  ASSERT (__fpending (stdout) == 3);\n\n  fflush (stdout);\n  ASSERT (__fpending (stdout) == 0);\n\n  exit (0);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

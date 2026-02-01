@@ -1,0 +1,9 @@
+{
+  "module_name": "gpiolib-acpi.h",
+  "hash_id": "6e394278b16c34c0c4339e84b3294eab7592214bb2a0d4e990d1420738579301",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpio/gpiolib-acpi.h",
+  "human_readable_source": " \n \n\n#ifndef GPIOLIB_ACPI_H\n#define GPIOLIB_ACPI_H\n\n#include <linux/err.h>\n#include <linux/types.h>\n\n#include <linux/gpio/consumer.h>\n\nstruct device;\nstruct fwnode_handle;\n\nstruct gpio_chip;\nstruct gpio_desc;\nstruct gpio_device;\n\n#ifdef CONFIG_ACPI\nvoid acpi_gpiochip_add(struct gpio_chip *chip);\nvoid acpi_gpiochip_remove(struct gpio_chip *chip);\n\nvoid acpi_gpiochip_request_interrupts(struct gpio_chip *chip);\nvoid acpi_gpiochip_free_interrupts(struct gpio_chip *chip);\n\nstruct gpio_desc *acpi_find_gpio(struct fwnode_handle *fwnode,\n\t\t\t\t const char *con_id,\n\t\t\t\t unsigned int idx,\n\t\t\t\t enum gpiod_flags *dflags,\n\t\t\t\t unsigned long *lookupflags);\n\nint acpi_gpio_count(struct device *dev, const char *con_id);\n#else\nstatic inline void acpi_gpiochip_add(struct gpio_chip *chip) { }\nstatic inline void acpi_gpiochip_remove(struct gpio_chip *chip) { }\n\nstatic inline void\nacpi_gpiochip_request_interrupts(struct gpio_chip *chip) { }\n\nstatic inline void\nacpi_gpiochip_free_interrupts(struct gpio_chip *chip) { }\n\nstatic inline struct gpio_desc *\nacpi_find_gpio(struct fwnode_handle *fwnode, const char *con_id,\n\t       unsigned int idx, enum gpiod_flags *dflags,\n\t       unsigned long *lookupflags)\n{\n\treturn ERR_PTR(-ENOENT);\n}\nstatic inline int acpi_gpio_count(struct device *dev, const char *con_id)\n{\n\treturn -ENODEV;\n}\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

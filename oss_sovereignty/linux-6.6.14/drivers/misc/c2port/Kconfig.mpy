@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "7299cf2e6f0948451ce26cd2f04f08adb3e56a69b22faa210a19dbb830d44e69",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/misc/c2port/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# C2 port devices\n#\n\nmenuconfig C2PORT\n\ttristate \"Silicon Labs C2 port support\"\n\thelp\n\t  This option enables support for Silicon Labs C2 port used to\n\t  program Silicon micro controller chips (and other 8051 compatible).\n\n\t  If your board have no such micro controllers you don't need this\n\t  interface at all.\n\n\t  To compile this driver as a module, choose M here: the module will\n\t  be called c2port_core. Note that you also need a client module\n\t  usually called c2port-*.\n\n\t  If you are not sure, say N here.\n\nif C2PORT\n\nconfig C2PORT_DURAMAR_2150\n\ttristate \"C2 port support for Eurotech's Duramar 2150\"\n\tdepends on X86\n\thelp\n\t  This option enables C2 support for the Eurotech's Duramar 2150\n\t  on board micro controller.\n\n\t  To compile this driver as a module, choose M here: the module will\n\t  be called c2port-duramar2150.\n\nendif # C2PORT\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

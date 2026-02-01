@@ -1,0 +1,9 @@
+{
+  "module_name": "sdio_osintf.h",
+  "hash_id": "6252ee8c5e2d51b8cb7a5a78a5a671f96be19efe69c2c55b026cb9fbd92bd3fa",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/rtl8723bs/include/sdio_osintf.h",
+  "human_readable_source": " \n \n#ifndef __SDIO_OSINTF_H__\n#define __SDIO_OSINTF_H__\n\n\n\nu8 sd_hal_bus_init(struct adapter *padapter);\nu8 sd_hal_bus_deinit(struct adapter *padapter);\nvoid sd_c2h_hdl(struct adapter *padapter);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

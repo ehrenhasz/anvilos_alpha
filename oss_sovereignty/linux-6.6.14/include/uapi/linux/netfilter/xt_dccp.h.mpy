@@ -1,0 +1,9 @@
+{
+  "module_name": "xt_dccp.h",
+  "hash_id": "adfdf993b3d6f2e2cd1d502ae8b3956ab9b3d52924726c5ee367827e7fb77453",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/netfilter/xt_dccp.h",
+  "human_readable_source": " \n#ifndef _XT_DCCP_H_\n#define _XT_DCCP_H_\n\n#include <linux/types.h>\n\n#define XT_DCCP_SRC_PORTS\t        0x01\n#define XT_DCCP_DEST_PORTS\t        0x02\n#define XT_DCCP_TYPE\t\t\t0x04\n#define XT_DCCP_OPTION\t\t\t0x08\n\n#define XT_DCCP_VALID_FLAGS\t\t0x0f\n\nstruct xt_dccp_info {\n\t__u16 dpts[2];   \n\t__u16 spts[2];   \n\n\t__u16 flags;\n\t__u16 invflags;\n\n\t__u16 typemask;\n\t__u8 option;\n};\n\n#endif  \n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "amdgpu_eeprom.h",
+  "hash_id": "adaec9102c796d4e9286aa758bf783586e20f3e91b2ef734ddcbdb7f00c1d415",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/amdgpu/amdgpu_eeprom.h",
+  "human_readable_source": " \n\n#ifndef _AMDGPU_EEPROM_H\n#define _AMDGPU_EEPROM_H\n\n#include <linux/i2c.h>\n\nint amdgpu_eeprom_read(struct i2c_adapter *i2c_adap,\n\t\t       u32 eeprom_addr, u8 *eeprom_buf,\n\t\t       u16 bytes);\n\nint amdgpu_eeprom_write(struct i2c_adapter *i2c_adap,\n\t\t\tu32 eeprom_addr, u8 *eeprom_buf,\n\t\t\tu16 bytes);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

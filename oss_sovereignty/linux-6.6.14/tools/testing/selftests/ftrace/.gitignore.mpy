@@ -1,0 +1,9 @@
+{
+  "module_name": ".gitignore",
+  "hash_id": "26d949f03d963e28153a3efffa8f3692c7de02196df658c626c31d6a8ce8cc9b",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/ftrace/.gitignore",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nlogs\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

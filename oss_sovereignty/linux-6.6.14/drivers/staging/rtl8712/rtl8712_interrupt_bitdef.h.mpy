@@ -1,0 +1,9 @@
+{
+  "module_name": "rtl8712_interrupt_bitdef.h",
+  "hash_id": "4fe3c3253d3a0b7dfc68d315a97846d7fb06838716978f4b9c69da3f465b878e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/rtl8712/rtl8712_interrupt_bitdef.h",
+  "human_readable_source": " \n \n#ifndef __RTL8712_INTERRUPT_BITDEF_H__\n#define __RTL8712_INTERRUPT_BITDEF_H__\n\n \n \n#define\t_CPUERR\t\t\t\t\tBIT(29)\n#define\t_ATIMEND\t\t\t\tBIT(28)\n#define\t_TXBCNOK\t\t\t\tBIT(27)\n#define\t_TXBCNERR\t\t\t\tBIT(26)\n#define\t_BCNDMAINT4\t\t\t\tBIT(25)\n#define\t_BCNDMAINT3\t\t\t\tBIT(24)\n#define\t_BCNDMAINT2\t\t\t\tBIT(23)\n#define\t_BCNDMAINT1\t\t\t\tBIT(22)\n#define\t_BCNDOK4\t\t\t\tBIT(21)\n#define\t_BCNDOK3\t\t\t\tBIT(20)\n#define\t_BCNDOK2\t\t\t\tBIT(19)\n#define\t_BCNDOK1\t\t\t\tBIT(18)\n#define\t_TIMEOUT2\t\t\t\tBIT(17)\n#define\t_TIMEOUT1\t\t\t\tBIT(16)\n#define\t_TXFOVW\t\t\t\t\tBIT(15)\n#define\t_PSTIMEOUT\t\t\t\tBIT(14)\n#define\t_BCNDMAINT0\t\t\t\tBIT(13)\n#define\t_FOVW\t\t\t\t\tBIT(12)\n#define\t_RDU\t\t\t\t\tBIT(11)\n#define\t_RXCMDOK\t\t\t\tBIT(10)\n#define\t_BCNDOK0\t\t\t\tBIT(9)\n#define\t_HIGHDOK\t\t\t\tBIT(8)\n#define\t_COMDOK\t\t\t\t\tBIT(7)\n#define\t_MGTDOK\t\t\t\t\tBIT(6)\n#define\t_HCCADOK\t\t\t\tBIT(5)\n#define\t_BKDOK\t\t\t\t\tBIT(4)\n#define\t_BEDOK\t\t\t\t\tBIT(3)\n#define\t_VIDOK\t\t\t\t\tBIT(2)\n#define\t_VODOK\t\t\t\t\tBIT(1)\n#define\t_RXOK\t\t\t\t\tBIT(0)\n\n#endif\t \n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

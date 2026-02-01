@@ -1,0 +1,9 @@
+{
+  "module_name": "cq_desc.h",
+  "hash_id": "4b37be01f3f0df060f82b5e3b5b9883b3d5ca9767ce73f11a6da2d8c21078ca4",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/cisco/enic/cq_desc.h",
+  "human_readable_source": " \n \n\n#ifndef _CQ_DESC_H_\n#define _CQ_DESC_H_\n\n \nenum cq_desc_types {\n\tCQ_DESC_TYPE_WQ_ENET = 0,\n\tCQ_DESC_TYPE_DESC_COPY = 1,\n\tCQ_DESC_TYPE_WQ_EXCH = 2,\n\tCQ_DESC_TYPE_RQ_ENET = 3,\n\tCQ_DESC_TYPE_RQ_FCP = 4,\n};\n\n \nstruct cq_desc {\n\t__le16 completed_index;\n\t__le16 q_number;\n\tu8 type_specfic[11];\n\tu8 type_color;\n};\n\n#define CQ_DESC_TYPE_BITS        4\n#define CQ_DESC_TYPE_MASK        ((1 << CQ_DESC_TYPE_BITS) - 1)\n#define CQ_DESC_COLOR_MASK       1\n#define CQ_DESC_COLOR_SHIFT      7\n#define CQ_DESC_Q_NUM_BITS       10\n#define CQ_DESC_Q_NUM_MASK       ((1 << CQ_DESC_Q_NUM_BITS) - 1)\n#define CQ_DESC_COMP_NDX_BITS    12\n#define CQ_DESC_COMP_NDX_MASK    ((1 << CQ_DESC_COMP_NDX_BITS) - 1)\n\nstatic inline void cq_desc_dec(const struct cq_desc *desc_arg,\n\tu8 *type, u8 *color, u16 *q_number, u16 *completed_index)\n{\n\tconst struct cq_desc *desc = desc_arg;\n\tconst u8 type_color = desc->type_color;\n\n\t*color = (type_color >> CQ_DESC_COLOR_SHIFT) & CQ_DESC_COLOR_MASK;\n\n\t \n\n\trmb();\n\n\t*type = type_color & CQ_DESC_TYPE_MASK;\n\t*q_number = le16_to_cpu(desc->q_number) & CQ_DESC_Q_NUM_MASK;\n\t*completed_index = le16_to_cpu(desc->completed_index) &\n\t\tCQ_DESC_COMP_NDX_MASK;\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

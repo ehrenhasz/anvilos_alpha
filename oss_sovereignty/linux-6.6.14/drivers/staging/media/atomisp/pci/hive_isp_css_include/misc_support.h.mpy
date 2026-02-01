@@ -1,0 +1,9 @@
+{
+  "module_name": "misc_support.h",
+  "hash_id": "08b2c38980fc8ff6630931b0c3be1af1828d1d6182582cc0b51ab96e4d3dc185",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/hive_isp_css_include/misc_support.h",
+  "human_readable_source": " \n \n\n#ifndef __MISC_SUPPORT_H_INCLUDED__\n#define __MISC_SUPPORT_H_INCLUDED__\n\n \n#ifndef NOT_USED\n#define NOT_USED(a) ((void)(a))\n#endif\n\n \n#define tot_bytes_for_pow2_align(pow2, cur_bytes)\t((cur_bytes + (pow2 - 1)) & ~(pow2 - 1))\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

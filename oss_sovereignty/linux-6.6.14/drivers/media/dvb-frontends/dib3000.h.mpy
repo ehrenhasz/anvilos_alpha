@@ -1,0 +1,9 @@
+{
+  "module_name": "dib3000.h",
+  "hash_id": "160136b9ea997e6f79ffaeef105bfdce3a62254a28cf944ed33fcaf913bec52b",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/dvb-frontends/dib3000.h",
+  "human_readable_source": " \n \n\n#ifndef DIB3000_H\n#define DIB3000_H\n\n#include <linux/dvb/frontend.h>\n\nstruct dib3000_config\n{\n\t \n\tu8 demod_address;\n};\n\nstruct dib_fe_xfer_ops\n{\n\t \n\tint (*pid_parse)(struct dvb_frontend *fe, int onoff);\n\tint (*fifo_ctrl)(struct dvb_frontend *fe, int onoff);\n\tint (*pid_ctrl)(struct dvb_frontend *fe, int index, int pid, int onoff);\n\tint (*tuner_pass_ctrl)(struct dvb_frontend *fe, int onoff, u8 pll_ctrl);\n};\n\n#if IS_REACHABLE(CONFIG_DVB_DIB3000MB)\nextern struct dvb_frontend* dib3000mb_attach(const struct dib3000_config* config,\n\t\t\t\t\t     struct i2c_adapter* i2c, struct dib_fe_xfer_ops *xfer_ops);\n#else\nstatic inline struct dvb_frontend* dib3000mb_attach(const struct dib3000_config* config,\n\t\t\t\t\t     struct i2c_adapter* i2c, struct dib_fe_xfer_ops *xfer_ops)\n{\n\tprintk(KERN_WARNING \"%s: driver disabled by Kconfig\\n\", __func__);\n\treturn NULL;\n}\n#endif \n\n#endif \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "mac.h",
+  "hash_id": "d2c7b1565247066a8e3309bad6a2fc9d48bd25263c5eb23b3696be53ea14625c",
+  "original_prompt": "Ingested from linux-6.6.14/block/partitions/mac.h",
+  "human_readable_source": " \n \n\n#define MAC_PARTITION_MAGIC\t0x504d\n\n \n#define APPLE_AUX_TYPE\t\"Apple_UNIX_SVR2\"\n\nstruct mac_partition {\n\t__be16\tsignature;\t \n\t__be16\tres1;\n\t__be32\tmap_count;\t \n\t__be32\tstart_block;\t \n\t__be32\tblock_count;\t \n\tchar\tname[32];\t \n\tchar\ttype[32];\t \n\t__be32\tdata_start;\t \n\t__be32\tdata_count;\t \n\t__be32\tstatus;\t\t \n\t__be32\tboot_start;\n\t__be32\tboot_size;\n\t__be32\tboot_load;\n\t__be32\tboot_load2;\n\t__be32\tboot_entry;\n\t__be32\tboot_entry2;\n\t__be32\tboot_cksum;\n\tchar\tprocessor[16];\t \n\t \n};\n\n#define MAC_STATUS_BOOTABLE\t8\t \n\n#define MAC_DRIVER_MAGIC\t0x4552\n\n \nstruct mac_driver_desc {\n\t__be16\tsignature;\t \n\t__be16\tblock_size;\n\t__be32\tblock_count;\n     \n};\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

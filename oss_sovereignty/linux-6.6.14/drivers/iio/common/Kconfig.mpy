@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "e8b3782e3817e42ff06eb5427b6453c8aea475b86fff9c6a4c37821c5cb6325c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/iio/common/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# IIO common modules\n#\n\nsource \"drivers/iio/common/cros_ec_sensors/Kconfig\"\nsource \"drivers/iio/common/hid-sensors/Kconfig\"\nsource \"drivers/iio/common/inv_sensors/Kconfig\"\nsource \"drivers/iio/common/ms_sensors/Kconfig\"\nsource \"drivers/iio/common/scmi_sensors/Kconfig\"\nsource \"drivers/iio/common/ssp_sensors/Kconfig\"\nsource \"drivers/iio/common/st_sensors/Kconfig\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "dce110_opp_v.h",
+  "hash_id": "96513c3675bc832f6a79f5fe1818812e7ae846935baf9d64fa0fdb9271d3e940",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/dc/dce110/dce110_opp_v.h",
+  "human_readable_source": " \n\n#ifndef __DC_OPP_DCE110_V_H__\n#define __DC_OPP_DCE110_V_H__\n\n#include \"dc_types.h\"\n#include \"opp.h\"\n#include \"core_types.h\"\n\nvoid dce110_opp_v_construct(struct dce110_opp *opp110,\n\tstruct dc_context *ctx);\n\n \n\n\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

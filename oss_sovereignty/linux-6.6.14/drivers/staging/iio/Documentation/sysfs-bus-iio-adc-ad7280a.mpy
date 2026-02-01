@@ -1,0 +1,9 @@
+{
+  "module_name": "sysfs-bus-iio-adc-ad7280a",
+  "hash_id": "ee0ec79c644bbddc04586a169f69e94134bd86303ea87d38dd0d7e9b1f8ea573",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/iio/Documentation/sysfs-bus-iio-adc-ad7280a",
+  "human_readable_source": "What:\t\t/sys/bus/iio/devices/deviceX/inY-inZ_balance_switch_en\nKernelVersion:\t3.0.0\nContact:\tlinux-iio@vger.kernel.org\nDescription:\n\t\tWriting 1 enables the cell balance output switch corresponding\n\t\tto input Y. Writing 0 disables it. If the inY-inZ_balance_timer\n\t\tis set to a none zero value, the corresponding switch will\n\t\tenable for the programmed amount of time, before it\n\t\tautomatically disables.\n\nWhat:\t\t/sys/bus/iio/devices/deviceX/inY-inZ_balance_timer\nKernelVersion:\t3.0.0\nContact:\tlinux-iio@vger.kernel.org\nDescription:\n\t\tThe inY-inZ_balance_timer file allows the user to program\n\t\tindividual times for each cell balance output. The AD7280A\n\t\tallows the user to set the timer to a value from 0 minutes to\n\t\t36.9 minutes. The resolution of the timer is 71.5 sec.\n\t\tThe value written is the on-time in milliseconds. When the\n\t\ttimer value is set 0, the timer is disabled. The cell balance\n\t\toutputs are controlled only by inY-inZ_balance_switch_en.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "8250_alpha.c",
+  "hash_id": "0b3bc5aea41440240226ef330abd839c736983d2c33cc64e55b511d6672b1e85",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/tty/serial/8250/8250_alpha.c",
+  "human_readable_source": "\n\n#include <asm/machvec.h>\n#include \"8250.h\"\n\nbool alpha_jensen(void)\n{\n\treturn !strcmp(alpha_mv.vector_name, \"Jensen\");\n}\n\nvoid alpha_jensen_set_mctrl(struct uart_port *port, unsigned int mctrl)\n{\n\t \n\tmctrl |= TIOCM_OUT1 | TIOCM_OUT2;\n\n\tserial8250_do_set_mctrl(port, mctrl);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

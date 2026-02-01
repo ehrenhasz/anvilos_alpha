@@ -1,0 +1,9 @@
+{
+  "module_name": "install-extmod-build",
+  "hash_id": "dba343ce5dc86e8f85026a11b9845e5d9f4db324c15a6507f08520cafbf49cc7",
+  "original_prompt": "Ingested from linux-6.6.14/scripts/package/install-extmod-build",
+  "human_readable_source": "#!/bin/sh\n# SPDX-License-Identifier: GPL-2.0-only\n\nset -e\n\ndestdir=${1}\n\ntest -n \"${srctree}\"\ntest -n \"${SRCARCH}\"\n\nis_enabled() {\n\tgrep -q \"^$1=y\" include/config/auto.conf\n}\n\nmkdir -p \"${destdir}\"\n\n(\n\tcd \"${srctree}\"\n\techo Makefile\n\tfind \"arch/${SRCARCH}\" -maxdepth 1 -name 'Makefile*'\n\tfind include scripts -type f -o -type l\n\tfind \"arch/${SRCARCH}\" -name Kbuild.platforms -o -name Platform\n\tfind \"arch/${SRCARCH}\" -name include -o -name scripts -type d\n) | tar -c -f - -C \"${srctree}\" -T - | tar -xf - -C \"${destdir}\"\n\n{\n\tif is_enabled CONFIG_OBJTOOL; then\n\t\techo tools/objtool/objtool\n\tfi\n\n\tfind \"arch/${SRCARCH}/include\" Module.symvers include scripts -type f\n\n\tif is_enabled CONFIG_GCC_PLUGINS; then\n\t\tfind scripts/gcc-plugins -name '*.so'\n\tfi\n} | tar -c -f - -T - | tar -xf - -C \"${destdir}\"\n\n# copy .config manually to be where it's expected to be\ncp \"${KCONFIG_CONFIG}\" \"${destdir}/.config\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

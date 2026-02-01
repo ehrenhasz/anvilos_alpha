@@ -1,0 +1,9 @@
+{
+  "module_name": "dcn32_init.h",
+  "hash_id": "bdd50a73d2d6f0a74e24a86aa9c95ccf04b235ad493f5058559803a75b822155",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/dc/dcn32/dcn32_init.h",
+  "human_readable_source": " \n\n#ifndef __DC_DCN32_INIT_H__\n#define __DC_DCN32_INIT_H__\n\nstruct dc;\n\nvoid dcn32_hw_sequencer_init_functions(struct dc *dc);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

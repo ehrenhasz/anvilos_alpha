@@ -1,0 +1,9 @@
+{
+  "module_name": "int340x_thermal_zone.h",
+  "hash_id": "4888c12a30d57fbe6045f2c14c043e364506904e53a1c873251183d3b14bfae0",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/thermal/intel/int340x_thermal/int340x_thermal_zone.h",
+  "human_readable_source": " \n \n\n#ifndef __INT340X_THERMAL_ZONE_H__\n#define __INT340X_THERMAL_ZONE_H__\n\n#include <acpi/acpi_lpat.h>\n\n#define INT340X_THERMAL_MAX_ACT_TRIP_COUNT\t10\n#define INT340X_THERMAL_MAX_TRIP_COUNT INT340X_THERMAL_MAX_ACT_TRIP_COUNT + 3\n\nstruct active_trip {\n\tint temp;\n\tint id;\n\tbool valid;\n};\n\nstruct int34x_thermal_zone {\n\tstruct acpi_device *adev;\n\tstruct thermal_trip *trips;\n\tint aux_trip_nr;\n\tstruct thermal_zone_device *zone;\n\tstruct thermal_zone_device_ops *ops;\n\tvoid *priv_data;\n\tstruct acpi_lpat_conversion_table *lpat_table;\n};\n\nstruct int34x_thermal_zone *int340x_thermal_zone_add(struct acpi_device *,\n\t\t\t\tint (*get_temp) (struct thermal_zone_device *, int *));\nvoid int340x_thermal_zone_remove(struct int34x_thermal_zone *);\nvoid int340x_thermal_update_trips(struct int34x_thermal_zone *int34x_zone);\n\nstatic inline void int340x_thermal_zone_set_priv_data(\n\t\t\tstruct int34x_thermal_zone *tzone, void *priv_data)\n{\n\ttzone->priv_data = priv_data;\n}\n\nstatic inline void *int340x_thermal_zone_get_priv_data(\n\t\t\tstruct int34x_thermal_zone *tzone)\n{\n\treturn tzone->priv_data;\n}\n\nstatic inline void int340x_thermal_zone_device_update(\n\t\t\t\t\tstruct int34x_thermal_zone *tzone,\n\t\t\t\t\tenum thermal_notify_event event)\n{\n\tthermal_zone_device_update(tzone->zone, event);\n}\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

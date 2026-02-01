@@ -1,0 +1,9 @@
+{
+  "module_name": "team_mode_broadcast.c",
+  "hash_id": "e4f06602989c146ae30533577036cb0b911cedf006950d5048d5eb8d9c609d17",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/team/team_mode_broadcast.c",
+  "human_readable_source": "\n \n\n#include <linux/kernel.h>\n#include <linux/types.h>\n#include <linux/module.h>\n#include <linux/init.h>\n#include <linux/netdevice.h>\n#include <linux/if_team.h>\n\nstatic bool bc_transmit(struct team *team, struct sk_buff *skb)\n{\n\tstruct team_port *cur;\n\tstruct team_port *last = NULL;\n\tstruct sk_buff *skb2;\n\tbool ret;\n\tbool sum_ret = false;\n\n\tlist_for_each_entry_rcu(cur, &team->port_list, list) {\n\t\tif (team_port_txable(cur)) {\n\t\t\tif (last) {\n\t\t\t\tskb2 = skb_clone(skb, GFP_ATOMIC);\n\t\t\t\tif (skb2) {\n\t\t\t\t\tret = !team_dev_queue_xmit(team, last,\n\t\t\t\t\t\t\t\t   skb2);\n\t\t\t\t\tif (!sum_ret)\n\t\t\t\t\t\tsum_ret = ret;\n\t\t\t\t}\n\t\t\t}\n\t\t\tlast = cur;\n\t\t}\n\t}\n\tif (last) {\n\t\tret = !team_dev_queue_xmit(team, last, skb);\n\t\tif (!sum_ret)\n\t\t\tsum_ret = ret;\n\t}\n\treturn sum_ret;\n}\n\nstatic const struct team_mode_ops bc_mode_ops = {\n\t.transmit\t\t= bc_transmit,\n\t.port_enter\t\t= team_modeop_port_enter,\n\t.port_change_dev_addr\t= team_modeop_port_change_dev_addr,\n};\n\nstatic const struct team_mode bc_mode = {\n\t.kind\t\t= \"broadcast\",\n\t.owner\t\t= THIS_MODULE,\n\t.ops\t\t= &bc_mode_ops,\n\t.lag_tx_type\t= NETDEV_LAG_TX_TYPE_BROADCAST,\n};\n\nstatic int __init bc_init_module(void)\n{\n\treturn team_mode_register(&bc_mode);\n}\n\nstatic void __exit bc_cleanup_module(void)\n{\n\tteam_mode_unregister(&bc_mode);\n}\n\nmodule_init(bc_init_module);\nmodule_exit(bc_cleanup_module);\n\nMODULE_LICENSE(\"GPL v2\");\nMODULE_AUTHOR(\"Jiri Pirko <jpirko@redhat.com>\");\nMODULE_DESCRIPTION(\"Broadcast mode for team\");\nMODULE_ALIAS_TEAM_MODE(\"broadcast\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

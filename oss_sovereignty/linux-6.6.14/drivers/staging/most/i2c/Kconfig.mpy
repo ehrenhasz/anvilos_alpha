@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "48a0602da50971fdd90240bc761fd07ee4001721f5e787507f4e145255c3b04d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/most/i2c/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# MOST I2C configuration\n#\n\nconfig MOST_I2C\n\ttristate \"I2C\"\n\tdepends on I2C\n\thelp\n\t  Say Y here if you want to connect via I2C to network transceiver.\n\n\t  To compile this driver as a module, choose M here: the\n\t  module will be called most_i2c.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

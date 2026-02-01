@@ -1,0 +1,9 @@
+{
+  "module_name": "flow_dissector_load_bytes.c",
+  "hash_id": "9f5c03de406fe802c98bb28607c7d61b2bdd1f5e039b0b637c71b01fe7fde708",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/prog_tests/flow_dissector_load_bytes.c",
+  "human_readable_source": "\n#include <test_progs.h>\n#include <network_helpers.h>\n\nvoid serial_test_flow_dissector_load_bytes(void)\n{\n\tstruct bpf_flow_keys flow_keys;\n\tstruct bpf_insn prog[] = {\n\t\t\n\t\t\n\t\tBPF_MOV64_IMM(BPF_REG_2, 0),\n\t\t\n\t\tBPF_ALU64_REG(BPF_MOV, BPF_REG_3, BPF_REG_10),\n\t\tBPF_ALU64_IMM(BPF_ADD, BPF_REG_3, -1),\n\t\t\n\t\tBPF_MOV64_IMM(BPF_REG_4, 1),\n\t\t\n\t\tBPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, 0, 0,\n\t\t\t     BPF_FUNC_skb_load_bytes),\n\t\tBPF_JMP_IMM(BPF_JNE, BPF_REG_0, 0, 2),\n\t\t\n\t\tBPF_MOV64_IMM(BPF_REG_0, BPF_DROP),\n\t\tBPF_EXIT_INSN(),\n\t\t\n\t\tBPF_MOV64_IMM(BPF_REG_0, BPF_OK),\n\t\tBPF_EXIT_INSN(),\n\t};\n\tint fd, err;\n\tLIBBPF_OPTS(bpf_test_run_opts, topts,\n\t\t.data_in = &pkt_v4,\n\t\t.data_size_in = sizeof(pkt_v4),\n\t\t.data_out = &flow_keys,\n\t\t.data_size_out = sizeof(flow_keys),\n\t\t.repeat = 1,\n\t);\n\n\t \n\tfd = bpf_test_load_program(BPF_PROG_TYPE_FLOW_DISSECTOR, prog,\n\t\t\t      ARRAY_SIZE(prog), \"GPL\", 0, NULL, 0);\n\tASSERT_GE(fd, 0, \"bpf_test_load_program good fd\");\n\n\terr = bpf_prog_test_run_opts(fd, &topts);\n\tASSERT_OK(err, \"test_run\");\n\tASSERT_EQ(topts.data_size_out, sizeof(flow_keys),\n\t\t  \"test_run data_size_out\");\n\tASSERT_EQ(topts.retval, BPF_OK, \"test_run retval\");\n\n\tif (fd >= -1)\n\t\tclose(fd);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

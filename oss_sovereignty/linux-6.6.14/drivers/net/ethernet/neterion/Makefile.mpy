@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "6605cb1e690514cdc0f430c8e7059d8d56a77396363d96c2f056271758518da3",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/neterion/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Makefile for the Exar network device drivers.\n#\n\nobj-$(CONFIG_S2IO) += s2io.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

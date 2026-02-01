@@ -1,0 +1,9 @@
+{
+  "module_name": "i-ring.h",
+  "hash_id": "04cb94d953d31c24bf1c08cde94864a1e2c2fec9f1f047032032ab0beec2f8e4",
+  "original_prompt": "Ingested from coreutils-9.4/lib/i-ring.h",
+  "human_readable_source": " \n#if !_GL_CONFIG_H_INCLUDED\n #error \"Please include config.h first.\"\n#endif\n\nenum { I_RING_SIZE = 4 };\nstatic_assert (1 <= I_RING_SIZE);\n\n \nstruct I_ring\n{\n  int ir_data[I_RING_SIZE];\n  int ir_default_val;\n  unsigned int ir_front;\n  unsigned int ir_back;\n  bool ir_empty;\n};\ntypedef struct I_ring I_ring;\n\nvoid i_ring_init (I_ring *ir, int ir_default_val);\nint i_ring_push (I_ring *ir, int val);\nint i_ring_pop (I_ring *ir);\nbool i_ring_empty (I_ring const *ir) _GL_ATTRIBUTE_PURE;\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

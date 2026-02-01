@@ -1,0 +1,9 @@
+{
+  "module_name": "drm_dsc_helper.h",
+  "hash_id": "c28f43a60e1e6630b9ae43e0cc21789330dfa3a9f24f96b9e9b925dd06f43734",
+  "original_prompt": "Ingested from linux-6.6.14/include/drm/display/drm_dsc_helper.h",
+  "human_readable_source": " \n\n#ifndef DRM_DSC_HELPER_H_\n#define DRM_DSC_HELPER_H_\n\n#include <drm/display/drm_dsc.h>\n\nenum drm_dsc_params_type {\n\tDRM_DSC_1_2_444,\n\tDRM_DSC_1_1_PRE_SCR,  \n\tDRM_DSC_1_2_422,\n\tDRM_DSC_1_2_420,\n};\n\nvoid drm_dsc_dp_pps_header_init(struct dp_sdp_header *pps_header);\nint drm_dsc_dp_rc_buffer_size(u8 rc_buffer_block_size, u8 rc_buffer_size);\nvoid drm_dsc_pps_payload_pack(struct drm_dsc_picture_parameter_set *pps_sdp,\n\t\t\t      const struct drm_dsc_config *dsc_cfg);\nvoid drm_dsc_set_const_params(struct drm_dsc_config *vdsc_cfg);\nvoid drm_dsc_set_rc_buf_thresh(struct drm_dsc_config *vdsc_cfg);\nint drm_dsc_setup_rc_params(struct drm_dsc_config *vdsc_cfg, enum drm_dsc_params_type type);\nint drm_dsc_compute_rc_parameters(struct drm_dsc_config *vdsc_cfg);\nu8 drm_dsc_initial_scale_value(const struct drm_dsc_config *dsc);\nu32 drm_dsc_flatness_det_thresh(const struct drm_dsc_config *dsc);\nu32 drm_dsc_get_bpp_int(const struct drm_dsc_config *vdsc_cfg);\n\n#endif  \n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

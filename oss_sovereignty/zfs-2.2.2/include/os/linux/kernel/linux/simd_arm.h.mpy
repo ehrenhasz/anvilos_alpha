@@ -1,0 +1,9 @@
+{
+  "module_name": "simd_arm.h",
+  "hash_id": "32d0ed69a18714ee2845bd36815b09096e213d4d8e8c42eaa86eba05496ed48e",
+  "original_prompt": "Ingested from zfs-2.2.2/include/os/linux/kernel/linux/simd_arm.h",
+  "human_readable_source": " \n\n \n\n \n\n#ifndef _LINUX_SIMD_ARM_H\n#define\t_LINUX_SIMD_ARM_H\n\n#include <sys/types.h>\n#include <asm/neon.h>\n#include <asm/elf.h>\n#include <asm/hwcap.h>\n\n#define\tkfpu_allowed()\t\t1\n#define\tkfpu_begin()\t\tkernel_neon_begin()\n#define\tkfpu_end()\t\tkernel_neon_end()\n#define\tkfpu_init()\t\t(0)\n#define\tkfpu_fini()\t\tdo {} while (0)\n\n \nstatic inline boolean_t\nzfs_neon_available(void)\n{\n\treturn (elf_hwcap & HWCAP_NEON);\n}\n\n \nstatic inline boolean_t\nzfs_sha256_available(void)\n{\n\treturn (elf_hwcap2 & HWCAP2_SHA2);\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

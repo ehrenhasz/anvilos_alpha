@@ -1,0 +1,9 @@
+{
+  "module_name": "ms_sensors_i2c.h",
+  "hash_id": "144153e5436ef696f1b48702606763dc531ef54f157f27dfac8e62161863c937",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/iio/common/ms_sensors/ms_sensors_i2c.h",
+  "human_readable_source": " \n \n\n#ifndef _MS_SENSORS_I2C_H\n#define _MS_SENSORS_I2C_H\n\n#include <linux/i2c.h>\n#include <linux/mutex.h>\n\n#define MS_SENSORS_TP_PROM_WORDS_NB\t\t8\n\n \nstruct ms_ht_dev {\n\tstruct i2c_client *client;\n\tstruct mutex lock;\n\tu8 res_index;\n};\n\n \nstruct ms_tp_hw_data {\n\tu8 prom_len;\n\tu8 max_res_index;\n};\n\n \nstruct ms_tp_dev {\n\tstruct i2c_client *client;\n\tstruct mutex lock;\n\tconst struct ms_tp_hw_data *hw;\n\tu16 prom[MS_SENSORS_TP_PROM_WORDS_NB];\n\tu8 res_index;\n};\n\nint ms_sensors_reset(void *cli, u8 cmd, unsigned int delay);\nint ms_sensors_read_prom_word(void *cli, int cmd, u16 *word);\nint ms_sensors_convert_and_read(void *cli, u8 conv, u8 rd,\n\t\t\t\tunsigned int delay, u32 *adc);\nint ms_sensors_read_serial(struct i2c_client *client, u64 *sn);\nssize_t ms_sensors_show_serial(struct ms_ht_dev *dev_data, char *buf);\nssize_t ms_sensors_write_resolution(struct ms_ht_dev *dev_data, u8 i);\nssize_t ms_sensors_show_battery_low(struct ms_ht_dev *dev_data, char *buf);\nssize_t ms_sensors_show_heater(struct ms_ht_dev *dev_data, char *buf);\nssize_t ms_sensors_write_heater(struct ms_ht_dev *dev_data,\n\t\t\t\tconst char *buf, size_t len);\nint ms_sensors_ht_read_temperature(struct ms_ht_dev *dev_data,\n\t\t\t\t   s32 *temperature);\nint ms_sensors_ht_read_humidity(struct ms_ht_dev *dev_data,\n\t\t\t\tu32 *humidity);\nint ms_sensors_tp_read_prom(struct ms_tp_dev *dev_data);\nint ms_sensors_read_temp_and_pressure(struct ms_tp_dev *dev_data,\n\t\t\t\t      int *temperature,\n\t\t\t\t      unsigned int *pressure);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

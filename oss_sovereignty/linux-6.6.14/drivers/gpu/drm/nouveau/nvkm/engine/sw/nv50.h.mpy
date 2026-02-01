@@ -1,0 +1,9 @@
+{
+  "module_name": "nv50.h",
+  "hash_id": "4ac11844ea2b5c4a9582440cb06288ecf6b7b8c9fd99b9363d4f2ed12633e955",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/engine/sw/nv50.h",
+  "human_readable_source": " \n#ifndef __NVKM_SW_NV50_H__\n#define __NVKM_SW_NV50_H__\n#define nv50_sw_chan(p) container_of((p), struct nv50_sw_chan, base)\n#include \"priv.h\"\n#include \"chan.h\"\n#include \"nvsw.h\"\n#include <core/event.h>\n\nstruct nv50_sw_chan {\n\tstruct nvkm_sw_chan base;\n\tstruct {\n\t\tstruct nvkm_event_ntfy notify[4];\n\t\tu32 ctxdma;\n\t\tu64 offset;\n\t\tu32 value;\n\t} vblank;\n};\n\nvoid *nv50_sw_chan_dtor(struct nvkm_sw_chan *);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

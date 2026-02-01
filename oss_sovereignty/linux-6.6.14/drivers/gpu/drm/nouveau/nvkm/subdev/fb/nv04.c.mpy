@@ -1,0 +1,9 @@
+{
+  "module_name": "nv04.c",
+  "hash_id": "a7152a32683ae6b26d8a9f0995c6440e9c307b3414035f76da8e90316b835881",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/subdev/fb/nv04.c",
+  "human_readable_source": " \n#include \"priv.h\"\n#include \"ram.h\"\n#include \"regsnv04.h\"\n\nstatic void\nnv04_fb_init(struct nvkm_fb *fb)\n{\n\tstruct nvkm_device *device = fb->subdev.device;\n\n\t \n\tnvkm_wr32(device, NV04_PFB_CFG0, 0x1114);\n}\n\nstatic const struct nvkm_fb_func\nnv04_fb = {\n\t.init = nv04_fb_init,\n\t.ram_new = nv04_ram_new,\n};\n\nint\nnv04_fb_new(struct nvkm_device *device, enum nvkm_subdev_type type, int inst, struct nvkm_fb **pfb)\n{\n\treturn nvkm_fb_new_(&nv04_fb, device, type, inst, pfb);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

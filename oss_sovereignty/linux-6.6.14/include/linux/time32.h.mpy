@@ -1,0 +1,9 @@
+{
+  "module_name": "time32.h",
+  "hash_id": "9ec2142d52d9d75b7d35fa753ff218968c8dfeab55d4bb1d3829d4b4dc9970a0",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/time32.h",
+  "human_readable_source": "#ifndef _LINUX_TIME32_H\n#define _LINUX_TIME32_H\n \n\n#include <linux/time64.h>\n#include <linux/timex.h>\n\n#include <vdso/time32.h>\n\nstruct old_itimerspec32 {\n\tstruct old_timespec32 it_interval;\n\tstruct old_timespec32 it_value;\n};\n\nstruct old_utimbuf32 {\n\told_time32_t\tactime;\n\told_time32_t\tmodtime;\n};\n\nstruct old_timex32 {\n\tu32 modes;\n\ts32 offset;\n\ts32 freq;\n\ts32 maxerror;\n\ts32 esterror;\n\ts32 status;\n\ts32 constant;\n\ts32 precision;\n\ts32 tolerance;\n\tstruct old_timeval32 time;\n\ts32 tick;\n\ts32 ppsfreq;\n\ts32 jitter;\n\ts32 shift;\n\ts32 stabil;\n\ts32 jitcnt;\n\ts32 calcnt;\n\ts32 errcnt;\n\ts32 stbcnt;\n\ts32 tai;\n\n\ts32:32; s32:32; s32:32; s32:32;\n\ts32:32; s32:32; s32:32; s32:32;\n\ts32:32; s32:32; s32:32;\n};\n\nextern int get_old_timespec32(struct timespec64 *, const void __user *);\nextern int put_old_timespec32(const struct timespec64 *, void __user *);\nextern int get_old_itimerspec32(struct itimerspec64 *its,\n\t\t\tconst struct old_itimerspec32 __user *uits);\nextern int put_old_itimerspec32(const struct itimerspec64 *its,\n\t\t\tstruct old_itimerspec32 __user *uits);\nstruct __kernel_timex;\nint get_old_timex32(struct __kernel_timex *, const struct old_timex32 __user *);\nint put_old_timex32(struct old_timex32 __user *, const struct __kernel_timex *);\n\n \nextern struct __kernel_old_timeval ns_to_kernel_old_timeval(s64 nsec);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

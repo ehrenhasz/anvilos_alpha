@@ -1,0 +1,9 @@
+{
+  "module_name": "selftest.h",
+  "hash_id": "8af2bc58f7eadab6c71ac1b25145925bdc5c6cf187b81cee4ad40733abde7446",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/sfc/falcon/selftest.h",
+  "human_readable_source": " \n \n\n#ifndef EF4_SELFTEST_H\n#define EF4_SELFTEST_H\n\n#include \"net_driver.h\"\n\n \n\nstruct ef4_loopback_self_tests {\n\tint tx_sent[EF4_TXQ_TYPES];\n\tint tx_done[EF4_TXQ_TYPES];\n\tint rx_good;\n\tint rx_bad;\n};\n\n#define EF4_MAX_PHY_TESTS 20\n\n \nstruct ef4_self_tests {\n\t \n\tint phy_alive;\n\tint nvram;\n\tint interrupt;\n\tint eventq_dma[EF4_MAX_CHANNELS];\n\tint eventq_int[EF4_MAX_CHANNELS];\n\t \n\tint memory;\n\tint registers;\n\tint phy_ext[EF4_MAX_PHY_TESTS];\n\tstruct ef4_loopback_self_tests loopback[LOOPBACK_TEST_MAX + 1];\n};\n\nvoid ef4_loopback_rx_packet(struct ef4_nic *efx, const char *buf_ptr,\n\t\t\t    int pkt_len);\nint ef4_selftest(struct ef4_nic *efx, struct ef4_self_tests *tests,\n\t\t unsigned flags);\nvoid ef4_selftest_async_start(struct ef4_nic *efx);\nvoid ef4_selftest_async_cancel(struct ef4_nic *efx);\nvoid ef4_selftest_async_work(struct work_struct *data);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

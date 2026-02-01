@@ -1,0 +1,9 @@
+{
+  "module_name": "internal.h",
+  "hash_id": "dd2d78556530725d779f8c151d72a66a3c2725604cfc291d2c741310c83c28d9",
+  "original_prompt": "Ingested from linux-6.6.14/fs/debugfs/internal.h",
+  "human_readable_source": " \n \n\n#ifndef _DEBUGFS_INTERNAL_H_\n#define _DEBUGFS_INTERNAL_H_\n\nstruct file_operations;\n\n \nextern const struct file_operations debugfs_noop_file_operations;\nextern const struct file_operations debugfs_open_proxy_file_operations;\nextern const struct file_operations debugfs_full_proxy_file_operations;\n\nstruct debugfs_fsdata {\n\tconst struct file_operations *real_fops;\n\tunion {\n\t\t \n\t\tdebugfs_automount_t automount;\n\t\tstruct {\n\t\t\trefcount_t active_users;\n\t\t\tstruct completion active_users_drained;\n\t\t};\n\t};\n};\n\n \n#define DEBUGFS_FSDATA_IS_REAL_FOPS_BIT BIT(0)\n\n \n#define DEBUGFS_ALLOW_API\tBIT(0)\n#define DEBUGFS_ALLOW_MOUNT\tBIT(1)\n\n#ifdef CONFIG_DEBUG_FS_ALLOW_ALL\n#define DEFAULT_DEBUGFS_ALLOW_BITS (DEBUGFS_ALLOW_MOUNT | DEBUGFS_ALLOW_API)\n#endif\n#ifdef CONFIG_DEBUG_FS_DISALLOW_MOUNT\n#define DEFAULT_DEBUGFS_ALLOW_BITS (DEBUGFS_ALLOW_API)\n#endif\n#ifdef CONFIG_DEBUG_FS_ALLOW_NONE\n#define DEFAULT_DEBUGFS_ALLOW_BITS (0)\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

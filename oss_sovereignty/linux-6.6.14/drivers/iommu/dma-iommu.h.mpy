@@ -1,0 +1,9 @@
+{
+  "module_name": "dma-iommu.h",
+  "hash_id": "45e499d0d3da8343525de8eaa606bde7ec15ac585bd8642acfcb68713e5a614c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/iommu/dma-iommu.h",
+  "human_readable_source": " \n \n#ifndef __DMA_IOMMU_H\n#define __DMA_IOMMU_H\n\n#include <linux/iommu.h>\n\n#ifdef CONFIG_IOMMU_DMA\n\nint iommu_get_dma_cookie(struct iommu_domain *domain);\nvoid iommu_put_dma_cookie(struct iommu_domain *domain);\n\nint iommu_dma_init_fq(struct iommu_domain *domain);\n\nvoid iommu_dma_get_resv_regions(struct device *dev, struct list_head *list);\n\nextern bool iommu_dma_forcedac;\nstatic inline void iommu_dma_set_pci_32bit_workaround(struct device *dev)\n{\n\tdev->iommu->pci_32bit_workaround = !iommu_dma_forcedac;\n}\n\n#else  \n\nstatic inline int iommu_dma_init_fq(struct iommu_domain *domain)\n{\n\treturn -EINVAL;\n}\n\nstatic inline int iommu_get_dma_cookie(struct iommu_domain *domain)\n{\n\treturn -ENODEV;\n}\n\nstatic inline void iommu_put_dma_cookie(struct iommu_domain *domain)\n{\n}\n\nstatic inline void iommu_dma_get_resv_regions(struct device *dev, struct list_head *list)\n{\n}\n\nstatic inline void iommu_dma_set_pci_32bit_workaround(struct device *dev)\n{\n}\n\n#endif\t \n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

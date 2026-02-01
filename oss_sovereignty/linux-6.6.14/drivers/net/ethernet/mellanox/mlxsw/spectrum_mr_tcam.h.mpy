@@ -1,0 +1,9 @@
+{
+  "module_name": "spectrum_mr_tcam.h",
+  "hash_id": "730d2eb0da1c324943209ec05a1390ff3de0652bdf4f1f110bb7f0b5a511dc96",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/mellanox/mlxsw/spectrum_mr_tcam.h",
+  "human_readable_source": " \n \n\n#ifndef _MLXSW_SPECTRUM_MCROUTER_TCAM_H\n#define _MLXSW_SPECTRUM_MCROUTER_TCAM_H\n\n#include \"spectrum.h\"\n#include \"spectrum_mr.h\"\n\nextern const struct mlxsw_sp_mr_ops mlxsw_sp_mr_tcam_ops;\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

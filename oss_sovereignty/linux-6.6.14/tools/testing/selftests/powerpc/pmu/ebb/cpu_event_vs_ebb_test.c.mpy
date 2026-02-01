@@ -1,0 +1,9 @@
+{
+  "module_name": "cpu_event_vs_ebb_test.c",
+  "hash_id": "cf9c219d770dd4798ad77a447f9659c772bfde425133235160ee9eae8614c910",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/powerpc/pmu/ebb/cpu_event_vs_ebb_test.c",
+  "human_readable_source": "\n \n\n#include <signal.h>\n#include <stdio.h>\n#include <stdlib.h>\n#include <stdbool.h>\n#include <sys/types.h>\n#include <sys/wait.h>\n#include <unistd.h>\n\n#include \"ebb.h\"\n\n\n \n\nstatic int setup_cpu_event(struct event *event, int cpu)\n{\n\tevent_init_named(event, 0x400FA, \"PM_RUN_INST_CMPL\");\n\n\tevent->attr.exclude_kernel = 1;\n\tevent->attr.exclude_hv = 1;\n\tevent->attr.exclude_idle = 1;\n\n\tSKIP_IF(require_paranoia_below(1));\n\tFAIL_IF(event_open_with_cpu(event, cpu));\n\tFAIL_IF(event_enable(event));\n\n\treturn 0;\n}\n\nint cpu_event_vs_ebb(void)\n{\n\tunion pipe read_pipe, write_pipe;\n\tstruct event event;\n\tint cpu, rc;\n\tpid_t pid;\n\n\tSKIP_IF(!ebb_is_supported());\n\n\tcpu = bind_to_cpu(BIND_CPU_ANY);\n\tFAIL_IF(cpu < 0);\n\n\tFAIL_IF(pipe(read_pipe.fds) == -1);\n\tFAIL_IF(pipe(write_pipe.fds) == -1);\n\n\tpid = fork();\n\tif (pid == 0) {\n\t\t \n\t\texit(ebb_child(write_pipe, read_pipe));\n\t}\n\n\t \n\trc = setup_cpu_event(&event, cpu);\n\tif (rc) {\n\t\tkill_child_and_wait(pid);\n\t\treturn rc;\n\t}\n\n\t \n\tif (sync_with_child(read_pipe, write_pipe))\n\t\t \n\t\tgoto wait;\n\n\t \n\tFAIL_IF(sync_with_child(read_pipe, write_pipe));\n\nwait:\n\t \n\tFAIL_IF(wait_for_child(pid));\n\n\tFAIL_IF(event_disable(&event));\n\tFAIL_IF(event_read(&event));\n\n\tevent_report(&event);\n\n\t \n\n\treturn 0;\n}\n\nint main(void)\n{\n\treturn test_harness(cpu_event_vs_ebb, \"cpu_event_vs_ebb\");\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

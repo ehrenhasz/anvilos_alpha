@@ -1,0 +1,9 @@
+{
+  "module_name": "compat.c",
+  "hash_id": "50be51953bc8df8de79e0fa32bb9c0caedfa729f06cf4c7f7674968ef6541eda",
+  "original_prompt": "Ingested from linux-6.6.14/ipc/compat.c",
+  "human_readable_source": "\n \n#include <linux/compat.h>\n#include <linux/errno.h>\n#include <linux/highuid.h>\n#include <linux/init.h>\n#include <linux/msg.h>\n#include <linux/shm.h>\n#include <linux/syscalls.h>\n#include <linux/ptrace.h>\n\n#include <linux/mutex.h>\n#include <linux/uaccess.h>\n\n#include \"util.h\"\n\nint get_compat_ipc64_perm(struct ipc64_perm *to,\n\t\t\t  struct compat_ipc64_perm __user *from)\n{\n\tstruct compat_ipc64_perm v;\n\tif (copy_from_user(&v, from, sizeof(v)))\n\t\treturn -EFAULT;\n\tto->uid = v.uid;\n\tto->gid = v.gid;\n\tto->mode = v.mode;\n\treturn 0;\n}\n\nint get_compat_ipc_perm(struct ipc64_perm *to,\n\t\t\tstruct compat_ipc_perm __user *from)\n{\n\tstruct compat_ipc_perm v;\n\tif (copy_from_user(&v, from, sizeof(v)))\n\t\treturn -EFAULT;\n\tto->uid = v.uid;\n\tto->gid = v.gid;\n\tto->mode = v.mode;\n\treturn 0;\n}\n\nvoid to_compat_ipc64_perm(struct compat_ipc64_perm *to, struct ipc64_perm *from)\n{\n\tto->key = from->key;\n\tto->uid = from->uid;\n\tto->gid = from->gid;\n\tto->cuid = from->cuid;\n\tto->cgid = from->cgid;\n\tto->mode = from->mode;\n\tto->seq = from->seq;\n}\n\nvoid to_compat_ipc_perm(struct compat_ipc_perm *to, struct ipc64_perm *from)\n{\n\tto->key = from->key;\n\tSET_UID(to->uid, from->uid);\n\tSET_GID(to->gid, from->gid);\n\tSET_UID(to->cuid, from->cuid);\n\tSET_GID(to->cgid, from->cgid);\n\tto->mode = from->mode;\n\tto->seq = from->seq;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

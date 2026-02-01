@@ -1,0 +1,9 @@
+{
+  "module_name": "kernelcapi.h",
+  "hash_id": "c91651b5d5d5938a3917ca2f8c7a94f90ef98ab1e9e1f9cb704296289b118095",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/kernelcapi.h",
+  "human_readable_source": " \n \n\n#ifndef _UAPI__KERNELCAPI_H__\n#define _UAPI__KERNELCAPI_H__\n\n#define CAPI_MAXAPPL\t240\t \n#define CAPI_MAXCONTR\t32\t \n#define CAPI_MAXDATAWINDOW\t8\n\n\ntypedef struct kcapi_flagdef {\n\tint contr;\n\tint flag;\n} kcapi_flagdef;\n\ntypedef struct kcapi_carddef {\n\tchar\t\tdriver[32];\n\tunsigned int\tport;\n\tunsigned\tirq;\n\tunsigned int\tmembase;\n\tint\t\tcardnr;\n} kcapi_carddef;\n\n \n#define KCAPI_CMD_TRACE\t\t10\n#define KCAPI_CMD_ADDCARD\t11\t \n\n \n#define KCAPI_TRACE_OFF\t\t\t0\n#define KCAPI_TRACE_SHORT_NO_DATA\t1\n#define KCAPI_TRACE_FULL_NO_DATA\t2\n#define KCAPI_TRACE_SHORT\t\t3\n#define KCAPI_TRACE_FULL\t\t4\n\n\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

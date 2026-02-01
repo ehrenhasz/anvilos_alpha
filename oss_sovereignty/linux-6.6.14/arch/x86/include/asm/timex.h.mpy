@@ -1,0 +1,9 @@
+{
+  "module_name": "timex.h",
+  "hash_id": "be12de153a9774bc03eff2a10f73147146550e9c4313831743128a939a68d274",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/include/asm/timex.h",
+  "human_readable_source": " \n#ifndef _ASM_X86_TIMEX_H\n#define _ASM_X86_TIMEX_H\n\n#include <asm/processor.h>\n#include <asm/tsc.h>\n\nstatic inline unsigned long random_get_entropy(void)\n{\n\tif (!IS_ENABLED(CONFIG_X86_TSC) &&\n\t    !cpu_feature_enabled(X86_FEATURE_TSC))\n\t\treturn random_get_entropy_fallback();\n\treturn rdtsc();\n}\n#define random_get_entropy random_get_entropy\n\n \n#define CLOCK_TICK_RATE\t\tPIT_TICK_RATE\n\n#define ARCH_HAS_READ_CURRENT_TIMER\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

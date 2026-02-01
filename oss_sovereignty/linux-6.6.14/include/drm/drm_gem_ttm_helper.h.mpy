@@ -1,0 +1,9 @@
+{
+  "module_name": "drm_gem_ttm_helper.h",
+  "hash_id": "15622776aabbfeaf89f8f0a943c5dc15cfa43d5daab894194dbd42490639383c",
+  "original_prompt": "Ingested from linux-6.6.14/include/drm/drm_gem_ttm_helper.h",
+  "human_readable_source": " \n\n#ifndef DRM_GEM_TTM_HELPER_H\n#define DRM_GEM_TTM_HELPER_H\n\n#include <linux/container_of.h>\n\n#include <drm/drm_device.h>\n#include <drm/drm_gem.h>\n#include <drm/ttm/ttm_bo.h>\n\nstruct iosys_map;\n\n#define drm_gem_ttm_of_gem(gem_obj) \\\n\tcontainer_of(gem_obj, struct ttm_buffer_object, base)\n\nvoid drm_gem_ttm_print_info(struct drm_printer *p, unsigned int indent,\n\t\t\t    const struct drm_gem_object *gem);\nint drm_gem_ttm_vmap(struct drm_gem_object *gem,\n\t\t     struct iosys_map *map);\nvoid drm_gem_ttm_vunmap(struct drm_gem_object *gem,\n\t\t\tstruct iosys_map *map);\nint drm_gem_ttm_mmap(struct drm_gem_object *gem,\n\t\t     struct vm_area_struct *vma);\n\nint drm_gem_ttm_dumb_map_offset(struct drm_file *file, struct drm_device *dev,\n\t\t\t\tuint32_t handle, uint64_t *offset);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": ".gitignore",
+  "hash_id": "bb6bf991410d146471cdef2c283d94a68a45eb49fc424407a440ef6c1609c844",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/powerpc/stringloops/.gitignore",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nmemcmp_64\nmemcmp_32\nstrlen\nstrlen_32\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

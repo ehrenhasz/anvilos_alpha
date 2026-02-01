@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "ec684d3707214fa2ebb113b6ed9bbec705e1bea95878fd6088f9c9ed3c3a840d",
+  "original_prompt": "Ingested from linux-6.6.14/sound/core/oss/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for ALSA\n# Copyright (c) 1999 by Jaroslav Kysela <perex@perex.cz>\n#\n\nsnd-mixer-oss-objs := mixer_oss.o\n\nsnd-pcm-oss-y := pcm_oss.o\nsnd-pcm-oss-$(CONFIG_SND_PCM_OSS_PLUGINS) += pcm_plugin.o \\\n\tio.o copy.o linear.o mulaw.o route.o rate.o\n\nobj-$(CONFIG_SND_MIXER_OSS) += snd-mixer-oss.o\nobj-$(CONFIG_SND_PCM_OSS) += snd-pcm-oss.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

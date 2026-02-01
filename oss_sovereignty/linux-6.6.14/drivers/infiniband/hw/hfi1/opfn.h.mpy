@@ -1,0 +1,9 @@
+{
+  "module_name": "opfn.h",
+  "hash_id": "c057ab5d1d5eafebd3a3dd9a3fb4b1ec935b9e21aaae83c78b3a3fd50f1a94cb",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/infiniband/hw/hfi1/opfn.h",
+  "human_readable_source": " \n \n#ifndef _HFI1_OPFN_H\n#define _HFI1_OPFN_H\n\n \n\n#include <linux/workqueue.h>\n#include <rdma/ib_verbs.h>\n#include <rdma/rdmavt_qp.h>\n\n \n#define IB_BTHE_E_SHIFT           24\n#define HFI1_VERBS_E_ATOMIC_VADDR U64_MAX\n\nenum hfi1_opfn_codes {\n\tSTL_VERBS_EXTD_NONE = 0,\n\tSTL_VERBS_EXTD_TID_RDMA,\n\tSTL_VERBS_EXTD_MAX\n};\n\nstruct hfi1_opfn_data {\n\tu8 extended;\n\tu16 requested;\n\tu16 completed;\n\tenum hfi1_opfn_codes curr;\n\t \n\tspinlock_t lock;\n\tstruct work_struct opfn_work;\n};\n\n \n#define IB_WR_OPFN IB_WR_RESERVED3\n\nvoid opfn_send_conn_request(struct work_struct *work);\nvoid opfn_conn_response(struct rvt_qp *qp, struct rvt_ack_entry *e,\n\t\t\tstruct ib_atomic_eth *ateth);\nvoid opfn_conn_reply(struct rvt_qp *qp, u64 data);\nvoid opfn_conn_error(struct rvt_qp *qp);\nvoid opfn_qp_init(struct rvt_qp *qp, struct ib_qp_attr *attr, int attr_mask);\nvoid opfn_trigger_conn_request(struct rvt_qp *qp, u32 bth1);\nint opfn_init(void);\nvoid opfn_exit(void);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "xdr4.h",
+  "hash_id": "41ac835c01a56c217e0590597b9c1cec7d700e539285af5feb6201163b92f5c1",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/lockd/xdr4.h",
+  "human_readable_source": " \n \n\n#ifndef LOCKD_XDR4_H\n#define LOCKD_XDR4_H\n\n#include <linux/fs.h>\n#include <linux/nfs.h>\n#include <linux/sunrpc/xdr.h>\n#include <linux/lockd/xdr.h>\n\n \n#define\tnlm4_deadlock\t\tcpu_to_be32(NLM_DEADLCK)\n#define\tnlm4_rofs\t\tcpu_to_be32(NLM_ROFS)\n#define\tnlm4_stale_fh\t\tcpu_to_be32(NLM_STALE_FH)\n#define\tnlm4_fbig\t\tcpu_to_be32(NLM_FBIG)\n#define\tnlm4_failed\t\tcpu_to_be32(NLM_FAILED)\n\nvoid\tnlm4svc_set_file_lock_range(struct file_lock *fl, u64 off, u64 len);\nbool\tnlm4svc_decode_void(struct svc_rqst *rqstp, struct xdr_stream *xdr);\nbool\tnlm4svc_decode_testargs(struct svc_rqst *rqstp, struct xdr_stream *xdr);\nbool\tnlm4svc_decode_lockargs(struct svc_rqst *rqstp, struct xdr_stream *xdr);\nbool\tnlm4svc_decode_cancargs(struct svc_rqst *rqstp, struct xdr_stream *xdr);\nbool\tnlm4svc_decode_unlockargs(struct svc_rqst *rqstp, struct xdr_stream *xdr);\nbool\tnlm4svc_decode_res(struct svc_rqst *rqstp, struct xdr_stream *xdr);\nbool\tnlm4svc_decode_reboot(struct svc_rqst *rqstp, struct xdr_stream *xdr);\nbool\tnlm4svc_decode_shareargs(struct svc_rqst *rqstp, struct xdr_stream *xdr);\nbool\tnlm4svc_decode_notify(struct svc_rqst *rqstp, struct xdr_stream *xdr);\n\nbool\tnlm4svc_encode_testres(struct svc_rqst *rqstp, struct xdr_stream *xdr);\nbool\tnlm4svc_encode_res(struct svc_rqst *rqstp, struct xdr_stream *xdr);\nbool\tnlm4svc_encode_void(struct svc_rqst *rqstp, struct xdr_stream *xdr);\nbool\tnlm4svc_encode_shareres(struct svc_rqst *rqstp, struct xdr_stream *xdr);\n\nextern const struct rpc_version nlm_version4;\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

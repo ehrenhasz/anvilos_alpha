@@ -1,0 +1,9 @@
+{
+  "module_name": "rlimit.h",
+  "hash_id": "9f17eef98190dfb5405446bb41ac372a7b7cb88a26b9e0ace70cda1a1895c7ca",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/util/rlimit.h",
+  "human_readable_source": "#ifndef __PERF_RLIMIT_H_\n#define __PERF_RLIMIT_H_\n \n\nvoid rlimit__bump_memlock(void);\n#endif \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

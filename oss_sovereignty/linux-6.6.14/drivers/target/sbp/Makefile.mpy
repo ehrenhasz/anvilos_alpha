@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "028cac6a062f64c325472e34c384c5414826b3aa488875e85adce0f95f3e393a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/target/sbp/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-$(CONFIG_SBP_TARGET) += sbp_target.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

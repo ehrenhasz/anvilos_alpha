@@ -1,0 +1,9 @@
+{
+  "module_name": "nv50_display.h",
+  "hash_id": "cd63dd03a1b094af6dc5ce2cf7a87d0b3e530e7bc44ef8d6645302c5a5384171",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nv50_display.h",
+  "human_readable_source": " \n\n#ifndef __NV50_DISPLAY_H__\n#define __NV50_DISPLAY_H__\n\n#include \"nouveau_display.h\"\n#include \"nouveau_reg.h\"\n\nint  nv50_display_create(struct drm_device *);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

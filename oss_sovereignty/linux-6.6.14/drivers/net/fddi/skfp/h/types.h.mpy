@@ -1,0 +1,9 @@
+{
+  "module_name": "types.h",
+  "hash_id": "0afef1bd28f5ca70635030dfa8a8897c6d581c72b5f8a890bb5103faec6b2301",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/fddi/skfp/h/types.h",
+  "human_readable_source": " \n \n\n#include\t<linux/types.h>\n \n#ifndef _TYPES_\n#define\t_TYPES_\n\n#define _packed\n#ifndef far\n#define far\n#endif\n#ifndef _far\n#define _far\n#endif\n\n#define inp(p)  ioread8(p)\n#define inpw(p)\tioread16(p)\n#define inpd(p) ioread32(p)\n#define outp(p,c)  iowrite8(c,p)\n#define outpw(p,s) iowrite16(s,p)\n#define outpd(p,l) iowrite32(l,p)\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

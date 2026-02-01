@@ -1,0 +1,9 @@
+{
+  "module_name": "irq.c",
+  "hash_id": "5cc1dcb245e009c2e7801c306af8a34e9444f7732b9f86a20e4f7bca28acb3c1",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/soundwire/irq.c",
+  "human_readable_source": "\n\n\n\n#include <linux/device.h>\n#include <linux/fwnode.h>\n#include <linux/irq.h>\n#include <linux/irqdomain.h>\n#include <linux/soundwire/sdw.h>\n#include \"irq.h\"\n\nstatic int sdw_irq_map(struct irq_domain *h, unsigned int virq,\n\t\t       irq_hw_number_t hw)\n{\n\tstruct sdw_bus *bus = h->host_data;\n\n\tirq_set_chip_data(virq, bus);\n\tirq_set_chip(virq, &bus->irq_chip);\n\tirq_set_nested_thread(virq, 1);\n\tirq_set_noprobe(virq);\n\n\treturn 0;\n}\n\nstatic const struct irq_domain_ops sdw_domain_ops = {\n\t.map\t= sdw_irq_map,\n};\n\nint sdw_irq_create(struct sdw_bus *bus,\n\t\t   struct fwnode_handle *fwnode)\n{\n\tbus->irq_chip.name = dev_name(bus->dev);\n\n\tbus->domain = irq_domain_create_linear(fwnode, SDW_MAX_DEVICES,\n\t\t\t\t\t       &sdw_domain_ops, bus);\n\tif (!bus->domain) {\n\t\tdev_err(bus->dev, \"Failed to add IRQ domain\\n\");\n\t\treturn -EINVAL;\n\t}\n\n\treturn 0;\n}\n\nvoid sdw_irq_delete(struct sdw_bus *bus)\n{\n\tirq_domain_remove(bus->domain);\n}\n\nvoid sdw_irq_create_mapping(struct sdw_slave *slave)\n{\n\tslave->irq = irq_create_mapping(slave->bus->domain, slave->dev_num);\n\tif (!slave->irq)\n\t\tdev_warn(&slave->dev, \"Failed to map IRQ\\n\");\n}\n\nvoid sdw_irq_dispose_mapping(struct sdw_slave *slave)\n{\n\tirq_dispose_mapping(irq_find_mapping(slave->bus->domain, slave->dev_num));\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

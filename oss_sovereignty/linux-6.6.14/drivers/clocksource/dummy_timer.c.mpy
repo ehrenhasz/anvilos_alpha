@@ -1,0 +1,9 @@
+{
+  "module_name": "dummy_timer.c",
+  "hash_id": "89767aea643b1df2a882aa8c59a955d30db0fa392a47f1bab144b8cd591bff9d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/clocksource/dummy_timer.c",
+  "human_readable_source": "\n \n#include <linux/clockchips.h>\n#include <linux/cpu.h>\n#include <linux/init.h>\n#include <linux/percpu.h>\n#include <linux/cpumask.h>\n\nstatic DEFINE_PER_CPU(struct clock_event_device, dummy_timer_evt);\n\nstatic int dummy_timer_starting_cpu(unsigned int cpu)\n{\n\tstruct clock_event_device *evt = per_cpu_ptr(&dummy_timer_evt, cpu);\n\n\tevt->name\t= \"dummy_timer\";\n\tevt->features\t= CLOCK_EVT_FEAT_PERIODIC |\n\t\t\t  CLOCK_EVT_FEAT_ONESHOT |\n\t\t\t  CLOCK_EVT_FEAT_DUMMY;\n\tevt->rating\t= 100;\n\tevt->cpumask\t= cpumask_of(cpu);\n\n\tclockevents_register_device(evt);\n\treturn 0;\n}\n\nstatic int __init dummy_timer_register(void)\n{\n\treturn cpuhp_setup_state(CPUHP_AP_DUMMY_TIMER_STARTING,\n\t\t\t\t \"clockevents/dummy_timer:starting\",\n\t\t\t\t dummy_timer_starting_cpu, NULL);\n}\nearly_initcall(dummy_timer_register);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "moduledefs.collected",
+  "hash_id": "3740d1a1c146120b062dcb812d4c5e88079535f48ef0e4b3688a7b9b874f4dae",
+  "original_prompt": "Ingested from sys_09_Anvil/source/ports/unix/build-bicameral/genhdr/moduledefs.collected",
+  "human_readable_source": "MP_REGISTER_EXTENSIBLE_MODULE(MP_QSTR_array, mp_module_array);\n\nMP_REGISTER_EXTENSIBLE_MODULE(MP_QSTR_collections, mp_module_collections);\n\nMP_REGISTER_EXTENSIBLE_MODULE(MP_QSTR_io, mp_module_io);\n\nMP_REGISTER_EXTENSIBLE_MODULE(MP_QSTR_os, mp_module_os);\n\nMP_REGISTER_EXTENSIBLE_MODULE(MP_QSTR_struct, mp_module_struct);\n\nMP_REGISTER_MODULE(MP_QSTR___main__, mp_module___main__);\n\nMP_REGISTER_MODULE(MP_QSTR_anvil, mp_module_anvil);\n\nMP_REGISTER_MODULE(MP_QSTR_builtins, mp_module_builtins);\n\nMP_REGISTER_MODULE(MP_QSTR_gc, mp_module_gc);\n\nMP_REGISTER_MODULE(MP_QSTR_micropython, mp_module_micropython);\n\nMP_REGISTER_MODULE(MP_QSTR_sys, mp_module_sys);\n\nMP_REGISTER_MODULE(MP_QSTR_vfs, mp_module_vfs);\n\nMP_REGISTER_MODULE_DELEGATION(mp_module_sys, mp_module_sys_attr);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

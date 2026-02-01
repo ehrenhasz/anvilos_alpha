@@ -1,0 +1,9 @@
+{
+  "module_name": "ad193x-spi.c",
+  "hash_id": "feb8ba4391b09af70e150f187d5250f60c30d098272b6e25acb280e2841d1c10",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/codecs/ad193x-spi.c",
+  "human_readable_source": "\n \n\n#include <linux/module.h>\n#include <linux/spi/spi.h>\n#include <linux/regmap.h>\n\n#include <sound/soc.h>\n\n#include \"ad193x.h\"\n\nstatic int ad193x_spi_probe(struct spi_device *spi)\n{\n\tconst struct spi_device_id *id = spi_get_device_id(spi);\n\tstruct regmap_config config;\n\n\tconfig = ad193x_regmap_config;\n\tconfig.val_bits = 8;\n\tconfig.reg_bits = 16;\n\tconfig.read_flag_mask = 0x09;\n\tconfig.write_flag_mask = 0x08;\n\n\treturn ad193x_probe(&spi->dev, devm_regmap_init_spi(spi, &config),\n\t\t\t    (enum ad193x_type)id->driver_data);\n}\n\nstatic const struct spi_device_id ad193x_spi_id[] = {\n\t{ \"ad193x\", AD193X },\n\t{ \"ad1933\", AD1933 },\n\t{ \"ad1934\", AD1934 },\n\t{ \"ad1938\", AD193X },\n\t{ \"ad1939\", AD193X },\n\t{ \"adau1328\", AD193X },\n\t{ }\n};\nMODULE_DEVICE_TABLE(spi, ad193x_spi_id);\n\nstatic struct spi_driver ad193x_spi_driver = {\n\t.driver = {\n\t\t.name\t= \"ad193x\",\n\t},\n\t.probe\t\t= ad193x_spi_probe,\n\t.id_table\t= ad193x_spi_id,\n};\nmodule_spi_driver(ad193x_spi_driver);\n\nMODULE_DESCRIPTION(\"ASoC AD1938/AD1939 audio CODEC driver\");\nMODULE_AUTHOR(\"Barry Song <21cnbao@gmail.com>\");\nMODULE_LICENSE(\"GPL\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

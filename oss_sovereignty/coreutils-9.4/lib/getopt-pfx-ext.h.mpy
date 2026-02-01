@@ -1,0 +1,9 @@
+{
+  "module_name": "getopt-pfx-ext.h",
+  "hash_id": "ed4e5af5846f6f9905929c77d8ce9930f71f082aa1eb21bb9819fe3043972624",
+  "original_prompt": "Ingested from coreutils-9.4/lib/getopt-pfx-ext.h",
+  "human_readable_source": " \n\n \n#ifdef __GETOPT_PREFIX\n# ifndef __GETOPT_ID\n#  define __GETOPT_CONCAT(x, y) x ## y\n#  define __GETOPT_XCONCAT(x, y) __GETOPT_CONCAT (x, y)\n#  define __GETOPT_ID(y) __GETOPT_XCONCAT (__GETOPT_PREFIX, y)\n# endif\n# undef getopt_long\n# undef getopt_long_only\n# undef option\n# undef _getopt_internal\n# define getopt_long __GETOPT_ID (getopt_long)\n# define getopt_long_only __GETOPT_ID (getopt_long_only)\n# define option __GETOPT_ID (option)\n# define _getopt_internal __GETOPT_ID (getopt_internal)\n\n \n# undef _GETOPT_EXT_H\n#endif\n\n \n#ifndef __getopt_argv_const\n# if defined __GETOPT_PREFIX\n#  define __getopt_argv_const  \n# else\n#  define __getopt_argv_const const\n# endif\n#endif\n\n#include <getopt-ext.h>\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

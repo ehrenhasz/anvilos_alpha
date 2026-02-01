@@ -1,0 +1,9 @@
+{
+  "module_name": "iscsi_target_nego.h",
+  "hash_id": "a6d33290b52e760709d020365033ed8d1f0c1c2be8aaf926c71e9eb21cf18afe",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/target/iscsi/iscsi_target_nego.h",
+  "human_readable_source": " \n#ifndef ISCSI_TARGET_NEGO_H\n#define ISCSI_TARGET_NEGO_H\n\n#define DECIMAL         0\n#define HEX             1\n#define BASE64          2\n\nstruct iscsit_conn;\nstruct iscsi_login;\nstruct iscsi_np;\n\nextern void convert_null_to_semi(char *, int);\nextern int extract_param(const char *, const char *, unsigned int, char *,\n\t\tunsigned char *);\nextern int iscsi_target_check_login_request(struct iscsit_conn *,\n\t\tstruct iscsi_login *);\nextern int iscsi_target_get_initial_payload(struct iscsit_conn *,\n\t\tstruct iscsi_login *);\nextern int iscsi_target_locate_portal(struct iscsi_np *, struct iscsit_conn *,\n\t\tstruct iscsi_login *);\nextern int iscsi_target_start_negotiation(\n\t\tstruct iscsi_login *, struct iscsit_conn *);\nextern void iscsi_target_nego_release(struct iscsit_conn *);\nextern bool iscsi_conn_auth_required(struct iscsit_conn *conn);\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

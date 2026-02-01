@@ -1,0 +1,9 @@
+{
+  "module_name": "open-safer.c",
+  "hash_id": "6edf787e3738aa551077bde4bc2076702e020b7888cc0dcc1cd16c75e397144b",
+  "original_prompt": "Ingested from coreutils-9.4/lib/open-safer.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#include \"fcntl-safer.h\"\n\n#include <fcntl.h>\n#include <stdarg.h>\n#include \"unistd-safer.h\"\n\nint\nopen_safer (char const *file, int flags, ...)\n{\n  mode_t mode = 0;\n\n  if (flags & O_CREAT)\n    {\n      va_list ap;\n      va_start (ap, flags);\n\n       \n      mode = va_arg (ap, PROMOTED_MODE_T);\n\n      va_end (ap);\n    }\n\n  return fd_safer (open (file, flags, mode));\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

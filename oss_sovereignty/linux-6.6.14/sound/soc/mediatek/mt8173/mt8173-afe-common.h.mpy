@@ -1,0 +1,9 @@
+{
+  "module_name": "mt8173-afe-common.h",
+  "hash_id": "30e76d1eec85dbe0e6c36d37d258e427c3445d4244352e61cb6fd23ad83f4a58",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/mediatek/mt8173/mt8173-afe-common.h",
+  "human_readable_source": " \n \n\n#ifndef _MT8173_AFE_COMMON_H_\n#define _MT8173_AFE_COMMON_H_\n\n#include <linux/clk.h>\n#include <linux/regmap.h>\n\nenum {\n\tMT8173_AFE_MEMIF_DL1,\n\tMT8173_AFE_MEMIF_DL2,\n\tMT8173_AFE_MEMIF_VUL,\n\tMT8173_AFE_MEMIF_DAI,\n\tMT8173_AFE_MEMIF_AWB,\n\tMT8173_AFE_MEMIF_MOD_DAI,\n\tMT8173_AFE_MEMIF_HDMI,\n\tMT8173_AFE_MEMIF_NUM,\n\tMT8173_AFE_IO_MOD_PCM1 = MT8173_AFE_MEMIF_NUM,\n\tMT8173_AFE_IO_MOD_PCM2,\n\tMT8173_AFE_IO_PMIC,\n\tMT8173_AFE_IO_I2S,\n\tMT8173_AFE_IO_2ND_I2S,\n\tMT8173_AFE_IO_HW_GAIN1,\n\tMT8173_AFE_IO_HW_GAIN2,\n\tMT8173_AFE_IO_MRG_O,\n\tMT8173_AFE_IO_MRG_I,\n\tMT8173_AFE_IO_DAIBT,\n\tMT8173_AFE_IO_HDMI,\n};\n\nenum {\n\tMT8173_AFE_IRQ_DL1,\n\tMT8173_AFE_IRQ_DL2,\n\tMT8173_AFE_IRQ_VUL,\n\tMT8173_AFE_IRQ_DAI,\n\tMT8173_AFE_IRQ_AWB,\n\tMT8173_AFE_IRQ_MOD_DAI,\n\tMT8173_AFE_IRQ_HDMI,\n\tMT8173_AFE_IRQ_NUM,\n};\n\nenum {\n\tMT8173_CLK_INFRASYS_AUD,\n\tMT8173_CLK_TOP_PDN_AUD,\n\tMT8173_CLK_TOP_PDN_AUD_BUS,\n\tMT8173_CLK_I2S0_M,\n\tMT8173_CLK_I2S1_M,\n\tMT8173_CLK_I2S2_M,\n\tMT8173_CLK_I2S3_M,\n\tMT8173_CLK_I2S3_B,\n\tMT8173_CLK_BCK0,\n\tMT8173_CLK_BCK1,\n\tMT8173_CLK_NUM\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

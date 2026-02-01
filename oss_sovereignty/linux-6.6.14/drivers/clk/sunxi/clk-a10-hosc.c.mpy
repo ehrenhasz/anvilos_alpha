@@ -1,0 +1,9 @@
+{
+  "module_name": "clk-a10-hosc.c",
+  "hash_id": "e98b91ca05b12be724ee2a0f4e34e950150de06cbe92f0b6218b5dcf3229888e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/clk/sunxi/clk-a10-hosc.c",
+  "human_readable_source": "\n \n\n#include <linux/clk-provider.h>\n#include <linux/of.h>\n#include <linux/of_address.h>\n#include <linux/slab.h>\n\n#define SUNXI_OSC24M_GATE\t0\n\nstatic DEFINE_SPINLOCK(hosc_lock);\n\nstatic void __init sun4i_osc_clk_setup(struct device_node *node)\n{\n\tstruct clk *clk;\n\tstruct clk_fixed_rate *fixed;\n\tstruct clk_gate *gate;\n\tconst char *clk_name = node->name;\n\tu32 rate;\n\n\tif (of_property_read_u32(node, \"clock-frequency\", &rate))\n\t\treturn;\n\n\t \n\tfixed = kzalloc(sizeof(struct clk_fixed_rate), GFP_KERNEL);\n\tif (!fixed)\n\t\treturn;\n\tgate = kzalloc(sizeof(struct clk_gate), GFP_KERNEL);\n\tif (!gate)\n\t\tgoto err_free_fixed;\n\n\tof_property_read_string(node, \"clock-output-names\", &clk_name);\n\n\t \n\tgate->reg = of_iomap(node, 0);\n\tgate->bit_idx = SUNXI_OSC24M_GATE;\n\tgate->lock = &hosc_lock;\n\tfixed->fixed_rate = rate;\n\n\tclk = clk_register_composite(NULL, clk_name,\n\t\t\tNULL, 0,\n\t\t\tNULL, NULL,\n\t\t\t&fixed->hw, &clk_fixed_rate_ops,\n\t\t\t&gate->hw, &clk_gate_ops, 0);\n\n\tif (IS_ERR(clk))\n\t\tgoto err_free_gate;\n\n\tof_clk_add_provider(node, of_clk_src_simple_get, clk);\n\n\treturn;\n\nerr_free_gate:\n\tkfree(gate);\nerr_free_fixed:\n\tkfree(fixed);\n}\nCLK_OF_DECLARE(sun4i_osc, \"allwinner,sun4i-a10-osc-clk\", sun4i_osc_clk_setup);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

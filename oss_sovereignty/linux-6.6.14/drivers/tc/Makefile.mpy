@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "fad134bc3e54358a98cb39d2c1ecadf542d954f336b62c9cd46f18ff761e9454",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/tc/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Makefile for the linux kernel.\n#\n\n# Object file lists.\n\nobj-$(CONFIG_TC) += tc.o tc-driver.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

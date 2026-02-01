@@ -1,0 +1,9 @@
+{
+  "module_name": "npde.c",
+  "hash_id": "f08729bf006447eddd99982a94814dd09bd5c687c38249859f138ed463c0c8a8",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/subdev/bios/npde.c",
+  "human_readable_source": " \n#include <subdev/bios.h>\n#include <subdev/bios/npde.h>\n#include <subdev/bios/pcir.h>\n\nu32\nnvbios_npdeTe(struct nvkm_bios *bios, u32 base)\n{\n\tstruct nvbios_pcirT pcir;\n\tu8  ver; u16 hdr;\n\tu32 data = nvbios_pcirTp(bios, base, &ver, &hdr, &pcir);\n\tif (data = (data + hdr + 0x0f) & ~0x0f, data) {\n\t\tswitch (nvbios_rd32(bios, data + 0x00)) {\n\t\tcase 0x4544504e:  \n\t\t\tbreak;\n\t\tdefault:\n\t\t\tnvkm_debug(&bios->subdev,\n\t\t\t\t   \"%08x: NPDE signature (%08x) unknown\\n\",\n\t\t\t\t   data, nvbios_rd32(bios, data + 0x00));\n\t\t\tdata = 0;\n\t\t\tbreak;\n\t\t}\n\t}\n\treturn data;\n}\n\nu32\nnvbios_npdeTp(struct nvkm_bios *bios, u32 base, struct nvbios_npdeT *info)\n{\n\tu32 data = nvbios_npdeTe(bios, base);\n\tmemset(info, 0x00, sizeof(*info));\n\tif (data) {\n\t\tinfo->image_size = nvbios_rd16(bios, data + 0x08) * 512;\n\t\tinfo->last = nvbios_rd08(bios, data + 0x0a) & 0x80;\n\t}\n\treturn data;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

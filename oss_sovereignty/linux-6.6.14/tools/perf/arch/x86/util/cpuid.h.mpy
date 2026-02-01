@@ -1,0 +1,9 @@
+{
+  "module_name": "cpuid.h",
+  "hash_id": "9ba52ca422157a9d2e6216de29a05060fdb6b68843555138e5b3e2e6595d0e31",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/arch/x86/util/cpuid.h",
+  "human_readable_source": " \n#ifndef PERF_CPUID_H\n#define PERF_CPUID_H 1\n\n\nstatic inline void\ncpuid(unsigned int op, unsigned int op2, unsigned int *a, unsigned int *b,\n\tunsigned int *c, unsigned int *d)\n{\n\t \n\tasm(\n#if defined(__x86_64__)\n\t\t\"mov %%rbx, %%rdi\\n\"\n\t\t\"cpuid\\n\"\n\t\t\"xchg %%rdi, %%rbx\\n\"\n#else\n\t\t\"pushl %%ebx\\n\"\n\t\t\"cpuid\\n\"\n\t\t\"movl %%ebx, %%edi\\n\"\n\t\t\"popl %%ebx\\n\"\n#endif\n\t\t: \"=a\"(*a), \"=D\"(*b), \"=c\"(*c), \"=d\"(*d)\n\t\t: \"a\"(op), \"2\"(op2));\n}\n\nvoid get_cpuid_0(char *vendor, unsigned int *lvl);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

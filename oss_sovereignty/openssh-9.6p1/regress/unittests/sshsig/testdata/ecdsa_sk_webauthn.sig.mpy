@@ -1,0 +1,9 @@
+{
+  "module_name": "ecdsa_sk_webauthn.sig",
+  "hash_id": "f2461c361e4694cec9ca98053801427f6054d5c232a9c56e897894e71e231648",
+  "original_prompt": "Ingested from openssh-9.6p1/regress/unittests/sshsig/testdata/ecdsa_sk_webauthn.sig",
+  "human_readable_source": "-----BEGIN SSH SIGNATURE-----\nU1NIU0lHAAAAAQAAAIYAAAAic2stZWNkc2Etc2hhMi1uaXN0cDI1NkBvcGVuc3NoLmNvbQ\nAAAAhuaXN0cDI1NgAAAEEEFEbAOOzgeEkVyfi0nkavvYpyZGYJLU6KsRPFpe+ew0CmCg4s\nXVr/uvGV19Iwebvd5PWeEd73tbyqJw88QAoMlAAAAAttaW5kcm90Lm9yZwAAAAh1bml0dG\nVzdAAAAAAAAAAGc2hhNTEyAAABhwAAACt3ZWJhdXRobi1zay1lY2RzYS1zaGEyLW5pc3Rw\nMjU2QG9wZW5zc2guY29tAAAASQAAACBj2oMT9tb5wRXe6mdmf4/lgAO8wrgr95ouozwNg4\nitnQAAACEAtU9g5wz3HchUiLfLD6plr9T4TiJ32lVCrATSjpiy0SMBAAADHwAAABdodHRw\nczovL3d3dy5taW5kcm90Lm9yZwAAAON7InR5cGUiOiJ3ZWJhdXRobi5nZXQiLCJjaGFsbG\nVuZ2UiOiJVMU5JVTBsSEFBQUFDSFZ1YVhSMFpYTjBBQUFBQUFBQUFBWnphR0UxTVRJQUFB\nQkFMTHU4WmdjU3h0Nk1zRlV6dWlaZ0c2R3dNZEo5ZDd4ZUU3WW9SSXcwZzlpSEpfd3NGRD\ncxbzRXbHllenZGV0VqYnFRMHFDN0Z3R3Bqa2pVUVAtTmQ2dyIsIm9yaWdpbiI6Imh0dHBz\nOi8vd3d3Lm1pbmRyb3Qub3JnIiwiY3Jvc3NPcmlnaW4iOmZhbHNlfQAAAAA=\n-----END SSH SIGNATURE-----\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

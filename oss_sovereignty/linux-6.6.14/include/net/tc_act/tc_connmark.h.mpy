@@ -1,0 +1,9 @@
+{
+  "module_name": "tc_connmark.h",
+  "hash_id": "f174486371b5b29b0390ecfadbc51ecd9a5a28c43057e0db1191ab030b979c9c",
+  "original_prompt": "Ingested from linux-6.6.14/include/net/tc_act/tc_connmark.h",
+  "human_readable_source": " \n#ifndef __NET_TC_CONNMARK_H\n#define __NET_TC_CONNMARK_H\n\n#include <net/act_api.h>\n\nstruct tcf_connmark_parms {\n\tstruct net *net;\n\tu16 zone;\n\tstruct rcu_head rcu;\n};\n\nstruct tcf_connmark_info {\n\tstruct tc_action common;\n\tstruct tcf_connmark_parms __rcu *parms;\n};\n\n#define to_connmark(a) ((struct tcf_connmark_info *)a)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

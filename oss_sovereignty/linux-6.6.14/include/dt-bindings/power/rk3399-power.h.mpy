@@ -1,0 +1,9 @@
+{
+  "module_name": "rk3399-power.h",
+  "hash_id": "1e34d0f6a588698f43032c920f4025f1a8cf9cbf72543867fec3d3df5f653547",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/power/rk3399-power.h",
+  "human_readable_source": " \n#ifndef __DT_BINDINGS_POWER_RK3399_POWER_H__\n#define __DT_BINDINGS_POWER_RK3399_POWER_H__\n\n \n#define RK3399_PD_A53_L0\t0\n#define RK3399_PD_A53_L1\t1\n#define RK3399_PD_A53_L2\t2\n#define RK3399_PD_A53_L3\t3\n#define RK3399_PD_SCU_L\t\t4\n\n \n#define RK3399_PD_A72_B0\t5\n#define RK3399_PD_A72_B1\t6\n#define RK3399_PD_SCU_B\t\t7\n\n \n#define RK3399_PD_TCPD0\t\t8\n#define RK3399_PD_TCPD1\t\t9\n#define RK3399_PD_CCI\t\t10\n#define RK3399_PD_CCI0\t\t11\n#define RK3399_PD_CCI1\t\t12\n#define RK3399_PD_PERILP\t13\n#define RK3399_PD_PERIHP\t14\n#define RK3399_PD_VIO\t\t15\n#define RK3399_PD_VO\t\t16\n#define RK3399_PD_VOPB\t\t17\n#define RK3399_PD_VOPL\t\t18\n#define RK3399_PD_ISP0\t\t19\n#define RK3399_PD_ISP1\t\t20\n#define RK3399_PD_HDCP\t\t21\n#define RK3399_PD_GMAC\t\t22\n#define RK3399_PD_EMMC\t\t23\n#define RK3399_PD_USB3\t\t24\n#define RK3399_PD_EDP\t\t25\n#define RK3399_PD_GIC\t\t26\n#define RK3399_PD_SD\t\t27\n#define RK3399_PD_SDIOAUDIO\t28\n#define RK3399_PD_ALIVE\t\t29\n\n \n#define RK3399_PD_CENTER\t30\n#define RK3399_PD_VCODEC\t31\n#define RK3399_PD_VDU\t\t32\n#define RK3399_PD_RGA\t\t33\n#define RK3399_PD_IEP\t\t34\n\n \n#define RK3399_PD_GPU\t\t35\n\n \n#define RK3399_PD_PMU\t\t36\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

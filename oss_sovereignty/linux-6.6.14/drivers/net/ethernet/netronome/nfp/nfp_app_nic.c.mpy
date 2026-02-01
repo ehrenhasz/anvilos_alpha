@@ -1,0 +1,9 @@
+{
+  "module_name": "nfp_app_nic.c",
+  "hash_id": "d2468ce70a73933d3046cdba92c5332d1ded83f976ee46b5f7605f806d82f336",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/netronome/nfp/nfp_app_nic.c",
+  "human_readable_source": "\n \n\n#include \"nfpcore/nfp_cpp.h\"\n#include \"nfpcore/nfp_nsp.h\"\n#include \"nfp_app.h\"\n#include \"nfp_main.h\"\n#include \"nfp_net.h\"\n#include \"nfp_port.h\"\n\nint nfp_app_nic_vnic_init_phy_port(struct nfp_pf *pf, struct nfp_app *app,\n\t\t\t\t   struct nfp_net *nn, unsigned int id)\n{\n\tint err;\n\n\tif (!pf->eth_tbl)\n\t\treturn 0;\n\n\tnn->port = nfp_port_alloc(app, NFP_PORT_PHYS_PORT, nn->dp.netdev);\n\tif (IS_ERR(nn->port))\n\t\treturn PTR_ERR(nn->port);\n\n\terr = nfp_port_init_phy_port(pf, app, nn->port, id);\n\tif (err) {\n\t\tnfp_port_free(nn->port);\n\t\treturn err;\n\t}\n\n\treturn nn->port->type == NFP_PORT_INVALID;\n}\n\nint nfp_app_nic_vnic_alloc(struct nfp_app *app, struct nfp_net *nn,\n\t\t\t   unsigned int id)\n{\n\tint err;\n\n\terr = nfp_app_nic_vnic_init_phy_port(app->pf, app, nn, id);\n\tif (err)\n\t\treturn err < 0 ? err : 0;\n\n\tnfp_net_get_mac_addr(app->pf, nn->dp.netdev, nn->port);\n\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

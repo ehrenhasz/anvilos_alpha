@@ -1,0 +1,9 @@
+{
+  "module_name": "fexit_sleep.c",
+  "hash_id": "5b4f7247f74cb39c4c5d15d0f48c2572bd5081a1634406ed849c4a050eb63843",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/fexit_sleep.c",
+  "human_readable_source": "\n \n#include \"vmlinux.h\"\n#include <bpf/bpf_helpers.h>\n#include <bpf/bpf_tracing.h>\n#include \"bpf_misc.h\"\n\nchar LICENSE[] SEC(\"license\") = \"GPL\";\n\nint pid = 0;\nint fentry_cnt = 0;\nint fexit_cnt = 0;\n\nSEC(\"fentry/\" SYS_PREFIX \"sys_nanosleep\")\nint nanosleep_fentry(void *ctx)\n{\n\tif (bpf_get_current_pid_tgid() >> 32 != pid)\n\t\treturn 0;\n\n\tfentry_cnt++;\n\treturn 0;\n}\n\nSEC(\"fexit/\" SYS_PREFIX \"sys_nanosleep\")\nint nanosleep_fexit(void *ctx)\n{\n\tif (bpf_get_current_pid_tgid() >> 32 != pid)\n\t\treturn 0;\n\n\tfexit_cnt++;\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

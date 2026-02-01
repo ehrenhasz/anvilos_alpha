@@ -1,0 +1,9 @@
+{
+  "module_name": "ptrace-gpr.h",
+  "hash_id": "9ab31531c1ffd96c1a3535f7d09e485af5c4829207384a7492d32dcb84152e0c",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/powerpc/ptrace/ptrace-gpr.h",
+  "human_readable_source": " \n \n#define GPR_1\t1\n#define GPR_2\t2\n#define GPR_3\t3\n#define GPR_4\t4\n\n#define FPR_1\t0.001\n#define FPR_2\t0.002\n#define FPR_3\t0.003\n#define FPR_4\t0.004\n\n#define FPR_1_REP 0x3f50624dd2f1a9fcull\n#define FPR_2_REP 0x3f60624dd2f1a9fcull\n#define FPR_3_REP 0x3f689374bc6a7efaull\n#define FPR_4_REP 0x3f70624dd2f1a9fcull\n\n \nint validate_gpr(unsigned long *gpr, unsigned long val)\n{\n\tint i, found = 1;\n\n\tfor (i = 0; i < 18; i++) {\n\t\tif (gpr[i] != val) {\n\t\t\tprintf(\"GPR[%d]: %lx Expected: %lx\\n\",\n\t\t\t\ti+14, gpr[i], val);\n\t\t\tfound = 0;\n\t\t}\n\t}\n\n\tif (!found)\n\t\treturn TEST_FAIL;\n\treturn TEST_PASS;\n}\n\n \nint validate_fpr(__u64 *fpr, __u64 val)\n{\n\tint i, found = 1;\n\n\tfor (i = 0; i < 32; i++) {\n\t\tif (fpr[i] != val) {\n\t\t\tprintf(\"FPR[%d]: %llx Expected: %llx\\n\", i, fpr[i], val);\n\t\t\tfound = 0;\n\t\t}\n\t}\n\n\tif (!found)\n\t\treturn TEST_FAIL;\n\treturn TEST_PASS;\n}\n\n \nint validate_fpr_double(double *fpr, double val)\n{\n\tint i, found = 1;\n\n\tfor (i = 0; i < 32; i++) {\n\t\tif (fpr[i] != val) {\n\t\t\tprintf(\"FPR[%d]: %f Expected: %f\\n\", i, fpr[i], val);\n\t\t\tfound = 0;\n\t\t}\n\t}\n\n\tif (!found)\n\t\treturn TEST_FAIL;\n\treturn TEST_PASS;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

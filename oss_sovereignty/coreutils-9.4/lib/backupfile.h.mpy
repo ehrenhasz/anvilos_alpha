@@ -1,0 +1,9 @@
+{
+  "module_name": "backupfile.h",
+  "hash_id": "3e9617f86e007b5e1d2ae1a57ca55808fcc090db91731e35d660c78c88e1898a",
+  "original_prompt": "Ingested from coreutils-9.4/lib/backupfile.h",
+  "human_readable_source": " \n#if !_GL_CONFIG_H_INCLUDED\n #error \"Please include config.h first.\"\n#endif\n\n \n#include <fcntl.h>\n\n#include <stdlib.h>\n\n#ifdef __cplusplus\nextern \"C\" {\n#endif\n\n\n \nenum backup_type\n{\n   \n  no_backups,\n\n   \n  simple_backups,\n\n   \n  numbered_existing_backups,\n\n   \n  numbered_backups\n};\n\n#define VALID_BACKUP_TYPE(Type) \\\n  ((unsigned int) (Type) <= numbered_backups)\n\nextern char const *simple_backup_suffix;\n\nvoid set_simple_backup_suffix (char const *);\nchar *backup_file_rename (int, char const *, enum backup_type)\n  _GL_ATTRIBUTE_MALLOC _GL_ATTRIBUTE_DEALLOC_FREE;\nchar *find_backup_file_name (int, char const *, enum backup_type)\n  _GL_ATTRIBUTE_MALLOC _GL_ATTRIBUTE_DEALLOC_FREE\n  _GL_ATTRIBUTE_RETURNS_NONNULL;\nenum backup_type get_version (char const *context, char const *arg);\nenum backup_type xget_version (char const *context, char const *arg);\n\n\n#ifdef __cplusplus\n}\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "btf_helpers.h",
+  "hash_id": "7c6c8139d0289ca7add2e4bb8ba056c1b33ef21c049d3a34efa88ebf619fad96",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/btf_helpers.h",
+  "human_readable_source": " \n \n#ifndef __BTF_HELPERS_H\n#define __BTF_HELPERS_H\n\n#include <stdio.h>\n#include <bpf/btf.h>\n\nint fprintf_btf_type_raw(FILE *out, const struct btf *btf, __u32 id);\nconst char *btf_type_raw_dump(const struct btf *btf, int type_id);\nint btf_validate_raw(struct btf *btf, int nr_types, const char *exp_types[]);\n\n#define VALIDATE_RAW_BTF(btf, raw_types...)\t\t\t\t\\\n\tbtf_validate_raw(btf,\t\t\t\t\t\t\\\n\t\t\t sizeof((const char *[]){raw_types})/sizeof(void *),\\\n\t\t\t (const char *[]){raw_types})\n\nconst char *btf_type_c_dump(const struct btf *btf);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

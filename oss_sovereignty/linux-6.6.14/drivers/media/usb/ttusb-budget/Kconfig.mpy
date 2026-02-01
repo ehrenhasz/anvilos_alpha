@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "400260f80b4492782620ad512559141107a0ef1c14bfa67e432340a32e09430f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/usb/ttusb-budget/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig DVB_TTUSB_BUDGET\n\ttristate \"Technotrend/Hauppauge Nova-USB devices\"\n\tdepends on DVB_CORE && USB && I2C && PCI\n\tselect DVB_CX22700 if MEDIA_SUBDRV_AUTOSELECT\n\tselect DVB_TDA1004X if MEDIA_SUBDRV_AUTOSELECT\n\tselect DVB_VES1820 if MEDIA_SUBDRV_AUTOSELECT\n\tselect DVB_TDA8083 if MEDIA_SUBDRV_AUTOSELECT\n\tselect DVB_STV0299 if MEDIA_SUBDRV_AUTOSELECT\n\tselect DVB_STV0297 if MEDIA_SUBDRV_AUTOSELECT\n\tselect DVB_LNBP21 if MEDIA_SUBDRV_AUTOSELECT\n\thelp\n\t  Support for external USB adapters designed by Technotrend and\n\t  produced by Hauppauge, shipped under the brand name 'Nova-USB'.\n\n\t  These devices don't have a MPEG decoder built in, so you need\n\t  an external software decoder to watch TV.\n\n\t  Say Y if you own such a device and want to use it.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

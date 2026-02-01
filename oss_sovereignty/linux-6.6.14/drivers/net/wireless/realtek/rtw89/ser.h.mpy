@@ -1,0 +1,9 @@
+{
+  "module_name": "ser.h",
+  "hash_id": "4067299cf2b27047bd01818a0d9404689e0c4e52eefdcbfc24b86e70c0d29257",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/realtek/rtw89/ser.h",
+  "human_readable_source": " \n#ifndef __SER_H__\n#define __SER_H__\n\n#include \"core.h\"\n\nint rtw89_ser_init(struct rtw89_dev *rtwdev);\nint rtw89_ser_deinit(struct rtw89_dev *rtwdev);\nint rtw89_ser_notify(struct rtw89_dev *rtwdev, u32 err);\nvoid rtw89_ser_recfg_done(struct rtw89_dev *rtwdev);\n\n#endif  \n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "qcom_rpm.h",
+  "hash_id": "67390a2c9615ef8241f625a1109a8f9f6f5f98d91954a8a683b273bce820c25b",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/mfd/qcom_rpm.h",
+  "human_readable_source": " \n#ifndef __QCOM_RPM_H__\n#define __QCOM_RPM_H__\n\n#include <linux/types.h>\n\nstruct qcom_rpm;\n\n#define QCOM_RPM_ACTIVE_STATE\t0\n#define QCOM_RPM_SLEEP_STATE\t1\n\nint qcom_rpm_write(struct qcom_rpm *rpm, int state, int resource, u32 *buf, size_t count);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

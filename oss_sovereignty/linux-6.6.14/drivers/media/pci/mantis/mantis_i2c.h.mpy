@@ -1,0 +1,9 @@
+{
+  "module_name": "mantis_i2c.h",
+  "hash_id": "d34c3a3360ae47855ebd11788cc0e31fa50bc6cf9566e4e2a15395cea3eb2ac7",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/pci/mantis/mantis_i2c.h",
+  "human_readable_source": " \n \n\n#ifndef __MANTIS_I2C_H\n#define __MANTIS_I2C_H\n\n#define I2C_STOP\t\t(1 <<  0)\n#define I2C_READ\t\t(1 <<  1)\n\nextern int mantis_i2c_init(struct mantis_pci *mantis);\nextern int mantis_i2c_exit(struct mantis_pci *mantis);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

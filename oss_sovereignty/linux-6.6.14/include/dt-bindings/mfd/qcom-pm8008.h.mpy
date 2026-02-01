@@ -1,0 +1,9 @@
+{
+  "module_name": "qcom-pm8008.h",
+  "hash_id": "2a80b8a9e72f1a3113fee290462c46842e31fa607bc0b7656a4e5205d67b4e39",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/mfd/qcom-pm8008.h",
+  "human_readable_source": " \n \n\n#ifndef __DT_BINDINGS_MFD_QCOM_PM8008_H\n#define __DT_BINDINGS_MFD_QCOM_PM8008_H\n\n \n#define PM8008_IRQ_MISC_UVLO\t0\n#define PM8008_IRQ_MISC_OVLO\t1\n#define PM8008_IRQ_MISC_OTST2\t2\n#define PM8008_IRQ_MISC_OTST3\t3\n#define PM8008_IRQ_MISC_LDO_OCP\t4\n#define PM8008_IRQ_TEMP_ALARM\t5\n#define PM8008_IRQ_GPIO1\t6\n#define PM8008_IRQ_GPIO2\t7\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

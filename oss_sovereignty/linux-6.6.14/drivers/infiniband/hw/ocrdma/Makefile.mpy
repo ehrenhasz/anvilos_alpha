@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "46a0a5b2f22951d19727ce56303fa12773856405bdc756b57f190747d033e18d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/infiniband/hw/ocrdma/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nccflags-y := -I $(srctree)/drivers/net/ethernet/emulex/benet\n\nobj-$(CONFIG_INFINIBAND_OCRDMA)\t+= ocrdma.o\n\nocrdma-y :=\tocrdma_main.o ocrdma_verbs.o ocrdma_hw.o ocrdma_ah.o ocrdma_stats.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "qxl_prime.c",
+  "hash_id": "8d821744680102abe81a8113894f7dcdebbbe7aeb94be2435da51e0c85ad68ac",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/qxl/qxl_prime.c",
+  "human_readable_source": " \n\n#include \"qxl_drv.h\"\n#include \"qxl_object.h\"\n\n \n\nint qxl_gem_prime_pin(struct drm_gem_object *obj)\n{\n\tstruct qxl_bo *bo = gem_to_qxl_bo(obj);\n\n\treturn qxl_bo_pin(bo);\n}\n\nvoid qxl_gem_prime_unpin(struct drm_gem_object *obj)\n{\n\tstruct qxl_bo *bo = gem_to_qxl_bo(obj);\n\n\tqxl_bo_unpin(bo);\n}\n\nstruct sg_table *qxl_gem_prime_get_sg_table(struct drm_gem_object *obj)\n{\n\treturn ERR_PTR(-ENOSYS);\n}\n\nstruct drm_gem_object *qxl_gem_prime_import_sg_table(\n\tstruct drm_device *dev, struct dma_buf_attachment *attach,\n\tstruct sg_table *table)\n{\n\treturn ERR_PTR(-ENOSYS);\n}\n\nint qxl_gem_prime_vmap(struct drm_gem_object *obj, struct iosys_map *map)\n{\n\tstruct qxl_bo *bo = gem_to_qxl_bo(obj);\n\tint ret;\n\n\tret = qxl_bo_vmap_locked(bo, map);\n\tif (ret < 0)\n\t\treturn ret;\n\n\treturn 0;\n}\n\nvoid qxl_gem_prime_vunmap(struct drm_gem_object *obj,\n\t\t\t  struct iosys_map *map)\n{\n\tstruct qxl_bo *bo = gem_to_qxl_bo(obj);\n\n\tqxl_bo_vunmap_locked(bo);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

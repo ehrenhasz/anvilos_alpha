@@ -1,0 +1,9 @@
+{
+  "module_name": "udp_limit.c",
+  "hash_id": "04c6a4aa54da5a534d65c9dcd03bbee39655f6641ee3f4b8d7fe3e87d63d5860",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/udp_limit.c",
+  "human_readable_source": "\n\n#include <sys/socket.h>\n#include <linux/bpf.h>\n#include <bpf/bpf_helpers.h>\n\nint invocations = 0, in_use = 0;\n\nstruct {\n\t__uint(type, BPF_MAP_TYPE_SK_STORAGE);\n\t__uint(map_flags, BPF_F_NO_PREALLOC);\n\t__type(key, int);\n\t__type(value, int);\n} sk_map SEC(\".maps\");\n\nSEC(\"cgroup/sock_create\")\nint sock(struct bpf_sock *ctx)\n{\n\tint *sk_storage;\n\n\tif (ctx->type != SOCK_DGRAM)\n\t\treturn 1;\n\n\tsk_storage = bpf_sk_storage_get(&sk_map, ctx, 0,\n\t\t\t\t\tBPF_SK_STORAGE_GET_F_CREATE);\n\tif (!sk_storage)\n\t\treturn 0;\n\t*sk_storage = 0xdeadbeef;\n\n\t__sync_fetch_and_add(&invocations, 1);\n\n\tif (in_use > 0) {\n\t\t \n\t\treturn 0;\n\t}\n\n\t__sync_fetch_and_add(&in_use, 1);\n\treturn 1;\n}\n\nSEC(\"cgroup/sock_release\")\nint sock_release(struct bpf_sock *ctx)\n{\n\tint *sk_storage;\n\n\tif (ctx->type != SOCK_DGRAM)\n\t\treturn 1;\n\n\tsk_storage = bpf_sk_storage_get(&sk_map, ctx, 0, 0);\n\tif (!sk_storage || *sk_storage != 0xdeadbeef)\n\t\treturn 0;\n\n\t__sync_fetch_and_add(&invocations, 1);\n\t__sync_fetch_and_add(&in_use, -1);\n\treturn 1;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

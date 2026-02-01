@@ -1,0 +1,9 @@
+{
+  "module_name": "protocols.h",
+  "hash_id": "b6758c394241c34097a828310ea987e7adacc4cc6aa585d70f6040eb14683f80",
+  "original_prompt": "Ingested from linux-6.6.14/include/xen/interface/io/protocols.h",
+  "human_readable_source": " \n#ifndef __XEN_PROTOCOLS_H__\n#define __XEN_PROTOCOLS_H__\n\n#define XEN_IO_PROTO_ABI_X86_32     \"x86_32-abi\"\n#define XEN_IO_PROTO_ABI_X86_64     \"x86_64-abi\"\n#define XEN_IO_PROTO_ABI_POWERPC64  \"powerpc64-abi\"\n#define XEN_IO_PROTO_ABI_ARM        \"arm-abi\"\n\n#if defined(__i386__)\n# define XEN_IO_PROTO_ABI_NATIVE XEN_IO_PROTO_ABI_X86_32\n#elif defined(__x86_64__)\n# define XEN_IO_PROTO_ABI_NATIVE XEN_IO_PROTO_ABI_X86_64\n#elif defined(__powerpc64__)\n# define XEN_IO_PROTO_ABI_NATIVE XEN_IO_PROTO_ABI_POWERPC64\n#elif defined(__arm__) || defined(__aarch64__)\n# define XEN_IO_PROTO_ABI_NATIVE XEN_IO_PROTO_ABI_ARM\n#else\n# error arch fixup needed here\n#endif\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "d3fdd2e71328f4b73ac9bb00f1f0c6e1a75fd13754c4db29063607974df133d7",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/core/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nCFLAGS += -g $(KHDR_INCLUDES)\n\nTEST_GEN_PROGS := close_range_test\n\ninclude ../lib.mk\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

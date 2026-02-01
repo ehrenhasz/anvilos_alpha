@@ -1,0 +1,9 @@
+{
+  "module_name": "cx24120.h",
+  "hash_id": "f99f45013ef44eaac6b1419936b3277a82ab8b0172a1e15b925b77f26620d55e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/dvb-frontends/cx24120.h",
+  "human_readable_source": " \n \n\n#ifndef CX24120_H\n#define CX24120_H\n\n#include <linux/dvb/frontend.h>\n#include <linux/firmware.h>\n\nstruct cx24120_initial_mpeg_config {\n\tu8 x1;\n\tu8 x2;\n\tu8 x3;\n};\n\nstruct cx24120_config {\n\tu8 i2c_addr;\n\tu32 xtal_khz;\n\tstruct cx24120_initial_mpeg_config initial_mpeg_config;\n\n\tint (*request_firmware)(struct dvb_frontend *fe,\n\t\t\t\tconst struct firmware **fw, char *name);\n\n\t \n\tu16 i2c_wr_max;\n};\n\n#if IS_REACHABLE(CONFIG_DVB_CX24120)\nstruct dvb_frontend *cx24120_attach(const struct cx24120_config *config,\n\t\t\t\t    struct i2c_adapter *i2c);\n#else\nstatic inline\nstruct dvb_frontend *cx24120_attach(const struct cx24120_config *config,\n\t\t\t\t    struct i2c_adapter *i2c)\n{\n\tpr_warn(\"%s: driver disabled by Kconfig\\n\", __func__);\n\treturn NULL;\n}\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

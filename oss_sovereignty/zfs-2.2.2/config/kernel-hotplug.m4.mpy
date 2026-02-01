@@ -1,0 +1,9 @@
+{
+  "module_name": "kernel-hotplug.m4",
+  "hash_id": "0f8d76057055cca83ea8bbccf7fe0b302d28ea79fbadd9c54d359b3a93f5e5b3",
+  "original_prompt": "Ingested from zfs-2.2.2/config/kernel-hotplug.m4",
+  "human_readable_source": "dnl #\ndnl # 4.6 API change\ndnl # Added CPU hotplug APIs\ndnl #\nAC_DEFUN([ZFS_AC_KERNEL_SRC_CPU_HOTPLUG], [\n\tZFS_LINUX_TEST_SRC([cpu_hotplug], [\n\t\t#include <linux/cpuhotplug.h>\n\t],[\n\t\tenum cpuhp_state state = CPUHP_ONLINE;\n\t\tint (*fp)(unsigned int, struct hlist_node *) = NULL;\n\t\tcpuhp_state_add_instance_nocalls(0, (struct hlist_node *)NULL);\n\t\tcpuhp_state_remove_instance_nocalls(0, (struct hlist_node *)NULL);\n\t\tcpuhp_setup_state_multi(state, \"\", fp, fp);\n\t\tcpuhp_remove_multi_state(0);\n\t])\n])\n\nAC_DEFUN([ZFS_AC_KERNEL_CPU_HOTPLUG], [\n\tAC_MSG_CHECKING([whether CPU hotplug APIs exist])\n\tZFS_LINUX_TEST_RESULT([cpu_hotplug], [\n\t\tAC_MSG_RESULT(yes)\n\t\tAC_DEFINE(HAVE_CPU_HOTPLUG, 1, [yes])\n\t],[\n\t\tAC_MSG_RESULT(no)\n\t])\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

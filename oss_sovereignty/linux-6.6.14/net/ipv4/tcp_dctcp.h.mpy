@@ -1,0 +1,9 @@
+{
+  "module_name": "tcp_dctcp.h",
+  "hash_id": "020f11f737887fe223d1b6066db9d1594a67c37d278a5466456e81b2ce279021",
+  "original_prompt": "Ingested from linux-6.6.14/net/ipv4/tcp_dctcp.h",
+  "human_readable_source": "#ifndef _TCP_DCTCP_H\n#define _TCP_DCTCP_H\n\nstatic inline void dctcp_ece_ack_cwr(struct sock *sk, u32 ce_state)\n{\n\tstruct tcp_sock *tp = tcp_sk(sk);\n\n\tif (ce_state == 1)\n\t\ttp->ecn_flags |= TCP_ECN_DEMAND_CWR;\n\telse\n\t\ttp->ecn_flags &= ~TCP_ECN_DEMAND_CWR;\n}\n\n \nstatic inline void dctcp_ece_ack_update(struct sock *sk, enum tcp_ca_event evt,\n\t\t\t\t\tu32 *prior_rcv_nxt, u32 *ce_state)\n{\n\tu32 new_ce_state = (evt == CA_EVENT_ECN_IS_CE) ? 1 : 0;\n\n\tif (*ce_state != new_ce_state) {\n\t\t \n\t\tif (inet_csk(sk)->icsk_ack.pending & ICSK_ACK_TIMER) {\n\t\t\tdctcp_ece_ack_cwr(sk, *ce_state);\n\t\t\t__tcp_send_ack(sk, *prior_rcv_nxt);\n\t\t}\n\t\tinet_csk(sk)->icsk_ack.pending |= ICSK_ACK_NOW;\n\t}\n\t*prior_rcv_nxt = tcp_sk(sk)->rcv_nxt;\n\t*ce_state = new_ce_state;\n\tdctcp_ece_ack_cwr(sk, new_ce_state);\n}\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

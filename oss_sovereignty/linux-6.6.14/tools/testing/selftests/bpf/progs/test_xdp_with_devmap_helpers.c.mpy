@@ -1,0 +1,9 @@
+{
+  "module_name": "test_xdp_with_devmap_helpers.c",
+  "hash_id": "077be91b155364651e0782fffc19f8d2b674348364e42cfffa88e977c575d6d9",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/test_xdp_with_devmap_helpers.c",
+  "human_readable_source": "\n#include <linux/bpf.h>\n#include <bpf/bpf_helpers.h>\n\nstruct {\n\t__uint(type, BPF_MAP_TYPE_DEVMAP);\n\t__uint(key_size, sizeof(__u32));\n\t__uint(value_size, sizeof(struct bpf_devmap_val));\n\t__uint(max_entries, 4);\n} dm_ports SEC(\".maps\");\n\nSEC(\"xdp\")\nint xdp_redir_prog(struct xdp_md *ctx)\n{\n\treturn bpf_redirect_map(&dm_ports, 1, 0);\n}\n\n \nSEC(\"xdp\")\nint xdp_dummy_prog(struct xdp_md *ctx)\n{\n\treturn XDP_PASS;\n}\n\n \nSEC(\"xdp/devmap\")\nint xdp_dummy_dm(struct xdp_md *ctx)\n{\n\tchar fmt[] = \"devmap redirect: dev %u -> dev %u len %u\\n\";\n\tvoid *data_end = (void *)(long)ctx->data_end;\n\tvoid *data = (void *)(long)ctx->data;\n\tunsigned int len = data_end - data;\n\n\tbpf_trace_printk(fmt, sizeof(fmt),\n\t\t\t ctx->ingress_ifindex, ctx->egress_ifindex, len);\n\n\treturn XDP_PASS;\n}\n\nSEC(\"xdp.frags/devmap\")\nint xdp_dummy_dm_frags(struct xdp_md *ctx)\n{\n\treturn XDP_PASS;\n}\n\nchar _license[] SEC(\"license\") = \"GPL\";\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

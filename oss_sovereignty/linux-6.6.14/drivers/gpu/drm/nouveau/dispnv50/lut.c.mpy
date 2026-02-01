@@ -1,0 +1,9 @@
+{
+  "module_name": "lut.c",
+  "hash_id": "8ffa705547ee3c6ce59a995340a19b01e25c926dcd82bd249fdcb720b1d5caba",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/dispnv50/lut.c",
+  "human_readable_source": " \n#include \"lut.h\"\n#include \"disp.h\"\n\n#include <drm/drm_color_mgmt.h>\n#include <drm/drm_mode.h>\n#include <drm/drm_property.h>\n\n#include <nvif/class.h>\n\nu32\nnv50_lut_load(struct nv50_lut *lut, int buffer, struct drm_property_blob *blob,\n\t      void (*load)(struct drm_color_lut *, int, void __iomem *))\n{\n\tstruct drm_color_lut *in = blob ? blob->data : NULL;\n\tvoid __iomem *mem = lut->mem[buffer].object.map.ptr;\n\tconst u32 addr = lut->mem[buffer].addr;\n\tint i;\n\n\tif (!in) {\n\t\tin = kvmalloc_array(1024, sizeof(*in), GFP_KERNEL);\n\t\tif (!WARN_ON(!in)) {\n\t\t\tfor (i = 0; i < 1024; i++) {\n\t\t\t\tin[i].red   =\n\t\t\t\tin[i].green =\n\t\t\t\tin[i].blue  = (i << 16) >> 10;\n\t\t\t}\n\t\t\tload(in, 1024, mem);\n\t\t\tkvfree(in);\n\t\t}\n\t} else {\n\t\tload(in, drm_color_lut_size(blob), mem);\n\t}\n\n\treturn addr;\n}\n\nvoid\nnv50_lut_fini(struct nv50_lut *lut)\n{\n\tint i;\n\tfor (i = 0; i < ARRAY_SIZE(lut->mem); i++)\n\t\tnvif_mem_dtor(&lut->mem[i]);\n}\n\nint\nnv50_lut_init(struct nv50_disp *disp, struct nvif_mmu *mmu,\n\t      struct nv50_lut *lut)\n{\n\tconst u32 size = disp->disp->object.oclass < GF110_DISP ? 257 : 1025;\n\tint i;\n\tfor (i = 0; i < ARRAY_SIZE(lut->mem); i++) {\n\t\tint ret = nvif_mem_ctor_map(mmu, \"kmsLut\", NVIF_MEM_VRAM,\n\t\t\t\t\t    size * 8, &lut->mem[i]);\n\t\tif (ret)\n\t\t\treturn ret;\n\t}\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

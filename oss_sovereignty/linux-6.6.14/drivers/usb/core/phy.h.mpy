@@ -1,0 +1,9 @@
+{
+  "module_name": "phy.h",
+  "hash_id": "5f10a0c2214202a3ad8a5cc5386a79e4aa792836c08945d10a73b4774d91da4c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/usb/core/phy.h",
+  "human_readable_source": " \n \n\n#ifndef __USB_CORE_PHY_H_\n#define __USB_CORE_PHY_H_\n\nstruct device;\nstruct usb_phy_roothub;\n\nstruct usb_phy_roothub *usb_phy_roothub_alloc(struct device *dev);\n\nint usb_phy_roothub_init(struct usb_phy_roothub *phy_roothub);\nint usb_phy_roothub_exit(struct usb_phy_roothub *phy_roothub);\n\nint usb_phy_roothub_set_mode(struct usb_phy_roothub *phy_roothub,\n\t\t\t     enum phy_mode mode);\nint usb_phy_roothub_calibrate(struct usb_phy_roothub *phy_roothub);\nint usb_phy_roothub_power_on(struct usb_phy_roothub *phy_roothub);\nvoid usb_phy_roothub_power_off(struct usb_phy_roothub *phy_roothub);\n\nint usb_phy_roothub_suspend(struct device *controller_dev,\n\t\t\t    struct usb_phy_roothub *phy_roothub);\nint usb_phy_roothub_resume(struct device *controller_dev,\n\t\t\t   struct usb_phy_roothub *phy_roothub);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

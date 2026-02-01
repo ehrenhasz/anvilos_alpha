@@ -1,0 +1,9 @@
+{
+  "module_name": "if_ether.h",
+  "hash_id": "643e3a7349d2cf840fdc33103393ac23ded92734a66b1d8e818e210045039a62",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/if_ether.h",
+  "human_readable_source": " \n \n#ifndef _LINUX_IF_ETHER_H\n#define _LINUX_IF_ETHER_H\n\n#include <linux/skbuff.h>\n#include <uapi/linux/if_ether.h>\n\nstatic inline struct ethhdr *eth_hdr(const struct sk_buff *skb)\n{\n\treturn (struct ethhdr *)skb_mac_header(skb);\n}\n\n \nstatic inline struct ethhdr *skb_eth_hdr(const struct sk_buff *skb)\n{\n\treturn (struct ethhdr *)skb->data;\n}\n\nstatic inline struct ethhdr *inner_eth_hdr(const struct sk_buff *skb)\n{\n\treturn (struct ethhdr *)skb_inner_mac_header(skb);\n}\n\nint eth_header_parse(const struct sk_buff *skb, unsigned char *haddr);\n\nextern ssize_t sysfs_format_mac(char *buf, const unsigned char *addr, int len);\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

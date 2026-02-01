@@ -1,0 +1,9 @@
+{
+  "module_name": "types.h",
+  "hash_id": "4c9601816bb82fb8d89489a16714b8cccfa21445e42ecd796aef91fa33932abb",
+  "original_prompt": "Ingested from zfs-2.2.2/include/os/freebsd/linux/types.h",
+  "human_readable_source": " \n#ifndef\t_LINUX_TYPES_H_\n#define\t_LINUX_TYPES_H_\n\n#include <linux/compiler.h>\n\n\n#ifndef __bitwise__\n#ifdef __CHECKER__\n#define\t__bitwise__ __attribute__((bitwise))\n#else\n#define\t__bitwise__\n#endif\n#endif\n\ntypedef uint16_t __le16;\ntypedef uint16_t __be16;\ntypedef uint32_t __le32;\ntypedef uint32_t __be32;\ntypedef uint64_t __le64;\ntypedef uint64_t __be64;\n\ntypedef unsigned gfp_t;\ntypedef off_t loff_t;\ntypedef vm_paddr_t resource_size_t;\ntypedef uint16_t __bitwise__ __sum16;\ntypedef unsigned long pgoff_t;\ntypedef unsigned __poll_t;\n\ntypedef uint64_t u64;\ntypedef u64 phys_addr_t;\n\ntypedef size_t __kernel_size_t;\n\n#define\tDECLARE_BITMAP(n, bits)\t\t\t\t\t\t\\\n\tunsigned long n[howmany(bits, sizeof (long) * 8)]\n\ntypedef unsigned long irq_hw_number_t;\n\nstruct rcu_head {\n\tvoid *raw[2];\n} __aligned(sizeof (void *));\n\ntypedef void (*rcu_callback_t)(struct rcu_head *head);\ntypedef void (*call_rcu_func_t)(struct rcu_head *head, rcu_callback_t func);\ntypedef int linux_task_fn_t(void *data);\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

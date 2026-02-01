@@ -1,0 +1,9 @@
+{
+  "module_name": "efx_devlink.h",
+  "hash_id": "1a561525c43fac8bac42cebd7060393aeede08007c4a42c80226858ac1a0ef9f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/sfc/efx_devlink.h",
+  "human_readable_source": " \n \n\n#ifndef _EFX_DEVLINK_H\n#define _EFX_DEVLINK_H\n\n#include \"net_driver.h\"\n#include <net/devlink.h>\n\n \n#define EFX_DEVLINK_INFO_VERSION_FW_MGMT_SUC\t\"fw.mgmt.suc\"\n#define EFX_DEVLINK_INFO_VERSION_FW_MGMT_CMC\t\"fw.mgmt.cmc\"\n#define EFX_DEVLINK_INFO_VERSION_FPGA_REV\t\"fpga.rev\"\n#define EFX_DEVLINK_INFO_VERSION_DATAPATH_HW\t\"fpga.app\"\n#define EFX_DEVLINK_INFO_VERSION_DATAPATH_FW\tDEVLINK_INFO_VERSION_GENERIC_FW_APP\n#define EFX_DEVLINK_INFO_VERSION_SOC_BOOT\t\"coproc.boot\"\n#define EFX_DEVLINK_INFO_VERSION_SOC_UBOOT\t\"coproc.uboot\"\n#define EFX_DEVLINK_INFO_VERSION_SOC_MAIN\t\"coproc.main\"\n#define EFX_DEVLINK_INFO_VERSION_SOC_RECOVERY\t\"coproc.recovery\"\n#define EFX_DEVLINK_INFO_VERSION_FW_EXPROM\t\"fw.exprom\"\n#define EFX_DEVLINK_INFO_VERSION_FW_UEFI\t\"fw.uefi\"\n\n#define EFX_MAX_VERSION_INFO_LEN\t64\n\nint efx_probe_devlink_and_lock(struct efx_nic *efx);\nvoid efx_probe_devlink_unlock(struct efx_nic *efx);\nvoid efx_fini_devlink_lock(struct efx_nic *efx);\nvoid efx_fini_devlink_and_unlock(struct efx_nic *efx);\n\n#ifdef CONFIG_SFC_SRIOV\nstruct efx_rep;\n\nvoid ef100_pf_set_devlink_port(struct efx_nic *efx);\nvoid ef100_rep_set_devlink_port(struct efx_rep *efv);\nvoid ef100_pf_unset_devlink_port(struct efx_nic *efx);\nvoid ef100_rep_unset_devlink_port(struct efx_rep *efv);\n#endif\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

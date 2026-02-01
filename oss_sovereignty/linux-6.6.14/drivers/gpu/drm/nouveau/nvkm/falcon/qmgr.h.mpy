@@ -1,0 +1,9 @@
+{
+  "module_name": "qmgr.h",
+  "hash_id": "6b500e82270343fe24b95c7352487e6fe1a0114e424afb757eb2f3c98b94c99d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/falcon/qmgr.h",
+  "human_readable_source": " \n#ifndef __NVKM_FALCON_QMGR_H__\n#define __NVKM_FALCON_QMGR_H__\n#include <core/falcon.h>\n\n#define HDR_SIZE sizeof(struct nvfw_falcon_msg)\n#define QUEUE_ALIGNMENT 4\n \n#define MSG_BUF_SIZE 128\n\n \nstruct nvkm_falcon_qmgr_seq {\n\tu16 id;\n\tenum {\n\t\tSEQ_STATE_FREE = 0,\n\t\tSEQ_STATE_PENDING,\n\t\tSEQ_STATE_USED,\n\t\tSEQ_STATE_CANCELLED\n\t} state;\n\tbool async;\n\tnvkm_falcon_qmgr_callback callback;\n\tvoid *priv;\n\tstruct completion done;\n\tint result;\n};\n\n \n#define NVKM_FALCON_QMGR_SEQ_NUM 16\n\nstruct nvkm_falcon_qmgr {\n\tstruct nvkm_falcon *falcon;\n\n\tstruct {\n\t\tstruct mutex mutex;\n\t\tstruct nvkm_falcon_qmgr_seq id[NVKM_FALCON_QMGR_SEQ_NUM];\n\t\tunsigned long tbl[BITS_TO_LONGS(NVKM_FALCON_QMGR_SEQ_NUM)];\n\t} seq;\n};\n\nstruct nvkm_falcon_qmgr_seq *\nnvkm_falcon_qmgr_seq_acquire(struct nvkm_falcon_qmgr *);\nvoid nvkm_falcon_qmgr_seq_release(struct nvkm_falcon_qmgr *,\n\t\t\t\t  struct nvkm_falcon_qmgr_seq *);\n\nstruct nvkm_falcon_cmdq {\n\tstruct nvkm_falcon_qmgr *qmgr;\n\tconst char *name;\n\tstruct mutex mutex;\n\tstruct completion ready;\n\n\tu32 head_reg;\n\tu32 tail_reg;\n\tu32 offset;\n\tu32 size;\n\n\tu32 position;\n};\n\nstruct nvkm_falcon_msgq {\n\tstruct nvkm_falcon_qmgr *qmgr;\n\tconst char *name;\n\tspinlock_t lock;\n\n\tu32 head_reg;\n\tu32 tail_reg;\n\tu32 offset;\n\n\tu32 position;\n};\n\n#define FLCNQ_PRINTK(q,l,p,f,a...) FLCN_PRINTK((q)->qmgr->falcon, l, p, \"%s: \"f, (q)->name, ##a)\n#define FLCNQ_DBG(q,f,a...) FLCNQ_PRINTK((q), DEBUG, info, f, ##a)\n#define FLCNQ_ERR(q,f,a...) FLCNQ_PRINTK((q), ERROR, err, f, ##a)\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

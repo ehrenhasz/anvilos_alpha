@@ -1,0 +1,9 @@
+{
+  "module_name": "getpagesize.h",
+  "hash_id": "a4d23bb0d0d012eb7037627181a829090f875353d2fe6f0d1f876439b34b0ae7",
+  "original_prompt": "Ingested from bash-5.2.21/lib/malloc/getpagesize.h",
+  "human_readable_source": " \n\n#if defined (HAVE_UNISTD_H)\n#  ifdef _MINIX\n#    include <sys/types.h>\n#  endif\n#  include <unistd.h>\n#  if defined (_SC_PAGESIZE)\n#    define getpagesize() sysconf(_SC_PAGESIZE)\n#  else\n#    if defined (_SC_PAGE_SIZE)\n#      define getpagesize() sysconf(_SC_PAGE_SIZE)\n#    endif  \n#  endif  \n#endif\n\n#if !defined (getpagesize)\n#  if defined (HAVE_SYS_PARAM_H)\n#    include <sys/param.h>\n#  endif\n#  if defined (PAGESIZE)\n#     define getpagesize() PAGESIZE\n#  else  \n#    if defined (EXEC_PAGESIZE)\n#      define getpagesize() EXEC_PAGESIZE\n#    else  \n#      if defined (NBPG)\n#        if !defined (CLSIZE)\n#          define CLSIZE 1\n#        endif  \n#        define getpagesize() (NBPG * CLSIZE)\n#      else  \n#        if defined (NBPC)\n#          define getpagesize() NBPC\n#        endif  \n#      endif  \n#    endif  \n#  endif  \n#endif  \n\n#if !defined (getpagesize)\n#  define getpagesize() 4096   \n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

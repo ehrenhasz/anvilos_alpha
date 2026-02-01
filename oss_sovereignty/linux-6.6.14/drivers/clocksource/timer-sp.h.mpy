@@ -1,0 +1,9 @@
+{
+  "module_name": "timer-sp.h",
+  "hash_id": "a67061365727878a8189e7c1e94694bbabd855b449a4e99790dd13c966be9013",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/clocksource/timer-sp.h",
+  "human_readable_source": " \n \n#define NR_TIMERS\t2\n#define TIMER_1_BASE\t0x00\n#define TIMER_2_BASE\t0x20\n\n#define TIMER_LOAD\t0x00\t\t\t \n#define TIMER_VALUE\t0x04\t\t\t \n#define TIMER_CTRL\t0x08\t\t\t \n#define TIMER_CTRL_ONESHOT\t(1 << 0)\t \n#define TIMER_CTRL_32BIT\t(1 << 1)\t \n#define TIMER_CTRL_DIV1\t\t(0 << 2)\t \n#define TIMER_CTRL_DIV16\t(1 << 2)\t \n#define TIMER_CTRL_DIV256\t(2 << 2)\t \n#define TIMER_CTRL_IE\t\t(1 << 5)\t \n#define TIMER_CTRL_PERIODIC\t(1 << 6)\t \n#define TIMER_CTRL_ENABLE\t(1 << 7)\t \n\n#define TIMER_INTCLR\t0x0c\t\t\t \n#define TIMER_RIS\t0x10\t\t\t \n#define TIMER_MIS\t0x14\t\t\t \n#define TIMER_BGLOAD\t0x18\t\t\t \n\nstruct sp804_timer {\n\tint load;\n\tint load_h;\n\tint value;\n\tint value_h;\n\tint ctrl;\n\tint intclr;\n\tint ris;\n\tint mis;\n\tint bgload;\n\tint bgload_h;\n\tint timer_base[NR_TIMERS];\n\tint width;\n};\n\nstruct sp804_clkevt {\n\tvoid __iomem *base;\n\tvoid __iomem *load;\n\tvoid __iomem *load_h;\n\tvoid __iomem *value;\n\tvoid __iomem *value_h;\n\tvoid __iomem *ctrl;\n\tvoid __iomem *intclr;\n\tvoid __iomem *ris;\n\tvoid __iomem *mis;\n\tvoid __iomem *bgload;\n\tvoid __iomem *bgload_h;\n\tunsigned long reload;\n\tint width;\n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

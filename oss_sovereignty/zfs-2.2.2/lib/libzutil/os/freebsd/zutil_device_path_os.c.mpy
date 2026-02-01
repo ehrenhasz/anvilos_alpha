@@ -1,0 +1,9 @@
+{
+  "module_name": "zutil_device_path_os.c",
+  "hash_id": "5fc07d3789c4563bd6aaf404511f217940026fa05b3e5d5d19806ac51a24fcc1",
+  "original_prompt": "Ingested from zfs-2.2.2/lib/libzutil/os/freebsd/zutil_device_path_os.c",
+  "human_readable_source": " \n\n#include <ctype.h>\n#include <fcntl.h>\n#include <paths.h>\n#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\n\n#include <sys/stat.h>\n\n#include <libgeom.h>\n\n#include <libzutil.h>\n\n \n\n \nchar *\nzfs_strip_partition(const char *dev)\n{\n\treturn (strdup(dev));\n}\n\nint\nzfs_append_partition(char *path, size_t max_len)\n{\n\treturn (strnlen(path, max_len));\n}\n\n \nconst char *\nzfs_strip_path(const char *path)\n{\n\tif (strncmp(path, _PATH_DEV, sizeof (_PATH_DEV) - 1) == 0)\n\t\treturn (path + sizeof (_PATH_DEV) - 1);\n\telse\n\t\treturn (path);\n}\n\nchar *\nzfs_get_underlying_path(const char *dev_name)\n{\n\n\tif (dev_name == NULL)\n\t\treturn (NULL);\n\n\treturn (realpath(dev_name, NULL));\n}\n\nboolean_t\nzfs_dev_is_whole_disk(const char *dev_name)\n{\n\tint fd;\n\n\tfd = g_open(dev_name, 0);\n\tif (fd >= 0) {\n\t\tg_close(fd);\n\t\treturn (B_TRUE);\n\t}\n\treturn (B_FALSE);\n}\n\n \nint\nzpool_label_disk_wait(const char *path, int timeout_ms)\n{\n\tint settle_ms = 50;\n\tlong sleep_ms = 10;\n\thrtime_t start, settle;\n\tstruct stat64 statbuf;\n\n\tstart = gethrtime();\n\tsettle = 0;\n\n\tdo {\n\t\terrno = 0;\n\t\tif ((stat64(path, &statbuf) == 0) && (errno == 0)) {\n\t\t\tif (settle == 0)\n\t\t\t\tsettle = gethrtime();\n\t\t\telse if (NSEC2MSEC(gethrtime() - settle) >= settle_ms)\n\t\t\t\treturn (0);\n\t\t} else if (errno != ENOENT) {\n\t\t\treturn (errno);\n\t\t}\n\n\t\tusleep(sleep_ms * MILLISEC);\n\t} while (NSEC2MSEC(gethrtime() - start) < timeout_ms);\n\n\treturn (ENODEV);\n}\n\nboolean_t\nis_mpath_whole_disk(const char *path)\n{\n\t(void) path;\n\treturn (B_FALSE);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

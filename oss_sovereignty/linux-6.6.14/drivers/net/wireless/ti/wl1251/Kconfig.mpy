@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "d1fd9da723bcafddbb965aa55425c2826d0209922d9d1ab71ce35ba13840b347",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/ti/wl1251/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig WL1251\n\ttristate \"TI wl1251 driver support\"\n\tdepends on MAC80211\n\tselect FW_LOADER\n\tselect CRC7\n\thelp\n\t  This will enable TI wl1251 driver support. The drivers make\n\t  use of the mac80211 stack.\n\n\t  If you choose to build a module, it'll be called wl1251. Say\n\t  N if unsure.\n\nconfig WL1251_SPI\n\ttristate \"TI wl1251 SPI support\"\n\tdepends on WL1251 && SPI_MASTER\n\thelp\n\t  This module adds support for the SPI interface of adapters using\n\t  TI wl1251 chipset.  Select this if your platform is using\n\t  the SPI bus.\n\n\t  If you choose to build a module, it'll be called wl1251_spi.\n\t  Say N if unsure.\n\nconfig WL1251_SDIO\n\ttristate \"TI wl1251 SDIO support\"\n\tdepends on WL1251 && MMC\n\thelp\n\t  This module adds support for the SDIO interface of adapters using\n\t  TI wl1251 chipset.  Select this if your platform is using\n\t  the SDIO bus.\n\n\t  If you choose to build a module, it'll be called\n\t  wl1251_sdio. Say N if unsure.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

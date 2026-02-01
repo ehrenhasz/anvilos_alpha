@@ -1,0 +1,9 @@
+{
+  "module_name": "freebsd_crypto.h",
+  "hash_id": "c3eab056302b68611c3366b801cf4798be1af7954b4091ebad15f26d38c8cedc",
+  "original_prompt": "Ingested from zfs-2.2.2/include/os/freebsd/zfs/sys/freebsd_crypto.h",
+  "human_readable_source": " \n\n#ifndef _ZFS_FREEBSD_CRYPTO_H\n#define\t_ZFS_FREEBSD_CRYPTO_H\n\n#include <sys/errno.h>\n#include <sys/mutex.h>\n#include <opencrypto/cryptodev.h>\n#include <crypto/sha2/sha256.h>\n#include <crypto/sha2/sha512.h>\n\n#define\tSUN_CKM_AES_CCM\t\"CKM_AES_CCM\"\n#define\tSUN_CKM_AES_GCM\t\"CKM_AES_GCM\"\n#define\tSUN_CKM_SHA512_HMAC\t\"CKM_SHA512_HMAC\"\n\n#define\tCRYPTO_BITS2BYTES(n) ((n) == 0 ? 0 : (((n) - 1) >> 3) + 1)\n#define\tCRYPTO_BYTES2BITS(n) ((n) << 3)\n\nstruct zio_crypt_info;\n\ntypedef struct freebsd_crypt_session {\n\tstruct mtx\t\tfs_lock;\n\tcrypto_session_t\tfs_sid;\n\tboolean_t\tfs_done;\n} freebsd_crypt_session_t;\n\n \ntypedef void *crypto_mechanism_t;\ntypedef void *crypto_ctx_template_t;\n \ntypedef struct crypto_key {\n\tvoid\t*ck_data;\n\tsize_t\tck_length;\n} crypto_key_t;\n\ntypedef struct hmac_ctx {\n\tSHA512_CTX\tinnerctx;\n\tSHA512_CTX\touterctx;\n} *crypto_context_t;\n\n \nvoid crypto_mac(const crypto_key_t *key, const void *in_data,\n\tsize_t in_data_size, void *out_data, size_t out_data_size);\nvoid crypto_mac_init(struct hmac_ctx *ctx, const crypto_key_t *key);\nvoid crypto_mac_update(struct hmac_ctx *ctx, const void *data,\n\tsize_t data_size);\nvoid crypto_mac_final(struct hmac_ctx *ctx, void *out_data,\n\tsize_t out_data_size);\n\nint freebsd_crypt_newsession(freebsd_crypt_session_t *sessp,\n    const struct zio_crypt_info *, crypto_key_t *);\nvoid freebsd_crypt_freesession(freebsd_crypt_session_t *sessp);\n\nint freebsd_crypt_uio(boolean_t, freebsd_crypt_session_t *,\n\tconst struct zio_crypt_info *, zfs_uio_t *, crypto_key_t *, uint8_t *,\n\tsize_t, size_t);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

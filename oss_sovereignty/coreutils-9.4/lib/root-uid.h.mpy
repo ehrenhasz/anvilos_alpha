@@ -1,0 +1,9 @@
+{
+  "module_name": "root-uid.h",
+  "hash_id": "7d1fa382cb3b1641cded1d459837accf3e41adebf0b71e2063e1116553d752fb",
+  "original_prompt": "Ingested from coreutils-9.4/lib/root-uid.h",
+  "human_readable_source": " \n\n#ifndef ROOT_UID_H_\n#define ROOT_UID_H_\n\n \n#ifdef __TANDEM\n# define ROOT_UID 65535\n#else\n# define ROOT_UID 0\n#endif\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

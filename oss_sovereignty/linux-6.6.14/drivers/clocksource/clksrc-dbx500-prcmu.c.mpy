@@ -1,0 +1,9 @@
+{
+  "module_name": "clksrc-dbx500-prcmu.c",
+  "hash_id": "8195a6ef5515df91c546202c829186d5ea400ebf017f080e3bbaa199e3986a21",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/clocksource/clksrc-dbx500-prcmu.c",
+  "human_readable_source": "\n \n#include <linux/of.h>\n#include <linux/of_address.h>\n#include <linux/clockchips.h>\n\n#define RATE_32K\t\t32768\n\n#define TIMER_MODE_CONTINUOUS\t0x1\n#define TIMER_DOWNCOUNT_VAL\t0xffffffff\n\n#define PRCMU_TIMER_REF\t\t0\n#define PRCMU_TIMER_DOWNCOUNT\t0x4\n#define PRCMU_TIMER_MODE\t0x8\n\nstatic void __iomem *clksrc_dbx500_timer_base;\n\nstatic u64 notrace clksrc_dbx500_prcmu_read(struct clocksource *cs)\n{\n\tvoid __iomem *base = clksrc_dbx500_timer_base;\n\tu32 count, count2;\n\n\tdo {\n\t\tcount = readl_relaxed(base + PRCMU_TIMER_DOWNCOUNT);\n\t\tcount2 = readl_relaxed(base + PRCMU_TIMER_DOWNCOUNT);\n\t} while (count2 != count);\n\n\t \n\treturn ~count;\n}\n\nstatic struct clocksource clocksource_dbx500_prcmu = {\n\t.name\t\t= \"dbx500-prcmu-timer\",\n\t.rating\t\t= 100,\n\t.read\t\t= clksrc_dbx500_prcmu_read,\n\t.mask\t\t= CLOCKSOURCE_MASK(32),\n\t.flags\t\t= CLOCK_SOURCE_IS_CONTINUOUS | CLOCK_SOURCE_SUSPEND_NONSTOP,\n};\n\nstatic int __init clksrc_dbx500_prcmu_init(struct device_node *node)\n{\n\tclksrc_dbx500_timer_base = of_iomap(node, 0);\n\n\t \n\tif (readl(clksrc_dbx500_timer_base + PRCMU_TIMER_MODE) !=\n\t    TIMER_MODE_CONTINUOUS) {\n\t\twritel(TIMER_MODE_CONTINUOUS,\n\t\t       clksrc_dbx500_timer_base + PRCMU_TIMER_MODE);\n\t\twritel(TIMER_DOWNCOUNT_VAL,\n\t\t       clksrc_dbx500_timer_base + PRCMU_TIMER_REF);\n\t}\n\treturn clocksource_register_hz(&clocksource_dbx500_prcmu, RATE_32K);\n}\nTIMER_OF_DECLARE(dbx500_prcmu, \"stericsson,db8500-prcmu-timer-4\",\n\t\t       clksrc_dbx500_prcmu_init);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

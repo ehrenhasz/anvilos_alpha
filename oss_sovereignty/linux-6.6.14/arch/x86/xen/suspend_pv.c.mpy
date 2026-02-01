@@ -1,0 +1,9 @@
+{
+  "module_name": "suspend_pv.c",
+  "hash_id": "2689790694bd9ea44b7ba91bd692fa9872f3bed4538ae503bf3ba5aebd9989ee",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/xen/suspend_pv.c",
+  "human_readable_source": "\n#include <linux/types.h>\n\n#include <asm/xen/hypercall.h>\n#include <asm/xen/page.h>\n\n#include <asm/fixmap.h>\n\n#include \"xen-ops.h\"\n\nvoid xen_pv_pre_suspend(void)\n{\n\txen_mm_pin_all();\n\n\txen_start_info->store_mfn = mfn_to_pfn(xen_start_info->store_mfn);\n\txen_start_info->console.domU.mfn =\n\t\tmfn_to_pfn(xen_start_info->console.domU.mfn);\n\n\tBUG_ON(!irqs_disabled());\n\n\tHYPERVISOR_shared_info = &xen_dummy_shared_info;\n\tif (HYPERVISOR_update_va_mapping(fix_to_virt(FIX_PARAVIRT_BOOTMAP),\n\t\t\t\t\t __pte_ma(0), 0))\n\t\tBUG();\n}\n\nvoid xen_pv_post_suspend(int suspend_cancelled)\n{\n\txen_build_mfn_list_list();\n\tset_fixmap(FIX_PARAVIRT_BOOTMAP, xen_start_info->shared_info);\n\tHYPERVISOR_shared_info = (void *)fix_to_virt(FIX_PARAVIRT_BOOTMAP);\n\txen_setup_mfn_list_list();\n\n\tif (suspend_cancelled) {\n\t\txen_start_info->store_mfn =\n\t\t\tpfn_to_mfn(xen_start_info->store_mfn);\n\t\txen_start_info->console.domU.mfn =\n\t\t\tpfn_to_mfn(xen_start_info->console.domU.mfn);\n\t} else {\n#ifdef CONFIG_SMP\n\t\tBUG_ON(xen_cpu_initialized_map == NULL);\n\t\tcpumask_copy(xen_cpu_initialized_map, cpu_online_mask);\n#endif\n\t\txen_vcpu_restore();\n\t}\n\n\txen_mm_unpin_all();\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

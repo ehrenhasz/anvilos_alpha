@@ -1,0 +1,9 @@
+{
+  "module_name": "Build",
+  "hash_id": "73693b89583083eea824532ab5e9b88f80d88a54d016169c83bd62036c1c8ee4",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/util/cs-etm-decoder/Build",
+  "human_readable_source": "perf-$(CONFIG_AUXTRACE) += cs-etm-decoder.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

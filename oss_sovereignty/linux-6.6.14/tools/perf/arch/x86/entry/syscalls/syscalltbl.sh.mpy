@@ -1,0 +1,9 @@
+{
+  "module_name": "syscalltbl.sh",
+  "hash_id": "4d747249a8a325f3568c72b84ca206de30c98a1ea27a7792b389d1fd79f9ffd6",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/arch/x86/entry/syscalls/syscalltbl.sh",
+  "human_readable_source": "#!/bin/sh\n# SPDX-License-Identifier: GPL-2.0\n\nin=\"$1\"\narch=\"$2\"\n\nsyscall_macro() {\n    nr=\"$1\"\n    name=\"$2\"\n\n    echo \"\t[$nr] = \\\"$name\\\",\"\n}\n\nemit() {\n    nr=\"$1\"\n    entry=\"$2\"\n\n    syscall_macro \"$nr\" \"$entry\"\n}\n\necho \"static const char *const syscalltbl_${arch}[] = {\"\n\nsorted_table=$(mktemp /tmp/syscalltbl.XXXXXX)\ngrep '^[0-9]' \"$in\" | sort -n > $sorted_table\n\nmax_nr=0\nwhile read nr _abi name entry _compat; do\n    if [ $nr -ge 512 ] ; then # discard compat sycalls\n        break\n    fi\n\n    emit \"$nr\" \"$name\"\n    max_nr=$nr\ndone < $sorted_table\n\nrm -f $sorted_table\n\necho \"};\"\n\necho \"#define SYSCALLTBL_${arch}_MAX_ID ${max_nr}\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "cros_ec_chardev.h",
+  "hash_id": "8b549995137102808435b531613172d2671b21ca4a409ea80aff99ea459d08d3",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/platform_data/cros_ec_chardev.h",
+  "human_readable_source": " \n \n\n#ifndef _UAPI_LINUX_CROS_EC_DEV_H_\n#define _UAPI_LINUX_CROS_EC_DEV_H_\n\n#include <linux/bits.h>\n#include <linux/ioctl.h>\n#include <linux/types.h>\n\n#include <linux/platform_data/cros_ec_commands.h>\n\n#define CROS_EC_DEV_VERSION \"1.0.0\"\n\n \nstruct cros_ec_readmem {\n\tuint32_t offset;\n\tuint32_t bytes;\n\tuint8_t buffer[EC_MEMMAP_SIZE];\n};\n\n#define CROS_EC_DEV_IOC       0xEC\n#define CROS_EC_DEV_IOCXCMD   _IOWR(CROS_EC_DEV_IOC, 0, struct cros_ec_command)\n#define CROS_EC_DEV_IOCRDMEM  _IOWR(CROS_EC_DEV_IOC, 1, struct cros_ec_readmem)\n#define CROS_EC_DEV_IOCEVENTMASK _IO(CROS_EC_DEV_IOC, 2)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

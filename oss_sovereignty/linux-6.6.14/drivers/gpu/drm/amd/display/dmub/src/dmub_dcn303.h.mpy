@@ -1,0 +1,9 @@
+{
+  "module_name": "dmub_dcn303.h",
+  "hash_id": "60fcc65cba6205fb40dbc80a1499d4a5063cd4b0c4161b8b25b50510b73c5c89",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/dmub/src/dmub_dcn303.h",
+  "human_readable_source": "\n \n\n#ifndef _DMUB_DCN303_H_\n#define _DMUB_DCN303_H_\n\n#include \"dmub_dcn20.h\"\n\n \n\nextern const struct dmub_srv_common_regs dmub_srv_dcn303_regs;\n\n \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

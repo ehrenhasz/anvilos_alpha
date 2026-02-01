@@ -1,0 +1,9 @@
+{
+  "module_name": "netlink.h",
+  "hash_id": "5651cbe592bfac06b53a444341c8d586a7442e4577b6b38a5719d6713fb81f20",
+  "original_prompt": "Ingested from linux-6.6.14/fs/smb/client/netlink.h",
+  "human_readable_source": " \n \n\n#ifndef _CIFS_NETLINK_H\n#define _CIFS_NETLINK_H\n\nextern struct genl_family cifs_genl_family;\n\nextern int cifs_genl_init(void);\nextern void cifs_genl_exit(void);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

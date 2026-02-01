@@ -1,0 +1,9 @@
+{
+  "module_name": "mount.h",
+  "hash_id": "b580b39383fa774011b1bbf76596d46212705fffefae07741677dfe919565ff2",
+  "original_prompt": "Ingested from zfs-2.2.2/lib/libspl/include/os/freebsd/sys/mount.h",
+  "human_readable_source": " \n \n\n\n#ifndef _LIBSPL_SYS_MOUNT_H\n#define\t_LIBSPL_SYS_MOUNT_H\n\n#undef _SYS_MOUNT_H_\n#include_next <sys/mount.h>\n\n#include <assert.h>\n#include <string.h>\n#include <stdlib.h>\n\n#if !defined(BLKGETSIZE64)\n#define\tBLKGETSIZE64\t\tDIOCGMEDIASIZE\n#endif\n\n \n#if !defined(MS_DIRSYNC)\n#define\tMS_DIRSYNC\t\tS_WRITE\n#endif\n\n \n#if !defined(MS_POSIXACL)\n#define\tMS_POSIXACL\t\t(1<<16)\n#endif\n\n#define\tMS_NOSUID\tMNT_NOSUID\n#define\tMS_NOEXEC\tMNT_NOEXEC\n#define\tMS_NODEV\t0\n#define\tS_WRITE\t\t0\n#define\tMS_BIND\t\t0\n#define\tMS_REMOUNT\t0\n#define\tMS_SYNCHRONOUS\tMNT_SYNCHRONOUS\n\n#define\tMS_USERS\t(MS_NOEXEC|MS_NOSUID|MS_NODEV)\n#define\tMS_OWNER\t(MS_NOSUID|MS_NODEV)\n#define\tMS_GROUP\t(MS_NOSUID|MS_NODEV)\n#define\tMS_COMMENT\t0\n\n \n#ifdef MNT_FORCE\n#define\tMS_FORCE\tMNT_FORCE\n#else\n#define\tMS_FORCE\t0x00000001\n#endif  \n\n#ifdef MNT_DETACH\n#define\tMS_DETACH\tMNT_DETACH\n#else\n#define\tMS_DETACH\t0x00000002\n#endif  \n\n \n#define\tMS_OVERLAY\t0x00000004\n\n \n#define\tMS_CRYPT\t0x00000008\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

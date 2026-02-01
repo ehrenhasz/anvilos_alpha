@@ -1,0 +1,9 @@
+{
+  "module_name": "netlink.h",
+  "hash_id": "93faf9177855285a48d13ece47dbbba7338dc23e42708859c523b077e2e4e5c4",
+  "original_prompt": "Ingested from linux-6.6.14/net/dsa/netlink.h",
+  "human_readable_source": " \n\n#ifndef __DSA_NETLINK_H\n#define __DSA_NETLINK_H\n\nextern struct rtnl_link_ops dsa_link_ops __read_mostly;\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

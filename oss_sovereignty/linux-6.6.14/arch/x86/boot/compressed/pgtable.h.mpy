@@ -1,0 +1,9 @@
+{
+  "module_name": "pgtable.h",
+  "hash_id": "efbb540070b316060485f2f85f9ce733890ee0137f04d2f78625e63fcf3b5df7",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/boot/compressed/pgtable.h",
+  "human_readable_source": "#ifndef BOOT_COMPRESSED_PAGETABLE_H\n#define BOOT_COMPRESSED_PAGETABLE_H\n\n#define TRAMPOLINE_32BIT_SIZE\t\t(2 * PAGE_SIZE)\n\n#define TRAMPOLINE_32BIT_CODE_OFFSET\tPAGE_SIZE\n#define TRAMPOLINE_32BIT_CODE_SIZE\t0xA0\n\n#ifndef __ASSEMBLER__\n\nextern unsigned long *trampoline_32bit;\n\nextern void trampoline_32bit_src(void *trampoline, bool enable_5lvl);\n\nextern const u16 trampoline_ljmp_imm_offset;\n\n#endif  \n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "5e8be57b66054efa5a186cbad9472e686bb91c01fbb185dec12feeabf47a8169",
+  "original_prompt": "Ingested from linux-6.6.14/lib/pldmfw/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-$(CONFIG_PLDMFW)\t+= pldmfw.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

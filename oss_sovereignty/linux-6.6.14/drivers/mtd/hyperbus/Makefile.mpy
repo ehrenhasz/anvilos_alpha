@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "effa0b863fc6af866f3bf5eb5be21a306b31f92b6a0df6d625cdb36242d7b272",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/mtd/hyperbus/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n\nobj-$(CONFIG_MTD_HYPERBUS)\t+= hyperbus-core.o\nobj-$(CONFIG_HBMC_AM654)\t+= hbmc-am654.o\nobj-$(CONFIG_RPCIF_HYPERBUS)\t+= rpc-if.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "a8aad489d81089707c70ed08fe3870f77416eef2665b23ced3d107f81ff4c4e0",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/tee/amdtee/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: MIT\nobj-$(CONFIG_AMDTEE) += amdtee.o\namdtee-objs += core.o\namdtee-objs += call.o\namdtee-objs += shm_pool.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

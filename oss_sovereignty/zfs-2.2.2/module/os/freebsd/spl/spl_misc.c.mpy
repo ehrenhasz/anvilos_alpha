@@ -1,0 +1,9 @@
+{
+  "module_name": "spl_misc.c",
+  "hash_id": "4c0d6f2de99f4b9362649e6697596ed1f104abdb63e5fca86bfb1674a62d3a45",
+  "original_prompt": "Ingested from zfs-2.2.2/module/os/freebsd/spl/spl_misc.c",
+  "human_readable_source": " \n\n#include <sys/cdefs.h>\n__FBSDID(\"$FreeBSD$\");\n\n#include <sys/types.h>\n#include <sys/param.h>\n#include <sys/jail.h>\n#include <sys/kernel.h>\n#include <sys/libkern.h>\n#include <sys/limits.h>\n#include <sys/misc.h>\n#include <sys/sysctl.h>\n#include <sys/vnode.h>\n\n#include <sys/zfs_context.h>\n\nstatic struct opensolaris_utsname hw_utsname = {\n\t.machine = MACHINE\n};\n\nutsname_t *\nutsname(void)\n{\n\treturn (&hw_utsname);\n}\n\nstatic void\nopensolaris_utsname_init(void *arg)\n{\n\n\thw_utsname.sysname = ostype;\n\thw_utsname.nodename = prison0.pr_hostname;\n\thw_utsname.release = osrelease;\n\tsnprintf(hw_utsname.version, sizeof (hw_utsname.version),\n\t    \"%d\", osreldate);\n}\n\nchar *\nkmem_strdup(const char *s)\n{\n\tchar *buf;\n\n\tbuf = kmem_alloc(strlen(s) + 1, KM_SLEEP);\n\tstrcpy(buf, s);\n\treturn (buf);\n}\n\nint\nddi_copyin(const void *from, void *to, size_t len, int flags)\n{\n\t \n\tif (flags & FKIOCTL) {\n\t\tmemcpy(to, from, len);\n\t\treturn (0);\n\t}\n\n\treturn (copyin(from, to, len));\n}\n\nint\nddi_copyout(const void *from, void *to, size_t len, int flags)\n{\n\t \n\tif (flags & FKIOCTL) {\n\t\tmemcpy(to, from, len);\n\t\treturn (0);\n\t}\n\n\treturn (copyout(from, to, len));\n}\n\nvoid\nspl_panic(const char *file, const char *func, int line, const char *fmt, ...)\n{\n\tva_list ap;\n\n\tva_start(ap, fmt);\n\tvpanic(fmt, ap);\n\tva_end(ap);\n}\n\n\nSYSINIT(opensolaris_utsname_init, SI_SUB_TUNABLES, SI_ORDER_ANY,\n    opensolaris_utsname_init, NULL);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "usbip_host_driver.c",
+  "hash_id": "361fd3fbf04efe2962f339a70b782977c5d74239c0100ef686054d62a1bb6af0",
+  "original_prompt": "Ingested from linux-6.6.14/tools/usb/usbip/libsrc/usbip_host_driver.c",
+  "human_readable_source": "\n \n\n#include <unistd.h>\n#include <libudev.h>\n\n#include \"usbip_host_common.h\"\n#include \"usbip_host_driver.h\"\n\n#undef  PROGNAME\n#define PROGNAME \"libusbip\"\n\nstatic int is_my_device(struct udev_device *dev)\n{\n\tconst char *driver;\n\n\tdriver = udev_device_get_driver(dev);\n\treturn driver != NULL && !strcmp(driver, USBIP_HOST_DRV_NAME);\n}\n\nstatic int usbip_host_driver_open(struct usbip_host_driver *hdriver)\n{\n\tint ret;\n\n\thdriver->ndevs = 0;\n\tINIT_LIST_HEAD(&hdriver->edev_list);\n\n\tret = usbip_generic_driver_open(hdriver);\n\tif (ret)\n\t\terr(\"please load \" USBIP_CORE_MOD_NAME \".ko and \"\n\t\t    USBIP_HOST_DRV_NAME \".ko!\");\n\treturn ret;\n}\n\nstruct usbip_host_driver host_driver = {\n\t.edev_list = LIST_HEAD_INIT(host_driver.edev_list),\n\t.udev_subsystem = \"usb\",\n\t.ops = {\n\t\t.open = usbip_host_driver_open,\n\t\t.close = usbip_generic_driver_close,\n\t\t.refresh_device_list = usbip_generic_refresh_device_list,\n\t\t.get_device = usbip_generic_get_device,\n\t\t.read_device = read_usb_device,\n\t\t.read_interface = read_usb_interface,\n\t\t.is_my_device = is_my_device,\n\t},\n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

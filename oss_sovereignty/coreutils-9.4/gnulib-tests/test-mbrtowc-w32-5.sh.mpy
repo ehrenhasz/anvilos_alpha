@@ -1,0 +1,9 @@
+{
+  "module_name": "test-mbrtowc-w32-5.sh",
+  "hash_id": "64eabf754e7b71d2b27435b645cba56e02bd31fbcfb576eceecbd2f4808cdf4b",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-mbrtowc-w32-5.sh",
+  "human_readable_source": "#!/bin/sh\n\n# Test a CP932 locale.\n${CHECKER} ./test-mbrtowc-w32${EXEEXT} Japanese_Japan 932\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

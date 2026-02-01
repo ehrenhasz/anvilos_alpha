@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "31dadc90d58a8de8cc31c4cf7f32992dab468a5a6721a09e3dff1437cb4d8941",
+  "original_prompt": "Ingested from linux-6.6.14/kernel/livepatch/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-$(CONFIG_LIVEPATCH) += livepatch.o\n\nlivepatch-objs := core.o patch.o shadow.o state.o transition.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

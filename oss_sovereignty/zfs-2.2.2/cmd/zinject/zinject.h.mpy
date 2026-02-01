@@ -1,0 +1,9 @@
+{
+  "module_name": "zinject.h",
+  "hash_id": "24454357e5351f11564c0d1d53f5904ab53b45575fb326871de514b79005ae6d",
+  "original_prompt": "Ingested from zfs-2.2.2/cmd/zinject/zinject.h",
+  "human_readable_source": " \n \n\n#ifndef\t_ZINJECT_H\n#define\t_ZINJECT_H\n\n#include <sys/zfs_ioctl.h>\n\n#ifdef\t__cplusplus\nextern \"C\" {\n#endif\n\ntypedef enum {\n\tTYPE_DATA,\t\t \n\tTYPE_DNODE,\t\t \n\tTYPE_MOS,\t\t \n\tTYPE_MOSDIR,\t\t \n\tTYPE_METASLAB,\t\t \n\tTYPE_CONFIG,\t\t \n\tTYPE_BPOBJ,\t\t \n\tTYPE_SPACEMAP,\t\t \n\tTYPE_ERRLOG,\t\t \n\tTYPE_LABEL_UBERBLOCK,\t \n\tTYPE_LABEL_NVLIST,\t \n\tTYPE_LABEL_PAD1,\t \n\tTYPE_LABEL_PAD2,\t \n\tTYPE_INVAL\n} err_type_t;\n\n#define\tMOS_TYPE(t)\t\\\n\t((t) >= TYPE_MOS && (t) < TYPE_LABEL_UBERBLOCK)\n\n#define\tLABEL_TYPE(t)\t\\\n\t((t) >= TYPE_LABEL_UBERBLOCK && (t) < TYPE_INVAL)\n\nint translate_record(err_type_t type, const char *object, const char *range,\n    int level, zinject_record_t *record, char *poolname, char *dataset);\nint translate_raw(const char *raw, zinject_record_t *record);\nint translate_device(const char *pool, const char *device,\n    err_type_t label_type, zinject_record_t *record);\nvoid usage(void);\n\nextern libzfs_handle_t *g_zfs;\n\n#ifdef\t__cplusplus\n}\n#endif\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

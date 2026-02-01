@@ -1,0 +1,9 @@
+{
+  "module_name": "vimc-streamer.h",
+  "hash_id": "c18e731f62b55b893d4a93903fb56771671a500c8ac30635fb59cd08ed34dbde",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/test-drivers/vimc/vimc-streamer.h",
+  "human_readable_source": " \n \n\n#ifndef _VIMC_STREAMER_H_\n#define _VIMC_STREAMER_H_\n\n#include <media/media-device.h>\n\n#include \"vimc-common.h\"\n\n#define VIMC_STREAMER_PIPELINE_MAX_SIZE 16\n\n \nstruct vimc_stream {\n\tstruct media_pipeline pipe;\n\tstruct vimc_ent_device *ved_pipeline[VIMC_STREAMER_PIPELINE_MAX_SIZE];\n\tunsigned int pipe_size;\n\tstruct task_struct *kthread;\n};\n\nint vimc_streamer_s_stream(struct vimc_stream *stream,\n\t\t\t   struct vimc_ent_device *ved,\n\t\t\t   int enable);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

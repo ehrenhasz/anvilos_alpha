@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "0006dfcfcdc39280b53aa1c39e637092b978d7ff927a35d1b82d80054eeb9397",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/cirrus/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Makefile for the Cirrus network device drivers.\n#\n\nobj-$(CONFIG_CS89x0) += cs89x0.o\nobj-$(CONFIG_EP93XX_ETH) += ep93xx_eth.o\nobj-$(CONFIG_MAC89x0) += mac89x0.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "ssm2602-spi.c",
+  "hash_id": "976ac8f5eaa91d37b04aa6f02a1dbc08dd1a853dd390a6354f43bdc037361ea8",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/codecs/ssm2602-spi.c",
+  "human_readable_source": "\n \n\n#include <linux/module.h>\n#include <linux/spi/spi.h>\n#include <linux/regmap.h>\n\n#include <sound/soc.h>\n\n#include \"ssm2602.h\"\n\nstatic int ssm2602_spi_probe(struct spi_device *spi)\n{\n\treturn ssm2602_probe(&spi->dev, SSM2602,\n\t\tdevm_regmap_init_spi(spi, &ssm2602_regmap_config));\n}\n\nstatic const struct of_device_id ssm2602_of_match[] = {\n\t{ .compatible = \"adi,ssm2602\", },\n\t{ }\n};\nMODULE_DEVICE_TABLE(of, ssm2602_of_match);\n\nstatic struct spi_driver ssm2602_spi_driver = {\n\t.driver = {\n\t\t.name\t= \"ssm2602\",\n\t\t.of_match_table = ssm2602_of_match,\n\t},\n\t.probe\t\t= ssm2602_spi_probe,\n};\nmodule_spi_driver(ssm2602_spi_driver);\n\nMODULE_DESCRIPTION(\"ASoC SSM2602 SPI driver\");\nMODULE_AUTHOR(\"Cliff Cai\");\nMODULE_LICENSE(\"GPL\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": ".git_allowed_signers.asc",
+  "hash_id": "793de0592c036d832ed6948ccf4d9794bc5a634ebec2bc46395ae64c6f879819",
+  "original_prompt": "Ingested from openssh-9.6p1/.git_allowed_signers.asc",
+  "human_readable_source": "-----BEGIN PGP SIGNATURE-----\n\niQIzBAABCgAdFiEEcWi5g4FaXu9ZpK39Kj9BTnNgYLoFAmMMMiIACgkQKj9BTnNg\nYLpyGhAAhZ1RxmD62JnT0gnor1aD0inq1fGPRadaFvXH2OScPcxXMIZWx+otnyZ/\nH9s0bIti42dPHqurgh92KS2mDGVIW8Y8MvxFUr678+hdem1U7Xvjoo0uaveNhJhe\nGxuQDOvXKRmmfL2c6w3wnFChFA1o3K+JNshjCHhWz7u6+UmY0Q9yIxqbSi+vmEPP\nNfWPfGdu4h8r7q11UgTxRSUQkfZXMqpBtb367B9BLduGuKRFKEJNyi6WpjBrqy38\nBvEbAaL52KX8hEp3TKMjo38RbOK+veSoPV5zlLui0WlEwwasgljal3f4RkqCAJob\nhqpFJRogM5XNnA2e68TDTf3buJ3wRRjuK39/CusOJz5v4i6+VCdte+BET1Y4gD6y\nv8KV4pRyumcdbN3khFUkmaQsjo+fyQjWNrgOvv60J2xUWZdchn8lxHOxrfRVKnOi\nBD4bdks7tPQY/XsS5GNJIp21Ji9HGyBajjHo0BlesLodw7FEOf6YE18A3n9qzosR\nRliuP4Hs/Z4sCUuDTbpKtQiUVs40kBbkhEL8kS8FsXz3VO89hAWaUqNUYom8AkKv\nnfDjrZDBLXuVj1Mi8qNPXxqrB/1Cza2/W4U7SK4TlMFXfoXXWxxhefN5vIdMhAJB\nu9Mdz1pY9mowKbd0c0dR+3fauvjM133dzKuyeDHMqDa5JPyd59o=\n=kgnS\n-----END PGP SIGNATURE-----\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

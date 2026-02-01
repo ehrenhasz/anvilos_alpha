@@ -1,0 +1,9 @@
+{
+  "module_name": "mktestdata.sh",
+  "hash_id": "f2f30fea078568c02b9dbc62d9d396b1327ddb80014178c1c85ffa0e1ad0ec12",
+  "original_prompt": "Ingested from openssh-9.6p1/regress/unittests/sshsig/mktestdata.sh",
+  "human_readable_source": "#!/bin/sh\n# $OpenBSD: mktestdata.sh,v 1.1 2020/06/19 04:32:09 djm Exp $\n\nNAMESPACE=unittest\n\nset -ex\n\ncd testdata\n\nif [ -f ../../../misc/sk-dummy/sk-dummy.so ] ; then\n\tSK_DUMMY=../../../misc/sk-dummy/sk-dummy.so\nelif [ -f ../../../misc/sk-dummy/obj/sk-dummy.so ] ; then\n\tSK_DUMMY=../../../misc/sk-dummy/obj/sk-dummy.so\nelse\n\techo \"Can't find sk-dummy.so\" 1>&2\n\texit 1\nfi\n\nrm -f signed-data namespace\nrm -f rsa dsa ecdsa ed25519 ecdsa_sk ed25519_sk\nrm -f rsa.sig dsa.sig ecdsa.sig ed25519.sig ecdsa_sk.sig ed25519_sk.sig\n\nprintf \"This is a test, this is only a test\" > signed-data\nprintf \"$NAMESPACE\" > namespace\n\nssh-keygen -t rsa -C \"RSA test\" -N \"\" -f rsa -m PEM\nssh-keygen -t dsa -C \"DSA test\" -N \"\" -f dsa -m PEM\nssh-keygen -t ecdsa -C \"ECDSA test\" -N \"\" -f ecdsa -m PEM\nssh-keygen -t ed25519 -C \"ED25519 test key\" -N \"\" -f ed25519\nssh-keygen -w \"$SK_DUMMY\" -t ecdsa-sk -C \"ECDSA-SK test key\" \\\n    -N \"\" -f ecdsa_sk\nssh-keygen -w \"$SK_DUMMY\" -t ed25519-sk -C \"ED25519-SK test key\" \\\n    -N \"\" -f ed25519_sk\n\nssh-keygen -Y sign -f rsa -n $NAMESPACE - < signed-data > rsa.sig\nssh-keygen -Y sign -f dsa -n $NAMESPACE - < signed-data > dsa.sig\nssh-keygen -Y sign -f ecdsa -n $NAMESPACE - < signed-data > ecdsa.sig\nssh-keygen -Y sign -f ed25519 -n $NAMESPACE - < signed-data > ed25519.sig\nssh-keygen -w \"$SK_DUMMY\" \\\n\t-Y sign -f ecdsa_sk -n $NAMESPACE - < signed-data > ecdsa_sk.sig\nssh-keygen -w \"$SK_DUMMY\" \\\n\t-Y sign -f ed25519_sk -n $NAMESPACE - < signed-data > ed25519_sk.sig\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

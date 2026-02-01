@@ -1,0 +1,9 @@
+{
+  "module_name": "exynos5422-asv.h",
+  "hash_id": "c85da264113b7f8d0a375e9dd08c3bb1430dfb11c93f6c423837a107a86d0b14",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/soc/samsung/exynos5422-asv.h",
+  "human_readable_source": " \n \n\n#ifndef __LINUX_SOC_EXYNOS5422_ASV_H\n#define __LINUX_SOC_EXYNOS5422_ASV_H\n\n#include <linux/errno.h>\n\nenum {\n\tEXYNOS_ASV_SUBSYS_ID_ARM,\n\tEXYNOS_ASV_SUBSYS_ID_KFC,\n\tEXYNOS_ASV_SUBSYS_ID_MAX\n};\n\nstruct exynos_asv;\n\n#ifdef CONFIG_EXYNOS_ASV_ARM\nint exynos5422_asv_init(struct exynos_asv *asv);\n#else\nstatic inline int exynos5422_asv_init(struct exynos_asv *asv)\n{\n\treturn -ENOTSUPP;\n}\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

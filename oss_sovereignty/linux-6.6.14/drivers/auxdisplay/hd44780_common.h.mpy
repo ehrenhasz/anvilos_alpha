@@ -1,0 +1,9 @@
+{
+  "module_name": "hd44780_common.h",
+  "hash_id": "b78727b1a1e850c2d67a1112245b6ebc39fbb4403694feb0d091322285ecbf4c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/auxdisplay/hd44780_common.h",
+  "human_readable_source": " \n\n#define DEFAULT_LCD_BWIDTH      40\n#define DEFAULT_LCD_HWIDTH      64\n\nstruct hd44780_common {\n\tint ifwidth;\t\t\t \n\tint bwidth;\t\t\t \n\tint hwidth;\t\t\t \n\tunsigned long hd44780_common_flags;\n\tvoid (*write_data)(struct hd44780_common *hdc, int data);\n\tvoid (*write_cmd)(struct hd44780_common *hdc, int cmd);\n\t \n\tvoid (*write_cmd_raw4)(struct hd44780_common *hdc, int cmd);\n\tvoid *hd44780;\n};\n\nint hd44780_common_print(struct charlcd *lcd, int c);\nint hd44780_common_gotoxy(struct charlcd *lcd, unsigned int x, unsigned int y);\nint hd44780_common_home(struct charlcd *lcd);\nint hd44780_common_clear_display(struct charlcd *lcd);\nint hd44780_common_init_display(struct charlcd *lcd);\nint hd44780_common_shift_cursor(struct charlcd *lcd,\n\t\tenum charlcd_shift_dir dir);\nint hd44780_common_shift_display(struct charlcd *lcd,\n\t\tenum charlcd_shift_dir dir);\nint hd44780_common_display(struct charlcd *lcd, enum charlcd_onoff on);\nint hd44780_common_cursor(struct charlcd *lcd, enum charlcd_onoff on);\nint hd44780_common_blink(struct charlcd *lcd, enum charlcd_onoff on);\nint hd44780_common_fontsize(struct charlcd *lcd, enum charlcd_fontsize size);\nint hd44780_common_lines(struct charlcd *lcd, enum charlcd_lines lines);\nint hd44780_common_redefine_char(struct charlcd *lcd, char *esc);\nstruct hd44780_common *hd44780_common_alloc(void);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

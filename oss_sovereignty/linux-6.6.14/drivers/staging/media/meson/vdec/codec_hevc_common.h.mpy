@@ -1,0 +1,9 @@
+{
+  "module_name": "codec_hevc_common.h",
+  "hash_id": "c1a5ab4a1e442b94adba81a2d4877b9e6d8451cde46b2fc61a3769dc245c9d66",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/meson/vdec/codec_hevc_common.h",
+  "human_readable_source": " \n \n\n#ifndef __MESON_VDEC_HEVC_COMMON_H_\n#define __MESON_VDEC_HEVC_COMMON_H_\n\n#include \"vdec.h\"\n\n#define PARSER_CMD_SKIP_CFG_0 0x0000090b\n#define PARSER_CMD_SKIP_CFG_1 0x1b14140f\n#define PARSER_CMD_SKIP_CFG_2 0x001b1910\n\n#define VDEC_HEVC_PARSER_CMD_LEN 37\nextern const u16 vdec_hevc_parser_cmd[VDEC_HEVC_PARSER_CMD_LEN];\n\n#define MAX_REF_PIC_NUM\t24\n\nstruct codec_hevc_common {\n\tvoid      *fbc_buffer_vaddr[MAX_REF_PIC_NUM];\n\tdma_addr_t fbc_buffer_paddr[MAX_REF_PIC_NUM];\n\n\tvoid      *mmu_header_vaddr[MAX_REF_PIC_NUM];\n\tdma_addr_t mmu_header_paddr[MAX_REF_PIC_NUM];\n\n\tvoid      *mmu_map_vaddr;\n\tdma_addr_t mmu_map_paddr;\n};\n\n \nstatic inline int codec_hevc_use_fbc(u32 pixfmt, int is_10bit)\n{\n\t \n\treturn is_10bit;\n}\n\n \nstatic inline int codec_hevc_use_downsample(u32 pixfmt, int is_10bit)\n{\n\treturn is_10bit;\n}\n\n \nstatic inline int codec_hevc_use_mmu(u32 revision, u32 pixfmt, int is_10bit)\n{\n\treturn revision >= VDEC_REVISION_G12A &&\n\t       codec_hevc_use_fbc(pixfmt, is_10bit);\n}\n\n \nvoid codec_hevc_setup_decode_head(struct amvdec_session *sess, int is_10bit);\n\nvoid codec_hevc_free_fbc_buffers(struct amvdec_session *sess,\n\t\t\t\t struct codec_hevc_common *comm);\n\nvoid codec_hevc_free_mmu_headers(struct amvdec_session *sess,\n\t\t\t\t struct codec_hevc_common *comm);\n\nint codec_hevc_setup_buffers(struct amvdec_session *sess,\n\t\t\t     struct codec_hevc_common *comm,\n\t\t\t     int is_10bit);\n\nvoid codec_hevc_fill_mmu_map(struct amvdec_session *sess,\n\t\t\t     struct codec_hevc_common *comm,\n\t\t\t     struct vb2_buffer *vb);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

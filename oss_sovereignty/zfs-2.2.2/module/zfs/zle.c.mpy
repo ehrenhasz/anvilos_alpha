@@ -1,0 +1,9 @@
+{
+  "module_name": "zle.c",
+  "hash_id": "e7e5e5e1eb585344abe159b623bc2bf9eb9ce9aa9ce5fd45e38459bd96cf5121",
+  "original_prompt": "Ingested from zfs-2.2.2/module/zfs/zle.c",
+  "human_readable_source": " \n\n \n\n \n#include <sys/types.h>\n#include <sys/sysmacros.h>\n#include <sys/zio_compress.h>\n\nsize_t\nzle_compress(void *s_start, void *d_start, size_t s_len, size_t d_len, int n)\n{\n\tuchar_t *src = s_start;\n\tuchar_t *dst = d_start;\n\tuchar_t *s_end = src + s_len;\n\tuchar_t *d_end = dst + d_len;\n\n\twhile (src < s_end && dst < d_end - 1) {\n\t\tuchar_t *first = src;\n\t\tuchar_t *len = dst++;\n\t\tif (src[0] == 0) {\n\t\t\tuchar_t *last = src + (256 - n);\n\t\t\twhile (src < MIN(last, s_end) && src[0] == 0)\n\t\t\t\tsrc++;\n\t\t\t*len = src - first - 1 + n;\n\t\t} else {\n\t\t\tuchar_t *last = src + n;\n\t\t\tif (d_end - dst < n)\n\t\t\t\tbreak;\n\t\t\twhile (src < MIN(last, s_end) - 1 && (src[0] | src[1]))\n\t\t\t\t*dst++ = *src++;\n\t\t\tif (src[0])\n\t\t\t\t*dst++ = *src++;\n\t\t\t*len = src - first - 1;\n\t\t}\n\t}\n\treturn (src == s_end ? dst - (uchar_t *)d_start : s_len);\n}\n\nint\nzle_decompress(void *s_start, void *d_start, size_t s_len, size_t d_len, int n)\n{\n\tuchar_t *src = s_start;\n\tuchar_t *dst = d_start;\n\tuchar_t *s_end = src + s_len;\n\tuchar_t *d_end = dst + d_len;\n\n\twhile (src < s_end && dst < d_end) {\n\t\tint len = 1 + *src++;\n\t\tif (len <= n) {\n\t\t\tif (src + len > s_end || dst + len > d_end)\n\t\t\t\treturn (-1);\n\t\t\twhile (len-- != 0)\n\t\t\t\t*dst++ = *src++;\n\t\t} else {\n\t\t\tlen -= n;\n\t\t\tif (dst + len > d_end)\n\t\t\t\treturn (-1);\n\t\t\twhile (len-- != 0)\n\t\t\t\t*dst++ = 0;\n\t\t}\n\t}\n\treturn (dst == d_end ? 0 : -1);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

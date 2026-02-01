@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "9d1b2572d6fc7856fd762c8f6e03ea33ed277fb55a8f254714ab3790aff29124",
+  "original_prompt": "Ingested from linux-6.6.14/sound/pci/rme9652/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for ALSA\n# Copyright (c) 2001 by Jaroslav Kysela <perex@perex.cz>\n#\n\nsnd-rme9652-objs := rme9652.o\nsnd-hdsp-objs := hdsp.o\nsnd-hdspm-objs := hdspm.o\n\n# Toplevel Module Dependency\nobj-$(CONFIG_SND_RME9652) += snd-rme9652.o\nobj-$(CONFIG_SND_HDSP) += snd-hdsp.o\nobj-$(CONFIG_SND_HDSPM) +=snd-hdspm.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

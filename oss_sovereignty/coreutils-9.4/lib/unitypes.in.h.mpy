@@ -1,0 +1,9 @@
+{
+  "module_name": "unitypes.in.h",
+  "hash_id": "c7b567f04cf384691ad6595c74a9cb84dc55e25812a46b428a9833df3e7897a3",
+  "original_prompt": "Ingested from coreutils-9.4/lib/unitypes.in.h",
+  "human_readable_source": " \n#include <stdint.h>\n\n \ntypedef uint32_t ucs4_t;\n\n \n#ifndef _UC_ATTRIBUTE_CONST\n# if __GNUC__ > 2 || (__GNUC__ == 2 && __GNUC_MINOR__ >= 95) || defined __clang__\n#  define _UC_ATTRIBUTE_CONST __attribute__ ((__const__))\n# else\n#  define _UC_ATTRIBUTE_CONST\n# endif\n#endif\n\n \n#ifndef _UC_ATTRIBUTE_PURE\n# if __GNUC__ > 2 || (__GNUC__ == 2 && __GNUC_MINOR__ >= 96) || defined __clang__\n#  define _UC_ATTRIBUTE_PURE __attribute__ ((__pure__))\n# else\n#  define _UC_ATTRIBUTE_PURE\n# endif\n#endif\n\n \n#ifndef _UC_RESTRICT\n# if defined __restrict \\\n     || 2 < __GNUC__ + (95 <= __GNUC_MINOR__) \\\n     || __clang_major__ >= 3\n#  define _UC_RESTRICT __restrict\n# elif 199901L <= __STDC_VERSION__ || defined restrict\n#  define _UC_RESTRICT restrict\n# else\n#  define _UC_RESTRICT\n# endif\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

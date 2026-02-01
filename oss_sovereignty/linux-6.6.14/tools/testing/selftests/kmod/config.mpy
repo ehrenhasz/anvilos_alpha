@@ -1,0 +1,9 @@
+{
+  "module_name": "config",
+  "hash_id": "bc9edfd5bfc541329c6fb498f9bc13a9fe467fe55df25dc605dd20c23bccf279",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/kmod/config",
+  "human_readable_source": "CONFIG_TEST_KMOD=m\nCONFIG_TEST_LKM=m\nCONFIG_XFS_FS=m\n\n# For the module parameter force_init_test is used\nCONFIG_TUN=m\nCONFIG_BTRFS_FS=m\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

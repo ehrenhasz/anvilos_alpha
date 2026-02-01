@@ -1,0 +1,9 @@
+{
+  "module_name": "ia_css_bnr.host.h",
+  "hash_id": "aab1eeeba8c62f36586120f26be807ee4e475e86cde71e0188596d9235f05e2d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/isp/kernels/bnr/bnr_1.0/ia_css_bnr.host.h",
+  "human_readable_source": " \n \n\n#ifndef __IA_CSS_BNR_HOST_H\n#define __IA_CSS_BNR_HOST_H\n\n#include \"sh_css_params.h\"\n\n#include \"ynr/ynr_1.0/ia_css_ynr_types.h\"\n#include \"ia_css_bnr_param.h\"\n\nvoid\nia_css_bnr_encode(\n    struct sh_css_isp_bnr_params *to,\n    const struct ia_css_nr_config *from,\n    unsigned int size);\n\nvoid\nia_css_bnr_dump(\n    const struct sh_css_isp_bnr_params *bnr,\n    unsigned int level);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "dsa.sig",
+  "hash_id": "cd1735af2f1869624f8bf15df0cd7af6cd4099a86c4ba5bb91827f8f3381dc8d",
+  "original_prompt": "Ingested from openssh-9.6p1/regress/unittests/sshsig/testdata/dsa.sig",
+  "human_readable_source": "-----BEGIN SSH SIGNATURE-----\nU1NIU0lHAAAAAQAAAbEAAAAHc3NoLWRzcwAAAIEAl6Z3UHc9pkFZ5PpWDhd58Q0/oekoiZ\nlLwRYZxVgb/LRuKUzpGxMBrnyxMxqc404/t241Wruyxbd+wBa6rODbptu9gVjbGDSIzpRj\n4Ku14799hTdNMSWIdQ6EbNXBhp76IZbFhGphhoUxw9WvYqXLTxAVfja8bWTK5fqTv2WYPL\n0AAAAVAKJBP3iNYSpSuW74+q4WxLCuK8O3AAAAgEJXRPgSLsZb6BtSBYlnrMdAlPh9ijtE\nhGXPQEl/6ozmm4dBW+/KH05RH/YFhxX2rfEr0iUCDjzFZW++i4qPAADE/BGmv6kCimJkC3\nTauDC4YY8ceSixreidichTxMQr/qpx2Bw+fZ4LS8Csqho6UgvCzy5LXV5/FvwGnS8tSu/j\nAAAAgGwwcFzOFJ5SHzDuLbQJWDg6U1OZ8lFVTa07o6kzFn+q6K1GbeEspI27jFGS8cnCLg\nuFC2/VJe8sjmCzk/eAIby2wgCLIKouKceFrreIF0mmqGdX/H+Pt0HImvfElueYt1YuSQK0\n2TUivX8K4TP658DIsZ0paSwQC7VRSVvnTUGTAAAACHVuaXR0ZXN0AAAAAAAAAAZzaGE1MT\nIAAAA3AAAAB3NzaC1kc3MAAAAodi5lr0pqBpO76OY4N1CtfR85BCgZ95qfVjP/e9lToj0q\nlwjSJJXUjw==\n-----END SSH SIGNATURE-----\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

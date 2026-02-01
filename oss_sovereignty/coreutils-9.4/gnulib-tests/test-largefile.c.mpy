@@ -1,0 +1,9 @@
+{
+  "module_name": "test-largefile.c",
+  "hash_id": "88f198c88f8f5554d314c492b3cdc3f7ce7de3f56c299ce018bc47df942617dc",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-largefile.c",
+  "human_readable_source": " \n\n \n\n#include <config.h>\n\n#include <sys/types.h>\n#include <sys/stat.h>\n#include \"intprops.h\"\n\n \n\nint\nmain (void)\n{\n  int result = 0;\n\n   \n  if (TYPE_MAXIMUM (off_t) >> 31 >> 31 == 0)\n    result |= 1;\n\n   \n  {\n    struct stat st;\n    if (sizeof st.st_size != sizeof (off_t))\n      result |= 2;\n  }\n\n  return result;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

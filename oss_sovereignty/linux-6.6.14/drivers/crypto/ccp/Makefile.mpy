@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "7397d634cb4d1f53fbd2fa1927265851ca213a463be6c76af25ef033286ad6ba",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/crypto/ccp/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nobj-$(CONFIG_CRYPTO_DEV_CCP_DD) += ccp.o\nccp-objs  := sp-dev.o sp-platform.o\nccp-$(CONFIG_CRYPTO_DEV_SP_CCP) += ccp-dev.o \\\n\t    ccp-ops.o \\\n\t    ccp-dev-v3.o \\\n\t    ccp-dev-v5.o \\\n\t    ccp-dmaengine.o\nccp-$(CONFIG_CRYPTO_DEV_CCP_DEBUGFS) += ccp-debugfs.o\nccp-$(CONFIG_PCI) += sp-pci.o\nccp-$(CONFIG_CRYPTO_DEV_SP_PSP) += psp-dev.o \\\n                                   sev-dev.o \\\n                                   tee-dev.o \\\n                                   platform-access.o \\\n                                   dbc.o\n\nobj-$(CONFIG_CRYPTO_DEV_CCP_CRYPTO) += ccp-crypto.o\nccp-crypto-objs := ccp-crypto-main.o \\\n\t\t   ccp-crypto-aes.o \\\n\t\t   ccp-crypto-aes-cmac.o \\\n\t\t   ccp-crypto-aes-xts.o \\\n\t\t   ccp-crypto-aes-galois.o \\\n\t\t   ccp-crypto-des3.o \\\n\t\t   ccp-crypto-rsa.o \\\n\t\t   ccp-crypto-sha.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

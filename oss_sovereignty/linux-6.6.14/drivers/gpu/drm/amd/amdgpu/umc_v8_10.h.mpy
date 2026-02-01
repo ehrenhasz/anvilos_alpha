@@ -1,0 +1,9 @@
+{
+  "module_name": "umc_v8_10.h",
+  "hash_id": "3c7bd680f26145c0e689080590f31b98f871b77cfeee54a4f337b8a06ddfe5e0",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/amdgpu/umc_v8_10.h",
+  "human_readable_source": " \n#ifndef __UMC_V8_10_H__\n#define __UMC_V8_10_H__\n\n#include \"soc15_common.h\"\n#include \"amdgpu.h\"\n\n \n#define UMC_V8_10_CHANNEL_INSTANCE_NUM\t\t2\n \n#define UMC_V8_10_UMC_INSTANCE_NUM\t\t2\n\n \n#define UMC_V8_10_TOTAL_CHANNEL_NUM(adev) \\\n\t(UMC_V8_10_CHANNEL_INSTANCE_NUM * UMC_V8_10_UMC_INSTANCE_NUM * \\\n\t(adev)->gmc.num_umc - hweight32((adev)->gmc.m_half_use) * 2)\n\n \n#define UMC_V8_10_PER_CHANNEL_OFFSET\t0x400\n\n \n#define UMC_V8_10_CE_CNT_MAX\t\t0xffff\n \n#define UUMC_V8_10_CE_INT_THRESHOLD\t0xffff\n \n#define UMC_V8_10_CE_CNT_INIT\t(UMC_V8_10_CE_CNT_MAX - UUMC_V8_10_CE_INT_THRESHOLD)\n\n#define UMC_V8_10_NA_COL_2BITS_POWER_OF_2_NUM\t 4\n\n \n#define UMC_V8_10_NA_C5_BIT\t14\n\n \n#define SWIZZLE_MODE_TMP_ADDR(na, ch_num, ch_idx) \\\n\t\t((((na) >> 10) * (ch_num) + (ch_idx)) << 10)\n#define SWIZZLE_MODE_ADDR_HI(addr, col_bit)  \\\n\t\t(((addr) >> ((col_bit) + 2)) << ((col_bit) + 2))\n#define SWIZZLE_MODE_ADDR_MID(na, col_bit) ((((na) >> 8) & 0x3) << (col_bit))\n#define SWIZZLE_MODE_ADDR_LOW(addr, col_bit) \\\n\t\t((((addr) >> 10) & ((0x1ULL << (col_bit - 8)) - 1)) << 8)\n#define SWIZZLE_MODE_ADDR_LSB(na) ((na) & 0xFF)\n\nextern struct amdgpu_umc_ras umc_v8_10_ras;\nextern const uint32_t\n\tumc_v8_10_channel_idx_tbl[]\n\t\t\t\t[UMC_V8_10_UMC_INSTANCE_NUM]\n\t\t\t\t[UMC_V8_10_CHANNEL_INSTANCE_NUM];\n\nextern const uint32_t\n\tumc_v8_10_channel_idx_tbl_ext0[]\n\t\t\t\t[UMC_V8_10_UMC_INSTANCE_NUM]\n\t\t\t\t[UMC_V8_10_CHANNEL_INSTANCE_NUM];\n#endif\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

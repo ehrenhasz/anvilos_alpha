@@ -1,0 +1,9 @@
+{
+  "module_name": "sk_connect_zero_addr.c",
+  "hash_id": "f2425aa4ecb6e25043fd532ef8dd96515ca58db7647266bc9d9275e9575e127d",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/net/sk_connect_zero_addr.c",
+  "human_readable_source": "\n\n#include <arpa/inet.h>\n#include <error.h>\n#include <errno.h>\n#include <unistd.h>\n\nint main(void)\n{\n\tint fd1, fd2, one = 1;\n\tstruct sockaddr_in6 bind_addr = {\n\t\t.sin6_family = AF_INET6,\n\t\t.sin6_port = htons(20000),\n\t\t.sin6_flowinfo = htonl(0),\n\t\t.sin6_addr = {},\n\t\t.sin6_scope_id = 0,\n\t};\n\n\tinet_pton(AF_INET6, \"::\", &bind_addr.sin6_addr);\n\n\tfd1 = socket(AF_INET6, SOCK_STREAM, IPPROTO_IP);\n\tif (fd1 < 0) {\n\t\terror(1, errno, \"socket fd1\");\n\t\treturn -1;\n\t}\n\n\tif (setsockopt(fd1, SOL_SOCKET, SO_REUSEADDR, &one, sizeof(one))) {\n\t\terror(1, errno, \"setsockopt(SO_REUSEADDR) fd1\");\n\t\tgoto out_err1;\n\t}\n\n\tif (bind(fd1, (struct sockaddr *)&bind_addr, sizeof(bind_addr))) {\n\t\terror(1, errno, \"bind fd1\");\n\t\tgoto out_err1;\n\t}\n\n\tif (listen(fd1, 0)) {\n\t\terror(1, errno, \"listen\");\n\t\tgoto out_err1;\n\t}\n\n\tfd2 = socket(AF_INET6, SOCK_STREAM, IPPROTO_IP);\n\tif (fd2 < 0) {\n\t\terror(1, errno, \"socket fd2\");\n\t\tgoto out_err1;\n\t}\n\n\tif (connect(fd2, (struct sockaddr *)&bind_addr, sizeof(bind_addr))) {\n\t\terror(1, errno, \"bind fd2\");\n\t\tgoto out_err2;\n\t}\n\n\tclose(fd2);\n\tclose(fd1);\n\treturn 0;\n\nout_err2:\n\tclose(fd2);\nout_err1:\n\tclose(fd1);\n\treturn -1;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

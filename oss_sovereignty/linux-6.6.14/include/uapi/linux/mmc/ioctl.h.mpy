@@ -1,0 +1,9 @@
+{
+  "module_name": "ioctl.h",
+  "hash_id": "4d136cb018eca7b29a824fbfbfe4e07e5f3663f267cbb0997ba40bbaf264d73d",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/mmc/ioctl.h",
+  "human_readable_source": " \n#ifndef LINUX_MMC_IOCTL_H\n#define LINUX_MMC_IOCTL_H\n\n#include <linux/types.h>\n#include <linux/major.h>\n\nstruct mmc_ioc_cmd {\n\t \n\tint write_flag;\n\n\t \n\tint is_acmd;\n\n\t__u32 opcode;\n\t__u32 arg;\n\t__u32 response[4];   \n\tunsigned int flags;\n\tunsigned int blksz;\n\tunsigned int blocks;\n\n\t \n\tunsigned int postsleep_min_us;\n\tunsigned int postsleep_max_us;\n\n\t \n\tunsigned int data_timeout_ns;\n\tunsigned int cmd_timeout_ms;\n\n\t \n\t__u32 __pad;\n\n\t \n\t__u64 data_ptr;\n};\n#define mmc_ioc_cmd_set_data(ic, ptr) ic.data_ptr = (__u64)(unsigned long) ptr\n\n \nstruct mmc_ioc_multi_cmd {\n\t__u64 num_of_cmds;\n\tstruct mmc_ioc_cmd cmds[];\n};\n\n#define MMC_IOC_CMD _IOWR(MMC_BLOCK_MAJOR, 0, struct mmc_ioc_cmd)\n \n#define MMC_IOC_MULTI_CMD _IOWR(MMC_BLOCK_MAJOR, 1, struct mmc_ioc_multi_cmd)\n \n#define MMC_IOC_MAX_BYTES  (512L * 1024)\n#define MMC_IOC_MAX_CMDS    255\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

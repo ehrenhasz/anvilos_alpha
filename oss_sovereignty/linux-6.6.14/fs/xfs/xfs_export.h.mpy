@@ -1,0 +1,9 @@
+{
+  "module_name": "xfs_export.h",
+  "hash_id": "50175391a51bba060181176547632a2865bbb7de1fa37dd5f73d4df8074c6103",
+  "original_prompt": "Ingested from linux-6.6.14/fs/xfs/xfs_export.h",
+  "human_readable_source": "\n \n#ifndef __XFS_EXPORT_H__\n#define __XFS_EXPORT_H__\n\n \n\nstruct xfs_fid64 {\n\tu64 ino;\n\tu32 gen;\n\tu64 parent_ino;\n\tu32 parent_gen;\n} __attribute__((packed));\n\n \n#define XFS_FILEID_TYPE_64FLAG\t0x80\t \n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "pcxhr_hwdep.h",
+  "hash_id": "df5317ce3cd0a9b7d923df8d00276f1d671837ea373d21b43a5e9513d7837a11",
+  "original_prompt": "Ingested from linux-6.6.14/sound/pci/pcxhr/pcxhr_hwdep.h",
+  "human_readable_source": " \n \n\n#ifndef __SOUND_PCXHR_HWDEP_H\n#define __SOUND_PCXHR_HWDEP_H\n\n\n \n#define PCXHR_FIRMWARE_XLX_INT_INDEX   0\n#define PCXHR_FIRMWARE_XLX_COM_INDEX   1\n#define PCXHR_FIRMWARE_DSP_EPRM_INDEX  2\n#define PCXHR_FIRMWARE_DSP_BOOT_INDEX  3\n#define PCXHR_FIRMWARE_DSP_MAIN_INDEX  4\n#define PCXHR_FIRMWARE_FILES_MAX_INDEX 5\n\n\n \nint  pcxhr_setup_firmware(struct pcxhr_mgr *mgr);\nvoid pcxhr_reset_board(struct pcxhr_mgr *mgr);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

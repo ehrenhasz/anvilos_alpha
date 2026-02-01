@@ -1,0 +1,9 @@
+{
+  "module_name": "sctop-report",
+  "hash_id": "d6ac4d0d683108c01785e9b44a01da4572c18650daedca0f340e5356ecd1ecbc",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/scripts/python/bin/sctop-report",
+  "human_readable_source": "#!/bin/bash\n# description: syscall top\n# args: [comm] [interval]\nn_args=0\nfor i in \"$@\"\ndo\n    if expr match \"$i\" \"-\" > /dev/null ; then\n\tbreak\n    fi\n    n_args=$(( $n_args + 1 ))\ndone\nif [ \"$n_args\" -gt 2 ] ; then\n    echo \"usage: sctop-report [comm] [interval]\"\n    exit\nfi\nif [ \"$n_args\" -gt 1 ] ; then\n    comm=$1\n    interval=$2\n    shift 2\nelif [ \"$n_args\" -gt 0 ] ; then\n    interval=$1\n    shift\nfi\nperf script $@ -s \"$PERF_EXEC_PATH\"/scripts/python/sctop.py $comm $interval\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

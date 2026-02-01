@@ -1,0 +1,9 @@
+{
+  "module_name": "test-strerror.c",
+  "hash_id": "4d87d31a48196b588d864ab0f325074c447bd127d28ad6a63a1befc0f5a98066",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-strerror.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#include <string.h>\n\n#include \"signature.h\"\nSIGNATURE_CHECK (strerror, char *, (int));\n\n#include <errno.h>\n\n#include \"macros.h\"\n\nint\nmain (void)\n{\n  char *str;\n\n  errno = 0;\n  str = strerror (EACCES);\n  ASSERT (str);\n  ASSERT (*str);\n  ASSERT (errno == 0);\n\n  errno = 0;\n  str = strerror (ETIMEDOUT);\n  ASSERT (str);\n  ASSERT (*str);\n  ASSERT (errno == 0);\n\n  errno = 0;\n  str = strerror (EOVERFLOW);\n  ASSERT (str);\n  ASSERT (*str);\n  ASSERT (errno == 0);\n\n   \n  errno = 0;\n  str = strerror (-3);\n  ASSERT (str);\n  ASSERT (*str);\n  ASSERT (errno == 0 || errno == EINVAL);\n\n  return 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

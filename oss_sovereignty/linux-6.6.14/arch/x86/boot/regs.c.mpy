@@ -1,0 +1,9 @@
+{
+  "module_name": "regs.c",
+  "hash_id": "28dafcc2a7f127235f3d6e9b82a3fa198d4e9144972a9ae2eddb284876a0b32e",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/boot/regs.c",
+  "human_readable_source": "\n \n\n \n\n#include \"boot.h\"\n#include \"string.h\"\n\nvoid initregs(struct biosregs *reg)\n{\n\tmemset(reg, 0, sizeof(*reg));\n\treg->eflags |= X86_EFLAGS_CF;\n\treg->ds = ds();\n\treg->es = ds();\n\treg->fs = fs();\n\treg->gs = gs();\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

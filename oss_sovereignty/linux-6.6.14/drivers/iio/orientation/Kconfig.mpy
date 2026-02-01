@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "813266b2561c37b67ef57f27327302fec5a086f8982794fae20a20f1afd321b5",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/iio/orientation/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Inclinometer sensors\n#\n# When adding new entries keep the list in alphabetical order\n\nmenu \"Inclinometer sensors\"\n\nconfig HID_SENSOR_INCLINOMETER_3D\n\tdepends on HID_SENSOR_HUB\n\tselect IIO_BUFFER\n\tselect HID_SENSOR_IIO_COMMON\n\tselect HID_SENSOR_IIO_TRIGGER\n\ttristate \"HID Inclinometer 3D\"\n\thelp\n\t  Say yes here to build support for the HID SENSOR\n\t  Inclinometer 3D.\n\nconfig HID_SENSOR_DEVICE_ROTATION\n\tdepends on HID_SENSOR_HUB\n\tselect IIO_BUFFER\n\tselect HID_SENSOR_IIO_COMMON\n\tselect HID_SENSOR_IIO_TRIGGER\n\ttristate \"HID Device Rotation\"\n\thelp\n\t  Say yes here to build support for the HID SENSOR\n\t  device rotation. The output of a device rotation sensor\n\t  is presented using quaternion format.\n\nendmenu\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "intrinsic.json",
+  "hash_id": "0476e510609bcc608a72c9adc7e9d5a9c29fbadb618600d75da882c535c91933",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/pmu-events/arch/arm64/ampere/ampereone/intrinsic.json",
+  "human_readable_source": "[\n    {\n        \"ArchStdEvent\": \"LDREX_SPEC\"\n    },\n    {\n        \"ArchStdEvent\": \"STREX_PASS_SPEC\"\n    },\n    {\n        \"ArchStdEvent\": \"STREX_FAIL_SPEC\"\n    },\n    {\n        \"ArchStdEvent\": \"STREX_SPEC\"\n    }\n]\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

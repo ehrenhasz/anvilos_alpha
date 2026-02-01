@@ -1,0 +1,9 @@
+{
+  "module_name": "btf_dump_test_case_bitfields.c",
+  "hash_id": "23f90199c73f9b283bf2182e830b17c6577eb1d2e1d1c38d709524f1f5c1938a",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/btf_dump_test_case_bitfields.c",
+  "human_readable_source": "\n\n \n#include <stdbool.h>\n\n \n \n \n\nstruct bitfields_only_mixed_types {\n\tint a: 3;\n\tlong b: 2;\n\tbool c: 1;  \n\tenum {\n\t\tA,  \n\t\tB,  \n\t} d: 1;\n\tshort e: 5;\n\t \n\tunsigned f: 30;  \n};\n\n \n \n \nstruct bitfield_mixed_with_others {\n\tchar: 4;  \n\tint a: 4;\n\t \n\tshort b;  \n\t \n\tlong c;\n\tlong d: 8;\n\t \n\tint e;  \n\tint f;\n\t \n};\n\n \n \n \nstruct bitfield_flushed {\n\tint a: 4;\n\tlong: 0;  \n\tlong b: 16;\n};\n\nint f(struct {\n\tstruct bitfields_only_mixed_types _1;\n\tstruct bitfield_mixed_with_others _2;\n\tstruct bitfield_flushed _3;\n} *_)\n{\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

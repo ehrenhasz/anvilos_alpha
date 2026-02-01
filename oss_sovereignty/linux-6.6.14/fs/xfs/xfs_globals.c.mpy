@@ -1,0 +1,9 @@
+{
+  "module_name": "xfs_globals.c",
+  "hash_id": "7be5d51217e113db3ff03137bc4d108929159379919496b2f501b5b822052db0",
+  "original_prompt": "Ingested from linux-6.6.14/fs/xfs/xfs_globals.c",
+  "human_readable_source": "\n \n#include \"xfs.h\"\n#include \"xfs_error.h\"\n\n \nxfs_param_t xfs_params = {\n\t\t\t   \n\t.sgid_inherit\t= {\t0,\t\t0,\t\t1\t},\n\t.symlink_mode\t= {\t0,\t\t0,\t\t1\t},\n\t.panic_mask\t= {\t0,\t\t0,\t\tXFS_PTAG_MASK},\n\t.error_level\t= {\t0,\t\t3,\t\t11\t},\n\t.syncd_timer\t= {\t1*100,\t\t30*100,\t\t7200*100},\n\t.stats_clear\t= {\t0,\t\t0,\t\t1\t},\n\t.inherit_sync\t= {\t0,\t\t1,\t\t1\t},\n\t.inherit_nodump\t= {\t0,\t\t1,\t\t1\t},\n\t.inherit_noatim = {\t0,\t\t1,\t\t1\t},\n\t.xfs_buf_timer\t= {\t100/2,\t\t1*100,\t\t30*100\t},\n\t.xfs_buf_age\t= {\t1*100,\t\t15*100,\t\t7200*100},\n\t.inherit_nosym\t= {\t0,\t\t0,\t\t1\t},\n\t.rotorstep\t= {\t1,\t\t1,\t\t255\t},\n\t.inherit_nodfrg\t= {\t0,\t\t1,\t\t1\t},\n\t.fstrm_timer\t= {\t1,\t\t30*100,\t\t3600*100},\n\t.blockgc_timer\t= {\t1,\t\t300,\t\t3600*24},\n};\n\nstruct xfs_globals xfs_globals = {\n\t.log_recovery_delay\t=\t0,\t \n\t.mount_delay\t\t=\t0,\t \n#ifdef XFS_ASSERT_FATAL\n\t.bug_on_assert\t\t=\ttrue,\t \n#else\n\t.bug_on_assert\t\t=\tfalse,\t \n#endif\n#ifdef DEBUG\n\t.pwork_threads\t\t=\t-1,\t \n\t.larp\t\t\t=\tfalse,\t \n#endif\n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

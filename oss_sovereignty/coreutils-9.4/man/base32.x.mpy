@@ -1,0 +1,9 @@
+{
+  "module_name": "base32.x",
+  "hash_id": "68eeaf7f89ef9244da1a8d90e83e281fea1acb387257126323bc3d3f890fab67",
+  "original_prompt": "Ingested from coreutils-9.4/man/base32.x",
+  "human_readable_source": "[NAME]\nbase32 \\- base32 encode/decode data and print to standard output\n[DESCRIPTION]\n.\\\" Add any additional description here\n[SEE ALSO]\nbasenc(1)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

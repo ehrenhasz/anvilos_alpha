@@ -1,0 +1,9 @@
+{
+  "module_name": "sm4-avx.h",
+  "hash_id": "8a99632ff2b59133492058a528c6973b5037b12cca2681c18035418cd85f6d50",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/crypto/sm4-avx.h",
+  "human_readable_source": " \n#ifndef ASM_X86_SM4_AVX_H\n#define ASM_X86_SM4_AVX_H\n\n#include <linux/types.h>\n#include <crypto/sm4.h>\n\ntypedef void (*sm4_crypt_func)(const u32 *rk, u8 *dst, const u8 *src, u8 *iv);\n\nint sm4_avx_ecb_encrypt(struct skcipher_request *req);\nint sm4_avx_ecb_decrypt(struct skcipher_request *req);\n\nint sm4_cbc_encrypt(struct skcipher_request *req);\nint sm4_avx_cbc_decrypt(struct skcipher_request *req,\n\t\t\tunsigned int bsize, sm4_crypt_func func);\n\nint sm4_cfb_encrypt(struct skcipher_request *req);\nint sm4_avx_cfb_decrypt(struct skcipher_request *req,\n\t\t\tunsigned int bsize, sm4_crypt_func func);\n\nint sm4_avx_ctr_crypt(struct skcipher_request *req,\n\t\t\tunsigned int bsize, sm4_crypt_func func);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

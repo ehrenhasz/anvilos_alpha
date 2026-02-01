@@ -1,0 +1,9 @@
+{
+  "module_name": "btf_ptr.h",
+  "hash_id": "a1e4a7cc8aa42149ea390ee0ae1ee18678cb92b1f13edfde413d4239d5c4818e",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/btf_ptr.h",
+  "human_readable_source": " \n \n \n#define btf_ptr btf_ptr___not_used\n#define BTF_F_COMPACT BTF_F_COMPACT___not_used\n#define BTF_F_NONAME BTF_F_NONAME___not_used\n#define BTF_F_PTR_RAW BTF_F_PTR_RAW___not_used\n#define BTF_F_ZERO BTF_F_ZERO___not_used\n#include \"vmlinux.h\"\n#undef btf_ptr\n#undef BTF_F_COMPACT\n#undef BTF_F_NONAME\n#undef BTF_F_PTR_RAW\n#undef BTF_F_ZERO\n\nstruct btf_ptr {\n\tvoid *ptr;\n\t__u32 type_id;\n\t__u32 flags;\n};\n\nenum {\n\tBTF_F_COMPACT\t=\t(1ULL << 0),\n\tBTF_F_NONAME\t=\t(1ULL << 1),\n\tBTF_F_PTR_RAW\t=\t(1ULL << 2),\n\tBTF_F_ZERO\t=\t(1ULL << 3),\n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

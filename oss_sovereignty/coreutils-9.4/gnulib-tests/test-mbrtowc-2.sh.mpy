@@ -1,0 +1,9 @@
+{
+  "module_name": "test-mbrtowc-2.sh",
+  "hash_id": "4d781df6ea752a7567bc81ff5c4e3426cd64c990f84f55bb55f854f4ff2b53b0",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-mbrtowc-2.sh",
+  "human_readable_source": "#!/bin/sh\n\n# Test in an ISO-8859-1 or ISO-8859-15 locale.\n: \"${LOCALE_FR=fr_FR}\"\nif test $LOCALE_FR = none; then\n  if test -f /usr/bin/localedef; then\n    echo \"Skipping test: no traditional french locale is installed\"\n  else\n    echo \"Skipping test: no traditional french locale is supported\"\n  fi\n  exit 77\nfi\n\nLC_ALL=$LOCALE_FR \\\n${CHECKER} ./test-mbrtowc${EXEEXT} 2\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

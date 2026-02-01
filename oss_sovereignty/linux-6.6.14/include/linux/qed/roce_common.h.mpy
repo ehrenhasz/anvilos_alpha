@@ -1,0 +1,9 @@
+{
+  "module_name": "roce_common.h",
+  "hash_id": "c186788393c988469829fbe572a4bbbd1b0e717c6870594b0430625dd1553886",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/qed/roce_common.h",
+  "human_readable_source": " \n \n\n#ifndef __ROCE_COMMON__\n#define __ROCE_COMMON__\n\n \n \n \n\n#define ROCE_REQ_MAX_INLINE_DATA_SIZE\t(256)\n#define ROCE_REQ_MAX_SINGLE_SQ_WQE_SIZE\t(288)\n\n#define ROCE_MAX_QPS\t\t\t(32 * 1024)\n#define ROCE_DCQCN_NP_MAX_QPS\t\t(64)\n#define ROCE_DCQCN_RP_MAX_QPS\t\t(64)\n#define ROCE_LKEY_MW_DIF_EN_BIT\t\t(28)\n\n \nenum roce_async_events_type {\n\tROCE_ASYNC_EVENT_NONE = 0,\n\tROCE_ASYNC_EVENT_COMM_EST = 1,\n\tROCE_ASYNC_EVENT_SQ_DRAINED,\n\tROCE_ASYNC_EVENT_SRQ_LIMIT,\n\tROCE_ASYNC_EVENT_LAST_WQE_REACHED,\n\tROCE_ASYNC_EVENT_CQ_ERR,\n\tROCE_ASYNC_EVENT_LOCAL_INVALID_REQUEST_ERR,\n\tROCE_ASYNC_EVENT_LOCAL_CATASTROPHIC_ERR,\n\tROCE_ASYNC_EVENT_LOCAL_ACCESS_ERR,\n\tROCE_ASYNC_EVENT_QP_CATASTROPHIC_ERR,\n\tROCE_ASYNC_EVENT_CQ_OVERFLOW_ERR,\n\tROCE_ASYNC_EVENT_SRQ_EMPTY,\n\tROCE_ASYNC_EVENT_DESTROY_QP_DONE,\n\tROCE_ASYNC_EVENT_XRC_DOMAIN_ERR,\n\tROCE_ASYNC_EVENT_INVALID_XRCETH_ERR,\n\tROCE_ASYNC_EVENT_XRC_SRQ_CATASTROPHIC_ERR,\n\tMAX_ROCE_ASYNC_EVENTS_TYPE\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

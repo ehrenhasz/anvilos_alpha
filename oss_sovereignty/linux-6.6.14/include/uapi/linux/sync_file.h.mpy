@@ -1,0 +1,9 @@
+{
+  "module_name": "sync_file.h",
+  "hash_id": "00253a414cc798037d1f55115cc56ea1cce028bbf0755d45c1f459115e406a0e",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/sync_file.h",
+  "human_readable_source": " \n \n\n#ifndef _UAPI_LINUX_SYNC_H\n#define _UAPI_LINUX_SYNC_H\n\n#include <linux/ioctl.h>\n#include <linux/types.h>\n\n \nstruct sync_merge_data {\n\tchar\tname[32];\n\t__s32\tfd2;\n\t__s32\tfence;\n\t__u32\tflags;\n\t__u32\tpad;\n};\n\n \nstruct sync_fence_info {\n\tchar\tobj_name[32];\n\tchar\tdriver_name[32];\n\t__s32\tstatus;\n\t__u32\tflags;\n\t__u64\ttimestamp_ns;\n};\n\n \nstruct sync_file_info {\n\tchar\tname[32];\n\t__s32\tstatus;\n\t__u32\tflags;\n\t__u32\tnum_fences;\n\t__u32\tpad;\n\n\t__u64\tsync_fence_info;\n};\n\n#define SYNC_IOC_MAGIC\t\t'>'\n\n \n\n#define SYNC_IOC_MERGE\t\t_IOWR(SYNC_IOC_MAGIC, 3, struct sync_merge_data)\n#define SYNC_IOC_FILE_INFO\t_IOWR(SYNC_IOC_MAGIC, 4, struct sync_file_info)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "strnumcmp.c",
+  "hash_id": "c90d6b1951bef02be4f1f3f7442476d6d27911e05f1716ba805f92ae26c72b0d",
+  "original_prompt": "Ingested from coreutils-9.4/lib/strnumcmp.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#include \"strnumcmp-in.h\"\n\n \n\nint\nstrnumcmp (char const *a, char const *b,\n           int decimal_point, int thousands_sep)\n{\n  return numcompare (a, b, decimal_point, thousands_sep);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

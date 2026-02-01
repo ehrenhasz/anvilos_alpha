@@ -1,0 +1,9 @@
+{
+  "module_name": "test-stdio.c",
+  "hash_id": "1feb6bb832f8eb91e753cf292a089d2aee102fe2ae00e2de3c582255308865e6",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-stdio.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#include <stdio.h>\n\n \nint sk[] = { SEEK_CUR, SEEK_END, SEEK_SET };\n\n \nint pnlm[] = { _PRINTF_NAN_LEN_MAX };\n\n \nstatic_assert (sizeof NULL == sizeof (void *));\n\n \nfpos_t t1;\noff_t t2;\nsize_t t3;\nssize_t t4;\nva_list t5;\n\n#include <string.h>\n\n#include \"nan.h\"\n#include \"macros.h\"\n\nint\nmain (void)\n{\n#if defined DBL_EXPBIT0_WORD && defined DBL_EXPBIT0_BIT\n   \n  {\n    #define NWORDS \\\n      ((sizeof (double) + sizeof (unsigned int) - 1) / sizeof (unsigned int))\n    typedef union { double value; unsigned int word[NWORDS]; } memory_double;\n\n    double value1;\n    memory_double value2;\n    char buf[64];\n\n    value1 = NaNd();\n    sprintf (buf, \"%g\", value1);\n    ASSERT (strlen (buf) <= _PRINTF_NAN_LEN_MAX);\n\n    value2.value = NaNd ();\n    #if DBL_EXPBIT0_BIT == 20\n    value2.word[DBL_EXPBIT0_WORD] ^= 0x54321;\n    #endif\n    sprintf (buf, \"%g\", value2.value);\n    ASSERT (strlen (buf) <= _PRINTF_NAN_LEN_MAX);\n  }\n#endif\n\n  return 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

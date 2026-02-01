@@ -1,0 +1,9 @@
+{
+  "module_name": "posix-timers.h",
+  "hash_id": "3a23e4023e70128e3132c9c30e546b25207566ac52f2b069d971a4d5b04537ae",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/sched/posix-timers.h",
+  "human_readable_source": "#include <linux/posix-timers.h>\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

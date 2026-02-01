@@ -1,0 +1,9 @@
+{
+  "module_name": "ia_css_eed1_8_types.h",
+  "hash_id": "6ddd898c81c3f32bbc01475b4fe97fe76accd204c6efb76d0cf56b01dca19d6c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/isp/kernels/eed1_8/ia_css_eed1_8_types.h",
+  "human_readable_source": " \n \n\n#ifndef __IA_CSS_EED1_8_TYPES_H\n#define __IA_CSS_EED1_8_TYPES_H\n\n \n\n#include \"type_support.h\"\n\n \n\n \n\n \n#define IA_CSS_NUMBER_OF_DEW_ENHANCE_SEGMENTS\t9\n\n \n\nstruct ia_css_eed1_8_config {\n\ts32 rbzp_strength;\t \n\n\ts32 fcstrength;\t \n\ts32 fcthres_0;\t \n\ts32 fcthres_1;\t \n\ts32 fc_sat_coef;\t \n\ts32 fc_coring_prm;\t \n\n\ts32 aerel_thres0;\t \n\ts32 aerel_gain0;\t \n\ts32 aerel_thres1;\t \n\ts32 aerel_gain1;\t \n\n\ts32 derel_thres0;\t \n\ts32 derel_gain0;\t \n\ts32 derel_thres1;\t \n\ts32 derel_gain1;\t \n\n\ts32 coring_pos0;\t \n\ts32 coring_pos1;\t \n\ts32 coring_neg0;\t \n\ts32 coring_neg1;\t \n\n\ts32 gain_exp;\t \n\ts32 gain_pos0;\t \n\ts32 gain_pos1;\t \n\ts32 gain_neg0;\t \n\ts32 gain_neg1;\t \n\n\ts32 pos_margin0;\t \n\ts32 pos_margin1;\t \n\ts32 neg_margin0;\t \n\ts32 neg_margin1;\t \n\n\ts32 dew_enhance_seg_x[IA_CSS_NUMBER_OF_DEW_ENHANCE_SEGMENTS];\t\t \n\ts32 dew_enhance_seg_y[IA_CSS_NUMBER_OF_DEW_ENHANCE_SEGMENTS];\t\t \n\ts32 dew_enhance_seg_slope[(IA_CSS_NUMBER_OF_DEW_ENHANCE_SEGMENTS -\n\t\t\t\t   1)];\t \n\ts32 dew_enhance_seg_exp[(IA_CSS_NUMBER_OF_DEW_ENHANCE_SEGMENTS -\n\t\t\t\t 1)];\t \n\ts32 dedgew_max;\t \n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

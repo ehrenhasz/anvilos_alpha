@@ -1,0 +1,9 @@
+{
+  "module_name": "init.c",
+  "hash_id": "9b03ec9951cc1f218b6eea4a8a9c3dd9f83e7b043236c72aaece2d9efbb8d1b2",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/acpi/arm64/init.c",
+  "human_readable_source": "\n#include <linux/acpi.h>\n#include \"init.h\"\n\nvoid __init acpi_arm_init(void)\n{\n\tif (IS_ENABLED(CONFIG_ACPI_AGDI))\n\t\tacpi_agdi_init();\n\tif (IS_ENABLED(CONFIG_ACPI_APMT))\n\t\tacpi_apmt_init();\n\tif (IS_ENABLED(CONFIG_ACPI_IORT))\n\t\tacpi_iort_init();\n\tif (IS_ENABLED(CONFIG_ARM_AMBA))\n\t\tacpi_amba_init();\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

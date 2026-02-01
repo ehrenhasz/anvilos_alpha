@@ -1,0 +1,9 @@
+{
+  "module_name": "membarrier_test_single_thread.c",
+  "hash_id": "89e0fbf5b8491aa043f9f730f5e1a46e2e9964708c91773aa5c908a6f1e3dd5c",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/membarrier/membarrier_test_single_thread.c",
+  "human_readable_source": "\n#define _GNU_SOURCE\n#include <linux/membarrier.h>\n#include <syscall.h>\n#include <stdio.h>\n#include <errno.h>\n#include <string.h>\n#include <pthread.h>\n\n#include \"membarrier_test_impl.h\"\n\nint main(int argc, char **argv)\n{\n\tksft_print_header();\n\tksft_set_plan(18);\n\n\ttest_membarrier_get_registrations( 0);\n\n\ttest_membarrier_query();\n\n\ttest_membarrier_fail();\n\n\ttest_membarrier_success();\n\n\ttest_membarrier_get_registrations( 0);\n\n\treturn ksft_exit_pass();\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

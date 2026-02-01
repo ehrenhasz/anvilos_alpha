@@ -1,0 +1,9 @@
+{
+  "module_name": "clock.h",
+  "hash_id": "d5a226acb8b896d4a315703f3033c94426ae0834a10e733bcf200dbc5b53628b",
+  "original_prompt": "Ingested from linux-6.6.14/sound/usb/clock.h",
+  "human_readable_source": " \n#ifndef __USBAUDIO_CLOCK_H\n#define __USBAUDIO_CLOCK_H\n\nint snd_usb_init_sample_rate(struct snd_usb_audio *chip,\n\t\t\t     const struct audioformat *fmt, int rate);\n\nint snd_usb_clock_find_source(struct snd_usb_audio *chip,\n\t\t\t      const struct audioformat *fmt, bool validate);\n\nint snd_usb_set_sample_rate_v2v3(struct snd_usb_audio *chip,\n\t\t\t\t const struct audioformat *fmt,\n\t\t\t\t int clock, int rate);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

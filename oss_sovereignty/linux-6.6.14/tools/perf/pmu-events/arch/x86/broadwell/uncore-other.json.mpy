@@ -1,0 +1,9 @@
+{
+  "module_name": "uncore-other.json",
+  "hash_id": "78d498250cbbe73f724afb0c90572f68f2d96016057616b5729e3f6ff19e4672",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/pmu-events/arch/x86/broadwell/uncore-other.json",
+  "human_readable_source": "[\n    {\n        \"BriefDescription\": \"This 48-bit fixed counter counts the UCLK cycles\",\n        \"EventCode\": \"0xff\",\n        \"EventName\": \"UNC_CLOCK.SOCKET\",\n        \"PerPkg\": \"1\",\n        \"PublicDescription\": \"This 48-bit fixed counter counts the UCLK cycles.\",\n        \"Unit\": \"CLOCK\"\n    }\n]\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

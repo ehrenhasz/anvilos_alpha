@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "84e43bfe68a6cbbf8c1cdc0ea2eee82c4728c8c97dbd0aac6f94bc6776e9f9f4",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/landlock/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# First run: make -C ../../../.. headers_install\n\nCFLAGS += -Wall -O2 $(KHDR_INCLUDES)\n\nLOCAL_HDRS += common.h\n\nsrc_test := $(wildcard *_test.c)\n\nTEST_GEN_PROGS := $(src_test:.c=)\n\nTEST_GEN_PROGS_EXTENDED := true\n\n# Short targets:\n$(TEST_GEN_PROGS): LDLIBS += -lcap\n$(TEST_GEN_PROGS_EXTENDED): LDFLAGS += -static\n\ninclude ../lib.mk\n\n# Targets with $(OUTPUT)/ prefix:\n$(TEST_GEN_PROGS): LDLIBS += -lcap\n$(TEST_GEN_PROGS_EXTENDED): LDFLAGS += -static\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

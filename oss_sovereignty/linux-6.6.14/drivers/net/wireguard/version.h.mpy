@@ -1,0 +1,9 @@
+{
+  "module_name": "version.h",
+  "hash_id": "f888cf2c2fe10db2799b21342b4745f68992cd1c57b3e454091aea6be2543aa4",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireguard/version.h",
+  "human_readable_source": "#define WIREGUARD_VERSION \"1.0.0\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

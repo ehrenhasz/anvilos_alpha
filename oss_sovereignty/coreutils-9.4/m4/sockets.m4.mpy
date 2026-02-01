@@ -1,0 +1,9 @@
+{
+  "module_name": "sockets.m4",
+  "hash_id": "a94123b98d7cfc3dc74dae99ec211fdad1c5238e4c8bdb1265984d1189dc212f",
+  "original_prompt": "Ingested from coreutils-9.4/m4/sockets.m4",
+  "human_readable_source": "# sockets.m4 serial 7\ndnl Copyright (C) 2008-2023 Free Software Foundation, Inc.\ndnl This file is free software; the Free Software Foundation\ndnl gives unlimited permission to copy and/or distribute it,\ndnl with or without modifications, as long as this notice is preserved.\n\nAC_DEFUN([gl_SOCKETS],\n[\n  AC_REQUIRE([AC_C_INLINE])\n  AC_REQUIRE([gl_SOCKETLIB])\n  gl_PREREQ_SOCKETS\n])\n\n# Prerequisites of lib/sockets.c.\nAC_DEFUN([gl_PREREQ_SOCKETS], [\n  :\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

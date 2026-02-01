@@ -1,0 +1,9 @@
+{
+  "module_name": "i8254.h",
+  "hash_id": "fab7dc9a26eb9e0b7cfd68f84009e3a4ba568d53e2e041f5a353031dcddd45a3",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/kvm/i8254.h",
+  "human_readable_source": " \n#ifndef __I8254_H\n#define __I8254_H\n\n#include <linux/kthread.h>\n\n#include <kvm/iodev.h>\n\nstruct kvm_kpit_channel_state {\n\tu32 count;  \n\tu16 latched_count;\n\tu8 count_latched;\n\tu8 status_latched;\n\tu8 status;\n\tu8 read_state;\n\tu8 write_state;\n\tu8 write_latch;\n\tu8 rw_mode;\n\tu8 mode;\n\tu8 bcd;  \n\tu8 gate;  \n\tktime_t count_load_time;\n};\n\nstruct kvm_kpit_state {\n\t \n\tstruct kvm_kpit_channel_state channels[3];\n\tu32 flags;\n\tbool is_periodic;\n\ts64 period; \t\t\t\t \n\tstruct hrtimer timer;\n\n\tstruct mutex lock;\n\tatomic_t reinject;\n\tatomic_t pending;  \n\tatomic_t irq_ack;\n\tstruct kvm_irq_ack_notifier irq_ack_notifier;\n};\n\nstruct kvm_pit {\n\tstruct kvm_io_device dev;\n\tstruct kvm_io_device speaker_dev;\n\tstruct kvm *kvm;\n\tstruct kvm_kpit_state pit_state;\n\tint irq_source_id;\n\tstruct kvm_irq_mask_notifier mask_notifier;\n\tstruct kthread_worker *worker;\n\tstruct kthread_work expired;\n};\n\n#define KVM_PIT_BASE_ADDRESS\t    0x40\n#define KVM_SPEAKER_BASE_ADDRESS    0x61\n#define KVM_PIT_MEM_LENGTH\t    4\n#define KVM_PIT_FREQ\t\t    1193181\n#define KVM_MAX_PIT_INTR_INTERVAL   HZ / 100\n#define KVM_PIT_CHANNEL_MASK\t    0x3\n\nstruct kvm_pit *kvm_create_pit(struct kvm *kvm, u32 flags);\nvoid kvm_free_pit(struct kvm *kvm);\n\nvoid kvm_pit_load_count(struct kvm_pit *pit, int channel, u32 val,\n\t\tint hpet_legacy_start);\nvoid kvm_pit_set_reinject(struct kvm_pit *pit, bool reinject);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

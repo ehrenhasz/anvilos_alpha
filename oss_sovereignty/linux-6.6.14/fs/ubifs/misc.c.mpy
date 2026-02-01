@@ -1,0 +1,9 @@
+{
+  "module_name": "misc.c",
+  "hash_id": "05dc245ac96ed878ab6c70a4b00548908235531c35bb95c33a686b911351fa43",
+  "original_prompt": "Ingested from linux-6.6.14/fs/ubifs/misc.c",
+  "human_readable_source": "\n#include <linux/kernel.h>\n#include \"ubifs.h\"\n\n \nvoid ubifs_msg(const struct ubifs_info *c, const char *fmt, ...)\n{\n\tstruct va_format vaf;\n\tva_list args;\n\n\tva_start(args, fmt);\n\n\tvaf.fmt = fmt;\n\tvaf.va = &args;\n\n\tpr_notice(\"UBIFS (ubi%d:%d): %pV\\n\",\n\t\t  c->vi.ubi_num, c->vi.vol_id, &vaf);\n\n\tva_end(args);\n}\t\t\t\t\t\t\t\t    \\\n\n \nvoid ubifs_err(const struct ubifs_info *c, const char *fmt, ...)\n{\n\tstruct va_format vaf;\n\tva_list args;\n\n\tva_start(args, fmt);\n\n\tvaf.fmt = fmt;\n\tvaf.va = &args;\n\n\tpr_err(\"UBIFS error (ubi%d:%d pid %d): %ps: %pV\\n\",\n\t       c->vi.ubi_num, c->vi.vol_id, current->pid,\n\t       __builtin_return_address(0),\n\t       &vaf);\n\n\tva_end(args);\n}\t\t\t\t\t\t\t\t    \\\n\n \nvoid ubifs_warn(const struct ubifs_info *c, const char *fmt, ...)\n{\n\tstruct va_format vaf;\n\tva_list args;\n\n\tva_start(args, fmt);\n\n\tvaf.fmt = fmt;\n\tvaf.va = &args;\n\n\tpr_warn(\"UBIFS warning (ubi%d:%d pid %d): %ps: %pV\\n\",\n\t\tc->vi.ubi_num, c->vi.vol_id, current->pid,\n\t\t__builtin_return_address(0),\n\t\t&vaf);\n\n\tva_end(args);\n}\n\nstatic char *assert_names[] = {\n\t[ASSACT_REPORT] = \"report\",\n\t[ASSACT_RO] = \"read-only\",\n\t[ASSACT_PANIC] = \"panic\",\n};\n\nconst char *ubifs_assert_action_name(struct ubifs_info *c)\n{\n\treturn assert_names[c->assert_action];\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

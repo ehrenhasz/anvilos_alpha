@@ -1,0 +1,9 @@
+{
+  "module_name": "task_io_accounting.h",
+  "hash_id": "86f80a48b8ecefb53f533ba3c320cc185e2d733ad65b6413f79316a40df7c738",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/task_io_accounting.h",
+  "human_readable_source": " \n \n\nstruct task_io_accounting {\n#ifdef CONFIG_TASK_XACCT\n\t \n\tu64 rchar;\n\t \n\tu64 wchar;\n\t \n\tu64 syscr;\n\t \n\tu64 syscw;\n#endif  \n\n#ifdef CONFIG_TASK_IO_ACCOUNTING\n\t \n\tu64 read_bytes;\n\n\t \n\tu64 write_bytes;\n\n\t \n\tu64 cancelled_write_bytes;\n#endif  \n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

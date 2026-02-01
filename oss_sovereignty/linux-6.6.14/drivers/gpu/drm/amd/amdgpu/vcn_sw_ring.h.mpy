@@ -1,0 +1,9 @@
+{
+  "module_name": "vcn_sw_ring.h",
+  "hash_id": "0bf643d1355f075d23744153445f9f271373eef5408e1e891a0ec8922208ee29",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/amdgpu/vcn_sw_ring.h",
+  "human_readable_source": " \n\n#ifndef __VCN_SW_RING_H__\n#define __VCN_SW_RING_H__\n\n#define VCN_SW_RING_EMIT_FRAME_SIZE \\\n\t\t(4 +   \\\n\t\t5 + 5 +   \\\n\t\t1)  \n\nvoid vcn_dec_sw_ring_emit_fence(struct amdgpu_ring *ring, u64 addr,\n\tu64 seq, uint32_t flags);\nvoid vcn_dec_sw_ring_insert_end(struct amdgpu_ring *ring);\nvoid vcn_dec_sw_ring_emit_ib(struct amdgpu_ring *ring, struct amdgpu_job *job,\n\tstruct amdgpu_ib *ib, uint32_t flags);\nvoid vcn_dec_sw_ring_emit_reg_wait(struct amdgpu_ring *ring, uint32_t reg,\n\tuint32_t val, uint32_t mask);\nvoid vcn_dec_sw_ring_emit_vm_flush(struct amdgpu_ring *ring,\n\tuint32_t vmid, uint64_t pd_addr);\nvoid vcn_dec_sw_ring_emit_wreg(struct amdgpu_ring *ring, uint32_t reg,\n\tuint32_t val);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

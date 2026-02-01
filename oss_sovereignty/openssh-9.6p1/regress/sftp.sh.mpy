@@ -1,0 +1,9 @@
+{
+  "module_name": "sftp.sh",
+  "hash_id": "68777c2fbf13a3c340a586546c80311e27dea5e3a3f2fa4657a578eabe3a8b8b",
+  "original_prompt": "Ingested from openssh-9.6p1/regress/sftp.sh",
+  "human_readable_source": "#\t$OpenBSD: sftp.sh,v 1.6 2017/10/30 21:59:43 djm Exp $\n#\tPlaced in the Public Domain.\n\ntid=\"basic sftp put/get\"\n\nSFTPCMDFILE=${OBJ}/batch\ncat >$SFTPCMDFILE <<EOF\nversion\nget $DATA ${COPY}.1\nput $DATA ${COPY}.2\nEOF\n\nBUFFERSIZE=\"5 1000 32000 64000\"\nREQUESTS=\"1 2 10\"\n\nfor B in ${BUFFERSIZE}; do\n\tfor R in ${REQUESTS}; do\n                verbose \"test $tid: buffer_size $B num_requests $R\"\n\t\trm -f ${COPY}.1 ${COPY}.2\n\t\t${SFTP} -D ${SFTPSERVER} -B $B -R $R -b $SFTPCMDFILE \\\n\t\t> /dev/null 2>&1\n\t\tr=$?\n\t\tif [ $r -ne 0 ]; then\n\t\t\tfail \"sftp failed with $r\"\n\t\telse\n\t\t\tcmp $DATA ${COPY}.1 || fail \"corrupted copy after get\"\n\t\t\tcmp $DATA ${COPY}.2 || fail \"corrupted copy after put\"\n\t\tfi\n\tdone\ndone\nrm -f ${COPY}.1 ${COPY}.2\nrm -f $SFTPCMDFILE\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

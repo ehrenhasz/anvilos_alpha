@@ -1,0 +1,9 @@
+{
+  "module_name": "conn.h",
+  "hash_id": "6cb21ff65060b4b07a3178ca9c4b6cc68977123ffece3ba74531251156b536dd",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/include/nvkm/subdev/bios/conn.h",
+  "human_readable_source": " \n#ifndef __NVBIOS_CONN_H__\n#define __NVBIOS_CONN_H__\nenum dcb_connector_type {\n\tDCB_CONNECTOR_VGA = 0x00,\n\tDCB_CONNECTOR_TV_0 = 0x10,\n\tDCB_CONNECTOR_TV_1 = 0x11,\n\tDCB_CONNECTOR_TV_3 = 0x13,\n\tDCB_CONNECTOR_DVI_I = 0x30,\n\tDCB_CONNECTOR_DVI_D = 0x31,\n\tDCB_CONNECTOR_DMS59_0 = 0x38,\n\tDCB_CONNECTOR_DMS59_1 = 0x39,\n\tDCB_CONNECTOR_LVDS = 0x40,\n\tDCB_CONNECTOR_LVDS_SPWG = 0x41,\n\tDCB_CONNECTOR_DP = 0x46,\n\tDCB_CONNECTOR_eDP = 0x47,\n\tDCB_CONNECTOR_mDP = 0x48,\n\tDCB_CONNECTOR_HDMI_0 = 0x60,\n\tDCB_CONNECTOR_HDMI_1 = 0x61,\n\tDCB_CONNECTOR_HDMI_C = 0x63,\n\tDCB_CONNECTOR_DMS59_DP0 = 0x64,\n\tDCB_CONNECTOR_DMS59_DP1 = 0x65,\n\tDCB_CONNECTOR_WFD\t= 0x70,\n\tDCB_CONNECTOR_USB_C = 0x71,\n\tDCB_CONNECTOR_NONE = 0xff\n};\n\nstruct nvbios_connT {\n};\n\nu32 nvbios_connTe(struct nvkm_bios *bios, u8 *ver, u8 *hdr, u8 *cnt, u8 *len);\nu32 nvbios_connTp(struct nvkm_bios *bios, u8 *ver, u8 *hdr, u8 *cnt, u8 *len,\n\t\t  struct nvbios_connT *info);\n\nstruct nvbios_connE {\n\tu8 type;\n\tu8 location;\n\tu8 hpd;\n\tu8 dp;\n\tu8 di;\n\tu8 sr;\n\tu8 lcdid;\n};\n\nu32 nvbios_connEe(struct nvkm_bios *bios, u8 idx, u8 *ver, u8 *hdr);\nu32 nvbios_connEp(struct nvkm_bios *bios, u8 idx, u8 *ver, u8 *hdr,\n\t\t  struct nvbios_connE *info);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

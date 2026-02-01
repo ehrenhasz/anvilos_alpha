@@ -1,0 +1,9 @@
+{
+  "module_name": "ctype_xdigit.c",
+  "hash_id": "d0dc6fa6e97945baf5209f97aa28d12be627c654398eee763d70d6df09327f25",
+  "original_prompt": "Ingested from coreutils-9.4/lib/unictype/ctype_xdigit.c",
+  "human_readable_source": " \n#include \"unictype.h\"\n\n#include \"bitmap.h\"\n\n \n#include \"ctype_xdigit.h\"\n\nbool\nuc_is_xdigit (ucs4_t uc)\n{\n  return bitmap_lookup (&u_is_xdigit, uc);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "big_endian.h",
+  "hash_id": "8287f92edd5c510761df3e3a40275df835aeb09786c1a720c85e318cb25dbea1",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/byteorder/big_endian.h",
+  "human_readable_source": " \n#ifndef _LINUX_BYTEORDER_BIG_ENDIAN_H\n#define _LINUX_BYTEORDER_BIG_ENDIAN_H\n\n#include <uapi/linux/byteorder/big_endian.h>\n\n#ifndef CONFIG_CPU_BIG_ENDIAN\n#warning inconsistent configuration, needs CONFIG_CPU_BIG_ENDIAN\n#endif\n\n#include <linux/byteorder/generic.h>\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

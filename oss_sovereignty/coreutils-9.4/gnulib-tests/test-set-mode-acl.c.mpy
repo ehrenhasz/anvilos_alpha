@@ -1,0 +1,9 @@
+{
+  "module_name": "test-set-mode-acl.c",
+  "hash_id": "42bc3f27e61a65015a23807d5c7648fbd45c39aca64f00e99076a1993c3897cd",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-set-mode-acl.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#include \"acl.h\"\n\n#include <stdlib.h>\n\n#include \"macros.h\"\n\nint\nmain (int argc, char *argv[])\n{\n  const char *file;\n  int mode;\n\n  ASSERT (argc == 3);\n\n  file = argv[1];\n  mode = strtol (argv[2], NULL, 8);\n\n  set_acl (file, -1, mode);\n\n  return 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "k210-rst.h",
+  "hash_id": "fa173c34038abba09ef1231e927694f672ebb1ebd277d98e2dd4385c56a3c6cd",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/reset/k210-rst.h",
+  "human_readable_source": " \n \n#ifndef RESET_K210_SYSCTL_H\n#define RESET_K210_SYSCTL_H\n\n \n#define K210_RST_ROM\t0\n#define K210_RST_DMA\t1\n#define K210_RST_AI\t2\n#define K210_RST_DVP\t3\n#define K210_RST_FFT\t4\n#define K210_RST_GPIO\t5\n#define K210_RST_SPI0\t6\n#define K210_RST_SPI1\t7\n#define K210_RST_SPI2\t8\n#define K210_RST_SPI3\t9\n#define K210_RST_I2S0\t10\n#define K210_RST_I2S1\t11\n#define K210_RST_I2S2\t12\n#define K210_RST_I2C0\t13\n#define K210_RST_I2C1\t14\n#define K210_RST_I2C2\t15\n#define K210_RST_UART1\t16\n#define K210_RST_UART2\t17\n#define K210_RST_UART3\t18\n#define K210_RST_AES\t19\n#define K210_RST_FPIOA\t20\n#define K210_RST_TIMER0\t21\n#define K210_RST_TIMER1\t22\n#define K210_RST_TIMER2\t23\n#define K210_RST_WDT0\t24\n#define K210_RST_WDT1\t25\n#define K210_RST_SHA\t26\n#define K210_RST_RTC\t29\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

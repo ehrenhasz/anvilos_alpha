@@ -1,0 +1,9 @@
+{
+  "module_name": "stat-macros.h",
+  "hash_id": "53cb74b79ca22aeb4a74b479f83c5eba1503ea6cb75203ce55c9a4acb5f5986b",
+  "original_prompt": "Ingested from coreutils-9.4/lib/stat-macros.h",
+  "human_readable_source": " \n#define CHMOD_MODE_BITS \\\n  (S_ISUID | S_ISGID | S_ISVTX | S_IRWXU | S_IRWXG | S_IRWXO)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

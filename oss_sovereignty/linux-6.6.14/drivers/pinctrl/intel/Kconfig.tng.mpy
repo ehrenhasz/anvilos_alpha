@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig.tng",
+  "hash_id": "20831e8bf0f00fa5b21e7c65594240293b092e6d12b380f6411e4b6f521486d4",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/pinctrl/intel/Kconfig.tng",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n# Intel Tangier and compatible pin control drivers\n\nif X86_INTEL_MID || COMPILE_TEST\n\nconfig PINCTRL_TANGIER\n\ttristate\n\tselect PINMUX\n\tselect PINCONF\n\tselect GENERIC_PINCONF\n\thelp\n\t  This is a library driver for Intel Tangier pin controller and to\n\t  be selected and used by respective compatible platform drivers.\n\n\t  If built as a module its name will be pinctrl-tangier.\n\nconfig PINCTRL_MERRIFIELD\n\ttristate \"Intel Merrifield pinctrl driver\"\n\tselect PINCTRL_TANGIER\n\thelp\n\t  Intel Merrifield Family-Level Interface Shim (FLIS) driver provides\n\t  an interface that allows configuring of SoC pins and using them as\n\t  GPIOs.\n\nconfig PINCTRL_MOOREFIELD\n\ttristate \"Intel Moorefield pinctrl driver\"\n\tselect PINCTRL_TANGIER\n\thelp\n\t  Intel Moorefield Family-Level Interface Shim (FLIS) driver provides\n\t  an interface that allows configuring of SoC pins and using them as\n\t  GPIOs.\n\nendif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

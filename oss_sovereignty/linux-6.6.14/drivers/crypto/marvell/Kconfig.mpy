@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "761f80dedef587b167e165f1498353ebe8f8f12bf50c2a1aa354e541ae78019d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/crypto/marvell/Kconfig",
+  "human_readable_source": "#\n# Marvell crypto drivers configuration\n#\n\nconfig CRYPTO_DEV_MARVELL\n\ttristate\n\nconfig CRYPTO_DEV_MARVELL_CESA\n\ttristate \"Marvell's Cryptographic Engine driver\"\n\tdepends on PLAT_ORION || ARCH_MVEBU\n\tselect CRYPTO_LIB_AES\n\tselect CRYPTO_LIB_DES\n\tselect CRYPTO_SKCIPHER\n\tselect CRYPTO_HASH\n\tselect SRAM\n\tselect CRYPTO_DEV_MARVELL\n\thelp\n\t  This driver allows you to utilize the Cryptographic Engines and\n\t  Security Accelerator (CESA) which can be found on MVEBU and ORION\n\t  platforms.\n\t  This driver supports CPU offload through DMA transfers.\n\nconfig CRYPTO_DEV_OCTEONTX_CPT\n\ttristate \"Support for Marvell OcteonTX CPT driver\"\n\tdepends on ARCH_THUNDER || COMPILE_TEST\n\tdepends on PCI_MSI && 64BIT\n\tdepends on CRYPTO_LIB_AES\n\tselect CRYPTO_SKCIPHER\n\tselect CRYPTO_HASH\n\tselect CRYPTO_AEAD\n\tselect CRYPTO_DEV_MARVELL\n\thelp\n\t\tThis driver allows you to utilize the Marvell Cryptographic\n\t\tAccelerator Unit(CPT) found in OcteonTX series of processors.\n\n\t\tTo compile this driver as module, choose M here:\n\t\tthe modules will be called octeontx-cpt and octeontx-cptvf\n\nconfig CRYPTO_DEV_OCTEONTX2_CPT\n\ttristate \"Marvell OcteonTX2 CPT driver\"\n\tdepends on ARCH_THUNDER2 || COMPILE_TEST\n\tdepends on PCI_MSI && 64BIT\n\tdepends on CRYPTO_LIB_AES\n\tdepends on NET_VENDOR_MARVELL\n\tselect OCTEONTX2_MBOX\n\tselect CRYPTO_DEV_MARVELL\n\tselect CRYPTO_SKCIPHER\n\tselect CRYPTO_HASH\n\tselect CRYPTO_AEAD\n\tselect NET_DEVLINK\n\thelp\n\t\tThis driver allows you to utilize the Marvell Cryptographic\n\t\tAccelerator Unit(CPT) found in OcteonTX2 series of processors.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

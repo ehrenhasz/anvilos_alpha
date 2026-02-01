@@ -1,0 +1,9 @@
+{
+  "module_name": "realmode.lds.S",
+  "hash_id": "a7738db36822ac1934e04da5ed168199e653fb7306cf614040b84e51434ff3e3",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/realmode/rm/realmode.lds.S",
+  "human_readable_source": " \n \n\n#include <asm/page_types.h>\n\n#undef i386\n\nOUTPUT_FORMAT(\"elf32-i386\")\nOUTPUT_ARCH(i386)\nENTRY(pa_text_start)\n\nSECTIONS\n{\n\treal_mode_seg = 0;\n\n\t. = 0;\n\t.header : {\n\t\tpa_real_mode_base = .;\n\t\t*(.header)\n\t}\n\n\t. = ALIGN(4);\n\t.rodata : {\n\t\t*(.rodata)\n\t\t*(.rodata.*)\n\t\t. = ALIGN(16);\n\t\tvideo_cards = .;\n\t\t*(.videocards)\n\t\tvideo_cards_end = .;\n\t}\n\n\t. = ALIGN(PAGE_SIZE);\n\tpa_text_start = .;\n\t.text : {\n\t\t*(.text)\n\t\t*(.text.*)\n\t}\n\n\t.text32 : {\n\t\t*(.text32)\n\t\t*(.text32.*)\n\t}\n\n\t.text64 : {\n\t\t*(.text64)\n\t\t*(.text64.*)\n\t}\n\tpa_ro_end = .;\n\n\t. = ALIGN(PAGE_SIZE);\n\t.data : {\n\t\t*(.data)\n\t\t*(.data.*)\n\t}\n\n\t. = ALIGN(128);\n\t.bss : {\n\t\t*(.bss*)\n\t}\n\n\t \n\t. = ALIGN(4);\n\t.signature : {\n\t\t*(.signature)\n\t}\n\n\t/DISCARD/ : {\n\t\t*(.note*)\n\t\t*(.debug*)\n\t}\n\n#include \"pasyms.h\"\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

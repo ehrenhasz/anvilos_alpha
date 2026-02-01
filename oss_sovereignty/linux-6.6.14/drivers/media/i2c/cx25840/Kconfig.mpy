@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "d3354ddf1a3b5f880c5347654aacfa75b1c9102d9002ff6eeedf05cecd013785",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/i2c/cx25840/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig VIDEO_CX25840\n\ttristate \"Conexant CX2584x audio/video decoders\"\n\tdepends on VIDEO_DEV && I2C\n\thelp\n\t  Support for the Conexant CX2584x audio/video decoders.\n\n\t  To compile this driver as a module, choose M here: the\n\t  module will be called cx25840\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

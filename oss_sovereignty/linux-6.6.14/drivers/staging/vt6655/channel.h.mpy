@@ -1,0 +1,9 @@
+{
+  "module_name": "channel.h",
+  "hash_id": "3a46d5a7e2200135a2d45c6db5f206af03bb901d192cec06196ed0ce168a5561",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/vt6655/channel.h",
+  "human_readable_source": " \n \n\n#ifndef _CHANNEL_H_\n#define _CHANNEL_H_\n\n#include \"card.h\"\n\nvoid vnt_init_bands(struct vnt_private *priv);\n\nbool set_channel(struct vnt_private *priv, struct ieee80211_channel *ch);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

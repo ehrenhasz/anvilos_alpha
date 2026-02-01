@@ -1,0 +1,9 @@
+{
+  "module_name": "symlink.c",
+  "hash_id": "144f4997fd7a130c88cd8a66030b7f92a5e1c8c1eaaf3727f54b10ce1f3012ee",
+  "original_prompt": "Ingested from linux-6.6.14/fs/autofs/symlink.c",
+  "human_readable_source": "\n \n\n#include \"autofs_i.h\"\n\nstatic const char *autofs_get_link(struct dentry *dentry,\n\t\t\t\t   struct inode *inode,\n\t\t\t\t   struct delayed_call *done)\n{\n\tstruct autofs_sb_info *sbi;\n\tstruct autofs_info *ino;\n\n\tif (!dentry)\n\t\treturn ERR_PTR(-ECHILD);\n\tsbi = autofs_sbi(dentry->d_sb);\n\tino = autofs_dentry_ino(dentry);\n\tif (ino && !autofs_oz_mode(sbi))\n\t\tino->last_used = jiffies;\n\treturn d_inode(dentry)->i_private;\n}\n\nconst struct inode_operations autofs_symlink_inode_operations = {\n\t.get_link\t= autofs_get_link\n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

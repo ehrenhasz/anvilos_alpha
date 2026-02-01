@@ -1,0 +1,9 @@
+{
+  "module_name": "config",
+  "hash_id": "97d1dd6ab3b012dbd7d1722383bf7603e0a78d0983200c99f4b5f1fdb7ba0be2",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/pid_namespace/config",
+  "human_readable_source": "CONFIG_PID_NS=y\nCONFIG_USER_NS=y\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

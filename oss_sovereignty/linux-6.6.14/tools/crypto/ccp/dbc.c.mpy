@@ -1,0 +1,9 @@
+{
+  "module_name": "dbc.c",
+  "hash_id": "c20240d8cf9e52e879e3a140e4a6ad99fbcbf41a56385930a948e5f69971b39b",
+  "original_prompt": "Ingested from linux-6.6.14/tools/crypto/ccp/dbc.c",
+  "human_readable_source": "\n \n\n#include <assert.h>\n#include <errno.h>\n#include <string.h>\n#include <sys/ioctl.h>\n\n \n#ifndef __packed\n#define __packed __attribute__((packed))\n#endif\n#include <linux/psp-dbc.h>\n\nint get_nonce(int fd, void *nonce_out, void *signature)\n{\n\tstruct dbc_user_nonce tmp = {\n\t\t.auth_needed = !!signature,\n\t};\n\n\tassert(nonce_out);\n\n\tif (signature)\n\t\tmemcpy(tmp.signature, signature, sizeof(tmp.signature));\n\n\tif (ioctl(fd, DBCIOCNONCE, &tmp))\n\t\treturn errno;\n\tmemcpy(nonce_out, tmp.nonce, sizeof(tmp.nonce));\n\n\treturn 0;\n}\n\nint set_uid(int fd, __u8 *uid, __u8 *signature)\n{\n\tstruct dbc_user_setuid tmp;\n\n\tassert(uid);\n\tassert(signature);\n\n\tmemcpy(tmp.uid, uid, sizeof(tmp.uid));\n\tmemcpy(tmp.signature, signature, sizeof(tmp.signature));\n\n\tif (ioctl(fd, DBCIOCUID, &tmp))\n\t\treturn errno;\n\treturn 0;\n}\n\nint process_param(int fd, int msg_index, __u8 *signature, int *data)\n{\n\tstruct dbc_user_param tmp = {\n\t\t.msg_index = msg_index,\n\t\t.param = *data,\n\t};\n\tint ret;\n\n\tassert(signature);\n\tassert(data);\n\n\tmemcpy(tmp.signature, signature, sizeof(tmp.signature));\n\n\tif (ioctl(fd, DBCIOCPARAM, &tmp))\n\t\treturn errno;\n\n\t*data = tmp.param;\n\tmemcpy(signature, tmp.signature, sizeof(tmp.signature));\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

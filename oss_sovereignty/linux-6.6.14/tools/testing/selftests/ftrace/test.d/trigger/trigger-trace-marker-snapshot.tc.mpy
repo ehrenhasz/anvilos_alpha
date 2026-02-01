@@ -1,0 +1,9 @@
+{
+  "module_name": "trigger-trace-marker-snapshot.tc",
+  "hash_id": "626272ac0b150b6baeeaa1c4855fdd99d301982cf9ca61b6921a95209dd6768e",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/ftrace/test.d/trigger/trigger-trace-marker-snapshot.tc",
+  "human_readable_source": "#!/bin/sh\n# SPDX-License-Identifier: GPL-2.0\n# description: trace_marker trigger - test snapshot trigger\n# requires: set_event snapshot events/ftrace/print/trigger\n# flags: instance\n\nfail() { #msg\n    echo $1\n    exit_fail\n}\n\ntest_trace() {\n    file=$1\n    x=$2\n\n    cat $file | while read line; do\n\tcomment=`echo $line | sed -e 's/^#//'`\n\tif [ \"$line\" != \"$comment\" ]; then\n\t    continue\n\tfi\n\techo \"testing $line for >$x<\"\n\tmatch=`echo $line | sed -e \"s/>$x<//\"`\n\tif [ \"$line\" = \"$match\" ]; then\n\t    fail \"$line does not have >$x< in it\"\n\tfi\n\tx=$((x+2))\n    done\n}\n\necho \"Test snapshot trace_marker trigger\"\n\necho 'snapshot' > events/ftrace/print/trigger\n\n# make sure the snapshot is allocated\n\ngrep -q 'Snapshot is allocated' snapshot\n\nfor i in `seq 1 10` ; do echo \"hello >$i<\" > trace_marker; done\n\ntest_trace trace 1\ntest_trace snapshot 2\n\nexit 0\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "fatfs_port.c",
+  "hash_id": "5245ba512c10bc174f392f69efa3deb8b66551df37a2c52876a621eb55753bf3",
+  "original_prompt": "Ingested from sys_09_Anvil/source/ports/unix/fatfs_port.c",
+  "human_readable_source": "#include <time.h>\n#include \"lib/oofatfs/ff.h\"\n\nDWORD get_fattime(void) {\n    time_t now = time(NULL);\n    struct tm *tm = localtime(&now);\n    return ((1900 + tm->tm_year - 1980) << 25)\n           | ((tm->tm_mon + 1) << 21)\n           | (tm->tm_mday << 16)\n           | (tm->tm_hour << 11)\n           | (tm->tm_min << 5)\n           | (tm->tm_sec / 2);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

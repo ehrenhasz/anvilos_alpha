@@ -1,0 +1,9 @@
+{
+  "module_name": "xt_quota.h",
+  "hash_id": "cf4a5718685a6e593a50d2c059b3376626faadb09948e1564cec614ccd168bd8",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/netfilter/xt_quota.h",
+  "human_readable_source": " \n#ifndef _XT_QUOTA_H\n#define _XT_QUOTA_H\n\n#include <linux/types.h>\n\nenum xt_quota_flags {\n\tXT_QUOTA_INVERT\t\t= 0x1,\n};\n#define XT_QUOTA_MASK\t\t0x1\n\nstruct xt_quota_priv;\n\nstruct xt_quota_info {\n\t__u32 flags;\n\t__u32 pad;\n\t__aligned_u64 quota;\n\n\t \n\tstruct xt_quota_priv\t*master;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

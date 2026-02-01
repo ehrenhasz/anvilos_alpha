@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "8c5792a4ab67d6cf0929ddb0703a95f1b46a92fa809bd92ef3478112b1a9e4b2",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/iio/imu/inv_icm42600/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-or-later\n\nconfig INV_ICM42600\n\ttristate\n\tselect IIO_BUFFER\n\tselect IIO_INV_SENSORS_TIMESTAMP\n\nconfig INV_ICM42600_I2C\n\ttristate \"InvenSense ICM-426xx I2C driver\"\n\tdepends on I2C\n\tselect INV_ICM42600\n\tselect REGMAP_I2C\n\thelp\n\t  This driver supports the InvenSense ICM-426xx motion tracking\n\t  devices over I2C.\n\n\t  This driver can be built as a module. The module will be called\n\t  inv-icm42600-i2c.\n\nconfig INV_ICM42600_SPI\n\ttristate \"InvenSense ICM-426xx SPI driver\"\n\tdepends on SPI_MASTER\n\tselect INV_ICM42600\n\tselect REGMAP_SPI\n\thelp\n\t  This driver supports the InvenSense ICM-426xx motion tracking\n\t  devices over SPI.\n\n\t  This driver can be built as a module. The module will be called\n\t  inv-icm42600-spi.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

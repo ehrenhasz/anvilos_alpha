@@ -1,0 +1,9 @@
+{
+  "module_name": "test-select-in.sh",
+  "hash_id": "f5f8ecfd68262f6258e4a3fb17627d5085d493cfdf91c50b73b4b69fd111479e",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-select-in.sh",
+  "human_readable_source": "#!/bin/sh\n# Test select() on file descriptors opened for reading.\n\n# This test is known to fail on Solaris 2.6 and older, due to its handling\n# of /dev/null.\n\ntmpfiles=\"\"\ntrap 'rm -fr $tmpfiles' HUP INT QUIT TERM\n\ntmpfiles=\"$tmpfiles t-select-in.tmp\"\n\n# Regular files.\n\nrm -f t-select-in.tmp\n${CHECKER} ./test-select-fd${EXEEXT} r 0 t-select-in.tmp < ./test-select-fd${EXEEXT}\ntest `cat t-select-in.tmp` = \"1\" || exit 1\n\n# Pipes.\n\nrm -f t-select-in.tmp\n{ sleep 1; echo abc; } | \\\n  { ${CHECKER} ./test-select-fd${EXEEXT} r 0 t-select-in.tmp; cat > /dev/null; }\ntest `cat t-select-in.tmp` = \"0\" || exit 1\n\nrm -f t-select-in.tmp\necho abc | { sleep 1; ${CHECKER} ./test-select-fd${EXEEXT} r 0 t-select-in.tmp; }\ntest `cat t-select-in.tmp` = \"1\" || exit 1\n\n# Special files.\n# This part of the test is known to fail on Solaris 2.6 and older.\n\nrm -f t-select-in.tmp\n${CHECKER} ./test-select-fd${EXEEXT} r 0 t-select-in.tmp < /dev/null\ntest `cat t-select-in.tmp` = \"1\" || exit 1\n\nrm -fr $tmpfiles\n\nexit 0\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

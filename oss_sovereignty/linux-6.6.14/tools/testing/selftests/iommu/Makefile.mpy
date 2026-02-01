@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "cb22f3965d5a370578ad2b921f146995a13b2d24591bb6bdcbfea7e10a880be4",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/iommu/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nCFLAGS += -Wall -O2 -Wno-unused-function\nCFLAGS += $(KHDR_INCLUDES)\n\nCFLAGS += -D_GNU_SOURCE\n\nTEST_GEN_PROGS :=\nTEST_GEN_PROGS += iommufd\nTEST_GEN_PROGS += iommufd_fail_nth\n\ninclude ../lib.mk\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

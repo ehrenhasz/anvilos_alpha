@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "a7e7dc3f553ecea9b49cf96b7de634cffd6af8c1855db6d96effc136b164479b",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/crypto/marvell/octeontx2/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-$(CONFIG_CRYPTO_DEV_OCTEONTX2_CPT) += rvu_cptcommon.o rvu_cptpf.o rvu_cptvf.o\n\nrvu_cptcommon-objs := cn10k_cpt.o otx2_cptlf.o otx2_cpt_mbox_common.o\nrvu_cptpf-objs := otx2_cptpf_main.o otx2_cptpf_mbox.o \\\n\t\t  otx2_cptpf_ucode.o otx2_cpt_devlink.o\nrvu_cptvf-objs := otx2_cptvf_main.o otx2_cptvf_mbox.o \\\n\t\t  otx2_cptvf_reqmgr.o otx2_cptvf_algs.o\n\nccflags-y += -I$(srctree)/drivers/net/ethernet/marvell/octeontx2/af\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

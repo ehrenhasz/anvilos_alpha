@@ -1,0 +1,9 @@
+{
+  "module_name": "lib_slkclear.c",
+  "hash_id": "afa698cc50cdc3b43c1dc31234f75808cc5f9882cf4be0c2360139338e0f99cc",
+  "original_prompt": "Ingested from ncurses-6.4/ncurses/base/lib_slkclear.c",
+  "human_readable_source": " \n\n \n\n \n#include <curses.priv.h>\n\nMODULE_ID(\"$Id: lib_slkclear.c,v 1.15 2020/02/02 23:34:34 tom Exp $\")\n\nNCURSES_EXPORT(int)\nNCURSES_SP_NAME(slk_clear) (NCURSES_SP_DCL0)\n{\n    int rc = ERR;\n\n    T((T_CALLED(\"slk_clear(%p)\"), (void *) SP_PARM));\n\n    if (SP_PARM != 0 && SP_PARM->_slk != 0) {\n\tSP_PARM->_slk->hidden = TRUE;\n\t \n\tSP_PARM->_slk->win->_nc_bkgd = StdScreen(SP_PARM)->_nc_bkgd;\n\tWINDOW_ATTRS(SP_PARM->_slk->win) = WINDOW_ATTRS(StdScreen(SP_PARM));\n\tif (SP_PARM->_slk->win == StdScreen(SP_PARM)) {\n\t    rc = OK;\n\t} else {\n\t    werase(SP_PARM->_slk->win);\n\t    rc = wrefresh(SP_PARM->_slk->win);\n\t}\n    }\n    returnCode(rc);\n}\n\n#if NCURSES_SP_FUNCS\nNCURSES_EXPORT(int)\nslk_clear(void)\n{\n    return NCURSES_SP_NAME(slk_clear) (CURRENT_SCREEN);\n}\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

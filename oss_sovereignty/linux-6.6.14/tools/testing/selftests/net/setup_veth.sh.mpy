@@ -1,0 +1,9 @@
+{
+  "module_name": "setup_veth.sh",
+  "hash_id": "8d9ac5b6c5d599d591839d5c9a79a401d13af7535e677aa18ba208fa0a979783",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/net/setup_veth.sh",
+  "human_readable_source": "#!/bin/bash\n# SPDX-License-Identifier: GPL-2.0\n\nsetup_veth_ns() {\n\tlocal -r link_dev=\"$1\"\n\tlocal -r ns_name=\"$2\"\n\tlocal -r ns_dev=\"$3\"\n\tlocal -r ns_mac=\"$4\"\n\n\t[[ -e /var/run/netns/\"${ns_name}\" ]] || ip netns add \"${ns_name}\"\n\techo 100000 > \"/sys/class/net/${ns_dev}/gro_flush_timeout\"\n\tip link set dev \"${ns_dev}\" netns \"${ns_name}\" mtu 65535\n\tip -netns \"${ns_name}\" link set dev \"${ns_dev}\" up\n\n\tip netns exec \"${ns_name}\" ethtool -K \"${ns_dev}\" gro on tso off\n}\n\nsetup_ns() {\n\t# Set up server_ns namespace and client_ns namespace\n\tip link add name server type veth peer name client\n\n\tsetup_veth_ns \"${dev}\" server_ns server \"${SERVER_MAC}\"\n\tsetup_veth_ns \"${dev}\" client_ns client \"${CLIENT_MAC}\"\n}\n\ncleanup_ns() {\n\tlocal ns_name\n\n\tfor ns_name in client_ns server_ns; do\n\t\t[[ -e /var/run/netns/\"${ns_name}\" ]] && ip netns del \"${ns_name}\"\n\tdone\n}\n\nsetup() {\n\t# no global init setup step needed\n\t:\n}\n\ncleanup() {\n\tcleanup_ns\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

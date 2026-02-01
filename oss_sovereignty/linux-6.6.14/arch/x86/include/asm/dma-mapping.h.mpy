@@ -1,0 +1,9 @@
+{
+  "module_name": "dma-mapping.h",
+  "hash_id": "9d9d5d775548312293f40cc60b5654417951e66e8d072deb75aaf45460692705",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/include/asm/dma-mapping.h",
+  "human_readable_source": " \n#ifndef _ASM_X86_DMA_MAPPING_H\n#define _ASM_X86_DMA_MAPPING_H\n\nextern const struct dma_map_ops *dma_ops;\n\nstatic inline const struct dma_map_ops *get_arch_dma_ops(void)\n{\n\treturn dma_ops;\n}\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

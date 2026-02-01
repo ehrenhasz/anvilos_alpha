@@ -1,0 +1,9 @@
+{
+  "module_name": "sch_ets.sh",
+  "hash_id": "f05aa06e1a3c3750d872b3fe61e5bd0687676640053c5da97e4a1bc36c6874ed",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/net/forwarding/sch_ets.sh",
+  "human_readable_source": "#!/bin/bash\n# SPDX-License-Identifier: GPL-2.0\n\n# A driver for the ETS selftest that implements testing in slowpath.\nlib_dir=.\nsource sch_ets_core.sh\n\nALL_TESTS=\"\n\tping_ipv4\n\tpriomap_mode\n\tets_test_strict\n\tets_test_mixed\n\tets_test_dwrr\n\tclassifier_mode\n\tets_test_strict\n\tets_test_mixed\n\tets_test_dwrr\n\"\n\nswitch_create()\n{\n\tets_switch_create\n\n\t# Create a bottleneck so that the DWRR process can kick in.\n\ttc qdisc add dev $swp2 root handle 1: tbf \\\n\t   rate 1Gbit burst 1Mbit latency 100ms\n\tPARENT=\"parent 1:\"\n}\n\nswitch_destroy()\n{\n\tets_switch_destroy\n\ttc qdisc del dev $swp2 root\n}\n\n# Callback from sch_ets_tests.sh\ncollect_stats()\n{\n\tlocal -a streams=(\"$@\")\n\tlocal stream\n\n\tfor stream in ${streams[@]}; do\n\t\tqdisc_parent_stats_get $swp2 10:$((stream + 1)) .bytes\n\tdone\n}\n\nets_run\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

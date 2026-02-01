@@ -1,0 +1,9 @@
+{
+  "module_name": "st_sensors_i2c.c",
+  "hash_id": "c1cef099f8ce25ecaba9e1e3029ee1f60de035ba3ba075646cec6ab1a90efbfd",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/iio/common/st_sensors/st_sensors_i2c.c",
+  "human_readable_source": "\n \n\n#include <linux/i2c.h>\n#include <linux/kernel.h>\n#include <linux/module.h>\n#include <linux/iio/iio.h>\n#include <linux/regmap.h>\n\n#include <linux/iio/common/st_sensors_i2c.h>\n\n#define ST_SENSORS_I2C_MULTIREAD\t0x80\n\nstatic const struct regmap_config st_sensors_i2c_regmap_config = {\n\t.reg_bits = 8,\n\t.val_bits = 8,\n};\n\nstatic const struct regmap_config st_sensors_i2c_regmap_multiread_bit_config = {\n\t.reg_bits = 8,\n\t.val_bits = 8,\n\t.read_flag_mask = ST_SENSORS_I2C_MULTIREAD,\n};\n\n \nint st_sensors_i2c_configure(struct iio_dev *indio_dev,\n\t\t\t     struct i2c_client *client)\n{\n\tstruct st_sensor_data *sdata = iio_priv(indio_dev);\n\tconst struct regmap_config *config;\n\n\tif (sdata->sensor_settings->multi_read_bit)\n\t\tconfig = &st_sensors_i2c_regmap_multiread_bit_config;\n\telse\n\t\tconfig = &st_sensors_i2c_regmap_config;\n\n\tsdata->regmap = devm_regmap_init_i2c(client, config);\n\tif (IS_ERR(sdata->regmap)) {\n\t\tdev_err(&client->dev, \"Failed to register i2c regmap (%ld)\\n\",\n\t\t\tPTR_ERR(sdata->regmap));\n\t\treturn PTR_ERR(sdata->regmap);\n\t}\n\n\ti2c_set_clientdata(client, indio_dev);\n\n\tindio_dev->name = client->name;\n\n\tsdata->irq = client->irq;\n\n\treturn 0;\n}\nEXPORT_SYMBOL_NS(st_sensors_i2c_configure, IIO_ST_SENSORS);\n\nMODULE_AUTHOR(\"Denis Ciocca <denis.ciocca@st.com>\");\nMODULE_DESCRIPTION(\"STMicroelectronics ST-sensors i2c driver\");\nMODULE_LICENSE(\"GPL v2\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

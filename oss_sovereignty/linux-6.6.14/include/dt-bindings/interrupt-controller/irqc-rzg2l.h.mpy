@@ -1,0 +1,9 @@
+{
+  "module_name": "irqc-rzg2l.h",
+  "hash_id": "3b47353b4867f5b704993a3d3d55ac163e91735f1c01114ac7a9ee4f04ebd256",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/interrupt-controller/irqc-rzg2l.h",
+  "human_readable_source": " \n \n\n#ifndef __DT_BINDINGS_IRQC_RZG2L_H\n#define __DT_BINDINGS_IRQC_RZG2L_H\n\n \n#define RZG2L_NMI\t0\n\n \n#define RZG2L_IRQ0\t1\n#define RZG2L_IRQ1\t2\n#define RZG2L_IRQ2\t3\n#define RZG2L_IRQ3\t4\n#define RZG2L_IRQ4\t5\n#define RZG2L_IRQ5\t6\n#define RZG2L_IRQ6\t7\n#define RZG2L_IRQ7\t8\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

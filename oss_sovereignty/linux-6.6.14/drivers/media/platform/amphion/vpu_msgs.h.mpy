@@ -1,0 +1,9 @@
+{
+  "module_name": "vpu_msgs.h",
+  "hash_id": "08cc4f6ac522223de67fd36700ecd5d97369c04f1fd466092dcf2cde64e407c8",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/platform/amphion/vpu_msgs.h",
+  "human_readable_source": " \n \n\n#ifndef _AMPHION_VPU_MSGS_H\n#define _AMPHION_VPU_MSGS_H\n\nint vpu_isr(struct vpu_core *core, u32 irq);\nvoid vpu_inst_run_work(struct work_struct *work);\nvoid vpu_msg_run_work(struct work_struct *work);\nvoid vpu_msg_delayed_work(struct work_struct *work);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

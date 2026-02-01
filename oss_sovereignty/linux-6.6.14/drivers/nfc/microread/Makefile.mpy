@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "75762a3f1b93709876c0e4c597c173524f570582d1f6bfb9cca359aa95126594",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/nfc/microread/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for Microread HCI based NFC driver\n#\n\nmicroread_i2c-objs  = i2c.o\nmicroread_mei-objs  = mei.o\n\nobj-$(CONFIG_NFC_MICROREAD)     += microread.o\nobj-$(CONFIG_NFC_MICROREAD_I2C) += microread_i2c.o\nobj-$(CONFIG_NFC_MICROREAD_MEI) += microread_mei.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

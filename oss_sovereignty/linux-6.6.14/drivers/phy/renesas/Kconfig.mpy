@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "e1b106869c658458616e023e43f0ea13cb69618e3c18dc26bf79d25c544641d4",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/phy/renesas/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Phy drivers for Renesas platforms\n#\n# NOTE: Please sorted config names alphabetically.\nconfig PHY_R8A779F0_ETHERNET_SERDES\n\ttristate \"Renesas R-Car S4-8 Ethernet SERDES driver\"\n\tdepends on ARCH_RENESAS || COMPILE_TEST\n\tselect GENERIC_PHY\n\thelp\n\t  Support for Ethernet SERDES found on Renesas R-Car S4-8 SoCs.\n\nconfig PHY_RCAR_GEN2\n\ttristate \"Renesas R-Car generation 2 USB PHY driver\"\n\tdepends on ARCH_RENESAS\n\tdepends on GENERIC_PHY\n\thelp\n\t  Support for USB PHY found on Renesas R-Car generation 2 SoCs.\n\nconfig PHY_RCAR_GEN3_PCIE\n\ttristate \"Renesas R-Car generation 3 PCIe PHY driver\"\n\tdepends on ARCH_RENESAS\n\tselect GENERIC_PHY\n\thelp\n\t  Support for the PCIe PHY found on Renesas R-Car generation 3 SoCs.\n\nconfig PHY_RCAR_GEN3_USB2\n\ttristate \"Renesas R-Car generation 3 USB 2.0 PHY driver\"\n\tdepends on ARCH_RENESAS\n\tdepends on EXTCON || !EXTCON # if EXTCON=m, this cannot be built-in\n\tdepends on USB_SUPPORT\n\tselect GENERIC_PHY\n\tselect USB_COMMON\n\thelp\n\t  Support for USB 2.0 PHY found on Renesas R-Car generation 3 SoCs.\n\nconfig PHY_RCAR_GEN3_USB3\n\ttristate \"Renesas R-Car generation 3 USB 3.0 PHY driver\"\n\tdepends on ARCH_RENESAS || COMPILE_TEST\n\tselect GENERIC_PHY\n\thelp\n\t  Support for USB 3.0 PHY found on Renesas R-Car generation 3 SoCs.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

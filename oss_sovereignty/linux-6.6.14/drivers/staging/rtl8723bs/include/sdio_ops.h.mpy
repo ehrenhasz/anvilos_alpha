@@ -1,0 +1,9 @@
+{
+  "module_name": "sdio_ops.h",
+  "hash_id": "a5a4e7fcfd7524b59dd2acf3784d160822baaf9ea71fa923daf7571722d19031",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/rtl8723bs/include/sdio_ops.h",
+  "human_readable_source": " \n \n#ifndef __SDIO_OPS_H__\n#define __SDIO_OPS_H__\n\n\n#include <sdio_ops_linux.h>\n\nextern void sdio_set_intf_ops(struct adapter *padapter, struct _io_ops *pops);\n\n \n \nextern u8 SdioLocalCmd52Read1Byte(struct adapter *padapter, u32 addr);\nextern void SdioLocalCmd52Write1Byte(struct adapter *padapter, u32 addr, u8 v);\nextern s32 sdio_local_read(struct adapter *padapter, u32 addr, u32 cnt, u8 *pbuf);\nextern s32 sdio_local_write(struct adapter *padapter, u32 addr, u32 cnt, u8 *pbuf);\n\nu32 _sdio_read32(struct adapter *padapter, u32 addr);\ns32 _sdio_write32(struct adapter *padapter, u32 addr, u32 val);\n\nextern void sd_int_hdl(struct adapter *padapter);\nextern u8 CheckIPSStatus(struct adapter *padapter);\n\nextern void InitInterrupt8723BSdio(struct adapter *padapter);\nextern void InitSysInterrupt8723BSdio(struct adapter *padapter);\nextern void EnableInterrupt8723BSdio(struct adapter *padapter);\nextern void DisableInterrupt8723BSdio(struct adapter *padapter);\nextern u8 HalQueryTxBufferStatus8723BSdio(struct adapter *padapter);\nextern void HalQueryTxOQTBufferStatus8723BSdio(struct adapter *padapter);\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

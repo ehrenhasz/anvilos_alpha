@@ -1,0 +1,9 @@
+{
+  "module_name": "i915-amly-fails.txt",
+  "hash_id": "a7d20da4eb4b75c89c4d25a7a5cd4046b16e125ea68c17ae4eb8444d90d92617",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/ci/xfails/i915-amly-fails.txt",
+  "human_readable_source": "kms_flip_scaled_crc@flip-32bpp-linear-to-64bpp-linear-downscaling,Fail\nkms_flip_scaled_crc@flip-32bpp-linear-to-64bpp-linear-upscaling,Fail\nkms_flip_scaled_crc@flip-32bpp-xtile-to-64bpp-xtile-downscaling,Fail\nkms_flip_scaled_crc@flip-32bpp-xtile-to-64bpp-xtile-upscaling,Fail\nkms_flip_scaled_crc@flip-64bpp-linear-to-16bpp-linear-downscaling,Fail\nkms_flip_scaled_crc@flip-64bpp-linear-to-16bpp-linear-upscaling,Fail\nkms_flip_scaled_crc@flip-64bpp-linear-to-32bpp-linear-downscaling,Fail\nkms_flip_scaled_crc@flip-64bpp-linear-to-32bpp-linear-upscaling,Fail\nkms_flip_scaled_crc@flip-64bpp-xtile-to-16bpp-xtile-downscaling,Fail\nkms_flip_scaled_crc@flip-64bpp-xtile-to-16bpp-xtile-upscaling,Fail\nkms_flip_scaled_crc@flip-64bpp-xtile-to-32bpp-xtile-downscaling,Fail\nkms_flip_scaled_crc@flip-64bpp-xtile-to-32bpp-xtile-upscaling,Fail\nkms_flip_scaled_crc@flip-64bpp-ytile-to-32bpp-ytilegen12rcccs-upscaling,Fail\nkms_plane_alpha_blend@alpha-basic,Fail\nkms_plane_alpha_blend@alpha-opaque-fb,Fail\nkms_plane_alpha_blend@alpha-transparent-fb,Fail\nkms_plane_alpha_blend@constant-alpha-max,Fail\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

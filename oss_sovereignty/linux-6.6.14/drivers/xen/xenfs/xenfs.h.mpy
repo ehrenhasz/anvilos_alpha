@@ -1,0 +1,9 @@
+{
+  "module_name": "xenfs.h",
+  "hash_id": "55458cde2dd387c1e5a4387dd9546d37372a21075fac3a8e1158b148ae57c45b",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/xen/xenfs/xenfs.h",
+  "human_readable_source": " \n#ifndef _XENFS_XENBUS_H\n#define _XENFS_XENBUS_H\n\nextern const struct file_operations xsd_kva_file_ops;\nextern const struct file_operations xsd_port_file_ops;\nextern const struct file_operations xensyms_ops;\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "nearbyint.c",
+  "hash_id": "34884eaeb30d34f62da31d0d29882a856c3860eade36cc5dffb305f31ece3d19",
+  "original_prompt": "Ingested from sys_09_Anvil/source/lib/libm_dbl/nearbyint.c",
+  "human_readable_source": "#include <math.h>\n\n \n\ndouble nearbyint(double x)\n{\n#ifdef FE_INEXACT\n\t#pragma STDC FENV_ACCESS ON\n\tint e;\n\n\te = fetestexcept(FE_INEXACT);\n#endif\n\tx = rint(x);\n#ifdef FE_INEXACT\n\tif (!e)\n\t\tfeclearexcept(FE_INEXACT);\n#endif\n\treturn x;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

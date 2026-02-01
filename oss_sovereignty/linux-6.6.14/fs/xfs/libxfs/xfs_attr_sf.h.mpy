@@ -1,0 +1,9 @@
+{
+  "module_name": "xfs_attr_sf.h",
+  "hash_id": "627dea60bc65c836ace9068c8fc919002f35e57104610a4d2faaad569dbaf23f",
+  "original_prompt": "Ingested from linux-6.6.14/fs/xfs/libxfs/xfs_attr_sf.h",
+  "human_readable_source": " \n \n#ifndef __XFS_ATTR_SF_H__\n#define\t__XFS_ATTR_SF_H__\n\n \ntypedef struct xfs_attr_sf_hdr xfs_attr_sf_hdr_t;\n\n \ntypedef struct xfs_attr_sf_sort {\n\tuint8_t\t\tentno;\t\t \n\tuint8_t\t\tnamelen;\t \n\tuint8_t\t\tvaluelen;\t \n\tuint8_t\t\tflags;\t\t \n\txfs_dahash_t\thash;\t\t \n\tunsigned char\t*name;\t\t \n} xfs_attr_sf_sort_t;\n\n#define XFS_ATTR_SF_ENTSIZE_MAX\t\t\t  \\\n\t((1 << (NBBY*(int)sizeof(uint8_t))) - 1)\n\n \nstatic inline int xfs_attr_sf_entsize_byname(uint8_t nlen, uint8_t vlen)\n{\n\treturn sizeof(struct xfs_attr_sf_entry) + nlen + vlen;\n}\n\n \nstatic inline int xfs_attr_sf_entsize(struct xfs_attr_sf_entry *sfep)\n{\n\treturn struct_size(sfep, nameval, sfep->namelen + sfep->valuelen);\n}\n\n \nstatic inline struct xfs_attr_sf_entry *\nxfs_attr_sf_nextentry(struct xfs_attr_sf_entry *sfep)\n{\n\treturn (void *)sfep + xfs_attr_sf_entsize(sfep);\n}\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

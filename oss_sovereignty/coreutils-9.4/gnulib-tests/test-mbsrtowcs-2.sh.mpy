@@ -1,0 +1,9 @@
+{
+  "module_name": "test-mbsrtowcs-2.sh",
+  "hash_id": "2a92fb869b3f2506c39958a53856934d8ef34cf3f3da315cd9abfb7cffac4357",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-mbsrtowcs-2.sh",
+  "human_readable_source": "#!/bin/sh\n\n# Test in an ISO-8859-1 or ISO-8859-15 locale.\n: \"${LOCALE_FR=fr_FR}\"\nif test $LOCALE_FR = none; then\n  if test -f /usr/bin/localedef; then\n    echo \"Skipping test: no traditional french locale is installed\"\n  else\n    echo \"Skipping test: no traditional french locale is supported\"\n  fi\n  exit 77\nfi\n\nLC_ALL=$LOCALE_FR \\\n${CHECKER} ./test-mbsrtowcs${EXEEXT} 2\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

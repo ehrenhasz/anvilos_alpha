@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "5ce76b983a6a1c157865ba9b4cb905c30e7fc1e6551d4f7d3de86366819ba906",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/video/fbdev/omap2/omapfb/dss/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nobj-$(CONFIG_FB_OMAP2_DSS_INIT) += omapdss-boot-init.o\nobj-$(CONFIG_FB_OMAP2_DSS) += omapdss.o\n# Core DSS files\nomapdss-y := core.o dss.o dss_features.o dispc.o dispc_coefs.o display.o \\\n\toutput.o dss-of.o pll.o video-pll.o\n# DSS compat layer files\nomapdss-y += manager.o manager-sysfs.o overlay.o overlay-sysfs.o apply.o \\\n\tdispc-compat.o display-sysfs.o\nomapdss-$(CONFIG_FB_OMAP2_DSS_DPI) += dpi.o\nomapdss-$(CONFIG_FB_OMAP2_DSS_VENC) += venc.o\nomapdss-$(CONFIG_FB_OMAP2_DSS_SDI) += sdi.o\nomapdss-$(CONFIG_FB_OMAP2_DSS_DSI) += dsi.o\nomapdss-$(CONFIG_FB_OMAP2_DSS_HDMI_COMMON) += hdmi_common.o hdmi_wp.o hdmi_pll.o \\\n\thdmi_phy.o\nomapdss-$(CONFIG_FB_OMAP4_DSS_HDMI) += hdmi4.o hdmi4_core.o\nomapdss-$(CONFIG_FB_OMAP5_DSS_HDMI) += hdmi5.o hdmi5_core.o\nccflags-$(CONFIG_FB_OMAP2_DSS_DEBUG) += -DDEBUG\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

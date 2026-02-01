@@ -1,0 +1,9 @@
+{
+  "module_name": "adau1701.h",
+  "hash_id": "f938382b70d492cea6aed0bc1867f3f847277a309f58ea6b0e81abffe838e3c6",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/codecs/adau1701.h",
+  "human_readable_source": " \n \n\n#ifndef _ADAU1701_H\n#define _ADAU1701_H\n\nenum adau1701_clk_src {\n\tADAU1701_CLK_SRC_OSC,\n\tADAU1701_CLK_SRC_MCLK,\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

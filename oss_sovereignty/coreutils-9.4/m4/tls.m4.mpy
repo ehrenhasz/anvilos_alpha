@@ -1,0 +1,9 @@
+{
+  "module_name": "tls.m4",
+  "hash_id": "d98dc68e06a82fa51e0755d17ca202b90f52d1aed15ec43f4913b536d2f64fb7",
+  "original_prompt": "Ingested from coreutils-9.4/m4/tls.m4",
+  "human_readable_source": "# tls.m4 serial 2 (gettext-0.18)\ndnl Copyright (C) 2005, 2008-2023 Free Software Foundation, Inc.\ndnl This file is free software; the Free Software Foundation\ndnl gives unlimited permission to copy and/or distribute it,\ndnl with or without modifications, as long as this notice is preserved.\n\ndnl From Bruno Haible.\n\nAC_DEFUN([gl_TLS],\n[\n  AC_REQUIRE([gl_THREADLIB])\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

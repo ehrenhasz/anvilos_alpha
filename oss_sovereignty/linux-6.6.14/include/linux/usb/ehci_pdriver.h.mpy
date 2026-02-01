@@ -1,0 +1,9 @@
+{
+  "module_name": "ehci_pdriver.h",
+  "hash_id": "0dac270f8834631e428fd00d17fc137bdf372973da5acd6cd0dd52adfdf468cc",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/usb/ehci_pdriver.h",
+  "human_readable_source": "\n \n\n#ifndef __USB_CORE_EHCI_PDRIVER_H\n#define __USB_CORE_EHCI_PDRIVER_H\n\nstruct platform_device;\nstruct usb_hcd;\n\n \nstruct usb_ehci_pdata {\n\tint\t\tcaps_offset;\n\tunsigned\thas_tt:1;\n\tunsigned\thas_synopsys_hc_bug:1;\n\tunsigned\tbig_endian_desc:1;\n\tunsigned\tbig_endian_mmio:1;\n\tunsigned\tno_io_watchdog:1;\n\tunsigned\treset_on_resume:1;\n\tunsigned\tdma_mask_64:1;\n\tunsigned\tspurious_oc:1;\n\n\t \n\tint (*power_on)(struct platform_device *pdev);\n\t \n\tvoid (*power_off)(struct platform_device *pdev);\n\t \n\tvoid (*power_suspend)(struct platform_device *pdev);\n\tint (*pre_setup)(struct usb_hcd *hcd);\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

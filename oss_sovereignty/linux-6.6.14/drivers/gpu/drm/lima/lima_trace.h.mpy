@@ -1,0 +1,9 @@
+{
+  "module_name": "lima_trace.h",
+  "hash_id": "0d1dd0555ec3fc2e2ef884b36315fc837d119496d953c1b3f6bebac508c76c6a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/lima/lima_trace.h",
+  "human_readable_source": " \n \n\n#if !defined(_LIMA_TRACE_H) || defined(TRACE_HEADER_MULTI_READ)\n#define _LIMA_TRACE_H_\n\n#include <linux/tracepoint.h>\n\n#undef TRACE_SYSTEM\n#define TRACE_SYSTEM lima\n#define TRACE_INCLUDE_FILE lima_trace\n\nDECLARE_EVENT_CLASS(lima_task,\n\tTP_PROTO(struct lima_sched_task *task),\n\tTP_ARGS(task),\n\tTP_STRUCT__entry(\n\t\t__field(uint64_t, task_id)\n\t\t__field(unsigned int, context)\n\t\t__field(unsigned int, seqno)\n\t\t__string(pipe, task->base.sched->name)\n\t\t),\n\n\tTP_fast_assign(\n\t\t__entry->task_id = task->base.id;\n\t\t__entry->context = task->base.s_fence->finished.context;\n\t\t__entry->seqno = task->base.s_fence->finished.seqno;\n\t\t__assign_str(pipe, task->base.sched->name);\n\t\t),\n\n\tTP_printk(\"task=%llu, context=%u seqno=%u pipe=%s\",\n\t\t  __entry->task_id, __entry->context, __entry->seqno,\n\t\t  __get_str(pipe))\n);\n\nDEFINE_EVENT(lima_task, lima_task_submit,\n\t     TP_PROTO(struct lima_sched_task *task),\n\t     TP_ARGS(task)\n);\n\nDEFINE_EVENT(lima_task, lima_task_run,\n\t     TP_PROTO(struct lima_sched_task *task),\n\t     TP_ARGS(task)\n);\n\n#endif\n\n \n#undef TRACE_INCLUDE_PATH\n#define TRACE_INCLUDE_PATH ../../drivers/gpu/drm/lima\n#include <trace/define_trace.h>\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

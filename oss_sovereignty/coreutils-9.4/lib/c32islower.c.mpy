@@ -1,0 +1,9 @@
+{
+  "module_name": "c32islower.c",
+  "hash_id": "e3a5aec759c9650a7bb3658b4585d9965b40f492f2c1143799f4d63569c61c90",
+  "original_prompt": "Ingested from coreutils-9.4/lib/c32islower.c",
+  "human_readable_source": " \n#include <uchar.h>\n\n#define FUNC c32islower\n#define WCHAR_FUNC iswlower\n#define UCS_FUNC uc_is_lower\n#include \"c32is-impl.h\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

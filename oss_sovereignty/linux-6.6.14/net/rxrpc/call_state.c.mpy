@@ -1,0 +1,9 @@
+{
+  "module_name": "call_state.c",
+  "hash_id": "3072d3e0020edace7b170cd2edc36057559f874ded7639c78b677045b97938d4",
+  "original_prompt": "Ingested from linux-6.6.14/net/rxrpc/call_state.c",
+  "human_readable_source": "\n \n\n#include \"ar-internal.h\"\n\n \nbool rxrpc_set_call_completion(struct rxrpc_call *call,\n\t\t\t\t enum rxrpc_call_completion compl,\n\t\t\t\t u32 abort_code,\n\t\t\t\t int error)\n{\n\tif (__rxrpc_call_state(call) == RXRPC_CALL_COMPLETE)\n\t\treturn false;\n\n\tcall->abort_code = abort_code;\n\tcall->error = error;\n\tcall->completion = compl;\n\t \n\trxrpc_set_call_state(call, RXRPC_CALL_COMPLETE);\n\ttrace_rxrpc_call_complete(call);\n\twake_up(&call->waitq);\n\trxrpc_notify_socket(call);\n\treturn true;\n}\n\n \nbool rxrpc_call_completed(struct rxrpc_call *call)\n{\n\treturn rxrpc_set_call_completion(call, RXRPC_CALL_SUCCEEDED, 0, 0);\n}\n\n \nbool rxrpc_abort_call(struct rxrpc_call *call, rxrpc_seq_t seq,\n\t\t      u32 abort_code, int error, enum rxrpc_abort_reason why)\n{\n\ttrace_rxrpc_abort(call->debug_id, why, call->cid, call->call_id, seq,\n\t\t\t  abort_code, error);\n\tif (!rxrpc_set_call_completion(call, RXRPC_CALL_LOCALLY_ABORTED,\n\t\t\t\t       abort_code, error))\n\t\treturn false;\n\tif (test_bit(RXRPC_CALL_EXPOSED, &call->flags))\n\t\trxrpc_send_abort_packet(call);\n\treturn true;\n}\n\n \nvoid rxrpc_prefail_call(struct rxrpc_call *call, enum rxrpc_call_completion compl,\n\t\t\tint error)\n{\n\tcall->abort_code\t= RX_CALL_DEAD;\n\tcall->error\t\t= error;\n\tcall->completion\t= compl;\n\tcall->_state\t\t= RXRPC_CALL_COMPLETE;\n\ttrace_rxrpc_call_complete(call);\n\tWARN_ON_ONCE(__test_and_set_bit(RXRPC_CALL_RELEASED, &call->flags));\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

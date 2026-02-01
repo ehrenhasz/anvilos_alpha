@@ -1,0 +1,9 @@
+{
+  "module_name": "config",
+  "hash_id": "c62081ac0b2335a6424b220f94f26491b924e7cd45ce77328723993e0235209a",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/netfilter/config",
+  "human_readable_source": "CONFIG_NET_NS=y\nCONFIG_NF_TABLES_INET=y\nCONFIG_NFT_QUEUE=m\nCONFIG_NFT_NAT=m\nCONFIG_NFT_REDIR=m\nCONFIG_NFT_MASQ=m\nCONFIG_NFT_FLOW_OFFLOAD=m\nCONFIG_NF_CT_NETLINK=m\nCONFIG_AUDIT=y\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

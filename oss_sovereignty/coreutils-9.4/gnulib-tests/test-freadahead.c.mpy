@@ -1,0 +1,9 @@
+{
+  "module_name": "test-freadahead.c",
+  "hash_id": "292e463aee7c9f51cbe61f8b4a6eeb404668ad129fdb8b628b76900bd5335843",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-freadahead.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#include \"freadahead.h\"\n\n#include <stdlib.h>\n#include <unistd.h>\n\n#include \"macros.h\"\n\nint\nmain (int argc, char **argv)\n{\n  int nbytes = atoi (argv[1]);\n  if (nbytes > 0)\n    {\n      void *buf = malloc (nbytes);\n      ASSERT (fread (buf, 1, nbytes, stdin) == nbytes);\n      free (buf);\n    }\n\n  if (nbytes == 0)\n    ASSERT (freadahead (stdin) == 0);\n  else\n    {\n      if (lseek (0, 0, SEEK_CUR) == nbytes)\n         \n        ASSERT (freadahead (stdin) == 0);\n      else\n        {\n           \n          size_t buffered;\n          int c, c2;\n\n          ASSERT (freadahead (stdin) != 0);\n          buffered = freadahead (stdin);\n\n          c = fgetc (stdin);\n          ASSERT (freadahead (stdin) == buffered - 1);\n          ungetc (c, stdin);\n          ASSERT (freadahead (stdin) == buffered);\n          c2 = fgetc (stdin);\n          ASSERT (c2 == c);\n          ASSERT (freadahead (stdin) == buffered - 1);\n\n          c = '@';\n          ungetc (c, stdin);\n          ASSERT (freadahead (stdin) == buffered);\n          c2 = fgetc (stdin);\n          ASSERT (c2 == c);\n          ASSERT (freadahead (stdin) == buffered - 1);\n        }\n    }\n\n   \n  fclose (stdin);\n\n  return 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "copy-builtin",
+  "hash_id": "d89d39ee66b5570588c7dcc4badf5bd40757946d58e56b7677e53e8aa4cc9a9c",
+  "original_prompt": "Ingested from zfs-2.2.2/copy-builtin",
+  "human_readable_source": "#!/bin/sh\n\nset -ef\n\nusage()\n{\n\techo \"usage: $0 <kernel source tree>\" >&2\n\texit 1\n}\n\n[ \"$#\" -eq 1 ] || usage\nKERNEL_DIR=\"$1\"\n\nif ! [ -e 'zfs_config.h' ]\nthen\n\techo \"$0: you did not run configure, or you're not in the ZFS source directory.\"\n\techo \"$0: run configure with --with-linux=$KERNEL_DIR and --enable-linux-builtin.\"\n\n\texit 1\nfi >&2\n\nmake clean ||:\nmake gitrev\n\nrm -rf \"$KERNEL_DIR/include/zfs\" \"$KERNEL_DIR/fs/zfs\"\ncp -R include \"$KERNEL_DIR/include/zfs\"\ncp -R module \"$KERNEL_DIR/fs/zfs\"\ncp zfs_config.h \"$KERNEL_DIR/include/zfs/\"\n\ncat > \"$KERNEL_DIR/fs/zfs/Kconfig\" <<EOF\nconfig ZFS\n\ttristate \"ZFS filesystem support\"\n\tdepends on EFI_PARTITION\n\tselect ZLIB_INFLATE\n\tselect ZLIB_DEFLATE\n\thelp\n\t  This is the ZFS filesystem from the OpenZFS project.\n\n\t  See https://github.com/openzfs/zfs\n\n\t  To compile this file system support as a module, choose M here.\n\n\t  If unsure, say N.\nEOF\n\nsed -i '/source \"fs\\/ext2\\/Kconfig\\\"/i\\source \"fs/zfs/Kconfig\"' \"$KERNEL_DIR/fs/Kconfig\"\necho 'obj-$(CONFIG_ZFS) += zfs/' >> \"$KERNEL_DIR/fs/Makefile\"\n\necho \"$0: done. now you can build the kernel with ZFS support.\" >&2\necho \"$0: make sure you enable ZFS support (CONFIG_ZFS) before building.\" >&2\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

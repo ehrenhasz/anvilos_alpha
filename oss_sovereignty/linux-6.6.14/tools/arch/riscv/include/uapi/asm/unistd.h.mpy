@@ -1,0 +1,9 @@
+{
+  "module_name": "unistd.h",
+  "hash_id": "a11e1d8e6bdf591063579ff2e8fccad77e0343c0e67e88fb917e7e237cdaeb87",
+  "original_prompt": "Ingested from linux-6.6.14/tools/arch/riscv/include/uapi/asm/unistd.h",
+  "human_readable_source": " \n \n\n#ifdef __LP64__\n#define __ARCH_WANT_NEW_STAT\n#define __ARCH_WANT_SET_GET_RLIMIT\n#endif  \n\n#include <asm-generic/unistd.h>\n\n \n#ifndef __NR_riscv_flush_icache\n#define __NR_riscv_flush_icache (__NR_arch_specific_syscall + 15)\n#endif\n__SYSCALL(__NR_riscv_flush_icache, sys_riscv_flush_icache)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

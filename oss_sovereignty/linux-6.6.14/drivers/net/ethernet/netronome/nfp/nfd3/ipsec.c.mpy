@@ -1,0 +1,9 @@
+{
+  "module_name": "ipsec.c",
+  "hash_id": "c37832f73ab779eee9c313b59323160610141ecf2ba10603df82eb779edb1170",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/netronome/nfp/nfd3/ipsec.c",
+  "human_readable_source": "\n \n \n\n#include <net/xfrm.h>\n\n#include \"../nfp_net.h\"\n#include \"nfd3.h\"\n\nvoid nfp_nfd3_ipsec_tx(struct nfp_nfd3_tx_desc *txd, struct sk_buff *skb)\n{\n\tstruct xfrm_state *x = xfrm_input_state(skb);\n\tstruct xfrm_offload *xo = xfrm_offload(skb);\n\tstruct iphdr *iph = ip_hdr(skb);\n\tint l4_proto;\n\n\tif (x->xso.dev && (x->xso.dev->features & NETIF_F_HW_ESP_TX_CSUM)) {\n\t\ttxd->flags |= NFD3_DESC_TX_CSUM;\n\n\t\tif (iph->version == 4)\n\t\t\ttxd->flags |= NFD3_DESC_TX_IP4_CSUM;\n\n\t\tif (x->props.mode == XFRM_MODE_TRANSPORT)\n\t\t\tl4_proto = xo->proto;\n\t\telse if (x->props.mode == XFRM_MODE_TUNNEL)\n\t\t\tl4_proto = xo->inner_ipproto;\n\t\telse\n\t\t\treturn;\n\n\t\tswitch (l4_proto) {\n\t\tcase IPPROTO_UDP:\n\t\t\ttxd->flags |= NFD3_DESC_TX_UDP_CSUM;\n\t\t\treturn;\n\t\tcase IPPROTO_TCP:\n\t\t\ttxd->flags |= NFD3_DESC_TX_TCP_CSUM;\n\t\t\treturn;\n\t\t}\n\t}\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

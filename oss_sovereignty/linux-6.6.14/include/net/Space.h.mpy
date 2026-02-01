@@ -1,0 +1,9 @@
+{
+  "module_name": "Space.h",
+  "hash_id": "36a91381fe24e6d2cfb4c6c8169f7dce129f333b9c57c05621ba339cd7055269",
+  "original_prompt": "Ingested from linux-6.6.14/include/net/Space.h",
+  "human_readable_source": " \n \n\nstruct net_device *ultra_probe(int unit);\nstruct net_device *wd_probe(int unit);\nstruct net_device *ne_probe(int unit);\nstruct net_device *smc_init(int unit);\nstruct net_device *cs89x0_probe(int unit);\nstruct net_device *tc515_probe(int unit);\nstruct net_device *lance_probe(int unit);\nstruct net_device *cops_probe(int unit);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

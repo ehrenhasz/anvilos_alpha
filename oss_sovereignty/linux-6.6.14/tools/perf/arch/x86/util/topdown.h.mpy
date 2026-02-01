@@ -1,0 +1,9 @@
+{
+  "module_name": "topdown.h",
+  "hash_id": "36b51f07132d07c10b0a934417bd8771c537d952f7f6f626e201ec4bb53b6a1f",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/arch/x86/util/topdown.h",
+  "human_readable_source": " \n#ifndef _TOPDOWN_H\n#define _TOPDOWN_H 1\n\nbool topdown_sys_has_perf_metrics(void);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

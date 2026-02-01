@@ -1,0 +1,9 @@
+{
+  "module_name": "cursc37a.c",
+  "hash_id": "e606a7d82c65e7c0c7595093c2d8168184c31bfdfb9c21b9f378067c48c4f2e7",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/dispnv50/cursc37a.c",
+  "human_readable_source": " \n#include \"curs.h\"\n#include \"atom.h\"\n\n#include <nvhw/class/clc37a.h>\n\nstatic int\ncursc37a_update(struct nv50_wndw *wndw, u32 *interlock)\n{\n\tstruct nvif_object *user = &wndw->wimm.base.user;\n\tint ret = nvif_chan_wait(&wndw->wimm, 1);\n\tif (ret == 0)\n\t\tNVIF_WR32(user, NVC37A, UPDATE, 0x00000001);\n\treturn ret;\n}\n\nstatic int\ncursc37a_point(struct nv50_wndw *wndw, struct nv50_wndw_atom *asyw)\n{\n\tstruct nvif_object *user = &wndw->wimm.base.user;\n\tint ret = nvif_chan_wait(&wndw->wimm, 1);\n\tif (ret == 0) {\n\t\tNVIF_WR32(user, NVC37A, SET_CURSOR_HOT_SPOT_POINT_OUT(0),\n\t\t\t  NVVAL(NVC37A, SET_CURSOR_HOT_SPOT_POINT_OUT, X, asyw->point.x) |\n\t\t\t  NVVAL(NVC37A, SET_CURSOR_HOT_SPOT_POINT_OUT, Y, asyw->point.y));\n\t}\n\treturn ret;\n}\n\nstatic const struct nv50_wimm_func\ncursc37a = {\n\t.point = cursc37a_point,\n\t.update = cursc37a_update,\n};\n\nint\ncursc37a_new(struct nouveau_drm *drm, int head, s32 oclass,\n\t     struct nv50_wndw **pwndw)\n{\n\treturn curs507a_new_(&cursc37a, drm, head, oclass,\n\t\t\t     0x00000001 << head, pwndw);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

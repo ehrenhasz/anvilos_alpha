@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "d3741193c084a256aec795a680001737546d0b212256e8f89345f96be7917928",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/intel/iwlwifi/mvm/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nobj-$(CONFIG_IWLMVM)   += iwlmvm.o\niwlmvm-y += fw.o mac80211.o nvm.o ops.o phy-ctxt.o mac-ctxt.o\niwlmvm-y += utils.o rx.o rxmq.o tx.o binding.o quota.o sta.o sf.o\niwlmvm-y += scan.o time-event.o rs.o rs-fw.o\niwlmvm-y += power.o coex.o\niwlmvm-y += tt.o offloading.o tdls.o\niwlmvm-y += ftm-responder.o ftm-initiator.o\niwlmvm-y += rfi.o\niwlmvm-y += mld-key.o mld-mac.o link.o mld-sta.o mld-mac80211.o\niwlmvm-y += ptp.o\niwlmvm-y += time-sync.o\niwlmvm-$(CONFIG_IWLWIFI_DEBUGFS) += debugfs.o debugfs-vif.o\niwlmvm-$(CONFIG_IWLWIFI_LEDS) += led.o\niwlmvm-$(CONFIG_PM) += d3.o\niwlmvm-$(CONFIG_IWLMEI) += vendor-cmd.o\n\nccflags-y += -I $(srctree)/$(src)/../\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

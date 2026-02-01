@@ -1,0 +1,9 @@
+{
+  "module_name": "@@__@@__py__objstr.c.qstr",
+  "hash_id": "d8afb2e8f1571a76c3d747a9e0188444c92ab0b1ce7aa97cb8b1f21bdb2335b7",
+  "original_prompt": "Ingested from sys_09_Anvil/source/ports/unix/build-bicameral/genhdr/qstr/@@__@@__py__objstr.c.qstr",
+  "human_readable_source": "Q(utf_hyphen_8)\nQ(utf_hyphen_8)\nQ(append)\nQ(extend)\nQ(decode)\nQ(find)\nQ(rfind)\nQ(index)\nQ(rindex)\nQ(join)\nQ(split)\nQ(rsplit)\nQ(startswith)\nQ(endswith)\nQ(strip)\nQ(lstrip)\nQ(rstrip)\nQ(format)\nQ(replace)\nQ(count)\nQ(lower)\nQ(upper)\nQ(isspace)\nQ(isalpha)\nQ(isdigit)\nQ(isupper)\nQ(islower)\nQ(encode)\nQ(str)\nQ(bytes)\nQ(str)\nQ(bytes)\nQ(str)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

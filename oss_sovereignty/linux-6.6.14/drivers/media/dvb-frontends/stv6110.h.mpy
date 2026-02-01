@@ -1,0 +1,9 @@
+{
+  "module_name": "stv6110.h",
+  "hash_id": "3f556246933dd6dc7ef3311f890262c05313e5d360f2d685a213405794bcbbc0",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/dvb-frontends/stv6110.h",
+  "human_readable_source": " \n \n\n#ifndef __DVB_STV6110_H__\n#define __DVB_STV6110_H__\n\n#include <linux/i2c.h>\n#include <media/dvb_frontend.h>\n\n \n#define RSTV6110_CTRL1\t\t0\n#define RSTV6110_CTRL2\t\t1\n#define RSTV6110_TUNING1\t2\n#define RSTV6110_TUNING2\t3\n#define RSTV6110_CTRL3\t\t4\n#define RSTV6110_STAT1\t\t5\n#define RSTV6110_STAT2\t\t6\n#define RSTV6110_STAT3\t\t7\n\nstruct stv6110_config {\n\tu8 i2c_address;\n\tu32 mclk;\n\tu8 gain;\n\tu8 clk_div;\t \n};\n\n#if IS_REACHABLE(CONFIG_DVB_STV6110)\nextern struct dvb_frontend *stv6110_attach(struct dvb_frontend *fe,\n\t\t\t\t\tconst struct stv6110_config *config,\n\t\t\t\t\tstruct i2c_adapter *i2c);\n#else\nstatic inline struct dvb_frontend *stv6110_attach(struct dvb_frontend *fe,\n\t\t\t\t\tconst struct stv6110_config *config,\n\t\t\t\t\tstruct i2c_adapter *i2c)\n{\n\tprintk(KERN_WARNING \"%s: driver disabled by Kconfig\\n\", __func__);\n\treturn NULL;\n}\n#endif\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

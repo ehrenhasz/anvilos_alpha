@@ -1,0 +1,9 @@
+{
+  "module_name": "max77693-common.h",
+  "hash_id": "0c261f1892aabcd581849eaddac2b9164e6177d34c6b53b117f4e619148fb44e",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/mfd/max77693-common.h",
+  "human_readable_source": " \n \n\n#ifndef __LINUX_MFD_MAX77693_COMMON_H\n#define __LINUX_MFD_MAX77693_COMMON_H\n\nenum max77693_types {\n\tTYPE_MAX77693_UNKNOWN,\n\tTYPE_MAX77693,\n\tTYPE_MAX77843,\n\n\tTYPE_MAX77693_NUM,\n};\n\n \nstruct max77693_dev {\n\tstruct device *dev;\n\tstruct i2c_client *i2c;\t\t \n\tstruct i2c_client *i2c_muic;\t \n\tstruct i2c_client *i2c_haptic;\t \n\tstruct i2c_client *i2c_chg;\t \n\n\tenum max77693_types type;\n\n\tstruct regmap *regmap;\n\tstruct regmap *regmap_muic;\n\tstruct regmap *regmap_haptic;\t \n\tstruct regmap *regmap_chg;\t \n\n\tstruct regmap_irq_chip_data *irq_data_led;\n\tstruct regmap_irq_chip_data *irq_data_topsys;\n\tstruct regmap_irq_chip_data *irq_data_chg;  \n\tstruct regmap_irq_chip_data *irq_data_muic;\n\n\tint irq;\n};\n\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

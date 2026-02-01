@@ -1,0 +1,9 @@
+{
+  "module_name": "usnic_abi.h",
+  "hash_id": "aa9a4f4d455a82c58a85748f3435c4cdbc7e57113000a0e3ee915e588c36229c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/infiniband/hw/usnic/usnic_abi.h",
+  "human_readable_source": " \n\n\n#ifndef USNIC_ABI_H\n#define USNIC_ABI_H\n\n \n#define USNIC_UVERBS_ABI_VERSION\t4\n\n#define USNIC_QP_GRP_MAX_WQS\t\t8\n#define USNIC_QP_GRP_MAX_RQS\t\t8\n#define USNIC_QP_GRP_MAX_CQS\t\t16\n\nenum usnic_transport_type {\n\tUSNIC_TRANSPORT_UNKNOWN\t\t= 0,\n\tUSNIC_TRANSPORT_ROCE_CUSTOM\t= 1,\n\tUSNIC_TRANSPORT_IPV4_UDP\t= 2,\n\tUSNIC_TRANSPORT_MAX\t\t= 3,\n};\n\nstruct usnic_transport_spec {\n\tenum usnic_transport_type\ttrans_type;\n\tunion {\n\t\tstruct {\n\t\t\tuint16_t\tport_num;\n\t\t} usnic_roce;\n\t\tstruct {\n\t\t\tuint32_t\tsock_fd;\n\t\t} udp;\n\t};\n};\n\nstruct usnic_ib_create_qp_cmd {\n\tstruct usnic_transport_spec\tspec;\n};\n\n \nstruct usnic_ib_create_qp_resp {\n\tu32\t\t\t\tvfid;\n\tu32\t\t\t\tqp_grp_id;\n\tu64\t\t\t\tbar_bus_addr;\n\tu32\t\t\t\tbar_len;\n \n\tu32\t\t\t\twq_cnt;\n\tu32\t\t\t\trq_cnt;\n\tu32\t\t\t\tcq_cnt;\n\tu32\t\t\t\twq_idx[USNIC_QP_GRP_MAX_WQS];\n\tu32\t\t\t\trq_idx[USNIC_QP_GRP_MAX_RQS];\n\tu32\t\t\t\tcq_idx[USNIC_QP_GRP_MAX_CQS];\n\tu32\t\t\t\ttransport;\n\tu32\t\t\t\treserved[9];\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

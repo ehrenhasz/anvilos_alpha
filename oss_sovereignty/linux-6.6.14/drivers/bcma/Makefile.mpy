@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "3bc4ab9dbcf1991c648402dd9d3006258c65f13409b52b029fef9b2ff6cbe141",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/bcma/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nbcma-y\t\t\t\t\t+= main.o scan.o core.o sprom.o\nbcma-y\t\t\t\t\t+= driver_chipcommon.o driver_chipcommon_pmu.o\nbcma-y\t\t\t\t\t+= driver_chipcommon_b.o\nbcma-$(CONFIG_BCMA_PFLASH)\t\t+= driver_chipcommon_pflash.o\nbcma-$(CONFIG_BCMA_SFLASH)\t\t+= driver_chipcommon_sflash.o\nbcma-$(CONFIG_BCMA_NFLASH)\t\t+= driver_chipcommon_nflash.o\nbcma-$(CONFIG_BCMA_DRIVER_PCI)\t\t+= driver_pci.o\nbcma-$(CONFIG_BCMA_DRIVER_PCI)\t\t+= driver_pcie2.o\nbcma-$(CONFIG_BCMA_DRIVER_PCI_HOSTMODE)\t+= driver_pci_host.o\nbcma-$(CONFIG_BCMA_DRIVER_MIPS)\t\t+= driver_mips.o\nbcma-$(CONFIG_BCMA_DRIVER_GMAC_CMN)\t+= driver_gmac_cmn.o\nbcma-$(CONFIG_BCMA_DRIVER_GPIO)\t\t+= driver_gpio.o\nbcma-$(CONFIG_BCMA_HOST_PCI)\t\t+= host_pci.o\nbcma-$(CONFIG_BCMA_HOST_SOC)\t\t+= host_soc.o\nobj-$(CONFIG_BCMA)\t\t\t+= bcma.o\n\nccflags-$(CONFIG_BCMA_DEBUG)\t\t:= -DDEBUG\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

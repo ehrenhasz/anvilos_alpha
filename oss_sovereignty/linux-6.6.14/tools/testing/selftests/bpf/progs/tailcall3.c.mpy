@@ -1,0 +1,9 @@
+{
+  "module_name": "tailcall3.c",
+  "hash_id": "aa9d716f6835c7c63095a4a6fe987c9d17e3746ef47c028f5c56b70df1dc40ea",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/tailcall3.c",
+  "human_readable_source": "\n#include <linux/bpf.h>\n\n#include <bpf/bpf_helpers.h>\n\nstruct {\n\t__uint(type, BPF_MAP_TYPE_PROG_ARRAY);\n\t__uint(max_entries, 1);\n\t__uint(key_size, sizeof(__u32));\n\t__uint(value_size, sizeof(__u32));\n} jmp_table SEC(\".maps\");\n\nint count = 0;\n\nSEC(\"tc\")\nint classifier_0(struct __sk_buff *skb)\n{\n\tcount++;\n\tbpf_tail_call_static(skb, &jmp_table, 0);\n\treturn 1;\n}\n\nSEC(\"tc\")\nint entry(struct __sk_buff *skb)\n{\n\tbpf_tail_call_static(skb, &jmp_table, 0);\n\treturn 0;\n}\n\nchar __license[] SEC(\"license\") = \"GPL\";\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

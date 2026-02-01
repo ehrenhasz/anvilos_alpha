@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "758b66a57854cca0722f444fd84c44522102d4b9a5c2c3f7b164c4d0206e84c7",
+  "original_prompt": "Ingested from linux-6.6.14/sound/usb/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for ALSA\n#\n\nsnd-usb-audio-objs := \tcard.o \\\n\t\t\tclock.o \\\n\t\t\tendpoint.o \\\n\t\t\tformat.o \\\n\t\t\thelper.o \\\n\t\t\timplicit.o \\\n\t\t\tmixer.o \\\n\t\t\tmixer_quirks.o \\\n\t\t\tmixer_scarlett.o \\\n\t\t\tmixer_scarlett_gen2.o \\\n\t\t\tmixer_us16x08.o \\\n\t\t\tmixer_s1810c.o \\\n\t\t\tpcm.o \\\n\t\t\tpower.o \\\n\t\t\tproc.o \\\n\t\t\tquirks.o \\\n\t\t\tstream.o \\\n\t\t\tvalidate.o\n\nsnd-usb-audio-$(CONFIG_SND_USB_AUDIO_MIDI_V2) += midi2.o\nsnd-usb-audio-$(CONFIG_SND_USB_AUDIO_USE_MEDIA_CONTROLLER) += media.o\n\nsnd-usbmidi-lib-objs := midi.o\n\n# Toplevel Module Dependency\nobj-$(CONFIG_SND_USB_AUDIO) += snd-usb-audio.o snd-usbmidi-lib.o\n\nobj-$(CONFIG_SND_USB_UA101) += snd-usbmidi-lib.o\nobj-$(CONFIG_SND_USB_USX2Y) += snd-usbmidi-lib.o\nobj-$(CONFIG_SND_USB_US122L) += snd-usbmidi-lib.o\n\nobj-$(CONFIG_SND) += misc/ usx2y/ caiaq/ 6fire/ hiface/ bcd2000/\nobj-$(CONFIG_SND_USB_LINE6)\t+= line6/\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

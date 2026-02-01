@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "20ecdbdb46f80c188fe3dbbb5b38fb464b4e6d9db5790db4385b9f84f86116b0",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/kernel/cpu/resctrl/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nobj-$(CONFIG_X86_CPU_RESCTRL)\t+= core.o rdtgroup.o monitor.o\nobj-$(CONFIG_X86_CPU_RESCTRL)\t+= ctrlmondata.o pseudo_lock.o\nCFLAGS_pseudo_lock.o = -I$(src)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

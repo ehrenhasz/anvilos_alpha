@@ -1,0 +1,9 @@
+{
+  "module_name": "lgamma.c",
+  "hash_id": "33ae90b2aa1c63f8cd7eea67fe952fe3e85e838bb5b42a6c975263a7dff6048e",
+  "original_prompt": "Ingested from sys_09_Anvil/source/lib/libm_dbl/lgamma.c",
+  "human_readable_source": "#include <math.h>\n\ndouble __lgamma_r(double, int*);\n\ndouble lgamma(double x) {\n    int sign;\n    return __lgamma_r(x, &sign);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

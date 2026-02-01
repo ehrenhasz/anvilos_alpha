@@ -1,0 +1,9 @@
+{
+  "module_name": "vcn_v4_0.h",
+  "hash_id": "e7d460753f49f460b7fd92822cb26a2a0c2f08a18c4a5c7e37d5f688e3e983a2",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/amdgpu/vcn_v4_0.h",
+  "human_readable_source": " \n\n#ifndef __VCN_V4_0_H__\n#define __VCN_V4_0_H__\n\nenum amdgpu_vcn_v4_0_sub_block {\n\tAMDGPU_VCN_V4_0_VCPU_VCODEC = 0,\n\n\tAMDGPU_VCN_V4_0_MAX_SUB_BLOCK,\n};\n\nextern const struct amdgpu_ip_block_version vcn_v4_0_ip_block;\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

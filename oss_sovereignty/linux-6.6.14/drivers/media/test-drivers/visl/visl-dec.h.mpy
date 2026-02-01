@@ -1,0 +1,9 @@
+{
+  "module_name": "visl-dec.h",
+  "hash_id": "c5d5fe4408042d7d21a79a8bbcf19f922eb9dc9d7fdfa87e3b1b2ce178dbb26d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/test-drivers/visl/visl-dec.h",
+  "human_readable_source": " \n \n\n#ifndef _VISL_DEC_H_\n#define _VISL_DEC_H_\n\n#include \"visl.h\"\n\nstruct visl_fwht_run {\n\tconst struct v4l2_ctrl_fwht_params *params;\n};\n\nstruct visl_mpeg2_run {\n\tconst struct v4l2_ctrl_mpeg2_sequence *seq;\n\tconst struct v4l2_ctrl_mpeg2_picture *pic;\n\tconst struct v4l2_ctrl_mpeg2_quantisation *quant;\n};\n\nstruct visl_vp8_run {\n\tconst struct v4l2_ctrl_vp8_frame *frame;\n};\n\nstruct visl_vp9_run {\n\tconst struct v4l2_ctrl_vp9_frame *frame;\n\tconst struct v4l2_ctrl_vp9_compressed_hdr *probs;\n};\n\nstruct visl_h264_run {\n\tconst struct v4l2_ctrl_h264_sps *sps;\n\tconst struct v4l2_ctrl_h264_pps *pps;\n\tconst struct v4l2_ctrl_h264_scaling_matrix *sm;\n\tconst struct v4l2_ctrl_h264_slice_params *spram;\n\tconst struct v4l2_ctrl_h264_decode_params *dpram;\n\tconst struct v4l2_ctrl_h264_pred_weights *pwht;\n};\n\nstruct visl_hevc_run {\n\tconst struct v4l2_ctrl_hevc_sps *sps;\n\tconst struct v4l2_ctrl_hevc_pps *pps;\n\tconst struct v4l2_ctrl_hevc_slice_params *spram;\n\tconst struct v4l2_ctrl_hevc_scaling_matrix *sm;\n\tconst struct v4l2_ctrl_hevc_decode_params *dpram;\n};\n\nstruct visl_run {\n\tstruct vb2_v4l2_buffer\t*src;\n\tstruct vb2_v4l2_buffer\t*dst;\n\n\tunion {\n\t\tstruct visl_fwht_run\tfwht;\n\t\tstruct visl_mpeg2_run\tmpeg2;\n\t\tstruct visl_vp8_run\tvp8;\n\t\tstruct visl_vp9_run\tvp9;\n\t\tstruct visl_h264_run\th264;\n\t\tstruct visl_hevc_run\thevc;\n\t};\n};\n\nint visl_dec_start(struct visl_ctx *ctx);\nint visl_dec_stop(struct visl_ctx *ctx);\nint visl_job_ready(void *priv);\nvoid visl_device_run(void *priv);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

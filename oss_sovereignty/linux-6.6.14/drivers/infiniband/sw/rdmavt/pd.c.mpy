@@ -1,0 +1,9 @@
+{
+  "module_name": "pd.c",
+  "hash_id": "7019eab40e5e53497e0948bab4cbd2a4ad9db266321a87413a7d624745e98ff8",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/infiniband/sw/rdmavt/pd.c",
+  "human_readable_source": "\n \n\n#include <linux/slab.h>\n#include \"pd.h\"\n\n \nint rvt_alloc_pd(struct ib_pd *ibpd, struct ib_udata *udata)\n{\n\tstruct ib_device *ibdev = ibpd->device;\n\tstruct rvt_dev_info *dev = ib_to_rvt(ibdev);\n\tstruct rvt_pd *pd = ibpd_to_rvtpd(ibpd);\n\tint ret = 0;\n\n\t \n\n\tspin_lock(&dev->n_pds_lock);\n\tif (dev->n_pds_allocated == dev->dparms.props.max_pd) {\n\t\tspin_unlock(&dev->n_pds_lock);\n\t\tret = -ENOMEM;\n\t\tgoto bail;\n\t}\n\n\tdev->n_pds_allocated++;\n\tspin_unlock(&dev->n_pds_lock);\n\n\t \n\tpd->user = !!udata;\n\nbail:\n\treturn ret;\n}\n\n \nint rvt_dealloc_pd(struct ib_pd *ibpd, struct ib_udata *udata)\n{\n\tstruct rvt_dev_info *dev = ib_to_rvt(ibpd->device);\n\n\tspin_lock(&dev->n_pds_lock);\n\tdev->n_pds_allocated--;\n\tspin_unlock(&dev->n_pds_lock);\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

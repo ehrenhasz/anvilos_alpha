@@ -1,0 +1,9 @@
+{
+  "module_name": "crypto.h",
+  "hash_id": "0e1a94317aeb05fb0304a40e00652e4aecb8462ef9b88724b572f58187df98b5",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/mellanox/mlx5/core/lib/crypto.h",
+  "human_readable_source": " \n \n\n#ifndef __MLX5_LIB_CRYPTO_H__\n#define __MLX5_LIB_CRYPTO_H__\n\nenum {\n\tMLX5_ACCEL_OBJ_TLS_KEY = MLX5_GENERAL_OBJECT_TYPE_ENCRYPTION_KEY_PURPOSE_TLS,\n\tMLX5_ACCEL_OBJ_IPSEC_KEY = MLX5_GENERAL_OBJECT_TYPE_ENCRYPTION_KEY_PURPOSE_IPSEC,\n\tMLX5_ACCEL_OBJ_MACSEC_KEY = MLX5_GENERAL_OBJECT_TYPE_ENCRYPTION_KEY_PURPOSE_MACSEC,\n\tMLX5_ACCEL_OBJ_TYPE_KEY_NUM,\n};\n\nint mlx5_create_encryption_key(struct mlx5_core_dev *mdev,\n\t\t\t       const void *key, u32 sz_bytes,\n\t\t\t       u32 key_type, u32 *p_key_id);\n\nvoid mlx5_destroy_encryption_key(struct mlx5_core_dev *mdev, u32 key_id);\n\nstruct mlx5_crypto_dek_pool;\nstruct mlx5_crypto_dek;\n\nstruct mlx5_crypto_dek_pool *mlx5_crypto_dek_pool_create(struct mlx5_core_dev *mdev,\n\t\t\t\t\t\t\t int key_purpose);\nvoid mlx5_crypto_dek_pool_destroy(struct mlx5_crypto_dek_pool *pool);\nstruct mlx5_crypto_dek *mlx5_crypto_dek_create(struct mlx5_crypto_dek_pool *dek_pool,\n\t\t\t\t\t       const void *key, u32 sz_bytes);\nvoid mlx5_crypto_dek_destroy(struct mlx5_crypto_dek_pool *dek_pool,\n\t\t\t     struct mlx5_crypto_dek *dek);\nu32 mlx5_crypto_dek_get_id(struct mlx5_crypto_dek *dek);\n\nstruct mlx5_crypto_dek_priv *mlx5_crypto_dek_init(struct mlx5_core_dev *mdev);\nvoid mlx5_crypto_dek_cleanup(struct mlx5_crypto_dek_priv *dek_priv);\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

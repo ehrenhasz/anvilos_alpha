@@ -1,0 +1,9 @@
+{
+  "module_name": "nfnetlink_cthelper.h",
+  "hash_id": "56874c227ce8cb96f43131bd5e06de1cef7c7f94caf8dde3e7eb4a40425dd512",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/netfilter/nfnetlink_cthelper.h",
+  "human_readable_source": " \n#ifndef _NFNL_CTHELPER_H_\n#define _NFNL_CTHELPER_H_\n\n#define NFCT_HELPER_STATUS_DISABLED\t0\n#define NFCT_HELPER_STATUS_ENABLED\t1\n\nenum nfnl_cthelper_msg_types {\n\tNFNL_MSG_CTHELPER_NEW,\n\tNFNL_MSG_CTHELPER_GET,\n\tNFNL_MSG_CTHELPER_DEL,\n\tNFNL_MSG_CTHELPER_MAX\n};\n\nenum nfnl_cthelper_type {\n\tNFCTH_UNSPEC,\n\tNFCTH_NAME,\n\tNFCTH_TUPLE,\n\tNFCTH_QUEUE_NUM,\n\tNFCTH_POLICY,\n\tNFCTH_PRIV_DATA_LEN,\n\tNFCTH_STATUS,\n\t__NFCTH_MAX\n};\n#define NFCTH_MAX (__NFCTH_MAX - 1)\n\nenum nfnl_cthelper_policy_type {\n\tNFCTH_POLICY_SET_UNSPEC,\n\tNFCTH_POLICY_SET_NUM,\n\tNFCTH_POLICY_SET,\n\tNFCTH_POLICY_SET1\t= NFCTH_POLICY_SET,\n\tNFCTH_POLICY_SET2,\n\tNFCTH_POLICY_SET3,\n\tNFCTH_POLICY_SET4,\n\t__NFCTH_POLICY_SET_MAX\n};\n#define NFCTH_POLICY_SET_MAX (__NFCTH_POLICY_SET_MAX - 1)\n\nenum nfnl_cthelper_pol_type {\n\tNFCTH_POLICY_UNSPEC,\n\tNFCTH_POLICY_NAME,\n\tNFCTH_POLICY_EXPECT_MAX,\n\tNFCTH_POLICY_EXPECT_TIMEOUT,\n\t__NFCTH_POLICY_MAX\n};\n#define NFCTH_POLICY_MAX (__NFCTH_POLICY_MAX - 1)\n\nenum nfnl_cthelper_tuple_type {\n\tNFCTH_TUPLE_UNSPEC,\n\tNFCTH_TUPLE_L3PROTONUM,\n\tNFCTH_TUPLE_L4PROTONUM,\n\t__NFCTH_TUPLE_MAX,\n};\n#define NFCTH_TUPLE_MAX (__NFCTH_TUPLE_MAX - 1)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

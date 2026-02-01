@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "0e4a9ec9861ad9c4168385c8c22344023e27256f5555d39f19514b760da53ddc",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/platform/allegro-dvt/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n\ncomment \"Allegro DVT media platform drivers\"\n\nconfig VIDEO_ALLEGRO_DVT\n\ttristate \"Allegro DVT Video IP Core\"\n\tdepends on V4L_MEM2MEM_DRIVERS\n\tdepends on VIDEO_DEV\n\tdepends on ARCH_ZYNQMP || COMPILE_TEST\n\tselect V4L2_MEM2MEM_DEV\n\tselect VIDEOBUF2_DMA_CONTIG\n\tselect REGMAP_MMIO\n\thelp\n\t  Support for the encoder video IP core by Allegro DVT. This core is\n\t  found for example on the Xilinx ZynqMP SoC in the EV family and is\n\t  called VCU in the reference manual.\n\n\t  To compile this driver as a module, choose M here: the module\n\t  will be called allegro.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

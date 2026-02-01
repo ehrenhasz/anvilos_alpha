@@ -1,0 +1,9 @@
+{
+  "module_name": "conn.c",
+  "hash_id": "b1ac078300e7e8651470f974ae1ea263ff41b8c5e47577ba835540fa7e9cdbf4",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/engine/disp/conn.c",
+  "human_readable_source": " \n#include \"conn.h\"\n#include \"outp.h\"\n#include \"priv.h\"\n\n#include <subdev/gpio.h>\n\n#include <nvif/event.h>\n\nvoid\nnvkm_conn_fini(struct nvkm_conn *conn)\n{\n}\n\nvoid\nnvkm_conn_init(struct nvkm_conn *conn)\n{\n}\n\nvoid\nnvkm_conn_del(struct nvkm_conn **pconn)\n{\n\tstruct nvkm_conn *conn = *pconn;\n\tif (conn) {\n\t\tkfree(*pconn);\n\t\t*pconn = NULL;\n\t}\n}\n\nstatic void\nnvkm_conn_ctor(struct nvkm_disp *disp, int index, struct nvbios_connE *info,\n\t       struct nvkm_conn *conn)\n{\n\tstatic const u8 hpd[] = { 0x07, 0x08, 0x51, 0x52, 0x5e, 0x5f, 0x60 };\n\tstruct nvkm_gpio *gpio = disp->engine.subdev.device->gpio;\n\tstruct dcb_gpio_func func;\n\tint ret;\n\n\tconn->disp = disp;\n\tconn->index = index;\n\tconn->info = *info;\n\tconn->info.hpd = DCB_GPIO_UNUSED;\n\n\tCONN_DBG(conn, \"type %02x loc %d hpd %02x dp %x di %x sr %x lcdid %x\",\n\t\t info->type, info->location, info->hpd, info->dp,\n\t\t info->di, info->sr, info->lcdid);\n\n\tif ((info->hpd = ffs(info->hpd))) {\n\t\tif (--info->hpd >= ARRAY_SIZE(hpd)) {\n\t\t\tCONN_ERR(conn, \"hpd %02x unknown\", info->hpd);\n\t\t\treturn;\n\t\t}\n\t\tinfo->hpd = hpd[info->hpd];\n\n\t\tret = nvkm_gpio_find(gpio, 0, info->hpd, DCB_GPIO_UNUSED, &func);\n\t\tif (ret) {\n\t\t\tCONN_ERR(conn, \"func %02x lookup failed, %d\", info->hpd, ret);\n\t\t\treturn;\n\t\t}\n\n\t\tconn->info.hpd = func.line;\n\t}\n}\n\nint\nnvkm_conn_new(struct nvkm_disp *disp, int index, struct nvbios_connE *info,\n\t      struct nvkm_conn **pconn)\n{\n\tif (!(*pconn = kzalloc(sizeof(**pconn), GFP_KERNEL)))\n\t\treturn -ENOMEM;\n\tnvkm_conn_ctor(disp, index, info, *pconn);\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

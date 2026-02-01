@@ -1,0 +1,9 @@
+{
+  "module_name": "cxgb4i.h",
+  "hash_id": "72d7b5b76a6f1fc6c4f35d6048bdcbe0fb9365551a8706e9353f03acaa0f33ea",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/scsi/cxgbi/cxgb4i/cxgb4i.h",
+  "human_readable_source": " \n\n#ifndef\t__CXGB4I_H__\n#define\t__CXGB4I_H__\n\n#define\tCXGB4I_SCSI_HOST_QDEPTH\t1024\n#define\tCXGB4I_MAX_CONN\t\t16384\n#define\tCXGB4I_MAX_TARGET\tCXGB4I_MAX_CONN\n#define\tCXGB4I_MAX_LUN\t\t0x1000\n\n \n#define CXGB4I_TX_HEADER_LEN \\\n\t(sizeof(struct fw_ofld_tx_data_wr) + sizeof(struct sge_opaque_hdr))\n\n#define T5_ISS_VALID\t\t(1 << 18)\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

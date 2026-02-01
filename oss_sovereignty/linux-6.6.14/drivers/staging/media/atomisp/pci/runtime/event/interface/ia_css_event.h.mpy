@@ -1,0 +1,9 @@
+{
+  "module_name": "ia_css_event.h",
+  "hash_id": "7dae5b88fcd1bea842b9c3378595888b73b358f15ee84ccf4354b59ead01f1a9",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/runtime/event/interface/ia_css_event.h",
+  "human_readable_source": " \n \n\n#ifndef _IA_CSS_EVENT_H\n#define _IA_CSS_EVENT_H\n\n#include <type_support.h>\n#include \"sw_event_global.h\"     \n\nbool ia_css_event_encode(\n    u8\t*in,\n    u8\tnr,\n    uint32_t\t*out);\n\nvoid ia_css_event_decode(\n    u32 event,\n    uint8_t *payload);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "parse_vdso.h",
+  "hash_id": "1b1d8250eeba34a7ad1f0bda0b468e19d9c9cd425154a6d8c1837142caf8cb33",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/vDSO/parse_vdso.h",
+  "human_readable_source": " \n\n#ifndef PARSE_VDSO_H\n#define PARSE_VDSO_H\n\n#include <stdint.h>\n\n \nvoid *vdso_sym(const char *version, const char *name);\nvoid vdso_init_from_sysinfo_ehdr(uintptr_t base);\nvoid vdso_init_from_auxv(void *auxv);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

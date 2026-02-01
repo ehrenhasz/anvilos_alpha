@@ -1,0 +1,9 @@
+{
+  "module_name": "ccu-sun20i-d1.h",
+  "hash_id": "2824fe1803a9d8cf80e2aaad2915a578de705dd604b892ffb0787e9d219c0638",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/clk/sunxi-ng/ccu-sun20i-d1.h",
+  "human_readable_source": " \n \n\n#ifndef _CCU_SUN20I_D1_H_\n#define _CCU_SUN20I_D1_H_\n\n#include <dt-bindings/clock/sun20i-d1-ccu.h>\n#include <dt-bindings/reset/sun20i-d1-ccu.h>\n\n#define CLK_NUMBER\t\t(CLK_BUS_CAN1 + 1)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

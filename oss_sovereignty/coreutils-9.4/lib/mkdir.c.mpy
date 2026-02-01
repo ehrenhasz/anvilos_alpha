@@ -1,0 +1,9 @@
+{
+  "module_name": "mkdir.c",
+  "hash_id": "a8b441bbad470bb191e65578815efb02f6a5794fe29761f6e98acd7bd23f3f8e",
+  "original_prompt": "Ingested from coreutils-9.4/lib/mkdir.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n \n#include <sys/stat.h>\n\n#include <errno.h>\n#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\n\n#include \"dirname.h\"\n\n \n#undef mkdir\n\n \n#if defined _WIN32 && ! defined __CYGWIN__\n# define mkdir(name,mode) _mkdir (name)\n# define maybe_unused _GL_UNUSED\n#else\n# define maybe_unused  \n#endif\n\n \n\nint\nrpl_mkdir (char const *dir, maybe_unused mode_t mode)\n{\n  int ret_val;\n  char *tmp_dir;\n  size_t len = strlen (dir);\n\n  if (len && dir[len - 1] == '/')\n    {\n      tmp_dir = strdup (dir);\n      if (!tmp_dir)\n        {\n           \n          errno = ENOMEM;\n          return -1;\n        }\n      strip_trailing_slashes (tmp_dir);\n    }\n  else\n    {\n      tmp_dir = (char *) dir;\n    }\n#if FUNC_MKDIR_DOT_BUG\n   \n  {\n    char *last = last_component (tmp_dir);\n    if (*last == '.' && (last[1] == '\\0'\n                         || (last[1] == '.' && last[2] == '\\0')))\n      {\n        struct stat st;\n        if (stat (tmp_dir, &st) == 0 || errno == EOVERFLOW)\n          errno = EEXIST;\n        return -1;\n      }\n  }\n#endif  \n\n  ret_val = mkdir (tmp_dir, mode);\n\n  if (tmp_dir != dir)\n    free (tmp_dir);\n\n  return ret_val;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

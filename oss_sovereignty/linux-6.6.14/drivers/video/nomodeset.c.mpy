@@ -1,0 +1,9 @@
+{
+  "module_name": "nomodeset.c",
+  "hash_id": "56222b386d421f21dfb962e63855e99bf27b3c6c932588b027b2ea700e0c7fb1",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/video/nomodeset.c",
+  "human_readable_source": "\n\n#include <linux/module.h>\n#include <linux/types.h>\n\n#include <video/nomodeset.h>\n\nstatic bool video_nomodeset;\n\nbool video_firmware_drivers_only(void)\n{\n\treturn video_nomodeset;\n}\nEXPORT_SYMBOL(video_firmware_drivers_only);\n\nstatic int __init disable_modeset(char *str)\n{\n\tvideo_nomodeset = true;\n\n\tpr_warn(\"Booted with the nomodeset parameter. Only the system framebuffer will be available\\n\");\n\n\treturn 1;\n}\n\n \n__setup(\"nomodeset\", disable_modeset);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

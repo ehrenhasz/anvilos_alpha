@@ -1,0 +1,9 @@
+{
+  "module_name": "fstat.m4",
+  "hash_id": "2ac83a8a792fcf9f7a501474ec94a9df6d34efd2afc9afc66dd54f8aaec7a38f",
+  "original_prompt": "Ingested from coreutils-9.4/m4/fstat.m4",
+  "human_readable_source": "# fstat.m4 serial 9\ndnl Copyright (C) 2011-2023 Free Software Foundation, Inc.\ndnl This file is free software; the Free Software Foundation\ndnl gives unlimited permission to copy and/or distribute it,\ndnl with or without modifications, as long as this notice is preserved.\n\nAC_DEFUN([gl_FUNC_FSTAT],\n[\n  AC_REQUIRE([AC_CANONICAL_HOST])\n  AC_REQUIRE([gl_SYS_STAT_H_DEFAULTS])\n\n  case \"$host_os\" in\n    mingw* | windows* | solaris*)\n      dnl On MinGW, the original stat() returns st_atime, st_mtime,\n      dnl st_ctime values that are affected by the time zone.\n      dnl Solaris stat can return a negative tv_nsec.\n      REPLACE_FSTAT=1\n      ;;\n  esac\n\n  dnl Replace fstat() for supporting the gnulib-defined open() on directories.\n  m4_ifdef([gl_FUNC_FCHDIR], [\n    gl_TEST_FCHDIR\n    if test $HAVE_FCHDIR = 0; then\n      case \"$gl_cv_func_open_directory_works\" in\n        *yes) ;;\n        *)\n          REPLACE_FSTAT=1\n          ;;\n      esac\n    fi\n  ])\n])\n\n# Prerequisites of lib/fstat.c and lib/stat-w32.c.\nAC_DEFUN([gl_PREREQ_FSTAT], [\n  AC_REQUIRE([gl_SYS_STAT_H])\n  AC_REQUIRE([gl_PREREQ_STAT_W32])\n  :\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

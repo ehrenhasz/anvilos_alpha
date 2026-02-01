@@ -1,0 +1,9 @@
+{
+  "module_name": "sample_map_ret0.c",
+  "hash_id": "d2cf35f725e888cbc61b4388ca03fc5915ba2aecc52c65ce66d45ccf2be70249",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/sample_map_ret0.c",
+  "human_readable_source": " \n#include <linux/bpf.h>\n#include <bpf/bpf_helpers.h>\n\nstruct {\n\t__uint(type, BPF_MAP_TYPE_HASH);\n\t__type(key, __u32);\n\t__type(value, long);\n\t__uint(max_entries, 2);\n} htab SEC(\".maps\");\n\nstruct {\n\t__uint(type, BPF_MAP_TYPE_ARRAY);\n\t__type(key, __u32);\n\t__type(value, long);\n\t__uint(max_entries, 2);\n} array SEC(\".maps\");\n\n \nSEC(\".text\") int func()\n{\n\t__u64 key64 = 0;\n\t__u32 key = 0;\n\tlong *value;\n\n\tvalue = bpf_map_lookup_elem(&htab, &key);\n\tif (!value)\n\t\treturn 1;\n\tvalue = bpf_map_lookup_elem(&array, &key64);\n\tif (!value)\n\t\treturn 1;\n\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

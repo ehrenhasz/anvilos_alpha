@@ -1,0 +1,9 @@
+{
+  "module_name": "safe-read.m4",
+  "hash_id": "b6d8626fb990d3ce9ebe03f66687fa563c0db8097f9e2e820b6c5b936c3db721",
+  "original_prompt": "Ingested from coreutils-9.4/m4/safe-read.m4",
+  "human_readable_source": "# safe-read.m4 serial 6\ndnl Copyright (C) 2002-2003, 2005-2006, 2009-2023 Free Software Foundation,\ndnl Inc.\ndnl This file is free software; the Free Software Foundation\ndnl gives unlimited permission to copy and/or distribute it,\ndnl with or without modifications, as long as this notice is preserved.\n\n# Prerequisites of lib/safe-read.c.\nAC_DEFUN([gl_PREREQ_SAFE_READ],\n[\n  AC_REQUIRE([gt_TYPE_SSIZE_T])\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

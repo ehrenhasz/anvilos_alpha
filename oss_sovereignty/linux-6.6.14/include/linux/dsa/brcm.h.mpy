@@ -1,0 +1,9 @@
+{
+  "module_name": "brcm.h",
+  "hash_id": "64251b6c55f9119cdb24bb2642b7ef044cdbfae7471a5cb91a9c53509403cbef",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/dsa/brcm.h",
+  "human_readable_source": " \n\n \n#ifndef _NET_DSA_BRCM_H\n#define _NET_DSA_BRCM_H\n\n \n#define BRCM_TAG_SET_PORT_QUEUE(p, q)\t((p) << 8 | q)\n#define BRCM_TAG_GET_PORT(v)\t\t((v) >> 8)\n#define BRCM_TAG_GET_QUEUE(v)\t\t((v) & 0xff)\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

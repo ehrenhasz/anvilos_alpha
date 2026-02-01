@@ -1,0 +1,9 @@
+{
+  "module_name": "xo1-rfkill.c",
+  "hash_id": "1ced91984e2e6a120e6125cf1753b1b6409478dedb52c77cb1f5fd2cd132c2df",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/platform/x86/xo1-rfkill.c",
+  "human_readable_source": "\n \n\n#include <linux/module.h>\n#include <linux/platform_device.h>\n#include <linux/rfkill.h>\n#include <linux/olpc-ec.h>\n\nstatic bool card_blocked;\n\nstatic int rfkill_set_block(void *data, bool blocked)\n{\n\tunsigned char cmd;\n\tint r;\n\n\tif (blocked == card_blocked)\n\t\treturn 0;\n\n\tif (blocked)\n\t\tcmd = EC_WLAN_ENTER_RESET;\n\telse\n\t\tcmd = EC_WLAN_LEAVE_RESET;\n\n\tr = olpc_ec_cmd(cmd, NULL, 0, NULL, 0);\n\tif (r == 0)\n\t\tcard_blocked = blocked;\n\n\treturn r;\n}\n\nstatic const struct rfkill_ops rfkill_ops = {\n\t.set_block = rfkill_set_block,\n};\n\nstatic int xo1_rfkill_probe(struct platform_device *pdev)\n{\n\tstruct rfkill *rfk;\n\tint r;\n\n\trfk = rfkill_alloc(pdev->name, &pdev->dev, RFKILL_TYPE_WLAN,\n\t\t\t   &rfkill_ops, NULL);\n\tif (!rfk)\n\t\treturn -ENOMEM;\n\n\tr = rfkill_register(rfk);\n\tif (r) {\n\t\trfkill_destroy(rfk);\n\t\treturn r;\n\t}\n\n\tplatform_set_drvdata(pdev, rfk);\n\treturn 0;\n}\n\nstatic void xo1_rfkill_remove(struct platform_device *pdev)\n{\n\tstruct rfkill *rfk = platform_get_drvdata(pdev);\n\trfkill_unregister(rfk);\n\trfkill_destroy(rfk);\n}\n\nstatic struct platform_driver xo1_rfkill_driver = {\n\t.driver = {\n\t\t.name = \"xo1-rfkill\",\n\t},\n\t.probe\t\t= xo1_rfkill_probe,\n\t.remove_new\t= xo1_rfkill_remove,\n};\n\nmodule_platform_driver(xo1_rfkill_driver);\n\nMODULE_AUTHOR(\"Daniel Drake <dsd@laptop.org>\");\nMODULE_LICENSE(\"GPL\");\nMODULE_ALIAS(\"platform:xo1-rfkill\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

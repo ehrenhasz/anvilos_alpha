@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "108392575ee2355a679b50a75c4afb6ee064e150723e1d1b7481991ec7d6a5e9",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/hid/intel-ish-hid/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nmenu \"Intel ISH HID support\"\n\tdepends on (X86_64 || COMPILE_TEST) && PCI\n\nconfig INTEL_ISH_HID\n\ttristate \"Intel Integrated Sensor Hub\"\n\tdefault n\n\tdepends on X86\n\tdepends on HID\n\thelp\n\t  The Integrated Sensor Hub (ISH) enables the ability to offload\n\t  sensor polling and algorithm processing to a dedicated low power\n\t  processor in the chipset. This allows the core processor to go into\n\t  low power modes more often, resulting in the increased battery life.\n\t  The current processors that support ISH are: Cherrytrail, Skylake,\n\t  Broxton and Kaby Lake.\n\n\t  Say Y here if you want to support Intel ISH. If unsure, say N.\n\nconfig INTEL_ISH_FIRMWARE_DOWNLOADER\n\ttristate \"Host Firmware Load feature for Intel ISH\"\n\tdepends on INTEL_ISH_HID\n\tdepends on X86\n\thelp\n\t  The Integrated Sensor Hub (ISH) enables the kernel to offload\n\t  sensor polling and algorithm processing to a dedicated low power\n\t  processor in the chipset.\n\n\t  The Host Firmware Load feature adds support to load the ISH\n\t  firmware from host file system at boot.\n\n\t  Say M here if you want to support Host Firmware Loading feature\n\t  for Intel ISH. If unsure, say N.\nendmenu\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

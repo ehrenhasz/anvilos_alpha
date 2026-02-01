@@ -1,0 +1,9 @@
+{
+  "module_name": "rza.c",
+  "hash_id": "28624bd7316a7b9fffc507ec2ebb555ad967c957f35022e03923428d85efb7d9",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/usb/renesas_usbhs/rza.c",
+  "human_readable_source": "\n \n\n#include <linux/delay.h>\n#include <linux/io.h>\n#include <linux/of.h>\n#include \"common.h\"\n#include \"rza.h\"\n\nstatic int usbhs_rza1_hardware_init(struct platform_device *pdev)\n{\n\tstruct usbhs_priv *priv = usbhs_pdev_to_priv(pdev);\n\tstruct device_node *usb_x1_clk, *extal_clk;\n\tu32 freq_usb = 0, freq_extal = 0;\n\n\t \n\tusb_x1_clk = of_find_node_by_name(NULL, \"usb_x1\");\n\textal_clk = of_find_node_by_name(NULL, \"extal\");\n\tof_property_read_u32(usb_x1_clk, \"clock-frequency\", &freq_usb);\n\tof_property_read_u32(extal_clk, \"clock-frequency\", &freq_extal);\n\n\tof_node_put(usb_x1_clk);\n\tof_node_put(extal_clk);\n\n\tif (freq_usb == 0) {\n\t\tif (freq_extal == 12000000) {\n\t\t\t \n\t\t\tusbhs_bset(priv, SYSCFG, UCKSEL, UCKSEL);\n\t\t} else {\n\t\t\tdev_err(usbhs_priv_to_dev(priv), \"A 48MHz USB clock or 12MHz main clock is required.\\n\");\n\t\t\treturn -EIO;\n\t\t}\n\t}\n\n\t \n\tusbhs_bset(priv, SYSCFG, UPLLE, UPLLE);\n\tusleep_range(1000, 2000);\n\tusbhs_bset(priv, SUSPMODE, SUSPM, SUSPM);\n\n\treturn 0;\n}\n\nconst struct renesas_usbhs_platform_info usbhs_rza1_plat_info = {\n\t.platform_callback = {\n\t\t.hardware_init = usbhs_rza1_hardware_init,\n\t\t.get_id = usbhs_get_id_as_gadget,\n\t},\n\t.driver_param = {\n\t\t.has_new_pipe_configs = 1,\n\t},\n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "try-catch.h",
+  "hash_id": "d54fef2767073bae928354bd4d38caf98bf2281937bc8ecdcb0d00017906598e",
+  "original_prompt": "Ingested from linux-6.6.14/include/kunit/try-catch.h",
+  "human_readable_source": " \n \n\n#ifndef _KUNIT_TRY_CATCH_H\n#define _KUNIT_TRY_CATCH_H\n\n#include <linux/types.h>\n\ntypedef void (*kunit_try_catch_func_t)(void *);\n\nstruct completion;\nstruct kunit;\n\n \nstruct kunit_try_catch {\n\t \n\tstruct kunit *test;\n\tstruct completion *try_completion;\n\tint try_result;\n\tkunit_try_catch_func_t try;\n\tkunit_try_catch_func_t catch;\n\tvoid *context;\n};\n\nvoid kunit_try_catch_run(struct kunit_try_catch *try_catch, void *context);\n\nvoid __noreturn kunit_try_catch_throw(struct kunit_try_catch *try_catch);\n\nstatic inline int kunit_try_catch_get_result(struct kunit_try_catch *try_catch)\n{\n\treturn try_catch->try_result;\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

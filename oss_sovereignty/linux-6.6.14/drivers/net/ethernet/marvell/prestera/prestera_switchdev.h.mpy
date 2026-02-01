@@ -1,0 +1,9 @@
+{
+  "module_name": "prestera_switchdev.h",
+  "hash_id": "88ec06535e7a9f6dfaf6a735b952815005683276675882903d1af8fea1bd68f5",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/marvell/prestera/prestera_switchdev.h",
+  "human_readable_source": " \n \n\n#ifndef _PRESTERA_SWITCHDEV_H_\n#define _PRESTERA_SWITCHDEV_H_\n\nint prestera_switchdev_init(struct prestera_switch *sw);\nvoid prestera_switchdev_fini(struct prestera_switch *sw);\n\nint prestera_bridge_port_join(struct net_device *br_dev,\n\t\t\t      struct prestera_port *port,\n\t\t\t      struct netlink_ext_ack *extack);\n\nvoid prestera_bridge_port_leave(struct net_device *br_dev,\n\t\t\t\tstruct prestera_port *port);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

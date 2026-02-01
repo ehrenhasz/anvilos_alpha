@@ -1,0 +1,9 @@
+{
+  "module_name": "sys.h",
+  "hash_id": "245db7d0b7baed7752b8daf51443077ebc75a99c8a43877561d0ceb4880d03ef",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/sys.h",
+  "human_readable_source": " \n#ifndef _LINUX_SYS_H\n#define _LINUX_SYS_H\n\n \n\n \n#ifdef notdef\n#define _sys_waitpid\t_sys_old_syscall\t \n#define _sys_olduname\t_sys_old_syscall\t \n#define _sys_uname\t_sys_old_syscall\t \n#define _sys_stat\t_sys_old_syscall\t \n#define _sys_fstat\t_sys_old_syscall\t \n#define _sys_lstat\t_sys_old_syscall\t \n#define _sys_signal\t_sys_old_syscall\t \n#define _sys_sgetmask\t_sys_old_syscall\t \n#define _sys_ssetmask\t_sys_old_syscall\t \n#endif\n\n \n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

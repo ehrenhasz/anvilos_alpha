@@ -1,0 +1,9 @@
+{
+  "module_name": "bios_parser.h",
+  "hash_id": "04c6f70351582f46ebe8045bf12ea3ad96e2e20bb2f1136f1ce24811793e0949",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/dc/bios/bios_parser.h",
+  "human_readable_source": " \n\n#ifndef __DAL_BIOS_PARSER_H__\n#define __DAL_BIOS_PARSER_H__\n\nstruct dc_bios *bios_parser_create(\n\tstruct bp_init_data *init,\n\tenum dce_version dce_version);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "e0308465963cc6b8ca184f567611fe2c6b807116bbf3f377ebb6d03844eb01d8",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/axis-fifo/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# \"Xilinx AXI-Stream FIFO IP core driver\"\n#\nconfig XIL_AXIS_FIFO\n\ttristate \"Xilinx AXI-Stream FIFO IP core driver\"\n\tdepends on OF && HAS_IOMEM\n\thelp\n\t  This adds support for the Xilinx AXI-Stream FIFO IP core driver.\n\t  The AXI Streaming FIFO allows memory mapped access to a AXI Streaming\n\t  interface. The Xilinx AXI-Stream FIFO IP core can be used to interface\n\t  to the AXI Ethernet without the need to use DMA.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

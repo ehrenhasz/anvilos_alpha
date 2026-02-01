@@ -1,0 +1,9 @@
+{
+  "module_name": "flexcan.h",
+  "hash_id": "ac1f459a00717de6022900e3668d60ad34ab0915ab89a56e3e51169ba4f16fb1",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/can/platform/flexcan.h",
+  "human_readable_source": " \n \n\n#ifndef _CAN_PLATFORM_FLEXCAN_H\n#define _CAN_PLATFORM_FLEXCAN_H\n\nstruct flexcan_platform_data {\n\tu32 clock_frequency;\n\tu8 clk_src;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

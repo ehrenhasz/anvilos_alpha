@@ -1,0 +1,9 @@
+{
+  "module_name": "nouveau_led.h",
+  "hash_id": "989032b03d1d21a37e7a634f0eaca71c0078c2c17993b4a2d823b3d6083525ff",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nouveau_led.h",
+  "human_readable_source": " \n\n#ifndef __NOUVEAU_LED_H__\n#define __NOUVEAU_LED_H__\n\n#include \"nouveau_drv.h\"\n\n#include <linux/leds.h>\n\nstruct nouveau_led {\n\tstruct drm_device *dev;\n\n\tstruct led_classdev led;\n};\n\nstatic inline struct nouveau_led *\nnouveau_led(struct drm_device *dev)\n{\n\treturn nouveau_drm(dev)->led;\n}\n\n \n#if IS_REACHABLE(CONFIG_LEDS_CLASS)\nint  nouveau_led_init(struct drm_device *dev);\nvoid nouveau_led_suspend(struct drm_device *dev);\nvoid nouveau_led_resume(struct drm_device *dev);\nvoid nouveau_led_fini(struct drm_device *dev);\n#else\nstatic inline int  nouveau_led_init(struct drm_device *dev) { return 0; };\nstatic inline void nouveau_led_suspend(struct drm_device *dev) { };\nstatic inline void nouveau_led_resume(struct drm_device *dev) { };\nstatic inline void nouveau_led_fini(struct drm_device *dev) { };\n#endif\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

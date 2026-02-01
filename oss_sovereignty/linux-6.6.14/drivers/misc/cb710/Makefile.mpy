@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "b35df088ae3714a210831c84a1b6a922b2f683208e95d50d968d61fd482a8858",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/misc/cb710/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nccflags-$(CONFIG_CB710_DEBUG)\t:= -DDEBUG\n\nobj-$(CONFIG_CB710_CORE)\t+= cb710.o\n\ncb710-y\t\t\t\t:= core.o sgbuf2.o\ncb710-$(CONFIG_CB710_DEBUG)\t+= debug.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

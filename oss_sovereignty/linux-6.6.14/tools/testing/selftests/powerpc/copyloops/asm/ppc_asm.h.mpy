@@ -1,0 +1,9 @@
+{
+  "module_name": "ppc_asm.h",
+  "hash_id": "5af758363942f787de1518002e47bfb49ee95ec248a09a022b4c68f5ef8abc7e",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/powerpc/copyloops/asm/ppc_asm.h",
+  "human_readable_source": " \n#ifndef __SELFTESTS_POWERPC_PPC_ASM_H\n#define __SELFTESTS_POWERPC_PPC_ASM_H\n#include <ppc-asm.h>\n\n#define CONFIG_ALTIVEC\n\n#define r1\t1\n\n#define R14 r14\n#define R15 r15\n#define R16 r16\n#define R17 r17\n#define R18 r18\n#define R19 r19\n#define R20 r20\n#define R21 r21\n#define R22 r22\n#define R29 r29\n#define R30 r30\n#define R31 r31\n\n#define STACKFRAMESIZE\t256\n#define STK_REG(i)\t(112 + ((i)-14)*8)\n\n#define _GLOBAL(A) FUNC_START(test_ ## A)\n#define _GLOBAL_TOC(A) _GLOBAL(A)\n#define _GLOBAL_TOC_KASAN(A) _GLOBAL(A)\n#define _GLOBAL_KASAN(A) _GLOBAL(A)\n#define CFUNC(name) name\n\n#define PPC_MTOCRF(A, B)\tmtocrf A, B\n\n#define EX_TABLE(x, y)\t\t\t\\\n\t.section __ex_table,\"a\";\t\\\n\t.8byte\tx, y;\t\t\t\\\n\t.previous\n\n#define BEGIN_FTR_SECTION\t\t.if test_feature\n#define FTR_SECTION_ELSE\t\t.else\n#define ALT_FTR_SECTION_END_IFCLR(x)\t.endif\n#define ALT_FTR_SECTION_END_IFSET(x)\t.endif\n#define ALT_FTR_SECTION_END(x, y)\t.endif\n#define END_FTR_SECTION_IFCLR(x)\t.endif\n#define END_FTR_SECTION_IFSET(x)\t.endif\n\n \ntest_feature = 1\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

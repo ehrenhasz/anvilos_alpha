@@ -1,0 +1,9 @@
+{
+  "module_name": "aggsum.h",
+  "hash_id": "73d32d50fadb85ec79622876883bc48430176fe70936c76fb35cf4323c63f20f",
+  "original_prompt": "Ingested from zfs-2.2.2/include/sys/aggsum.h",
+  "human_readable_source": " \n \n\n#ifndef\t_SYS_AGGSUM_H\n#define\t_SYS_AGGSUM_H\n\n#include <sys/zfs_context.h>\n\n#ifdef\t__cplusplus\nextern \"C\" {\n#endif\n\ntypedef struct aggsum_bucket aggsum_bucket_t;\n\nstruct aggsum_bucket {\n\tkmutex_t asc_lock;\n\tint64_t asc_delta;\n\tuint64_t asc_borrowed;\n} ____cacheline_aligned;\n\n \ntypedef struct aggsum {\n\tkmutex_t as_lock;\n\tint64_t as_lower_bound;\n\tuint64_t as_upper_bound;\n\taggsum_bucket_t *as_buckets ____cacheline_aligned;\n\tuint_t as_numbuckets;\n\tuint_t as_bucketshift;\n} aggsum_t;\n\nvoid aggsum_init(aggsum_t *, uint64_t);\nvoid aggsum_fini(aggsum_t *);\nint64_t aggsum_lower_bound(aggsum_t *);\nuint64_t aggsum_upper_bound(aggsum_t *);\nint aggsum_compare(aggsum_t *, uint64_t);\nuint64_t aggsum_value(aggsum_t *);\nvoid aggsum_add(aggsum_t *, int64_t);\n\n#ifdef\t__cplusplus\n}\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

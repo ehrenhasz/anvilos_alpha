@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "3eb2e5dcd6ada25943102cfd5590c7b792e65b96038c20f4bbdd7bc4e58a8e02",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/android/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nccflags-y += -I$(src)\t\t\t# needed for trace events\n\nobj-$(CONFIG_ANDROID_BINDERFS)\t\t+= binderfs.o\nobj-$(CONFIG_ANDROID_BINDER_IPC)\t+= binder.o binder_alloc.o\nobj-$(CONFIG_ANDROID_BINDER_IPC_SELFTEST) += binder_alloc_selftest.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "isys_dma_private.h",
+  "hash_id": "2525a81a09822225f24030c65a778594f477356ee1a8fd76d1de532a8ac7611a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/css_2401_system/host/isys_dma_private.h",
+  "human_readable_source": " \n \n\n#ifndef __ISYS_DMA_PRIVATE_H_INCLUDED__\n#define __ISYS_DMA_PRIVATE_H_INCLUDED__\n\n#include \"isys_dma_public.h\"\n#include \"device_access.h\"\n#include \"assert_support.h\"\n#include \"dma.h\"\n#include \"dma_v2_defs.h\"\n#include \"print_support.h\"\n\nvoid isys2401_dma_reg_store(const isys2401_dma_ID_t\tdma_id,\n\t\t\t    const unsigned int\t\treg,\n\t\t\t    const hrt_data\t\tvalue)\n{\n\tunsigned int reg_loc;\n\n\tassert(dma_id < N_ISYS2401_DMA_ID);\n\tassert(ISYS2401_DMA_BASE[dma_id] != (hrt_address) - 1);\n\n\treg_loc = ISYS2401_DMA_BASE[dma_id] + (reg * sizeof(hrt_data));\n\n\tia_css_device_store_uint32(reg_loc, value);\n}\n\nhrt_data isys2401_dma_reg_load(const isys2401_dma_ID_t\tdma_id,\n\t\t\t       const unsigned int\treg)\n{\n\tunsigned int reg_loc;\n\thrt_data value;\n\n\tassert(dma_id < N_ISYS2401_DMA_ID);\n\tassert(ISYS2401_DMA_BASE[dma_id] != (hrt_address) - 1);\n\n\treg_loc = ISYS2401_DMA_BASE[dma_id] + (reg * sizeof(hrt_data));\n\n\tvalue = ia_css_device_load_uint32(reg_loc);\n\tia_css_print(\"isys dma load from addr(0x%x) val(%u)\\n\", reg_loc,\n\t\t     (unsigned int)value);\n\n\treturn value;\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

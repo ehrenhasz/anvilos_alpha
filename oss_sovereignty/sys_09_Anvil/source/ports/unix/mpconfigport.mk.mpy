@@ -1,0 +1,9 @@
+{
+  "module_name": "mpconfigport.mk",
+  "hash_id": "bd2d27f95511dc7510a2cc09f77710ef326f6e18f79fd1e56da8e9969d7b09dc",
+  "original_prompt": "Ingested from sys_09_Anvil/source/ports/unix/mpconfigport.mk",
+  "human_readable_source": "# Enable/disable modules and 3rd-party libs to be included in interpreter\n\n# Build 32-bit binaries on a 64-bit host\nMICROPY_FORCE_32BIT = 0\n\n# This variable can take the following values:\n#  0 - no readline, just simple stdin input\n#  1 - use MicroPython version of readline\nMICROPY_USE_READLINE = 1\n\n# btree module using Berkeley DB 1.xx\nMICROPY_PY_BTREE = 1\n\n# _thread module using pthreads\nMICROPY_PY_THREAD = 1\n\n# Subset of CPython termios module\nMICROPY_PY_TERMIOS = 1\n\n# Subset of CPython socket module\nMICROPY_PY_SOCKET = 1\n\n# ffi module requires libffi (libffi-dev Debian package)\nMICROPY_PY_FFI = 1\n\n# ssl module requires one of the TLS libraries below\nMICROPY_PY_SSL = 1\n# axTLS has minimal size but implements only a subset of modern TLS\n# functionality, so may have problems with some servers.\nMICROPY_SSL_AXTLS = 0\n# mbedTLS is more up to date and complete implementation, but also\n# more bloated.\nMICROPY_SSL_MBEDTLS = 1\n\n# jni module requires JVM/JNI\nMICROPY_PY_JNI = 0\n\n# Avoid using system libraries, use copies bundled with MicroPython\n# as submodules (currently affects only libffi).\nMICROPY_STANDALONE = 0\n\nMICROPY_ROM_TEXT_COMPRESSION = 1\n\nMICROPY_VFS_FAT = 1\nMICROPY_VFS_LFS1 = 1\nMICROPY_VFS_LFS2 = 1\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

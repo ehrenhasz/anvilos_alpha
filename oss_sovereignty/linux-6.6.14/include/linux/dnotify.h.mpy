@@ -1,0 +1,9 @@
+{
+  "module_name": "dnotify.h",
+  "hash_id": "60d09a1267dd689e28d135dcdee6f44593e5557d403f156938c7828147aba885",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/dnotify.h",
+  "human_readable_source": " \n#ifndef _LINUX_DNOTIFY_H\n#define _LINUX_DNOTIFY_H\n \n\n#include <linux/fs.h>\n\nstruct dnotify_struct {\n\tstruct dnotify_struct *\tdn_next;\n\t__u32\t\t\tdn_mask;\n\tint\t\t\tdn_fd;\n\tstruct file *\t\tdn_filp;\n\tfl_owner_t\t\tdn_owner;\n};\n\n#ifdef __KERNEL__\n\n\n#ifdef CONFIG_DNOTIFY\n\n#define DNOTIFY_ALL_EVENTS (FS_DELETE | FS_DELETE_CHILD |\\\n\t\t\t    FS_MODIFY | FS_MODIFY_CHILD |\\\n\t\t\t    FS_ACCESS | FS_ACCESS_CHILD |\\\n\t\t\t    FS_ATTRIB | FS_ATTRIB_CHILD |\\\n\t\t\t    FS_CREATE | FS_RENAME |\\\n\t\t\t    FS_MOVED_FROM | FS_MOVED_TO)\n\nextern void dnotify_flush(struct file *, fl_owner_t);\nextern int fcntl_dirnotify(int, struct file *, unsigned int);\n\n#else\n\nstatic inline void dnotify_flush(struct file *filp, fl_owner_t id)\n{\n}\n\nstatic inline int fcntl_dirnotify(int fd, struct file *filp, unsigned int arg)\n{\n\treturn -EINVAL;\n}\n\n#endif  \n\n#endif  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

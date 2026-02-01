@@ -1,0 +1,9 @@
+{
+  "module_name": "dt_idle_states.h",
+  "hash_id": "ca51c3425436923d683aa8f4e59672f2803f0bcc45ea7aa986bbf84e155a916a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/cpuidle/dt_idle_states.h",
+  "human_readable_source": " \n#ifndef __DT_IDLE_STATES\n#define __DT_IDLE_STATES\n\nint dt_init_idle_driver(struct cpuidle_driver *drv,\n\t\t\tconst struct of_device_id *matches,\n\t\t\tunsigned int start_idx);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

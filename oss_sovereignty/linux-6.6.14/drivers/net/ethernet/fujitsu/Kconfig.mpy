@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "cca2ed0e32bc689660d6333762bd3e9a6c0a45320136c5aab35d506d5076e310",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/fujitsu/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Fujitsu Network device configuration\n#\n\nconfig NET_VENDOR_FUJITSU\n\tbool \"Fujitsu devices\"\n\tdefault y\n\tdepends on PCMCIA\n\thelp\n\t  If you have a network (Ethernet) card belonging to this class, say Y.\n\n\t  Note that the answer to this question doesn't directly affect the\n\t  the questions about Fujitsu cards. If you say Y, you will be asked for\n\t  your specific card in the following questions.\n\nif NET_VENDOR_FUJITSU\n\nconfig PCMCIA_FMVJ18X\n\ttristate \"Fujitsu FMV-J18x PCMCIA support\"\n\tdepends on PCMCIA\n\tselect CRC32\n\thelp\n\t  Say Y here if you intend to attach a Fujitsu FMV-J18x or compatible\n\t  PCMCIA (PC-card) Ethernet card to your computer.\n\n\t  To compile this driver as a module, choose M here: the module will be\n\t  called fmvj18x_cs.  If unsure, say N.\n\nendif # NET_VENDOR_FUJITSU\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "firmware.h",
+  "hash_id": "f398b633bf1f7fcf1f89d0937ea69da2139269914993d6be52abf2baf7e3573c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/platform/qcom/venus/firmware.h",
+  "human_readable_source": " \n \n#ifndef __VENUS_FIRMWARE_H__\n#define __VENUS_FIRMWARE_H__\n\nstruct device;\n\nint venus_firmware_init(struct venus_core *core);\nvoid venus_firmware_deinit(struct venus_core *core);\nint venus_boot(struct venus_core *core);\nint venus_shutdown(struct venus_core *core);\nint venus_set_hw_state(struct venus_core *core, bool suspend);\n\nstatic inline int venus_set_hw_state_suspend(struct venus_core *core)\n{\n\treturn venus_set_hw_state(core, false);\n}\n\nstatic inline int venus_set_hw_state_resume(struct venus_core *core)\n{\n\treturn venus_set_hw_state(core, true);\n}\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

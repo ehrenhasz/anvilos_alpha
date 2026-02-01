@@ -1,0 +1,9 @@
+{
+  "module_name": "qcom,mmcc-apq8084.h",
+  "hash_id": "3d8e09a75ca080116bfc15e3395cfa316b68a52d203ec01513d58de6e8239e2f",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/reset/qcom,mmcc-apq8084.h",
+  "human_readable_source": " \n \n\n#ifndef _DT_BINDINGS_RESET_APQ_MMCC_8084_H\n#define _DT_BINDINGS_RESET_APQ_MMCC_8084_H\n\n#define MMSS_SPDM_RESET\t\t\t0\n#define MMSS_SPDM_RM_RESET\t\t1\n#define VENUS0_RESET\t\t\t2\n#define VPU_RESET\t\t\t3\n#define MDSS_RESET\t\t\t4\n#define AVSYNC_RESET\t\t\t5\n#define CAMSS_PHY0_RESET\t\t6\n#define CAMSS_PHY1_RESET\t\t7\n#define CAMSS_PHY2_RESET\t\t8\n#define CAMSS_CSI0_RESET\t\t9\n#define CAMSS_CSI0PHY_RESET\t\t10\n#define CAMSS_CSI0RDI_RESET\t\t11\n#define CAMSS_CSI0PIX_RESET\t\t12\n#define CAMSS_CSI1_RESET\t\t13\n#define CAMSS_CSI1PHY_RESET\t\t14\n#define CAMSS_CSI1RDI_RESET\t\t15\n#define CAMSS_CSI1PIX_RESET\t\t16\n#define CAMSS_CSI2_RESET\t\t17\n#define CAMSS_CSI2PHY_RESET\t\t18\n#define CAMSS_CSI2RDI_RESET\t\t19\n#define CAMSS_CSI2PIX_RESET\t\t20\n#define CAMSS_CSI3_RESET\t\t21\n#define CAMSS_CSI3PHY_RESET\t\t22\n#define CAMSS_CSI3RDI_RESET\t\t23\n#define CAMSS_CSI3PIX_RESET\t\t24\n#define CAMSS_ISPIF_RESET\t\t25\n#define CAMSS_CCI_RESET\t\t\t26\n#define CAMSS_MCLK0_RESET\t\t27\n#define CAMSS_MCLK1_RESET\t\t28\n#define CAMSS_MCLK2_RESET\t\t29\n#define CAMSS_MCLK3_RESET\t\t30\n#define CAMSS_GP0_RESET\t\t\t31\n#define CAMSS_GP1_RESET\t\t\t32\n#define CAMSS_TOP_RESET\t\t\t33\n#define CAMSS_AHB_RESET\t\t\t34\n#define CAMSS_MICRO_RESET\t\t35\n#define CAMSS_JPEG_RESET\t\t36\n#define CAMSS_VFE_RESET\t\t\t37\n#define CAMSS_CSI_VFE0_RESET\t\t38\n#define CAMSS_CSI_VFE1_RESET\t\t39\n#define OXILI_RESET\t\t\t40\n#define OXILICX_RESET\t\t\t41\n#define OCMEMCX_RESET\t\t\t42\n#define MMSS_RBCRP_RESET\t\t43\n#define MMSSNOCAHB_RESET\t\t44\n#define MMSSNOCAXI_RESET\t\t45\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "owl-common.h",
+  "hash_id": "a54fd4d5a91092037f7f615176eb1da5fe5fbafe8dce4a564601b876adf9d0c3",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/clk/actions/owl-common.h",
+  "human_readable_source": " \n\n\n\n\n\n\n\n\n\n#ifndef _OWL_COMMON_H_\n#define _OWL_COMMON_H_\n\n#include <linux/clk-provider.h>\n#include <linux/regmap.h>\n\nstruct device_node;\nstruct platform_device;\n\nstruct owl_clk_common {\n\tstruct regmap\t\t\t*regmap;\n\tstruct clk_hw\t\t\thw;\n};\n\nstruct owl_clk_desc {\n\tstruct owl_clk_common\t\t**clks;\n\tunsigned long\t\t\tnum_clks;\n\tstruct clk_hw_onecell_data\t*hw_clks;\n\tconst struct owl_reset_map\t*resets;\n\tunsigned long\t\t\tnum_resets;\n\tstruct regmap\t\t\t*regmap;\n};\n\nstatic inline struct owl_clk_common *\n\thw_to_owl_clk_common(const struct clk_hw *hw)\n{\n\treturn container_of(hw, struct owl_clk_common, hw);\n}\n\nint owl_clk_regmap_init(struct platform_device *pdev,\n\t\t\tstruct owl_clk_desc *desc);\nint owl_clk_probe(struct device *dev, struct clk_hw_onecell_data *hw_clks);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

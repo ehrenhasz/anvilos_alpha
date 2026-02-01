@@ -1,0 +1,9 @@
+{
+  "module_name": "Kbuild",
+  "hash_id": "d419c96258a069a125cf8a8aa1911e55e0d952300d46f944e6f3dc1b2f60ab3b",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/infiniband/ulp/srp/Kbuild",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nobj-$(CONFIG_INFINIBAND_SRP)\t\t\t+= ib_srp.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

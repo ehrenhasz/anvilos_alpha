@@ -1,0 +1,9 @@
+{
+  "module_name": "gf117.c",
+  "hash_id": "6f7b41bca6f66d8ae1d86a8681605ae0f77577336ecf10abb779c125e7745e25",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/subdev/volt/gf117.c",
+  "human_readable_source": " \n#include \"priv.h\"\n\n#include <subdev/fuse.h>\n\nstatic int\ngf117_volt_speedo_read(struct nvkm_volt *volt)\n{\n\tstruct nvkm_device *device = volt->subdev.device;\n\tstruct nvkm_fuse *fuse = device->fuse;\n\n\tif (!fuse)\n\t\treturn -EINVAL;\n\n\treturn nvkm_fuse_read(fuse, 0x3a8);\n}\n\nstatic const struct nvkm_volt_func\ngf117_volt = {\n\t.oneinit = gf100_volt_oneinit,\n\t.vid_get = nvkm_voltgpio_get,\n\t.vid_set = nvkm_voltgpio_set,\n\t.speedo_read = gf117_volt_speedo_read,\n};\n\nint\ngf117_volt_new(struct nvkm_device *device, enum nvkm_subdev_type type, int inst,\n\t       struct nvkm_volt **pvolt)\n{\n\tstruct nvkm_volt *volt;\n\tint ret;\n\n\tret = nvkm_volt_new_(&gf117_volt, device, type, inst, &volt);\n\t*pvolt = volt;\n\tif (ret)\n\t\treturn ret;\n\n\treturn nvkm_voltgpio_init(volt);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

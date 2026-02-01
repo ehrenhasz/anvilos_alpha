@@ -1,0 +1,9 @@
+{
+  "module_name": "dcn20_clk_mgr.h",
+  "hash_id": "832f9063413c588019f47b3cfbc6fa980db3b314582753290190b7abeb88eb98",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/dc/clk_mgr/dcn20/dcn20_clk_mgr.h",
+  "human_readable_source": " \n\n#ifndef __DCN20_CLK_MGR_H__\n#define __DCN20_CLK_MGR_H__\n\nvoid dcn2_update_clocks(struct clk_mgr *dccg,\n\t\t\tstruct dc_state *context,\n\t\t\tbool safe_to_lower);\n\nvoid dcn2_update_clocks_fpga(struct clk_mgr *clk_mgr,\n\t\t\tstruct dc_state *context,\n\t\t\tbool safe_to_lower);\nvoid dcn20_update_clocks_update_dpp_dto(struct clk_mgr_internal *clk_mgr,\n\t\tstruct dc_state *context, bool safe_to_lower);\n\nvoid dcn2_init_clocks(struct clk_mgr *clk_mgr);\n\nvoid dcn20_clk_mgr_construct(struct dc_context *ctx,\n\t\tstruct clk_mgr_internal *clk_mgr,\n\t\tstruct pp_smu_funcs *pp_smu,\n\t\tstruct dccg *dccg);\n\nuint32_t dentist_get_did_from_divider(int divider);\n\nvoid dcn2_get_clock(struct clk_mgr *clk_mgr,\n\t\tstruct dc_state *context,\n\t\t\tenum dc_clock_type clock_type,\n\t\t\tstruct dc_clock_config *clock_cfg);\n\nvoid dcn20_update_clocks_update_dentist(struct clk_mgr_internal *clk_mgr,\n\t\t\t\t\tstruct dc_state *context);\n\nvoid dcn2_read_clocks_from_hw_dentist(struct clk_mgr *clk_mgr_base);\n\n\n#endif \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

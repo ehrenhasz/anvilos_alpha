@@ -1,0 +1,9 @@
+{
+  "module_name": "simple-mfd-i2c.h",
+  "hash_id": "56183b9043d7e58ce496b45fa4cad28114c3d6d9edba6dae9cdfe43fff6d7903",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/mfd/simple-mfd-i2c.h",
+  "human_readable_source": "\n \n\n#ifndef __MFD_SIMPLE_MFD_I2C_H\n#define __MFD_SIMPLE_MFD_I2C_H\n\n#include <linux/mfd/core.h>\n#include <linux/regmap.h>\n\nstruct simple_mfd_data {\n\tconst struct regmap_config *regmap_config;\n\tconst struct mfd_cell *mfd_cell;\n\tsize_t mfd_cell_size;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

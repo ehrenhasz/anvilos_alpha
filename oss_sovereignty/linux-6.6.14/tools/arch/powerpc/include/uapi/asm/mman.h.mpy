@@ -1,0 +1,9 @@
+{
+  "module_name": "mman.h",
+  "hash_id": "789ecefdd067ab1fc049da938a7f91da5a85fa5c0ccb50e1f99c16dd4b0c486e",
+  "original_prompt": "Ingested from linux-6.6.14/tools/arch/powerpc/include/uapi/asm/mman.h",
+  "human_readable_source": " \n#ifndef TOOLS_ARCH_POWERPC_UAPI_ASM_MMAN_FIX_H\n#define TOOLS_ARCH_POWERPC_UAPI_ASM_MMAN_FIX_H\n#define MAP_DENYWRITE\t0x0800\n#define MAP_EXECUTABLE\t0x1000\n#define MAP_GROWSDOWN\t0x0100\n#define MAP_LOCKED\t0x80\n#define MAP_NORESERVE   0x40\n#include <uapi/asm-generic/mman-common.h>\n \n#define MAP_32BIT\t0\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

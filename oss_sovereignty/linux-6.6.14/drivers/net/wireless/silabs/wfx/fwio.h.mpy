@@ -1,0 +1,9 @@
+{
+  "module_name": "fwio.h",
+  "hash_id": "429d14c66eaed3c94480ddd0d689da3290f702328048abe0bddc22ddd061d0c4",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/silabs/wfx/fwio.h",
+  "human_readable_source": " \n \n#ifndef WFX_FWIO_H\n#define WFX_FWIO_H\n\nstruct wfx_dev;\n\nint wfx_init_device(struct wfx_dev *wdev);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

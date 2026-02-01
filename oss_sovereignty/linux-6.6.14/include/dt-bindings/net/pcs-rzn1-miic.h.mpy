@@ -1,0 +1,9 @@
+{
+  "module_name": "pcs-rzn1-miic.h",
+  "hash_id": "7731fae800f4eb5ec5920791c145c83ff578cf59c7c5befa4da4b58d1cd2c80c",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/net/pcs-rzn1-miic.h",
+  "human_readable_source": " \n \n\n#ifndef _DT_BINDINGS_PCS_RZN1_MIIC\n#define _DT_BINDINGS_PCS_RZN1_MIIC\n\n \n\n#define MIIC_GMAC1_PORT\t\t\t0\n#define MIIC_GMAC2_PORT\t\t\t1\n#define MIIC_RTOS_PORT\t\t\t2\n#define MIIC_SERCOS_PORTA\t\t3\n#define MIIC_SERCOS_PORTB\t\t4\n#define MIIC_ETHERCAT_PORTA\t\t5\n#define MIIC_ETHERCAT_PORTB\t\t6\n#define MIIC_ETHERCAT_PORTC\t\t7\n#define MIIC_SWITCH_PORTA\t\t8\n#define MIIC_SWITCH_PORTB\t\t9\n#define MIIC_SWITCH_PORTC\t\t10\n#define MIIC_SWITCH_PORTD\t\t11\n#define MIIC_HSR_PORTA\t\t\t12\n#define MIIC_HSR_PORTB\t\t\t13\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

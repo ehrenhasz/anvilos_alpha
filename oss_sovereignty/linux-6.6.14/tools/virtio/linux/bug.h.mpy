@@ -1,0 +1,9 @@
+{
+  "module_name": "bug.h",
+  "hash_id": "040be08065156b00a6ff9e3d42579b41ab45e795c2ee595ac31791e44bd77eb2",
+  "original_prompt": "Ingested from linux-6.6.14/tools/virtio/linux/bug.h",
+  "human_readable_source": " \n#ifndef _LINUX_BUG_H\n#define _LINUX_BUG_H\n\n#include <asm/bug.h>\n\n#define BUG_ON(__BUG_ON_cond) assert(!(__BUG_ON_cond))\n\n#define BUG() abort()\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

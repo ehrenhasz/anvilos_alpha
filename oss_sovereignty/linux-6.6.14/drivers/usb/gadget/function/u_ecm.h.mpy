@@ -1,0 +1,9 @@
+{
+  "module_name": "u_ecm.h",
+  "hash_id": "90ab8c3e1b7dc02c3101e0303063ccc698e0eb65c252f27e4c444d6c3ead38de",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/usb/gadget/function/u_ecm.h",
+  "human_readable_source": " \n \n\n#ifndef U_ECM_H\n#define U_ECM_H\n\n#include <linux/usb/composite.h>\n\nstruct f_ecm_opts {\n\tstruct usb_function_instance\tfunc_inst;\n\tstruct net_device\t\t*net;\n\tbool\t\t\t\tbound;\n\n\t \n\tstruct mutex\t\t\tlock;\n\tint\t\t\t\trefcnt;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

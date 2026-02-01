@@ -1,0 +1,9 @@
+{
+  "module_name": "signal_pending.c",
+  "hash_id": "70c006d0193e5c1eb2ed511da221a4ef7e35df8e32d0aaf8e8395e1c3094dfc8",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/prog_tests/signal_pending.c",
+  "human_readable_source": "\n#include <test_progs.h>\n#include <network_helpers.h>\n\nstatic void sigalrm_handler(int s) {}\nstatic struct sigaction sigalrm_action = {\n\t.sa_handler = sigalrm_handler,\n};\n\nstatic void test_signal_pending_by_type(enum bpf_prog_type prog_type)\n{\n\tstruct bpf_insn prog[4096];\n\tstruct itimerval timeo = {\n\t\t.it_value.tv_usec = 100000,  \n\t};\n\tint prog_fd;\n\tint err;\n\tint i;\n\tLIBBPF_OPTS(bpf_test_run_opts, topts,\n\t\t.data_in = &pkt_v4,\n\t\t.data_size_in = sizeof(pkt_v4),\n\t\t.repeat = 0xffffffff,\n\t);\n\n\tfor (i = 0; i < ARRAY_SIZE(prog); i++)\n\t\tprog[i] = BPF_ALU64_IMM(BPF_MOV, BPF_REG_0, 0);\n\tprog[ARRAY_SIZE(prog) - 1] = BPF_EXIT_INSN();\n\n\tprog_fd = bpf_test_load_program(prog_type, prog, ARRAY_SIZE(prog),\n\t\t\t\t   \"GPL\", 0, NULL, 0);\n\tASSERT_GE(prog_fd, 0, \"test-run load\");\n\n\terr = sigaction(SIGALRM, &sigalrm_action, NULL);\n\tASSERT_OK(err, \"test-run-signal-sigaction\");\n\n\terr = setitimer(ITIMER_REAL, &timeo, NULL);\n\tASSERT_OK(err, \"test-run-signal-timer\");\n\n\terr = bpf_prog_test_run_opts(prog_fd, &topts);\n\tASSERT_LE(topts.duration, 500000000  ,\n\t\t  \"test-run-signal-duration\");\n\n\tsignal(SIGALRM, SIG_DFL);\n}\n\nvoid test_signal_pending(void)\n{\n\ttest_signal_pending_by_type(BPF_PROG_TYPE_SOCKET_FILTER);\n\ttest_signal_pending_by_type(BPF_PROG_TYPE_FLOW_DISSECTOR);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

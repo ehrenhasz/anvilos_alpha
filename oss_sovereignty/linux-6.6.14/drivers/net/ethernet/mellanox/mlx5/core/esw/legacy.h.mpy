@@ -1,0 +1,9 @@
+{
+  "module_name": "legacy.h",
+  "hash_id": "2f8f367cb97552a63915c87b27a063603fe01f78da01b19398f69abd8758a2ad",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/mellanox/mlx5/core/esw/legacy.h",
+  "human_readable_source": " \n \n\n#ifndef __MLX5_ESW_LEGACY_H__\n#define __MLX5_ESW_LEGACY_H__\n\n#define MLX5_LEGACY_SRIOV_VPORT_EVENTS (MLX5_VPORT_UC_ADDR_CHANGE | \\\n\t\t\t\t\tMLX5_VPORT_MC_ADDR_CHANGE | \\\n\t\t\t\t\tMLX5_VPORT_PROMISC_CHANGE)\n\nstruct mlx5_eswitch;\n\nint esw_legacy_enable(struct mlx5_eswitch *esw);\nvoid esw_legacy_disable(struct mlx5_eswitch *esw);\n\nint esw_legacy_vport_acl_setup(struct mlx5_eswitch *esw, struct mlx5_vport *vport);\nvoid esw_legacy_vport_acl_cleanup(struct mlx5_eswitch *esw, struct mlx5_vport *vport);\n\nint mlx5_esw_query_vport_drop_stats(struct mlx5_core_dev *dev,\n\t\t\t\t    struct mlx5_vport *vport,\n\t\t\t\t    struct mlx5_vport_drop_stats *stats);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

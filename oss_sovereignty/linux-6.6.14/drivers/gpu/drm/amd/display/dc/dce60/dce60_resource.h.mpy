@@ -1,0 +1,9 @@
+{
+  "module_name": "dce60_resource.h",
+  "hash_id": "65804a81128eb9a0f3c1d1e78648230d3d237cc2a296dc0ecee86fd70fdeb478",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/dc/dce60/dce60_resource.h",
+  "human_readable_source": " \n\n#ifndef __DC_RESOURCE_DCE60_H__\n#define __DC_RESOURCE_DCE60_H__\n\n#include \"core_types.h\"\n\nstruct dc;\nstruct resource_pool;\n\nstruct resource_pool *dce60_create_resource_pool(\n\tuint8_t num_virtual_links,\n\tstruct dc *dc);\n\nstruct resource_pool *dce61_create_resource_pool(\n\tuint8_t num_virtual_links,\n\tstruct dc *dc);\n\nstruct resource_pool *dce64_create_resource_pool(\n\tuint8_t num_virtual_links,\n\tstruct dc *dc);\n\n#endif  \n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

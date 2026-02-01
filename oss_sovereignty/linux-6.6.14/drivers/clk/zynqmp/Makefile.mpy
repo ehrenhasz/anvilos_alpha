@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "3d12e630668fd9da3ad7a9df3227e6eb0a531134d343abda07bdc504889667ac",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/clk/zynqmp/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n# Zynq Ultrascale+ MPSoC clock specific Makefile\n\nobj-$(CONFIG_ARCH_ZYNQMP)\t+= pll.o clk-gate-zynqmp.o divider.o clk-mux-zynqmp.o clkc.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

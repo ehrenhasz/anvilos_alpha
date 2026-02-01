@@ -1,0 +1,9 @@
+{
+  "module_name": "ctype.c",
+  "hash_id": "09d9b2a160c591592c50e60166856c042ce65607c8880110f7b7cb24b0e572bc",
+  "original_prompt": "Ingested from linux-6.6.14/tools/lib/ctype.c",
+  "human_readable_source": "\n \n\n#include <linux/ctype.h>\n#include <linux/compiler.h>\n\nconst unsigned char _ctype[] = {\n_C,_C,_C,_C,_C,_C,_C,_C,\t\t\t\t \n_C,_C|_S,_C|_S,_C|_S,_C|_S,_C|_S,_C,_C,\t\t\t \n_C,_C,_C,_C,_C,_C,_C,_C,\t\t\t\t \n_C,_C,_C,_C,_C,_C,_C,_C,\t\t\t\t \n_S|_SP,_P,_P,_P,_P,_P,_P,_P,\t\t\t\t \n_P,_P,_P,_P,_P,_P,_P,_P,\t\t\t\t \n_D,_D,_D,_D,_D,_D,_D,_D,\t\t\t\t \n_D,_D,_P,_P,_P,_P,_P,_P,\t\t\t\t \n_P,_U|_X,_U|_X,_U|_X,_U|_X,_U|_X,_U|_X,_U,\t\t \n_U,_U,_U,_U,_U,_U,_U,_U,\t\t\t\t \n_U,_U,_U,_U,_U,_U,_U,_U,\t\t\t\t \n_U,_U,_U,_P,_P,_P,_P,_P,\t\t\t\t \n_P,_L|_X,_L|_X,_L|_X,_L|_X,_L|_X,_L|_X,_L,\t\t \n_L,_L,_L,_L,_L,_L,_L,_L,\t\t\t\t \n_L,_L,_L,_L,_L,_L,_L,_L,\t\t\t\t \n_L,_L,_L,_P,_P,_P,_P,_C,\t\t\t\t \n0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,\t\t\t \n0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,\t\t\t \n_S|_SP,_P,_P,_P,_P,_P,_P,_P,_P,_P,_P,_P,_P,_P,_P,_P,\t \n_P,_P,_P,_P,_P,_P,_P,_P,_P,_P,_P,_P,_P,_P,_P,_P,\t \n_U,_U,_U,_U,_U,_U,_U,_U,_U,_U,_U,_U,_U,_U,_U,_U,\t \n_U,_U,_U,_U,_U,_U,_U,_P,_U,_U,_U,_U,_U,_U,_U,_L,\t \n_L,_L,_L,_L,_L,_L,_L,_L,_L,_L,_L,_L,_L,_L,_L,_L,\t \n_L,_L,_L,_L,_L,_L,_L,_P,_L,_L,_L,_L,_L,_L,_L,_L};\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

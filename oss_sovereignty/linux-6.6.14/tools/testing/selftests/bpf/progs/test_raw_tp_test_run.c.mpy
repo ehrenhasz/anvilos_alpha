@@ -1,0 +1,9 @@
+{
+  "module_name": "test_raw_tp_test_run.c",
+  "hash_id": "87f8dd4ad59261d6c07365a7d3889f4b38ab8914d82d6c4146376ddc7895dddc",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/test_raw_tp_test_run.c",
+  "human_readable_source": "\n \n\n#include \"vmlinux.h\"\n#include <bpf/bpf_helpers.h>\n#include <bpf/bpf_tracing.h>\n\n__u32 count = 0;\n__u32 on_cpu = 0xffffffff;\n\nSEC(\"raw_tp/task_rename\")\nint BPF_PROG(rename, struct task_struct *task, char *comm)\n{\n\n\tcount++;\n\tif ((__u64) task == 0x1234ULL && (__u64) comm == 0x5678ULL) {\n\t\ton_cpu = bpf_get_smp_processor_id();\n\t\treturn (long)task + (long)comm;\n\t}\n\n\treturn 0;\n}\n\nchar _license[] SEC(\"license\") = \"GPL\";\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "getpagesize.c",
+  "hash_id": "8183ebd4d6adc896975f11fe64505d87e5f06c03bade8931b9620cceb493ef27",
+  "original_prompt": "Ingested from coreutils-9.4/lib/getpagesize.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n \n#include <unistd.h>\n\n \n#if defined _WIN32 && ! defined __CYGWIN__\n\n# define WIN32_LEAN_AND_MEAN\n# include <windows.h>\n\nint\ngetpagesize (void)\n{\n  SYSTEM_INFO system_info;\n  GetSystemInfo (&system_info);\n  return system_info.dwPageSize;\n}\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

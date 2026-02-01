@@ -1,0 +1,9 @@
+{
+  "module_name": "videobuf2-dma-contig.h",
+  "hash_id": "3793125b129d37fdcc0956a13af33fdbab45cece6d8f72081a65aac5f2cb717a",
+  "original_prompt": "Ingested from linux-6.6.14/include/media/videobuf2-dma-contig.h",
+  "human_readable_source": " \n\n#ifndef _MEDIA_VIDEOBUF2_DMA_CONTIG_H\n#define _MEDIA_VIDEOBUF2_DMA_CONTIG_H\n\n#include <media/videobuf2-v4l2.h>\n#include <linux/dma-mapping.h>\n\nstatic inline dma_addr_t\nvb2_dma_contig_plane_dma_addr(struct vb2_buffer *vb, unsigned int plane_no)\n{\n\tdma_addr_t *addr = vb2_plane_cookie(vb, plane_no);\n\n\treturn *addr;\n}\n\nint vb2_dma_contig_set_max_seg_size(struct device *dev, unsigned int size);\nstatic inline void vb2_dma_contig_clear_max_seg_size(struct device *dev) { }\n\nextern const struct vb2_mem_ops vb2_dma_contig_memops;\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

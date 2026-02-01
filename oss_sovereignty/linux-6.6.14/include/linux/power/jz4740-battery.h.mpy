@@ -1,0 +1,9 @@
+{
+  "module_name": "jz4740-battery.h",
+  "hash_id": "fa17e65e91ed7c80c22704661dde1f61304dd426308d1e16cef8a10e7fd3ae4f",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/power/jz4740-battery.h",
+  "human_readable_source": " \n \n\n#ifndef __JZ4740_BATTERY_H\n#define __JZ4740_BATTERY_H\n\nstruct jz_battery_platform_data {\n\tstruct power_supply_info info;\n\tint gpio_charge;\t \n\tint gpio_charge_active_low;\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

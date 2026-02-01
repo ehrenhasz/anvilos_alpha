@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "21c4c73dabbccb2e8034830187cf0c446a9bd44303bd1a917049d66da84b66f1",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/pci/solo6x10/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nsolo6x10-y := solo6x10-core.o solo6x10-i2c.o solo6x10-p2m.o solo6x10-v4l2.o \\\n\t\tsolo6x10-tw28.o solo6x10-gpio.o solo6x10-disp.o solo6x10-enc.o \\\n\t\tsolo6x10-v4l2-enc.o solo6x10-g723.o solo6x10-eeprom.o\n\nobj-$(CONFIG_VIDEO_SOLO6X10) += solo6x10.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

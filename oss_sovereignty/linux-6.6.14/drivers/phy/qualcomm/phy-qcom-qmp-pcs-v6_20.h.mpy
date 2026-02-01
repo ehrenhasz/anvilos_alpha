@@ -1,0 +1,9 @@
+{
+  "module_name": "phy-qcom-qmp-pcs-v6_20.h",
+  "hash_id": "32dd32026d81e13e2f957ec74a5cb88b236a60f6ad4573edc7bfcdf7f11fc246",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/phy/qualcomm/phy-qcom-qmp-pcs-v6_20.h",
+  "human_readable_source": " \n \n\n#ifndef QCOM_PHY_QMP_PCS_V6_20_H_\n#define QCOM_PHY_QMP_PCS_V6_20_H_\n\n \n#define QPHY_V6_20_PCS_G3S2_PRE_GAIN\t\t\t0x178\n#define QPHY_V6_20_PCS_RX_SIGDET_LVL\t\t\t0x190\n#define QPHY_V6_20_PCS_COM_ELECIDLE_DLY_SEL\t\t0x1b8\n#define QPHY_V6_20_PCS_TX_RX_CONFIG1\t\t\t0x1dc\n#define QPHY_V6_20_PCS_TX_RX_CONFIG2\t\t\t0x1e0\n#define QPHY_V6_20_PCS_EQ_CONFIG4\t\t\t0x1f8\n#define QPHY_V6_20_PCS_EQ_CONFIG5\t\t\t0x1fc\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

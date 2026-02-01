@@ -1,0 +1,9 @@
+{
+  "module_name": "sid.h",
+  "hash_id": "1df7336a46885c1beb9f83feb0f23e4648463d2f6156e2b21498d21ab1a37f20",
+  "original_prompt": "Ingested from zfs-2.2.2/include/os/freebsd/spl/sys/sid.h",
+  "human_readable_source": " \n\n#ifndef _OPENSOLARIS_SYS_SID_H_\n#define\t_OPENSOLARIS_SYS_SID_H_\n#include <sys/idmap.h>\n\ntypedef struct ksiddomain {\n\tchar\t*kd_name;\t \n\tuint_t\tkd_len;\n} ksiddomain_t;\ntypedef void\tksid_t;\n\nstatic __inline ksiddomain_t *\nksid_lookupdomain(const char *domain)\n{\n\tksiddomain_t *kd;\n\tsize_t len;\n\n\tlen = strlen(domain) + 1;\n\tkd = kmem_alloc(sizeof (*kd), KM_SLEEP);\n\tkd->kd_len = (uint_t)len;\n\tkd->kd_name = kmem_alloc(len, KM_SLEEP);\n\tstrcpy(kd->kd_name, domain);\n\treturn (kd);\n}\n\nstatic __inline void\nksiddomain_rele(ksiddomain_t *kd)\n{\n\n\tkmem_free(kd->kd_name, kd->kd_len);\n\tkmem_free(kd, sizeof (*kd));\n}\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

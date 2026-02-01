@@ -1,0 +1,9 @@
+{
+  "module_name": "special.h",
+  "hash_id": "00d4006fbdd34378779b01fd1a6c295f71b43354126d98fc4c4c3af822ca560b",
+  "original_prompt": "Ingested from linux-6.6.14/tools/objtool/include/objtool/special.h",
+  "human_readable_source": " \n \n\n#ifndef _SPECIAL_H\n#define _SPECIAL_H\n\n#include <stdbool.h>\n#include <objtool/check.h>\n#include <objtool/elf.h>\n\n#define C_JUMP_TABLE_SECTION \".rodata..c_jump_table\"\n\nstruct special_alt {\n\tstruct list_head list;\n\n\tbool group;\n\tbool skip_orig;\n\tbool skip_alt;\n\tbool jump_or_nop;\n\tu8 key_addend;\n\n\tstruct section *orig_sec;\n\tunsigned long orig_off;\n\n\tstruct section *new_sec;\n\tunsigned long new_off;\n\n\tunsigned int orig_len, new_len;  \n};\n\nint special_get_alts(struct elf *elf, struct list_head *alts);\n\nvoid arch_handle_alternative(unsigned short feature, struct special_alt *alt);\n\nbool arch_support_alt_relocation(struct special_alt *special_alt,\n\t\t\t\t struct instruction *insn,\n\t\t\t\t struct reloc *reloc);\nstruct reloc *arch_find_switch_table(struct objtool_file *file,\n\t\t\t\t    struct instruction *insn);\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

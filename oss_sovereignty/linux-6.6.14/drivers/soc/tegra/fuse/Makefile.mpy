@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "579c65eff44baefe1c09189fce78e3e8d6b6fdd2de18d3c0553bbcd543842d9f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/soc/tegra/fuse/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nobj-y\t\t\t\t\t+= fuse-tegra.o\nobj-y\t\t\t\t\t+= fuse-tegra30.o\nobj-y\t\t\t\t\t+= tegra-apbmisc.o\nobj-$(CONFIG_ARCH_TEGRA_2x_SOC)\t\t+= fuse-tegra20.o\nobj-$(CONFIG_ARCH_TEGRA_2x_SOC)\t\t+= speedo-tegra20.o\nobj-$(CONFIG_ARCH_TEGRA_3x_SOC)\t\t+= speedo-tegra30.o\nobj-$(CONFIG_ARCH_TEGRA_114_SOC)\t+= speedo-tegra114.o\nobj-$(CONFIG_ARCH_TEGRA_124_SOC)\t+= speedo-tegra124.o\nobj-$(CONFIG_ARCH_TEGRA_132_SOC)\t+= speedo-tegra124.o\nobj-$(CONFIG_ARCH_TEGRA_210_SOC)\t+= speedo-tegra210.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

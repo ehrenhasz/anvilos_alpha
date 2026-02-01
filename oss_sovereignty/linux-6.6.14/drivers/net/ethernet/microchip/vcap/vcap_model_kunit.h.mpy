@@ -1,0 +1,9 @@
+{
+  "module_name": "vcap_model_kunit.h",
+  "hash_id": "07a5cf633fcd77a64e27639feb52023018ba63127b9fce53ec94d1cc6b76bdfe",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/microchip/vcap/vcap_model_kunit.h",
+  "human_readable_source": " \n \n\n \n\n#ifndef __VCAP_MODEL_KUNIT_H__\n#define __VCAP_MODEL_KUNIT_H__\n\n \nextern const struct vcap_info kunit_test_vcaps[];\nextern const struct vcap_statistics kunit_test_vcap_stats;\n\n#endif  \n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

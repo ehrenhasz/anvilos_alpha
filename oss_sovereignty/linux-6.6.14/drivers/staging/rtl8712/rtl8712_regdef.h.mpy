@@ -1,0 +1,9 @@
+{
+  "module_name": "rtl8712_regdef.h",
+  "hash_id": "226c2fd4c225894e78b8ca42202952b25bc833267bc1af2a3c492b72e839ba62",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/rtl8712/rtl8712_regdef.h",
+  "human_readable_source": " \n \n#ifndef __RTL8712_REGDEF_H__\n#define __RTL8712_REGDEF_H__\n\n#include \"rtl8712_syscfg_regdef.h\"\n#include \"rtl8712_cmdctrl_regdef.h\"\n#include \"rtl8712_macsetting_regdef.h\"\n#include \"rtl8712_timectrl_regdef.h\"\n#include \"rtl8712_fifoctrl_regdef.h\"\n#include \"rtl8712_ratectrl_regdef.h\"\n#include \"rtl8712_edcasetting_regdef.h\"\n#include \"rtl8712_wmac_regdef.h\"\n#include \"rtl8712_powersave_regdef.h\"\n#include \"rtl8712_gp_regdef.h\"\n#include \"rtl8712_debugctrl_regdef.h\"\n\n#define HIMR\t(RTL8712_INTERRUPT_ + 0x08)\n\n#endif  \n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

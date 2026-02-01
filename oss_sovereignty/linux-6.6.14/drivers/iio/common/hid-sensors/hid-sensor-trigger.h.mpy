@@ -1,0 +1,9 @@
+{
+  "module_name": "hid-sensor-trigger.h",
+  "hash_id": "9fb1872c06297015f71903275c75da405ddc91d3b1d5a3b2bb32701dc93fdc04",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/iio/common/hid-sensors/hid-sensor-trigger.h",
+  "human_readable_source": " \n \n#ifndef _HID_SENSOR_TRIGGER_H\n#define _HID_SENSOR_TRIGGER_H\n\n#include <linux/pm.h>\n#include <linux/pm_runtime.h>\n\nstruct hid_sensor_common;\nstruct iio_dev;\n\nextern const struct dev_pm_ops hid_sensor_pm_ops;\n\nint hid_sensor_setup_trigger(struct iio_dev *indio_dev, const char *name,\n\t\t\t\tstruct hid_sensor_common *attrb);\nvoid hid_sensor_remove_trigger(struct iio_dev *indio_dev,\n\t\t\t       struct hid_sensor_common *attrb);\nint hid_sensor_power_state(struct hid_sensor_common *st, bool state);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

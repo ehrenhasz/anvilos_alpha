@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "f6c83980418aaf582eb602215b25163fb15f65c388b03159d5e066f27e192776",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/microchip/sparx5/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Makefile for the Microchip Sparx5 network device drivers.\n#\n\nobj-$(CONFIG_SPARX5_SWITCH) += sparx5-switch.o\n\nsparx5-switch-y  := sparx5_main.o sparx5_packet.o \\\n sparx5_netdev.o sparx5_phylink.o sparx5_port.o sparx5_mactable.o sparx5_vlan.o \\\n sparx5_switchdev.o sparx5_calendar.o sparx5_ethtool.o sparx5_fdma.o \\\n sparx5_ptp.o sparx5_pgid.o sparx5_tc.o sparx5_qos.o \\\n sparx5_vcap_impl.o sparx5_vcap_ag_api.o sparx5_tc_flower.o \\\n sparx5_tc_matchall.o sparx5_pool.o sparx5_sdlb.o sparx5_police.o sparx5_psfp.o\n\nsparx5-switch-$(CONFIG_SPARX5_DCB) += sparx5_dcb.o\nsparx5-switch-$(CONFIG_DEBUG_FS) += sparx5_vcap_debugfs.o\n\n# Provide include files\nccflags-y += -I$(srctree)/drivers/net/ethernet/microchip/vcap\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "sock_destructor.h",
+  "hash_id": "2a29ac7799f30d454211cff245524e954c4eff5fc7811d01a3a286f57908c7e3",
+  "original_prompt": "Ingested from linux-6.6.14/net/core/sock_destructor.h",
+  "human_readable_source": " \n#ifndef _NET_CORE_SOCK_DESTRUCTOR_H\n#define _NET_CORE_SOCK_DESTRUCTOR_H\n#include <net/tcp.h>\n\nstatic inline bool is_skb_wmem(const struct sk_buff *skb)\n{\n\treturn skb->destructor == sock_wfree ||\n\t       skb->destructor == __sock_wfree ||\n\t       (IS_ENABLED(CONFIG_INET) && skb->destructor == tcp_wfree);\n}\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "tc_nat.h",
+  "hash_id": "5671c5c13a8378d46527385023d105b3f9947b4e44525f3135c499bc62367c51",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/tc_act/tc_nat.h",
+  "human_readable_source": " \n#ifndef __LINUX_TC_NAT_H\n#define __LINUX_TC_NAT_H\n\n#include <linux/pkt_cls.h>\n#include <linux/types.h>\n\nenum {\n\tTCA_NAT_UNSPEC,\n\tTCA_NAT_PARMS,\n\tTCA_NAT_TM,\n\tTCA_NAT_PAD,\n\t__TCA_NAT_MAX\n};\n#define TCA_NAT_MAX (__TCA_NAT_MAX - 1)\n\n#define TCA_NAT_FLAG_EGRESS 1\n\nstruct tc_nat {\n\ttc_gen;\n\t__be32 old_addr;\n\t__be32 new_addr;\n\t__be32 mask;\n\t__u32 flags;\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": ".gitignore",
+  "hash_id": "80c99571766072c60d6a9bc574c9b1d4097ee6adecc2005481780b3823ff062b",
+  "original_prompt": "Ingested from linux-6.6.14/tools/usb/.gitignore",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nffs-test\ntestusb\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

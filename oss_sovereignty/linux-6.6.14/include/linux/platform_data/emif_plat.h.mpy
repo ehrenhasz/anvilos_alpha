@@ -1,0 +1,9 @@
+{
+  "module_name": "emif_plat.h",
+  "hash_id": "62c5f2642d53df17c9723a1764a61694e59636184c8442ba419c3a329b93c552",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/platform_data/emif_plat.h",
+  "human_readable_source": " \n \n#ifndef __EMIF_PLAT_H\n#define __EMIF_PLAT_H\n\n \n#define EMIF_LP_MODE_DISABLE\t\t\t\t0\n#define EMIF_LP_MODE_CLOCK_STOP\t\t\t\t1\n#define EMIF_LP_MODE_SELF_REFRESH\t\t\t2\n#define EMIF_LP_MODE_PWR_DN\t\t\t\t4\n\n \n#define\tEMIF_HW_CAPS_LL_INTERFACE\t\t\t0x00000001\n\n \n#define\tEMIF_4D\t\t\t\t\t\t1\n#define\tEMIF_4D5\t\t\t\t\t2\n\n \n#define\tEMIF_PHY_TYPE_ATTILAPHY\t\t\t\t1\n#define\tEMIF_PHY_TYPE_INTELLIPHY\t\t\t2\n\n \n#define EMIF_CUSTOM_CONFIG_LPMODE\t\t\t0x00000001\n#define EMIF_CUSTOM_CONFIG_TEMP_ALERT_POLL_INTERVAL\t0x00000002\n#define EMIF_CUSTOM_CONFIG_EXTENDED_TEMP_PART\t\t0x00000004\n\n#ifndef __ASSEMBLY__\n \nstruct ddr_device_info {\n\tu32\ttype;\n\tu32\tdensity;\n\tu32\tio_width;\n\tu32\tcs1_used;\n\tu32\tcal_resistors_per_cs;\n\tchar\tmanufacturer[10];\n};\n\n \nstruct emif_custom_configs {\n\tu32 mask;\n\tu32 lpmode;\n\tu32 lpmode_timeout_performance;\n\tu32 lpmode_timeout_power;\n\tu32 lpmode_freq_threshold;\n\tu32 temp_alert_poll_interval_ms;\n};\n\n \nstruct emif_platform_data {\n\tu32 hw_caps;\n\tstruct ddr_device_info *device_info;\n\tconst struct lpddr2_timings *timings;\n\tu32 timings_arr_size;\n\tconst struct lpddr2_min_tck *min_tck;\n\tstruct emif_custom_configs *custom_configs;\n\tu32 ip_rev;\n\tu32 phy_type;\n};\n#endif  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

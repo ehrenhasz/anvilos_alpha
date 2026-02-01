@@ -1,0 +1,9 @@
+{
+  "module_name": "symlinkat.c",
+  "hash_id": "9dec5e63b69e4e0e642cda207eb2af12cec82ce9880b06a58d07210186305d2c",
+  "original_prompt": "Ingested from coreutils-9.4/lib/symlinkat.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n \n#include <unistd.h>\n\n#include <errno.h>\n#include <stdlib.h>\n\n#if HAVE_SYMLINKAT\n# undef symlinkat\n\n#include <fcntl.h>\n#include <sys/stat.h>\n#include <string.h>\n\n \nint\nrpl_symlinkat (char const *contents, int fd, char const *name)\n{\n  size_t len = strlen (name);\n  if (len && name[len - 1] == '/')\n    {\n      struct stat st;\n      if (fstatat (fd, name, &st, AT_SYMLINK_NOFOLLOW) == 0\n          || errno == EOVERFLOW)\n        errno = EEXIST;\n      return -1;\n    }\n  return symlinkat (contents, fd, name);\n}\n\n#elif !HAVE_SYMLINK\n \n\nint\nsymlinkat (_GL_UNUSED char const *path1, _GL_UNUSED int fd,\n           _GL_UNUSED char const *path2)\n{\n  errno = ENOSYS;\n  return -1;\n}\n\n#else  \n\n \n\n \nstatic int\nsymlink_reversed (char const *file, char const *contents)\n{\n  return symlink (contents, file);\n}\n\n \n\nstatic int\nsymlinkat_reversed (int fd, char const *file, char const *contents);\n\n# define AT_FUNC_NAME symlinkat_reversed\n# define AT_FUNC_F1 symlink_reversed\n# define AT_FUNC_POST_FILE_PARAM_DECLS , char const *contents\n# define AT_FUNC_POST_FILE_ARGS        , contents\n# include \"at-func.c\"\n# undef AT_FUNC_NAME\n# undef AT_FUNC_F1\n# undef AT_FUNC_POST_FILE_PARAM_DECLS\n# undef AT_FUNC_POST_FILE_ARGS\n\n \n\nint\nsymlinkat (char const *contents, int fd, char const *file)\n{\n  return symlinkat_reversed (fd, file, contents);\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

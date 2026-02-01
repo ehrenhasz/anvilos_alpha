@@ -1,0 +1,9 @@
+{
+  "module_name": "trigger-action-hist-xfail.tc",
+  "hash_id": "b00baf9557130c7264c50f3a569653697535904283785419045fe9dc4f0ba6cf",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/ftrace/test.d/trigger/inter-event/trigger-action-hist-xfail.tc",
+  "human_readable_source": "#!/bin/sh\n# SPDX-License-Identifier: GPL-2.0\n# description: event trigger - test inter-event histogram trigger expected fail actions\n# requires: set_event snapshot \"snapshot()\":README\n\nfail() { #msg\n    echo $1\n    exit_fail\n}\n\necho \"Test expected snapshot action failure\"\n\necho 'hist:keys=comm:onmatch(sched.sched_wakeup).snapshot()' >> events/sched/sched_waking/trigger && exit_fail\n\necho \"Test expected save action failure\"\n\necho 'hist:keys=comm:onmatch(sched.sched_wakeup).save(comm,prio)' >> events/sched/sched_waking/trigger && exit_fail\n\nexit_xfail\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

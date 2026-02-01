@@ -1,0 +1,9 @@
+{
+  "module_name": ".gitignore",
+  "hash_id": "6f9dd71daa6578d62bc3523c960308a91e69b2d16b7c0424b9a3add6c3006953",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/resctrl/.gitignore",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nresctrl_tests\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

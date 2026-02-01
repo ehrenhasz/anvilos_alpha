@@ -1,0 +1,9 @@
+{
+  "module_name": "aica.h",
+  "hash_id": "a8c53f4d8d114b1bfcdf1b45363df62d564a631cb415e6884fa0dc83195cbdf7",
+  "original_prompt": "Ingested from linux-6.6.14/sound/sh/aica.h",
+  "human_readable_source": " \n \n\n \n#define G2_FIFO 0xa05f688c\n#define SPU_MEMORY_BASE 0xA0800000\n#define ARM_RESET_REGISTER 0xA0702C00\n#define SPU_REGISTER_BASE 0xA0700000\n\n \n#define AICA_CONTROL_POINT 0xA0810000\n#define AICA_CONTROL_CHANNEL_SAMPLE_NUMBER 0xA0810008\n#define AICA_CHANNEL0_CONTROL_OFFSET 0x10004\n\n \n#define AICA_CMD_KICK 0x80000000\n#define AICA_CMD_NONE 0\n#define AICA_CMD_START 1\n#define AICA_CMD_STOP 2\n#define AICA_CMD_VOL 3\n\n \n#define SM_8BIT\t\t1\n#define SM_16BIT\t0\n#define SM_ADPCM\t2\n\n \n#define AICA_BUFFER_SIZE 0x8000\n#define AICA_PERIOD_SIZE 0x800\n#define AICA_PERIOD_NUMBER 16\n\n#define AICA_CHANNEL0_OFFSET 0x11000\n#define AICA_CHANNEL1_OFFSET 0x21000\n#define CHANNEL_OFFSET 0x10000\n\n#define AICA_DMA_CHANNEL 5\n#define AICA_DMA_MODE 5\n\n#define SND_AICA_DRIVER \"AICA\"\n\nstruct aica_channel {\n\tuint32_t cmd;\t\t \n\tuint32_t pos;\t\t \n\tuint32_t length;\t \n\tuint32_t freq;\t\t \n\tuint32_t vol;\t\t \n\tuint32_t pan;\t\t \n\tuint32_t sfmt;\t\t \n\tuint32_t flags;\t\t \n};\n\nstruct snd_card_aica {\n\tstruct work_struct spu_dma_work;\n\tstruct snd_card *card;\n\tstruct aica_channel *channel;\n\tstruct snd_pcm_substream *substream;\n\tint clicks;\n\tint current_period;\n\tstruct timer_list timer;\n\tint master_volume;\n\tint dma_check;\n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

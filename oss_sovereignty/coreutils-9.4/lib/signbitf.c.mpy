@@ -1,0 +1,9 @@
+{
+  "module_name": "signbitf.c",
+  "hash_id": "8e1161191855168bdb635424be1d3e8a3483a9772aac4482976a1f2d412911ea",
+  "original_prompt": "Ingested from coreutils-9.4/lib/signbitf.c",
+  "human_readable_source": " \n#include <math.h>\n\n#include <string.h>\n#include \"isnanf-nolibm.h\"\n#include \"float+.h\"\n\n#ifdef gl_signbitf_OPTIMIZED_MACRO\n# undef gl_signbitf\n#endif\n\nint\ngl_signbitf (float arg)\n{\n#if defined FLT_SIGNBIT_WORD && defined FLT_SIGNBIT_BIT\n   \n# define NWORDS \\\n    ((sizeof (float) + sizeof (unsigned int) - 1) / sizeof (unsigned int))\n  union { float value; unsigned int word[NWORDS]; } m;\n  m.value = arg;\n  return (m.word[FLT_SIGNBIT_WORD] >> FLT_SIGNBIT_BIT) & 1;\n#elif HAVE_COPYSIGNF_IN_LIBC\n  return copysignf (1.0f, arg) < 0;\n#else\n   \n  if (isnanf (arg))\n    return 0;\n  if (arg < 0.0f)\n    return 1;\n  else if (arg == 0.0f)\n    {\n       \n      static float plus_zero = 0.0f;\n      float arg_mem = arg;\n      return (memcmp (&plus_zero, &arg_mem, SIZEOF_FLT) != 0);\n    }\n  else\n    return 0;\n#endif\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

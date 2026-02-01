@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "a1e2bbb1d44cf004bdd754268bd697ad54f10e1cdf088155c55b97578f591a73",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/iio/common/st_sensors/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for the STMicroelectronics sensor common modules.\n#\n\nobj-$(CONFIG_IIO_ST_SENSORS_I2C) += st_sensors_i2c.o\nobj-$(CONFIG_IIO_ST_SENSORS_SPI) += st_sensors_spi.o\nobj-$(CONFIG_IIO_ST_SENSORS_CORE) += st_sensors.o\nst_sensors-y := st_sensors_core.o\nst_sensors-$(CONFIG_IIO_BUFFER) += st_sensors_buffer.o\nst_sensors-$(CONFIG_IIO_TRIGGER) += st_sensors_trigger.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

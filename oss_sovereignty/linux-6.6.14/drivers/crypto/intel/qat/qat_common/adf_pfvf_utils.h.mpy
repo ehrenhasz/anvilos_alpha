@@ -1,0 +1,9 @@
+{
+  "module_name": "adf_pfvf_utils.h",
+  "hash_id": "32548cffb9cea6ca489585296444b66c253683e051aa6e45cebcedb1c0592c11",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/crypto/intel/qat/qat_common/adf_pfvf_utils.h",
+  "human_readable_source": " \n \n#ifndef ADF_PFVF_UTILS_H\n#define ADF_PFVF_UTILS_H\n\n#include <linux/types.h>\n#include \"adf_pfvf_msg.h\"\n\n \n#define ADF_PFVF_MSG_ACK_DELAY_US\t4\n#define ADF_PFVF_MSG_ACK_MAX_DELAY_US\t(1 * USEC_PER_SEC)\n\nu8 adf_pfvf_calc_blkmsg_crc(u8 const *buf, u8 buf_len);\nvoid adf_pfvf_crc_init(void);\n\nstruct pfvf_field_format {\n\tu8  offset;\n\tu32 mask;\n};\n\nstruct pfvf_csr_format {\n\tstruct pfvf_field_format type;\n\tstruct pfvf_field_format data;\n};\n\nu32 adf_pfvf_csr_msg_of(struct adf_accel_dev *accel_dev, struct pfvf_message msg,\n\t\t\tconst struct pfvf_csr_format *fmt);\nstruct pfvf_message adf_pfvf_message_of(struct adf_accel_dev *accel_dev, u32 raw_msg,\n\t\t\t\t\tconst struct pfvf_csr_format *fmt);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

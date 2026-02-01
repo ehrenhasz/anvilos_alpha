@@ -1,0 +1,9 @@
+{
+  "module_name": "fseterr.c",
+  "hash_id": "a584ebe55db78b455dac8b80d3a6b49f92c3ba596abc571da92fb36b3f08fe2d",
+  "original_prompt": "Ingested from coreutils-9.4/lib/fseterr.c",
+  "human_readable_source": " \n#include \"fseterr.h\"\n\n#include <errno.h>\n\n#include \"stdio-impl.h\"\n\n \n\nvoid\nfseterr (FILE *fp)\n{\n   \n#if defined _IO_EOF_SEEN || defined _IO_ftrylockfile || __GNU_LIBRARY__ == 1\n   \n  fp->_flags |= _IO_ERR_SEEN;\n#elif defined __sferror || defined __DragonFly__ || defined __ANDROID__\n   \n  fp_->_flags |= __SERR;\n#elif defined __EMX__                \n  fp->_flags |= _IOERR;\n#elif defined __minix                \n  fp->_flags |= _IOERR;\n#elif defined _IOERR                 \n  fp_->_flag |= _IOERR;\n#elif defined __UCLIBC__             \n  fp->__modeflags |= __FLAG_ERROR;\n#elif defined __QNX__                \n  fp->_Mode |= 0x200  ;\n#elif defined __MINT__               \n  fp->__error = 1;\n#elif defined EPLAN9                 \n  if (fp->state != 0  )\n    fp->state = 5  ;\n#elif 0                              \n   \n  int saved_errno;\n  int fd;\n  int fd2;\n\n  saved_errno = errno;\n  fflush (fp);\n  fd = fileno (fp);\n  fd2 = dup (fd);\n  if (fd2 >= 0)\n    {\n      close (fd);\n      fputc ('\\0', fp);  \n      fflush (fp);       \n      if (dup2 (fd2, fd) < 0)\n         \n        abort ();\n      close (fd2);\n    }\n  errno = saved_errno;\n#else\n #error \"Please port gnulib fseterr.c to your platform! Look at the definitions of ferror and clearerr on your system, then report this to bug-gnulib.\"\n#endif\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

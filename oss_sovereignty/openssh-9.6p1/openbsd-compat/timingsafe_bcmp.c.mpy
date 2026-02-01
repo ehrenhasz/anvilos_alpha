@@ -1,0 +1,9 @@
+{
+  "module_name": "timingsafe_bcmp.c",
+  "hash_id": "2b1093a28761ed308278c93121c27b489640e8d77b3359a87246a8806f35f604",
+  "original_prompt": "Ingested from openssh-9.6p1/openbsd-compat/timingsafe_bcmp.c",
+  "human_readable_source": " \n \n\n \n\n#include \"includes.h\"\n#ifndef HAVE_TIMINGSAFE_BCMP\n\nint\ntimingsafe_bcmp(const void *b1, const void *b2, size_t n)\n{\n\tconst unsigned char *p1 = b1, *p2 = b2;\n\tint ret = 0;\n\n\tfor (; n > 0; n--)\n\t\tret |= *p1++ ^ *p2++;\n\treturn (ret != 0);\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

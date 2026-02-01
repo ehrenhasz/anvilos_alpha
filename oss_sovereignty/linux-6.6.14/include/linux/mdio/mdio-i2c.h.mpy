@@ -1,0 +1,9 @@
+{
+  "module_name": "mdio-i2c.h",
+  "hash_id": "367bb3339dff32ff495f4d76bcd417808aa0ceec667dbe643110140045d806bd",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/mdio/mdio-i2c.h",
+  "human_readable_source": " \n \n#ifndef MDIO_I2C_H\n#define MDIO_I2C_H\n\nstruct device;\nstruct i2c_adapter;\nstruct mii_bus;\n\nenum mdio_i2c_proto {\n\tMDIO_I2C_NONE,\n\tMDIO_I2C_MARVELL_C22,\n\tMDIO_I2C_C45,\n\tMDIO_I2C_ROLLBALL,\n};\n\nstruct mii_bus *mdio_i2c_alloc(struct device *parent, struct i2c_adapter *i2c,\n\t\t\t       enum mdio_i2c_proto protocol);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

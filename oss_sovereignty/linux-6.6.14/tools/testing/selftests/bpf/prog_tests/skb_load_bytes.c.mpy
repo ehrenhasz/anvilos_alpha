@@ -1,0 +1,9 @@
+{
+  "module_name": "skb_load_bytes.c",
+  "hash_id": "d107a9095f357f4b8c32bd4505c09b848ab95535852dd7dded5fc18ec4ce04c6",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/prog_tests/skb_load_bytes.c",
+  "human_readable_source": "\n#include <test_progs.h>\n#include <network_helpers.h>\n#include \"skb_load_bytes.skel.h\"\n\nvoid test_skb_load_bytes(void)\n{\n\tstruct skb_load_bytes *skel;\n\tint err, prog_fd, test_result;\n\tstruct __sk_buff skb = { 0 };\n\n\tLIBBPF_OPTS(bpf_test_run_opts, tattr,\n\t\t.data_in = &pkt_v4,\n\t\t.data_size_in = sizeof(pkt_v4),\n\t\t.ctx_in = &skb,\n\t\t.ctx_size_in = sizeof(skb),\n\t);\n\n\tskel = skb_load_bytes__open_and_load();\n\tif (!ASSERT_OK_PTR(skel, \"skel_open_and_load\"))\n\t\treturn;\n\n\tprog_fd = bpf_program__fd(skel->progs.skb_process);\n\tif (!ASSERT_GE(prog_fd, 0, \"prog_fd\"))\n\t\tgoto out;\n\n\tskel->bss->load_offset = (uint32_t)(-1);\n\terr = bpf_prog_test_run_opts(prog_fd, &tattr);\n\tif (!ASSERT_OK(err, \"bpf_prog_test_run_opts\"))\n\t\tgoto out;\n\ttest_result = skel->bss->test_result;\n\tif (!ASSERT_EQ(test_result, -EFAULT, \"offset -1\"))\n\t\tgoto out;\n\n\tskel->bss->load_offset = (uint32_t)10;\n\terr = bpf_prog_test_run_opts(prog_fd, &tattr);\n\tif (!ASSERT_OK(err, \"bpf_prog_test_run_opts\"))\n\t\tgoto out;\n\ttest_result = skel->bss->test_result;\n\tif (!ASSERT_EQ(test_result, 0, \"offset 10\"))\n\t\tgoto out;\n\nout:\n\tskb_load_bytes__destroy(skel);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

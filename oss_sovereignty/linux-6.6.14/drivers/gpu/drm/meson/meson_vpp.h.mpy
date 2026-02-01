@@ -1,0 +1,9 @@
+{
+  "module_name": "meson_vpp.h",
+  "hash_id": "eee3e83be84d453d541cd7cf572a09626e5a618cc9b5c9312a1a86c1c6a16e0c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/meson/meson_vpp.h",
+  "human_readable_source": " \n \n\n \n\n#ifndef __MESON_VPP_H\n#define __MESON_VPP_H\n\nstruct drm_rect;\nstruct meson_drm;\n\n \n#define MESON_VIU_VPP_MUX_ENCL\t0x0\n \n#define MESON_VIU_VPP_MUX_ENCI\t0x5\n \n#define MESON_VIU_VPP_MUX_ENCP\t0xA\n\nvoid meson_vpp_setup_mux(struct meson_drm *priv, unsigned int mux);\n\nvoid meson_vpp_setup_interlace_vscaler_osd1(struct meson_drm *priv,\n\t\t\t\t\t    struct drm_rect *input);\nvoid meson_vpp_disable_interlace_vscaler_osd1(struct meson_drm *priv);\n\nvoid meson_vpp_init(struct meson_drm *priv);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

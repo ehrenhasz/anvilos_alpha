@@ -1,0 +1,9 @@
+{
+  "module_name": "autoload.c",
+  "hash_id": "9bd024616d5fa3f51d67abc4b7a17f335502aba54e866ef575b1f27a27a48e43",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/prog_tests/autoload.c",
+  "human_readable_source": "\n \n\n#include <test_progs.h>\n#include <time.h>\n#include \"test_autoload.skel.h\"\n\nvoid test_autoload(void)\n{\n\tint duration = 0, err;\n\tstruct test_autoload* skel;\n\n\tskel = test_autoload__open_and_load();\n\t \n\tif (CHECK(skel, \"skel_open_and_load\", \"unexpected success\\n\"))\n\t\tgoto cleanup;\n\n\tskel = test_autoload__open();\n\tif (CHECK(!skel, \"skel_open\", \"failed to open skeleton\\n\"))\n\t\tgoto cleanup;\n\n\t \n\tbpf_program__set_autoload(skel->progs.prog3, false);\n\n\terr = test_autoload__load(skel);\n\tif (CHECK(err, \"skel_load\", \"failed to load skeleton: %d\\n\", err))\n\t\tgoto cleanup;\n\n\terr = test_autoload__attach(skel);\n\tif (CHECK(err, \"skel_attach\", \"skeleton attach failed: %d\\n\", err))\n\t\tgoto cleanup;\n\n\tusleep(1);\n\n\tCHECK(!skel->bss->prog1_called, \"prog1\", \"not called\\n\");\n\tCHECK(!skel->bss->prog2_called, \"prog2\", \"not called\\n\");\n\tCHECK(skel->bss->prog3_called, \"prog3\", \"called?!\\n\");\n\ncleanup:\n\ttest_autoload__destroy(skel);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

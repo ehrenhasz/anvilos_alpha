@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "a1af1a41634a895a1965a3d7915d5cae820fa00b554686c34ad5a7cffd8afea0",
+  "original_prompt": "Ingested from linux-6.6.14/net/bridge/netfilter/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for the netfilter modules for Link Layer filtering on a bridge.\n#\n\nobj-$(CONFIG_NFT_BRIDGE_META)  += nft_meta_bridge.o\nobj-$(CONFIG_NFT_BRIDGE_REJECT)  += nft_reject_bridge.o\n\n# connection tracking\nobj-$(CONFIG_NF_CONNTRACK_BRIDGE) += nf_conntrack_bridge.o\n\nobj-$(CONFIG_BRIDGE_NF_EBTABLES) += ebtables.o\n\n# tables\nobj-$(CONFIG_BRIDGE_EBT_BROUTE) += ebtable_broute.o\nobj-$(CONFIG_BRIDGE_EBT_T_FILTER) += ebtable_filter.o\nobj-$(CONFIG_BRIDGE_EBT_T_NAT) += ebtable_nat.o\n\n#matches\nobj-$(CONFIG_BRIDGE_EBT_802_3) += ebt_802_3.o\nobj-$(CONFIG_BRIDGE_EBT_AMONG) += ebt_among.o\nobj-$(CONFIG_BRIDGE_EBT_ARP) += ebt_arp.o\nobj-$(CONFIG_BRIDGE_EBT_IP) += ebt_ip.o\nobj-$(CONFIG_BRIDGE_EBT_IP6) += ebt_ip6.o\nobj-$(CONFIG_BRIDGE_EBT_LIMIT) += ebt_limit.o\nobj-$(CONFIG_BRIDGE_EBT_MARK) += ebt_mark_m.o\nobj-$(CONFIG_BRIDGE_EBT_PKTTYPE) += ebt_pkttype.o\nobj-$(CONFIG_BRIDGE_EBT_STP) += ebt_stp.o\nobj-$(CONFIG_BRIDGE_EBT_VLAN) += ebt_vlan.o\n\n# targets\nobj-$(CONFIG_BRIDGE_EBT_ARPREPLY) += ebt_arpreply.o\nobj-$(CONFIG_BRIDGE_EBT_MARK_T) += ebt_mark.o\nobj-$(CONFIG_BRIDGE_EBT_DNAT) += ebt_dnat.o\nobj-$(CONFIG_BRIDGE_EBT_REDIRECT) += ebt_redirect.o\nobj-$(CONFIG_BRIDGE_EBT_SNAT) += ebt_snat.o\n\n# watchers\nobj-$(CONFIG_BRIDGE_EBT_LOG) += ebt_log.o\nobj-$(CONFIG_BRIDGE_EBT_NFLOG) += ebt_nflog.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

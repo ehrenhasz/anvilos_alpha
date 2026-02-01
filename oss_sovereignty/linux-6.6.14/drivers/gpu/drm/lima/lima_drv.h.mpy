@@ -1,0 +1,9 @@
+{
+  "module_name": "lima_drv.h",
+  "hash_id": "c2ca8e225fa24b8c12fb7693ca1f145ce4a2d9d22eb91f7f06f9ac159c95ae7f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/lima/lima_drv.h",
+  "human_readable_source": " \n \n\n#ifndef __LIMA_DRV_H__\n#define __LIMA_DRV_H__\n\n#include <drm/drm_file.h>\n\n#include \"lima_ctx.h\"\n\nextern int lima_sched_timeout_ms;\nextern uint lima_heap_init_nr_pages;\nextern uint lima_max_error_tasks;\nextern uint lima_job_hang_limit;\n\nstruct lima_vm;\nstruct lima_bo;\nstruct lima_sched_task;\n\nstruct drm_lima_gem_submit_bo;\n\nstruct lima_drm_priv {\n\tstruct lima_vm *vm;\n\tstruct lima_ctx_mgr ctx_mgr;\n};\n\nstruct lima_submit {\n\tstruct lima_ctx *ctx;\n\tint pipe;\n\tu32 flags;\n\n\tstruct drm_lima_gem_submit_bo *bos;\n\tstruct lima_bo **lbos;\n\tu32 nr_bos;\n\n\tu32 in_sync[2];\n\tu32 out_sync;\n\n\tstruct lima_sched_task *task;\n};\n\nstatic inline struct lima_drm_priv *\nto_lima_drm_priv(struct drm_file *file)\n{\n\treturn file->driver_priv;\n}\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

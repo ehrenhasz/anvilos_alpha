@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile.in",
+  "hash_id": "4570e8354957eaeaf6c7bf86195e17372e74f8df760c52f8989a782bf4bdca9f",
+  "original_prompt": "Ingested from openssh-9.6p1/openbsd-compat/regress/Makefile.in",
+  "human_readable_source": "sysconfdir=@sysconfdir@\npiddir=@piddir@\nsrcdir=@srcdir@\ntop_srcdir=@top_srcdir@\n\nVPATH=@srcdir@\nCC=@CC@\nLD=@LD@\nCFLAGS=@CFLAGS@\nCPPFLAGS=-I. -I.. -I../.. -I$(srcdir) -I$(srcdir)/.. -I$(srcdir)/../.. @CPPFLAGS@ @DEFS@\nEXEEXT=@EXEEXT@\nLIBCOMPAT=../libopenbsd-compat.a\nLIBSSH=../../libssh.a\nLIBS=@LIBS@ @CHANNELLIBS@\nLDFLAGS=@LDFLAGS@ $(LIBCOMPAT)\n\nTESTPROGS=closefromtest$(EXEEXT) snprintftest$(EXEEXT) strduptest$(EXEEXT) \\\n\tstrtonumtest$(EXEEXT) opensslvertest$(EXEEXT) utimensattest$(EXEEXT)\n\nall:\tt-exec ${OTHERTESTS}\n\n.c:\t$(LIBCOMPAT) $(LIBSSH)\n\t$(CC) $(CFLAGS) $(CPPFLAGS) $(LDFLAGS) -o $@ $< $(LIBCOMPAT) $(LIBSSH) $(LIBS)\n\nt-exec:\t$(TESTPROGS)\n\t@echo running compat regress tests\n\t@for TEST in \"\"$?; do \\\n\t\techo \"run test $${TEST}\" ... 1>&2; \\\n\t\t./$${TEST}$(EXEEXT) || exit $$? ; \\\n\tdone\n\t@echo finished compat regress tests\n\nclean:\n\trm -f *.o *.a core $(TESTPROGS) valid.out\n\ndistclean: clean\n\trm -f Makefile *~\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

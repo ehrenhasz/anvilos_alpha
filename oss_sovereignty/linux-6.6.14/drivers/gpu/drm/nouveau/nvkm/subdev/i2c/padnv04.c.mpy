@@ -1,0 +1,9 @@
+{
+  "module_name": "padnv04.c",
+  "hash_id": "3be171fcdc5b26f13753895a8350125b5b2b7e3bb54b2d84a1a4db83bdea6a43",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/subdev/i2c/padnv04.c",
+  "human_readable_source": " \n#include \"pad.h\"\n#include \"bus.h\"\n\nstatic const struct nvkm_i2c_pad_func\nnv04_i2c_pad_func = {\n\t.bus_new_0 = nv04_i2c_bus_new,\n};\n\nint\nnv04_i2c_pad_new(struct nvkm_i2c *i2c, int id, struct nvkm_i2c_pad **ppad)\n{\n\treturn nvkm_i2c_pad_new_(&nv04_i2c_pad_func, i2c, id, ppad);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

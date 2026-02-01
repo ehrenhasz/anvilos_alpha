@@ -1,0 +1,9 @@
+{
+  "module_name": "xz_dec_syms.c",
+  "hash_id": "5283a24c2ab1400391392c29a83e7ac381989c456cbab6cceb9a7bc5abf2072f",
+  "original_prompt": "Ingested from linux-6.6.14/lib/xz/xz_dec_syms.c",
+  "human_readable_source": " \n\n#include <linux/module.h>\n#include <linux/xz.h>\n\nEXPORT_SYMBOL(xz_dec_init);\nEXPORT_SYMBOL(xz_dec_reset);\nEXPORT_SYMBOL(xz_dec_run);\nEXPORT_SYMBOL(xz_dec_end);\n\n#ifdef CONFIG_XZ_DEC_MICROLZMA\nEXPORT_SYMBOL(xz_dec_microlzma_alloc);\nEXPORT_SYMBOL(xz_dec_microlzma_reset);\nEXPORT_SYMBOL(xz_dec_microlzma_run);\nEXPORT_SYMBOL(xz_dec_microlzma_end);\n#endif\n\nMODULE_DESCRIPTION(\"XZ decompressor\");\nMODULE_VERSION(\"1.1\");\nMODULE_AUTHOR(\"Lasse Collin <lasse.collin@tukaani.org> and Igor Pavlov\");\n\n \nMODULE_LICENSE(\"GPL\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

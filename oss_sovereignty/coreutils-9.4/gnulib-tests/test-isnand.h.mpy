@@ -1,0 +1,9 @@
+{
+  "module_name": "test-isnand.h",
+  "hash_id": "4e3d41b8cd7856aa03cb3ef53337c0de635c9eb80cd250d733bf29d52986542c",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-isnand.h",
+  "human_readable_source": " \n\n#include <limits.h>\n\n#include \"minus-zero.h\"\n#include \"infinity.h\"\n#include \"nan.h\"\n#include \"macros.h\"\n\nint\nmain ()\n{\n   \n  ASSERT (!isnand (3.141));\n  ASSERT (!isnand (3.141e30));\n  ASSERT (!isnand (3.141e-30));\n  ASSERT (!isnand (-2.718));\n  ASSERT (!isnand (-2.718e30));\n  ASSERT (!isnand (-2.718e-30));\n  ASSERT (!isnand (0.0));\n  ASSERT (!isnand (minus_zerod));\n   \n  ASSERT (!isnand (Infinityd ()));\n  ASSERT (!isnand (- Infinityd ()));\n   \n  ASSERT (isnand (NaNd ()));\n#if defined DBL_EXPBIT0_WORD && defined DBL_EXPBIT0_BIT\n   \n  {\n    #define NWORDS \\\n      ((sizeof (double) + sizeof (unsigned int) - 1) / sizeof (unsigned int))\n    typedef union { double value; unsigned int word[NWORDS]; } memory_double;\n    memory_double m;\n    m.value = NaNd ();\n# if DBL_EXPBIT0_BIT > 0\n    m.word[DBL_EXPBIT0_WORD] ^= (unsigned int) 1 << (DBL_EXPBIT0_BIT - 1);\n# else\n    m.word[DBL_EXPBIT0_WORD + (DBL_EXPBIT0_WORD < NWORDS / 2 ? 1 : - 1)]\n      ^= (unsigned int) 1 << (sizeof (unsigned int) * CHAR_BIT - 1);\n# endif\n    m.word[DBL_EXPBIT0_WORD + (DBL_EXPBIT0_WORD < NWORDS / 2 ? 1 : - 1)]\n      |= (unsigned int) 1 << DBL_EXPBIT0_BIT;\n    ASSERT (isnand (m.value));\n  }\n#endif\n  return 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

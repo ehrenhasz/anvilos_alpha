@@ -1,0 +1,9 @@
+{
+  "module_name": "max8649.h",
+  "hash_id": "4e7cf7d9963a5c9468b71066e38a2bc79757f153ec7bb5cfed7118ffc98538b0",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/regulator/max8649.h",
+  "human_readable_source": " \n \n\n#ifndef __LINUX_REGULATOR_MAX8649_H\n#define\t__LINUX_REGULATOR_MAX8649_H\n\n#include <linux/regulator/machine.h>\n\nenum {\n\tMAX8649_EXTCLK_26MHZ = 0,\n\tMAX8649_EXTCLK_13MHZ,\n\tMAX8649_EXTCLK_19MHZ,\t \n};\n\nenum {\n\tMAX8649_RAMP_32MV = 0,\n\tMAX8649_RAMP_16MV,\n\tMAX8649_RAMP_8MV,\n\tMAX8649_RAMP_4MV,\n\tMAX8649_RAMP_2MV,\n\tMAX8649_RAMP_1MV,\n\tMAX8649_RAMP_0_5MV,\n\tMAX8649_RAMP_0_25MV,\n};\n\nstruct max8649_platform_data {\n\tstruct regulator_init_data *regulator;\n\n\tunsigned\tmode:2;\t\t \n\tunsigned\textclk_freq:2;\n\tunsigned\textclk:1;\n\tunsigned\tramp_timing:3;\n\tunsigned\tramp_down:1;\n};\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "svm_vmcall_test.c",
+  "hash_id": "bcc4be62ad4f33ecdb76bb40662de26d1381ae23768e28882a77c9a899f63265",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/kvm/x86_64/svm_vmcall_test.c",
+  "human_readable_source": "\n \n\n#include \"test_util.h\"\n#include \"kvm_util.h\"\n#include \"processor.h\"\n#include \"svm_util.h\"\n\nstatic void l2_guest_code(struct svm_test_data *svm)\n{\n\t__asm__ __volatile__(\"vmcall\");\n}\n\nstatic void l1_guest_code(struct svm_test_data *svm)\n{\n\t#define L2_GUEST_STACK_SIZE 64\n\tunsigned long l2_guest_stack[L2_GUEST_STACK_SIZE];\n\tstruct vmcb *vmcb = svm->vmcb;\n\n\t \n\tgeneric_svm_setup(svm, l2_guest_code,\n\t\t\t  &l2_guest_stack[L2_GUEST_STACK_SIZE]);\n\n\trun_guest(vmcb, svm->vmcb_gpa);\n\n\tGUEST_ASSERT(vmcb->control.exit_code == SVM_EXIT_VMMCALL);\n\tGUEST_DONE();\n}\n\nint main(int argc, char *argv[])\n{\n\tstruct kvm_vcpu *vcpu;\n\tvm_vaddr_t svm_gva;\n\tstruct kvm_vm *vm;\n\n\tTEST_REQUIRE(kvm_cpu_has(X86_FEATURE_SVM));\n\n\tvm = vm_create_with_one_vcpu(&vcpu, l1_guest_code);\n\n\tvcpu_alloc_svm(vm, &svm_gva);\n\tvcpu_args_set(vcpu, 1, svm_gva);\n\n\tfor (;;) {\n\t\tstruct ucall uc;\n\n\t\tvcpu_run(vcpu);\n\t\tTEST_ASSERT_KVM_EXIT_REASON(vcpu, KVM_EXIT_IO);\n\n\t\tswitch (get_ucall(vcpu, &uc)) {\n\t\tcase UCALL_ABORT:\n\t\t\tREPORT_GUEST_ASSERT(uc);\n\t\t\t \n\t\tcase UCALL_SYNC:\n\t\t\tbreak;\n\t\tcase UCALL_DONE:\n\t\t\tgoto done;\n\t\tdefault:\n\t\t\tTEST_FAIL(\"Unknown ucall 0x%lx.\", uc.cmd);\n\t\t}\n\t}\ndone:\n\tkvm_vm_free(vm);\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

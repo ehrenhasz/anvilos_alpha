@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "9526d383409bbc2055378c0169f547b9b6e74d041fd83704d2100c4ffbb86564",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/iio/afe/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Analog Front End drivers\n#\n# When adding new entries keep the list in alphabetical order\n\nmenu \"Analog Front Ends\"\n\nconfig IIO_RESCALE\n\ttristate \"IIO rescale\"\n\thelp\n\t  Say yes here to build support for the IIO rescaling\n\t  that handles voltage dividers, current sense shunts and\n\t  current sense amplifiers.\n\n\t  To compile this driver as a module, choose M here: the\n\t  module will be called iio-rescale.\n\nendmenu\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "tfrc.h",
+  "hash_id": "3b484c070ebca0f7508a659977a72edc171ae2ee7b5f11ebdf45ec4c620735d4",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/tfrc.h",
+  "human_readable_source": " \n#ifndef _LINUX_TFRC_H_\n#define _LINUX_TFRC_H_\n \n#include <linux/types.h>\n\n \nstruct tfrc_rx_info {\n  \t__u32 tfrcrx_x_recv;\n\t__u32 tfrcrx_rtt;\n  \t__u32 tfrcrx_p;\n};\n\n \nstruct tfrc_tx_info {\n\t__u64 tfrctx_x;\n\t__u64 tfrctx_x_recv;\n\t__u32 tfrctx_x_calc;\n\t__u32 tfrctx_rtt;\n\t__u32 tfrctx_p;\n\t__u32 tfrctx_rto;\n\t__u32 tfrctx_ipi;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

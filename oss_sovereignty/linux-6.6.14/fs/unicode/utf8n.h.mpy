@@ -1,0 +1,9 @@
+{
+  "module_name": "utf8n.h",
+  "hash_id": "5caa24ccecbdb4c8143c0a24c3bb656acfd2e6e005dabb02e8ce5e14b2bebabb",
+  "original_prompt": "Ingested from linux-6.6.14/fs/unicode/utf8n.h",
+  "human_readable_source": " \n \n\n#ifndef UTF8NORM_H\n#define UTF8NORM_H\n\n#include <linux/types.h>\n#include <linux/export.h>\n#include <linux/string.h>\n#include <linux/module.h>\n#include <linux/unicode.h>\n\nint utf8version_is_supported(const struct unicode_map *um, unsigned int version);\n\n \nssize_t utf8nlen(const struct unicode_map *um, enum utf8_normalization n,\n\t\tconst char *s, size_t len);\n\n \n#define UTF8HANGULLEAF\t(12)\n\n \nstruct utf8cursor {\n\tconst struct unicode_map *um;\n\tenum utf8_normalization n;\n\tconst char\t*s;\n\tconst char\t*p;\n\tconst char\t*ss;\n\tconst char\t*sp;\n\tunsigned int\tlen;\n\tunsigned int\tslen;\n\tshort int\tccc;\n\tshort int\tnccc;\n\tunsigned char\thangul[UTF8HANGULLEAF];\n};\n\n \nint utf8ncursor(struct utf8cursor *u8c, const struct unicode_map *um,\n\t\tenum utf8_normalization n, const char *s, size_t len);\n\n \nextern int utf8byte(struct utf8cursor *u8c);\n\nstruct utf8data {\n\tunsigned int maxage;\n\tunsigned int offset;\n};\n\nstruct utf8data_table {\n\tconst unsigned int *utf8agetab;\n\tint utf8agetab_size;\n\n\tconst struct utf8data *utf8nfdicfdata;\n\tint utf8nfdicfdata_size;\n\n\tconst struct utf8data *utf8nfdidata;\n\tint utf8nfdidata_size;\n\n\tconst unsigned char *utf8data;\n};\n\nextern struct utf8data_table utf8_data_table;\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

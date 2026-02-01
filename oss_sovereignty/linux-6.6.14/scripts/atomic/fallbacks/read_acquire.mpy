@@ -1,0 +1,9 @@
+{
+  "module_name": "read_acquire",
+  "hash_id": "f95734e289bee03ac7b0056394d0d21239ca0447e1281be27fdf2e6b41cbeb71",
+  "original_prompt": "Ingested from linux-6.6.14/scripts/atomic/fallbacks/read_acquire",
+  "human_readable_source": "cat <<EOF\n\t${int} ret;\n\n\tif (__native_word(${atomic}_t)) {\n\t\tret = smp_load_acquire(&(v)->counter);\n\t} else {\n\t\tret = raw_${atomic}_read(v);\n\t\t__atomic_acquire_fence();\n\t}\n\n\treturn ret;\nEOF\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "pdr.h",
+  "hash_id": "3ea8de02a92c64595463fba74a503bc182be455f7ade8213622ce068f71b4f4e",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/soc/qcom/pdr.h",
+  "human_readable_source": " \n#ifndef __QCOM_PDR_HELPER__\n#define __QCOM_PDR_HELPER__\n\n#include <linux/soc/qcom/qmi.h>\n\n#define SERVREG_NAME_LENGTH\t64\n\nstruct pdr_service;\nstruct pdr_handle;\n\nenum servreg_service_state {\n\tSERVREG_LOCATOR_ERR = 0x1,\n\tSERVREG_SERVICE_STATE_DOWN = 0x0FFFFFFF,\n\tSERVREG_SERVICE_STATE_UP = 0x1FFFFFFF,\n\tSERVREG_SERVICE_STATE_EARLY_DOWN = 0x2FFFFFFF,\n\tSERVREG_SERVICE_STATE_UNINIT = 0x7FFFFFFF,\n};\n\nstruct pdr_handle *pdr_handle_alloc(void (*status)(int state,\n\t\t\t\t\t\t   char *service_path,\n\t\t\t\t\t\t   void *priv), void *priv);\nstruct pdr_service *pdr_add_lookup(struct pdr_handle *pdr,\n\t\t\t\t   const char *service_name,\n\t\t\t\t   const char *service_path);\nint pdr_restart_pd(struct pdr_handle *pdr, struct pdr_service *pds);\nvoid pdr_handle_release(struct pdr_handle *pdr);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

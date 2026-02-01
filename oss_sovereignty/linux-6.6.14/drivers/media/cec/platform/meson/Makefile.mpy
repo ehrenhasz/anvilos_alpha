@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "d178c86b3ac5cff19f2d280d17472dcfc7b5965f6222301e31699aae44713521",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/cec/platform/meson/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-$(CONFIG_CEC_MESON_AO)\t+= ao-cec.o\nobj-$(CONFIG_CEC_MESON_G12A_AO)\t+= ao-cec-g12a.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

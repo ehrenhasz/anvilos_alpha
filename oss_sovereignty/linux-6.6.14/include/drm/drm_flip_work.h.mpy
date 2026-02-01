@@ -1,0 +1,9 @@
+{
+  "module_name": "drm_flip_work.h",
+  "hash_id": "d160224e3c7d2e0a60ed26c8880c5ec05c4aeef74a1270fa66d9a8ee605edfe5",
+  "original_prompt": "Ingested from linux-6.6.14/include/drm/drm_flip_work.h",
+  "human_readable_source": " \n\n#ifndef DRM_FLIP_WORK_H\n#define DRM_FLIP_WORK_H\n\n#include <linux/kfifo.h>\n#include <linux/spinlock.h>\n#include <linux/workqueue.h>\n\n \n\nstruct drm_flip_work;\n\n \ntypedef void (*drm_flip_func_t)(struct drm_flip_work *work, void *val);\n\n \nstruct drm_flip_task {\n\tstruct list_head node;\n\tvoid *data;\n};\n\n \nstruct drm_flip_work {\n\tconst char *name;\n\tdrm_flip_func_t func;\n\tstruct work_struct worker;\n\tstruct list_head queued;\n\tstruct list_head commited;\n\tspinlock_t lock;\n};\n\nstruct drm_flip_task *drm_flip_work_allocate_task(void *data, gfp_t flags);\nvoid drm_flip_work_queue_task(struct drm_flip_work *work,\n\t\t\t      struct drm_flip_task *task);\nvoid drm_flip_work_queue(struct drm_flip_work *work, void *val);\nvoid drm_flip_work_commit(struct drm_flip_work *work,\n\t\tstruct workqueue_struct *wq);\nvoid drm_flip_work_init(struct drm_flip_work *work,\n\t\tconst char *name, drm_flip_func_t func);\nvoid drm_flip_work_cleanup(struct drm_flip_work *work);\n\n#endif   \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

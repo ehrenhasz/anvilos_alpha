@@ -1,0 +1,9 @@
+{
+  "module_name": "ethtool.c",
+  "hash_id": "fe43ad1cc4a77ff408755ea836603d457168df0c555c8431613f537b8fcf63ad",
+  "original_prompt": "Ingested from linux-6.6.14/tools/net/ynl/samples/ethtool.c",
+  "human_readable_source": "\n#include <stdio.h>\n#include <string.h>\n\n#include <ynl.h>\n\n#include <net/if.h>\n\n#include \"ethtool-user.h\"\n\nint main(int argc, char **argv)\n{\n\tstruct ethtool_channels_get_req_dump creq = {};\n\tstruct ethtool_rings_get_req_dump rreq = {};\n\tstruct ethtool_channels_get_list *channels;\n\tstruct ethtool_rings_get_list *rings;\n\tstruct ynl_sock *ys;\n\n\tys = ynl_sock_create(&ynl_ethtool_family, NULL);\n\tif (!ys)\n\t\treturn 1;\n\n\tcreq._present.header = 1;  \n\tchannels = ethtool_channels_get_dump(ys, &creq);\n\tif (!channels)\n\t\tgoto err_close;\n\n\tprintf(\"Channels:\\n\");\n\tynl_dump_foreach(channels, dev) {\n\t\tprintf(\"  %8s: \", dev->header.dev_name);\n\t\tif (dev->_present.rx_count)\n\t\t\tprintf(\"rx %d \", dev->rx_count);\n\t\tif (dev->_present.tx_count)\n\t\t\tprintf(\"tx %d \", dev->tx_count);\n\t\tif (dev->_present.combined_count)\n\t\t\tprintf(\"combined %d \", dev->combined_count);\n\t\tprintf(\"\\n\");\n\t}\n\tethtool_channels_get_list_free(channels);\n\n\trreq._present.header = 1;  \n\trings = ethtool_rings_get_dump(ys, &rreq);\n\tif (!rings)\n\t\tgoto err_close;\n\n\tprintf(\"Rings:\\n\");\n\tynl_dump_foreach(rings, dev) {\n\t\tprintf(\"  %8s: \", dev->header.dev_name);\n\t\tif (dev->_present.rx)\n\t\t\tprintf(\"rx %d \", dev->rx);\n\t\tif (dev->_present.tx)\n\t\t\tprintf(\"tx %d \", dev->tx);\n\t\tprintf(\"\\n\");\n\t}\n\tethtool_rings_get_list_free(rings);\n\n\tynl_sock_destroy(ys);\n\n\treturn 0;\n\nerr_close:\n\tfprintf(stderr, \"YNL (%d): %s\\n\", ys->err.code, ys->err.msg);\n\tynl_sock_destroy(ys);\n\treturn 2;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

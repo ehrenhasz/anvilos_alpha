@@ -1,0 +1,9 @@
+{
+  "module_name": "mem-phys-addr-record",
+  "hash_id": "9b4d6d0a96c1f567ad43a2d6ab40aaadea936f73c0e68bd8860c7c3934774ca9",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/scripts/python/bin/mem-phys-addr-record",
+  "human_readable_source": "#!/bin/bash\n\n#\n# Profiling physical memory by all retired load instructions/uops event\n# MEM_INST_RETIRED.ALL_LOADS or MEM_UOPS_RETIRED.ALL_LOADS\n#\n\nload=`perf list | grep mem_inst_retired.all_loads`\nif [ -z \"$load\" ]; then\n\tload=`perf list | grep mem_uops_retired.all_loads`\nfi\nif [ -z \"$load\" ]; then\n\techo \"There is no event to count all retired load instructions/uops.\"\n\texit 1\nfi\n\narg=$(echo $load | tr -d ' ')\narg=\"$arg:P\"\nperf record --phys-data -e $arg $@\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

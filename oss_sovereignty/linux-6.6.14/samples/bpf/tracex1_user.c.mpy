@@ -1,0 +1,9 @@
+{
+  "module_name": "tracex1_user.c",
+  "hash_id": "21290a383b929b9fc2b84dc89137521d6aa69a8f18e6dfcf5e780b566ca592a3",
+  "original_prompt": "Ingested from linux-6.6.14/samples/bpf/tracex1_user.c",
+  "human_readable_source": "\n#include <stdio.h>\n#include <unistd.h>\n#include <bpf/libbpf.h>\n#include \"trace_helpers.h\"\n\nint main(int ac, char **argv)\n{\n\tstruct bpf_link *link = NULL;\n\tstruct bpf_program *prog;\n\tstruct bpf_object *obj;\n\tchar filename[256];\n\tFILE *f;\n\n\tsnprintf(filename, sizeof(filename), \"%s.bpf.o\", argv[0]);\n\tobj = bpf_object__open_file(filename, NULL);\n\tif (libbpf_get_error(obj)) {\n\t\tfprintf(stderr, \"ERROR: opening BPF object file failed\\n\");\n\t\treturn 0;\n\t}\n\n\tprog = bpf_object__find_program_by_name(obj, \"bpf_prog1\");\n\tif (!prog) {\n\t\tfprintf(stderr, \"ERROR: finding a prog in obj file failed\\n\");\n\t\tgoto cleanup;\n\t}\n\n\t \n\tif (bpf_object__load(obj)) {\n\t\tfprintf(stderr, \"ERROR: loading BPF object file failed\\n\");\n\t\tgoto cleanup;\n\t}\n\n\tlink = bpf_program__attach(prog);\n\tif (libbpf_get_error(link)) {\n\t\tfprintf(stderr, \"ERROR: bpf_program__attach failed\\n\");\n\t\tlink = NULL;\n\t\tgoto cleanup;\n\t}\n\n\tf = popen(\"taskset 1 ping -c5 localhost\", \"r\");\n\t(void) f;\n\n\tread_trace_pipe();\n\ncleanup:\n\tbpf_link__destroy(link);\n\tbpf_object__close(obj);\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

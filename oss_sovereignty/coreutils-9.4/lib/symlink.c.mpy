@@ -1,0 +1,9 @@
+{
+  "module_name": "symlink.c",
+  "hash_id": "b0b62037d1e6f092c08b736d04208ead5207d97719052cab341dd0bef4fd469c",
+  "original_prompt": "Ingested from coreutils-9.4/lib/symlink.c",
+  "human_readable_source": " \n#include <unistd.h>\n\n#include <errno.h>\n#include <string.h>\n#include <sys/stat.h>\n\n\n#if HAVE_SYMLINK\n\n# undef symlink\n\n \nint\nrpl_symlink (char const *contents, char const *name)\n{\n  size_t len = strlen (name);\n  if (len && name[len - 1] == '/')\n    {\n      struct stat st;\n      if (lstat (name, &st) == 0 || errno == EOVERFLOW)\n        errno = EEXIST;\n      return -1;\n    }\n  return symlink (contents, name);\n}\n\n#else  \n\n \nint\nsymlink (_GL_UNUSED char const *contents,\n         _GL_UNUSED char const *name)\n{\n  errno = ENOSYS;\n  return -1;\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

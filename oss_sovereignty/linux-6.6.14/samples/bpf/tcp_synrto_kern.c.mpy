@@ -1,0 +1,9 @@
+{
+  "module_name": "tcp_synrto_kern.c",
+  "hash_id": "ce3f35e1e607b2ace2213fda3b1a9ebf8cf94d00e7eb14e64ce9a85972587d12",
+  "original_prompt": "Ingested from linux-6.6.14/samples/bpf/tcp_synrto_kern.c",
+  "human_readable_source": " \n\n#include <uapi/linux/bpf.h>\n#include <uapi/linux/if_ether.h>\n#include <uapi/linux/if_packet.h>\n#include <uapi/linux/ip.h>\n#include <linux/socket.h>\n#include <bpf/bpf_helpers.h>\n#include <bpf/bpf_endian.h>\n\n#define DEBUG 1\n\nSEC(\"sockops\")\nint bpf_synrto(struct bpf_sock_ops *skops)\n{\n\tint rv = -1;\n\tint op;\n\n\t \n\tif (bpf_ntohl(skops->remote_port) != 55601 &&\n\t    skops->local_port != 55601) {\n\t\tskops->reply = -1;\n\t\treturn 1;\n\t}\n\n\top = (int) skops->op;\n\n#ifdef DEBUG\n\tbpf_printk(\"BPF command: %d\\n\", op);\n#endif\n\n\t \n\tif (op == BPF_SOCK_OPS_TIMEOUT_INIT &&\n\t\tskops->family == AF_INET6) {\n\n\t\t \n\t\tif (skops->local_ip6[0] == skops->remote_ip6[0] &&\n\t\t    (bpf_ntohl(skops->local_ip6[1]) & 0xfff00000) ==\n\t\t    (bpf_ntohl(skops->remote_ip6[1]) & 0xfff00000))\n\t\t\trv = 10;\n\t}\n#ifdef DEBUG\n\tbpf_printk(\"Returning %d\\n\", rv);\n#endif\n\tskops->reply = rv;\n\treturn 1;\n}\nchar _license[] SEC(\"license\") = \"GPL\";\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

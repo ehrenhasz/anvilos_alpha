@@ -1,0 +1,9 @@
+{
+  "module_name": "rc_calc.h",
+  "hash_id": "430af1a948c5fb9735313298575a5491f673a1f42aa52566ef92b88bfba83bbd",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/dc/dsc/rc_calc.h",
+  "human_readable_source": "\n \n\n#ifndef __RC_CALC_H__\n#define __RC_CALC_H__\n\n#include \"dml/dsc/rc_calc_fpu.h\"\n\nvoid calc_rc_params(struct rc_params *rc, const struct drm_dsc_config *pps);\n\n#endif\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

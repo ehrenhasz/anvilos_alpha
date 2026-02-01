@@ -1,0 +1,9 @@
+{
+  "module_name": "hw_host1x06_channel.h",
+  "hash_id": "bedbb761794baf5afa61cacc869535e584492c28816e1d6ca0a351c59c1e9dd8",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/host1x/hw/hw_host1x06_channel.h",
+  "human_readable_source": "\n \n\n#ifndef HOST1X_HW_HOST1X06_CHANNEL_H\n#define HOST1X_HW_HOST1X06_CHANNEL_H\n\n#define HOST1X_CHANNEL_SMMU_STREAMID 0x084\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

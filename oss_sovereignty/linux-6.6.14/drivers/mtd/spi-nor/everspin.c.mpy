@@ -1,0 +1,9 @@
+{
+  "module_name": "everspin.c",
+  "hash_id": "d764903943204edd83b56683544c7981c9193131c866c113b97b605ea52ebd97",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/mtd/spi-nor/everspin.c",
+  "human_readable_source": "\n \n\n#include <linux/mtd/spi-nor.h>\n\n#include \"core.h\"\n\nstatic const struct flash_info everspin_nor_parts[] = {\n\t \n\t{ \"mr25h128\", CAT25_INFO(16 * 1024, 1, 256, 2) },\n\t{ \"mr25h256\", CAT25_INFO(32 * 1024, 1, 256, 2) },\n\t{ \"mr25h10\",  CAT25_INFO(128 * 1024, 1, 256, 3) },\n\t{ \"mr25h40\",  CAT25_INFO(512 * 1024, 1, 256, 3) },\n};\n\nconst struct spi_nor_manufacturer spi_nor_everspin = {\n\t.name = \"everspin\",\n\t.parts = everspin_nor_parts,\n\t.nparts = ARRAY_SIZE(everspin_nor_parts),\n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

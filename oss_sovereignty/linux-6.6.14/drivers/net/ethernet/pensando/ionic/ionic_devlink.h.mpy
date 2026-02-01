@@ -1,0 +1,9 @@
+{
+  "module_name": "ionic_devlink.h",
+  "hash_id": "afb51953520d0e593b7ce0bcbfe50095e22b9aefecd5fbe90b54ecf79a2ac371",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/pensando/ionic/ionic_devlink.h",
+  "human_readable_source": " \n \n\n#ifndef _IONIC_DEVLINK_H_\n#define _IONIC_DEVLINK_H_\n\n#include <net/devlink.h>\n\nint ionic_firmware_update(struct ionic_lif *lif, const struct firmware *fw,\n\t\t\t  struct netlink_ext_ack *extack);\n\nstruct ionic *ionic_devlink_alloc(struct device *dev);\nvoid ionic_devlink_free(struct ionic *ionic);\nint ionic_devlink_register(struct ionic *ionic);\nvoid ionic_devlink_unregister(struct ionic *ionic);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

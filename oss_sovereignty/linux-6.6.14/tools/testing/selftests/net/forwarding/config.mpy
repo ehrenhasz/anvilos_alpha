@@ -1,0 +1,9 @@
+{
+  "module_name": "config",
+  "hash_id": "46b8cf242a37232ae3135a18fb4a6dccb1c00e7760faf6de2f6fde9b8e8ccc8a",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/net/forwarding/config",
+  "human_readable_source": "CONFIG_BRIDGE=m\nCONFIG_VLAN_8021Q=m\nCONFIG_BRIDGE_VLAN_FILTERING=y\nCONFIG_NET_L3_MASTER_DEV=y\nCONFIG_IPV6_MULTIPLE_TABLES=y\nCONFIG_NET_VRF=m\nCONFIG_BPF_SYSCALL=y\nCONFIG_CGROUP_BPF=y\nCONFIG_NET_ACT_CT=m\nCONFIG_NET_ACT_MIRRED=m\nCONFIG_NET_ACT_MPLS=m\nCONFIG_NET_ACT_VLAN=m\nCONFIG_NET_CLS_FLOWER=m\nCONFIG_NET_CLS_MATCHALL=m\nCONFIG_NET_SCH_INGRESS=m\nCONFIG_NET_ACT_GACT=m\nCONFIG_VETH=m\nCONFIG_NAMESPACES=y\nCONFIG_NET_NS=y\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

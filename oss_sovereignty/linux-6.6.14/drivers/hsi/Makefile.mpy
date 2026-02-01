@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "6dc4a99df7123a07a057d423956f8913b193bfe3cd60fffd2678b7c14d7e5b54",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/hsi/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for HSI\n#\nobj-$(CONFIG_HSI)\t\t+= hsi.o\nhsi-objs\t\t\t:= hsi_core.o\nhsi-$(CONFIG_HSI_BOARDINFO)\t+= hsi_boardinfo.o\nobj-y\t\t\t\t+= controllers/\nobj-y\t\t\t\t+= clients/\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

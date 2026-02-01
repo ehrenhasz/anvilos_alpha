@@ -1,0 +1,9 @@
+{
+  "module_name": "malidp_product.h",
+  "hash_id": "f296955b914a92bc4a32aa2189604a95a6cc45289cf4f818ef11a1a86a734f49",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/arm/display/include/malidp_product.h",
+  "human_readable_source": " \n \n#ifndef _MALIDP_PRODUCT_H_\n#define _MALIDP_PRODUCT_H_\n\n \n#define MALIDP_CORE_ID(__product, __major, __minor, __status) \\\n\t((((__product) & 0xFFFF) << 16) | (((__major) & 0xF) << 12) | \\\n\t(((__minor) & 0xF) << 8) | ((__status) & 0xFF))\n\n#define MALIDP_CORE_ID_PRODUCT_ID(__core_id) ((__u32)(__core_id) >> 16)\n#define MALIDP_CORE_ID_MAJOR(__core_id)      (((__u32)(__core_id) >> 12) & 0xF)\n#define MALIDP_CORE_ID_MINOR(__core_id)      (((__u32)(__core_id) >> 8) & 0xF)\n#define MALIDP_CORE_ID_STATUS(__core_id)     (((__u32)(__core_id)) & 0xFF)\n\n \n#define MALIDP_D71_PRODUCT_ID\t0x0071\n#define MALIDP_D32_PRODUCT_ID\t0x0032\n\nunion komeda_config_id {\n\tstruct {\n\t\t__u32\tmax_line_sz:16,\n\t\t\tn_pipelines:2,\n\t\t\tn_scalers:2,  \n\t\t\tn_layers:3,  \n\t\t\tn_richs:3,  \n\t\t\treserved_bits:6;\n\t};\n\t__u32 value;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

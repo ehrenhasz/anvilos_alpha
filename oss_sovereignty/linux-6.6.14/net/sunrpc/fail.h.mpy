@@ -1,0 +1,9 @@
+{
+  "module_name": "fail.h",
+  "hash_id": "673b435bd79d527018c0196e7e509d48879b323551d36e16106cdeadf9a9ed0f",
+  "original_prompt": "Ingested from linux-6.6.14/net/sunrpc/fail.h",
+  "human_readable_source": " \n \n\n#ifndef _NET_SUNRPC_FAIL_H_\n#define _NET_SUNRPC_FAIL_H_\n\n#include <linux/fault-inject.h>\n\n#if IS_ENABLED(CONFIG_FAULT_INJECTION)\n\nstruct fail_sunrpc_attr {\n\tstruct fault_attr\tattr;\n\n\tbool\t\t\tignore_client_disconnect;\n\tbool\t\t\tignore_server_disconnect;\n\tbool\t\t\tignore_cache_wait;\n};\n\nextern struct fail_sunrpc_attr fail_sunrpc;\n\n#endif  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

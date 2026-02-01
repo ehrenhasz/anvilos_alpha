@@ -1,0 +1,9 @@
+{
+  "module_name": "freezero.c",
+  "hash_id": "4c5a741a28bb3e47784e78952fdafd6a4f2451acc878362f8fa7a31236fabbe3",
+  "original_prompt": "Ingested from openssh-9.6p1/openbsd-compat/freezero.c",
+  "human_readable_source": " \n\n#include \"includes.h\"\n\n#include <stdlib.h>\n#include <string.h>\n\n#ifndef HAVE_FREEZERO\n\nvoid\nfreezero(void *ptr, size_t sz)\n{\n\tif (ptr == NULL)\n\t\treturn;\n\texplicit_bzero(ptr, sz);\n\tfree(ptr);\n}\n\n#endif  \n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

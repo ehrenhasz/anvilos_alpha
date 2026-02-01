@@ -1,0 +1,9 @@
+{
+  "module_name": "gettext.c",
+  "hash_id": "646592187ca9142700c90472c542c7656a8ebab8e25cdac6521caf49c767c353",
+  "original_prompt": "Ingested from bash-5.2.21/lib/intl/gettext.c",
+  "human_readable_source": " \n\n \n\n#ifdef HAVE_CONFIG_H\n# include <config.h>\n#endif\n\n#ifdef _LIBC\n# define __need_NULL\n# include <stddef.h>\n#else\n# include <stdlib.h>\t\t \n#endif\n\n#include \"gettextP.h\"\n#ifdef _LIBC\n# include <libintl.h>\n#else\n# include \"libgnuintl.h\"\n#endif\n\n \n\n \n#ifdef _LIBC\n# define GETTEXT __gettext\n# define DCGETTEXT INTUSE(__dcgettext)\n#else\n# define GETTEXT libintl_gettext\n# define DCGETTEXT libintl_dcgettext\n#endif\n\n \nchar *\nGETTEXT (msgid)\n     const char *msgid;\n{\n  return DCGETTEXT (NULL, msgid, LC_MESSAGES);\n}\n\n#ifdef _LIBC\n \nweak_alias (__gettext, gettext);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "omap_voutlib.h",
+  "hash_id": "b5c20d6e33fc06d3b9c2c7f17af3556dc59b98fd7c7100bc216a83f756a5ec49",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/platform/ti/omap/omap_voutlib.h",
+  "human_readable_source": " \n\n#ifndef OMAP_VOUTLIB_H\n#define OMAP_VOUTLIB_H\n\nvoid omap_vout_default_crop(struct v4l2_pix_format *pix,\n\t\tstruct v4l2_framebuffer *fbuf, struct v4l2_rect *crop);\n\nint omap_vout_new_crop(struct v4l2_pix_format *pix,\n\t\tstruct v4l2_rect *crop, struct v4l2_window *win,\n\t\tstruct v4l2_framebuffer *fbuf,\n\t\tconst struct v4l2_rect *new_crop);\n\nint omap_vout_try_window(struct v4l2_framebuffer *fbuf,\n\t\tstruct v4l2_window *new_win);\n\nint omap_vout_new_window(struct v4l2_rect *crop,\n\t\tstruct v4l2_window *win, struct v4l2_framebuffer *fbuf,\n\t\tstruct v4l2_window *new_win);\n\nvoid omap_vout_new_format(struct v4l2_pix_format *pix,\n\t\tstruct v4l2_framebuffer *fbuf, struct v4l2_rect *crop,\n\t\tstruct v4l2_window *win);\nunsigned long omap_vout_alloc_buffer(u32 buf_size, u32 *phys_addr);\nvoid omap_vout_free_buffer(unsigned long virtaddr, u32 buf_size);\n\nbool omap_vout_dss_omap24xx(void);\nbool omap_vout_dss_omap34xx(void);\n#endif\t \n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

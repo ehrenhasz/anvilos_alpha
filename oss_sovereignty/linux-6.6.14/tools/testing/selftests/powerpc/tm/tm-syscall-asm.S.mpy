@@ -1,0 +1,9 @@
+{
+  "module_name": "tm-syscall-asm.S",
+  "hash_id": "b1d458fd5be63abc0b7c367255af1713a71e0257c094486ea8f0c93616849478",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/powerpc/tm/tm-syscall-asm.S",
+  "human_readable_source": " \n#include <basic_asm.h>\n#include <asm/unistd.h>\n\n\t.text\nFUNC_START(getppid_tm_active)\n\ttbegin.\n\tbeq 1f\n\tli\tr0, __NR_getppid\n\tsc\n\ttend.\n\tblr\n1:\n\tli\tr3, -1\n\tblr\n\nFUNC_START(getppid_tm_suspended)\n\ttbegin.\n\tbeq 1f\n\tli\tr0, __NR_getppid\n\ttsuspend.\n\tsc\n\ttresume.\n\ttend.\n\tblr\n1:\n\tli\tr3, -1\n\tblr\n\n\n.macro scv level\n\t.long (0x44000001 | (\\level) << 5)\n.endm\n\nFUNC_START(getppid_scv_tm_active)\n\tPUSH_BASIC_STACK(0)\n\ttbegin.\n\tbeq 1f\n\tli\tr0, __NR_getppid\n\tscv\t0\n\ttend.\n\tPOP_BASIC_STACK(0)\n\tblr\n1:\n\tli\tr3, -1\n\tPOP_BASIC_STACK(0)\n\tblr\n\nFUNC_START(getppid_scv_tm_suspended)\n\tPUSH_BASIC_STACK(0)\n\ttbegin.\n\tbeq 1f\n\tli\tr0, __NR_getppid\n\ttsuspend.\n\tscv\t0\n\ttresume.\n\ttend.\n\tPOP_BASIC_STACK(0)\n\tblr\n1:\n\tli\tr3, -1\n\tPOP_BASIC_STACK(0)\n\tblr\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

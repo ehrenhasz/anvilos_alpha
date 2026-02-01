@@ -1,0 +1,9 @@
+{
+  "module_name": "qcom,gpucc-sm8250.h",
+  "hash_id": "fadd871403c93a1cdf30edbe994d4520e31bf0eaece56a88b922284ccde04c2b",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/clock/qcom,gpucc-sm8250.h",
+  "human_readable_source": " \n \n\n#ifndef _DT_BINDINGS_CLK_QCOM_GPU_CC_SM8250_H\n#define _DT_BINDINGS_CLK_QCOM_GPU_CC_SM8250_H\n\n \n#define GPU_CC_AHB_CLK\t\t\t\t0\n#define GPU_CC_CRC_AHB_CLK\t\t\t1\n#define GPU_CC_CX_APB_CLK\t\t\t2\n#define GPU_CC_CX_GMU_CLK\t\t\t3\n#define GPU_CC_CX_SNOC_DVM_CLK\t\t\t4\n#define GPU_CC_CXO_AON_CLK\t\t\t5\n#define GPU_CC_CXO_CLK\t\t\t\t6\n#define GPU_CC_GMU_CLK_SRC\t\t\t7\n#define GPU_CC_GX_GMU_CLK\t\t\t8\n#define GPU_CC_PLL1\t\t\t\t9\n#define GPU_CC_HLOS1_VOTE_GPU_SMMU_CLK\t\t10\n\n \n#define GPUCC_GPU_CC_ACD_BCR\t\t\t0\n#define GPUCC_GPU_CC_CX_BCR\t\t\t1\n#define GPUCC_GPU_CC_GFX3D_AON_BCR\t\t2\n#define GPUCC_GPU_CC_GMU_BCR\t\t\t3\n#define GPUCC_GPU_CC_GX_BCR\t\t\t4\n#define GPUCC_GPU_CC_XO_BCR\t\t\t5\n\n \n#define GPU_CX_GDSC\t\t\t\t0\n#define GPU_GX_GDSC\t\t\t\t1\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

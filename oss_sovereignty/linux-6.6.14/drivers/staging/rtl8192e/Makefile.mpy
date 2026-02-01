@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "70611deb889fc0e4e84b78e649de3b066112480823c8be1462713283f4208fe6",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/rtl8192e/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nrtllib-objs :=\t\t\t\\\n\tdot11d.o\t\t\\\n\trtllib_module.o\t\t\\\n\trtllib_rx.o\t\t\\\n\trtllib_tx.o\t\t\\\n\trtllib_wx.o\t\t\\\n\trtllib_softmac.o\t\\\n\trtllib_softmac_wx.o\t\\\n\trtl819x_BAProc.o\t\\\n\trtl819x_HTProc.o\t\\\n\trtl819x_TSProc.o\n\nobj-$(CONFIG_RTLLIB) += rtllib.o\n\nobj-$(CONFIG_RTLLIB_CRYPTO_CCMP) += rtllib_crypt_ccmp.o\nobj-$(CONFIG_RTLLIB_CRYPTO_TKIP) += rtllib_crypt_tkip.o\nobj-$(CONFIG_RTLLIB_CRYPTO_WEP) += rtllib_crypt_wep.o\n\nobj-$(CONFIG_RTL8192E) += rtl8192e/\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

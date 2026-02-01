@@ -1,0 +1,9 @@
+{
+  "module_name": "led.h",
+  "hash_id": "b5d39f4bddd5ef82fcc96d43bc6998889c84e7a93721ddc36beb1f0626ff6258",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/realtek/rtlwifi/rtl8192se/led.h",
+  "human_readable_source": " \n \n\n#ifndef __REALTEK_PCI92SE_LED_H__\n#define __REALTEK_PCI92SE_LED_H__\n\nvoid rtl92se_sw_led_on(struct ieee80211_hw *hw, enum rtl_led_pin pin);\nvoid rtl92se_sw_led_off(struct ieee80211_hw *hw, enum rtl_led_pin pin);\nvoid rtl92se_led_control(struct ieee80211_hw *hw, enum led_ctl_mode ledaction);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

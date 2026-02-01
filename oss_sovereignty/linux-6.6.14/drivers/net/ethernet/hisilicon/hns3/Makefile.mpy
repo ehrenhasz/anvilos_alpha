@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "f843362c16c1b6632cce853c9ad8655559f3d8e2eeb8b70449e24c02bb3494d6",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/hisilicon/hns3/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0+\n#\n# Makefile for the HISILICON network device drivers.\n#\n\nccflags-y += -I$(srctree)/$(src)\nccflags-y += -I$(srctree)/drivers/net/ethernet/hisilicon/hns3/hns3pf\nccflags-y += -I$(srctree)/drivers/net/ethernet/hisilicon/hns3/hns3vf\nccflags-y += -I$(srctree)/drivers/net/ethernet/hisilicon/hns3/hns3_common\n\nobj-$(CONFIG_HNS3) += hnae3.o\n\nobj-$(CONFIG_HNS3_ENET) += hns3.o\nhns3-objs = hns3_enet.o hns3_ethtool.o hns3_debugfs.o\n\nhns3-$(CONFIG_HNS3_DCB) += hns3_dcbnl.o\n\nobj-$(CONFIG_HNS3_HCLGEVF) += hclgevf.o\n\nhclgevf-objs = hns3vf/hclgevf_main.o hns3vf/hclgevf_mbx.o  hns3vf/hclgevf_devlink.o hns3vf/hclgevf_regs.o \\\n\t\thns3_common/hclge_comm_cmd.o hns3_common/hclge_comm_rss.o hns3_common/hclge_comm_tqp_stats.o\n\nobj-$(CONFIG_HNS3_HCLGE) += hclge.o\nhclge-objs = hns3pf/hclge_main.o hns3pf/hclge_mdio.o hns3pf/hclge_tm.o hns3pf/hclge_regs.o \\\n\t\thns3pf/hclge_mbx.o hns3pf/hclge_err.o  hns3pf/hclge_debugfs.o hns3pf/hclge_ptp.o hns3pf/hclge_devlink.o \\\n\t\thns3_common/hclge_comm_cmd.o hns3_common/hclge_comm_rss.o hns3_common/hclge_comm_tqp_stats.o\n\n\nhclge-$(CONFIG_HNS3_DCB) += hns3pf/hclge_dcb.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

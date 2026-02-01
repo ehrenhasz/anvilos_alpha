@@ -1,0 +1,9 @@
+{
+  "module_name": "dp_power.h",
+  "hash_id": "1ce3ef031511d68cc73398879b5d80c0258455ead9ac3d70442cda96c7695edf",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/msm/dp/dp_power.h",
+  "human_readable_source": " \n \n\n#ifndef _DP_POWER_H_\n#define _DP_POWER_H_\n\n#include \"dp_parser.h\"\n\n \nstruct dp_power {\n\tbool core_clks_on;\n\tbool link_clks_on;\n\tbool stream_clks_on;\n};\n\n \nint dp_power_init(struct dp_power *power);\n\n \nint dp_power_deinit(struct dp_power *power);\n\n \n\nint dp_power_clk_status(struct dp_power *dp_power, enum dp_pm_type pm_type);\n\n \n\nint dp_power_clk_enable(struct dp_power *power, enum dp_pm_type pm_type,\n\t\t\t\tbool enable);\n\n \nint dp_power_client_init(struct dp_power *power);\n\n \nvoid dp_power_client_deinit(struct dp_power *power);\n\n \nstruct dp_power *dp_power_get(struct device *dev, struct dp_parser *parser);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

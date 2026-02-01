@@ -1,0 +1,9 @@
+{
+  "module_name": "physaddr.h",
+  "hash_id": "858073ea9f226ff0305f9939cec3d7b80cb3ad8fe48e843125593600603de734",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/mm/physaddr.h",
+  "human_readable_source": " \n#include <asm/processor.h>\n\nstatic inline int phys_addr_valid(resource_size_t addr)\n{\n#ifdef CONFIG_PHYS_ADDR_T_64BIT\n\treturn !(addr >> boot_cpu_data.x86_phys_bits);\n#else\n\treturn 1;\n#endif\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

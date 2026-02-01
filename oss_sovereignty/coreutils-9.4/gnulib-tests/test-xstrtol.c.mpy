@@ -1,0 +1,9 @@
+{
+  "module_name": "test-xstrtol.c",
+  "hash_id": "552eaa072cefbf5fa428e6a2107b8888150be35701a4ffb4a4112673da4389b0",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-xstrtol.c",
+  "human_readable_source": " \nstatic void\nprint_no_progname (void)\n{\n}\n\nint\nmain (int argc, char **argv)\n{\n  strtol_error s_err;\n  int i;\n\n  error_print_progname = print_no_progname;\n\n  for (i = 1; i < argc; i++)\n    {\n      char *p;\n      __strtol_t val;\n\n      s_err = __xstrtol (argv[i], &p, 0, &val, \"bckMw0\");\n      if (s_err == LONGINT_OK)\n        {\n          printf (\"%s->%\" __spec \" (%s)\\n\", argv[i], val, p);\n        }\n      else\n        {\n          xstrtol_fatal (s_err, -2, 'X', NULL, argv[i]);\n        }\n    }\n  exit (0);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

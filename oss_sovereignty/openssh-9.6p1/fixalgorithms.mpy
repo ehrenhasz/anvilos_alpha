@@ -1,0 +1,9 @@
+{
+  "module_name": "fixalgorithms",
+  "hash_id": "83b1016a7e3030dace57d65a83cb2da69d9271140ff85eb3b0d15c1ce3e142de",
+  "original_prompt": "Ingested from openssh-9.6p1/fixalgorithms",
+  "human_readable_source": "#!/bin/sh\n#\n# fixciphers - remove unsupported ciphers from man pages.\n# Usage: fixpaths /path/to/sed cipher1 [cipher2] <infile >outfile \n#\n# Author: Darren Tucker (dtucker at zip com.au).  Placed in the public domain.\n\ndie() {\n\techo $*\n\texit -1\n}\n\nSED=$1\nshift\n\nfor c in $*; do\n\tsubs=\"$subs -e /.Dq.$c.*$/d\"\n\tsubs=\"$subs -e s/$c,//g\"\ndone\n\n# now remove any entirely empty lines\nsubs=\"$subs -e /^$/d\"\n\n${SED} $subs\n\nexit 0\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

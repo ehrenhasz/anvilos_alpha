@@ -1,0 +1,9 @@
+{
+  "module_name": "dh.h",
+  "hash_id": "373a381d4ed10e3a40e639e473f39bb883346c4a8c1d7546e32542d1966e4e45",
+  "original_prompt": "Ingested from linux-6.6.14/include/crypto/dh.h",
+  "human_readable_source": " \n \n#ifndef _CRYPTO_DH_\n#define _CRYPTO_DH_\n\n \n\n \nstruct dh {\n\tconst void *key;\n\tconst void *p;\n\tconst void *g;\n\tunsigned int key_size;\n\tunsigned int p_size;\n\tunsigned int g_size;\n};\n\n \nunsigned int crypto_dh_key_len(const struct dh *params);\n\n \nint crypto_dh_encode_key(char *buf, unsigned int len, const struct dh *params);\n\n \nint crypto_dh_decode_key(const char *buf, unsigned int len, struct dh *params);\n\n \nint __crypto_dh_decode_key(const char *buf, unsigned int len,\n\t\t\t   struct dh *params);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

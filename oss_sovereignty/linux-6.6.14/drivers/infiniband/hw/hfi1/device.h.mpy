@@ -1,0 +1,9 @@
+{
+  "module_name": "device.h",
+  "hash_id": "bbf94c8f4d98b3dabb7d5a8031e636c19bfe495997b9af2cab63a3c3a812131e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/infiniband/hw/hfi1/device.h",
+  "human_readable_source": " \n \n\n#ifndef _HFI1_DEVICE_H\n#define _HFI1_DEVICE_H\n\nint hfi1_cdev_init(int minor, const char *name,\n\t\t   const struct file_operations *fops,\n\t\t   struct cdev *cdev, struct device **devp,\n\t\t   bool user_accessible,\n\t\t   struct kobject *parent);\nvoid hfi1_cdev_cleanup(struct cdev *cdev, struct device **devp);\nconst char *class_name(void);\nint __init dev_init(void);\nvoid dev_cleanup(void);\n\n#endif                           \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

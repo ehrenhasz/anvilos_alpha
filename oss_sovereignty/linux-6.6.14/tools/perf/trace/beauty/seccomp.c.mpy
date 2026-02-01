@@ -1,0 +1,9 @@
+{
+  "module_name": "seccomp.c",
+  "hash_id": "2330aef4f847212c3fa5638ca29ef80ed161b722409d1647d10366e82e6b46c2",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/trace/beauty/seccomp.c",
+  "human_readable_source": "\n#ifndef SECCOMP_SET_MODE_STRICT\n#define SECCOMP_SET_MODE_STRICT 0\n#endif\n#ifndef SECCOMP_SET_MODE_FILTER\n#define SECCOMP_SET_MODE_FILTER 1\n#endif\n\nstatic size_t syscall_arg__scnprintf_seccomp_op(char *bf, size_t size, struct syscall_arg *arg)\n{\n\tbool show_prefix = arg->show_string_prefix;\n\tconst char *prefix = \"SECCOMP_SET_MODE_\";\n\tint op = arg->val;\n\tsize_t printed = 0;\n\n\tswitch (op) {\n#define\tP_SECCOMP_SET_MODE_OP(n) case SECCOMP_SET_MODE_##n: printed = scnprintf(bf, size, \"%s%s\", show_prefix ? prefix : \"\", #n); break\n\tP_SECCOMP_SET_MODE_OP(STRICT);\n\tP_SECCOMP_SET_MODE_OP(FILTER);\n#undef P_SECCOMP_SET_MODE_OP\n\tdefault: printed = scnprintf(bf, size, \"%#x\", op);\t\t\t  break;\n\t}\n\n\treturn printed;\n}\n\n#define SCA_SECCOMP_OP  syscall_arg__scnprintf_seccomp_op\n\n#ifndef SECCOMP_FILTER_FLAG_TSYNC\n#define SECCOMP_FILTER_FLAG_TSYNC 1\n#endif\n\nstatic size_t syscall_arg__scnprintf_seccomp_flags(char *bf, size_t size,\n\t\t\t\t\t\t   struct syscall_arg *arg)\n{\n\tbool show_prefix = arg->show_string_prefix;\n\tconst char *prefix = \"SECCOMP_FILTER_FLAG_\";\n\tint printed = 0, flags = arg->val;\n\n#define\tP_FLAG(n) \\\n\tif (flags & SECCOMP_FILTER_FLAG_##n) { \\\n\t\tprinted += scnprintf(bf + printed, size - printed, \"%s%s%s\", printed ? \"|\" : \"\", show_prefix ? prefix : \"\", #n); \\\n\t\tflags &= ~SECCOMP_FILTER_FLAG_##n; \\\n\t}\n\n\tP_FLAG(TSYNC);\n#undef P_FLAG\n\n\tif (flags)\n\t\tprinted += scnprintf(bf + printed, size - printed, \"%s%#x\", printed ? \"|\" : \"\", flags);\n\n\treturn printed;\n}\n\n#define SCA_SECCOMP_FLAGS syscall_arg__scnprintf_seccomp_flags\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

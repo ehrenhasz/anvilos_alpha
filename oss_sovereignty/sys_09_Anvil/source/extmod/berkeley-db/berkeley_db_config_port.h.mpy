@@ -1,0 +1,9 @@
+{
+  "module_name": "berkeley_db_config_port.h",
+  "hash_id": "d7101a5178bbfc18bc885e5c057ef579a86fae350e78f98c58c028a4355abcf0",
+  "original_prompt": "Ingested from sys_09_Anvil/source/extmod/berkeley-db/berkeley_db_config_port.h",
+  "human_readable_source": "\n\n#define __DBINTERFACE_PRIVATE 1\n#define mpool_error printf\n#define abort abort_\n#define virt_fd_t void*\n\n#ifdef MICROPY_BERKELEY_DB_DEFPSIZE\n#define DEFPSIZE MICROPY_BERKELEY_DB_DEFPSIZE\n#endif\n\n#ifdef MICROPY_BERKELEY_DB_MINCACHE\n#define MINCACHE MICROPY_BERKELEY_DB_MINCACHE\n#endif\n\n__attribute__((noreturn)) void abort_(void);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

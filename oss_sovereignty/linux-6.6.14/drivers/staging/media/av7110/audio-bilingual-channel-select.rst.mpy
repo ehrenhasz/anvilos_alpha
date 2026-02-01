@@ -1,0 +1,9 @@
+{
+  "module_name": "audio-bilingual-channel-select.rst",
+  "hash_id": "88b98068d4a60aeb4ea157f97c0704d506a93c662f81f416d272d2fa029464ef",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/av7110/audio-bilingual-channel-select.rst",
+  "human_readable_source": ".. SPDX-License-Identifier: GFDL-1.1-no-invariants-or-later\n.. c:namespace:: DTV.audio\n\n.. _AUDIO_BILINGUAL_CHANNEL_SELECT:\n\n==============================\nAUDIO_BILINGUAL_CHANNEL_SELECT\n==============================\n\nName\n----\n\nAUDIO_BILINGUAL_CHANNEL_SELECT\n\n.. attention:: This ioctl is deprecated\n\nSynopsis\n--------\n\n.. c:macro:: AUDIO_BILINGUAL_CHANNEL_SELECT\n\n``int ioctl(int fd, AUDIO_BILINGUAL_CHANNEL_SELECT, struct audio_channel_select *select)``\n\nArguments\n---------\n\n.. flat-table::\n    :header-rows:  0\n    :stub-columns: 0\n\n    -\n\n       -  int fd\n\n       -  File descriptor returned by a previous call to open().\n\n    -\n\n       -  audio_channel_select_t ch\n\n       -  Select the output format of the audio (mono left/right, stereo).\n\nDescription\n-----------\n\nThis ioctl is obsolete. Do not use in new drivers. It has been replaced\nby the V4L2 ``V4L2_CID_MPEG_AUDIO_DEC_MULTILINGUAL_PLAYBACK`` control\nfor MPEG decoders controlled through V4L2.\n\nThis ioctl call asks the Audio Device to select the requested channel\nfor bilingual streams if possible.\n\nReturn Value\n------------\n\nOn success 0 is returned, on error -1 and the ``errno`` variable is set\nappropriately. The generic error codes are described at the\n:ref:`Generic Error Codes <gen-errors>` chapter.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

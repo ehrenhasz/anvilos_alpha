@@ -1,0 +1,9 @@
+{
+  "module_name": "aq_pci_func.h",
+  "hash_id": "5df73e2f2686a8877bbf316061d67ccb7cb9ab78297a15dd8adc35d1a38732cc",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/aquantia/atlantic/aq_pci_func.h",
+  "human_readable_source": " \n \n\n \n\n#ifndef AQ_PCI_FUNC_H\n#define AQ_PCI_FUNC_H\n\n#include \"aq_common.h\"\n#include \"aq_nic.h\"\n\nstruct aq_board_revision_s {\n\tunsigned short devid;\n\tunsigned short revision;\n\tconst struct aq_hw_ops *ops;\n\tconst struct aq_hw_caps_s *caps;\n};\n\nint aq_pci_func_alloc_irq(struct aq_nic_s *self, unsigned int i,\n\t\t\t  char *name, irq_handler_t irq_handler,\n\t\t\t  void *irq_arg, cpumask_t *affinity_mask);\nvoid aq_pci_func_free_irqs(struct aq_nic_s *self);\nunsigned int aq_pci_func_get_irq_type(struct aq_nic_s *self);\n\nint aq_pci_func_register_driver(void);\nvoid aq_pci_func_unregister_driver(void);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

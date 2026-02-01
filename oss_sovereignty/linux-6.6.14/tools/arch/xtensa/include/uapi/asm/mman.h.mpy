@@ -1,0 +1,9 @@
+{
+  "module_name": "mman.h",
+  "hash_id": "675aa4dda34e312252fa8d5afcd3f1ae3b17d2de513e9da8d58aeb20018fd98b",
+  "original_prompt": "Ingested from linux-6.6.14/tools/arch/xtensa/include/uapi/asm/mman.h",
+  "human_readable_source": " \n#ifndef TOOLS_ARCH_XTENSA_UAPI_ASM_MMAN_FIX_H\n#define TOOLS_ARCH_XTENSA_UAPI_ASM_MMAN_FIX_H\n#define MADV_DODUMP\t17\n#define MADV_DOFORK\t11\n#define MADV_DONTDUMP   16\n#define MADV_DONTFORK\t10\n#define MADV_DONTNEED\t4\n#define MADV_FREE\t8\n#define MADV_HUGEPAGE\t14\n#define MADV_MERGEABLE   12\n#define MADV_NOHUGEPAGE\t15\n#define MADV_NORMAL\t0\n#define MADV_RANDOM\t1\n#define MADV_REMOVE\t9\n#define MADV_SEQUENTIAL\t2\n#define MADV_UNMERGEABLE 13\n#define MADV_WILLNEED\t3\n#define MAP_ANONYMOUS\t0x0800\n#define MAP_DENYWRITE\t0x2000\n#define MAP_EXECUTABLE\t0x4000\n#define MAP_FILE\t0\n#define MAP_FIXED\t0x010\n#define MAP_GROWSDOWN\t0x1000\n#define MAP_HUGETLB\t0x80000\n#define MAP_LOCKED\t0x8000\n#define MAP_NONBLOCK\t0x20000\n#define MAP_NORESERVE\t0x0400\n#define MAP_POPULATE\t0x10000\n#define MAP_STACK\t0x40000\n#define PROT_EXEC\t0x4\n#define PROT_GROWSDOWN\t0x01000000\n#define PROT_GROWSUP\t0x02000000\n#define PROT_NONE\t0x0\n#define PROT_READ\t0x1\n#define PROT_SEM\t0x10\n#define PROT_WRITE\t0x2\n \n#define MADV_HWPOISON\t100\n \n#define MADV_SOFT_OFFLINE 101\n \n#define MAP_32BIT\t0\n \n#define MAP_UNINITIALIZED\t0\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

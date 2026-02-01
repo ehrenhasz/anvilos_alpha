@@ -1,0 +1,9 @@
+{
+  "module_name": "ia_css_pipe_util.h",
+  "hash_id": "37b48272453667adecc7a1fc14f2039b48ec3aa7cad73df7b69c8201c425aa7e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/camera/pipe/interface/ia_css_pipe_util.h",
+  "human_readable_source": " \n \n\n#ifndef __IA_CSS_PIPE_UTIL_H__\n#define __IA_CSS_PIPE_UTIL_H__\n\n#include <ia_css_types.h>\n#include <ia_css_frame_public.h>\n\n \nunsigned int ia_css_pipe_util_pipe_input_format_bpp(\n    const struct ia_css_pipe *const pipe);\n\nvoid ia_css_pipe_util_create_output_frames(\n    struct ia_css_frame *frames[]);\n\nvoid ia_css_pipe_util_set_output_frames(\n    struct ia_css_frame *frames[],\n    unsigned int idx,\n    struct ia_css_frame *frame);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

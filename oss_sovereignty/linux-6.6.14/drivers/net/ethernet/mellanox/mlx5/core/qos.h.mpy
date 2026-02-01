@@ -1,0 +1,9 @@
+{
+  "module_name": "qos.h",
+  "hash_id": "a60cbbce7aedaa9afe0d455fed00cda17dc3b03074d1d9a5b383f331ce534eb8",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/mellanox/mlx5/core/qos.h",
+  "human_readable_source": " \n \n\n#ifndef __MLX5_QOS_H\n#define __MLX5_QOS_H\n\n#include \"mlx5_core.h\"\n\n#define MLX5_DEBUG_QOS_MASK BIT(4)\n\n#define qos_err(mdev, fmt, ...) \\\n\tmlx5_core_err(mdev, \"QoS: \" fmt, ##__VA_ARGS__)\n#define qos_warn(mdev, fmt, ...) \\\n\tmlx5_core_warn(mdev, \"QoS: \" fmt, ##__VA_ARGS__)\n#define qos_dbg(mdev, fmt, ...) \\\n\tmlx5_core_dbg_mask(mdev, MLX5_DEBUG_QOS_MASK, \"QoS: \" fmt, ##__VA_ARGS__)\n\nbool mlx5_qos_is_supported(struct mlx5_core_dev *mdev);\nint mlx5_qos_max_leaf_nodes(struct mlx5_core_dev *mdev);\n\nint mlx5_qos_create_leaf_node(struct mlx5_core_dev *mdev, u32 parent_id,\n\t\t\t      u32 bw_share, u32 max_avg_bw, u32 *id);\nint mlx5_qos_create_inner_node(struct mlx5_core_dev *mdev, u32 parent_id,\n\t\t\t       u32 bw_share, u32 max_avg_bw, u32 *id);\nint mlx5_qos_create_root_node(struct mlx5_core_dev *mdev, u32 *id);\nint mlx5_qos_update_node(struct mlx5_core_dev *mdev, u32 bw_share,\n\t\t\t u32 max_avg_bw, u32 id);\nint mlx5_qos_destroy_node(struct mlx5_core_dev *mdev, u32 id);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

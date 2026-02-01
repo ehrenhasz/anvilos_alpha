@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "baf3b981733054cc2c568e10a6e2672526e07794fcc28ccb98cc62237430553a",
+  "original_prompt": "Ingested from linux-6.6.14/net/8021q/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for the Linux VLAN layer.\n#\nobj-$(subst m,y,$(CONFIG_VLAN_8021Q))\t+= vlan_core.o\nobj-$(CONFIG_VLAN_8021Q)\t\t+= 8021q.o\n\n8021q-y\t\t\t\t\t:= vlan.o vlan_dev.o vlan_netlink.o\n8021q-$(CONFIG_VLAN_8021Q_GVRP)\t\t+= vlan_gvrp.o\n8021q-$(CONFIG_VLAN_8021Q_MVRP)\t\t+= vlan_mvrp.o\n8021q-$(CONFIG_PROC_FS)\t\t\t+= vlanproc.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

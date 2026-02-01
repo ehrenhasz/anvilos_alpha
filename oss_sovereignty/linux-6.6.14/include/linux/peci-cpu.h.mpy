@@ -1,0 +1,9 @@
+{
+  "module_name": "peci-cpu.h",
+  "hash_id": "601bf153c6e05de7f4dbfd7e16b8852e1cf46aab0dea0e562e93e302f68997c1",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/peci-cpu.h",
+  "human_readable_source": " \n \n\n#ifndef __LINUX_PECI_CPU_H\n#define __LINUX_PECI_CPU_H\n\n#include <linux/types.h>\n\n#include \"../../arch/x86/include/asm/intel-family.h\"\n\n#define PECI_PCS_PKG_ID\t\t\t0   \n#define  PECI_PKG_ID_CPU_ID\t\t0x0000   \n#define  PECI_PKG_ID_PLATFORM_ID\t0x0001   \n#define  PECI_PKG_ID_DEVICE_ID\t\t0x0002   \n#define  PECI_PKG_ID_MAX_THREAD_ID\t0x0003   \n#define  PECI_PKG_ID_MICROCODE_REV\t0x0004   \n#define  PECI_PKG_ID_MCA_ERROR_LOG\t0x0005   \n#define PECI_PCS_MODULE_TEMP\t\t9   \n#define PECI_PCS_THERMAL_MARGIN\t\t10  \n#define PECI_PCS_DDR_DIMM_TEMP\t\t14  \n#define PECI_PCS_TEMP_TARGET\t\t16  \n#define PECI_PCS_TDP_UNITS\t\t30  \n\nstruct peci_device;\n\nint peci_temp_read(struct peci_device *device, s16 *temp_raw);\n\nint peci_pcs_read(struct peci_device *device, u8 index,\n\t\t  u16 param, u32 *data);\n\nint peci_pci_local_read(struct peci_device *device, u8 bus, u8 dev,\n\t\t\tu8 func, u16 reg, u32 *data);\n\nint peci_ep_pci_local_read(struct peci_device *device, u8 seg,\n\t\t\t   u8 bus, u8 dev, u8 func, u16 reg, u32 *data);\n\nint peci_mmio_read(struct peci_device *device, u8 bar, u8 seg,\n\t\t   u8 bus, u8 dev, u8 func, u64 address, u32 *data);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

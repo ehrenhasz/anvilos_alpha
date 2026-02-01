@@ -1,0 +1,9 @@
+{
+  "module_name": "timing.h",
+  "hash_id": "f34c451b9fb8e8c864f7393873ece2e7ea8c75d2438be3b84f07e2b25516d545",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/include/nvkm/subdev/bios/timing.h",
+  "human_readable_source": " \n#ifndef __NVBIOS_TIMING_H__\n#define __NVBIOS_TIMING_H__\n#include <subdev/bios/ramcfg.h>\n\nu32 nvbios_timingTe(struct nvkm_bios *,\n\t\t    u8 *ver, u8 *hdr, u8 *cnt, u8 *len, u8 *snr, u8 *ssz);\nu32 nvbios_timingEe(struct nvkm_bios *, int idx,\n\t\t    u8 *ver, u8 *hdr, u8 *cnt, u8 *len);\nu32 nvbios_timingEp(struct nvkm_bios *, int idx,\n\t\t    u8 *ver, u8 *hdr, u8 *cnt, u8 *len, struct nvbios_ramcfg *);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "instruction.json",
+  "hash_id": "33f371d7d2c8e5dcde4faa6d4a79098aeca3667fecafc4e24d0ff2f6413b9918",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/pmu-events/arch/arm64/arm/cortex-a57-a72/instruction.json",
+  "human_readable_source": "[\n    {\n        \"ArchStdEvent\": \"SW_INCR\"\n    },\n    {\n        \"ArchStdEvent\": \"INST_RETIRED\"\n    },\n    {\n        \"ArchStdEvent\": \"EXC_RETURN\"\n    },\n    {\n        \"ArchStdEvent\": \"CID_WRITE_RETIRED\"\n    },\n    {\n        \"ArchStdEvent\": \"INST_SPEC\"\n    },\n    {\n        \"ArchStdEvent\": \"TTBR_WRITE_RETIRED\"\n    },\n    {\n        \"ArchStdEvent\": \"LDREX_SPEC\"\n    },\n    {\n        \"ArchStdEvent\": \"STREX_PASS_SPEC\"\n    },\n    {\n        \"ArchStdEvent\": \"STREX_FAIL_SPEC\"\n    },\n    {\n        \"ArchStdEvent\": \"LD_SPEC\"\n    },\n    {\n        \"ArchStdEvent\": \"ST_SPEC\"\n    },\n    {\n        \"ArchStdEvent\": \"LDST_SPEC\"\n    },\n    {\n        \"ArchStdEvent\": \"DP_SPEC\"\n    },\n    {\n        \"ArchStdEvent\": \"ASE_SPEC\"\n    },\n    {\n        \"ArchStdEvent\": \"VFP_SPEC\"\n    },\n    {\n        \"ArchStdEvent\": \"PC_WRITE_SPEC\"\n    },\n    {\n        \"ArchStdEvent\": \"CRYPTO_SPEC\"\n    },\n    {\n        \"ArchStdEvent\": \"ISB_SPEC\"\n    },\n    {\n        \"ArchStdEvent\": \"DSB_SPEC\"\n    },\n    {\n        \"ArchStdEvent\": \"DMB_SPEC\"\n    },\n    {\n        \"ArchStdEvent\": \"RC_LD_SPEC\"\n    },\n    {\n        \"ArchStdEvent\": \"RC_ST_SPEC\"\n    }\n]\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

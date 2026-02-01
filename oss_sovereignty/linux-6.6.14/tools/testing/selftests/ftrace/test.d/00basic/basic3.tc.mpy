@@ -1,0 +1,9 @@
+{
+  "module_name": "basic3.tc",
+  "hash_id": "dc14321a736559a32d70f6c9c8b886c7bfa9a1730c919fb7c9088f8ddb91dc92",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/ftrace/test.d/00basic/basic3.tc",
+  "human_readable_source": "#!/bin/sh\n# SPDX-License-Identifier: GPL-2.0\n# description: Basic trace clock test\n# flags: instance\ntest -f trace_clock\nfor c in `cat trace_clock | tr  -d \\[\\]`; do\n  echo $c > trace_clock\n  grep '\\['$c'\\]' trace_clock\ndone\necho local > trace_clock\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "allocator.h",
+  "hash_id": "320689fe4bc95fed5309e4ba147fb1b1a65167cef9f135ed897cdfaa703c0dcd",
+  "original_prompt": "Ingested from coreutils-9.4/lib/allocator.h",
+  "human_readable_source": " \n\n#ifndef _GL_ALLOCATOR_H\n#define _GL_ALLOCATOR_H\n\n#include <stddef.h>\n\n \n\nstruct allocator\n{\n   \n  void *(*allocate) (size_t);\n\n   \n  void *(*reallocate) (void *, size_t);\n\n   \n  void (*free) (void *);\n\n   \n  void (*die) (size_t);\n};\n\n \nextern struct allocator const stdlib_allocator;\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

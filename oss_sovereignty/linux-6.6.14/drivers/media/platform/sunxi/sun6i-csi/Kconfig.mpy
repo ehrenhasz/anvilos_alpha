@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "b881cda1ae0e608c17a39674a7465c03993eca24b6b42a11d9224bea7c3bcee7",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/platform/sunxi/sun6i-csi/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig VIDEO_SUN6I_CSI\n\ttristate \"Allwinner A31 Camera Sensor Interface (CSI) Driver\"\n\tdepends on V4L_PLATFORM_DRIVERS && VIDEO_DEV\n\tdepends on ARCH_SUNXI || COMPILE_TEST\n\tdepends on PM && COMMON_CLK && RESET_CONTROLLER && HAS_DMA\n\tselect MEDIA_CONTROLLER\n\tselect VIDEO_V4L2_SUBDEV_API\n\tselect VIDEOBUF2_DMA_CONTIG\n\tselect V4L2_FWNODE\n\tselect REGMAP_MMIO\n\thelp\n\t   Support for the Allwinner A31 Camera Sensor Interface (CSI)\n\t   controller, also found on other platforms such as the A83T, H3,\n\t   V3/V3s or A64.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "i2c-ccgx-ucsi.c",
+  "hash_id": "9da0069afcce95571a6e6e616e09728cd31438f46bc6efbd68e38c93f289033a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/i2c/busses/i2c-ccgx-ucsi.c",
+  "human_readable_source": "\n \n\n#include <linux/i2c.h>\n#include <linux/export.h>\n#include <linux/module.h>\n#include <linux/string.h>\n\n#include \"i2c-ccgx-ucsi.h\"\n\nstruct software_node;\n\nstruct i2c_client *i2c_new_ccgx_ucsi(struct i2c_adapter *adapter, int irq,\n\t\t\t\t     const struct software_node *swnode)\n{\n\tstruct i2c_board_info info = {};\n\n\tstrscpy(info.type, \"ccgx-ucsi\", sizeof(info.type));\n\tinfo.addr = 0x08;\n\tinfo.irq = irq;\n\tinfo.swnode = swnode;\n\n\treturn i2c_new_client_device(adapter, &info);\n}\nEXPORT_SYMBOL_GPL(i2c_new_ccgx_ucsi);\n\nMODULE_LICENSE(\"GPL\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

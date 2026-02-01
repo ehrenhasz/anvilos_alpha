@@ -1,0 +1,9 @@
+{
+  "module_name": "bios_parser_helper.h",
+  "hash_id": "4c2d40587d3260086c84e0fcb276242b3c24ced09bc6af0d18a0d459c5d799d5",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/dc/bios/bios_parser_helper.h",
+  "human_readable_source": " \n\n#ifndef __DAL_BIOS_PARSER_HELPER_H__\n#define __DAL_BIOS_PARSER_HELPER_H__\n\nstruct bios_parser;\n\nuint8_t *bios_get_image(struct dc_bios *bp, uint32_t offset,\n\tuint32_t size);\n\nbool bios_is_accelerated_mode(struct dc_bios *bios);\nvoid bios_set_scratch_acc_mode_change(struct dc_bios *bios, uint32_t state);\nvoid bios_set_scratch_critical_state(struct dc_bios *bios, bool state);\nuint32_t bios_get_vga_enabled_displays(struct dc_bios *bios);\n\n#define GET_IMAGE(type, offset) ((type *) bios_get_image(&bp->base, offset, sizeof(type)))\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

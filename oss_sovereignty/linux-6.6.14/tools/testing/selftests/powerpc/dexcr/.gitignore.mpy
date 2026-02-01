@@ -1,0 +1,9 @@
+{
+  "module_name": ".gitignore",
+  "hash_id": "051f0a7a4cd2546eba8b4925563efa82dca1c71a5c5bb44a807624b4470a2d93",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/powerpc/dexcr/.gitignore",
+  "human_readable_source": "hashchk_test\nlsdexcr\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

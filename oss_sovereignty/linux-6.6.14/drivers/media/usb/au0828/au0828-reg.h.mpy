@@ -1,0 +1,9 @@
+{
+  "module_name": "au0828-reg.h",
+  "hash_id": "a5194e1dc0cc4117f4a5d7e94cc72618dafff1b1a876bbc776afbeef567f6be9",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/usb/au0828/au0828-reg.h",
+  "human_readable_source": " \n \n\n \n#define REG_000 0x000\n#define REG_001 0x001\n#define REG_002 0x002\n#define REG_003 0x003\n\n#define AU0828_SENSORCTRL_100 0x100\n#define AU0828_SENSORCTRL_VBI_103 0x103\n\n \n#define AU0828_I2C_TRIGGER_200\t\t0x200\n#define AU0828_I2C_STATUS_201\t\t0x201\n#define AU0828_I2C_CLK_DIVIDER_202\t0x202\n#define AU0828_I2C_DEST_ADDR_203\t0x203\n#define AU0828_I2C_WRITE_FIFO_205\t0x205\n#define AU0828_I2C_READ_FIFO_209\t0x209\n#define AU0828_I2C_MULTIBYTE_MODE_2FF\t0x2ff\n\n \n#define AU0828_AUDIOCTRL_50C 0x50C\n\n#define REG_600 0x600\n\n \n \n\n \n#define AU0828_I2C_TRIGGER_WRITE\t0x01\n#define AU0828_I2C_TRIGGER_READ\t\t0x20\n#define AU0828_I2C_TRIGGER_HOLD\t\t0x40\n\n \n#define AU0828_I2C_STATUS_READ_DONE\t0x01\n#define AU0828_I2C_STATUS_NO_READ_ACK\t0x02\n#define AU0828_I2C_STATUS_WRITE_DONE\t0x04\n#define AU0828_I2C_STATUS_NO_WRITE_ACK\t0x08\n#define AU0828_I2C_STATUS_BUSY\t\t0x10\n\n \n#define AU0828_I2C_CLK_250KHZ 0x07\n#define AU0828_I2C_CLK_100KHZ 0x14\n#define AU0828_I2C_CLK_30KHZ  0x40\n#define AU0828_I2C_CLK_20KHZ  0x60\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

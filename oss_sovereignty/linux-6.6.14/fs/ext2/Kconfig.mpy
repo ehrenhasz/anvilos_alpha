@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "0a00cfb21d46fd83eed8bf225bd6911f575cb0d797da122fc61d75f61e1b3f55",
+  "original_prompt": "Ingested from linux-6.6.14/fs/ext2/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig EXT2_FS\n\ttristate \"Second extended fs support\"\n\tselect BUFFER_HEAD\n\tselect FS_IOMAP\n\tselect LEGACY_DIRECT_IO\n\thelp\n\t  Ext2 is a standard Linux file system for hard disks.\n\n\t  To compile this file system support as a module, choose M here: the\n\t  module will be called ext2.\n\n\t  If unsure, say Y.\n\nconfig EXT2_FS_XATTR\n\tbool \"Ext2 extended attributes\"\n\tdepends on EXT2_FS\n\thelp\n\t  Extended attributes are name:value pairs associated with inodes by\n\t  the kernel or by users (see the attr(5) manual page for details).\n\n\t  If unsure, say N.\n\nconfig EXT2_FS_POSIX_ACL\n\tbool \"Ext2 POSIX Access Control Lists\"\n\tdepends on EXT2_FS_XATTR\n\tselect FS_POSIX_ACL\n\thelp\n\t  Posix Access Control Lists (ACLs) support permissions for users and\n\t  groups beyond the owner/group/world scheme.\n\n\t  If you don't know what Access Control Lists are, say N\n\nconfig EXT2_FS_SECURITY\n\tbool \"Ext2 Security Labels\"\n\tdepends on EXT2_FS_XATTR\n\thelp\n\t  Security labels support alternative access control models\n\t  implemented by security modules like SELinux.  This option\n\t  enables an extended attribute handler for file security\n\t  labels in the ext2 filesystem.\n\n\t  If you are not using a security module that requires using\n\t  extended attributes for file security labels, say N.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

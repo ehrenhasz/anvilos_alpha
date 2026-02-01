@@ -1,0 +1,9 @@
+{
+  "module_name": "syscall_user_dispatch.h",
+  "hash_id": "9cf3f4a3ae8b29610ba43d2919bc3edd22a080df3fda7d520b72a9994baa57f1",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/syscall_user_dispatch.h",
+  "human_readable_source": " \n \n#ifndef _SYSCALL_USER_DISPATCH_H\n#define _SYSCALL_USER_DISPATCH_H\n\n#include <linux/thread_info.h>\n\n#ifdef CONFIG_GENERIC_ENTRY\n\nstruct syscall_user_dispatch {\n\tchar __user\t*selector;\n\tunsigned long\toffset;\n\tunsigned long\tlen;\n\tbool\t\ton_dispatch;\n};\n\nint set_syscall_user_dispatch(unsigned long mode, unsigned long offset,\n\t\t\t      unsigned long len, char __user *selector);\n\n#define clear_syscall_work_syscall_user_dispatch(tsk) \\\n\tclear_task_syscall_work(tsk, SYSCALL_USER_DISPATCH)\n\nint syscall_user_dispatch_get_config(struct task_struct *task, unsigned long size,\n\t\t\t\t     void __user *data);\n\nint syscall_user_dispatch_set_config(struct task_struct *task, unsigned long size,\n\t\t\t\t     void __user *data);\n\n#else\nstruct syscall_user_dispatch {};\n\nstatic inline int set_syscall_user_dispatch(unsigned long mode, unsigned long offset,\n\t\t\t\t\t    unsigned long len, char __user *selector)\n{\n\treturn -EINVAL;\n}\n\nstatic inline void clear_syscall_work_syscall_user_dispatch(struct task_struct *tsk)\n{\n}\n\nstatic inline int syscall_user_dispatch_get_config(struct task_struct *task,\n\t\t\t\t\t\t   unsigned long size, void __user *data)\n{\n\treturn -EINVAL;\n}\n\nstatic inline int syscall_user_dispatch_set_config(struct task_struct *task,\n\t\t\t\t\t\t   unsigned long size, void __user *data)\n{\n\treturn -EINVAL;\n}\n\n#endif  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "e39e5a456ec5c848f564f74ede28c7a3ad285329915a023486569be7f5de6b2b",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/broadcom/brcm80211/brcmsmac/Makefile",
+  "human_readable_source": "#\n# Makefile fragment for Broadcom 802.11n Networking Device Driver\n#\n# Copyright (c) 2010 Broadcom Corporation\n#\n# Permission to use, copy, modify, and/or distribute this software for any\n# purpose with or without fee is hereby granted, provided that the above\n# copyright notice and this permission notice appear in all copies.\n#\n# THE SOFTWARE IS PROVIDED \"AS IS\" AND THE AUTHOR DISCLAIMS ALL WARRANTIES\n# WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF\n# MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY\n# SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES\n# WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION\n# OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN\n# CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.\n\nccflags-y := \\\n\t-I $(srctree)/$(src) \\\n\t-I $(srctree)/$(src)/phy \\\n\t-I $(srctree)/$(src)/../include\n\nbrcmsmac-y := \\\n\tmac80211_if.o \\\n\tucode_loader.o \\\n\tampdu.o \\\n\tantsel.o \\\n\tchannel.o \\\n\tmain.o \\\n\tphy_shim.o \\\n\tpmu.o \\\n\trate.o \\\n\tstf.o \\\n\taiutils.o \\\n\tphy/phy_cmn.o \\\n\tphy/phy_lcn.o \\\n\tphy/phy_n.o \\\n\tphy/phytbl_lcn.o \\\n\tphy/phytbl_n.o \\\n\tphy/phy_qmath.o \\\n\tdma.o \\\n\tbrcms_trace_events.o \\\n\tdebug.o\n\nbrcmsmac-$(CONFIG_BRCMSMAC_LEDS) += led.o\n\nobj-$(CONFIG_BRCMSMAC)\t+= brcmsmac.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

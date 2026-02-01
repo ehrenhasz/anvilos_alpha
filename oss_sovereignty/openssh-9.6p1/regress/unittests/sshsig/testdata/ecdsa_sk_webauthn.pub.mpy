@@ -1,0 +1,9 @@
+{
+  "module_name": "ecdsa_sk_webauthn.pub",
+  "hash_id": "bc0e3c44835b690ae4cdbb0800ebc01dc9544cf6b1092a90e3f980aff1405141",
+  "original_prompt": "Ingested from openssh-9.6p1/regress/unittests/sshsig/testdata/ecdsa_sk_webauthn.pub",
+  "human_readable_source": "sk-ecdsa-sha2-nistp256@openssh.com AAAAInNrLWVjZHNhLXNoYTItbmlzdHAyNTZAb3BlbnNzaC5jb20AAAAIbmlzdHAyNTYAAABBBBRGwDjs4HhJFcn4tJ5Gr72KcmRmCS1OirETxaXvnsNApgoOLF1a/7rxldfSMHm73eT1nhHe97W8qicPPEAKDJQAAAALbWluZHJvdC5vcmc=\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

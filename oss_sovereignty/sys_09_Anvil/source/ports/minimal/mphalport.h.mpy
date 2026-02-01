@@ -1,0 +1,9 @@
+{
+  "module_name": "mphalport.h",
+  "hash_id": "4da7f0d2eeeb511dff9a3d4f934578e551ea18f43953c7aec82d23a945029f39",
+  "original_prompt": "Ingested from sys_09_Anvil/source/ports/minimal/mphalport.h",
+  "human_readable_source": "static inline mp_uint_t mp_hal_ticks_ms(void) {\n    return 0;\n}\nstatic inline void mp_hal_set_interrupt_char(char c) {\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

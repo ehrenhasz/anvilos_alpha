@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "91988d605a245c793d33a7574b50a178fc1d88aeafa5630dac3b650402838eca",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/platform/mediatek/jpeg/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-$(CONFIG_VIDEO_MEDIATEK_JPEG) += mtk_jpeg.o \\\n\tmtk-jpeg-enc-hw.o \\\n\tmtk-jpeg-dec-hw.o\n\nmtk_jpeg-y := mtk_jpeg_core.o \\\n\t\t mtk_jpeg_dec_parse.o\n\nmtk-jpeg-enc-hw-y := mtk_jpeg_enc_hw.o\nmtk-jpeg-dec-hw-y := mtk_jpeg_dec_hw.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

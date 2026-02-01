@@ -1,0 +1,9 @@
+{
+  "module_name": "sparx5_police.c",
+  "hash_id": "016d4e800db2a6beb4ee0c4c193e59dc32b90e62f238e03a297e608d7e84f7f0",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/microchip/sparx5/sparx5_police.c",
+  "human_readable_source": "\n \n\n#include \"sparx5_main_regs.h\"\n#include \"sparx5_main.h\"\n\nstatic int sparx5_policer_service_conf_set(struct sparx5 *sparx5,\n\t\t\t\t\t   struct sparx5_policer *pol)\n{\n\tu32 idx, pup_tokens, max_pup_tokens, burst, thres;\n\tstruct sparx5_sdlb_group *g;\n\tu64 rate;\n\n\tg = &sdlb_groups[pol->group];\n\tidx = pol->idx;\n\n\trate = pol->rate * 1000;\n\tburst = pol->burst;\n\n\tpup_tokens = sparx5_sdlb_pup_token_get(sparx5, g->pup_interval, rate);\n\tmax_pup_tokens =\n\t\tsparx5_sdlb_pup_token_get(sparx5, g->pup_interval, g->max_rate);\n\n\tthres = DIV_ROUND_UP(burst, g->min_burst);\n\n\tspx5_wr(ANA_AC_SDLB_PUP_TOKENS_PUP_TOKENS_SET(pup_tokens), sparx5,\n\t\tANA_AC_SDLB_PUP_TOKENS(idx, 0));\n\n\tspx5_rmw(ANA_AC_SDLB_INH_CTRL_PUP_TOKENS_MAX_SET(max_pup_tokens),\n\t\t ANA_AC_SDLB_INH_CTRL_PUP_TOKENS_MAX, sparx5,\n\t\t ANA_AC_SDLB_INH_CTRL(idx, 0));\n\n\tspx5_rmw(ANA_AC_SDLB_THRES_THRES_SET(thres), ANA_AC_SDLB_THRES_THRES,\n\t\t sparx5, ANA_AC_SDLB_THRES(idx, 0));\n\n\treturn 0;\n}\n\nint sparx5_policer_conf_set(struct sparx5 *sparx5, struct sparx5_policer *pol)\n{\n\t \n\tswitch (pol->type) {\n\tcase SPX5_POL_SERVICE:\n\t\treturn sparx5_policer_service_conf_set(sparx5, pol);\n\tdefault:\n\t\tbreak;\n\t}\n\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

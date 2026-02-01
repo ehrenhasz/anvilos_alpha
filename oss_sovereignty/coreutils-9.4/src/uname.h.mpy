@@ -1,0 +1,9 @@
+{
+  "module_name": "uname.h",
+  "hash_id": "836a84c5fd11275c19c585aca2f2f6806b8038573b7ce387a6b0e62d03324377",
+  "original_prompt": "Ingested from coreutils-9.4/src/uname.h",
+  "human_readable_source": " \n#define UNAME_UNAME 1\n\n \n#define UNAME_ARCH 2\n\nextern int uname_mode;\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

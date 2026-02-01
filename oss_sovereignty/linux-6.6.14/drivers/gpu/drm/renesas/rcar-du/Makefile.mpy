@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "c015d0a0bf7814af45fe6e907549ae9f763b5bedc695690401cd8cb7f59e4857",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/renesas/rcar-du/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nrcar-du-drm-y := rcar_du_crtc.o \\\n\t\t rcar_du_drv.o \\\n\t\t rcar_du_encoder.o \\\n\t\t rcar_du_group.o \\\n\t\t rcar_du_kms.o \\\n\t\t rcar_du_plane.o \\\n\nrcar-du-drm-$(CONFIG_DRM_RCAR_VSP)\t+= rcar_du_vsp.o\nrcar-du-drm-$(CONFIG_DRM_RCAR_WRITEBACK) += rcar_du_writeback.o\n\nobj-$(CONFIG_DRM_RCAR_CMM)\t\t+= rcar_cmm.o\nobj-$(CONFIG_DRM_RCAR_DU)\t\t+= rcar-du-drm.o\nobj-$(CONFIG_DRM_RCAR_DW_HDMI)\t\t+= rcar_dw_hdmi.o\nobj-$(CONFIG_DRM_RCAR_LVDS)\t\t+= rcar_lvds.o\nobj-$(CONFIG_DRM_RCAR_MIPI_DSI)\t\t+= rcar_mipi_dsi.o\n\nobj-$(CONFIG_DRM_RZG2L_MIPI_DSI)\t+= rzg2l_mipi_dsi.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

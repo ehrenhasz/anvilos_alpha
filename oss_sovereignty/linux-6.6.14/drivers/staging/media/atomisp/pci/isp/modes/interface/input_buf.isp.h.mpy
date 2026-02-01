@@ -1,0 +1,9 @@
+{
+  "module_name": "input_buf.isp.h",
+  "hash_id": "7a87ed7c57c58e4792324cd640cf1923322334b0ac949af9500fcf02cfe8a829",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/isp/modes/interface/input_buf.isp.h",
+  "human_readable_source": " \n \n\n#ifndef _INPUT_BUF_ISP_H_\n#define _INPUT_BUF_ISP_H_\n\n \n#include \"sh_css_defs.h\"\n#include \"isp_const.h\"  \n\n#define INPUT_BUF_HEIGHT\t2  \n#define INPUT_BUF_LINES\t\t2\n\n#ifndef ENABLE_CONTINUOUS\n#define ENABLE_CONTINUOUS 0\n#endif\n\n \n#define EXTRA_INPUT_VECTORS\t2  \n#define MAX_VECTORS_PER_INPUT_LINE_CONT (CEIL_DIV(SH_CSS_MAX_SENSOR_WIDTH, ISP_NWAY) + EXTRA_INPUT_VECTORS)\n\n \n#define INPUT_BUF_ADDR 0x0\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

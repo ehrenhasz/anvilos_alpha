@@ -1,0 +1,9 @@
+{
+  "module_name": "nv44.c",
+  "hash_id": "b4a48c6f722bcc51521afa77f83865472d05f9842e82c0630b569a81556aa983",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/subdev/fb/nv44.c",
+  "human_readable_source": " \n#include \"priv.h\"\n#include \"ram.h\"\n\nstatic void\nnv44_fb_tile_init(struct nvkm_fb *fb, int i, u32 addr, u32 size, u32 pitch,\n\t\t  u32 flags, struct nvkm_fb_tile *tile)\n{\n\ttile->addr  = 0x00000001;  \n\ttile->addr |= addr;\n\ttile->limit = max(1u, addr + size) - 1;\n\ttile->pitch = pitch;\n}\n\nvoid\nnv44_fb_tile_prog(struct nvkm_fb *fb, int i, struct nvkm_fb_tile *tile)\n{\n\tstruct nvkm_device *device = fb->subdev.device;\n\tnvkm_wr32(device, 0x100604 + (i * 0x10), tile->limit);\n\tnvkm_wr32(device, 0x100608 + (i * 0x10), tile->pitch);\n\tnvkm_wr32(device, 0x100600 + (i * 0x10), tile->addr);\n\tnvkm_rd32(device, 0x100600 + (i * 0x10));\n}\n\nvoid\nnv44_fb_init(struct nvkm_fb *fb)\n{\n\tstruct nvkm_device *device = fb->subdev.device;\n\tnvkm_wr32(device, 0x100850, 0x80000000);\n\tnvkm_wr32(device, 0x100800, 0x00000001);\n}\n\nstatic const struct nvkm_fb_func\nnv44_fb = {\n\t.init = nv44_fb_init,\n\t.tile.regions = 12,\n\t.tile.init = nv44_fb_tile_init,\n\t.tile.fini = nv20_fb_tile_fini,\n\t.tile.prog = nv44_fb_tile_prog,\n\t.ram_new = nv44_ram_new,\n};\n\nint\nnv44_fb_new(struct nvkm_device *device, enum nvkm_subdev_type type, int inst, struct nvkm_fb **pfb)\n{\n\treturn nvkm_fb_new_(&nv44_fb, device, type, inst, pfb);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

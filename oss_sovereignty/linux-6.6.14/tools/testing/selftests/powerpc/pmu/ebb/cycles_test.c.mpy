@@ -1,0 +1,9 @@
+{
+  "module_name": "cycles_test.c",
+  "hash_id": "2c0d9ad8bf8f0c1f4cb66f5ae4f17a4d3ea4089bb832778ab4b6e05e28de642f",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/powerpc/pmu/ebb/cycles_test.c",
+  "human_readable_source": "\n \n\n#include <stdio.h>\n#include <stdlib.h>\n\n#include \"ebb.h\"\n\n\n \nint cycles(void)\n{\n\tstruct event event;\n\n\tSKIP_IF(!ebb_is_supported());\n\n\tevent_init_named(&event, 0x1001e, \"cycles\");\n\tevent_leader_ebb_init(&event);\n\n\tevent.attr.exclude_kernel = 1;\n\tevent.attr.exclude_hv = 1;\n\tevent.attr.exclude_idle = 1;\n\n\tFAIL_IF(event_open(&event));\n\n\tebb_enable_pmc_counting(1);\n\tsetup_ebb_handler(standard_ebb_callee);\n\tebb_global_enable();\n\tFAIL_IF(ebb_event_enable(&event));\n\n\tmtspr(SPRN_PMC1, pmc_sample_period(sample_period));\n\n\twhile (ebb_state.stats.ebb_count < 10) {\n\t\tFAIL_IF(core_busy_loop());\n\t\tFAIL_IF(ebb_check_mmcr0());\n\t}\n\n\tebb_global_disable();\n\tebb_freeze_pmcs();\n\n\tdump_ebb_state();\n\n\tevent_close(&event);\n\n\tFAIL_IF(ebb_state.stats.ebb_count == 0);\n\tFAIL_IF(!ebb_check_count(1, sample_period, 100));\n\n\treturn 0;\n}\n\nint main(void)\n{\n\treturn test_harness(cycles, \"cycles\");\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

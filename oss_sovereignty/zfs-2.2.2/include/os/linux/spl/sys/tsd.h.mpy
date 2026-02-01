@@ -1,0 +1,9 @@
+{
+  "module_name": "tsd.h",
+  "hash_id": "28f198873e8ce35174c747f7c44e9b0bdddbbd157ab0a6a46525f472d0101c76",
+  "original_prompt": "Ingested from zfs-2.2.2/include/os/linux/spl/sys/tsd.h",
+  "human_readable_source": " \n\n#ifndef _SPL_TSD_H\n#define\t_SPL_TSD_H\n\n#include <sys/types.h>\n\n#define\tTSD_HASH_TABLE_BITS_DEFAULT\t9\n#define\tTSD_KEYS_MAX\t\t\t32768\n#define\tDTOR_PID\t\t\t(PID_MAX_LIMIT+1)\n#define\tPID_KEY\t\t\t\t(TSD_KEYS_MAX+1)\n\ntypedef void (*dtor_func_t)(void *);\n\nextern int tsd_set(uint_t, void *);\nextern void *tsd_get(uint_t);\nextern void *tsd_get_by_thread(uint_t, kthread_t *);\nextern void tsd_create(uint_t *, dtor_func_t);\nextern void tsd_destroy(uint_t *);\nextern void tsd_exit(void);\n\nint spl_tsd_init(void);\nvoid spl_tsd_fini(void);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

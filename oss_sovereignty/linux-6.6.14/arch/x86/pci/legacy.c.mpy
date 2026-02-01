@@ -1,0 +1,9 @@
+{
+  "module_name": "legacy.c",
+  "hash_id": "5773925ae6543bb289c4e7b2784fbf086be30978e7ea7d523328843cd98acc87",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/pci/legacy.c",
+  "human_readable_source": "\n \n#include <linux/init.h>\n#include <linux/export.h>\n#include <linux/pci.h>\n#include <asm/jailhouse_para.h>\n#include <asm/pci_x86.h>\n\n \nstatic void pcibios_fixup_peer_bridges(void)\n{\n\tint n;\n\n\tif (pcibios_last_bus <= 0 || pcibios_last_bus > 0xff)\n\t\treturn;\n\tDBG(\"PCI: Peer bridge fixup\\n\");\n\n\tfor (n=0; n <= pcibios_last_bus; n++)\n\t\tpcibios_scan_specific_bus(n);\n}\n\nint __init pci_legacy_init(void)\n{\n\tif (!raw_pci_ops)\n\t\treturn 1;\n\n\tpr_info(\"PCI: Probing PCI hardware\\n\");\n\tpcibios_scan_root(0);\n\treturn 0;\n}\n\nvoid pcibios_scan_specific_bus(int busn)\n{\n\tint stride = jailhouse_paravirt() ? 1 : 8;\n\tint devfn;\n\tu32 l;\n\n\tif (pci_find_bus(0, busn))\n\t\treturn;\n\n\tfor (devfn = 0; devfn < 256; devfn += stride) {\n\t\tif (!raw_pci_read(0, busn, devfn, PCI_VENDOR_ID, 2, &l) &&\n\t\t    l != 0x0000 && l != 0xffff) {\n\t\t\tDBG(\"Found device at %02x:%02x [%04x]\\n\", busn, devfn, l);\n\t\t\tpr_info(\"PCI: Discovered peer bus %02x\\n\", busn);\n\t\t\tpcibios_scan_root(busn);\n\t\t\treturn;\n\t\t}\n\t}\n}\nEXPORT_SYMBOL_GPL(pcibios_scan_specific_bus);\n\nstatic int __init pci_subsys_init(void)\n{\n\t \n\tif (x86_init.pci.init()) {\n\t\tif (pci_legacy_init()) {\n\t\t\tpr_info(\"PCI: System does not support PCI\\n\");\n\t\t\treturn -ENODEV;\n\t\t}\n\t}\n\n\tpcibios_fixup_peer_bridges();\n\tx86_init.pci.init_irq();\n\tpcibios_init();\n\n\treturn 0;\n}\nsubsys_initcall(pci_subsys_init);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

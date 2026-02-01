@@ -1,0 +1,9 @@
+{
+  "module_name": "fakekey.c",
+  "hash_id": "81601747d35de0deb0fe5ad22ddf56d4c9a9e4dd46e27b67607be4a5dd43b8fb",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/accessibility/speakup/fakekey.c",
+  "human_readable_source": "\n \n#include <linux/types.h>\n#include <linux/slab.h>\n#include <linux/preempt.h>\n#include <linux/percpu.h>\n#include <linux/input.h>\n\n#include \"speakup.h\"\n\n#define PRESSED 1\n#define RELEASED 0\n\nstatic DEFINE_PER_CPU(int, reporting_keystroke);\n\nstatic struct input_dev *virt_keyboard;\n\nint speakup_add_virtual_keyboard(void)\n{\n\tint err;\n\n\tvirt_keyboard = input_allocate_device();\n\n\tif (!virt_keyboard)\n\t\treturn -ENOMEM;\n\n\tvirt_keyboard->name = \"Speakup\";\n\tvirt_keyboard->id.bustype = BUS_VIRTUAL;\n\tvirt_keyboard->phys = \"speakup/input0\";\n\tvirt_keyboard->dev.parent = NULL;\n\n\t__set_bit(EV_KEY, virt_keyboard->evbit);\n\t__set_bit(KEY_DOWN, virt_keyboard->keybit);\n\n\terr = input_register_device(virt_keyboard);\n\tif (err) {\n\t\tinput_free_device(virt_keyboard);\n\t\tvirt_keyboard = NULL;\n\t}\n\n\treturn err;\n}\n\nvoid speakup_remove_virtual_keyboard(void)\n{\n\tif (virt_keyboard) {\n\t\tinput_unregister_device(virt_keyboard);\n\t\tvirt_keyboard = NULL;\n\t}\n}\n\n \nvoid speakup_fake_down_arrow(void)\n{\n\tunsigned long flags;\n\n\t \n\tlocal_irq_save(flags);\n\t \n\tpreempt_disable();\n\n\t__this_cpu_write(reporting_keystroke, true);\n\tinput_report_key(virt_keyboard, KEY_DOWN, PRESSED);\n\tinput_report_key(virt_keyboard, KEY_DOWN, RELEASED);\n\tinput_sync(virt_keyboard);\n\t__this_cpu_write(reporting_keystroke, false);\n\n\t \n\tpreempt_enable();\n\t \n\tlocal_irq_restore(flags);\n}\n\n \nbool speakup_fake_key_pressed(void)\n{\n\treturn this_cpu_read(reporting_keystroke);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

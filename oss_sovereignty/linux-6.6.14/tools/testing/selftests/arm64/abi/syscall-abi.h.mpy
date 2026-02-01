@@ -1,0 +1,9 @@
+{
+  "module_name": "syscall-abi.h",
+  "hash_id": "a2a07eaf22e1820245fff9a709b37d747476db1a40fee2e5e92f4fb4f666e40b",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/arm64/abi/syscall-abi.h",
+  "human_readable_source": " \n \n\n#ifndef SYSCALL_ABI_H\n#define SYSCALL_ABI_H\n\n#define SVCR_ZA_MASK\t\t2\n#define SVCR_SM_MASK\t\t1\n\n#define SVCR_ZA_SHIFT\t\t1\n#define SVCR_SM_SHIFT\t\t0\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

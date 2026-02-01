@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "c2d3136005ee3dcc253ea4a49b6a71f4cc20a7487c65aac8b52c3976fb82d656",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/message/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Makefile for MPT based block devices\n#\n\nobj-$(CONFIG_FUSION)\t+= fusion/\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

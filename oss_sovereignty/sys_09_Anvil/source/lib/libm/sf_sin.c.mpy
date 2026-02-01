@@ -1,0 +1,9 @@
+{
+  "module_name": "sf_sin.c",
+  "hash_id": "957c3fd422e406b0001d8d52a0d31d32c79bbb0e34b58548a13a8aaf57af5efb",
+  "original_prompt": "Ingested from sys_09_Anvil/source/lib/libm/sf_sin.c",
+  "human_readable_source": " \n\n \n\n \n\n#include \"fdlibm.h\"\n\n#ifdef __STDC__\n\tfloat sinf(float x)\n#else\n\tfloat sinf(x)\n\tfloat x;\n#endif\n{\n\tfloat y[2],z=0.0;\n\t__int32_t n,ix;\n\n\tGET_FLOAT_WORD(ix,x);\n\n     \n\tix &= 0x7fffffff;\n\tif(ix <= 0x3f490fd8) return __kernel_sinf(x,z,0);\n\n     \n\telse if (!FLT_UWORD_IS_FINITE(ix)) return x-x;\n\n     \n\telse {\n\t    n = __ieee754_rem_pio2f(x,y);\n\t    switch(n&3) {\n\t\tcase 0: return  __kernel_sinf(y[0],y[1],1);\n\t\tcase 1: return  __kernel_cosf(y[0],y[1]);\n\t\tcase 2: return -__kernel_sinf(y[0],y[1],1);\n\t\tdefault:\n\t\t\treturn -__kernel_cosf(y[0],y[1]);\n\t    }\n\t}\n}\n\n#ifdef _DOUBLE_IS_32BITS\n\n#ifdef __STDC__\n\tdouble sin(double x)\n#else\n\tdouble sin(x)\n\tdouble x;\n#endif\n{\n\treturn (double) sinf((float) x);\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

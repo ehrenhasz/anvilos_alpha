@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "1ec2462b14c06522c7a39258511ecb8ba74a20efd86595578436e57371af95d0",
+  "original_prompt": "Ingested from linux-6.6.14/samples/livepatch/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-$(CONFIG_SAMPLE_LIVEPATCH) += livepatch-sample.o\nobj-$(CONFIG_SAMPLE_LIVEPATCH) += livepatch-shadow-mod.o\nobj-$(CONFIG_SAMPLE_LIVEPATCH) += livepatch-shadow-fix1.o\nobj-$(CONFIG_SAMPLE_LIVEPATCH) += livepatch-shadow-fix2.o\nobj-$(CONFIG_SAMPLE_LIVEPATCH) += livepatch-callbacks-demo.o\nobj-$(CONFIG_SAMPLE_LIVEPATCH) += livepatch-callbacks-mod.o\nobj-$(CONFIG_SAMPLE_LIVEPATCH) += livepatch-callbacks-busymod.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

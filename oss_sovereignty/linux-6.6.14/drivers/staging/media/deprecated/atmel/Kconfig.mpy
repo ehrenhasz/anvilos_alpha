@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "3d309e5565c7975b5355c08fb55be77abc424d93f04d4b9e53ffed914615a568",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/deprecated/atmel/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n\ncomment \"Atmel media platform drivers\"\n\nconfig VIDEO_ATMEL_ISC\n\ttristate \"ATMEL Image Sensor Controller (ISC) support (DEPRECATED)\"\n\tdepends on V4L_PLATFORM_DRIVERS\n\tdepends on VIDEO_DEV && COMMON_CLK\n\tdepends on ARCH_AT91 || COMPILE_TEST\n\tdepends on !VIDEO_MICROCHIP_ISC_BASE || COMPILE_TEST\n\tselect MEDIA_CONTROLLER\n\tselect VIDEO_V4L2_SUBDEV_API\n\tselect VIDEOBUF2_DMA_CONTIG\n\tselect REGMAP_MMIO\n\tselect V4L2_FWNODE\n\tselect VIDEO_ATMEL_ISC_BASE\n\thelp\n\t   This module makes the ATMEL Image Sensor Controller available\n\t   as a v4l2 device.\n\n\t   This driver is deprecated and is scheduled for removal by\n\t   the beginning of 2026. See the TODO file for more information.\n\nconfig VIDEO_ATMEL_XISC\n\ttristate \"ATMEL eXtended Image Sensor Controller (XISC) support (DEPRECATED)\"\n\tdepends on V4L_PLATFORM_DRIVERS\n\tdepends on VIDEO_DEV && COMMON_CLK\n\tdepends on ARCH_AT91 || COMPILE_TEST\n\tdepends on !VIDEO_MICROCHIP_ISC_BASE || COMPILE_TEST\n\tselect VIDEOBUF2_DMA_CONTIG\n\tselect REGMAP_MMIO\n\tselect V4L2_FWNODE\n\tselect VIDEO_ATMEL_ISC_BASE\n\tselect MEDIA_CONTROLLER\n\tselect VIDEO_V4L2_SUBDEV_API\n\thelp\n\t   This module makes the ATMEL eXtended Image Sensor Controller\n\t   available as a v4l2 device.\n\n\t   This driver is deprecated and is scheduled for removal by\n\t   the beginning of 2026. See the TODO file for more information.\n\nconfig VIDEO_ATMEL_ISC_BASE\n\ttristate\n\tdefault n\n\thelp\n\t  ATMEL ISC and XISC common code base.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

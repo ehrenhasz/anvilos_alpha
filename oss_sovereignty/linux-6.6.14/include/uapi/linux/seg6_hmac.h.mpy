@@ -1,0 +1,9 @@
+{
+  "module_name": "seg6_hmac.h",
+  "hash_id": "da90eee9095000c3c3c6cbbfa922dbd91d26b30f0606edf8b04beb06288ddad6",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/seg6_hmac.h",
+  "human_readable_source": " \n#ifndef _UAPI_LINUX_SEG6_HMAC_H\n#define _UAPI_LINUX_SEG6_HMAC_H\n\n#include <linux/types.h>\n#include <linux/seg6.h>\n\n#define SEG6_HMAC_SECRET_LEN\t64\n#define SEG6_HMAC_FIELD_LEN\t32\n\nstruct sr6_tlv_hmac {\n\tstruct sr6_tlv tlvhdr;\n\t__u16 reserved;\n\t__be32 hmackeyid;\n\t__u8 hmac[SEG6_HMAC_FIELD_LEN];\n};\n\nenum {\n\tSEG6_HMAC_ALGO_SHA1 = 1,\n\tSEG6_HMAC_ALGO_SHA256 = 2,\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "tcp_rwnd_kern.c",
+  "hash_id": "d1d08cad3ee4d4dcd727aee6585fd69ab8696ce0796acb4b30027fb154f554ae",
+  "original_prompt": "Ingested from linux-6.6.14/samples/bpf/tcp_rwnd_kern.c",
+  "human_readable_source": " \n\n#include <uapi/linux/bpf.h>\n#include <uapi/linux/if_ether.h>\n#include <uapi/linux/if_packet.h>\n#include <uapi/linux/ip.h>\n#include <linux/socket.h>\n#include <bpf/bpf_helpers.h>\n#include <bpf/bpf_endian.h>\n\n#define DEBUG 1\n\nSEC(\"sockops\")\nint bpf_rwnd(struct bpf_sock_ops *skops)\n{\n\tint rv = -1;\n\tint op;\n\n\t \n\tif (bpf_ntohl(skops->remote_port) !=\n\t    55601 && skops->local_port != 55601) {\n\t\tskops->reply = -1;\n\t\treturn 1;\n\t}\n\n\top = (int) skops->op;\n\n#ifdef DEBUG\n\tbpf_printk(\"BPF command: %d\\n\", op);\n#endif\n\n\t \n\tif (op == BPF_SOCK_OPS_RWND_INIT &&\n\t\tskops->family == AF_INET6) {\n\n\t\t \n\t\tif (skops->local_ip6[0] != skops->remote_ip6[0] ||\n\t\t    (bpf_ntohl(skops->local_ip6[1]) & 0xfffff000) !=\n\t\t    (bpf_ntohl(skops->remote_ip6[1]) & 0xfffff000))\n\t\t\trv = 40;\n\t}\n#ifdef DEBUG\n\tbpf_printk(\"Returning %d\\n\", rv);\n#endif\n\tskops->reply = rv;\n\treturn 1;\n}\nchar _license[] SEC(\"license\") = \"GPL\";\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

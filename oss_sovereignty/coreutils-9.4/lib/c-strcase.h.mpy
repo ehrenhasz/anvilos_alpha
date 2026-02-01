@@ -1,0 +1,9 @@
+{
+  "module_name": "c-strcase.h",
+  "hash_id": "99b67391a1d799959fc55af64d3139f9929e0740883ac0011530fe5773ad57c9",
+  "original_prompt": "Ingested from coreutils-9.4/lib/c-strcase.h",
+  "human_readable_source": " \n#if !_GL_CONFIG_H_INCLUDED\n #error \"Please include config.h first.\"\n#endif\n\n#include <stddef.h>\n\n\n \n\n\n#ifdef __cplusplus\nextern \"C\" {\n#endif\n\n\n \nextern int c_strcasecmp (const char *s1, const char *s2) _GL_ATTRIBUTE_PURE;\n\n \nextern int c_strncasecmp (const char *s1, const char *s2, size_t n)\n  _GL_ATTRIBUTE_PURE;\n\n\n#ifdef __cplusplus\n}\n#endif\n\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "init.c",
+  "hash_id": "f237931857dbd239ed7a26359fe5ac3fe16701a9fe007656a581c6102dd82fc2",
+  "original_prompt": "Ingested from linux-6.6.14/fs/autofs/init.c",
+  "human_readable_source": "\n \n\n#include <linux/module.h>\n#include <linux/init.h>\n#include \"autofs_i.h\"\n\nstatic struct dentry *autofs_mount(struct file_system_type *fs_type,\n\tint flags, const char *dev_name, void *data)\n{\n\treturn mount_nodev(fs_type, flags, data, autofs_fill_super);\n}\n\nstruct file_system_type autofs_fs_type = {\n\t.owner\t\t= THIS_MODULE,\n\t.name\t\t= \"autofs\",\n\t.mount\t\t= autofs_mount,\n\t.kill_sb\t= autofs_kill_sb,\n};\nMODULE_ALIAS_FS(\"autofs\");\nMODULE_ALIAS(\"autofs\");\n\nstatic int __init init_autofs_fs(void)\n{\n\tint err;\n\n\tautofs_dev_ioctl_init();\n\n\terr = register_filesystem(&autofs_fs_type);\n\tif (err)\n\t\tautofs_dev_ioctl_exit();\n\n\treturn err;\n}\n\nstatic void __exit exit_autofs_fs(void)\n{\n\tautofs_dev_ioctl_exit();\n\tunregister_filesystem(&autofs_fs_type);\n}\n\nmodule_init(init_autofs_fs)\nmodule_exit(exit_autofs_fs)\nMODULE_LICENSE(\"GPL\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

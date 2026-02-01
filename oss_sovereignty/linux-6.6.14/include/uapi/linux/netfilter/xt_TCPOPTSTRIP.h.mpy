@@ -1,0 +1,9 @@
+{
+  "module_name": "xt_TCPOPTSTRIP.h",
+  "hash_id": "0ef63db0937d4fc1c8ecb20eda685e27083992c60e2ea9cf5d9a24d68a85411e",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/netfilter/xt_TCPOPTSTRIP.h",
+  "human_readable_source": " \n#ifndef _XT_TCPOPTSTRIP_H\n#define _XT_TCPOPTSTRIP_H\n\n#include <linux/types.h>\n\n#define tcpoptstrip_set_bit(bmap, idx) \\\n\t(bmap[(idx) >> 5] |= 1U << (idx & 31))\n#define tcpoptstrip_test_bit(bmap, idx) \\\n\t(((1U << (idx & 31)) & bmap[(idx) >> 5]) != 0)\n\nstruct xt_tcpoptstrip_target_info {\n\t__u32 strip_bmap[8];\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

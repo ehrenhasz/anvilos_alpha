@@ -1,0 +1,9 @@
+{
+  "module_name": "print_support.h",
+  "hash_id": "515d9a4cdec7e06c9c06141c9629a33d656e08d6a114964ffb24fec80821daeb",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/hive_isp_css_include/print_support.h",
+  "human_readable_source": " \n \n\n#ifndef __PRINT_SUPPORT_H_INCLUDED__\n#define __PRINT_SUPPORT_H_INCLUDED__\n\n#include <linux/stdarg.h>\n\nextern int (*sh_css_printf)(const char *fmt, va_list args);\n \nstatic inline  __printf(1, 2) void ia_css_print(const char *fmt, ...)\n{\n\tva_list ap;\n\n\tif (sh_css_printf) {\n\t\tva_start(ap, fmt);\n\t\tsh_css_printf(fmt, ap);\n\t\tva_end(ap);\n\t}\n}\n\n \n \n#define PWARN(format, ...) ia_css_print(\"warning: \", ##__VA_ARGS__)\n#define PRINT(format, ...) ia_css_print(format, ##__VA_ARGS__)\n#define PERROR(format, ...) ia_css_print(\"error: \" format, ##__VA_ARGS__)\n#define PDEBUG(format, ...) ia_css_print(\"debug: \" format, ##__VA_ARGS__)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

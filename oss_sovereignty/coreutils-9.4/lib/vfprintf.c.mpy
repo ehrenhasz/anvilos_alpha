@@ -1,0 +1,9 @@
+{
+  "module_name": "vfprintf.c",
+  "hash_id": "ad4ba0428797f8f4516c706d4c6fd0ff3f01ad27f39c95cce23e4bca633436fd",
+  "original_prompt": "Ingested from coreutils-9.4/lib/vfprintf.c",
+  "human_readable_source": " \n#include <stdio.h>\n\n#include <errno.h>\n#include <limits.h>\n#include <stdarg.h>\n#include <stdlib.h>\n\n#include \"fseterr.h\"\n#include \"vasnprintf.h\"\n\n \nint\nvfprintf (FILE *fp, const char *format, va_list args)\n{\n  char buf[2000];\n  char *output;\n  size_t len;\n  size_t lenbuf = sizeof (buf);\n\n  output = vasnprintf (buf, &lenbuf, format, args);\n  len = lenbuf;\n\n  if (!output)\n    {\n      fseterr (fp);\n      return -1;\n    }\n\n  if (fwrite (output, 1, len, fp) < len)\n    {\n      if (output != buf)\n        free (output);\n      return -1;\n    }\n\n  if (output != buf)\n    free (output);\n\n  if (len > INT_MAX)\n    {\n      errno = EOVERFLOW;\n      fseterr (fp);\n      return -1;\n    }\n\n  return len;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

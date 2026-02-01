@@ -1,0 +1,9 @@
+{
+  "module_name": "ia_css_isp_states.h",
+  "hash_id": "b9ce5db2c75516adbf7b2d0799750093150046bef2537b2975d51a32f264f923",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/ia_css_isp_states.h",
+  "human_readable_source": " \n \n\n#define IA_CSS_INCLUDE_STATES\n#include \"isp/kernels/aa/aa_2/ia_css_aa2.host.h\"\n#include \"isp/kernels/cnr/cnr_1.0/ia_css_cnr.host.h\"\n#include \"isp/kernels/cnr/cnr_2/ia_css_cnr2.host.h\"\n#include \"isp/kernels/de/de_1.0/ia_css_de.host.h\"\n#include \"isp/kernels/dp/dp_1.0/ia_css_dp.host.h\"\n#include \"isp/kernels/ref/ref_1.0/ia_css_ref.host.h\"\n#include \"isp/kernels/tnr/tnr_1.0/ia_css_tnr.host.h\"\n#include \"isp/kernels/ynr/ynr_1.0/ia_css_ynr.host.h\"\n#include \"isp/kernels/dpc2/ia_css_dpc2.host.h\"\n#include \"isp/kernels/eed1_8/ia_css_eed1_8.host.h\"\n \n\n#ifndef _IA_CSS_ISP_STATE_H\n#define _IA_CSS_ISP_STATE_H\n\n \n\nenum ia_css_state_ids {\n\tIA_CSS_AA_STATE_ID,\n\tIA_CSS_CNR_STATE_ID,\n\tIA_CSS_CNR2_STATE_ID,\n\tIA_CSS_DP_STATE_ID,\n\tIA_CSS_DE_STATE_ID,\n\tIA_CSS_TNR_STATE_ID,\n\tIA_CSS_REF_STATE_ID,\n\tIA_CSS_YNR_STATE_ID,\n\tIA_CSS_NUM_STATE_IDS\n};\n\n \n\nstruct ia_css_state_memory_offsets {\n\tstruct {\n\t\tstruct ia_css_isp_parameter aa;\n\t\tstruct ia_css_isp_parameter cnr;\n\t\tstruct ia_css_isp_parameter cnr2;\n\t\tstruct ia_css_isp_parameter dp;\n\t\tstruct ia_css_isp_parameter de;\n\t\tstruct ia_css_isp_parameter ynr;\n\t} vmem;\n\tstruct {\n\t\tstruct ia_css_isp_parameter tnr;\n\t\tstruct ia_css_isp_parameter ref;\n\t} dmem;\n};\n\n#if defined(IA_CSS_INCLUDE_STATES)\n\n#include \"ia_css_stream.h\"    \n#include \"ia_css_binary.h\"    \n \n\nextern void (*ia_css_kernel_init_state[IA_CSS_NUM_STATE_IDS])(\n    const struct ia_css_binary *binary);\n\n#endif  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

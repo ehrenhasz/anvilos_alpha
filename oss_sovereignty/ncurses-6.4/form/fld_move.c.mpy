@@ -1,0 +1,9 @@
+{
+  "module_name": "fld_move.c",
+  "hash_id": "7eba018698e2e334ee6b902ffbe07c7920dfcfdc4e6dd428c79371b188e28f47",
+  "original_prompt": "Ingested from ncurses-6.4/form/fld_move.c",
+  "human_readable_source": " \n\n \n\n#include \"form.priv.h\"\n\nMODULE_ID(\"$Id: fld_move.c,v 1.16 2021/06/17 21:20:30 tom Exp $\")\n\n \nFORM_EXPORT(int)\nmove_field(FIELD *field, int frow, int fcol)\n{\n  T((T_CALLED(\"move_field(%p,%d,%d)\"), (void *)field, frow, fcol));\n\n  if (!field || (frow < 0) || (fcol < 0))\n    RETURN(E_BAD_ARGUMENT);\n\n  if (field->form)\n    RETURN(E_CONNECTED);\n\n  field->frow = (short)frow;\n  field->fcol = (short)fcol;\n  RETURN(E_OK);\n}\n\n \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

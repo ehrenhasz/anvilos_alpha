@@ -1,0 +1,9 @@
+{
+  "module_name": "openssl-compat.c",
+  "hash_id": "428a54e4b8e7318774d34b34957b8218574928bddb0e978779a015de2c72bd64",
+  "original_prompt": "Ingested from openssh-9.6p1/openbsd-compat/openssl-compat.c",
+  "human_readable_source": " \n\n#define SSH_DONT_OVERLOAD_OPENSSL_FUNCS\n#include \"includes.h\"\n\n#ifdef WITH_OPENSSL\n\n#include <stdarg.h>\n#include <string.h>\n\n#ifdef USE_OPENSSL_ENGINE\n# include <openssl/engine.h>\n# include <openssl/conf.h>\n#endif\n\n#include \"log.h\"\n\n#include \"openssl-compat.h\"\n\n \n\nint\nssh_compatible_openssl(long headerver, long libver)\n{\n\tlong mask, hfix, lfix;\n\n\t \n\tif (headerver == libver)\n\t\treturn 1;\n\n\t \n\tif (headerver >= 0x3000000f) {\n\t\tmask = 0xf000000fL;  \n\t\treturn (headerver & mask) == (libver & mask);\n\t}\n\n\t \n\tmask = 0xfff0000fL;  \n\thfix = (headerver & 0x000ff000) >> 12;\n\tlfix = (libver & 0x000ff000) >> 12;\n\tif ( (headerver & mask) == (libver & mask) && lfix >= hfix)\n\t\treturn 1;\n\treturn 0;\n}\n\nvoid\nssh_libcrypto_init(void)\n{\n#if defined(HAVE_OPENSSL_INIT_CRYPTO) && \\\n      defined(OPENSSL_INIT_ADD_ALL_CIPHERS) && \\\n      defined(OPENSSL_INIT_ADD_ALL_DIGESTS)\n\tOPENSSL_init_crypto(OPENSSL_INIT_ADD_ALL_CIPHERS |\n\t    OPENSSL_INIT_ADD_ALL_DIGESTS, NULL);\n#elif defined(HAVE_OPENSSL_ADD_ALL_ALGORITHMS)\n\tOpenSSL_add_all_algorithms();\n#endif\n\n#ifdef\tUSE_OPENSSL_ENGINE\n\t \n\tENGINE_load_builtin_engines();\n\tENGINE_register_all_complete();\n\n\t \n# if defined(HAVE_OPENSSL_INIT_CRYPTO) && defined(OPENSSL_INIT_LOAD_CONFIG)\n\tOPENSSL_init_crypto(OPENSSL_INIT_ADD_ALL_CIPHERS |\n\t    OPENSSL_INIT_ADD_ALL_DIGESTS | OPENSSL_INIT_LOAD_CONFIG, NULL);\n# else\n\tOPENSSL_config(NULL);\n# endif\n#endif  \n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

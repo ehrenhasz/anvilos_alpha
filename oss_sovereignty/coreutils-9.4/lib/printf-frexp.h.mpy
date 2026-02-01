@@ -1,0 +1,9 @@
+{
+  "module_name": "printf-frexp.h",
+  "hash_id": "8e4f5c02172ce72b8b6fe791cfad1fc0c16a3a9b7cc37976a16c6f2b5c108f84",
+  "original_prompt": "Ingested from coreutils-9.4/lib/printf-frexp.h",
+  "human_readable_source": " \nextern double printf_frexp (double x, int *expptr);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

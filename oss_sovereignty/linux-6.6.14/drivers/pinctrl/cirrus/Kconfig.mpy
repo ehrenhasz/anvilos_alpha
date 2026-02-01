@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "c2bf14d86cf29ef61e68ae73ef028254e7276686accc7a4c753b23e7b76499c8",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/pinctrl/cirrus/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig PINCTRL_CS42L43\n\ttristate \"Cirrus Logic CS42L43 Pinctrl Driver\"\n\tdepends on MFD_CS42L43\n\tselect GPIOLIB\n\tselect PINMUX\n\tselect PINCONF\n\tselect GENERIC_PINCONF\n\thelp\n\t  Select this to support the GPIO/Pinctrl functions of the Cirrus\n\t  Logic CS42L43 PC CODEC.\n\nconfig PINCTRL_LOCHNAGAR\n\ttristate \"Cirrus Logic Lochnagar pinctrl driver\"\n\t# Avoid clash caused by MIPS defining RST, which is used in the driver\n\tdepends on MFD_LOCHNAGAR && !MIPS\n\tselect GPIOLIB\n\tselect PINMUX\n\tselect PINCONF\n\tselect GENERIC_PINCONF\n\thelp\n\t  This driver supports configuring the GPIO and other pin configuration\n\t  of the Cirrus Logic Lochnagar audio development board.\n\n# This is all selected by the Madera MFD driver Kconfig options\nconfig PINCTRL_MADERA\n\ttristate\n\tselect PINMUX\n\tselect GENERIC_PINCONF\n\nconfig PINCTRL_CS47L15\n\tbool\n\nconfig PINCTRL_CS47L35\n\tbool\n\nconfig PINCTRL_CS47L85\n\tbool\n\nconfig PINCTRL_CS47L90\n\tbool\n\nconfig PINCTRL_CS47L92\n\tbool\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

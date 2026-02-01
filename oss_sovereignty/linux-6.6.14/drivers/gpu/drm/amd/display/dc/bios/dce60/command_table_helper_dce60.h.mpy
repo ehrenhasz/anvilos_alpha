@@ -1,0 +1,9 @@
+{
+  "module_name": "command_table_helper_dce60.h",
+  "hash_id": "b5d360f96e7f9222783d36cacc40c7626305fdbe3f0d3b3c7654e6edd6508b68",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/dc/bios/dce60/command_table_helper_dce60.h",
+  "human_readable_source": " \n\n#ifndef __DAL_COMMAND_TABLE_HELPER_DCE60_H__\n#define __DAL_COMMAND_TABLE_HELPER_DCE60_H__\n\nstruct command_table_helper;\n\nconst struct command_table_helper *dal_cmd_tbl_helper_dce60_get_table(void);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

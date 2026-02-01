@@ -1,0 +1,9 @@
+{
+  "module_name": "target_core_rd.h",
+  "hash_id": "4f5b13f7942199881d0b0cbda0a3d25f76ab8c448cc42885df200cc17caebd8a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/target/target_core_rd.h",
+  "human_readable_source": " \n#ifndef TARGET_CORE_RD_H\n#define TARGET_CORE_RD_H\n\n#include <linux/module.h>\n#include <linux/types.h>\n#include <target/target_core_base.h>\n\n#define RD_HBA_VERSION\t\t\"v4.0\"\n#define RD_MCP_VERSION\t\t\"4.0\"\n\n \n#define RD_MAX_ALLOCATION_SIZE\t65536\n#define RD_DEVICE_QUEUE_DEPTH\t32\n#define RD_MAX_DEVICE_QUEUE_DEPTH 128\n#define RD_BLOCKSIZE\t\t512\n\n \nint __init rd_module_init(void);\nvoid rd_module_exit(void);\n\nstruct rd_dev_sg_table {\n\tu32\t\tpage_start_offset;\n\tu32\t\tpage_end_offset;\n\tu32\t\trd_sg_count;\n\tstruct scatterlist *sg_table;\n} ____cacheline_aligned;\n\n#define RDF_HAS_PAGE_COUNT\t0x01\n#define RDF_NULLIO\t\t0x02\n#define RDF_DUMMY\t\t0x04\n\nstruct rd_dev {\n\tstruct se_device dev;\n\tu32\t\trd_flags;\n\t \n\tu32\t\trd_dev_id;\n\t \n\tu32\t\trd_page_count;\n\t \n\tu32\t\tsg_table_count;\n\t \n\tu32\t\tsg_prot_count;\n\t \n\tstruct rd_dev_sg_table *sg_table_array;\n\t \n\tstruct rd_dev_sg_table *sg_prot_array;\n\t \n\tstruct rd_host *rd_host;\n} ____cacheline_aligned;\n\nstruct rd_host {\n\tu32\t\trd_host_dev_id_count;\n\tu32\t\trd_host_id;\t\t \n} ____cacheline_aligned;\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

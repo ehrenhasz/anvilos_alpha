@@ -1,0 +1,9 @@
+{
+  "module_name": "wcswidth.c",
+  "hash_id": "62b51a263fd88b53bb2ea965c67b8c9c0dfe213b51b0b205b3e8fee7c1d6da69",
+  "original_prompt": "Ingested from coreutils-9.4/lib/wcswidth.c",
+  "human_readable_source": " \n#include <wchar.h>\n\n#include <limits.h>\n\n#define FUNC wcswidth\n#define UNIT wchar_t\n#define CHARACTER_WIDTH wcwidth\n#include \"wcswidth-impl.h\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

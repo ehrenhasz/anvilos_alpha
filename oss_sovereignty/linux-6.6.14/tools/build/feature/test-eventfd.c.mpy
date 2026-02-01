@@ -1,0 +1,9 @@
+{
+  "module_name": "test-eventfd.c",
+  "hash_id": "d7bc0e00e79ed0147ed83fbca015311ab0bbdc1b0dd72c1f6623a435ab74ea54",
+  "original_prompt": "Ingested from linux-6.6.14/tools/build/feature/test-eventfd.c",
+  "human_readable_source": "\n\n\n#include <sys/eventfd.h>\n\nint main(void)\n{\n\treturn eventfd(0, EFD_NONBLOCK);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

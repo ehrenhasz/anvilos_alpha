@@ -1,0 +1,9 @@
+{
+  "module_name": "objtool_types.h",
+  "hash_id": "a05500161c0c3c7ef39708ed9898ae1fe719861b9f215ad325dcd524b2eef440",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/objtool_types.h",
+  "human_readable_source": " \n#ifndef _LINUX_OBJTOOL_TYPES_H\n#define _LINUX_OBJTOOL_TYPES_H\n\n#ifndef __ASSEMBLY__\n\n#include <linux/types.h>\n\n \nstruct unwind_hint {\n\tu32\t\tip;\n\ts16\t\tsp_offset;\n\tu8\t\tsp_reg;\n\tu8\t\ttype;\n\tu8\t\tsignal;\n};\n\n#endif  \n\n \n#define UNWIND_HINT_TYPE_UNDEFINED\t0\n#define UNWIND_HINT_TYPE_END_OF_STACK\t1\n#define UNWIND_HINT_TYPE_CALL\t\t2\n#define UNWIND_HINT_TYPE_REGS\t\t3\n#define UNWIND_HINT_TYPE_REGS_PARTIAL\t4\n \n#define UNWIND_HINT_TYPE_FUNC\t\t5\n#define UNWIND_HINT_TYPE_SAVE\t\t6\n#define UNWIND_HINT_TYPE_RESTORE\t7\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

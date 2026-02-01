@@ -1,0 +1,9 @@
+{
+  "module_name": "tc_nat.h",
+  "hash_id": "f0e2da519a3e71cae0b29654e3c5f3819f089c24c71a3a54b7ed54d669683034",
+  "original_prompt": "Ingested from linux-6.6.14/include/net/tc_act/tc_nat.h",
+  "human_readable_source": " \n#ifndef __NET_TC_NAT_H\n#define __NET_TC_NAT_H\n\n#include <linux/types.h>\n#include <net/act_api.h>\n\nstruct tcf_nat_parms {\n\t__be32 old_addr;\n\t__be32 new_addr;\n\t__be32 mask;\n\tu32 flags;\n\tstruct rcu_head rcu;\n};\n\nstruct tcf_nat {\n\tstruct tc_action common;\n\tstruct tcf_nat_parms __rcu *parms;\n};\n\n#define to_tcf_nat(a) ((struct tcf_nat *)a)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

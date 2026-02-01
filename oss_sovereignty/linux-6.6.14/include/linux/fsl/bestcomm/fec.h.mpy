@@ -1,0 +1,9 @@
+{
+  "module_name": "fec.h",
+  "hash_id": "54ca9eb9060e718b569a5170b1c6337f15bd642089e173ffa028e965074a8023",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/fsl/bestcomm/fec.h",
+  "human_readable_source": " \n\n#ifndef __BESTCOMM_FEC_H__\n#define __BESTCOMM_FEC_H__\n\n\nstruct bcom_fec_bd {\n\tu32\tstatus;\n\tu32\tskb_pa;\n};\n\n#define BCOM_FEC_TX_BD_TFD\t0x08000000ul\t \n#define BCOM_FEC_TX_BD_TC\t0x04000000ul\t \n#define BCOM_FEC_TX_BD_ABC\t0x02000000ul\t \n\n#define BCOM_FEC_RX_BD_L\t0x08000000ul\t \n#define BCOM_FEC_RX_BD_BC\t0x00800000ul\t \n#define BCOM_FEC_RX_BD_MC\t0x00400000ul\t \n#define BCOM_FEC_RX_BD_LG\t0x00200000ul\t \n#define BCOM_FEC_RX_BD_NO\t0x00100000ul\t \n#define BCOM_FEC_RX_BD_CR\t0x00040000ul\t \n#define BCOM_FEC_RX_BD_OV\t0x00020000ul\t \n#define BCOM_FEC_RX_BD_TR\t0x00010000ul\t \n#define BCOM_FEC_RX_BD_LEN_MASK\t0x000007fful\t \n#define BCOM_FEC_RX_BD_ERRORS\t(BCOM_FEC_RX_BD_LG | BCOM_FEC_RX_BD_NO | \\\n\t\tBCOM_FEC_RX_BD_CR | BCOM_FEC_RX_BD_OV | BCOM_FEC_RX_BD_TR)\n\n\nextern struct bcom_task *\nbcom_fec_rx_init(int queue_len, phys_addr_t fifo, int maxbufsize);\n\nextern int\nbcom_fec_rx_reset(struct bcom_task *tsk);\n\nextern void\nbcom_fec_rx_release(struct bcom_task *tsk);\n\n\nextern struct bcom_task *\nbcom_fec_tx_init(int queue_len, phys_addr_t fifo);\n\nextern int\nbcom_fec_tx_reset(struct bcom_task *tsk);\n\nextern void\nbcom_fec_tx_release(struct bcom_task *tsk);\n\n\n#endif  \n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

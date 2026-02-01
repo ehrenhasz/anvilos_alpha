@@ -1,0 +1,9 @@
+{
+  "module_name": "intel_display_driver.h",
+  "hash_id": "c0953a291e795e4d0678730305c43b4b2968843fba8b01b7eb151deaa7fd2733",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/display/intel_display_driver.h",
+  "human_readable_source": " \n \n\n#ifndef __INTEL_DISPLAY_DRIVER_H__\n#define __INTEL_DISPLAY_DRIVER_H__\n\n#include <linux/types.h>\n\nstruct drm_atomic_state;\nstruct drm_i915_private;\nstruct drm_modeset_acquire_ctx;\nstruct pci_dev;\n\nbool intel_display_driver_probe_defer(struct pci_dev *pdev);\nvoid intel_display_driver_init_hw(struct drm_i915_private *i915);\nvoid intel_display_driver_early_probe(struct drm_i915_private *i915);\nint intel_display_driver_probe_noirq(struct drm_i915_private *i915);\nint intel_display_driver_probe_nogem(struct drm_i915_private *i915);\nint intel_display_driver_probe(struct drm_i915_private *i915);\nvoid intel_display_driver_register(struct drm_i915_private *i915);\nvoid intel_display_driver_remove(struct drm_i915_private *i915);\nvoid intel_display_driver_remove_noirq(struct drm_i915_private *i915);\nvoid intel_display_driver_remove_nogem(struct drm_i915_private *i915);\nvoid intel_display_driver_unregister(struct drm_i915_private *i915);\nint intel_display_driver_suspend(struct drm_i915_private *i915);\nvoid intel_display_driver_resume(struct drm_i915_private *i915);\n\n \nint __intel_display_driver_resume(struct drm_i915_private *i915,\n\t\t\t\t  struct drm_atomic_state *state,\n\t\t\t\t  struct drm_modeset_acquire_ctx *ctx);\n\n#endif  \n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

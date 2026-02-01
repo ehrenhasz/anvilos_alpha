@@ -1,0 +1,9 @@
+{
+  "module_name": "scp-ssh-wrapper.sh",
+  "hash_id": "5c332574c1889f5ac76a056fab3954cfa82dc4902efa8c15dd015e3b5f83adc1",
+  "original_prompt": "Ingested from openssh-9.6p1/regress/scp-ssh-wrapper.sh",
+  "human_readable_source": "#!/bin/sh\n#       $OpenBSD: scp-ssh-wrapper.sh,v 1.4 2019/07/19 03:45:44 djm Exp $\n#       Placed in the Public Domain.\n\nprintname () {\n\tNAME=$1\n\tsave_IFS=$IFS\n\tIFS=/\n\tset -- `echo \"$NAME\"`\n\tIFS=\"$save_IFS\"\n\twhile [ $# -ge 1 ] ; do\n\t\tif [ \"x$1\" != \"x\" ]; then\n\t\t\techo \"D0755 0 $1\"\n\t\tfi\n\t\tshift;\n\tdone\n}\n\n# Discard all but last argument.  We use arg later.\nwhile test \"x$1\" != \"x\"; do\n\targ=\"$1\"\n\tshift\ndone\n\nBAD=\"../../../../../../../../../../../../../${DIR}/dotpathdir\"\n\ncase \"$SCPTESTMODE\" in\nbadserver_0)\n\techo \"D0755 0 /${DIR}/rootpathdir\"\n\techo \"C755 2 rootpathfile\"\n\techo \"X\"\n\t;;\nbadserver_1)\n\techo \"D0755 0 $BAD\"\n\techo \"C755 2 file\"\n\techo \"X\"\n\t;;\nbadserver_2)\n\techo \"D0755 0 $BAD\"\n\techo \"C755 2 file\"\n\techo \"X\"\n\t;;\nbadserver_3)\n\tprintname $BAD\n\techo \"C755 2 file\"\n\techo \"X\"\n\t;;\nbadserver_4)\n\tprintname $BAD\n\techo \"D0755 0 ..\"\n\techo \"C755 2 file\"\n\techo \"X\"\n\t;;\nbadserver_5)\n\techo \"D0555 0 \"\n\techo \"X\"\n\t;;\nbadserver_6)\n\techo \"D0555 0 .\"\n\techo \"X\"\n\t;;\nbadserver_7)\n\techo \"C0755 2 extrafile\"\n\techo \"X\"\n\t;;\n*)\n\tset -- $arg\n\tshift\n\texec $SCP \"$@\"\n\t;;\nesac\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

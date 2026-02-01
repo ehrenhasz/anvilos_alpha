@@ -1,0 +1,9 @@
+{
+  "module_name": "ia_css_eventq.h",
+  "hash_id": "32bf904bd906dcc90a456929654ab03bf99afde10459f89bc016ecf2be745755",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/runtime/eventq/interface/ia_css_eventq.h",
+  "human_readable_source": " \n \n\n#ifndef _IA_CSS_EVENTQ_H\n#define _IA_CSS_EVENTQ_H\n\n#include \"ia_css_queue.h\"\t \n\n \nint ia_css_eventq_recv(\n    ia_css_queue_t *eventq_handle,\n    uint8_t *payload);\n\n \nint ia_css_eventq_send(\n    ia_css_queue_t *eventq_handle,\n    u8 evt_id,\n    u8 evt_payload_0,\n    u8 evt_payload_1,\n    uint8_t evt_payload_2);\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

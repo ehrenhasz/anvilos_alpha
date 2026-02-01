@@ -1,0 +1,9 @@
+{
+  "module_name": "manifest.py",
+  "hash_id": "6e116ab3bb3c61068e1cc8eec79721c422fb6063e7ef7847eff6373b19a4034c",
+  "original_prompt": "Ingested from sys_09_Anvil/source/extmod/asyncio/manifest.py",
+  "human_readable_source": "# This list of package files doesn't include task.py because that's provided\n# by the C module.\npackage(\n    \"asyncio\",\n    (\n        \"__init__.py\",\n        \"core.py\",\n        \"event.py\",\n        \"funcs.py\",\n        \"lock.py\",\n        \"stream.py\",\n    ),\n    base_path=\"..\",\n    opt=3,\n)\n\n# Backwards-compatible uasyncio module.\nmodule(\"uasyncio.py\", opt=3)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

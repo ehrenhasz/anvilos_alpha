@@ -1,0 +1,9 @@
+{
+  "module_name": "dec_if_positive",
+  "hash_id": "7f3dddf8c2cff19a54f61c44e6b79dd24c6e56d4ecbe93a4ecc8fc886be84c97",
+  "original_prompt": "Ingested from linux-6.6.14/scripts/atomic/kerneldoc/dec_if_positive",
+  "human_readable_source": "cat <<EOF\n/**\n * ${class}${atomicname}() - atomic decrement if positive with ${desc_order} ordering\n * @v: pointer to ${atomic}_t\n *\n * If (@v > 0), atomically updates @v to (@v - 1) with ${desc_order} ordering.\n *\n * ${desc_noinstr}\n *\n * Return: The old value of (@v - 1), regardless of whether @v was updated.\n */\nEOF\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

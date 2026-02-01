@@ -1,0 +1,9 @@
+{
+  "module_name": "spi_bitbang.h",
+  "hash_id": "308162ebd394eccaf1db45c943a7081283d7b7736413411857782379085f4715",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/spi/spi_bitbang.h",
+  "human_readable_source": " \n#ifndef\t__SPI_BITBANG_H\n#define\t__SPI_BITBANG_H\n\n#include <linux/workqueue.h>\n\nstruct spi_bitbang {\n\tstruct mutex\t\tlock;\n\tu8\t\t\tbusy;\n\tu8\t\t\tuse_dma;\n\tu16\t\t\tflags;\t\t \n\n\tstruct spi_master\t*master;\n\n\t \n\tint\t(*setup_transfer)(struct spi_device *spi,\n\t\t\tstruct spi_transfer *t);\n\n\tvoid\t(*chipselect)(struct spi_device *spi, int is_on);\n#define\tBITBANG_CS_ACTIVE\t1\t \n#define\tBITBANG_CS_INACTIVE\t0\n\n\t \n\tint\t(*txrx_bufs)(struct spi_device *spi, struct spi_transfer *t);\n\n\t \n\tu32\t(*txrx_word[4])(struct spi_device *spi,\n\t\t\tunsigned nsecs,\n\t\t\tu32 word, u8 bits, unsigned flags);\n\tint\t(*set_line_direction)(struct spi_device *spi, bool output);\n};\n\n \nextern int spi_bitbang_setup(struct spi_device *spi);\nextern void spi_bitbang_cleanup(struct spi_device *spi);\nextern int spi_bitbang_setup_transfer(struct spi_device *spi,\n\t\t\t\t      struct spi_transfer *t);\n\n \nextern int spi_bitbang_start(struct spi_bitbang *spi);\nextern int spi_bitbang_init(struct spi_bitbang *spi);\nextern void spi_bitbang_stop(struct spi_bitbang *spi);\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "canohost.h",
+  "hash_id": "dd2f34c2d38c036f728a4ee9e4c252dad4d73dd5c8dc385b0d20e5c296e921e6",
+  "original_prompt": "Ingested from openssh-9.6p1/canohost.h",
+  "human_readable_source": " \n\n \n\n#ifndef _CANOHOST_H\n#define _CANOHOST_H\n\nchar\t\t*get_peer_ipaddr(int);\nint\t\t get_peer_port(int);\nchar\t\t*get_local_ipaddr(int);\nchar\t\t*get_local_name(int);\nint\t\tget_local_port(int);\n\n#endif  \n\nvoid\t\t ipv64_normalise_mapped(struct sockaddr_storage *, socklen_t *);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

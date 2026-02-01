@@ -1,0 +1,9 @@
+{
+  "module_name": "trace_spl.h",
+  "hash_id": "569dcea5ae367ce15eaedeb757be95e6ece5abdac3e1a3f37e8208a0c86aab83",
+  "original_prompt": "Ingested from zfs-2.2.2/include/os/linux/spl/sys/trace_spl.h",
+  "human_readable_source": " \n\n#ifndef _OS_LINUX_SPL_TRACE_H\n#define\t_OS_LINUX_SPL_TRACE_H\n\n#include <sys/taskq.h>\n\n#include <sys/trace.h>\n#include <sys/trace_taskq.h>\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

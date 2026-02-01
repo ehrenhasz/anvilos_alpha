@@ -1,0 +1,9 @@
+{
+  "module_name": "drxk.h",
+  "hash_id": "74f43d10e80f66c54d5b23e7b7323029d1248b60bd70755a976bdbd48dde6e5d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/dvb-frontends/drxk.h",
+  "human_readable_source": " \n#ifndef _DRXK_H_\n#define _DRXK_H_\n\n#include <linux/types.h>\n#include <linux/i2c.h>\n\n \nstruct drxk_config {\n\tu8\tadr;\n\tbool\tsingle_master;\n\tbool\tno_i2c_bridge;\n\tbool\tparallel_ts;\n\tbool\tdynamic_clk;\n\tbool\tenable_merr_cfg;\n\n\tbool\tantenna_dvbt;\n\tu16\tantenna_gpio;\n\n\tu8\tmpeg_out_clk_strength;\n\tint\tchunk_size;\n\n\tconst char\t*microcode_name;\n\tint\t\t qam_demod_parameter_count;\n};\n\n#if IS_REACHABLE(CONFIG_DVB_DRXK)\n \nextern struct dvb_frontend *drxk_attach(const struct drxk_config *config,\n\t\t\t\t\tstruct i2c_adapter *i2c);\n#else\nstatic inline struct dvb_frontend *drxk_attach(const struct drxk_config *config,\n\t\t\t\t\tstruct i2c_adapter *i2c)\n{\n\tprintk(KERN_WARNING \"%s: driver disabled by Kconfig\\n\", __func__);\n\treturn NULL;\n}\n#endif\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

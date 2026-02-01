@@ -1,0 +1,9 @@
+{
+  "module_name": "cuda.h",
+  "hash_id": "8dd4bec3c23668ce14d8a3ceff1319a8a30b61979f7ae1c80f668325a4f8bb36",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/cuda.h",
+  "human_readable_source": " \n \n#ifndef _LINUX_CUDA_H\n#define _LINUX_CUDA_H\n\n#include <linux/rtc.h>\n#include <uapi/linux/cuda.h>\n\n\nextern int __init find_via_cuda(void);\nextern int cuda_request(struct adb_request *req,\n\t\t\tvoid (*done)(struct adb_request *), int nbytes, ...);\nextern void cuda_poll(void);\n\nextern time64_t cuda_get_time(void);\nextern int cuda_set_rtc_time(struct rtc_time *tm);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

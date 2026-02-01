@@ -1,0 +1,9 @@
+{
+  "module_name": "kmsan-checks.h",
+  "hash_id": "ffdc2931e050b3c4788eb014a981d607ca124e1aab58efdde1b4c27fac908f56",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/kmsan-checks.h",
+  "human_readable_source": " \n \n\n#ifndef _LINUX_KMSAN_CHECKS_H\n#define _LINUX_KMSAN_CHECKS_H\n\n#include <linux/types.h>\n\n#ifdef CONFIG_KMSAN\n\n \nvoid kmsan_poison_memory(const void *address, size_t size, gfp_t flags);\n\n \nvoid kmsan_unpoison_memory(const void *address, size_t size);\n\n \nvoid kmsan_check_memory(const void *address, size_t size);\n\n \nvoid kmsan_copy_to_user(void __user *to, const void *from, size_t to_copy,\n\t\t\tsize_t left);\n\n#else\n\nstatic inline void kmsan_poison_memory(const void *address, size_t size,\n\t\t\t\t       gfp_t flags)\n{\n}\nstatic inline void kmsan_unpoison_memory(const void *address, size_t size)\n{\n}\nstatic inline void kmsan_check_memory(const void *address, size_t size)\n{\n}\nstatic inline void kmsan_copy_to_user(void __user *to, const void *from,\n\t\t\t\t      size_t to_copy, size_t left)\n{\n}\n\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

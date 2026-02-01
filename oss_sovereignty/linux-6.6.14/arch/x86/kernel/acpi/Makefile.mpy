@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "d706b3367d6bbcc31a4c2e2b49538f900264aad1028453c3523a0b2d9c0e65e0",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/kernel/acpi/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n\nobj-$(CONFIG_ACPI)\t\t+= boot.o\nobj-$(CONFIG_ACPI_SLEEP)\t+= sleep.o wakeup_$(BITS).o\nobj-$(CONFIG_ACPI_APEI)\t\t+= apei.o\nobj-$(CONFIG_ACPI_CPPC_LIB)\t+= cppc.o\n\nifneq ($(CONFIG_ACPI_PROCESSOR),)\nobj-y\t\t\t\t+= cstate.o\nendif\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

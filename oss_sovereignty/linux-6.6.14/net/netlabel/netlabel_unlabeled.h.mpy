@@ -1,0 +1,9 @@
+{
+  "module_name": "netlabel_unlabeled.h",
+  "hash_id": "0dd979487e3dbdb14242f024110165936c67eb10d8b6bb5fd515841b182047ab",
+  "original_prompt": "Ingested from linux-6.6.14/net/netlabel/netlabel_unlabeled.h",
+  "human_readable_source": " \n \n\n \n\n#ifndef _NETLABEL_UNLABELED_H\n#define _NETLABEL_UNLABELED_H\n\n#include <net/netlabel.h>\n\n \n\n \nenum {\n\tNLBL_UNLABEL_C_UNSPEC,\n\tNLBL_UNLABEL_C_ACCEPT,\n\tNLBL_UNLABEL_C_LIST,\n\tNLBL_UNLABEL_C_STATICADD,\n\tNLBL_UNLABEL_C_STATICREMOVE,\n\tNLBL_UNLABEL_C_STATICLIST,\n\tNLBL_UNLABEL_C_STATICADDDEF,\n\tNLBL_UNLABEL_C_STATICREMOVEDEF,\n\tNLBL_UNLABEL_C_STATICLISTDEF,\n\t__NLBL_UNLABEL_C_MAX,\n};\n\n \nenum {\n\tNLBL_UNLABEL_A_UNSPEC,\n\tNLBL_UNLABEL_A_ACPTFLG,\n\t \n\tNLBL_UNLABEL_A_IPV6ADDR,\n\t \n\tNLBL_UNLABEL_A_IPV6MASK,\n\t \n\tNLBL_UNLABEL_A_IPV4ADDR,\n\t \n\tNLBL_UNLABEL_A_IPV4MASK,\n\t \n\tNLBL_UNLABEL_A_IFACE,\n\t \n\tNLBL_UNLABEL_A_SECCTX,\n\t \n\t__NLBL_UNLABEL_A_MAX,\n};\n#define NLBL_UNLABEL_A_MAX (__NLBL_UNLABEL_A_MAX - 1)\n\n \nint netlbl_unlabel_genl_init(void);\n\n \n \n#define NETLBL_UNLHSH_BITSIZE       7\n\n \nint netlbl_unlabel_init(u32 size);\n\n \nint netlbl_unlhsh_add(struct net *net,\n\t\t      const char *dev_name,\n\t\t      const void *addr,\n\t\t      const void *mask,\n\t\t      u32 addr_len,\n\t\t      u32 secid,\n\t\t      struct netlbl_audit *audit_info);\nint netlbl_unlhsh_remove(struct net *net,\n\t\t\t const char *dev_name,\n\t\t\t const void *addr,\n\t\t\t const void *mask,\n\t\t\t u32 addr_len,\n\t\t\t struct netlbl_audit *audit_info);\n\n \nint netlbl_unlabel_getattr(const struct sk_buff *skb,\n\t\t\t   u16 family,\n\t\t\t   struct netlbl_lsm_secattr *secattr);\n\n \nint netlbl_unlabel_defconf(void);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

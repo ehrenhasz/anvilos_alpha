@@ -1,0 +1,9 @@
+{
+  "module_name": "internal.h",
+  "hash_id": "0beebc8dc7cbb480f34559920984879f2694fce938fc7ed05a19ae8cd79f692f",
+  "original_prompt": "Ingested from linux-6.6.14/fs/romfs/internal.h",
+  "human_readable_source": " \n \n\n#include <linux/romfs_fs.h>\n\nstruct romfs_inode_info {\n\tstruct inode\tvfs_inode;\n\tunsigned long\ti_metasize;\t \n\tunsigned long\ti_dataoffset;\t \n};\n\nstatic inline size_t romfs_maxsize(struct super_block *sb)\n{\n\treturn (size_t) (unsigned long) sb->s_fs_info;\n}\n\nstatic inline struct romfs_inode_info *ROMFS_I(struct inode *inode)\n{\n\treturn container_of(inode, struct romfs_inode_info, vfs_inode);\n}\n\n \n#if !defined(CONFIG_MMU) && defined(CONFIG_ROMFS_ON_MTD)\nextern const struct file_operations romfs_ro_fops;\n#else\n#define romfs_ro_fops\tgeneric_ro_fops\n#endif\n\n \nextern int romfs_dev_read(struct super_block *sb, unsigned long pos,\n\t\t\t  void *buf, size_t buflen);\nextern ssize_t romfs_dev_strnlen(struct super_block *sb,\n\t\t\t\t unsigned long pos, size_t maxlen);\nextern int romfs_dev_strcmp(struct super_block *sb, unsigned long pos,\n\t\t\t    const char *str, size_t size);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

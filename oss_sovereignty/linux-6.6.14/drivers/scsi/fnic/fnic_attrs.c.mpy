@@ -1,0 +1,9 @@
+{
+  "module_name": "fnic_attrs.c",
+  "hash_id": "752a452804045eb7ffc89d2d36b5b8def75fa4c6180723a478768db34c48fdaf",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/scsi/fnic/fnic_attrs.c",
+  "human_readable_source": "\n \n#include <linux/string.h>\n#include <linux/device.h>\n#include <scsi/scsi_host.h>\n#include \"fnic.h\"\n\nstatic ssize_t fnic_show_state(struct device *dev,\n\t\t\t       struct device_attribute *attr, char *buf)\n{\n\tstruct fc_lport *lp = shost_priv(class_to_shost(dev));\n\tstruct fnic *fnic = lport_priv(lp);\n\n\treturn snprintf(buf, PAGE_SIZE, \"%s\\n\", fnic_state_str[fnic->state]);\n}\n\nstatic ssize_t fnic_show_drv_version(struct device *dev,\n\t\t\t\t     struct device_attribute *attr, char *buf)\n{\n\treturn snprintf(buf, PAGE_SIZE, \"%s\\n\", DRV_VERSION);\n}\n\nstatic ssize_t fnic_show_link_state(struct device *dev,\n\t\t\t\t    struct device_attribute *attr, char *buf)\n{\n\tstruct fc_lport *lp = shost_priv(class_to_shost(dev));\n\n\treturn snprintf(buf, PAGE_SIZE, \"%s\\n\", (lp->link_up)\n\t\t\t? \"Link Up\" : \"Link Down\");\n}\n\nstatic DEVICE_ATTR(fnic_state, S_IRUGO, fnic_show_state, NULL);\nstatic DEVICE_ATTR(drv_version, S_IRUGO, fnic_show_drv_version, NULL);\nstatic DEVICE_ATTR(link_state, S_IRUGO, fnic_show_link_state, NULL);\n\nstatic struct attribute *fnic_host_attrs[] = {\n\t&dev_attr_fnic_state.attr,\n\t&dev_attr_drv_version.attr,\n\t&dev_attr_link_state.attr,\n\tNULL,\n};\n\nstatic const struct attribute_group fnic_host_attr_group = {\n\t.attrs = fnic_host_attrs\n};\n\nconst struct attribute_group *fnic_host_groups[] = {\n\t&fnic_host_attr_group,\n\tNULL\n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

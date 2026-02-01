@@ -1,0 +1,9 @@
+{
+  "module_name": "xreadlink.h",
+  "hash_id": "b6fadba19881d6f8ebdd6b0736a58ef015bd7a10de6f295bc50a51940c7f8f14",
+  "original_prompt": "Ingested from coreutils-9.4/lib/xreadlink.h",
+  "human_readable_source": " \n\n \n#if !_GL_CONFIG_H_INCLUDED\n #error \"Please include config.h first.\"\n#endif\n\n#include <stdlib.h>\n\nextern char *xreadlink (char const *filename)\n  _GL_ATTRIBUTE_MALLOC _GL_ATTRIBUTE_DEALLOC_FREE;\n\n#if GNULIB_XREADLINKAT\nextern char *xreadlinkat (int fd, char const *filename)\n  _GL_ATTRIBUTE_MALLOC _GL_ATTRIBUTE_DEALLOC_FREE;\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

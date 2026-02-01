@@ -1,0 +1,9 @@
+{
+  "module_name": "unusual_isd200.h",
+  "hash_id": "66e98d78cd29ebac9e088142b2a44d48488e0b7a1e94a0dc77c4b8edb601380e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/usb/storage/unusual_isd200.h",
+  "human_readable_source": " \n \n\n#if defined(CONFIG_USB_STORAGE_ISD200) || \\\n\t\tdefined(CONFIG_USB_STORAGE_ISD200_MODULE)\n\nUNUSUAL_DEV(  0x054c, 0x002b, 0x0100, 0x0110,\n\t\t\"Sony\",\n\t\t\"Portable USB Harddrive V2\",\n\t\tUSB_SC_ISD200, USB_PR_BULK, isd200_Initialization,\n\t\t0),\n\nUNUSUAL_DEV(  0x05ab, 0x0031, 0x0100, 0x0110,\n\t\t\"In-System\",\n\t\t\"USB/IDE Bridge (ATA/ATAPI)\",\n\t\tUSB_SC_ISD200, USB_PR_BULK, isd200_Initialization,\n\t\t0),\n\nUNUSUAL_DEV(  0x05ab, 0x0301, 0x0100, 0x0110,\n\t\t\"In-System\",\n\t\t\"Portable USB Harddrive V2\",\n\t\tUSB_SC_ISD200, USB_PR_BULK, isd200_Initialization,\n\t\t0),\n\nUNUSUAL_DEV(  0x05ab, 0x0351, 0x0100, 0x0110,\n\t\t\"In-System\",\n\t\t\"Portable USB Harddrive V2\",\n\t\tUSB_SC_ISD200, USB_PR_BULK, isd200_Initialization,\n\t\t0),\n\nUNUSUAL_DEV(  0x05ab, 0x5701, 0x0100, 0x0110,\n\t\t\"In-System\",\n\t\t\"USB Storage Adapter V2\",\n\t\tUSB_SC_ISD200, USB_PR_BULK, isd200_Initialization,\n\t\t0),\n\nUNUSUAL_DEV(  0x0bf6, 0xa001, 0x0100, 0x0110,\n\t\t\"ATI\",\n\t\t\"USB Cable 205\",\n\t\tUSB_SC_ISD200, USB_PR_BULK, isd200_Initialization,\n\t\t0),\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "hvm_op.h",
+  "hash_id": "c2625ac46728de344d9643c1e04c852d02f003bd4e55369eee858a9ec37c5194",
+  "original_prompt": "Ingested from linux-6.6.14/include/xen/interface/hvm/hvm_op.h",
+  "human_readable_source": " \n\n#ifndef __XEN_PUBLIC_HVM_HVM_OP_H__\n#define __XEN_PUBLIC_HVM_HVM_OP_H__\n\n#include <xen/interface/xen.h>\n\n \n#define HVMOP_set_param           0\n#define HVMOP_get_param           1\nstruct xen_hvm_param {\n    domid_t  domid;     \n    uint32_t index;     \n    uint64_t value;     \n};\nDEFINE_GUEST_HANDLE_STRUCT(xen_hvm_param);\n\n \n#define HVMOP_pagetable_dying       9\nstruct xen_hvm_pagetable_dying {\n     \n    domid_t  domid;\n     \n    aligned_u64 gpa;\n};\ntypedef struct xen_hvm_pagetable_dying xen_hvm_pagetable_dying_t;\nDEFINE_GUEST_HANDLE_STRUCT(xen_hvm_pagetable_dying_t);\n \nenum hvmmem_type_t {\n    HVMMEM_ram_rw,              \n    HVMMEM_ram_ro,              \n    HVMMEM_mmio_dm,             \n};\n\n#define HVMOP_get_mem_type    15\n \nstruct xen_hvm_get_mem_type {\n     \n    domid_t domid;\n     \n    uint16_t mem_type;\n    uint16_t pad[2];  \n     \n    uint64_t pfn;\n};\nDEFINE_GUEST_HANDLE_STRUCT(xen_hvm_get_mem_type);\n\n#if defined(__i386__) || defined(__x86_64__)\n\n \n#define HVMOP_set_evtchn_upcall_vector 23\nstruct xen_hvm_evtchn_upcall_vector {\n    uint32_t vcpu;\n    uint8_t vector;\n};\ntypedef struct xen_hvm_evtchn_upcall_vector xen_hvm_evtchn_upcall_vector_t;\nDEFINE_GUEST_HANDLE_STRUCT(xen_hvm_evtchn_upcall_vector_t);\n\n#endif  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "skl_universal_plane.h",
+  "hash_id": "e5128a99bd6669f8e3c8f235a57ee6ef9431e32b45362dc720eed7a30fdf678a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/display/skl_universal_plane.h",
+  "human_readable_source": " \n \n\n#ifndef _SKL_UNIVERSAL_PLANE_H_\n#define _SKL_UNIVERSAL_PLANE_H_\n\n#include <linux/types.h>\n\nstruct drm_i915_private;\nstruct intel_crtc;\nstruct intel_initial_plane_config;\nstruct intel_plane_state;\n\nenum pipe;\nenum plane_id;\n\nstruct intel_plane *\nskl_universal_plane_create(struct drm_i915_private *dev_priv,\n\t\t\t   enum pipe pipe, enum plane_id plane_id);\n\nvoid skl_get_initial_plane_config(struct intel_crtc *crtc,\n\t\t\t\t  struct intel_initial_plane_config *plane_config);\n\nint skl_format_to_fourcc(int format, bool rgb_order, bool alpha);\n\nint skl_calc_main_surface_offset(const struct intel_plane_state *plane_state,\n\t\t\t\t int *x, int *y, u32 *offset);\n\nbool icl_is_nv12_y_plane(struct drm_i915_private *dev_priv,\n\t\t\t enum plane_id plane_id);\nu8 icl_hdr_plane_mask(void);\nbool icl_is_hdr_plane(struct drm_i915_private *dev_priv, enum plane_id plane_id);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

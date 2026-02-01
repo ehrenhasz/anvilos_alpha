@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "7d5477c0f1fac4176f2c4c596bc64775fc9640b7c169ab853314b5e98af3273f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/infiniband/ulp/rtrs/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-or-later\n\nconfig INFINIBAND_RTRS\n\ttristate\n\tdepends on INFINIBAND_ADDR_TRANS\n\nconfig INFINIBAND_RTRS_CLIENT\n\ttristate \"RTRS client module\"\n\tdepends on INFINIBAND_ADDR_TRANS\n\tselect INFINIBAND_RTRS\n\thelp\n\t  RDMA transport client module.\n\n\t  RDMA Transport (RTRS) client implements a reliable transport layer\n\t  and also multipathing functionality and that it is intended to be\n\t  the base layer for a block storage initiator over RDMA.\n\nconfig INFINIBAND_RTRS_SERVER\n\ttristate \"RTRS server module\"\n\tdepends on INFINIBAND_ADDR_TRANS\n\tselect INFINIBAND_RTRS\n\thelp\n\t  RDMA transport server module.\n\n\t  RDMA Transport (RTRS) server module processing connection and IO\n\t  requests received from the RTRS client module, it will pass the\n\t  IO requests to its user eg. RNBD_server.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

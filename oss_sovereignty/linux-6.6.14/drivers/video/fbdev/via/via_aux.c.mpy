@@ -1,0 +1,9 @@
+{
+  "module_name": "via_aux.c",
+  "hash_id": "015ceeafb438841ff265b43ac1386558769eddc7037b130fbd0cd2e5568a7bb9",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/video/fbdev/via/via_aux.c",
+  "human_readable_source": "\n \n \n\n#include <linux/slab.h>\n#include \"via_aux.h\"\n\n\nstruct via_aux_bus *via_aux_probe(struct i2c_adapter *adap)\n{\n\tstruct via_aux_bus *bus;\n\n\tif (!adap)\n\t\treturn NULL;\n\n\tbus = kmalloc(sizeof(*bus), GFP_KERNEL);\n\tif (!bus)\n\t\treturn NULL;\n\n\tbus->adap = adap;\n\tINIT_LIST_HEAD(&bus->drivers);\n\n\tvia_aux_edid_probe(bus);\n\tvia_aux_vt1636_probe(bus);\n\tvia_aux_vt1632_probe(bus);\n\tvia_aux_vt1631_probe(bus);\n\tvia_aux_vt1625_probe(bus);\n\tvia_aux_vt1622_probe(bus);\n\tvia_aux_vt1621_probe(bus);\n\tvia_aux_sii164_probe(bus);\n\tvia_aux_ch7301_probe(bus);\n\n\treturn bus;\n}\n\nvoid via_aux_free(struct via_aux_bus *bus)\n{\n\tstruct via_aux_drv *pos, *n;\n\n\tif (!bus)\n\t\treturn;\n\n\tlist_for_each_entry_safe(pos, n, &bus->drivers, chain) {\n\t\tif (pos->cleanup)\n\t\t\tpos->cleanup(pos);\n\n\t\tlist_del(&pos->chain);\n\t\tkfree(pos->data);\n\t\tkfree(pos);\n\t}\n\n\tkfree(bus);\n}\n\nconst struct fb_videomode *via_aux_get_preferred_mode(struct via_aux_bus *bus)\n{\n\tstruct via_aux_drv *pos;\n\tconst struct fb_videomode *mode = NULL;\n\n\tif (!bus)\n\t\treturn NULL;\n\n\tlist_for_each_entry(pos, &bus->drivers, chain) {\n\t\tif (pos->get_preferred_mode)\n\t\t\tmode = pos->get_preferred_mode(pos);\n\t}\n\n\treturn mode;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

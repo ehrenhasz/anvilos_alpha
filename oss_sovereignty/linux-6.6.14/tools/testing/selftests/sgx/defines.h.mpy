@@ -1,0 +1,9 @@
+{
+  "module_name": "defines.h",
+  "hash_id": "e1af37d40815f85c0083abc34439cb02db7f4a49c132104a97655a1685ca36e2",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/sgx/defines.h",
+  "human_readable_source": " \n \n\n#ifndef DEFINES_H\n#define DEFINES_H\n\n#include <stdint.h>\n\n#define PAGE_SIZE 4096\n#define PAGE_MASK (~(PAGE_SIZE - 1))\n\n#define __aligned(x) __attribute__((__aligned__(x)))\n#define __packed __attribute__((packed))\n\n#include \"../../../../arch/x86/include/asm/sgx.h\"\n#include \"../../../../arch/x86/include/asm/enclu.h\"\n#include \"../../../../arch/x86/include/uapi/asm/sgx.h\"\n\nenum encl_op_type {\n\tENCL_OP_PUT_TO_BUFFER,\n\tENCL_OP_GET_FROM_BUFFER,\n\tENCL_OP_PUT_TO_ADDRESS,\n\tENCL_OP_GET_FROM_ADDRESS,\n\tENCL_OP_NOP,\n\tENCL_OP_EACCEPT,\n\tENCL_OP_EMODPE,\n\tENCL_OP_INIT_TCS_PAGE,\n\tENCL_OP_MAX,\n};\n\nstruct encl_op_header {\n\tuint64_t type;\n};\n\nstruct encl_op_put_to_buf {\n\tstruct encl_op_header header;\n\tuint64_t value;\n};\n\nstruct encl_op_get_from_buf {\n\tstruct encl_op_header header;\n\tuint64_t value;\n};\n\nstruct encl_op_put_to_addr {\n\tstruct encl_op_header header;\n\tuint64_t value;\n\tuint64_t addr;\n};\n\nstruct encl_op_get_from_addr {\n\tstruct encl_op_header header;\n\tuint64_t value;\n\tuint64_t addr;\n};\n\nstruct encl_op_eaccept {\n\tstruct encl_op_header header;\n\tuint64_t epc_addr;\n\tuint64_t flags;\n\tuint64_t ret;\n};\n\nstruct encl_op_emodpe {\n\tstruct encl_op_header header;\n\tuint64_t epc_addr;\n\tuint64_t flags;\n};\n\nstruct encl_op_init_tcs_page {\n\tstruct encl_op_header header;\n\tuint64_t tcs_page;\n\tuint64_t ssa;\n\tuint64_t entry;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

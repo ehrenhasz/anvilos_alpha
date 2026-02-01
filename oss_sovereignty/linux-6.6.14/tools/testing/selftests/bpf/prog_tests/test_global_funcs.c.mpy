@@ -1,0 +1,9 @@
+{
+  "module_name": "test_global_funcs.c",
+  "hash_id": "06fa4a4f5841900ba60e8491cd70b1604e01f90a91ad8a2ff3038617e6ad21c3",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/prog_tests/test_global_funcs.c",
+  "human_readable_source": "\n \n#include <test_progs.h>\n#include \"test_global_func1.skel.h\"\n#include \"test_global_func2.skel.h\"\n#include \"test_global_func3.skel.h\"\n#include \"test_global_func4.skel.h\"\n#include \"test_global_func5.skel.h\"\n#include \"test_global_func6.skel.h\"\n#include \"test_global_func7.skel.h\"\n#include \"test_global_func8.skel.h\"\n#include \"test_global_func9.skel.h\"\n#include \"test_global_func10.skel.h\"\n#include \"test_global_func11.skel.h\"\n#include \"test_global_func12.skel.h\"\n#include \"test_global_func13.skel.h\"\n#include \"test_global_func14.skel.h\"\n#include \"test_global_func15.skel.h\"\n#include \"test_global_func16.skel.h\"\n#include \"test_global_func17.skel.h\"\n#include \"test_global_func_ctx_args.skel.h\"\n\nvoid test_test_global_funcs(void)\n{\n\tRUN_TESTS(test_global_func1);\n\tRUN_TESTS(test_global_func2);\n\tRUN_TESTS(test_global_func3);\n\tRUN_TESTS(test_global_func4);\n\tRUN_TESTS(test_global_func5);\n\tRUN_TESTS(test_global_func6);\n\tRUN_TESTS(test_global_func7);\n\tRUN_TESTS(test_global_func8);\n\tRUN_TESTS(test_global_func9);\n\tRUN_TESTS(test_global_func10);\n\tRUN_TESTS(test_global_func11);\n\tRUN_TESTS(test_global_func12);\n\tRUN_TESTS(test_global_func13);\n\tRUN_TESTS(test_global_func14);\n\tRUN_TESTS(test_global_func15);\n\tRUN_TESTS(test_global_func16);\n\tRUN_TESTS(test_global_func17);\n\tRUN_TESTS(test_global_func_ctx_args);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "vxfs_immed.c",
+  "hash_id": "6f2b42f40bf4e984d3bda90366131d0545dd5fccc1e926f732077c791e05c080",
+  "original_prompt": "Ingested from linux-6.6.14/fs/freevxfs/vxfs_immed.c",
+  "human_readable_source": "\n \n\n \n#include <linux/fs.h>\n#include <linux/pagemap.h>\n\n#include \"vxfs.h\"\n#include \"vxfs_extern.h\"\n#include \"vxfs_inode.h\"\n\n \nstatic int vxfs_immed_read_folio(struct file *fp, struct folio *folio)\n{\n\tstruct vxfs_inode_info *vip = VXFS_INO(folio->mapping->host);\n\tvoid *src = vip->vii_immed.vi_immed + folio_pos(folio);\n\tunsigned long i;\n\n\tfor (i = 0; i < folio_nr_pages(folio); i++) {\n\t\tmemcpy_to_page(folio_page(folio, i), 0, src, PAGE_SIZE);\n\t\tsrc += PAGE_SIZE;\n\t}\n\n\tfolio_mark_uptodate(folio);\n\tfolio_unlock(folio);\n\n\treturn 0;\n}\n\n \nconst struct address_space_operations vxfs_immed_aops = {\n\t.read_folio =\tvxfs_immed_read_folio,\n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

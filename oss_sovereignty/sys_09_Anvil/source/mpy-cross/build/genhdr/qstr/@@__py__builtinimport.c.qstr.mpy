@@ -1,0 +1,9 @@
+{
+  "module_name": "@@__py__builtinimport.c.qstr",
+  "hash_id": "a1b155cd1da28cff4a1e10850dd887c49268732209bb15fd1431bb6535eb5cef",
+  "original_prompt": "Ingested from sys_09_Anvil/source/mpy-cross/build/genhdr/qstr/@@__py__builtinimport.c.qstr",
+  "human_readable_source": "Q(__name__)\nQ(__path__)\nQ(__path__)\nQ(__path__)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

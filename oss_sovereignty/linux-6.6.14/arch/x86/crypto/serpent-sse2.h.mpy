@@ -1,0 +1,9 @@
+{
+  "module_name": "serpent-sse2.h",
+  "hash_id": "799ad3d1fb0ff3e502fe85c62f38024c4b8ce94bb37bd6e2d61e27166f599e16",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/crypto/serpent-sse2.h",
+  "human_readable_source": " \n#ifndef ASM_X86_SERPENT_SSE2_H\n#define ASM_X86_SERPENT_SSE2_H\n\n#include <linux/crypto.h>\n#include <crypto/serpent.h>\n\n#ifdef CONFIG_X86_32\n\n#define SERPENT_PARALLEL_BLOCKS 4\n\nasmlinkage void __serpent_enc_blk_4way(const struct serpent_ctx *ctx, u8 *dst,\n\t\t\t\t       const u8 *src, bool xor);\nasmlinkage void serpent_dec_blk_4way(const struct serpent_ctx *ctx, u8 *dst,\n\t\t\t\t     const u8 *src);\n\nstatic inline void serpent_enc_blk_xway(const void *ctx, u8 *dst, const u8 *src)\n{\n\t__serpent_enc_blk_4way(ctx, dst, src, false);\n}\n\nstatic inline void serpent_enc_blk_xway_xor(const struct serpent_ctx *ctx,\n\t\t\t\t\t    u8 *dst, const u8 *src)\n{\n\t__serpent_enc_blk_4way(ctx, dst, src, true);\n}\n\nstatic inline void serpent_dec_blk_xway(const void *ctx, u8 *dst, const u8 *src)\n{\n\tserpent_dec_blk_4way(ctx, dst, src);\n}\n\n#else\n\n#define SERPENT_PARALLEL_BLOCKS 8\n\nasmlinkage void __serpent_enc_blk_8way(const struct serpent_ctx *ctx, u8 *dst,\n\t\t\t\t       const u8 *src, bool xor);\nasmlinkage void serpent_dec_blk_8way(const struct serpent_ctx *ctx, u8 *dst,\n\t\t\t\t     const u8 *src);\n\nstatic inline void serpent_enc_blk_xway(const void *ctx, u8 *dst, const u8 *src)\n{\n\t__serpent_enc_blk_8way(ctx, dst, src, false);\n}\n\nstatic inline void serpent_enc_blk_xway_xor(const struct serpent_ctx *ctx,\n\t\t\t\t\t    u8 *dst, const u8 *src)\n{\n\t__serpent_enc_blk_8way(ctx, dst, src, true);\n}\n\nstatic inline void serpent_dec_blk_xway(const void *ctx, u8 *dst, const u8 *src)\n{\n\tserpent_dec_blk_8way(ctx, dst, src);\n}\n\n#endif\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

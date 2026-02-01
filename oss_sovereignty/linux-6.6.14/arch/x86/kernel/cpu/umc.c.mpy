@@ -1,0 +1,9 @@
+{
+  "module_name": "umc.c",
+  "hash_id": "4187f51e105c2c15d900a954c080e665eef872019c6fcedbbc79c476dd2af00f",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/kernel/cpu/umc.c",
+  "human_readable_source": "\n#include <linux/kernel.h>\n#include <asm/processor.h>\n#include \"cpu.h\"\n\n \n\nstatic const struct cpu_dev umc_cpu_dev = {\n\t.c_vendor\t= \"UMC\",\n\t.c_ident\t= { \"UMC UMC UMC\" },\n\t.legacy_models\t= {\n\t\t{ .family = 4, .model_names =\n\t\t  {\n\t\t\t  [1] = \"U5D\",\n\t\t\t  [2] = \"U5S\",\n\t\t  }\n\t\t},\n\t},\n\t.c_x86_vendor\t= X86_VENDOR_UMC,\n};\n\ncpu_dev_register(umc_cpu_dev);\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "display_timing.h",
+  "hash_id": "d6ba75fd2ee7660aef075fcc590d9a23824a51d08cf73d6f572f2fe7f9e5a705",
+  "original_prompt": "Ingested from linux-6.6.14/include/video/display_timing.h",
+  "human_readable_source": " \n \n\n#ifndef __LINUX_DISPLAY_TIMING_H\n#define __LINUX_DISPLAY_TIMING_H\n\n#include <linux/bitops.h>\n#include <linux/types.h>\n\nenum display_flags {\n\tDISPLAY_FLAGS_HSYNC_LOW\t\t= BIT(0),\n\tDISPLAY_FLAGS_HSYNC_HIGH\t= BIT(1),\n\tDISPLAY_FLAGS_VSYNC_LOW\t\t= BIT(2),\n\tDISPLAY_FLAGS_VSYNC_HIGH\t= BIT(3),\n\n\t \n\tDISPLAY_FLAGS_DE_LOW\t\t= BIT(4),\n\tDISPLAY_FLAGS_DE_HIGH\t\t= BIT(5),\n\t \n\tDISPLAY_FLAGS_PIXDATA_POSEDGE\t= BIT(6),\n\t \n\tDISPLAY_FLAGS_PIXDATA_NEGEDGE\t= BIT(7),\n\tDISPLAY_FLAGS_INTERLACED\t= BIT(8),\n\tDISPLAY_FLAGS_DOUBLESCAN\t= BIT(9),\n\tDISPLAY_FLAGS_DOUBLECLK\t\t= BIT(10),\n\t \n\tDISPLAY_FLAGS_SYNC_POSEDGE\t= BIT(11),\n\t \n\tDISPLAY_FLAGS_SYNC_NEGEDGE\t= BIT(12),\n};\n\n \nstruct timing_entry {\n\tu32 min;\n\tu32 typ;\n\tu32 max;\n};\n\n \nstruct display_timing {\n\tstruct timing_entry pixelclock;\n\n\tstruct timing_entry hactive;\t\t \n\tstruct timing_entry hfront_porch;\t \n\tstruct timing_entry hback_porch;\t \n\tstruct timing_entry hsync_len;\t\t \n\n\tstruct timing_entry vactive;\t\t \n\tstruct timing_entry vfront_porch;\t \n\tstruct timing_entry vback_porch;\t \n\tstruct timing_entry vsync_len;\t\t \n\n\tenum display_flags flags;\t\t \n};\n\n \nstruct display_timings {\n\tunsigned int num_timings;\n\tunsigned int native_mode;\n\n\tstruct display_timing **timings;\n};\n\n \nstatic inline struct display_timing *display_timings_get(const struct\n\t\t\t\t\t\t\t display_timings *disp,\n\t\t\t\t\t\t\t unsigned int index)\n{\n\tif (disp->num_timings > index)\n\t\treturn disp->timings[index];\n\telse\n\t\treturn NULL;\n}\n\nvoid display_timings_release(struct display_timings *disp);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

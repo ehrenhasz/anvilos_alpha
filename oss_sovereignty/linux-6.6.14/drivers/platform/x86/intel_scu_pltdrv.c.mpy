@@ -1,0 +1,9 @@
+{
+  "module_name": "intel_scu_pltdrv.c",
+  "hash_id": "f967dfaaad5dbb108ba486bc530467d462eeb65c67dfd537e6486fffd63ecf06",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/platform/x86/intel_scu_pltdrv.c",
+  "human_readable_source": "\n \n\n#include <linux/err.h>\n#include <linux/errno.h>\n#include <linux/ioport.h>\n#include <linux/mod_devicetable.h>\n#include <linux/module.h>\n#include <linux/platform_device.h>\n\n#include <asm/intel_scu_ipc.h>\n\nstatic int intel_scu_platform_probe(struct platform_device *pdev)\n{\n\tstruct intel_scu_ipc_data scu_data = {};\n\tstruct intel_scu_ipc_dev *scu;\n\tconst struct resource *res;\n\n\tscu_data.irq = platform_get_irq_optional(pdev, 0);\n\tres = platform_get_resource(pdev, IORESOURCE_MEM, 0);\n\tif (!res)\n\t\treturn -ENOMEM;\n\n\tscu_data.mem = *res;\n\n\tscu = devm_intel_scu_ipc_register(&pdev->dev, &scu_data);\n\tif (IS_ERR(scu))\n\t\treturn PTR_ERR(scu);\n\n\tplatform_set_drvdata(pdev, scu);\n\treturn 0;\n}\n\nstatic const struct acpi_device_id intel_scu_acpi_ids[] = {\n\t{ \"INTC1026\" },\n\t{}\n};\nMODULE_DEVICE_TABLE(acpi, intel_scu_acpi_ids);\n\nstatic struct platform_driver intel_scu_platform_driver = {\n\t.probe = intel_scu_platform_probe,\n\t.driver = {\n\t\t.name = \"intel_scu\",\n\t\t.acpi_match_table = intel_scu_acpi_ids,\n\t},\n};\nmodule_platform_driver(intel_scu_platform_driver);\n\nMODULE_AUTHOR(\"Divya Sasidharan <divya.s.sasidharan@intel.com>\");\nMODULE_AUTHOR(\"Mika Westerberg <mika.westerberg@linux.intel.com\");\nMODULE_AUTHOR(\"Rajmohan Mani <rajmohan.mani@intel.com>\");\nMODULE_DESCRIPTION(\"Intel SCU platform driver\");\nMODULE_LICENSE(\"GPL v2\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

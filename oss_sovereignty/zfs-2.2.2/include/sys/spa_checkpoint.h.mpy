@@ -1,0 +1,9 @@
+{
+  "module_name": "spa_checkpoint.h",
+  "hash_id": "0cf0ee38ed18fec833fa35934d6244d35283bd3b2d78687790c759cfebd5f399",
+  "original_prompt": "Ingested from zfs-2.2.2/include/sys/spa_checkpoint.h",
+  "human_readable_source": " \n\n \n\n#ifndef _SYS_SPA_CHECKPOINT_H\n#define\t_SYS_SPA_CHECKPOINT_H\n\n#include <sys/zthr.h>\n\ntypedef struct spa_checkpoint_info {\n\tuint64_t sci_timestamp;  \n\tuint64_t sci_dspace;     \n} spa_checkpoint_info_t;\n\nint spa_checkpoint(const char *);\nint spa_checkpoint_discard(const char *);\n\nboolean_t spa_checkpoint_discard_thread_check(void *, zthr_t *);\nvoid spa_checkpoint_discard_thread(void *, zthr_t *);\n\nint spa_checkpoint_get_stats(spa_t *, pool_checkpoint_stat_t *);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

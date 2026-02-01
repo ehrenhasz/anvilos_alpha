@@ -1,0 +1,9 @@
+{
+  "module_name": "rust_is_available_bindgen_libclang.h",
+  "hash_id": "658507dd29cb31b276492d1cabb3deea9c2af8c4f22d5f66be9ef67801721445",
+  "original_prompt": "Ingested from linux-6.6.14/scripts/rust_is_available_bindgen_libclang.h",
+  "human_readable_source": " \n#pragma message(\"clang version \" __clang_version__)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

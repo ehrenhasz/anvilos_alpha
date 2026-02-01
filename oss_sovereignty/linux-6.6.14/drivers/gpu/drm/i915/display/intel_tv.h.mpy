@@ -1,0 +1,9 @@
+{
+  "module_name": "intel_tv.h",
+  "hash_id": "c66112e48445319718e4096809467d62bb68622316d353eb96d50c336f52674e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/display/intel_tv.h",
+  "human_readable_source": " \n \n\n#ifndef __INTEL_TV_H__\n#define __INTEL_TV_H__\n\nstruct drm_i915_private;\n\nvoid intel_tv_init(struct drm_i915_private *dev_priv);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

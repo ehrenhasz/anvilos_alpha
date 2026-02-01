@@ -1,0 +1,9 @@
+{
+  "module_name": "demangle-cxx.cpp",
+  "hash_id": "e4ccb85bfdf1b6b0a4849632b4e8b6be8836fd9b3cce9b7463d5a244e6714b18",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/util/demangle-cxx.cpp",
+  "human_readable_source": "\n#include \"demangle-cxx.h\"\n#include <stdlib.h>\n#include <string.h>\n#include <linux/compiler.h>\n\n#ifdef HAVE_LIBBFD_SUPPORT\n#define PACKAGE 'perf'\n#include <bfd.h>\n#endif\n\n#ifdef HAVE_CXA_DEMANGLE_SUPPORT\n#include <cxxabi.h>\n#endif\n\n#if defined(HAVE_LIBBFD_SUPPORT) || defined(HAVE_CPLUS_DEMANGLE_SUPPORT)\n#ifndef DMGL_PARAMS\n#define DMGL_PARAMS     (1 << 0)   \n#define DMGL_ANSI       (1 << 1)   \n#endif\n#endif\n\n \nextern \"C\"\nchar *cxx_demangle_sym(const char *str, bool params __maybe_unused,\n                       bool modifiers __maybe_unused)\n{\n#ifdef HAVE_LIBBFD_SUPPORT\n        int flags = (params ? DMGL_PARAMS : 0) | (modifiers ? DMGL_ANSI : 0);\n\n        return bfd_demangle(NULL, str, flags);\n#elif defined(HAVE_CPLUS_DEMANGLE_SUPPORT)\n        int flags = (params ? DMGL_PARAMS : 0) | (modifiers ? DMGL_ANSI : 0);\n\n        return cplus_demangle(str, flags);\n#elif defined(HAVE_CXA_DEMANGLE_SUPPORT)\n        char *output;\n        int status;\n\n        output = abi::__cxa_demangle(str,  NULL,  NULL, &status);\n        return output;\n#else\n        return NULL;\n#endif\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

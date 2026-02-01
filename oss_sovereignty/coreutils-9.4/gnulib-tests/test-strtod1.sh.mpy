@@ -1,0 +1,9 @@
+{
+  "module_name": "test-strtod1.sh",
+  "hash_id": "c5524f974be52232c8767ffb4af3769422b3885880034b9ad005c967750d75eb",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-strtod1.sh",
+  "human_readable_source": "#!/bin/sh\n\n: \"${LOCALE_FR=fr_FR}\"\n: \"${LOCALE_FR_UTF8=fr_FR.UTF-8}\"\n\nif test $LOCALE_FR = none && test $LOCALE_FR_UTF8 = none; then\n  if test -f /usr/bin/localedef; then\n    echo \"Skipping test: no locale for testing is installed\"\n  else\n    echo \"Skipping test: no locale for testing is supported\"\n  fi\n  exit 77\nfi\n\nif $LC_NUMERIC_IMPLEMENTED; then\n  :\nelse\n  echo \"Skipping test: LC_NUMERIC category of locales is not implemented\"\n  exit 77\nfi\n\nif test $LOCALE_FR != none; then\n  LC_ALL=$LOCALE_FR      ${CHECKER} ./test-strtod1${EXEEXT} || exit 1\nfi\n\nif test $LOCALE_FR_UTF8 != none; then\n  LC_ALL=$LOCALE_FR_UTF8 ${CHECKER} ./test-strtod1${EXEEXT} || exit 1\nfi\n\nexit 0\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

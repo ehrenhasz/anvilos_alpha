@@ -1,0 +1,9 @@
+{
+  "module_name": "root-dev-ino.c",
+  "hash_id": "f0923860afd72d121e9ddb6c7d38e63f24a4e4405e2a0f7bec6f6f4e7c42aeed",
+  "original_prompt": "Ingested from coreutils-9.4/lib/root-dev-ino.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#include \"root-dev-ino.h\"\n\n#include <stdlib.h>\n\n \nstruct dev_ino *\nget_root_dev_ino (struct dev_ino *root_d_i)\n{\n  struct stat statbuf;\n  if (lstat (\"/\", &statbuf))\n    return nullptr;\n  root_d_i->st_ino = statbuf.st_ino;\n  root_d_i->st_dev = statbuf.st_dev;\n  return root_d_i;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

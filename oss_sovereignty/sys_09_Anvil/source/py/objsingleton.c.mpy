@@ -1,0 +1,9 @@
+{
+  "module_name": "objsingleton.c",
+  "hash_id": "5b32d1de644214883f1eaf4e0182082e06f85ca6e5ef0dc084a8625af8ed7c2d",
+  "original_prompt": "Ingested from sys_09_Anvil/source/py/objsingleton.c",
+  "human_readable_source": " \n\n#include <stdlib.h>\n#include <assert.h>\n\n#include \"py/obj.h\"\n\n \n \n\ntypedef struct _mp_obj_singleton_t {\n    mp_obj_base_t base;\n    qstr name;\n} mp_obj_singleton_t;\n\nstatic void singleton_print(const mp_print_t *print, mp_obj_t self_in, mp_print_kind_t kind) {\n    (void)kind;\n    mp_obj_singleton_t *self = MP_OBJ_TO_PTR(self_in);\n    mp_printf(print, \"%q\", self->name);\n}\n\nMP_DEFINE_CONST_OBJ_TYPE(\n    mp_type_singleton, MP_QSTR_, MP_TYPE_FLAG_NONE,\n    print, singleton_print\n    );\n\nconst mp_obj_singleton_t mp_const_ellipsis_obj = {{&mp_type_singleton}, MP_QSTR_Ellipsis};\n#if MICROPY_PY_BUILTINS_NOTIMPLEMENTED\nconst mp_obj_singleton_t mp_const_notimplemented_obj = {{&mp_type_singleton}, MP_QSTR_NotImplemented};\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

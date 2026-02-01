@@ -1,0 +1,9 @@
+{
+  "module_name": "ws.h",
+  "hash_id": "d301af96f63c2e9bd9882617b18993af32f011174590c95b8868ea422702f0eb",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/infiniband/hw/irdma/ws.h",
+  "human_readable_source": " \n \n#ifndef IRDMA_WS_H\n#define IRDMA_WS_H\n\n#include \"osdep.h\"\n\nenum irdma_ws_node_type {\n\tWS_NODE_TYPE_PARENT,\n\tWS_NODE_TYPE_LEAF,\n};\n\nenum irdma_ws_match_type {\n\tWS_MATCH_TYPE_VSI,\n\tWS_MATCH_TYPE_TC,\n};\n\nstruct irdma_ws_node {\n\tstruct list_head siblings;\n\tstruct list_head child_list_head;\n\tstruct irdma_ws_node *parent;\n\tu64 lan_qs_handle;  \n\tu32 l2_sched_node_id;\n\tu16 index;\n\tu16 qs_handle;\n\tu16 vsi_index;\n\tu8 traffic_class;\n\tu8 user_pri;\n\tu8 rel_bw;\n\tu8 abstraction_layer;  \n\tu8 prio_type;\n\tbool type_leaf:1;\n\tbool enable:1;\n};\n\nstruct irdma_sc_vsi;\nint irdma_ws_add(struct irdma_sc_vsi *vsi, u8 user_pri);\nvoid irdma_ws_remove(struct irdma_sc_vsi *vsi, u8 user_pri);\nvoid irdma_ws_reset(struct irdma_sc_vsi *vsi);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "314973192a02c1a3549379ad0b37e054f90da7dd9ae57498dd8748740b390a7a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/vfio/cdx/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# VFIO CDX configuration\n#\n# Copyright (C) 2022-2023, Advanced Micro Devices, Inc.\n#\n\nconfig VFIO_CDX\n\ttristate \"VFIO support for CDX bus devices\"\n\tdepends on CDX_BUS\n\tselect EVENTFD\n\thelp\n\t  Driver to enable VFIO support for the devices on CDX bus.\n\t  This is required to make use of CDX devices present in\n\t  the system using the VFIO framework.\n\n\t  If you don't know what to do here, say N.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

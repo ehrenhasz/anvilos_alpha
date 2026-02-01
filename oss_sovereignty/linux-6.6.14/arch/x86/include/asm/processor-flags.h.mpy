@@ -1,0 +1,9 @@
+{
+  "module_name": "processor-flags.h",
+  "hash_id": "38cf8da069b6db82aaad93d5265b1dfa340000fea5172cee9efc5ffeecdc0739",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/include/asm/processor-flags.h",
+  "human_readable_source": " \n#ifndef _ASM_X86_PROCESSOR_FLAGS_H\n#define _ASM_X86_PROCESSOR_FLAGS_H\n\n#include <uapi/asm/processor-flags.h>\n#include <linux/mem_encrypt.h>\n\n#ifdef CONFIG_VM86\n#define X86_VM_MASK\tX86_EFLAGS_VM\n#else\n#define X86_VM_MASK\t0  \n#endif\n\n \n#ifdef CONFIG_X86_64\n \n#define CR3_ADDR_MASK\t__sme_clr(PHYSICAL_PAGE_MASK)\n#define CR3_PCID_MASK\t0xFFFull\n#define CR3_NOFLUSH\tBIT_ULL(63)\n\n#else\n \n#define CR3_ADDR_MASK\t0xFFFFFFFFull\n#define CR3_PCID_MASK\t0ull\n#define CR3_NOFLUSH\t0\n#endif\n\n#ifdef CONFIG_PAGE_TABLE_ISOLATION\n# define X86_CR3_PTI_PCID_USER_BIT\t11\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

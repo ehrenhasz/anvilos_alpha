@@ -1,0 +1,9 @@
+{
+  "module_name": "hplance.h",
+  "hash_id": "7e27e84d296d9d7c8982730e053ddac5bd03c4bc9b2823f62813fc0b216c8a3b",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/amd/hplance.h",
+  "human_readable_source": " \n \n\n \n#define HPLANCE_ID\t\t0x01\t\t \n#define HPLANCE_STATUS\t\t0x03\t\t \n\n \n#define LE_IE 0x80                                 \n#define LE_IR 0x40                                 \n#define LE_LOCK 0x08                               \n#define LE_ACK 0x04                                \n#define LE_JAB 0x02                                \n \n\n \n#define HPLANCE_IDOFF 0                            \n#define HPLANCE_REGOFF 0x4000                      \n#define HPLANCE_MEMOFF 0x8000                      \n#define HPLANCE_NVRAMOFF 0xC008                    \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

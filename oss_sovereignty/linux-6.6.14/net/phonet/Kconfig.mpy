@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "4c35901f713c6002ab5dd9e96f6fa80e7b9223a5aad65a49ce9bed6cf625480c",
+  "original_prompt": "Ingested from linux-6.6.14/net/phonet/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Phonet protocol\n#\n\nconfig PHONET\n\ttristate \"Phonet protocols family\"\n\thelp\n\t  The Phone Network protocol (PhoNet) is a packet-oriented\n\t  communication protocol developed by Nokia for use with its modems.\n\n\t  This is required for Maemo to use cellular data connectivity (if\n\t  supported). It can also be used to control Nokia phones\n\t  from a Linux computer, although AT commands may be easier to use.\n\n\t  To compile this driver as a module, choose M here: the module\n\t  will be called phonet. If unsure, say N.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

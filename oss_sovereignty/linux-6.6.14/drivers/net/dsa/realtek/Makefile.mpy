@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "a50e942e3f0a5ca16cc339e0752762dcd27d19d9c89fc8a2a67c73971af596a7",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/dsa/realtek/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nobj-$(CONFIG_NET_DSA_REALTEK_MDIO) \t+= realtek-mdio.o\nobj-$(CONFIG_NET_DSA_REALTEK_SMI) \t+= realtek-smi.o\nobj-$(CONFIG_NET_DSA_REALTEK_RTL8366RB) += rtl8366.o\nrtl8366-objs \t\t\t\t:= rtl8366-core.o rtl8366rb.o\nobj-$(CONFIG_NET_DSA_REALTEK_RTL8365MB) += rtl8365mb.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

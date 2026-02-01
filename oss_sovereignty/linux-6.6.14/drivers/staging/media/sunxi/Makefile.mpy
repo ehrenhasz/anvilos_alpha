@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "af8b46eea7829106b29e1a466a75b98317dc9918d9150cb3aca934d878aa02a7",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/sunxi/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nobj-$(CONFIG_VIDEO_SUNXI_CEDRUS)\t+= cedrus/\nobj-$(CONFIG_VIDEO_SUN6I_ISP)\t\t+= sun6i-isp/\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

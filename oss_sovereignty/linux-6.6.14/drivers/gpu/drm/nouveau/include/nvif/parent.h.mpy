@@ -1,0 +1,9 @@
+{
+  "module_name": "parent.h",
+  "hash_id": "e1ae919f5a3f8a4bf49166eb4f843db67afd76c50bd4c025504370b2afc0cd4e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/include/nvif/parent.h",
+  "human_readable_source": " \n#ifndef __NVIF_PARENT_H__\n#define __NVIF_PARENT_H__\n#include <nvif/os.h>\nstruct nvif_object;\n\nstruct nvif_parent {\n\tconst struct nvif_parent_func {\n\t\tvoid (*debugf)(struct nvif_object *, const char *fmt, ...) __printf(2, 3);\n\t\tvoid (*errorf)(struct nvif_object *, const char *fmt, ...) __printf(2, 3);\n\t} *func;\n};\n\nstatic inline void\nnvif_parent_dtor(struct nvif_parent *parent)\n{\n\tparent->func = NULL;\n}\n\nstatic inline void\nnvif_parent_ctor(const struct nvif_parent_func *func, struct nvif_parent *parent)\n{\n\tparent->func = func;\n}\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

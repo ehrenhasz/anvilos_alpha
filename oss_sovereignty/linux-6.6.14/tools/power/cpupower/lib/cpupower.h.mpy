@@ -1,0 +1,9 @@
+{
+  "module_name": "cpupower.h",
+  "hash_id": "4af5a5a96a6fecefccf203eaaac7610f569c5578a11ede9500b3fc8bf94322d3",
+  "original_prompt": "Ingested from linux-6.6.14/tools/power/cpupower/lib/cpupower.h",
+  "human_readable_source": " \n#ifndef __CPUPOWER_CPUPOWER_H__\n#define __CPUPOWER_CPUPOWER_H__\n\nstruct cpupower_topology {\n\t \n\tunsigned int cores;\n\tunsigned int pkgs;\n\tunsigned int threads;  \n\n\t \n\tstruct cpuid_core_info *core_info;\n};\n\nstruct cpuid_core_info {\n\tint pkg;\n\tint core;\n\tint cpu;\n\n\t \n\tunsigned int is_online:1;\n};\n\n#ifdef __cplusplus\nextern \"C\" {\n#endif\n\nint get_cpu_topology(struct cpupower_topology *cpu_top);\nvoid cpu_topology_release(struct cpupower_topology cpu_top);\nint cpupower_is_cpu_online(unsigned int cpu);\n\n#ifdef __cplusplus\n}\n#endif\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

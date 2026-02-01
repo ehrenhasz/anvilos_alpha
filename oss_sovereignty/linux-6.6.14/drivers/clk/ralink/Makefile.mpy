@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "ecf9235c137efc325633bef19b878f680cfbe9b54ac54b85c23fd8906d58f51f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/clk/ralink/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nobj-$(CONFIG_CLK_MT7621) += clk-mt7621.o\nobj-$(CONFIG_CLK_MTMIPS) += clk-mtmips.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

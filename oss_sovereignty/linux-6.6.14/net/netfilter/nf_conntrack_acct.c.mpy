@@ -1,0 +1,9 @@
+{
+  "module_name": "nf_conntrack_acct.c",
+  "hash_id": "2f6acc76b8202e1cee7d62a125eec4e1f49350551e0b1ac4f1eaec1c27191f36",
+  "original_prompt": "Ingested from linux-6.6.14/net/netfilter/nf_conntrack_acct.c",
+  "human_readable_source": "\n \n\n \n\n#define pr_fmt(fmt) KBUILD_MODNAME \": \" fmt\n\n#include <linux/netfilter.h>\n#include <linux/slab.h>\n#include <linux/kernel.h>\n#include <linux/moduleparam.h>\n#include <linux/export.h>\n\n#include <net/netfilter/nf_conntrack.h>\n#include <net/netfilter/nf_conntrack_extend.h>\n#include <net/netfilter/nf_conntrack_acct.h>\n\nstatic bool nf_ct_acct __read_mostly;\n\nmodule_param_named(acct, nf_ct_acct, bool, 0644);\nMODULE_PARM_DESC(acct, \"Enable connection tracking flow accounting.\");\n\nvoid nf_conntrack_acct_pernet_init(struct net *net)\n{\n\tnet->ct.sysctl_acct = nf_ct_acct;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "bc_xprt.h",
+  "hash_id": "9c68188e2cb0078a70aac167b00b263fe98928c52b0fb21598353d3a23dc67ca",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/sunrpc/bc_xprt.h",
+  "human_readable_source": " \n \n\n \n\n#ifndef _LINUX_SUNRPC_BC_XPRT_H\n#define _LINUX_SUNRPC_BC_XPRT_H\n\n#include <linux/sunrpc/svcsock.h>\n#include <linux/sunrpc/xprt.h>\n#include <linux/sunrpc/sched.h>\n\n#ifdef CONFIG_SUNRPC_BACKCHANNEL\nstruct rpc_rqst *xprt_lookup_bc_request(struct rpc_xprt *xprt, __be32 xid);\nvoid xprt_complete_bc_request(struct rpc_rqst *req, uint32_t copied);\nvoid xprt_init_bc_request(struct rpc_rqst *req, struct rpc_task *task);\nvoid xprt_free_bc_request(struct rpc_rqst *req);\nint xprt_setup_backchannel(struct rpc_xprt *, unsigned int min_reqs);\nvoid xprt_destroy_backchannel(struct rpc_xprt *, unsigned int max_reqs);\n\n \nint xprt_setup_bc(struct rpc_xprt *xprt, unsigned int min_reqs);\nvoid xprt_destroy_bc(struct rpc_xprt *xprt, unsigned int max_reqs);\nvoid xprt_free_bc_rqst(struct rpc_rqst *req);\nunsigned int xprt_bc_max_slots(struct rpc_xprt *xprt);\n\n \nstatic inline bool svc_is_backchannel(const struct svc_rqst *rqstp)\n{\n\treturn rqstp->rq_server->sv_bc_enabled;\n}\n\nstatic inline void set_bc_enabled(struct svc_serv *serv)\n{\n\tserv->sv_bc_enabled = true;\n}\n#else  \nstatic inline int xprt_setup_backchannel(struct rpc_xprt *xprt,\n\t\t\t\t\t unsigned int min_reqs)\n{\n\treturn 0;\n}\n\nstatic inline void xprt_destroy_backchannel(struct rpc_xprt *xprt,\n\t\t\t\t\t    unsigned int max_reqs)\n{\n}\n\nstatic inline bool svc_is_backchannel(const struct svc_rqst *rqstp)\n{\n\treturn false;\n}\n\nstatic inline void set_bc_enabled(struct svc_serv *serv)\n{\n}\n\nstatic inline void xprt_free_bc_request(struct rpc_rqst *req)\n{\n}\n#endif  \n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

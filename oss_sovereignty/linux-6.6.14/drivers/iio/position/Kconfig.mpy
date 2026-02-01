@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "baf75cc4ab1500dfc088c04a7703d931d3ae214a5c2b77adac2eed6dfdffdcda",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/iio/position/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Linear and angular position sensors\n#\n# When adding new entries keep the list in alphabetical order\n\nmenu \"Linear and angular position sensors\"\n\nconfig IQS624_POS\n\ttristate \"Azoteq IQS624/625 angular position sensors\"\n\tdepends on MFD_IQS62X || COMPILE_TEST\n\thelp\n\t  Say Y here if you want to build support for the Azoteq IQS624\n\t  and IQS625 angular position sensors.\n\n\t  To compile this driver as a module, choose M here: the module\n\t  will be called iqs624-pos.\n\nconfig HID_SENSOR_CUSTOM_INTEL_HINGE\n\tdepends on HID_SENSOR_HUB\n\tselect IIO_BUFFER\n\tselect IIO_TRIGGERED_BUFFER\n\tselect HID_SENSOR_IIO_COMMON\n\tselect HID_SENSOR_IIO_TRIGGER\n\ttristate \"HID Hinge\"\n\thelp\n\t  This sensor present three angles, hinge angel, screen angles\n\t  and keyboard angle respect to horizon (ground).\n\t  Say yes here to build support for the HID custom\n\t  intel hinge sensor.\n\n\t  To compile this driver as a module, choose M here: the\n\t  module will be called hid-sensor-custom-hinge.\n\nendmenu\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

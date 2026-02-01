@@ -1,0 +1,9 @@
+{
+  "module_name": "sh_css_metrics.h",
+  "hash_id": "9435ffdffdd8c25527ec40ad352a3c108d1d7d63bc848de830422a1befaccc8b",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/sh_css_metrics.h",
+  "human_readable_source": " \n \n\n#ifndef _SH_CSS_METRICS_H_\n#define _SH_CSS_METRICS_H_\n\n#include <type_support.h>\n\nstruct sh_css_pc_histogram {\n\tunsigned int length;\n\tunsigned int *run;\n\tunsigned int *stall;\n\tunsigned int *msink;\n};\n\nstruct sh_css_binary_metrics {\n\tunsigned int mode;\n\tunsigned int id;\n\tstruct sh_css_pc_histogram isp_histogram;\n\tstruct sh_css_pc_histogram sp_histogram;\n\tstruct sh_css_binary_metrics *next;\n};\n\nstruct ia_css_frame_metrics {\n\tunsigned int num_frames;\n};\n\nstruct sh_css_metrics {\n\tstruct sh_css_binary_metrics *binary_metrics;\n\tstruct ia_css_frame_metrics   frame_metrics;\n};\n\nextern struct sh_css_metrics sh_css_metrics;\n\n \n#include \"ia_css_types.h\"\n\n \nvoid sh_css_metrics_enable_pc_histogram(bool enable);\nvoid sh_css_metrics_start_frame(void);\nvoid sh_css_metrics_start_binary(struct sh_css_binary_metrics *metrics);\nvoid sh_css_metrics_sample_pcs(void);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

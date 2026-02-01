@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "304fccf40c9e696823ea838ad748bc7e36be08239463b157ae332c4bb6a40c72",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/vsock/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nall: test vsock_perf\ntest: vsock_test vsock_diag_test\nvsock_test: vsock_test.o timeout.o control.o util.o\nvsock_diag_test: vsock_diag_test.o timeout.o control.o util.o\nvsock_perf: vsock_perf.o\n\nCFLAGS += -g -O2 -Werror -Wall -I. -I../../include -I../../../usr/include -Wno-pointer-sign -fno-strict-overflow -fno-strict-aliasing -fno-common -MMD -U_FORTIFY_SOURCE -D_GNU_SOURCE\n.PHONY: all test clean\nclean:\n\t${RM} *.o *.d vsock_test vsock_diag_test vsock_perf\n-include *.d\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

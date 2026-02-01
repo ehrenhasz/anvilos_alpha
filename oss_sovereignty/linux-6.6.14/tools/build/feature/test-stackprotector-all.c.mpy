@@ -1,0 +1,9 @@
+{
+  "module_name": "test-stackprotector-all.c",
+  "hash_id": "640f60d936824392574acb3a4084f177989f435b816ce3804d2f3dae22d945d1",
+  "original_prompt": "Ingested from linux-6.6.14/tools/build/feature/test-stackprotector-all.c",
+  "human_readable_source": "\n#include <stdio.h>\n\nint main(void)\n{\n\treturn puts(\"hi\");\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

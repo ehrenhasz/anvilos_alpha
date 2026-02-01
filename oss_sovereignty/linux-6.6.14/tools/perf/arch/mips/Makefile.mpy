@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "1535781bd2333a5c5cbc961a0c230ae8ed049f3cb26cce0afaa965675cae2a97",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/arch/mips/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nifndef NO_DWARF\nPERF_HAVE_DWARF_REGS := 1\nendif\n\n# Syscall table generation for perf\nout    := $(OUTPUT)arch/mips/include/generated/asm\nheader := $(out)/syscalls_n64.c\nsysprf := $(srctree)/tools/perf/arch/mips/entry/syscalls\nsysdef := $(sysprf)/syscall_n64.tbl\nsystbl := $(sysprf)/mksyscalltbl\n\n# Create output directory if not already present\n_dummy := $(shell [ -d '$(out)' ] || mkdir -p '$(out)')\n\n$(header): $(sysdef) $(systbl)\n\t$(Q)$(SHELL) '$(systbl)' $(sysdef) > $@\n\nclean::\n\t$(call QUIET_CLEAN, mips) $(RM) $(header)\n\narchheaders: $(header)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

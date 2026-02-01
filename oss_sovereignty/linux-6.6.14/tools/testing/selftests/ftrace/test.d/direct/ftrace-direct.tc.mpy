@@ -1,0 +1,9 @@
+{
+  "module_name": "ftrace-direct.tc",
+  "hash_id": "8929c32895d093d904eaf51a3d6bc601b259509adafa37512c0ff305991c913d",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/ftrace/test.d/direct/ftrace-direct.tc",
+  "human_readable_source": "#!/bin/sh\n# SPDX-License-Identifier: GPL-2.0\n# description: Test ftrace direct functions against tracers\n\nrmmod ftrace-direct ||:\nif ! modprobe ftrace-direct ; then\n  echo \"No ftrace-direct sample module - please make CONFIG_SAMPLE_FTRACE_DIRECT=m\"\n  exit_unresolved;\nfi\n\necho \"Let the module run a little\"\nsleep 1\n\ngrep -q \"my_direct_func: waking up\" trace\n\nrmmod ftrace-direct\n\ntest_tracer() {\n\ttracer=$1\n\n\t# tracer -> direct -> no direct > no tracer\n\techo $tracer > current_tracer\n\tmodprobe ftrace-direct\n\trmmod ftrace-direct\n\techo nop > current_tracer\n\n\t# tracer -> direct -> no tracer > no direct\n\techo $tracer > current_tracer\n\tmodprobe ftrace-direct\n\techo nop > current_tracer\n\trmmod ftrace-direct\n\n\t# direct -> tracer -> no tracer > no direct\n\tmodprobe ftrace-direct\n\techo $tracer > current_tracer\n\techo nop > current_tracer\n\trmmod ftrace-direct\n\n\t# direct -> tracer -> no direct > no notracer\n\tmodprobe ftrace-direct\n\techo $tracer > current_tracer\n\trmmod ftrace-direct\n\techo nop > current_tracer\n}\n\nfor t in `cat available_tracers`; do\n\tif [ \"$t\" != \"nop\" ]; then\n\t\ttest_tracer $t\n\tfi\ndone\n\necho nop > current_tracer\nrmmod ftrace-direct ||:\n\n# Now do the same thing with another direct function registered\necho \"Running with another ftrace direct function\"\n\nrmmod ftrace-direct-too ||:\nmodprobe ftrace-direct-too\n\nfor t in `cat available_tracers`; do\n\tif [ \"$t\" != \"nop\" ]; then\n\t\ttest_tracer $t\n\tfi\ndone\n\necho nop > current_tracer\nrmmod ftrace-direct ||:\nrmmod ftrace-direct-too ||:\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

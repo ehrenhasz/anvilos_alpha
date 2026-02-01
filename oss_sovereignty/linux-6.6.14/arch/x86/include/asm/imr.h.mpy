@@ -1,0 +1,9 @@
+{
+  "module_name": "imr.h",
+  "hash_id": "4f0808fb877f5d80c721d99f66d70b4cf04c409b8f3ef0284be47020ef9e3dc4",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/include/asm/imr.h",
+  "human_readable_source": " \n \n#ifndef _IMR_H\n#define _IMR_H\n\n#include <linux/types.h>\n\n \n#define IMR_ESRAM_FLUSH\t\tBIT(31)\n#define IMR_CPU_SNOOP\t\tBIT(30)\t\t \n#define IMR_RMU\t\t\tBIT(29)\n#define IMR_VC1_SAI_ID3\t\tBIT(15)\n#define IMR_VC1_SAI_ID2\t\tBIT(14)\n#define IMR_VC1_SAI_ID1\t\tBIT(13)\n#define IMR_VC1_SAI_ID0\t\tBIT(12)\n#define IMR_VC0_SAI_ID3\t\tBIT(11)\n#define IMR_VC0_SAI_ID2\t\tBIT(10)\n#define IMR_VC0_SAI_ID1\t\tBIT(9)\n#define IMR_VC0_SAI_ID0\t\tBIT(8)\n#define IMR_CPU_0\t\tBIT(1)\t\t \n#define IMR_CPU\t\t\tBIT(0)\t\t \n#define IMR_ACCESS_NONE\t\t0\n\n \n#define IMR_READ_ACCESS_ALL\t0xBFFFFFFF\n#define IMR_WRITE_ACCESS_ALL\t0xFFFFFFFF\n\n \n#define QUARK_X1000_IMR_MAX\t0x08\n#define QUARK_X1000_IMR_REGBASE 0x40\n\n \n#define IMR_ALIGN\t\t0x400\n#define IMR_MASK\t\t(IMR_ALIGN - 1)\n\nint imr_add_range(phys_addr_t base, size_t size,\n\t\t  unsigned int rmask, unsigned int wmask);\n\nint imr_remove_range(phys_addr_t base, size_t size);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

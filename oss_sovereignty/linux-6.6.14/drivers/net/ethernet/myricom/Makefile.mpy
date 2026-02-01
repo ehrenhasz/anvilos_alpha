@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "198d2d7a9990a6f76b6056dbb5a2d04c1e379c3b7717ae8aaf503486e9c3dd57",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/myricom/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Makefile for the Myricom network device drivers.\n#\n\nobj-$(CONFIG_MYRI10GE) += myri10ge/\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

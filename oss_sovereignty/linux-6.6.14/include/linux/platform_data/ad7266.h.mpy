@@ -1,0 +1,9 @@
+{
+  "module_name": "ad7266.h",
+  "hash_id": "c5c4c87cfb9761cf958984bb1a79ffec8720a65c43079de412d96b3ef5808c66",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/platform_data/ad7266.h",
+  "human_readable_source": " \n \n\n#ifndef __IIO_ADC_AD7266_H__\n#define __IIO_ADC_AD7266_H__\n\n \nenum ad7266_range {\n\tAD7266_RANGE_VREF,\n\tAD7266_RANGE_2VREF,\n};\n\n \nenum ad7266_mode {\n\tAD7266_MODE_DIFF,\n\tAD7266_MODE_PSEUDO_DIFF,\n\tAD7266_MODE_SINGLE_ENDED,\n};\n\n \nstruct ad7266_platform_data {\n\tenum ad7266_range range;\n\tenum ad7266_mode mode;\n\tbool fixed_addr;\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

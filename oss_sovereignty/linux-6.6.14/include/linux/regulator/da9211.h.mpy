@@ -1,0 +1,9 @@
+{
+  "module_name": "da9211.h",
+  "hash_id": "e0891d94a5ed29e518069daf7d6a7e46dc286b542d3e94e34b26479f73e18ec1",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/regulator/da9211.h",
+  "human_readable_source": " \n \n\n#ifndef __LINUX_REGULATOR_DA9211_H\n#define __LINUX_REGULATOR_DA9211_H\n\n#include <linux/regulator/machine.h>\n\n#define DA9211_MAX_REGULATORS\t2\n\nstruct gpio_desc;\n\nenum da9211_chip_id {\n\tDA9211,\n\tDA9212,\n\tDA9213,\n\tDA9223,\n\tDA9214,\n\tDA9224,\n\tDA9215,\n\tDA9225,\n};\n\nstruct da9211_pdata {\n\t \n\tint num_buck;\n\tstruct gpio_desc *gpiod_ren[DA9211_MAX_REGULATORS];\n\tstruct device_node *reg_node[DA9211_MAX_REGULATORS];\n\tstruct regulator_init_data *init_data[DA9211_MAX_REGULATORS];\n};\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

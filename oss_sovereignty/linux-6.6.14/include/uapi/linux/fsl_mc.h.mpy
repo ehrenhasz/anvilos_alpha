@@ -1,0 +1,9 @@
+{
+  "module_name": "fsl_mc.h",
+  "hash_id": "76564b30d3f32b3b83e20fe4e04e827ae91ec75b1d52b5527cb7c8d7b99a3f84",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/fsl_mc.h",
+  "human_readable_source": " \n \n#ifndef _UAPI_FSL_MC_H_\n#define _UAPI_FSL_MC_H_\n\n#include <linux/types.h>\n\n#define MC_CMD_NUM_OF_PARAMS\t7\n\n \nstruct fsl_mc_command {\n\t__le64 header;\n\t__le64 params[MC_CMD_NUM_OF_PARAMS];\n};\n\n#define FSL_MC_SEND_CMD_IOCTL_TYPE\t'R'\n#define FSL_MC_SEND_CMD_IOCTL_SEQ\t0xE0\n\n#define FSL_MC_SEND_MC_COMMAND \\\n\t_IOWR(FSL_MC_SEND_CMD_IOCTL_TYPE, FSL_MC_SEND_CMD_IOCTL_SEQ, \\\n\tstruct fsl_mc_command)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

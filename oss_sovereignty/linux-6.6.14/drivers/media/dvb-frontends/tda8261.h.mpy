@@ -1,0 +1,9 @@
+{
+  "module_name": "tda8261.h",
+  "hash_id": "a25d46cd1bc2cac6f136e03477b06319611c62eed1069d60acf3981fa48eccac",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/dvb-frontends/tda8261.h",
+  "human_readable_source": " \n \n\n#ifndef __TDA8261_H\n#define __TDA8261_H\n\nenum tda8261_step {\n\tTDA8261_STEP_2000 = 0,\t \n\tTDA8261_STEP_1000,\t \n\tTDA8261_STEP_500,\t \n\tTDA8261_STEP_250,\t \n\tTDA8261_STEP_125\t \n};\n\nstruct tda8261_config {\n\n\tu8\t\t\taddr;\n\tenum tda8261_step\tstep_size;\n};\n\n#if IS_REACHABLE(CONFIG_DVB_TDA8261)\n\nextern struct dvb_frontend *tda8261_attach(struct dvb_frontend *fe,\n\t\t\t\t\t   const struct tda8261_config *config,\n\t\t\t\t\t   struct i2c_adapter *i2c);\n\n#else\n\nstatic inline struct dvb_frontend *tda8261_attach(struct dvb_frontend *fe,\n\t\t\t\t\t\t  const struct tda8261_config *config,\n\t\t\t\t\t\t  struct i2c_adapter *i2c)\n{\n\tprintk(KERN_WARNING \"%s: Driver disabled by Kconfig\\n\", __func__);\n\treturn NULL;\n}\n\n#endif \n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

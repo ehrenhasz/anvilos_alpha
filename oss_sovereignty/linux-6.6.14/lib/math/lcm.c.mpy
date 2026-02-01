@@ -1,0 +1,9 @@
+{
+  "module_name": "lcm.c",
+  "hash_id": "0e4956b4d3cac271a1608baf0db766d2e510744e489dd965b8172a8f58ae24a6",
+  "original_prompt": "Ingested from linux-6.6.14/lib/math/lcm.c",
+  "human_readable_source": "\n#include <linux/compiler.h>\n#include <linux/gcd.h>\n#include <linux/export.h>\n#include <linux/lcm.h>\n\n \nunsigned long lcm(unsigned long a, unsigned long b)\n{\n\tif (a && b)\n\t\treturn (a / gcd(a, b)) * b;\n\telse\n\t\treturn 0;\n}\nEXPORT_SYMBOL_GPL(lcm);\n\nunsigned long lcm_not_zero(unsigned long a, unsigned long b)\n{\n\tunsigned long l = lcm(a, b);\n\n\tif (l)\n\t\treturn l;\n\n\treturn (b ? : a);\n}\nEXPORT_SYMBOL_GPL(lcm_not_zero);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

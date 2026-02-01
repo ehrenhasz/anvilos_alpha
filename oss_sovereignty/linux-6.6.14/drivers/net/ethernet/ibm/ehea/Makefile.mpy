@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "d064bc96efbf38a1fbd8dc580149edad2dcf578ee3f620b84295825fa5b63d9d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/ibm/ehea/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Makefile for the eHEA ethernet device driver for IBM eServer System p\n#\nehea-y = ehea_main.o ehea_phyp.o ehea_qmr.o ehea_ethtool.o\nobj-$(CONFIG_EHEA) += ehea.o\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

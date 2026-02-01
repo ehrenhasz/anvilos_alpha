@@ -1,0 +1,9 @@
+{
+  "module_name": "define_custom_trace.h",
+  "hash_id": "fdf3be47979677e9aa76f55fa1de7dd3a77ee833edabc0154369ade33d9ffb10",
+  "original_prompt": "Ingested from linux-6.6.14/include/trace/define_custom_trace.h",
+  "human_readable_source": " \n \n\n#ifdef CREATE_CUSTOM_TRACE_EVENTS\n\n \n#undef CREATE_CUSTOM_TRACE_EVENTS\n\n#include <linux/stringify.h>\n\n#undef TRACE_CUSTOM_EVENT\n#define TRACE_CUSTOM_EVENT(name, proto, args, tstruct, assign, print)\n\n#undef DEFINE_CUSTOM_EVENT\n#define DEFINE_CUSTOM_EVENT(template, name, proto, args)\n\n#undef TRACE_INCLUDE\n#undef __TRACE_INCLUDE\n\n#ifndef TRACE_INCLUDE_FILE\n# define TRACE_INCLUDE_FILE TRACE_SYSTEM\n# define UNDEF_TRACE_INCLUDE_FILE\n#endif\n\n#ifndef TRACE_INCLUDE_PATH\n# define __TRACE_INCLUDE(system) <trace/events/system.h>\n# define UNDEF_TRACE_INCLUDE_PATH\n#else\n# define __TRACE_INCLUDE(system) __stringify(TRACE_INCLUDE_PATH/system.h)\n#endif\n\n# define TRACE_INCLUDE(system) __TRACE_INCLUDE(system)\n\n \n#define TRACE_CUSTOM_MULTI_READ\n\n#include TRACE_INCLUDE(TRACE_INCLUDE_FILE)\n\n#ifdef TRACEPOINTS_ENABLED\n#include <trace/trace_custom_events.h>\n#endif\n\n#undef TRACE_CUSTOM_EVENT\n#undef DECLARE_CUSTOM_EVENT_CLASS\n#undef DEFINE_CUSTOM_EVENT\n#undef TRACE_CUSTOM_MULTI_READ\n\n \n#ifdef UNDEF_TRACE_INCLUDE_FILE\n# undef TRACE_INCLUDE_FILE\n# undef UNDEF_TRACE_INCLUDE_FILE\n#endif\n\n#ifdef UNDEF_TRACE_INCLUDE_PATH\n# undef TRACE_INCLUDE_PATH\n# undef UNDEF_TRACE_INCLUDE_PATH\n#endif\n\n \n#define CREATE_CUSTOM_TRACE_POINTS\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

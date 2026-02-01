@@ -1,0 +1,9 @@
+{
+  "module_name": "rwsem.h",
+  "hash_id": "e51b50722591a78ef47affa5455468a89beb42b5ec3500d6cb36cd3de31eb6ba",
+  "original_prompt": "Ingested from linux-6.6.14/tools/include/linux/rwsem.h",
+  "human_readable_source": " \n#ifndef _TOOLS__RWSEM_H\n#define _TOOLS__RWSEM_H\n\n#include <pthread.h>\n\nstruct rw_semaphore {\n\tpthread_rwlock_t lock;\n};\n\nstatic inline int init_rwsem(struct rw_semaphore *sem)\n{\n\treturn pthread_rwlock_init(&sem->lock, NULL);\n}\n\nstatic inline int exit_rwsem(struct rw_semaphore *sem)\n{\n\treturn pthread_rwlock_destroy(&sem->lock);\n}\n\nstatic inline int down_read(struct rw_semaphore *sem)\n{\n\treturn pthread_rwlock_rdlock(&sem->lock);\n}\n\nstatic inline int up_read(struct rw_semaphore *sem)\n{\n\treturn pthread_rwlock_unlock(&sem->lock);\n}\n\nstatic inline int down_write(struct rw_semaphore *sem)\n{\n\treturn pthread_rwlock_wrlock(&sem->lock);\n}\n\nstatic inline int up_write(struct rw_semaphore *sem)\n{\n\treturn pthread_rwlock_unlock(&sem->lock);\n}\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

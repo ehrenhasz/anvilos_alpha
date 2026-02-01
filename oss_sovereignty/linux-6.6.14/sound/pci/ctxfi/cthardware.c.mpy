@@ -1,0 +1,9 @@
+{
+  "module_name": "cthardware.c",
+  "hash_id": "0d85623b24f5efd6e8d8162654ce26f8200b09c0e39b1dd4d3386bb78387f8ef",
+  "original_prompt": "Ingested from linux-6.6.14/sound/pci/ctxfi/cthardware.c",
+  "human_readable_source": "\n \n\n#include \"cthardware.h\"\n#include \"cthw20k1.h\"\n#include \"cthw20k2.h\"\n#include <linux/bug.h>\n\nint create_hw_obj(struct pci_dev *pci, enum CHIPTYP chip_type,\n\t\t  enum CTCARDS model, struct hw **rhw)\n{\n\tint err;\n\n\tswitch (chip_type) {\n\tcase ATC20K1:\n\t\terr = create_20k1_hw_obj(rhw);\n\t\tbreak;\n\tcase ATC20K2:\n\t\terr = create_20k2_hw_obj(rhw);\n\t\tbreak;\n\tdefault:\n\t\terr = -ENODEV;\n\t\tbreak;\n\t}\n\tif (err)\n\t\treturn err;\n\n\t(*rhw)->pci = pci;\n\t(*rhw)->chip_type = chip_type;\n\t(*rhw)->model = model;\n\n\treturn 0;\n}\n\nint destroy_hw_obj(struct hw *hw)\n{\n\tint err;\n\n\tswitch (hw->pci->device) {\n\tcase 0x0005:\t \n\t\terr = destroy_20k1_hw_obj(hw);\n\t\tbreak;\n\tcase 0x000B:\t \n\t\terr = destroy_20k2_hw_obj(hw);\n\t\tbreak;\n\tdefault:\n\t\terr = -ENODEV;\n\t\tbreak;\n\t}\n\n\treturn err;\n}\n\nunsigned int get_field(unsigned int data, unsigned int field)\n{\n\tint i;\n\n\tif (WARN_ON(!field))\n\t\treturn 0;\n\t \n\tfor (i = 0; !(field & (1 << i)); )\n\t\ti++;\n\n\treturn (data & field) >> i;\n}\n\nvoid set_field(unsigned int *data, unsigned int field, unsigned int value)\n{\n\tint i;\n\n\tif (WARN_ON(!field))\n\t\treturn;\n\t \n\tfor (i = 0; !(field & (1 << i)); )\n\t\ti++;\n\n\t*data = (*data & (~field)) | ((value << i) & field);\n}\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

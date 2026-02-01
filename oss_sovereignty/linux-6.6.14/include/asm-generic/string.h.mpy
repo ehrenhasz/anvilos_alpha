@@ -1,0 +1,9 @@
+{
+  "module_name": "string.h",
+  "hash_id": "661e5b7bcf3ed7291111d2e49b10d036a36847ea2e6144ac7877fdfe3dacc917",
+  "original_prompt": "Ingested from linux-6.6.14/include/asm-generic/string.h",
+  "human_readable_source": "#ifndef __ASM_GENERIC_STRING_H\n#define __ASM_GENERIC_STRING_H\n \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

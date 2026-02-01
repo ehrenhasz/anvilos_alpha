@@ -1,0 +1,9 @@
+{
+  "module_name": "kprobe_eventname.tc",
+  "hash_id": "0587a2754687871754ce9f014d976f761b4edd21ac3e15a10ff71ac9b523fb4c",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/ftrace/test.d/kprobe/kprobe_eventname.tc",
+  "human_readable_source": "#!/bin/sh\n# SPDX-License-Identifier: GPL-2.0\n# description: Kprobe event auto/manual naming\n# requires: kprobe_events\n\n:;: \"Add an event on function without name\" ;:\n\nFUNC=`grep \" [tT] .*vfs_read$\" /proc/kallsyms | tail -n 1 | cut -f 3 -d \" \"`\n[ \"x\" != \"x$FUNC\" ] || exit_unresolved\necho \"p $FUNC\" > kprobe_events\nPROBE_NAME=`echo $FUNC | tr \".:\" \"_\"`\ntest -d events/kprobes/p_${PROBE_NAME}_0 || exit_failure\n\n:;: \"Add an event on function with new name\" ;:\n\necho \"p:event1 $FUNC\" > kprobe_events\ntest -d events/kprobes/event1 || exit_failure\n\n:;: \"Add an event on function with new name and group\" ;:\n\necho \"p:kprobes2/event2 $FUNC\" > kprobe_events\ntest -d events/kprobes2/event2 || exit_failure\n\n:;: \"Add an event on dot function without name\" ;:\n\nfind_dot_func() {\n\tif [ ! -f available_filter_functions ]; then\n\t\tgrep -m 10 \" [tT] .*\\.isra\\..*$\" /proc/kallsyms | tail -n 1 | cut -f 3 -d \" \"\n\t\treturn;\n\tfi\n\n\tgrep \" [tT] .*\\.isra\\..*\" /proc/kallsyms | cut -f 3 -d \" \" | while read f; do\n\t\tif grep -s $f available_filter_functions; then\n\t\t\techo $f\n\t\t\tbreak\n\t\tfi\n\tdone\n}\n\nFUNC=`find_dot_func | tail -n 1`\n[ \"x\" != \"x$FUNC\" ] || exit_unresolved\necho \"p $FUNC\" > kprobe_events\nEVENT=`grep $FUNC kprobe_events | cut -f 1 -d \" \" | cut -f 2 -d:`\n[ \"x\" != \"x$EVENT\" ] || exit_failure\ntest -d events/$EVENT || exit_failure\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

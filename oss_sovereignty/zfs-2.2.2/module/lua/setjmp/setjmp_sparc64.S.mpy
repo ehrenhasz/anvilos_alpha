@@ -1,0 +1,9 @@
+{
+  "module_name": "setjmp_sparc64.S",
+  "hash_id": "88f73fc10af532d1c8cf99907c53266597d57cfa643867f7aeaa210ece0412c4",
+  "original_prompt": "Ingested from zfs-2.2.2/module/lua/setjmp/setjmp_sparc64.S",
+  "human_readable_source": " \n\n#if defined(LIBC_SCCS) && !defined(lint)\n#if 0\n\t.asciz \"@(#)_setjmp.s\t8.1 (Berkeley) 6/4/93\"\n#else\n\tRCSID(\"$NetBSD: _setjmp.S,v 1.4 1998/10/08 02:27:59 eeh Exp $\")\n#endif\n#endif  \n\n#define\t_JB_FP\t\t0x0\n#define\t_JB_PC\t\t0x8\n#define\t_JB_SP\t\t0x10\n\n\t.register %g2,#ignore\n\t.register %g3,#ignore\n\n#define\tENTRY(x)\t\t\\\n\t.text ;\t\t\t\\\n\t.balign 32 ;\t\t\\\n\t.globl\tx ;\t\t\\\n\t.type\tx,@function ;\t\\\nx:\n\n#define\tEND(x)\t\t\t\\\n\t.size x, . - x\n\n \n\nENTRY(setjmp)\n\tstx\t%sp, [%o0 + _JB_SP]\n\tstx\t%o7, [%o0 + _JB_PC]\n\tstx\t%fp, [%o0 + _JB_FP]\n\tretl\n\t clr\t%o0\nEND(setjmp)\n\nENTRY(longjmp)\n\tmov\t1, %g1\n\tmovrnz\t%o1, %o1, %g1\n\tmov\t%o0, %g2\n\tldx\t[%g2 + _JB_FP], %g3\n1:\tcmp\t%fp, %g3\n\tbl,a\t1b\n\t restore\n\tbe,a\t2f\n\t ldx\t[%g2 + _JB_SP], %o0\n\n.Lbotch:\n\tilltrap\n\n2:\tcmp\t%o0, %sp\n\tbge,a\t3f\n\t mov\t%o0, %sp\n\tb,a\t.Lbotch\n\t nop\n3:\tldx\t[%g2 + _JB_PC], %o7\n\tretl\n\t mov\t%g1, %o0\nEND(longjmp)\n\n#ifdef __ELF__\n.section .note.GNU-stack,\"\",%progbits\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

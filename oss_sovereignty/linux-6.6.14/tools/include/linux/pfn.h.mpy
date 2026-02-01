@@ -1,0 +1,9 @@
+{
+  "module_name": "pfn.h",
+  "hash_id": "525b9ea9a3cad60dde12912dd254c301ec19bf3857fea6d9c897e65c54acf538",
+  "original_prompt": "Ingested from linux-6.6.14/tools/include/linux/pfn.h",
+  "human_readable_source": " \n#ifndef _TOOLS_LINUX_PFN_H_\n#define _TOOLS_LINUX_PFN_H_\n\n#include <linux/mm.h>\n\n#define PFN_UP(x)\t(((x) + PAGE_SIZE - 1) >> PAGE_SHIFT)\n#define PFN_DOWN(x)\t((x) >> PAGE_SHIFT)\n#define PFN_PHYS(x)\t((phys_addr_t)(x) << PAGE_SHIFT)\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

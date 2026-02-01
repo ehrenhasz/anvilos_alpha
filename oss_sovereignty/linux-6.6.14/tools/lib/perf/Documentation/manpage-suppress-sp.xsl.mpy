@@ -1,0 +1,9 @@
+{
+  "module_name": "manpage-suppress-sp.xsl",
+  "hash_id": "6819da92d3ecbecee1ddb0ef53fcb36ec19349c416862ab294858e031f7162b3",
+  "original_prompt": "Ingested from linux-6.6.14/tools/lib/perf/Documentation/manpage-suppress-sp.xsl",
+  "human_readable_source": "<!-- manpage-suppress-sp.xsl:\n     special settings for manpages rendered from asciidoc+docbook\n     handles erroneous, inline .sp in manpage output of some\n     versions of docbook-xsl -->\n<xsl:stylesheet xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\"\n\t\tversion=\"1.0\">\n\n<!-- attempt to work around spurious .sp at the tail of the line\n     that some versions of docbook stylesheets seem to add -->\n<xsl:template match=\"simpara\">\n  <xsl:variable name=\"content\">\n    <xsl:apply-templates/>\n  </xsl:variable>\n  <xsl:value-of select=\"normalize-space($content)\"/>\n  <xsl:if test=\"not(ancestor::authorblurb) and\n                not(ancestor::personblurb)\">\n    <xsl:text>&#10;&#10;</xsl:text>\n  </xsl:if>\n</xsl:template>\n\n</xsl:stylesheet>\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

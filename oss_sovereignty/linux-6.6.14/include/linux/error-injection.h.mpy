@@ -1,0 +1,9 @@
+{
+  "module_name": "error-injection.h",
+  "hash_id": "7c1abdeac1ee73b825109c878568815d65470202292ad5171431ec762da8d88b",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/error-injection.h",
+  "human_readable_source": " \n#ifndef _LINUX_ERROR_INJECTION_H\n#define _LINUX_ERROR_INJECTION_H\n\n#include <linux/compiler.h>\n#include <linux/errno.h>\n#include <asm-generic/error-injection.h>\n\n#ifdef CONFIG_FUNCTION_ERROR_INJECTION\n\nextern bool within_error_injection_list(unsigned long addr);\nextern int get_injectable_error_type(unsigned long addr);\n\n#else  \n\nstatic inline bool within_error_injection_list(unsigned long addr)\n{\n\treturn false;\n}\n\nstatic inline int get_injectable_error_type(unsigned long addr)\n{\n\treturn -EOPNOTSUPP;\n}\n\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

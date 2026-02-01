@@ -1,0 +1,9 @@
+{
+  "module_name": "ipc.h",
+  "hash_id": "aa90b16d45e6a917ea00adf85eb7e8438eb613a8f94c3668726c6c95aaec3d7d",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/firmware/imx/ipc.h",
+  "human_readable_source": " \n \n\n#ifndef _SC_IPC_H\n#define _SC_IPC_H\n\n#include <linux/device.h>\n#include <linux/types.h>\n\n#define IMX_SC_RPC_VERSION\t1\n#define IMX_SC_RPC_MAX_MSG\t8\n\nstruct imx_sc_ipc;\n\nenum imx_sc_rpc_svc {\n\tIMX_SC_RPC_SVC_UNKNOWN = 0,\n\tIMX_SC_RPC_SVC_RETURN = 1,\n\tIMX_SC_RPC_SVC_PM = 2,\n\tIMX_SC_RPC_SVC_RM = 3,\n\tIMX_SC_RPC_SVC_TIMER = 5,\n\tIMX_SC_RPC_SVC_PAD = 6,\n\tIMX_SC_RPC_SVC_MISC = 7,\n\tIMX_SC_RPC_SVC_IRQ = 8,\n};\n\nstruct imx_sc_rpc_msg {\n\tuint8_t ver;\n\tuint8_t size;\n\tuint8_t svc;\n\tuint8_t func;\n};\n\n#ifdef CONFIG_IMX_SCU\n \nint imx_scu_call_rpc(struct imx_sc_ipc *ipc, void *msg, bool have_resp);\n\n \nint imx_scu_get_handle(struct imx_sc_ipc **ipc);\n#else\nstatic inline int imx_scu_call_rpc(struct imx_sc_ipc *ipc, void *msg,\n\t\t\t\t   bool have_resp)\n{\n\treturn -ENOTSUPP;\n}\n\nstatic inline int imx_scu_get_handle(struct imx_sc_ipc **ipc)\n{\n\treturn -ENOTSUPP;\n}\n#endif\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

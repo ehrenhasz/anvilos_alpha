@@ -1,0 +1,9 @@
+{
+  "module_name": "posixjmp.h",
+  "hash_id": "bdaf39320c82fc02260d8fa02f2e7c4809d06e47119e2b307d7934d5edb0c4bb",
+  "original_prompt": "Ingested from bash-5.2.21/lib/readline/posixjmp.h",
+  "human_readable_source": " \n\n \n\n#ifndef _POSIXJMP_H_\n#define _POSIXJMP_H_\n\n#include <setjmp.h>\n\n \n\n#if defined (HAVE_POSIX_SIGSETJMP)\n#  define procenv_t\tsigjmp_buf\n\n#  define setjmp_nosigs(x)\tsigsetjmp((x), 0)\n#  define setjmp_sigs(x)\tsigsetjmp((x), 1)\n\n#  define _rl_longjmp(x, n)\tsiglongjmp((x), (n))\n#  define sh_longjmp(x, n)\tsiglongjmp((x), (n))\n#else\n#  define procenv_t\tjmp_buf\n\n#  define setjmp_nosigs\t\tsetjmp\n#  define setjmp_sigs\t\tsetjmp\n\n#  define _rl_longjmp(x, n)\tlongjmp((x), (n))\n#  define sh_longjmp(x, n)\tlongjmp((x), (n))\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

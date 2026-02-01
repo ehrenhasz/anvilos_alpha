@@ -1,0 +1,9 @@
+{
+  "module_name": "smpboot.h",
+  "hash_id": "4d14c50cb17818a231902c8a6e033871afb0172ec26aa19396bb0d9749d2f225",
+  "original_prompt": "Ingested from linux-6.6.14/kernel/smpboot.h",
+  "human_readable_source": " \n#ifndef SMPBOOT_H\n#define SMPBOOT_H\n\nstruct task_struct;\n\n#ifdef CONFIG_GENERIC_SMP_IDLE_THREAD\nstruct task_struct *idle_thread_get(unsigned int cpu);\nvoid idle_thread_set_boot_cpu(void);\nvoid idle_threads_init(void);\n#else\nstatic inline struct task_struct *idle_thread_get(unsigned int cpu) { return NULL; }\nstatic inline void idle_thread_set_boot_cpu(void) { }\nstatic inline void idle_threads_init(void) { }\n#endif\n\nint smpboot_create_threads(unsigned int cpu);\nint smpboot_park_threads(unsigned int cpu);\nint smpboot_unpark_threads(unsigned int cpu);\n\nvoid __init cpuhp_threads_init(void);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

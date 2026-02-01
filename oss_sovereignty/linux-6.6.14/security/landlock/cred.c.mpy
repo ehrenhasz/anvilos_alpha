@@ -1,0 +1,9 @@
+{
+  "module_name": "cred.c",
+  "hash_id": "fe54027a4ad6dd548c02dacffc53b99d86ddbf90f468c9792ad33965cc5f4614",
+  "original_prompt": "Ingested from linux-6.6.14/security/landlock/cred.c",
+  "human_readable_source": "\n \n\n#include <linux/cred.h>\n#include <linux/lsm_hooks.h>\n\n#include \"common.h\"\n#include \"cred.h\"\n#include \"ruleset.h\"\n#include \"setup.h\"\n\nstatic int hook_cred_prepare(struct cred *const new,\n\t\t\t     const struct cred *const old, const gfp_t gfp)\n{\n\tstruct landlock_ruleset *const old_dom = landlock_cred(old)->domain;\n\n\tif (old_dom) {\n\t\tlandlock_get_ruleset(old_dom);\n\t\tlandlock_cred(new)->domain = old_dom;\n\t}\n\treturn 0;\n}\n\nstatic void hook_cred_free(struct cred *const cred)\n{\n\tstruct landlock_ruleset *const dom = landlock_cred(cred)->domain;\n\n\tif (dom)\n\t\tlandlock_put_ruleset_deferred(dom);\n}\n\nstatic struct security_hook_list landlock_hooks[] __ro_after_init = {\n\tLSM_HOOK_INIT(cred_prepare, hook_cred_prepare),\n\tLSM_HOOK_INIT(cred_free, hook_cred_free),\n};\n\n__init void landlock_add_cred_hooks(void)\n{\n\tsecurity_add_hooks(landlock_hooks, ARRAY_SIZE(landlock_hooks),\n\t\t\t   LANDLOCK_NAME);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

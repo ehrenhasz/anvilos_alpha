@@ -1,0 +1,9 @@
+{
+  "module_name": "tick-broadcast-hrtimer.c",
+  "hash_id": "c6aa4e8dab9c4a67d6d0c8d7836c3f4040287836ae9bd29bfff4160148cc887f",
+  "original_prompt": "Ingested from linux-6.6.14/kernel/time/tick-broadcast-hrtimer.c",
+  "human_readable_source": "\n \n#include <linux/cpu.h>\n#include <linux/err.h>\n#include <linux/hrtimer.h>\n#include <linux/interrupt.h>\n#include <linux/percpu.h>\n#include <linux/profile.h>\n#include <linux/clockchips.h>\n#include <linux/sched.h>\n#include <linux/smp.h>\n#include <linux/module.h>\n\n#include \"tick-internal.h\"\n\nstatic struct hrtimer bctimer;\n\nstatic int bc_shutdown(struct clock_event_device *evt)\n{\n\t \n\thrtimer_try_to_cancel(&bctimer);\n\treturn 0;\n}\n\n \nstatic int bc_set_next(ktime_t expires, struct clock_event_device *bc)\n{\n\t \n\thrtimer_start(&bctimer, expires, HRTIMER_MODE_ABS_PINNED_HARD);\n\t \n\tbc->bound_on = bctimer.base->cpu_base->cpu;\n\n\treturn 0;\n}\n\nstatic struct clock_event_device ce_broadcast_hrtimer = {\n\t.name\t\t\t= \"bc_hrtimer\",\n\t.set_state_shutdown\t= bc_shutdown,\n\t.set_next_ktime\t\t= bc_set_next,\n\t.features\t\t= CLOCK_EVT_FEAT_ONESHOT |\n\t\t\t\t  CLOCK_EVT_FEAT_KTIME |\n\t\t\t\t  CLOCK_EVT_FEAT_HRTIMER,\n\t.rating\t\t\t= 0,\n\t.bound_on\t\t= -1,\n\t.min_delta_ns\t\t= 1,\n\t.max_delta_ns\t\t= KTIME_MAX,\n\t.min_delta_ticks\t= 1,\n\t.max_delta_ticks\t= ULONG_MAX,\n\t.mult\t\t\t= 1,\n\t.shift\t\t\t= 0,\n\t.cpumask\t\t= cpu_possible_mask,\n};\n\nstatic enum hrtimer_restart bc_handler(struct hrtimer *t)\n{\n\tce_broadcast_hrtimer.event_handler(&ce_broadcast_hrtimer);\n\n\treturn HRTIMER_NORESTART;\n}\n\nvoid tick_setup_hrtimer_broadcast(void)\n{\n\thrtimer_init(&bctimer, CLOCK_MONOTONIC, HRTIMER_MODE_ABS_HARD);\n\tbctimer.function = bc_handler;\n\tclockevents_register_device(&ce_broadcast_hrtimer);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

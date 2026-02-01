@@ -1,0 +1,9 @@
+{
+  "module_name": "intel_dpt.h",
+  "hash_id": "f62dc5c839509aa0693e0bf960bd17f373f821385bb591413ed4312f675ca32b",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/display/intel_dpt.h",
+  "human_readable_source": " \n \n\n#ifndef __INTEL_DPT_H__\n#define __INTEL_DPT_H__\n\nstruct drm_i915_private;\n\nstruct i915_address_space;\nstruct i915_vma;\nstruct intel_crtc;\nstruct intel_framebuffer;\n\nvoid intel_dpt_destroy(struct i915_address_space *vm);\nstruct i915_vma *intel_dpt_pin(struct i915_address_space *vm);\nvoid intel_dpt_unpin(struct i915_address_space *vm);\nvoid intel_dpt_suspend(struct drm_i915_private *i915);\nvoid intel_dpt_resume(struct drm_i915_private *i915);\nstruct i915_address_space *\nintel_dpt_create(struct intel_framebuffer *fb);\nvoid intel_dpt_configure(struct intel_crtc *crtc);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

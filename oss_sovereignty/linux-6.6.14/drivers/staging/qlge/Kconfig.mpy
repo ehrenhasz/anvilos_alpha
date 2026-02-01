@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "86bdc0ebe20047ffe6cb34c98c76657edf3e65d958440da94c408a065d17934c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/qlge/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n\nconfig QLGE\n\ttristate \"QLogic QLGE 10Gb Ethernet Driver Support\"\n\tdepends on ETHERNET && PCI\n\tselect NET_DEVLINK\n\thelp\n\tThis driver supports QLogic ISP8XXX 10Gb Ethernet cards.\n\n\tTo compile this driver as a module, choose M here. The module will be\n\tcalled qlge.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

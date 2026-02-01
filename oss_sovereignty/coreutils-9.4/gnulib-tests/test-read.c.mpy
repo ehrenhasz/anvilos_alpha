@@ -1,0 +1,9 @@
+{
+  "module_name": "test-read.c",
+  "hash_id": "86de08379e475b29600684ddff5ce47d663d8bbe49c97dcd2058d208823843ff",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-read.c",
+  "human_readable_source": " \n  fd = open (filename, O_CREAT | O_WRONLY, 0600);\n  ASSERT (fd >= 0);\n  ASSERT (write (fd, \"Hello World\", 11) == 11);\n  ASSERT (close (fd) == 0);\n\n   \n  fd = open (filename, O_RDONLY);\n  ASSERT (fd >= 0);\n  ASSERT (lseek (fd, 6, SEEK_SET) == 6);\n  {\n    char buf[10];\n    ssize_t ret = read (fd, buf, 10);\n    ASSERT (ret == 5);\n    ASSERT (memcmp (buf, \"World\", 5) == 0);\n  }\n  ASSERT (close (fd) == 0);\n\n   \n  {\n    char byte;\n    errno = 0;\n    ASSERT (read (-1, &byte, 1) == -1);\n    ASSERT (errno == EBADF);\n  }\n  {\n    char byte;\n    close (99);\n    errno = 0;\n    ASSERT (read (99, &byte, 1) == -1);\n    ASSERT (errno == EBADF);\n  }\n\n   \n  unlink (filename);\n\n  return 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

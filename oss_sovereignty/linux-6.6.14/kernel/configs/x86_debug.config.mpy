@@ -1,0 +1,9 @@
+{
+  "module_name": "x86_debug.config",
+  "hash_id": "a18cd1229682982a0822b8e4918426dd6283027e4884aa314de76590834d5911",
+  "original_prompt": "Ingested from linux-6.6.14/kernel/configs/x86_debug.config",
+  "human_readable_source": "# Help: Debugging options for tip tree testing\nCONFIG_X86_DEBUG_FPU=y\nCONFIG_LOCK_STAT=y\nCONFIG_DEBUG_VM=y\nCONFIG_DEBUG_VM_VMACACHE=y\nCONFIG_DEBUG_VM_RB=y\nCONFIG_DEBUG_SLAB=y\nCONFIG_DEBUG_KMEMLEAK=y\nCONFIG_DEBUG_PAGEALLOC=y\nCONFIG_SLUB_DEBUG_ON=y\nCONFIG_DEBUG_OBJECTS=y\nCONFIG_DEBUG_OBJECTS_ENABLE_DEFAULT=1\nCONFIG_GCOV_KERNEL=y\nCONFIG_LOCKDEP=y\nCONFIG_PROVE_LOCKING=y\nCONFIG_SCHEDSTATS=y\nCONFIG_NOINSTR_VALIDATION=y\nCONFIG_DEBUG_INFO_DWARF_TOOLCHAIN_DEFAULT=y\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

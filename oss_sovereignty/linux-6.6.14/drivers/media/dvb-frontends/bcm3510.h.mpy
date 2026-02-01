@@ -1,0 +1,9 @@
+{
+  "module_name": "bcm3510.h",
+  "hash_id": "52fa3e2580cb861ead705b84aa7fbda7623d8d50b4109da7c3e72bced7b36aed",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/dvb-frontends/bcm3510.h",
+  "human_readable_source": " \n \n#ifndef BCM3510_H\n#define BCM3510_H\n\n#include <linux/dvb/frontend.h>\n#include <linux/firmware.h>\n\nstruct bcm3510_config\n{\n\t \n\tu8 demod_address;\n\n\t \n\tint (*request_firmware)(struct dvb_frontend* fe, const struct firmware **fw, char* name);\n};\n\n#if IS_REACHABLE(CONFIG_DVB_BCM3510)\nextern struct dvb_frontend* bcm3510_attach(const struct bcm3510_config* config,\n\t\t\t\t\t   struct i2c_adapter* i2c);\n#else\nstatic inline struct dvb_frontend* bcm3510_attach(const struct bcm3510_config* config,\n\t\t\t\t\t\t  struct i2c_adapter* i2c)\n{\n\tprintk(KERN_WARNING \"%s: driver disabled by Kconfig\\n\", __func__);\n\treturn NULL;\n}\n#endif \n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

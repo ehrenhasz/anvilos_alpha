@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "e9230ae02eeca99f4ea5577f19b4210499be216d9ab86369b455762d578bf383",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/most/net/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# MOST Networking configuration\n#\n\nconfig MOST_NET\n\ttristate \"Net\"\n\tdepends on NET\n\n\thelp\n\t  Say Y here if you want to commumicate via a networking device.\n\n\t  To compile this driver as a module, choose M here: the\n\t  module will be called most_net.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

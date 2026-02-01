@@ -1,0 +1,9 @@
+{
+  "module_name": "raspberrypi-power.h",
+  "hash_id": "1ca564cf1b54c38ecef322525a832acc4e66e4aa397d8953dd41121a2601ab66",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/power/raspberrypi-power.h",
+  "human_readable_source": " \n \n\n#ifndef _DT_BINDINGS_ARM_BCM2835_RPI_POWER_H\n#define _DT_BINDINGS_ARM_BCM2835_RPI_POWER_H\n\n \n#define RPI_POWER_DOMAIN_I2C0\t\t0\n#define RPI_POWER_DOMAIN_I2C1\t\t1\n#define RPI_POWER_DOMAIN_I2C2\t\t2\n#define RPI_POWER_DOMAIN_VIDEO_SCALER\t3\n#define RPI_POWER_DOMAIN_VPU1\t\t4\n#define RPI_POWER_DOMAIN_HDMI\t\t5\n#define RPI_POWER_DOMAIN_USB\t\t6\n#define RPI_POWER_DOMAIN_VEC\t\t7\n#define RPI_POWER_DOMAIN_JPEG\t\t8\n#define RPI_POWER_DOMAIN_H264\t\t9\n#define RPI_POWER_DOMAIN_V3D\t\t10\n#define RPI_POWER_DOMAIN_ISP\t\t11\n#define RPI_POWER_DOMAIN_UNICAM0\t12\n#define RPI_POWER_DOMAIN_UNICAM1\t13\n#define RPI_POWER_DOMAIN_CCP2RX\t\t14\n#define RPI_POWER_DOMAIN_CSI2\t\t15\n#define RPI_POWER_DOMAIN_CPI\t\t16\n#define RPI_POWER_DOMAIN_DSI0\t\t17\n#define RPI_POWER_DOMAIN_DSI1\t\t18\n#define RPI_POWER_DOMAIN_TRANSPOSER\t19\n#define RPI_POWER_DOMAIN_CCP2TX\t\t20\n#define RPI_POWER_DOMAIN_CDP\t\t21\n#define RPI_POWER_DOMAIN_ARM\t\t22\n\n#define RPI_POWER_DOMAIN_COUNT\t\t23\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

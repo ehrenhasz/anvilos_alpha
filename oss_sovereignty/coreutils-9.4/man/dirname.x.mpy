@@ -1,0 +1,9 @@
+{
+  "module_name": "dirname.x",
+  "hash_id": "755e62e787507b96d7d17d28a86fc713e2ec1338d1b96787f4eb7d34aa938e07",
+  "original_prompt": "Ingested from coreutils-9.4/man/dirname.x",
+  "human_readable_source": "[NAME]\ndirname \\- strip last component from file name\n[DESCRIPTION]\n.\\\" Add any additional description here\n[SEE ALSO]\nbasename(1), readlink(1)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

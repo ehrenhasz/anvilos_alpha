@@ -1,0 +1,9 @@
+{
+  "module_name": "test_bpf_ma.c",
+  "hash_id": "f16707229280c5fb58a60ebb0c9d4d5eb68382100f4a5a9c3773f0312f8b9f42",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/prog_tests/test_bpf_ma.c",
+  "human_readable_source": "\n \n#define _GNU_SOURCE\n#include <sched.h>\n#include <pthread.h>\n#include <stdbool.h>\n#include <bpf/btf.h>\n#include <test_progs.h>\n\n#include \"test_bpf_ma.skel.h\"\n\nvoid test_test_bpf_ma(void)\n{\n\tstruct test_bpf_ma *skel;\n\tstruct btf *btf;\n\tint i, err;\n\n\tskel = test_bpf_ma__open();\n\tif (!ASSERT_OK_PTR(skel, \"open\"))\n\t\treturn;\n\n\tbtf = bpf_object__btf(skel->obj);\n\tif (!ASSERT_OK_PTR(btf, \"btf\"))\n\t\tgoto out;\n\n\tfor (i = 0; i < ARRAY_SIZE(skel->rodata->data_sizes); i++) {\n\t\tchar name[32];\n\t\tint id;\n\n\t\tsnprintf(name, sizeof(name), \"bin_data_%u\", skel->rodata->data_sizes[i]);\n\t\tid = btf__find_by_name_kind(btf, name, BTF_KIND_STRUCT);\n\t\tif (!ASSERT_GT(id, 0, \"bin_data\"))\n\t\t\tgoto out;\n\t\tskel->rodata->data_btf_ids[i] = id;\n\t}\n\n\terr = test_bpf_ma__load(skel);\n\tif (!ASSERT_OK(err, \"load\"))\n\t\tgoto out;\n\n\terr = test_bpf_ma__attach(skel);\n\tif (!ASSERT_OK(err, \"attach\"))\n\t\tgoto out;\n\n\tskel->bss->pid = getpid();\n\tusleep(1);\n\tASSERT_OK(skel->bss->err, \"test error\");\nout:\n\ttest_bpf_ma__destroy(skel);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

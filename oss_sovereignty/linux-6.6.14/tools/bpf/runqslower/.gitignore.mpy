@@ -1,0 +1,9 @@
+{
+  "module_name": ".gitignore",
+  "hash_id": "b86d43b7d3a2d248d29bd97783f2587fc034a4667925f9b14d98b8655960a93b",
+  "original_prompt": "Ingested from linux-6.6.14/tools/bpf/runqslower/.gitignore",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n/.output\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

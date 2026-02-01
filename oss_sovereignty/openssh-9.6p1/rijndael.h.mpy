@@ -1,0 +1,9 @@
+{
+  "module_name": "rijndael.h",
+  "hash_id": "b51d7d6898e35d908ef5ef9d4b930d0d94e7e1041a1cf8104e048c1629133799",
+  "original_prompt": "Ingested from openssh-9.6p1/rijndael.h",
+  "human_readable_source": " \n\n \n#ifndef _PRIVATE_RIJNDAEL_H\n#define _PRIVATE_RIJNDAEL_H\n\n#define AES_MAXKEYBITS\t(256)\n#define AES_MAXKEYBYTES\t(AES_MAXKEYBITS/8)\n \n#define AES_MAXROUNDS\t14\n\ntypedef unsigned char\tu8;\ntypedef unsigned short\tu16;\ntypedef unsigned int\tu32;\n\nint\trijndaelKeySetupEnc(unsigned int [], const unsigned char [], int);\nvoid\trijndaelEncrypt(const unsigned int [], int, const u8 [16], u8 [16]);\n\n \ntypedef struct {\n\tint\tdecrypt;\n\tint\tNr;\t\t \n\tu32\tek[4*(AES_MAXROUNDS + 1)];\t \n\tu32\tdk[4*(AES_MAXROUNDS + 1)];\t \n} rijndael_ctx;\n\nvoid\t rijndael_set_key(rijndael_ctx *, u_char *, int, int);\nvoid\t rijndael_decrypt(rijndael_ctx *, u_char *, u_char *);\nvoid\t rijndael_encrypt(rijndael_ctx *, u_char *, u_char *);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

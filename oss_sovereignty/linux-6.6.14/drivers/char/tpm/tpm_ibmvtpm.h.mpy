@@ -1,0 +1,9 @@
+{
+  "module_name": "tpm_ibmvtpm.h",
+  "hash_id": "ac0301e64d7d216f8eb6a1e2d0a3095752c5b866ccd686dfdef9e219585cbab6",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/char/tpm/tpm_ibmvtpm.h",
+  "human_readable_source": " \n \n\n#ifndef __TPM_IBMVTPM_H__\n#define __TPM_IBMVTPM_H__\n\n \nstruct ibmvtpm_crq {\n\tu8 valid;\n\tu8 msg;\n\t__be16 len;\n\t__be32 data;\n\t__be64 reserved;\n} __attribute__((packed, aligned(8)));\n\nstruct ibmvtpm_crq_queue {\n\tstruct ibmvtpm_crq *crq_addr;\n\tu32 index;\n\tu32 num_entry;\n\twait_queue_head_t wq;\n};\n\nstruct ibmvtpm_dev {\n\tstruct device *dev;\n\tstruct vio_dev *vdev;\n\tstruct ibmvtpm_crq_queue crq_queue;\n\tdma_addr_t crq_dma_handle;\n\tu32 rtce_size;\n\tvoid __iomem *rtce_buf;\n\tdma_addr_t rtce_dma_handle;\n\tspinlock_t rtce_lock;\n\twait_queue_head_t wq;\n\tu16 res_len;\n\tu32 vtpm_version;\n\tu8 tpm_processing_cmd;\n};\n\n#define CRQ_RES_BUF_SIZE\tPAGE_SIZE\n\n \n#define INIT_CRQ_CMD\t\t0xC001000000000000LL  \n#define INIT_CRQ_COMP_CMD\t0xC002000000000000LL  \n#define INIT_CRQ_RES\t\t0x01\t \n#define INIT_CRQ_COMP_RES\t0x02\t \n#define VALID_INIT_CRQ\t\t0xC0\t \n\n \n#define VTPM_MSG_RES\t\t0x80\n#define IBMVTPM_VALID_CMD\t0x80\n\n \n#define VTPM_GET_VERSION\t\t\t0x01\n#define VTPM_GET_VERSION_RES\t\t\t(0x01 | VTPM_MSG_RES)\n\n#define VTPM_TPM_COMMAND\t\t\t0x02\n#define VTPM_TPM_COMMAND_RES\t\t\t(0x02 | VTPM_MSG_RES)\n\n#define VTPM_GET_RTCE_BUFFER_SIZE\t\t0x03\n#define VTPM_GET_RTCE_BUFFER_SIZE_RES\t\t(0x03 | VTPM_MSG_RES)\n\n#define VTPM_PREPARE_TO_SUSPEND\t\t\t0x04\n#define VTPM_PREPARE_TO_SUSPEND_RES\t\t(0x04 | VTPM_MSG_RES)\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

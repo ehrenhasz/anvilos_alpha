@@ -1,0 +1,9 @@
+{
+  "module_name": "fd.h",
+  "hash_id": "e746215a5a700968841d987e13ff21d327029d14de0103ad5ab90434949dd417",
+  "original_prompt": "Ingested from linux-6.6.14/fs/proc/fd.h",
+  "human_readable_source": " \n#ifndef __PROCFS_FD_H__\n#define __PROCFS_FD_H__\n\n#include <linux/fs.h>\n\nextern const struct file_operations proc_fd_operations;\nextern const struct inode_operations proc_fd_inode_operations;\n\nextern const struct file_operations proc_fdinfo_operations;\nextern const struct inode_operations proc_fdinfo_inode_operations;\n\nextern int proc_fd_permission(struct mnt_idmap *idmap,\n\t\t\t      struct inode *inode, int mask);\n\nstatic inline unsigned int proc_fd(struct inode *inode)\n{\n\treturn PROC_I(inode)->fd;\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

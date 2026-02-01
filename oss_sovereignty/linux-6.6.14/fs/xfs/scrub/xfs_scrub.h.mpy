@@ -1,0 +1,9 @@
+{
+  "module_name": "xfs_scrub.h",
+  "hash_id": "e35c793280f941779c813038b55f9a31728443d613a163aef6bfe4bf65542c5d",
+  "original_prompt": "Ingested from linux-6.6.14/fs/xfs/scrub/xfs_scrub.h",
+  "human_readable_source": "\n \n#ifndef __XFS_SCRUB_H__\n#define __XFS_SCRUB_H__\n\n#ifndef CONFIG_XFS_ONLINE_SCRUB\n# define xfs_scrub_metadata(file, sm)\t(-ENOTTY)\n#else\nint xfs_scrub_metadata(struct file *file, struct xfs_scrub_metadata *sm);\n#endif  \n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

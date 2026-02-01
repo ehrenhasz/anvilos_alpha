@@ -1,0 +1,9 @@
+{
+  "module_name": "ga102.c",
+  "hash_id": "065809b335e0982502d32f60c1652b2b20588e0419c347cc614d85245a36ef88",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/subdev/gsp/ga102.c",
+  "human_readable_source": " \n#include \"priv.h\"\n\nstatic const struct nvkm_falcon_func\nga102_gsp_flcn = {\n\t.disable = gm200_flcn_disable,\n\t.enable = gm200_flcn_enable,\n\t.select = ga102_flcn_select,\n\t.addr2 = 0x1000,\n\t.reset_eng = gp102_flcn_reset_eng,\n\t.reset_prep = ga102_flcn_reset_prep,\n\t.reset_wait_mem_scrubbing = ga102_flcn_reset_wait_mem_scrubbing,\n\t.imem_dma = &ga102_flcn_dma,\n\t.dmem_dma = &ga102_flcn_dma,\n};\n\nstatic const struct nvkm_gsp_func\nga102_gsp = {\n\t.flcn = &ga102_gsp_flcn,\n};\n\nstatic int\nga102_gsp_nofw(struct nvkm_gsp *gsp, int ver, const struct nvkm_gsp_fwif *fwif)\n{\n\treturn 0;\n}\n\nstatic struct nvkm_gsp_fwif\nga102_gsps[] = {\n\t{ -1, ga102_gsp_nofw, &ga102_gsp },\n\t{}\n};\n\nint\nga102_gsp_new(struct nvkm_device *device, enum nvkm_subdev_type type, int inst,\n\t      struct nvkm_gsp **pgsp)\n{\n\treturn nvkm_gsp_new_(ga102_gsps, device, type, inst, pgsp);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

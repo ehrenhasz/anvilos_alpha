@@ -1,0 +1,9 @@
+{
+  "module_name": "TASKS03.boot",
+  "hash_id": "3a0586b3a5ba1e8ff18c0a952fa353bee3aa92128f3c28005dc262c86166a3b9",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/rcutorture/configs/rcu/TASKS03.boot",
+  "human_readable_source": "rcutorture.torture_type=tasks nohz_full=1\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

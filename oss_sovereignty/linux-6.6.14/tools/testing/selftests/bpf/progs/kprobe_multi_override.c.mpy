@@ -1,0 +1,9 @@
+{
+  "module_name": "kprobe_multi_override.c",
+  "hash_id": "5e7eaca3b54b79f82964edace68bc0a9a22323ff8b0a70cb5c7e03b0e1ccea8f",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/kprobe_multi_override.c",
+  "human_readable_source": "\n#include <linux/bpf.h>\n#include <bpf/bpf_helpers.h>\n#include <bpf/bpf_tracing.h>\n\nchar _license[] SEC(\"license\") = \"GPL\";\n\nSEC(\"kprobe.multi\")\nint test_override(struct pt_regs *ctx)\n{\n\tbpf_override_return(ctx, 123);\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

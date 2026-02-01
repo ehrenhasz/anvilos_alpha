@@ -1,0 +1,9 @@
+{
+  "module_name": "io.c",
+  "hash_id": "306e5a15eab088a2448b35615f6ff62a8e08529976a2cea255147b6b9beba5ec",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/ti/wl18xx/io.c",
+  "human_readable_source": "\n \n\n#include \"../wlcore/wlcore.h\"\n#include \"../wlcore/io.h\"\n\n#include \"io.h\"\n\nint wl18xx_top_reg_write(struct wl1271 *wl, int addr, u16 val)\n{\n\tu32 tmp;\n\tint ret;\n\n\tif (WARN_ON(addr % 2))\n\t\treturn -EINVAL;\n\n\tif ((addr % 4) == 0) {\n\t\tret = wlcore_read32(wl, addr, &tmp);\n\t\tif (ret < 0)\n\t\t\tgoto out;\n\n\t\ttmp = (tmp & 0xffff0000) | val;\n\t\tret = wlcore_write32(wl, addr, tmp);\n\t} else {\n\t\tret = wlcore_read32(wl, addr - 2, &tmp);\n\t\tif (ret < 0)\n\t\t\tgoto out;\n\n\t\ttmp = (tmp & 0xffff) | (val << 16);\n\t\tret = wlcore_write32(wl, addr - 2, tmp);\n\t}\n\nout:\n\treturn ret;\n}\n\nint wl18xx_top_reg_read(struct wl1271 *wl, int addr, u16 *out)\n{\n\tu32 val = 0;\n\tint ret;\n\n\tif (WARN_ON(addr % 2))\n\t\treturn -EINVAL;\n\n\tif ((addr % 4) == 0) {\n\t\t \n\t\tret = wlcore_read32(wl, addr, &val);\n\t\tif (ret >= 0 && out)\n\t\t\t*out = val & 0xffff;\n\t} else {\n\t\tret = wlcore_read32(wl, addr - 2, &val);\n\t\tif (ret >= 0 && out)\n\t\t\t*out = (val & 0xffff0000) >> 16;\n\t}\n\n\treturn ret;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

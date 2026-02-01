@@ -1,0 +1,9 @@
+{
+  "module_name": "test-signal-h.c",
+  "hash_id": "e69fdfc70674fa22b7799646c9e958b139ac3c74685deaeb6ee7065b641a826d",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-signal-h.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#include <signal.h>\n\n \nstruct\n{\n  size_t a;\n  uid_t b;\n  volatile sig_atomic_t c;\n  sigset_t d;\n  pid_t e;\n#if 0\n   \n  pthread_t f;\n  struct timespec g;\n#endif\n} s;\n\n \nint nsig = NSIG;\n\nint\nmain (void)\n{\n  switch (0)\n    {\n       \n    case 0:\n    case SIGABRT:\n    case SIGFPE:\n    case SIGILL:\n    case SIGINT:\n    case SIGSEGV:\n    case SIGTERM:\n       \n#if GNULIB_SIGPIPE || defined SIGPIPE\n    case SIGPIPE:\n#endif\n       \n#ifdef SIGALRM\n    case SIGALRM:\n#endif\n       \n#if defined SIGBUS && SIGBUS != SIGSEGV\n    case SIGBUS:\n#endif\n#ifdef SIGCHLD\n    case SIGCHLD:\n#endif\n#ifdef SIGCONT\n    case SIGCONT:\n#endif\n#ifdef SIGHUP\n    case SIGHUP:\n#endif\n#ifdef SIGKILL\n    case SIGKILL:\n#endif\n#ifdef SIGQUIT\n    case SIGQUIT:\n#endif\n#ifdef SIGSTOP\n    case SIGSTOP:\n#endif\n#ifdef SIGTSTP\n    case SIGTSTP:\n#endif\n#ifdef SIGTTIN\n    case SIGTTIN:\n#endif\n#ifdef SIGTTOU\n    case SIGTTOU:\n#endif\n#ifdef SIGUSR1\n    case SIGUSR1:\n#endif\n#ifdef SIGUSR2\n    case SIGUSR2:\n#endif\n#ifdef SIGSYS\n    case SIGSYS:\n#endif\n#ifdef SIGTRAP\n    case SIGTRAP:\n#endif\n#ifdef SIGURG\n    case SIGURG:\n#endif\n#ifdef SIGVTALRM\n    case SIGVTALRM:\n#endif\n#ifdef SIGXCPU\n    case SIGXCPU:\n#endif\n#ifdef SIGXFSZ\n    case SIGXFSZ:\n#endif\n       \n#if 0\n# ifdef SIGRTMIN\n    case SIGRTMIN:\n# endif\n# ifdef SIGRTMAX\n    case SIGRTMAX:\n# endif\n#endif\n      ;\n    }\n  return s.a + s.b + s.c + s.e;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "rtw_event.h",
+  "hash_id": "3d8af156b90d3dd682aa3021a0e6c9dea341d3dd5438d6e9e51b5fa2f66d461d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/rtl8723bs/include/rtw_event.h",
+  "human_readable_source": " \n \n#ifndef _RTW_EVENT_H_\n#define _RTW_EVENT_H_\n\n \nstruct survey_event\t{\n\tstruct wlan_bssid_ex bss;\n};\n\n \nstruct surveydone_event {\n\tunsigned int\tbss_cnt;\n\n};\n\n \nstruct joinbss_event {\n\tstruct\twlan_network\tnetwork;\n};\n\n \nstruct stassoc_event {\n\tunsigned char macaddr[6];\n\tunsigned char rsvd[2];\n\tint    cam_id;\n\n};\n\nstruct stadel_event {\n unsigned char macaddr[6];\n unsigned char rsvd[2];  \n int mac_id;\n};\n\nstruct wmm_event {\n\tunsigned char wmm;\n};\n\n#define GEN_EVT_CODE(event)\tevent ## _EVT_\n\n\n\nstruct fwevent {\n\tu32 parmsize;\n\tvoid (*event_callback)(struct adapter *dev, u8 *pbuf);\n};\n\n\n#define C2HEVENT_SZ\t\t\t32\n\nstruct event_node {\n\tunsigned char *node;\n\tunsigned char evt_code;\n\tunsigned short evt_sz;\n\tvolatile int\t*caller_ff_tail;\n\tint\tcaller_ff_sz;\n};\n\n#define NETWORK_QUEUE_SZ\t4\n\nstruct network_queue {\n\tvolatile int\thead;\n\tvolatile int\ttail;\n\tstruct wlan_bssid_ex networks[NETWORK_QUEUE_SZ];\n};\n\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

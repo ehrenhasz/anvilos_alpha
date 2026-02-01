@@ -1,0 +1,9 @@
+{
+  "module_name": "simd_powerpc.h",
+  "hash_id": "936ddd60f576aee7f95224a2f460579b535be1df5e7ceafddf431d8492e4f703",
+  "original_prompt": "Ingested from zfs-2.2.2/include/os/freebsd/spl/sys/simd_powerpc.h",
+  "human_readable_source": " \n\n \n\n#ifndef _FREEBSD_SIMD_POWERPC_H\n#define\t_FREEBSD_SIMD_POWERPC_H\n\n#include <sys/types.h>\n#include <sys/cdefs.h>\n\n#include <machine/pcb.h>\n#include <machine/cpu.h>\n\n#define\tkfpu_allowed()\t\t0\n#define\tkfpu_initialize(tsk)\tdo {} while (0)\n#define\tkfpu_begin()\t\tdo {} while (0)\n#define\tkfpu_end()\t\tdo {} while (0)\n#define\tkfpu_init()\t\t(0)\n#define\tkfpu_fini()\t\tdo {} while (0)\n\n \nstatic inline boolean_t\nzfs_altivec_available(void)\n{\n\treturn ((cpu_features & PPC_FEATURE_HAS_ALTIVEC) != 0);\n}\n\n \nstatic inline boolean_t\nzfs_vsx_available(void)\n{\n\treturn ((cpu_features & PPC_FEATURE_HAS_VSX) != 0);\n}\n\n \nstatic inline boolean_t\nzfs_isa207_available(void)\n{\n\treturn ((cpu_features2 & PPC_FEATURE2_ARCH_2_07) != 0);\n}\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

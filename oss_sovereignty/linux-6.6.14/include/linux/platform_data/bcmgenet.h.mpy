@@ -1,0 +1,9 @@
+{
+  "module_name": "bcmgenet.h",
+  "hash_id": "d90d0fd29f9bfd35a268b61e415de80d7856488a83e147c4ac44c48ece2ee469",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/platform_data/bcmgenet.h",
+  "human_readable_source": " \n#ifndef __LINUX_PLATFORM_DATA_BCMGENET_H__\n#define __LINUX_PLATFORM_DATA_BCMGENET_H__\n\n#include <linux/types.h>\n#include <linux/if_ether.h>\n#include <linux/phy.h>\n\nstruct bcmgenet_platform_data {\n\tbool\t\tmdio_enabled;\n\tphy_interface_t\tphy_interface;\n\tint\t\tphy_address;\n\tint\t\tphy_speed;\n\tint\t\tphy_duplex;\n\tu8\t\tmac_address[ETH_ALEN];\n\tint\t\tgenet_version;\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

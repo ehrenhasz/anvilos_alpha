@@ -1,0 +1,9 @@
+{
+  "module_name": "pid.c",
+  "hash_id": "d2b2b411a8a1569191fa854e684129af1360c1e0866572669121dece331db413",
+  "original_prompt": "Ingested from linux-6.6.14/tools/thermal/tmon/pid.c",
+  "human_readable_source": "\n \n\n#include <unistd.h>\n#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\n#include <stdint.h>\n#include <sys/types.h>\n#include <dirent.h>\n#include <libintl.h>\n#include <ctype.h>\n#include <assert.h>\n#include <time.h>\n#include <limits.h>\n#include <math.h>\n#include <sys/stat.h>\n#include <syslog.h>\n\n#include \"tmon.h\"\n\n \nstruct pid_params p_param;\n \nstatic double xk_1, xk_2;  \n\n \nint init_thermal_controller(void)\n{\n\n\t \n\tp_param.ts = ticktime;\n\t \n\tp_param.kp = .36;\n\tp_param.ki = 5.0;\n\tp_param.kd = 0.19;\n\n\tp_param.t_target = target_temp_user;\n\n\treturn 0;\n}\n\nvoid controller_reset(void)\n{\n\t \n\tsyslog(LOG_DEBUG, \"TC inactive, relax p-state\\n\");\n\tp_param.y_k = 0.0;\n\txk_1 = 0.0;\n\txk_2 = 0.0;\n\tset_ctrl_state(0);\n}\n\n \n#define GUARD_BAND (2)\nvoid controller_handler(const double xk, double *yk)\n{\n\tdouble ek;\n\tdouble p_term, i_term, d_term;\n\n\tek = p_param.t_target - xk;  \n\tif (ek >= 3.0) {\n\t\tsyslog(LOG_DEBUG, \"PID: %3.1f Below set point %3.1f, stop\\n\",\n\t\t\txk, p_param.t_target);\n\t\tcontroller_reset();\n\t\t*yk = 0.0;\n\t\treturn;\n\t}\n\t \n\tp_term = -p_param.kp * (xk - xk_1);\n\ti_term = p_param.kp * p_param.ki * p_param.ts * ek;\n\td_term = -p_param.kp * p_param.kd * (xk - 2 * xk_1 + xk_2) / p_param.ts;\n\t \n\t*yk += p_term + i_term + d_term;\n\t \n\txk_1 = xk;\n\txk_2 = xk_1;\n\n\t \n\tif (*yk < -LIMIT_HIGH)\n\t\t*yk = -LIMIT_HIGH;\n\telse if (*yk > -LIMIT_LOW)\n\t\t*yk = -LIMIT_LOW;\n\n\tp_param.y_k = *yk;\n\n\tset_ctrl_state(lround(fabs(p_param.y_k)));\n\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

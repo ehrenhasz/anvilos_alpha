@@ -1,0 +1,9 @@
+{
+  "module_name": "samsung.h",
+  "hash_id": "bec372da6f8410fea3e3ef8a6b763ce75ab85a38bdf78e7dbc8cf3e7161a02a5",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/mtd/nand/onenand/samsung.h",
+  "human_readable_source": " \n \n#ifndef __SAMSUNG_ONENAND_H__\n#define __SAMSUNG_ONENAND_H__\n\n \n#define MEM_CFG_OFFSET\t\t0x0000\n#define BURST_LEN_OFFSET\t0x0010\n#define MEM_RESET_OFFSET\t0x0020\n#define INT_ERR_STAT_OFFSET\t0x0030\n#define INT_ERR_MASK_OFFSET\t0x0040\n#define INT_ERR_ACK_OFFSET\t0x0050\n#define ECC_ERR_STAT_OFFSET\t0x0060\n#define MANUFACT_ID_OFFSET\t0x0070\n#define DEVICE_ID_OFFSET\t0x0080\n#define DATA_BUF_SIZE_OFFSET\t0x0090\n#define BOOT_BUF_SIZE_OFFSET\t0x00A0\n#define BUF_AMOUNT_OFFSET\t0x00B0\n#define TECH_OFFSET\t\t0x00C0\n#define FBA_WIDTH_OFFSET\t0x00D0\n#define FPA_WIDTH_OFFSET\t0x00E0\n#define FSA_WIDTH_OFFSET\t0x00F0\n#define TRANS_SPARE_OFFSET\t0x0140\n#define DBS_DFS_WIDTH_OFFSET\t0x0160\n#define INT_PIN_ENABLE_OFFSET\t0x01A0\n#define ACC_CLOCK_OFFSET\t0x01C0\n#define FLASH_VER_ID_OFFSET\t0x01F0\n#define FLASH_AUX_CNTRL_OFFSET\t0x0300\t\t \n\n#define ONENAND_MEM_RESET_HOT\t0x3\n#define ONENAND_MEM_RESET_COLD\t0x2\n#define ONENAND_MEM_RESET_WARM\t0x1\n\n#define CACHE_OP_ERR\t\t(1 << 13)\n#define RST_CMP\t\t\t(1 << 12)\n#define RDY_ACT\t\t\t(1 << 11)\n#define INT_ACT\t\t\t(1 << 10)\n#define UNSUP_CMD\t\t(1 << 9)\n#define LOCKED_BLK\t\t(1 << 8)\n#define BLK_RW_CMP\t\t(1 << 7)\n#define ERS_CMP\t\t\t(1 << 6)\n#define PGM_CMP\t\t\t(1 << 5)\n#define LOAD_CMP\t\t(1 << 4)\n#define ERS_FAIL\t\t(1 << 3)\n#define PGM_FAIL\t\t(1 << 2)\n#define INT_TO\t\t\t(1 << 1)\n#define LD_FAIL_ECC_ERR\t\t(1 << 0)\n\n#define TSRF\t\t\t(1 << 0)\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

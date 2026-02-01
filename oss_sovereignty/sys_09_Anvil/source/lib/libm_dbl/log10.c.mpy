@@ -1,0 +1,9 @@
+{
+  "module_name": "log10.c",
+  "hash_id": "faf4483375f54e19ba76855ce248893d6e12e554b5d416820f89ecfbca1ef3e1",
+  "original_prompt": "Ingested from sys_09_Anvil/source/lib/libm_dbl/log10.c",
+  "human_readable_source": "#include <math.h>\n\nstatic const double _M_LN10 = 2.302585092994046;\n\ndouble log10(double x) {\n    return log(x) / (double)_M_LN10;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

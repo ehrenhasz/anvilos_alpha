@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "7461bf7a5f171b69d4f7c5210f6d2bbc9b7a964a740aceb3259f2977fa32da32",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/mtd/chips/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# linux/drivers/chips/Makefile\n#\n\nobj-$(CONFIG_MTD)\t\t+= chipreg.o\nobj-$(CONFIG_MTD_CFI)\t\t+= cfi_probe.o\nobj-$(CONFIG_MTD_CFI_UTIL)\t+= cfi_util.o\nobj-$(CONFIG_MTD_CFI_STAA)\t+= cfi_cmdset_0020.o\nobj-$(CONFIG_MTD_CFI_AMDSTD)\t+= cfi_cmdset_0002.o\nobj-$(CONFIG_MTD_CFI_INTELEXT)\t+= cfi_cmdset_0001.o\nobj-$(CONFIG_MTD_GEN_PROBE)\t+= gen_probe.o\nobj-$(CONFIG_MTD_JEDECPROBE)\t+= jedec_probe.o\nobj-$(CONFIG_MTD_RAM)\t\t+= map_ram.o\nobj-$(CONFIG_MTD_ROM)\t\t+= map_rom.o\nobj-$(CONFIG_MTD_ABSENT)\t+= map_absent.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "unc.c",
+  "hash_id": "d06ec649fe341a6de651309f07380c6cde79763246bd23595d34fea47949c809",
+  "original_prompt": "Ingested from linux-6.6.14/fs/smb/client/unc.c",
+  "human_readable_source": "\n \n\n#include <linux/fs.h>\n#include <linux/slab.h>\n#include <linux/inet.h>\n#include <linux/ctype.h>\n#include \"cifsglob.h\"\n#include \"cifsproto.h\"\n\n \nchar *extract_hostname(const char *unc)\n{\n\tconst char *src;\n\tchar *dst, *delim;\n\tunsigned int len;\n\n\t \n\t \n\tif (strlen(unc) < 3)\n\t\treturn ERR_PTR(-EINVAL);\n\tfor (src = unc; *src && *src == '\\\\'; src++)\n\t\t;\n\tif (!*src)\n\t\treturn ERR_PTR(-EINVAL);\n\n\t \n\tdelim = strchr(src, '\\\\');\n\tif (!delim)\n\t\treturn ERR_PTR(-EINVAL);\n\n\tlen = delim - src;\n\tdst = kmalloc((len + 1), GFP_KERNEL);\n\tif (dst == NULL)\n\t\treturn ERR_PTR(-ENOMEM);\n\n\tmemcpy(dst, src, len);\n\tdst[len] = '\\0';\n\n\treturn dst;\n}\n\nchar *extract_sharename(const char *unc)\n{\n\tconst char *src;\n\tchar *delim, *dst;\n\n\t \n\tsrc = unc + 2;\n\n\t \n\tdelim = strchr(src, '\\\\');\n\tif (!delim)\n\t\treturn ERR_PTR(-EINVAL);\n\tdelim++;\n\n\t \n\tdst = kstrdup(delim, GFP_KERNEL);\n\tif (!dst)\n\t\treturn ERR_PTR(-ENOMEM);\n\n\treturn dst;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

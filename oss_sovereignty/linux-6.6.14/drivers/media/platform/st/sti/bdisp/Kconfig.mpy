@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "d2a87cdb04fc617f6c33bfc943d15437fc1949261b2cdc27cda1dd3d2fbbc9f2",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/platform/st/sti/bdisp/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig VIDEO_STI_BDISP\n\ttristate \"STMicroelectronics BDISP 2D blitter driver\"\n\tdepends on V4L_MEM2MEM_DRIVERS\n\tdepends on VIDEO_DEV\n\tdepends on ARCH_STI || COMPILE_TEST\n\tselect VIDEOBUF2_DMA_CONTIG\n\tselect V4L2_MEM2MEM_DEV\n\thelp\n\t  This v4l2 mem2mem driver is a 2D blitter for STMicroelectronics SoC.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

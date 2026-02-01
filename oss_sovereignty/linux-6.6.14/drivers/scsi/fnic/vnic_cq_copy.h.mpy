@@ -1,0 +1,9 @@
+{
+  "module_name": "vnic_cq_copy.h",
+  "hash_id": "484114c282829f04542f99bbd780408bc5b4269e3fb197dbdbd3501ea5ea85eb",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/scsi/fnic/vnic_cq_copy.h",
+  "human_readable_source": " \n \n#ifndef _VNIC_CQ_COPY_H_\n#define _VNIC_CQ_COPY_H_\n\n#include \"fcpio.h\"\n\nstatic inline unsigned int vnic_cq_copy_service(\n\tstruct vnic_cq *cq,\n\tint (*q_service)(struct vnic_dev *vdev,\n\t\t\t unsigned int index,\n\t\t\t struct fcpio_fw_req *desc),\n\tunsigned int work_to_do)\n\n{\n\tstruct fcpio_fw_req *desc;\n\tunsigned int work_done = 0;\n\tu8 color;\n\n\tdesc = (struct fcpio_fw_req *)((u8 *)cq->ring.descs +\n\t\tcq->ring.desc_size * cq->to_clean);\n\tfcpio_color_dec(desc, &color);\n\n\twhile (color != cq->last_color) {\n\n\t\tif ((*q_service)(cq->vdev, cq->index, desc))\n\t\t\tbreak;\n\n\t\tcq->to_clean++;\n\t\tif (cq->to_clean == cq->ring.desc_count) {\n\t\t\tcq->to_clean = 0;\n\t\t\tcq->last_color = cq->last_color ? 0 : 1;\n\t\t}\n\n\t\tdesc = (struct fcpio_fw_req *)((u8 *)cq->ring.descs +\n\t\t\tcq->ring.desc_size * cq->to_clean);\n\t\tfcpio_color_dec(desc, &color);\n\n\t\twork_done++;\n\t\tif (work_done >= work_to_do)\n\t\t\tbreak;\n\t}\n\n\treturn work_done;\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

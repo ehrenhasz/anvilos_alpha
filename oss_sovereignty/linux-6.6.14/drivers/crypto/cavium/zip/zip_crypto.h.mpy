@@ -1,0 +1,9 @@
+{
+  "module_name": "zip_crypto.h",
+  "hash_id": "074f066e2104b0b9b21c3ea150866874c72044bb0d1d9f98670beaad586cbcf7",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/crypto/cavium/zip/zip_crypto.h",
+  "human_readable_source": " \n\n#ifndef __ZIP_CRYPTO_H__\n#define __ZIP_CRYPTO_H__\n\n#include <linux/crypto.h>\n#include <crypto/internal/scompress.h>\n#include \"common.h\"\n#include \"zip_deflate.h\"\n#include \"zip_inflate.h\"\n\nstruct zip_kernel_ctx {\n\tstruct zip_operation zip_comp;\n\tstruct zip_operation zip_decomp;\n};\n\nint  zip_alloc_comp_ctx_deflate(struct crypto_tfm *tfm);\nint  zip_alloc_comp_ctx_lzs(struct crypto_tfm *tfm);\nvoid zip_free_comp_ctx(struct crypto_tfm *tfm);\nint  zip_comp_compress(struct crypto_tfm *tfm,\n\t\t       const u8 *src, unsigned int slen,\n\t\t       u8 *dst, unsigned int *dlen);\nint  zip_comp_decompress(struct crypto_tfm *tfm,\n\t\t\t const u8 *src, unsigned int slen,\n\t\t\t u8 *dst, unsigned int *dlen);\n\nvoid *zip_alloc_scomp_ctx_deflate(struct crypto_scomp *tfm);\nvoid *zip_alloc_scomp_ctx_lzs(struct crypto_scomp *tfm);\nvoid  zip_free_scomp_ctx(struct crypto_scomp *tfm, void *zip_ctx);\nint   zip_scomp_compress(struct crypto_scomp *tfm,\n\t\t\t const u8 *src, unsigned int slen,\n\t\t\t u8 *dst, unsigned int *dlen, void *ctx);\nint   zip_scomp_decompress(struct crypto_scomp *tfm,\n\t\t\t   const u8 *src, unsigned int slen,\n\t\t\t   u8 *dst, unsigned int *dlen, void *ctx);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "net_tstamp.h",
+  "hash_id": "34717cd02bb5ff53a8343078e8b541381bbc17772ce3b52f24f325fd9902de96",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/net_tstamp.h",
+  "human_readable_source": " \n\n#ifndef _LINUX_NET_TIMESTAMPING_H_\n#define _LINUX_NET_TIMESTAMPING_H_\n\n#include <uapi/linux/net_tstamp.h>\n\nenum hwtstamp_source {\n\tHWTSTAMP_SOURCE_NETDEV,\n\tHWTSTAMP_SOURCE_PHYLIB,\n};\n\n \nstruct kernel_hwtstamp_config {\n\tint flags;\n\tint tx_type;\n\tint rx_filter;\n\tstruct ifreq *ifr;\n\tbool copied_to_user;\n\tenum hwtstamp_source source;\n};\n\nstatic inline void hwtstamp_config_to_kernel(struct kernel_hwtstamp_config *kernel_cfg,\n\t\t\t\t\t     const struct hwtstamp_config *cfg)\n{\n\tkernel_cfg->flags = cfg->flags;\n\tkernel_cfg->tx_type = cfg->tx_type;\n\tkernel_cfg->rx_filter = cfg->rx_filter;\n}\n\nstatic inline void hwtstamp_config_from_kernel(struct hwtstamp_config *cfg,\n\t\t\t\t\t       const struct kernel_hwtstamp_config *kernel_cfg)\n{\n\tcfg->flags = kernel_cfg->flags;\n\tcfg->tx_type = kernel_cfg->tx_type;\n\tcfg->rx_filter = kernel_cfg->rx_filter;\n}\n\nstatic inline bool kernel_hwtstamp_config_changed(const struct kernel_hwtstamp_config *a,\n\t\t\t\t\t\t  const struct kernel_hwtstamp_config *b)\n{\n\treturn a->flags != b->flags ||\n\t       a->tx_type != b->tx_type ||\n\t       a->rx_filter != b->rx_filter;\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

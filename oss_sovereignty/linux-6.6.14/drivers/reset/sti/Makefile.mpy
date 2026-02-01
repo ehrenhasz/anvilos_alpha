@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "68344147bfb414dc2c6a23545725e49809d65a60b7d4cda333685fb14dca245d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/reset/sti/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-$(CONFIG_STIH407_RESET) += reset-stih407.o reset-syscfg.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

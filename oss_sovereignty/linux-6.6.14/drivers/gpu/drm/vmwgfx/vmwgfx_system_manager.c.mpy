@@ -1,0 +1,9 @@
+{
+  "module_name": "vmwgfx_system_manager.c",
+  "hash_id": "8c1ecb5670e8168fb444bf2ece6b92bcba9d3626cb3341ef4027080613a7fd3a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/vmwgfx/vmwgfx_system_manager.c",
+  "human_readable_source": " \n \n\n#include \"vmwgfx_drv.h\"\n\n#include <drm/ttm/ttm_device.h>\n#include <drm/ttm/ttm_placement.h>\n#include <drm/ttm/ttm_resource.h>\n#include <linux/slab.h>\n\n\nstatic int vmw_sys_man_alloc(struct ttm_resource_manager *man,\n\t\t\t     struct ttm_buffer_object *bo,\n\t\t\t     const struct ttm_place *place,\n\t\t\t     struct ttm_resource **res)\n{\n\t*res = kzalloc(sizeof(**res), GFP_KERNEL);\n\tif (!*res)\n\t\treturn -ENOMEM;\n\n\tttm_resource_init(bo, place, *res);\n\treturn 0;\n}\n\nstatic void vmw_sys_man_free(struct ttm_resource_manager *man,\n\t\t\t     struct ttm_resource *res)\n{\n\tttm_resource_fini(man, res);\n\tkfree(res);\n}\n\nstatic const struct ttm_resource_manager_func vmw_sys_manager_func = {\n\t.alloc = vmw_sys_man_alloc,\n\t.free = vmw_sys_man_free,\n};\n\nint vmw_sys_man_init(struct vmw_private *dev_priv)\n{\n\tstruct ttm_device *bdev = &dev_priv->bdev;\n\tstruct ttm_resource_manager *man =\n\t\t\tkzalloc(sizeof(*man), GFP_KERNEL);\n\n\tif (!man)\n\t\treturn -ENOMEM;\n\n\tman->use_tt = true;\n\tman->func = &vmw_sys_manager_func;\n\n\tttm_resource_manager_init(man, bdev, 0);\n\tttm_set_driver_manager(bdev, VMW_PL_SYSTEM, man);\n\tttm_resource_manager_set_used(man, true);\n\treturn 0;\n}\n\nvoid vmw_sys_man_fini(struct vmw_private *dev_priv)\n{\n\tstruct ttm_resource_manager *man = ttm_manager_type(&dev_priv->bdev,\n\t\t\t\t\t\t\t    VMW_PL_SYSTEM);\n\n\tttm_resource_manager_evict_all(&dev_priv->bdev, man);\n\n\tttm_resource_manager_set_used(man, false);\n\tttm_resource_manager_cleanup(man);\n\n\tttm_set_driver_manager(&dev_priv->bdev, VMW_PL_SYSTEM, NULL);\n\tkfree(man);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

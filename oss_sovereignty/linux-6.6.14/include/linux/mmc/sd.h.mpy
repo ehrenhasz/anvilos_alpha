@@ -1,0 +1,9 @@
+{
+  "module_name": "sd.h",
+  "hash_id": "b101868eab2d19e303c3060f311882015118f08fc97049612a4319d45031d9d5",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/mmc/sd.h",
+  "human_readable_source": " \n \n\n#ifndef LINUX_MMC_SD_H\n#define LINUX_MMC_SD_H\n\n \n   \n \n#define SD_SEND_RELATIVE_ADDR     3    \n#define SD_SEND_IF_COND           8    \n#define SD_SWITCH_VOLTAGE         11   \n\n   \n#define SD_SWITCH                 6    \n\n   \n#define SD_ERASE_WR_BLK_START    32    \n#define SD_ERASE_WR_BLK_END      33    \n\n   \n#define SD_APP_SET_BUS_WIDTH      6    \n#define SD_APP_SD_STATUS         13    \n#define SD_APP_SEND_NUM_WR_BLKS  22    \n#define SD_APP_OP_COND           41    \n#define SD_APP_SEND_SCR          51    \n\n   \n#define SD_READ_EXTR_SINGLE      48    \n#define SD_WRITE_EXTR_SINGLE     49    \n\n \n#define SD_OCR_S18R\t\t(1 << 24)     \n#define SD_ROCR_S18A\t\tSD_OCR_S18R   \n#define SD_OCR_XPC\t\t(1 << 28)     \n#define SD_OCR_CCS\t\t(1 << 30)     \n\n \n\n \n\n \n\n#define SCR_SPEC_VER_0\t\t0\t \n#define SCR_SPEC_VER_1\t\t1\t \n#define SCR_SPEC_VER_2\t\t2\t \n\n \n#define SD_BUS_WIDTH_1\t\t0\n#define SD_BUS_WIDTH_4\t\t2\n\n \n#define SD_SWITCH_CHECK\t\t0\n#define SD_SWITCH_SET\t\t1\n\n \n#define SD_SWITCH_GRP_ACCESS\t0\n\n \n#define SD_SWITCH_ACCESS_DEF\t0\n#define SD_SWITCH_ACCESS_HS\t1\n\n \n#define SD_ERASE_ARG\t\t\t0x00000000\n#define SD_DISCARD_ARG\t\t\t0x00000001\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "r819xU_firmware.h",
+  "hash_id": "36899b210716cab8ee6881d3e44ffb22e42d5dcb58a17e894c72190232acd4ab",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/rtl8192u/r819xU_firmware.h",
+  "human_readable_source": " \n#ifndef __INC_FIRMWARE_H\n#define __INC_FIRMWARE_H\n\n#define GET_COMMAND_PACKET_FRAG_THRESHOLD(v) \\\n\t(4 * ((v) / 4) - 8 - USB_HWDESC_HEADER_LEN)\n\nenum firmware_init_step_e {\n\tFW_INIT_STEP0_BOOT = 0,\n\tFW_INIT_STEP1_MAIN = 1,\n\tFW_INIT_STEP2_DATA = 2,\n};\n\nenum opt_rst_type_e {\n\tOPT_SYSTEM_RESET = 0,\n\tOPT_FIRMWARE_RESET = 1,\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

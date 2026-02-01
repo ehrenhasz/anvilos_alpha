@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "bbb5bc81a26f9eef0c80540ba81cd971384dabbcf3182bfcc8169a17a1463b74",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/memstick/core/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Makefile for the kernel MemoryStick core.\n#\n\nobj-$(CONFIG_MEMSTICK)\t\t+= memstick.o\nobj-$(CONFIG_MS_BLOCK)\t\t+= ms_block.o\nobj-$(CONFIG_MSPRO_BLOCK)\t+= mspro_block.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

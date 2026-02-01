@@ -1,0 +1,9 @@
+{
+  "module_name": "modarray.c",
+  "hash_id": "fd758ca35c02122ad5900ab79aff6f9f5f68bf1b7ad6ffe5708c97cb51213e0c",
+  "original_prompt": "Ingested from sys_09_Anvil/source/py/modarray.c",
+  "human_readable_source": " \n\n#include \"py/builtin.h\"\n\n#if MICROPY_PY_ARRAY\n\nstatic const mp_rom_map_elem_t mp_module_array_globals_table[] = {\n    { MP_ROM_QSTR(MP_QSTR___name__), MP_ROM_QSTR(MP_QSTR_array) },\n    { MP_ROM_QSTR(MP_QSTR_array), MP_ROM_PTR(&mp_type_array) },\n};\n\nstatic MP_DEFINE_CONST_DICT(mp_module_array_globals, mp_module_array_globals_table);\n\nconst mp_obj_module_t mp_module_array = {\n    .base = { &mp_type_module },\n    .globals = (mp_obj_dict_t *)&mp_module_array_globals,\n};\n\nMP_REGISTER_EXTENSIBLE_MODULE(MP_QSTR_array, mp_module_array);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

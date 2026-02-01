@@ -1,0 +1,9 @@
+{
+  "module_name": "fdinfo.h",
+  "hash_id": "fbcb19e1075d7e1b74351e50ef8720e07f6c2df164b07e904d4041a519a8e2ef",
+  "original_prompt": "Ingested from linux-6.6.14/fs/notify/fdinfo.h",
+  "human_readable_source": " \n#ifndef __FSNOTIFY_FDINFO_H__\n#define __FSNOTIFY_FDINFO_H__\n\n#include <linux/errno.h>\n#include <linux/proc_fs.h>\n\nstruct seq_file;\nstruct file;\n\n#ifdef CONFIG_PROC_FS\n\n#ifdef CONFIG_INOTIFY_USER\nvoid inotify_show_fdinfo(struct seq_file *m, struct file *f);\n#endif\n\n#ifdef CONFIG_FANOTIFY\nvoid fanotify_show_fdinfo(struct seq_file *m, struct file *f);\n#endif\n\n#else  \n\n#define inotify_show_fdinfo\tNULL\n#define fanotify_show_fdinfo\tNULL\n\n#endif  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

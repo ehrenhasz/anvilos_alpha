@@ -1,0 +1,9 @@
+{
+  "module_name": "sw_event_global.h",
+  "hash_id": "bd83d28bc309573c1c6d0532808e60cb4355c9d167a67a3dbf9a60c656d581e2",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/hive_isp_css_shared/sw_event_global.h",
+  "human_readable_source": " \n \n\n#ifndef __SW_EVENT_GLOBAL_H_INCLUDED__\n#define __SW_EVENT_GLOBAL_H_INCLUDED__\n\n#define MAX_NR_OF_PAYLOADS_PER_SW_EVENT 4\n\nenum ia_css_psys_sw_event {\n\tIA_CSS_PSYS_SW_EVENT_BUFFER_ENQUEUED,  \n\tIA_CSS_PSYS_SW_EVENT_BUFFER_DEQUEUED,  \n\tIA_CSS_PSYS_SW_EVENT_EVENT_DEQUEUED,  \n\tIA_CSS_PSYS_SW_EVENT_START_STREAM,\n\tIA_CSS_PSYS_SW_EVENT_STOP_STREAM,\n\tIA_CSS_PSYS_SW_EVENT_MIPI_BUFFERS_READY,\n\tIA_CSS_PSYS_SW_EVENT_UNLOCK_RAW_BUFFER,\n\tIA_CSS_PSYS_SW_EVENT_STAGE_ENABLE_DISABLE  \n};\n\nenum ia_css_isys_sw_event {\n\tIA_CSS_ISYS_SW_EVENT_EVENT_DEQUEUED\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

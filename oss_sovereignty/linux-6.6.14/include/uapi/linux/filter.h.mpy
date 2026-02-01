@@ -1,0 +1,9 @@
+{
+  "module_name": "filter.h",
+  "hash_id": "6aef196b12abda0ac1e6e9ba3db66a9eb4d8e79c696a3489ffbae5915cbb0d46",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/filter.h",
+  "human_readable_source": " \n \n\n#ifndef _UAPI__LINUX_FILTER_H__\n#define _UAPI__LINUX_FILTER_H__\n\n#include <linux/compiler.h>\n#include <linux/types.h>\n#include <linux/bpf_common.h>\n\n \n#define BPF_MAJOR_VERSION 1\n#define BPF_MINOR_VERSION 1\n\n \n \nstruct sock_filter {\t \n\t__u16\tcode;    \n\t__u8\tjt;\t \n\t__u8\tjf;\t \n\t__u32\tk;       \n};\n\nstruct sock_fprog {\t \n\tunsigned short\t\tlen;\t \n\tstruct sock_filter __user *filter;\n};\n\n \n#define BPF_RVAL(code)  ((code) & 0x18)\n#define         BPF_A           0x10\n\n \n#define BPF_MISCOP(code) ((code) & 0xf8)\n#define         BPF_TAX         0x00\n#define         BPF_TXA         0x80\n\n \n#ifndef BPF_STMT\n#define BPF_STMT(code, k) { (unsigned short)(code), 0, 0, k }\n#endif\n#ifndef BPF_JUMP\n#define BPF_JUMP(code, k, jt, jf) { (unsigned short)(code), jt, jf, k }\n#endif\n\n \n#define BPF_MEMWORDS 16\n\n \n#define SKF_AD_OFF    (-0x1000)\n#define SKF_AD_PROTOCOL 0\n#define SKF_AD_PKTTYPE \t4\n#define SKF_AD_IFINDEX \t8\n#define SKF_AD_NLATTR\t12\n#define SKF_AD_NLATTR_NEST\t16\n#define SKF_AD_MARK \t20\n#define SKF_AD_QUEUE\t24\n#define SKF_AD_HATYPE\t28\n#define SKF_AD_RXHASH\t32\n#define SKF_AD_CPU\t36\n#define SKF_AD_ALU_XOR_X\t40\n#define SKF_AD_VLAN_TAG\t44\n#define SKF_AD_VLAN_TAG_PRESENT 48\n#define SKF_AD_PAY_OFFSET\t52\n#define SKF_AD_RANDOM\t56\n#define SKF_AD_VLAN_TPID\t60\n#define SKF_AD_MAX\t64\n\n#define SKF_NET_OFF\t(-0x100000)\n#define SKF_LL_OFF\t(-0x200000)\n\n#define BPF_NET_OFF\tSKF_NET_OFF\n#define BPF_LL_OFF\tSKF_LL_OFF\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

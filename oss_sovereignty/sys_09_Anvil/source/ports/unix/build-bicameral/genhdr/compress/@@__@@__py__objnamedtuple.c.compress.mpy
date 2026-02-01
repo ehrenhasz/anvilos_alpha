@@ -1,0 +1,9 @@
+{
+  "module_name": "@@__@@__py__objnamedtuple.c.compress",
+  "hash_id": "36a59cd7c4e7ffa7392751ed651ebc3237226ef35a48ed46c1f4baf5b67c9a93",
+  "original_prompt": "Ingested from sys_09_Anvil/source/ports/unix/build-bicameral/genhdr/compress/@@__@@__py__objnamedtuple.c.compress",
+  "human_readable_source": "can't set attribute\nfunction takes %d positional arguments but %d were given\nunexpected keyword argument '%q'\nfunction got multiple values for argument '%q'\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

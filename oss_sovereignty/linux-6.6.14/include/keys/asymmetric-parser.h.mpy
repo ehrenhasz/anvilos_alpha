@@ -1,0 +1,9 @@
+{
+  "module_name": "asymmetric-parser.h",
+  "hash_id": "34c16071efd19d1ba8f48600d55cd6247555c07b67f759385dc2e2fca257b685",
+  "original_prompt": "Ingested from linux-6.6.14/include/keys/asymmetric-parser.h",
+  "human_readable_source": " \n \n\n#ifndef _KEYS_ASYMMETRIC_PARSER_H\n#define _KEYS_ASYMMETRIC_PARSER_H\n\nstruct key_preparsed_payload;\n\n \nstruct asymmetric_key_parser {\n\tstruct list_head\tlink;\n\tstruct module\t\t*owner;\n\tconst char\t\t*name;\n\n\t \n\tint (*parse)(struct key_preparsed_payload *prep);\n};\n\nextern int register_asymmetric_key_parser(struct asymmetric_key_parser *);\nextern void unregister_asymmetric_key_parser(struct asymmetric_key_parser *);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

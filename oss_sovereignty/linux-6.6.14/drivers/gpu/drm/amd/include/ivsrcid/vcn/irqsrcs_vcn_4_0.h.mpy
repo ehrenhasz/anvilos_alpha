@@ -1,0 +1,9 @@
+{
+  "module_name": "irqsrcs_vcn_4_0.h",
+  "hash_id": "60742081708ab71e6555512e2cf26aca6ec0ae0d1c84c613e48c38b79014cc6f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/include/ivsrcid/vcn/irqsrcs_vcn_4_0.h",
+  "human_readable_source": " \n\n#ifndef __IRQSRCS_VCN_4_0_H__\n#define __IRQSRCS_VCN_4_0_H__\n\n#define VCN_4_0__SRCID__UVD_TRAP\t\t\t\t\t114\t\t\n#define VCN_4_0__SRCID__UVD_ENC_GENERAL_PURPOSE\t\t\t\t119\t\t\n#define VCN_4_0__SRCID__UVD_ENC_LOW_LATENCY\t\t\t\t120\t\t\n#define VCN_4_0__SRCID__UVD_SYSTEM_MESSAGE_INTERRUPT\t\t\t124\t\t\n#define VCN_4_0__SRCID__JPEG_ENCODE\t\t\t\t\t151\t\t\n#define VCN_4_0__SRCID__JPEG_DECODE\t\t\t\t\t153\t\t\n\n#define VCN_4_0__SRCID__JPEG1_DECODE\t\t\t\t\t149\t\t\n#define VCN_4_0__SRCID__JPEG2_DECODE\t\t\t\t\tVCN_4_0__SRCID__JPEG_ENCODE\n#define VCN_4_0__SRCID__JPEG3_DECODE\t\t\t\t\t171\t\t\n#define VCN_4_0__SRCID__JPEG4_DECODE\t\t\t\t\t172\t\t\n#define VCN_4_0__SRCID__JPEG5_DECODE\t\t\t\t\t173\t\t\n#define VCN_4_0__SRCID__JPEG6_DECODE\t\t\t\t\t174\t\t\n#define VCN_4_0__SRCID__JPEG7_DECODE\t\t\t\t\t175\t\t\n\n#define VCN_4_0__SRCID_UVD_POISON\t\t\t\t\t160\n#define VCN_4_0__SRCID_DJPEG0_POISON\t\t\t\t\t161\n#define VCN_4_0__SRCID_EJPEG0_POISON\t\t\t\t\t162\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

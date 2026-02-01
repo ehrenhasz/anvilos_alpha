@@ -1,0 +1,9 @@
+{
+  "module_name": "sonet.h",
+  "hash_id": "80ead6cb4c1d90b4cf8fc26e4563a7e277fe44b24a75df45cf9a030364b15bce",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/sonet.h",
+  "human_readable_source": " \n \n#ifndef LINUX_SONET_H\n#define LINUX_SONET_H\n\n\n#include <linux/atomic.h>\n#include <uapi/linux/sonet.h>\n\nstruct k_sonet_stats {\n#define __HANDLE_ITEM(i) atomic_t i\n\t__SONET_ITEMS\n#undef __HANDLE_ITEM\n};\n\nextern void sonet_copy_stats(struct k_sonet_stats *from,struct sonet_stats *to);\nextern void sonet_subtract_stats(struct k_sonet_stats *from,\n    struct sonet_stats *to);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

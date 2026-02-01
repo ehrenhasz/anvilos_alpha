@@ -1,0 +1,9 @@
+{
+  "module_name": "test_cls_bpf.sh",
+  "hash_id": "0c17439e336cdd07d384807e3f5310fe71336d043a5a022ae225dbd48439c026",
+  "original_prompt": "Ingested from linux-6.6.14/samples/bpf/test_cls_bpf.sh",
+  "human_readable_source": "#!/bin/bash\n# SPDX-License-Identifier: GPL-2.0\n\nfunction pktgen {\n    ../pktgen/pktgen_bench_xmit_mode_netif_receive.sh -i $IFC -s 64 \\\n        -m 90:e2:ba:ff:ff:ff -d 192.168.0.1 -t 4\n    local dropped=`tc -s qdisc show dev $IFC | tail -3 | awk '/drop/{print $7}'`\n    if [ \"$dropped\" == \"0,\" ]; then\n        echo \"FAIL\"\n    else\n        echo \"Successfully filtered \" $dropped \" packets\"\n    fi\n}\n\nfunction test {\n    echo -n \"Loading bpf program '$2'... \"\n    tc qdisc add dev $IFC clsact\n    tc filter add dev $IFC ingress bpf da obj $1 sec $2\n    local status=$?\n    if [ $status -ne 0 ]; then\n        echo \"FAIL\"\n    else\n        echo \"ok\"\n\tpktgen\n    fi\n    tc qdisc del dev $IFC clsact\n}\n\nIFC=test_veth\n\nip link add name $IFC type veth peer name pair_$IFC\nip link set $IFC up\nip link set pair_$IFC up\n\ntest ./parse_simple.o simple\ntest ./parse_varlen.o varlen\ntest ./parse_ldabs.o ldabs\nip link del dev $IFC\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

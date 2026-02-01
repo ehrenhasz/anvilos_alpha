@@ -1,0 +1,9 @@
+{
+  "module_name": "base64.h",
+  "hash_id": "27c997b7ea3e7bf55097606eeeda07801be1273400f572c0b2cced4e7f8d4596",
+  "original_prompt": "Ingested from openssh-9.6p1/openbsd-compat/base64.h",
+  "human_readable_source": " \n\n \n\n#ifndef _BSD_BASE64_H\n#define _BSD_BASE64_H\n\n#include \"includes.h\"\n\n#ifndef HAVE___B64_NTOP\n# ifndef HAVE_B64_NTOP\nint b64_ntop(u_char const *src, size_t srclength, char *target,\n    size_t targsize);\n# endif  \n# define __b64_ntop(a,b,c,d) b64_ntop(a,b,c,d)\n#endif  \n\n#ifndef HAVE___B64_PTON\n# ifndef HAVE_B64_PTON\nint b64_pton(char const *src, u_char *target, size_t targsize);\n# endif  \n# define __b64_pton(a,b,c) b64_pton(a,b,c)\n#endif  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

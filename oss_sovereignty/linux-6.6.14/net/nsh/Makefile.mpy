@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "2f3e70305c8858731748a4fa34c34b8023336c34465710263b8194ec8d66ad7f",
+  "original_prompt": "Ingested from linux-6.6.14/net/nsh/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-$(CONFIG_NET_NSH) += nsh.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

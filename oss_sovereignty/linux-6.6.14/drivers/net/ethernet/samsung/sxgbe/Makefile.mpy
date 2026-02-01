@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "40935097b3e4e6a0832b05a93d630fd0c9bab4d003143980b0c97294af4b0335",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/samsung/sxgbe/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-$(CONFIG_SXGBE_ETH) += samsung-sxgbe.o\nsamsung-sxgbe-objs:= sxgbe_platform.o sxgbe_main.o sxgbe_desc.o \\\n\t\tsxgbe_dma.o sxgbe_core.o sxgbe_mtl.o  sxgbe_mdio.o \\\n\t\tsxgbe_ethtool.o $(samsung-sxgbe-y)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

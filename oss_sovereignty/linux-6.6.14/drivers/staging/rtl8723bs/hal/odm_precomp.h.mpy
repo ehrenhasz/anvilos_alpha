@@ -1,0 +1,9 @@
+{
+  "module_name": "odm_precomp.h",
+  "hash_id": "ba4b35aec23160cf075b3ed806203726fe7e5d35fe0f09e15f924cffb5f95248",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/rtl8723bs/hal/odm_precomp.h",
+  "human_readable_source": " \n \n\n#ifndef\t__ODM_PRECOMP_H__\n#define __ODM_PRECOMP_H__\n\n#include \"odm_types.h\"\n\n#define\t\tTEST_FALG___\t\t1\n\n \n\n\t \n\t \n\t \n\t \n\t \n#define BEAMFORMING_SUPPORT 0\n\n \n\n \n\n#include \"odm.h\"\n#include \"odm_HWConfig.h\"\n#include \"odm_RegDefine11N.h\"\n#include \"odm_EdcaTurboCheck.h\"\n#include \"odm_DIG.h\"\n#include \"odm_DynamicBBPowerSaving.h\"\n#include \"odm_DynamicTxPower.h\"\n#include \"odm_CfoTracking.h\"\n#include \"HalPhyRf.h\"\n#include \"HalPhyRf_8723B.h\" \n#include \"rtl8723b_hal.h\"\n#include \"odm_interface.h\"\n#include \"odm_reg.h\"\n#include \"HalHWImg8723B_MAC.h\"\n#include \"HalHWImg8723B_RF.h\"\n#include \"HalHWImg8723B_BB.h\"\n#include \"Hal8723BReg.h\"\n#include \"odm_RegConfig8723B.h\"\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

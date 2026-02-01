@@ -1,0 +1,9 @@
+{
+  "module_name": "ls-vdir.c",
+  "hash_id": "a558224b854cc82bb024e0bcb2e42cb4a2eaf9f110249040e1ad4f6e77fae8b3",
+  "original_prompt": "Ingested from coreutils-9.4/src/ls-vdir.c",
+  "human_readable_source": "#include \"ls.h\"\nint ls_mode = LS_LONG_FORMAT;\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

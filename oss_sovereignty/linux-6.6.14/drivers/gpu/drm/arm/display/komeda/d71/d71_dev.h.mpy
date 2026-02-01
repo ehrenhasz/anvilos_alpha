@@ -1,0 +1,9 @@
+{
+  "module_name": "d71_dev.h",
+  "hash_id": "1e2b5dafc0da8aa8344548eb9b6189e1612096236d0fc3bf13290b27c84841c7",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/arm/display/komeda/d71/d71_dev.h",
+  "human_readable_source": " \n \n#ifndef _D71_DEV_H_\n#define _D71_DEV_H_\n\n#include \"komeda_dev.h\"\n#include \"komeda_pipeline.h\"\n#include \"d71_regs.h\"\n\nstruct d71_pipeline {\n\tstruct komeda_pipeline base;\n\n\t \n\tu32 __iomem\t*lpu_addr;\n\tu32 __iomem\t*cu_addr;\n\tu32 __iomem\t*dou_addr;\n\tu32 __iomem\t*dou_ft_coeff_addr;  \n};\n\nstruct d71_dev {\n\tstruct komeda_dev *mdev;\n\n\tint\tnum_blocks;\n\tint\tnum_pipelines;\n\tint\tnum_rich_layers;\n\tu32\tmax_line_size;\n\tu32\tmax_vsize;\n\tu32\tsupports_dual_link : 1;\n\tu32\tintegrates_tbu : 1;\n\n\t \n\tu32 __iomem\t*gcu_addr;\n\t \n\tu32 __iomem\t*glb_scl_coeff_addr[D71_MAX_GLB_SCL_COEFF];\n\tu32 __iomem\t*periph_addr;\n\n\tstruct d71_pipeline *pipes[D71_MAX_PIPELINE];\n};\n\n#define to_d71_pipeline(x)\tcontainer_of(x, struct d71_pipeline, base)\n\nextern const struct komeda_pipeline_funcs d71_pipeline_funcs;\n\nint d71_probe_block(struct d71_dev *d71,\n\t\t    struct block_header *blk, u32 __iomem *reg);\nvoid d71_read_block_header(u32 __iomem *reg, struct block_header *blk);\n\nvoid d71_dump(struct komeda_dev *mdev, struct seq_file *sf);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

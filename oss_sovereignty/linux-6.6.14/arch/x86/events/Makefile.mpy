@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "68e274d6d25510ca17e13b1ce44edd104099b51c7d2fe6ae62e1602af814a522",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/events/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-y\t\t\t\t\t+= core.o probe.o utils.o\nobj-$(CONFIG_PERF_EVENTS_INTEL_RAPL)\t+= rapl.o\nobj-y\t\t\t\t\t+= amd/\nobj-$(CONFIG_X86_LOCAL_APIC)            += msr.o\nobj-$(CONFIG_CPU_SUP_INTEL)\t\t+= intel/\nobj-$(CONFIG_CPU_SUP_CENTAUR)\t\t+= zhaoxin/\nobj-$(CONFIG_CPU_SUP_ZHAOXIN)\t\t+= zhaoxin/\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "iosm_ipc_coredump.h",
+  "hash_id": "794a8ff6902821596a3023dd0530f762a126a47ed5ed52eb4f1add8c7bf6bafe",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wwan/iosm/iosm_ipc_coredump.h",
+  "human_readable_source": " \n\n#ifndef _IOSM_IPC_COREDUMP_H_\n#define _IOSM_IPC_COREDUMP_H_\n\n#include \"iosm_ipc_devlink.h\"\n\n \n#define MAX_CD_LIST_SIZE  0x1000\n\n \n#define MAX_DATA_SIZE 0x00010000\n\n \n#define MAX_SIZE_LEN 32\n\n \nstruct iosm_cd_list_entry {\n\t__le32 size;\n\tchar filename[IOSM_MAX_FILENAME_LEN];\n} __packed;\n\n \nstruct iosm_cd_list {\n\t__le32 num_entries;\n\tstruct iosm_cd_list_entry entry[];\n} __packed;\n\n \nstruct iosm_cd_table {\n\t__le32 version;\n\tstruct iosm_cd_list list;\n} __packed;\n\nint ipc_coredump_collect(struct iosm_devlink *devlink, u8 **data, int entry,\n\t\t\t u32 region_size);\n\nint ipc_coredump_get_list(struct iosm_devlink *devlink, u16 cmd);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

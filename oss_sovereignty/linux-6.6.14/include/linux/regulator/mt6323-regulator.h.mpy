@@ -1,0 +1,9 @@
+{
+  "module_name": "mt6323-regulator.h",
+  "hash_id": "8c64b847f687c16a038bb3921799fc110481eaa08f243c0b0fc55701ca66c8ea",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/regulator/mt6323-regulator.h",
+  "human_readable_source": " \n \n\n#ifndef __LINUX_REGULATOR_MT6323_H\n#define __LINUX_REGULATOR_MT6323_H\n\nenum {\n\tMT6323_ID_VPROC = 0,\n\tMT6323_ID_VSYS,\n\tMT6323_ID_VPA,\n\tMT6323_ID_VTCXO,\n\tMT6323_ID_VCN28,\n\tMT6323_ID_VCN33_BT,\n\tMT6323_ID_VCN33_WIFI,\n\tMT6323_ID_VA,\n\tMT6323_ID_VCAMA,\n\tMT6323_ID_VIO28 = 9,\n\tMT6323_ID_VUSB,\n\tMT6323_ID_VMC,\n\tMT6323_ID_VMCH,\n\tMT6323_ID_VEMC3V3,\n\tMT6323_ID_VGP1,\n\tMT6323_ID_VGP2,\n\tMT6323_ID_VGP3,\n\tMT6323_ID_VCN18,\n\tMT6323_ID_VSIM1,\n\tMT6323_ID_VSIM2,\n\tMT6323_ID_VRTC,\n\tMT6323_ID_VCAMAF,\n\tMT6323_ID_VIBR,\n\tMT6323_ID_VRF18,\n\tMT6323_ID_VM,\n\tMT6323_ID_VIO18,\n\tMT6323_ID_VCAMD,\n\tMT6323_ID_VCAMIO,\n\tMT6323_ID_RG_MAX,\n};\n\n#define MT6323_MAX_REGULATOR\tMT6323_ID_RG_MAX\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "stmp3xxx_rtc_wdt.h",
+  "hash_id": "5b169b105848754151f974b7dcf125b44b0f0ec5b1d1bf429024d2c0b95e1235",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/stmp3xxx_rtc_wdt.h",
+  "human_readable_source": " \n \n#ifndef __LINUX_STMP3XXX_RTC_WDT_H\n#define __LINUX_STMP3XXX_RTC_WDT_H\n\nstruct stmp3xxx_wdt_pdata {\n\tvoid (*wdt_set_timeout)(struct device *dev, u32 timeout);\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

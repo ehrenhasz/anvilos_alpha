@@ -1,0 +1,9 @@
+{
+  "module_name": "ptp_mock.h",
+  "hash_id": "4709e2e0424b1dffc3624f5d66620f7f6cc843f1ec7aa730fbfab6570e685021",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/ptp_mock.h",
+  "human_readable_source": " \n \n\n#ifndef _PTP_MOCK_H_\n#define _PTP_MOCK_H_\n\nstruct device;\nstruct mock_phc;\n\n#if IS_ENABLED(CONFIG_PTP_1588_CLOCK_MOCK)\n\nstruct mock_phc *mock_phc_create(struct device *dev);\nvoid mock_phc_destroy(struct mock_phc *phc);\nint mock_phc_index(struct mock_phc *phc);\n\n#else\n\nstatic inline struct mock_phc *mock_phc_create(struct device *dev)\n{\n\treturn NULL;\n}\n\nstatic inline void mock_phc_destroy(struct mock_phc *phc)\n{\n}\n\nstatic inline int mock_phc_index(struct mock_phc *phc)\n{\n\treturn -1;\n}\n\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

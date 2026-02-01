@@ -1,0 +1,9 @@
+{
+  "module_name": "gf117.c",
+  "hash_id": "ab30362e63b47dd9e115b3b1190a7597692dfda85aacf092403b45d60c073578",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/subdev/i2c/gf117.c",
+  "human_readable_source": " \n#include \"priv.h\"\n#include \"pad.h\"\n\nstatic const struct nvkm_i2c_func\ngf117_i2c = {\n\t.pad_x_new = gf119_i2c_pad_x_new,\n};\n\nint\ngf117_i2c_new(struct nvkm_device *device, enum nvkm_subdev_type type, int inst,\n\t      struct nvkm_i2c **pi2c)\n{\n\treturn nvkm_i2c_new_(&gf117_i2c, device, type, inst, pi2c);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "if000d.h",
+  "hash_id": "d0426947c05e191250b754b1d642a1aa2b55b902cba5a208efd7c46a0becbea8",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/include/nvif/if000d.h",
+  "human_readable_source": "#ifndef __NVIF_IF000D_H__\n#define __NVIF_IF000D_H__\n#include \"if000c.h\"\n\nstruct nv04_vmm_vn {\n\t \n};\n\nstruct nv04_vmm_map_vn {\n\t \n};\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "1e84a965f912a124a510b904c0ee310773369ea16dd64fd694485e30860b7a17",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/iio/potentiometer/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for industrial I/O potentiometer drivers\n#\n\n# When adding new entries keep the list in alphabetical order\nobj-$(CONFIG_AD5110) += ad5110.o\nobj-$(CONFIG_AD5272) += ad5272.o\nobj-$(CONFIG_DS1803) += ds1803.o\nobj-$(CONFIG_MAX5432) += max5432.o\nobj-$(CONFIG_MAX5481) += max5481.o\nobj-$(CONFIG_MAX5487) += max5487.o\nobj-$(CONFIG_MCP4018) += mcp4018.o\nobj-$(CONFIG_MCP4131) += mcp4131.o\nobj-$(CONFIG_MCP4531) += mcp4531.o\nobj-$(CONFIG_MCP41010) += mcp41010.o\nobj-$(CONFIG_TPL0102) += tpl0102.o\nobj-$(CONFIG_X9250) += x9250.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

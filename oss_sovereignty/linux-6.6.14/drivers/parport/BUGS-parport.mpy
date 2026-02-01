@@ -1,0 +1,9 @@
+{
+  "module_name": "BUGS-parport",
+  "hash_id": "1f30ce297ec188fe628714be01a0fe17e56dd8aa0946fe8c4f1c021335c0e30e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/parport/BUGS-parport",
+  "human_readable_source": "Currently known (or at least suspected) bugs in parport:\n\no lp doesn't allow you to read status while printing is in progress (is\n  this still true?).\n\no parport_pc_ecp_read_block_pio() is broken.  parport will revert to the\n  software-driven mode in ieee1284_ops.c\n\nSee <URL:http://people.redhat.com/twaugh/parport/>.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

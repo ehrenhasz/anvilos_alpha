@@ -1,0 +1,9 @@
+{
+  "module_name": "conn.c",
+  "hash_id": "d7630818e1c6747bb07705930bdcbebea9a33c57d6f5bfb9740da1f048d5a14a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvif/conn.c",
+  "human_readable_source": " \n#include <nvif/conn.h>\n#include <nvif/disp.h>\n#include <nvif/printf.h>\n\n#include <nvif/class.h>\n#include <nvif/if0011.h>\n\nint\nnvif_conn_event_ctor(struct nvif_conn *conn, const char *name, nvif_event_func func, u8 types,\n\t\t     struct nvif_event *event)\n{\n\tstruct {\n\t\tstruct nvif_event_v0 base;\n\t\tstruct nvif_conn_event_v0 conn;\n\t} args;\n\tint ret;\n\n\targs.conn.version = 0;\n\targs.conn.types = types;\n\n\tret = nvif_event_ctor_(&conn->object, name ?: \"nvifConnHpd\", nvif_conn_id(conn),\n\t\t\t       func, true, &args.base, sizeof(args), false, event);\n\tNVIF_DEBUG(&conn->object, \"[NEW EVENT:HPD types:%02x]\", types);\n\treturn ret;\n}\n\nint\nnvif_conn_hpd_status(struct nvif_conn *conn)\n{\n\tstruct nvif_conn_hpd_status_v0 args;\n\tint ret;\n\n\targs.version = 0;\n\n\tret = nvif_mthd(&conn->object, NVIF_CONN_V0_HPD_STATUS, &args, sizeof(args));\n\tNVIF_ERRON(ret, &conn->object, \"[HPD_STATUS] support:%d present:%d\",\n\t\t   args.support, args.present);\n\treturn ret ? ret : !!args.support + !!args.present;\n}\n\nvoid\nnvif_conn_dtor(struct nvif_conn *conn)\n{\n\tnvif_object_dtor(&conn->object);\n}\n\nint\nnvif_conn_ctor(struct nvif_disp *disp, const char *name, int id, struct nvif_conn *conn)\n{\n\tstruct nvif_conn_v0 args;\n\tint ret;\n\n\targs.version = 0;\n\targs.id = id;\n\n\tret = nvif_object_ctor(&disp->object, name ?: \"nvifConn\", id, NVIF_CLASS_CONN,\n\t\t\t       &args, sizeof(args), &conn->object);\n\tNVIF_ERRON(ret, &disp->object, \"[NEW conn id:%d]\", id);\n\treturn ret;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

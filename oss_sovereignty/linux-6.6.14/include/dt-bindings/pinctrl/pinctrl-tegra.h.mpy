@@ -1,0 +1,9 @@
+{
+  "module_name": "pinctrl-tegra.h",
+  "hash_id": "acaf3cf9ef92acb1c34aaf7c2590891a7378d685f54c1843b95bf18cd892373c",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/pinctrl/pinctrl-tegra.h",
+  "human_readable_source": " \n \n\n#ifndef _DT_BINDINGS_PINCTRL_TEGRA_H\n#define _DT_BINDINGS_PINCTRL_TEGRA_H\n\n \n#define TEGRA_PIN_DISABLE\t\t\t\t0\n#define TEGRA_PIN_ENABLE\t\t\t\t1\n\n#define TEGRA_PIN_PULL_NONE\t\t\t\t0\n#define TEGRA_PIN_PULL_DOWN\t\t\t\t1\n#define TEGRA_PIN_PULL_UP\t\t\t\t2\n\n \n#define TEGRA_PIN_LP_DRIVE_DIV_8\t\t\t0\n#define TEGRA_PIN_LP_DRIVE_DIV_4\t\t\t1\n#define TEGRA_PIN_LP_DRIVE_DIV_2\t\t\t2\n#define TEGRA_PIN_LP_DRIVE_DIV_1\t\t\t3\n\n \n#define TEGRA_PIN_SLEW_RATE_FASTEST\t\t\t0\n#define TEGRA_PIN_SLEW_RATE_FAST\t\t\t1\n#define TEGRA_PIN_SLEW_RATE_SLOW\t\t\t2\n#define TEGRA_PIN_SLEW_RATE_SLOWEST\t\t\t3\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

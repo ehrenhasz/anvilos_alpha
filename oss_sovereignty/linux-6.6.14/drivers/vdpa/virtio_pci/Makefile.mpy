@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "9e7b6554a3c27fdc5482fb78f54a9b222a56de4af6c4c70f90eccafc05c92bbf",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/vdpa/virtio_pci/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nobj-$(CONFIG_VP_VDPA) += vp_vdpa.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "mbslen.c",
+  "hash_id": "3302d1b8391ea46cda98f153838fabd3e9ecd2ee96d0effa6ec4e5e80de50aa9",
+  "original_prompt": "Ingested from coreutils-9.4/lib/mbslen.c",
+  "human_readable_source": " \n#include <string.h>\n\n#include <stdlib.h>\n\n#include \"mbuiterf.h\"\n\n \nsize_t\nmbslen (const char *string)\n{\n  if (MB_CUR_MAX > 1)\n    {\n      size_t count = 0;\n\n      mbuif_state_t state;\n      const char *iter;\n      for (mbuif_init (state), iter = string; mbuif_avail (state, iter); )\n        {\n          mbchar_t cur = mbuif_next (state, iter);\n          count++;\n          iter += mb_len (cur);\n        }\n\n      return count;\n    }\n  else\n    return strlen (string);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

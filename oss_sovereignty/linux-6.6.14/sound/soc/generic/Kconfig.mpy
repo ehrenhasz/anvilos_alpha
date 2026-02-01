@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "2a3a6850a35e1e70e423879e6b6d68faa86b1036a74551d3fba019ae0144ebb5",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/generic/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig SND_SIMPLE_CARD_UTILS\n\ttristate\n\nconfig SND_SIMPLE_CARD\n\ttristate \"ASoC Simple sound card support\"\n\tselect SND_SIMPLE_CARD_UTILS\n\thelp\n\t  This option enables generic simple sound card support\n\t  It also support DPCM of multi CPU single Codec ststem.\n\nconfig SND_AUDIO_GRAPH_CARD\n\ttristate \"ASoC Audio Graph sound card support\"\n\tdepends on OF\n\tselect SND_SIMPLE_CARD_UTILS\n\thelp\n\t  This option enables generic simple sound card support\n\t  with OF-graph DT bindings.\n\t  It also support DPCM of multi CPU single Codec ststem.\n\nconfig SND_AUDIO_GRAPH_CARD2\n\ttristate \"ASoC Audio Graph sound card2 support\"\n\tdepends on OF\n\tselect SND_SIMPLE_CARD_UTILS\n\thelp\n\t  This option enables generic simple sound card2 support\n\t  with OF-graph DT bindings.\n\nconfig SND_AUDIO_GRAPH_CARD2_CUSTOM_SAMPLE\n\ttristate \"ASoC Audio Graph Card2 base custom sample support\"\n\tdepends on SND_AUDIO_GRAPH_CARD2\n\thelp\n\t  This option enables Audio Graph Card2 base custom sample\n\nconfig SND_TEST_COMPONENT\n\ttristate \"ASoC Test component sound support\"\n\tdepends on OF\n\thelp\n\t  This option enables test component sound driver support.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

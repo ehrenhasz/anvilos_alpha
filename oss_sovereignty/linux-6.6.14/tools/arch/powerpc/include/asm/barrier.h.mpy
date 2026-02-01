@@ -1,0 +1,9 @@
+{
+  "module_name": "barrier.h",
+  "hash_id": "c9054ae44432363810ee9aa45c9bb8060c15bdf955cf418a7c1f504023c0ffb8",
+  "original_prompt": "Ingested from linux-6.6.14/tools/arch/powerpc/include/asm/barrier.h",
+  "human_readable_source": " \n \n#ifndef _TOOLS_LINUX_ASM_POWERPC_BARRIER_H\n#define _TOOLS_LINUX_ASM_POWERPC_BARRIER_H\n\n \n#define mb()   __asm__ __volatile__ (\"sync\" : : : \"memory\")\n#define rmb()  __asm__ __volatile__ (\"sync\" : : : \"memory\")\n#define wmb()  __asm__ __volatile__ (\"sync\" : : : \"memory\")\n\n#if defined(__powerpc64__)\n#define smp_lwsync()\t__asm__ __volatile__ (\"lwsync\" : : : \"memory\")\n\n#define smp_store_release(p, v)\t\t\t\\\ndo {\t\t\t\t\t\t\\\n\tsmp_lwsync();\t\t\t\t\\\n\tWRITE_ONCE(*p, v);\t\t\t\\\n} while (0)\n\n#define smp_load_acquire(p)\t\t\t\\\n({\t\t\t\t\t\t\\\n\ttypeof(*p) ___p1 = READ_ONCE(*p);\t\\\n\tsmp_lwsync();\t\t\t\t\\\n\t___p1;\t\t\t\t\t\\\n})\n#endif  \n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

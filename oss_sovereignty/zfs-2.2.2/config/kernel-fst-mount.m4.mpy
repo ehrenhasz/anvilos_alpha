@@ -1,0 +1,9 @@
+{
+  "module_name": "kernel-fst-mount.m4",
+  "hash_id": "9e870542415c0114369f35a03d910304b47bd91581f406c4f550c3e34bbb0d3c",
+  "original_prompt": "Ingested from zfs-2.2.2/config/kernel-fst-mount.m4",
+  "human_readable_source": "dnl #\ndnl # 2.6.38 API change\ndnl # The .get_sb callback has been replaced by a .mount callback\ndnl # in the file_system_type structure.\ndnl #\nAC_DEFUN([ZFS_AC_KERNEL_SRC_FST_MOUNT], [\n        ZFS_LINUX_TEST_SRC([file_system_type_mount], [\n                #include <linux/fs.h>\n\n                static struct dentry *\n                mount(struct file_system_type *fs_type, int flags,\n                    const char *osname, void *data) {\n                        struct dentry *d = NULL;\n                        return (d);\n                }\n\n                static struct file_system_type fst __attribute__ ((unused)) = {\n                        .mount = mount,\n                };\n        ],[])\n])\n\nAC_DEFUN([ZFS_AC_KERNEL_FST_MOUNT], [\n        AC_MSG_CHECKING([whether fst->mount() exists])\n        ZFS_LINUX_TEST_RESULT([file_system_type_mount], [\n                AC_MSG_RESULT(yes)\n        ],[\n\t\tZFS_LINUX_TEST_ERROR([fst->mount()])\n        ])\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

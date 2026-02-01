@@ -1,0 +1,9 @@
+{
+  "module_name": "TREE08.boot",
+  "hash_id": "4308a48c46386d065f171f88c944982c62b1a3067c90ca3815d876bb479b5bb4",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/rcutorture/configs/rcu/TREE08.boot",
+  "human_readable_source": "rcupdate.rcu_self_test=1\nrcutree.rcu_fanout_exact=1\nrcu_nocbs=all\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

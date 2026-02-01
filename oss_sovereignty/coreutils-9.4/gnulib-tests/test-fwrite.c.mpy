@@ -1,0 +1,9 @@
+{
+  "module_name": "test-fwrite.c",
+  "hash_id": "c6064718ddc9175bde1ac5886602bed99c5db32fd4b711c6448dc915696e6b97",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-fwrite.c",
+  "human_readable_source": " \n#if HAVE_MSVC_INVALID_PARAMETER_HANDLER \\\n    && MSVC_INVALID_PARAMETER_HANDLING == DEFAULT_HANDLING\n  gl_msvc_inval_ensure_handler ();\n#endif\n\n   \n  #if !defined __ANDROID__  \n  {\n    FILE *fp = fopen (filename, \"w\");\n    char buf[5] = \"world\";\n    ASSERT (fp != NULL);\n    setvbuf (fp, NULL, _IONBF, 0);\n    ASSERT (close (fileno (fp)) == 0);\n    errno = 0;\n    ASSERT (fwrite (buf, 1, sizeof (buf), fp) == 0);\n    ASSERT (errno == EBADF);\n    ASSERT (ferror (fp));\n    fclose (fp);\n  }\n  #endif\n\n   \n  {\n    FILE *fp = fdopen (-1, \"w\");\n    if (fp != NULL)\n      {\n        char buf[5] = \"world\";\n        setvbuf (fp, NULL, _IONBF, 0);\n        errno = 0;\n        ASSERT (fwrite (buf, 1, sizeof (buf), fp) == 0);\n        ASSERT (errno == EBADF);\n        ASSERT (ferror (fp));\n        fclose (fp);\n      }\n  }\n  {\n    FILE *fp;\n    close (99);\n    fp = fdopen (99, \"w\");\n    if (fp != NULL)\n      {\n        char buf[5] = \"world\";\n        setvbuf (fp, NULL, _IONBF, 0);\n        errno = 0;\n        ASSERT (fwrite (buf, 1, sizeof (buf), fp) == 0);\n        ASSERT (errno == EBADF);\n        ASSERT (ferror (fp));\n        fclose (fp);\n      }\n  }\n\n   \n  unlink (filename);\n\n  return 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

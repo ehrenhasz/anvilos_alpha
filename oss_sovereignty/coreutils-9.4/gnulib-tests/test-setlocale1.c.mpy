@@ -1,0 +1,9 @@
+{
+  "module_name": "test-setlocale1.c",
+  "hash_id": "716b743d26e7daa9e4096961c539fdb72a0f6f430fc4ed1deb585926afe695ea",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-setlocale1.c",
+  "human_readable_source": " \n  if (setlocale (LC_ALL, \"\") == NULL)\n    return 1;\n\n  name1 = strdup (setlocale (LC_ALL, NULL));\n\n   \n  if (setlocale (LC_ALL, \"C\") == NULL)\n    return 1;\n\n   \n  if (setlocale (LC_ALL, getenv (\"LC_ALL\")) == NULL)\n    return 1;\n\n  name2 = strdup (setlocale (LC_ALL, NULL));\n\n  ASSERT (name1);\n  ASSERT (name2);\n\n   \n  ASSERT (strcmp (name1, name2) == 0);\n  free (name1);\n  free (name2);\n\n  return 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

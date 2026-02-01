@@ -1,0 +1,9 @@
+{
+  "module_name": "test-c32isalpha.sh",
+  "hash_id": "509db80f8efc21681d92b4f85030bdf6cdfd7236cdc0820f2e8b4c0af2ba2e4d",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-c32isalpha.sh",
+  "human_readable_source": "#!/bin/sh\n\n# Test in the POSIX locale.\nLC_ALL=C     ${CHECKER} ./test-c32isalpha${EXEEXT} 0 || exit 1\nLC_ALL=POSIX ${CHECKER} ./test-c32isalpha${EXEEXT} 0 || exit 1\n\n# Test in an ISO-8859-1 or ISO-8859-15 locale.\n: \"${LOCALE_FR=fr_FR}\"\nif test $LOCALE_FR != none; then\n  LC_ALL=$LOCALE_FR \\\n  ${CHECKER} ./test-c32isalpha${EXEEXT} 1 \\\n  || exit 1\nfi\n\n# Test whether a specific EUC-JP locale is installed.\n: \"${LOCALE_JA=ja_JP}\"\nif test $LOCALE_JA != none; then\n  LC_ALL=$LOCALE_JA \\\n  ${CHECKER} ./test-c32isalpha${EXEEXT} 2 \\\n  || exit 1\nfi\n\n# Test whether a specific UTF-8 locale is installed.\n: \"${LOCALE_FR_UTF8=fr_FR.UTF-8}\"\nif test $LOCALE_FR_UTF8 != none; then\n  LC_ALL=$LOCALE_FR_UTF8 \\\n  ${CHECKER} ./test-c32isalpha${EXEEXT} 3 \\\n  || exit 1\nfi\n\n# Test whether a specific GB18030 locale is installed.\n: \"${LOCALE_ZH_CN=zh_CN.GB18030}\"\nif test $LOCALE_ZH_CN != none; then\n  LC_ALL=$LOCALE_ZH_CN \\\n  ${CHECKER} ./test-c32isalpha${EXEEXT} 4\n  case $? in\n    0 | 77) ;;\n    *) exit 1 ;;\n  esac\nfi\n\nexit 0\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "en_dim.c",
+  "hash_id": "3659b344d5c529b00a68a949101b0bd2b903b9935b9b20d8f833b81496d4b8d4",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/mellanox/mlx5/core/en_dim.c",
+  "human_readable_source": " \n\n#include <linux/dim.h>\n#include \"en.h\"\n\nstatic void\nmlx5e_complete_dim_work(struct dim *dim, struct dim_cq_moder moder,\n\t\t\tstruct mlx5_core_dev *mdev, struct mlx5_core_cq *mcq)\n{\n\tmlx5_core_modify_cq_moderation(mdev, mcq, moder.usec, moder.pkts);\n\tdim->state = DIM_START_MEASURE;\n}\n\nvoid mlx5e_rx_dim_work(struct work_struct *work)\n{\n\tstruct dim *dim = container_of(work, struct dim, work);\n\tstruct mlx5e_rq *rq = container_of(dim, struct mlx5e_rq, dim);\n\tstruct dim_cq_moder cur_moder =\n\t\tnet_dim_get_rx_moderation(dim->mode, dim->profile_ix);\n\n\tmlx5e_complete_dim_work(dim, cur_moder, rq->mdev, &rq->cq.mcq);\n}\n\nvoid mlx5e_tx_dim_work(struct work_struct *work)\n{\n\tstruct dim *dim = container_of(work, struct dim, work);\n\tstruct mlx5e_txqsq *sq = container_of(dim, struct mlx5e_txqsq, dim);\n\tstruct dim_cq_moder cur_moder =\n\t\tnet_dim_get_tx_moderation(dim->mode, dim->profile_ix);\n\n\tmlx5e_complete_dim_work(dim, cur_moder, sq->cq.mdev, &sq->cq.mcq);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

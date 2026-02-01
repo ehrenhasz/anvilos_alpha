@@ -1,0 +1,9 @@
+{
+  "module_name": "timerqueue.h",
+  "hash_id": "fe07cff078f29d8e85c8925ef70d30f7f5491af61cdad4ce9be34dc05a5ddb27",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/timerqueue.h",
+  "human_readable_source": " \n#ifndef _LINUX_TIMERQUEUE_H\n#define _LINUX_TIMERQUEUE_H\n\n#include <linux/rbtree.h>\n#include <linux/ktime.h>\n\n\nstruct timerqueue_node {\n\tstruct rb_node node;\n\tktime_t expires;\n};\n\nstruct timerqueue_head {\n\tstruct rb_root_cached rb_root;\n};\n\n\nextern bool timerqueue_add(struct timerqueue_head *head,\n\t\t\t   struct timerqueue_node *node);\nextern bool timerqueue_del(struct timerqueue_head *head,\n\t\t\t   struct timerqueue_node *node);\nextern struct timerqueue_node *timerqueue_iterate_next(\n\t\t\t\t\t\tstruct timerqueue_node *node);\n\n \nstatic inline\nstruct timerqueue_node *timerqueue_getnext(struct timerqueue_head *head)\n{\n\tstruct rb_node *leftmost = rb_first_cached(&head->rb_root);\n\n\treturn rb_entry_safe(leftmost, struct timerqueue_node, node);\n}\n\nstatic inline void timerqueue_init(struct timerqueue_node *node)\n{\n\tRB_CLEAR_NODE(&node->node);\n}\n\nstatic inline bool timerqueue_node_queued(struct timerqueue_node *node)\n{\n\treturn !RB_EMPTY_NODE(&node->node);\n}\n\nstatic inline bool timerqueue_node_expires(struct timerqueue_node *node)\n{\n\treturn node->expires;\n}\n\nstatic inline void timerqueue_init_head(struct timerqueue_head *head)\n{\n\thead->rb_root = RB_ROOT_CACHED;\n}\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

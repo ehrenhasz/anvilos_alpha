@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "456064532b573babad96b2fe54626f5cdf8db6f5dc4a0e708c0db80b9e8e597d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/mediatek/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig DRM_MEDIATEK\n\ttristate \"DRM Support for Mediatek SoCs\"\n\tdepends on DRM\n\tdepends on ARCH_MEDIATEK || (ARM && COMPILE_TEST)\n\tdepends on COMMON_CLK\n\tdepends on HAVE_ARM_SMCCC\n\tdepends on OF\n\tdepends on MTK_MMSYS\n\tselect DRM_KMS_HELPER\n\tselect DRM_MIPI_DSI\n\tselect DRM_PANEL\n\tselect MEMORY\n\tselect MTK_SMI\n\tselect PHY_MTK_MIPI_DSI\n\tselect VIDEOMODE_HELPERS\n\thelp\n\t  Choose this option if you have a Mediatek SoCs.\n\t  The module will be called mediatek-drm\n\t  This driver provides kernel mode setting and\n\t  buffer management to userspace.\n\nconfig DRM_MEDIATEK_DP\n\ttristate \"DRM DPTX Support for MediaTek SoCs\"\n\tdepends on DRM_MEDIATEK\n\tselect PHY_MTK_DP\n\tselect DRM_DISPLAY_HELPER\n\tselect DRM_DISPLAY_DP_HELPER\n\tselect DRM_DP_AUX_BUS\n\thelp\n\t  DRM/KMS Display Port driver for MediaTek SoCs.\n\nconfig DRM_MEDIATEK_HDMI\n\ttristate \"DRM HDMI Support for Mediatek SoCs\"\n\tdepends on DRM_MEDIATEK\n\tselect SND_SOC_HDMI_CODEC if SND_SOC\n\tselect PHY_MTK_HDMI\n\thelp\n\t  DRM/KMS HDMI driver for Mediatek SoCs\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

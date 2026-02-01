@@ -1,0 +1,9 @@
+{
+  "module_name": "ramgf108.c",
+  "hash_id": "6212caead0bee2bc68f63c6061bebf466862a3f3984536f139c9385a662f54f6",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/subdev/fb/ramgf108.c",
+  "human_readable_source": " \n#include \"ram.h\"\n\nu32\ngf108_ram_probe_fbp_amount(const struct nvkm_ram_func *func, u32 fbpao,\n\t\t\t   struct nvkm_device *device, int fbp, int *pltcs)\n{\n\tu32 fbpt  = nvkm_rd32(device, 0x022438);\n\tu32 fbpat = nvkm_rd32(device, 0x02243c);\n\tu32 fbpas = fbpat / fbpt;\n\tu32 fbpa  = fbp * fbpas;\n\tu32 size  = 0;\n\twhile (fbpas--) {\n\t\tif (!(fbpao & BIT(fbpa)))\n\t\t\tsize += func->probe_fbpa_amount(device, fbpa);\n\t\tfbpa++;\n\t}\n\t*pltcs = 1;\n\treturn size;\n}\n\nstatic const struct nvkm_ram_func\ngf108_ram = {\n\t.upper = 0x0200000000ULL,\n\t.probe_fbp = gf100_ram_probe_fbp,\n\t.probe_fbp_amount = gf108_ram_probe_fbp_amount,\n\t.probe_fbpa_amount = gf100_ram_probe_fbpa_amount,\n\t.init = gf100_ram_init,\n\t.calc = gf100_ram_calc,\n\t.prog = gf100_ram_prog,\n\t.tidy = gf100_ram_tidy,\n};\n\nint\ngf108_ram_new(struct nvkm_fb *fb, struct nvkm_ram **pram)\n{\n\treturn gf100_ram_new_(&gf108_ram, fb, pram);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

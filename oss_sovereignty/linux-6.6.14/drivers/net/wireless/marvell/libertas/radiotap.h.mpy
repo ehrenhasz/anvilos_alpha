@@ -1,0 +1,9 @@
+{
+  "module_name": "radiotap.h",
+  "hash_id": "6f1d4fe2983ac5b0e64dc3fd0e248085c945795d627cd1bc39e30e25525c6830",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/marvell/libertas/radiotap.h",
+  "human_readable_source": " \n#include <net/ieee80211_radiotap.h>\n\nstruct tx_radiotap_hdr {\n\tstruct ieee80211_radiotap_header hdr;\n\tu8 rate;\n\tu8 txpower;\n\tu8 rts_retries;\n\tu8 data_retries;\n} __packed;\n\n#define TX_RADIOTAP_PRESENT (\t\t\t\t\\\n\t(1 << IEEE80211_RADIOTAP_RATE) |\t\t\\\n\t(1 << IEEE80211_RADIOTAP_DBM_TX_POWER) |\t\\\n\t(1 << IEEE80211_RADIOTAP_RTS_RETRIES) |\t\t\\\n\t(1 << IEEE80211_RADIOTAP_DATA_RETRIES)  |\t\\\n\t0)\n\n#define IEEE80211_FC_VERSION_MASK    0x0003\n#define IEEE80211_FC_TYPE_MASK       0x000c\n#define IEEE80211_FC_TYPE_MGT        0x0000\n#define IEEE80211_FC_TYPE_CTL        0x0004\n#define IEEE80211_FC_TYPE_DATA       0x0008\n#define IEEE80211_FC_SUBTYPE_MASK    0x00f0\n#define IEEE80211_FC_TOFROMDS_MASK   0x0300\n#define IEEE80211_FC_TODS_MASK       0x0100\n#define IEEE80211_FC_FROMDS_MASK     0x0200\n#define IEEE80211_FC_NODS            0x0000\n#define IEEE80211_FC_TODS            0x0100\n#define IEEE80211_FC_FROMDS          0x0200\n#define IEEE80211_FC_DSTODS          0x0300\n\nstruct rx_radiotap_hdr {\n\tstruct ieee80211_radiotap_header hdr;\n\tu8 flags;\n\tu8 rate;\n\tu8 antsignal;\n} __packed;\n\n#define RX_RADIOTAP_PRESENT (\t\t\t\\\n\t(1 << IEEE80211_RADIOTAP_FLAGS) |\t\\\n\t(1 << IEEE80211_RADIOTAP_RATE) |\t\\\n\t(1 << IEEE80211_RADIOTAP_DB_ANTSIGNAL) |\\\n\t0)\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

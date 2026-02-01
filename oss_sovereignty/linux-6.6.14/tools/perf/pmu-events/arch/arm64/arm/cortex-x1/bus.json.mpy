@@ -1,0 +1,9 @@
+{
+  "module_name": "bus.json",
+  "hash_id": "e017dfe9290364cbe232fe316e138cae99186b060ef258a0e73fac7ed13b6601",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/pmu-events/arch/arm64/arm/cortex-x1/bus.json",
+  "human_readable_source": "[\n    {\n        \"ArchStdEvent\": \"CPU_CYCLES\"\n    },\n    {\n        \"ArchStdEvent\": \"BUS_ACCESS\"\n    },\n    {\n        \"ArchStdEvent\": \"BUS_CYCLES\"\n    },\n    {\n        \"ArchStdEvent\": \"BUS_ACCESS_RD\"\n    },\n    {\n        \"ArchStdEvent\": \"BUS_ACCESS_WR\"\n    },\n    {\n        \"ArchStdEvent\": \"CNT_CYCLES\"\n    }\n]\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

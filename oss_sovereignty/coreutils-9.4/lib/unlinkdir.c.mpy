@@ -1,0 +1,9 @@
+{
+  "module_name": "unlinkdir.c",
+  "hash_id": "a4a971732c848f7f5d2912e5e2047fbea06bcbb76fc4828bc7d821a458e78f1f",
+  "original_prompt": "Ingested from coreutils-9.4/lib/unlinkdir.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#include \"unlinkdir.h\"\n#include \"priv-set.h\"\n#include \"root-uid.h\"\n#include <unistd.h>\n\n#if ! UNLINK_CANNOT_UNLINK_DIR\n\n \n\nbool\ncannot_unlink_dir (void)\n{\n  static bool initialized;\n  static bool cannot;\n\n  if (! initialized)\n    {\n# if defined PRIV_SYS_LINKDIR\n       \n      cannot = (priv_set_ismember (PRIV_SYS_LINKDIR) == 0);\n# else\n       \n      cannot = (geteuid () != ROOT_UID);\n# endif\n      initialized = true;\n    }\n\n  return cannot;\n}\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

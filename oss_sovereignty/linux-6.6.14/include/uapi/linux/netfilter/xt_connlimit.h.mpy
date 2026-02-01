@@ -1,0 +1,9 @@
+{
+  "module_name": "xt_connlimit.h",
+  "hash_id": "f861627893c397ad6f3f4df2e17d8774b20e070b689543278063d0bebf3a4e41",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/netfilter/xt_connlimit.h",
+  "human_readable_source": " \n#ifndef _XT_CONNLIMIT_H\n#define _XT_CONNLIMIT_H\n\n#include <linux/types.h>\n#include <linux/netfilter.h>\n\nstruct xt_connlimit_data;\n\nenum {\n\tXT_CONNLIMIT_INVERT = 1 << 0,\n\tXT_CONNLIMIT_DADDR  = 1 << 1,\n};\n\nstruct xt_connlimit_info {\n\tunion {\n\t\tunion nf_inet_addr mask;\n#ifndef __KERNEL__\n\t\tunion {\n\t\t\t__be32 v4_mask;\n\t\t\t__be32 v6_mask[4];\n\t\t};\n#endif\n\t};\n\tunsigned int limit;\n\t \n\t__u32 flags;\n\n\t \n\tstruct nf_conncount_data *data __attribute__((aligned(8)));\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

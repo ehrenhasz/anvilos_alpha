@@ -1,0 +1,9 @@
+{
+  "module_name": "fixpaths",
+  "hash_id": "4b8e1511950b6ca1c4bcac27bedf2fac6a4bd098434a9caa925eee1a8f592d4a",
+  "original_prompt": "Ingested from openssh-9.6p1/fixpaths",
+  "human_readable_source": "#!/bin/sh\n#\n# fixpaths  - substitute makefile variables into text files\n# Usage: fixpaths -Dsomething=somethingelse ...\n\ndie() {\n\techo $*\n\texit -1\n}\n\ntest -n \"`echo $1|grep -- -D`\" || \\\n\tdie $0: nothing to do - no substitutions listed!\n\ntest -n \"`echo $1|grep -- '-D[^=]\\+=[^ ]\\+'`\" || \\\n\tdie $0: error in command line arguments.\n\ntest -n \"`echo $*|grep -- ' [^-]'`\" || \\\n\tdie Usage: $0 '[-Dstring=replacement] [[infile] ...]'\n\nsed `echo $*|sed -e 's/-D\\([^=]\\+\\)=\\([^ ]*\\)/-e s=\\1=\\2=g/g'`\n\nexit 0\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

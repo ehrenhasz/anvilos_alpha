@@ -1,0 +1,9 @@
+{
+  "module_name": "emu10k1_synth_local.h",
+  "hash_id": "700c277a055eff3bd4ab980203f627e07238b3ce251d2f8829a62e24554c0cc2",
+  "original_prompt": "Ingested from linux-6.6.14/sound/pci/emu10k1/emu10k1_synth_local.h",
+  "human_readable_source": " \n#ifndef __EMU10K1_SYNTH_LOCAL_H\n#define __EMU10K1_SYNTH_LOCAL_H\n \n\n#include <linux/time.h>\n#include <sound/core.h>\n#include <sound/emu10k1_synth.h>\n\n \nint snd_emu10k1_sample_new(struct snd_emux *private_data,\n\t\t\t   struct snd_sf_sample *sp,\n\t\t\t   struct snd_util_memhdr *hdr,\n\t\t\t   const void __user *_data, long count);\nint snd_emu10k1_sample_free(struct snd_emux *private_data,\n\t\t\t    struct snd_sf_sample *sp,\n\t\t\t    struct snd_util_memhdr *hdr);\nint snd_emu10k1_memhdr_init(struct snd_emux *emu);\n\n \nvoid snd_emu10k1_ops_setup(struct snd_emux *emu);\nint snd_emu10k1_synth_get_voice(struct snd_emu10k1 *hw);\n\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

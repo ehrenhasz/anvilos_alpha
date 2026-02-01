@@ -1,0 +1,9 @@
+{
+  "module_name": "hrtimer_defs.h",
+  "hash_id": "753a58ffea2d6bb2aa1a3862e8f85515c3763c7f5c99ba59434868baa96748b8",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/hrtimer_defs.h",
+  "human_readable_source": " \n#ifndef _LINUX_HRTIMER_DEFS_H\n#define _LINUX_HRTIMER_DEFS_H\n\n#include <linux/ktime.h>\n\n#ifdef CONFIG_HIGH_RES_TIMERS\n\n \n# define HIGH_RES_NSEC\t\t1\n# define KTIME_HIGH_RES\t\t(HIGH_RES_NSEC)\n# define MONOTONIC_RES_NSEC\tHIGH_RES_NSEC\n# define KTIME_MONOTONIC_RES\tKTIME_HIGH_RES\n\n#else\n\n# define MONOTONIC_RES_NSEC\tLOW_RES_NSEC\n# define KTIME_MONOTONIC_RES\tKTIME_LOW_RES\n\n#endif\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

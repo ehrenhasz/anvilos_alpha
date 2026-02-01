@@ -1,0 +1,9 @@
+{
+  "module_name": "sof-utils.c",
+  "hash_id": "1a6c9b0e957c72cd8b68a6815b7f9d17d70a235ec06e4a6af0c3ab68af8b0f62",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/sof/sof-utils.c",
+  "human_readable_source": "\n\n\n\n\n\n\n\n\n\n#include <asm/unaligned.h>\n#include <linux/io-64-nonatomic-lo-hi.h>\n#include <linux/device.h>\n#include <sound/memalloc.h>\n#include <linux/module.h>\n#include \"sof-utils.h\"\n\n \n\nint snd_sof_create_page_table(struct device *dev,\n\t\t\t      struct snd_dma_buffer *dmab,\n\t\t\t      unsigned char *page_table, size_t size)\n{\n\tint i, pages;\n\n\tpages = snd_sgbuf_aligned_pages(size);\n\n\tdev_dbg(dev, \"generating page table for %p size 0x%zx pages %d\\n\",\n\t\tdmab->area, size, pages);\n\n\tfor (i = 0; i < pages; i++) {\n\t\t \n\t\tu32 idx = (5 * i) >> 1;\n\t\tu32 pfn = snd_sgbuf_get_addr(dmab, i * PAGE_SIZE) >> PAGE_SHIFT;\n\t\tu8 *pg_table;\n\n\t\tpg_table = (u8 *)(page_table + idx);\n\n\t\t \n\t\tif (i & 1)\n\t\t\tput_unaligned_le32((pg_table[0] & 0xf) | pfn << 4,\n\t\t\t\t\t   pg_table);\n\t\telse\n\t\t\tput_unaligned_le32(pfn, pg_table);\n\t}\n\n\treturn pages;\n}\nEXPORT_SYMBOL(snd_sof_create_page_table);\n\nMODULE_LICENSE(\"Dual BSD/GPL\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

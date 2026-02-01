@@ -1,0 +1,9 @@
+{
+  "module_name": "fib_lookup.c",
+  "hash_id": "5cd2b3a530767716de19434af904c4934c75ec2790aa7b2cb69e22417dfd3927",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/fib_lookup.c",
+  "human_readable_source": "\n \n\n#include <linux/types.h>\n#include <linux/bpf.h>\n#include <bpf/bpf_helpers.h>\n#include \"bpf_tracing_net.h\"\n\nstruct bpf_fib_lookup fib_params = {};\nint fib_lookup_ret = 0;\nint lookup_flags = 0;\n\nSEC(\"tc\")\nint fib_lookup(struct __sk_buff *skb)\n{\n\tfib_lookup_ret = bpf_fib_lookup(skb, &fib_params, sizeof(fib_params),\n\t\t\t\t\tlookup_flags);\n\n\treturn TC_ACT_SHOT;\n}\n\nchar _license[] SEC(\"license\") = \"GPL\";\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

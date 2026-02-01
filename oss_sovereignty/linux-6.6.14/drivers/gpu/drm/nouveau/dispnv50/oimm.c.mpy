@@ -1,0 +1,9 @@
+{
+  "module_name": "oimm.c",
+  "hash_id": "3a11417faf4c6c9300240a067e363f04da01d14c9b9f229bcd73525d344534bc",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/dispnv50/oimm.c",
+  "human_readable_source": " \n#include \"oimm.h\"\n\n#include <nvif/class.h>\n\nint\nnv50_oimm_init(struct nouveau_drm *drm, struct nv50_wndw *wndw)\n{\n\tstatic const struct {\n\t\ts32 oclass;\n\t\tint version;\n\t\tint (*init)(struct nouveau_drm *, s32, struct nv50_wndw *);\n\t} oimms[] = {\n\t\t{ GK104_DISP_OVERLAY, 0, oimm507b_init },\n\t\t{ GF110_DISP_OVERLAY, 0, oimm507b_init },\n\t\t{ GT214_DISP_OVERLAY, 0, oimm507b_init },\n\t\t{   G82_DISP_OVERLAY, 0, oimm507b_init },\n\t\t{  NV50_DISP_OVERLAY, 0, oimm507b_init },\n\t\t{}\n\t};\n\tstruct nv50_disp *disp = nv50_disp(drm->dev);\n\tint cid;\n\n\tcid = nvif_mclass(&disp->disp->object, oimms);\n\tif (cid < 0) {\n\t\tNV_ERROR(drm, \"No supported overlay immediate class\\n\");\n\t\treturn cid;\n\t}\n\n\treturn oimms[cid].init(drm, oimms[cid].oclass, wndw);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

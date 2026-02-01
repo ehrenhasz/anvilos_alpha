@@ -1,0 +1,9 @@
+{
+  "module_name": "xt_realm.h",
+  "hash_id": "e6336fac8c3d5866680d945642c30e5cea385f0d1ceef55321e4e1f47e7fdea9",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/netfilter/xt_realm.h",
+  "human_readable_source": " \n#ifndef _XT_REALM_H\n#define _XT_REALM_H\n\n#include <linux/types.h>\n\nstruct xt_realm_info {\n\t__u32 id;\n\t__u32 mask;\n\t__u8 invert;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "authenc.h",
+  "hash_id": "85f488d12e7e6691d1608e51ea01bb9a39659da6193b46204c9798bbd44e132c",
+  "original_prompt": "Ingested from linux-6.6.14/include/crypto/authenc.h",
+  "human_readable_source": " \n \n#ifndef _CRYPTO_AUTHENC_H\n#define _CRYPTO_AUTHENC_H\n\n#include <linux/types.h>\n\nenum {\n\tCRYPTO_AUTHENC_KEYA_UNSPEC,\n\tCRYPTO_AUTHENC_KEYA_PARAM,\n};\n\nstruct crypto_authenc_key_param {\n\t__be32 enckeylen;\n};\n\nstruct crypto_authenc_keys {\n\tconst u8 *authkey;\n\tconst u8 *enckey;\n\n\tunsigned int authkeylen;\n\tunsigned int enckeylen;\n};\n\nint crypto_authenc_extractkeys(struct crypto_authenc_keys *keys, const u8 *key,\n\t\t\t       unsigned int keylen);\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

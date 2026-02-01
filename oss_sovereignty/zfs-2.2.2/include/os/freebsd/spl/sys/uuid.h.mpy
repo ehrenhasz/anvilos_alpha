@@ -1,0 +1,9 @@
+{
+  "module_name": "uuid.h",
+  "hash_id": "1c9816b34542bba5b2def7da5cfe905fb395d179c091cc595e6e0089f90d0b7a",
+  "original_prompt": "Ingested from zfs-2.2.2/include/os/freebsd/spl/sys/uuid.h",
+  "human_readable_source": " \n \n\n#ifndef\t_SYS_UUID_H\n#define\t_SYS_UUID_H\n\n#ifdef\t__cplusplus\nextern \"C\" {\n#endif\n\n \n\n \n\n#include <sys/types.h>\n#include <sys/byteorder.h>\n\ntypedef struct {\n\tuint8_t\t\tnodeID[6];\n} uuid_node_t;\n\n \ntypedef struct uuid {\n\tuint32_t\ttime_low;\n\tuint16_t\ttime_mid;\n\tuint16_t\ttime_hi_and_version;\n\tuint8_t\t\tclock_seq_hi_and_reserved;\n\tuint8_t\t\tclock_seq_low;\n\tuint8_t\t\tnode_addr[6];\n} uuid_t;\n\n#define\tUUID_PRINTABLE_STRING_LENGTH 37\n\n \n#define\tUUID_LE_CONVERT(dest, src)\t\t\t\t\t\\\n{\t\t\t\t\t\t\t\t\t\\\n\t(dest) = (src);\t\t\t\t\t\t\t\\\n\t(dest).time_low = LE_32((dest).time_low);\t\t\t\\\n\t(dest).time_mid = LE_16((dest).time_mid);\t\t\t\\\n\t(dest).time_hi_and_version = LE_16((dest).time_hi_and_version);\t\\\n}\n\nstatic __inline int\nuuid_is_null(const caddr_t uuid)\n{\n\treturn (0);\n}\n#ifdef __cplusplus\n}\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

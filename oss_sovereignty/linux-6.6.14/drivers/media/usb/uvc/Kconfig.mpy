@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "dddf99fdf1b365f6638c1ea4c604a48336139f8003e4bcc9db551fc743989db8",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/usb/uvc/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig USB_VIDEO_CLASS\n\ttristate \"USB Video Class (UVC)\"\n\tdepends on VIDEO_DEV\n\tselect VIDEOBUF2_VMALLOC\n\tselect UVC_COMMON\n\thelp\n\t  Support for the USB Video Class (UVC).  Currently only video\n\t  input devices, such as webcams, are supported.\n\n\t  For more information see: <http://linux-uvc.berlios.de/>\n\nconfig USB_VIDEO_CLASS_INPUT_EVDEV\n\tbool \"UVC input events device support\"\n\tdefault y\n\tdepends on USB_VIDEO_CLASS\n\tdepends on USB_VIDEO_CLASS=INPUT || INPUT=y\n\thelp\n\t  This option makes USB Video Class devices register an input device\n\t  to report button events.\n\n\t  If you are in doubt, say Y.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

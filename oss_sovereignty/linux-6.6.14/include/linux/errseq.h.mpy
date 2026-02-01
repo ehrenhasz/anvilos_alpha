@@ -1,0 +1,9 @@
+{
+  "module_name": "errseq.h",
+  "hash_id": "e71586c5cc3fd52ba646a62d5662bbca830f44a463726d49e3511abf7d799048",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/errseq.h",
+  "human_readable_source": " \n \n#ifndef _LINUX_ERRSEQ_H\n#define _LINUX_ERRSEQ_H\n\ntypedef u32\terrseq_t;\n\nerrseq_t errseq_set(errseq_t *eseq, int err);\nerrseq_t errseq_sample(errseq_t *eseq);\nint errseq_check(errseq_t *eseq, errseq_t since);\nint errseq_check_and_advance(errseq_t *eseq, errseq_t *since);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

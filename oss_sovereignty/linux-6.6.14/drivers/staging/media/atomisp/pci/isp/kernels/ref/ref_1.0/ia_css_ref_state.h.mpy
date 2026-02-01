@@ -1,0 +1,9 @@
+{
+  "module_name": "ia_css_ref_state.h",
+  "hash_id": "bde3b502bc5b795cc62ebe0b638879cc01f05389b9b360d4ee516d005ef2d3bb",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/isp/kernels/ref/ref_1.0/ia_css_ref_state.h",
+  "human_readable_source": " \n \n\n#ifndef __IA_CSS_REF_STATE_H\n#define __IA_CSS_REF_STATE_H\n\n#include \"type_support.h\"\n\n \nstruct sh_css_isp_ref_dmem_state {\n\ts32 ref_in_buf_idx;\n\ts32 ref_out_buf_idx;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

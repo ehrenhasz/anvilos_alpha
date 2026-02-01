@@ -1,0 +1,9 @@
+{
+  "module_name": "hash-triple.c",
+  "hash_id": "13a552c5cc5951cdc82a0a8b0131bc6dbeeeed3d9625e314c13d1c26f9404af2",
+  "original_prompt": "Ingested from coreutils-9.4/lib/hash-triple.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n \n#include \"hash-triple.h\"\n\n#include \"same.h\"\n#include \"same-inode.h\"\n\n \nsize_t\ntriple_hash_no_name (void const *x, size_t table_size)\n{\n  struct F_triple const *p = x;\n\n   \n  return p->st_ino % table_size;\n}\n\n \nbool\ntriple_compare (void const *x, void const *y)\n{\n  struct F_triple const *a = x;\n  struct F_triple const *b = y;\n  return (SAME_INODE (*a, *b) && same_name (a->name, b->name)) ? true : false;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "mt65xx.h",
+  "hash_id": "d268891ad939fc38f98cd52d3acc80a319b309c055e6a55bc802e0c3ae28bff5",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/pinctrl/mt65xx.h",
+  "human_readable_source": " \n \n\n#ifndef _DT_BINDINGS_PINCTRL_MT65XX_H\n#define _DT_BINDINGS_PINCTRL_MT65XX_H\n\n#define MTK_PIN_NO(x) ((x) << 8)\n#define MTK_GET_PIN_NO(x) ((x) >> 8)\n#define MTK_GET_PIN_FUNC(x) ((x) & 0xf)\n\n#define MTK_PUPD_SET_R1R0_00 100\n#define MTK_PUPD_SET_R1R0_01 101\n#define MTK_PUPD_SET_R1R0_10 102\n#define MTK_PUPD_SET_R1R0_11 103\n\n#define MTK_PULL_SET_RSEL_000  200\n#define MTK_PULL_SET_RSEL_001  201\n#define MTK_PULL_SET_RSEL_010  202\n#define MTK_PULL_SET_RSEL_011  203\n#define MTK_PULL_SET_RSEL_100  204\n#define MTK_PULL_SET_RSEL_101  205\n#define MTK_PULL_SET_RSEL_110  206\n#define MTK_PULL_SET_RSEL_111  207\n\n#define MTK_DRIVE_2mA  2\n#define MTK_DRIVE_4mA  4\n#define MTK_DRIVE_6mA  6\n#define MTK_DRIVE_8mA  8\n#define MTK_DRIVE_10mA 10\n#define MTK_DRIVE_12mA 12\n#define MTK_DRIVE_14mA 14\n#define MTK_DRIVE_16mA 16\n#define MTK_DRIVE_20mA 20\n#define MTK_DRIVE_24mA 24\n#define MTK_DRIVE_28mA 28\n#define MTK_DRIVE_32mA 32\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

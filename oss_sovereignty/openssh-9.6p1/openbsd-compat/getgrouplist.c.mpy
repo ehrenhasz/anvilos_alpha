@@ -1,0 +1,9 @@
+{
+  "module_name": "getgrouplist.c",
+  "hash_id": "d6342d34253ef8cea1ff354306175f3c4cec3936ca859397b6f259ffdc82085e",
+  "original_prompt": "Ingested from openssh-9.6p1/openbsd-compat/getgrouplist.c",
+  "human_readable_source": " \n \n\n \n\n#include \"includes.h\"\n\n#ifndef HAVE_GETGROUPLIST\n\n \n#include <sys/types.h>\n#include <string.h>\n#include <unistd.h>\n#include <grp.h>\n\nint\ngetgrouplist(const char *uname, gid_t agroup, gid_t *groups, int *grpcnt)\n{\n\tstruct group *grp;\n\tint i, ngroups;\n\tint ret, maxgroups;\n\tint bail;\n\n\tret = 0;\n\tngroups = 0;\n\tmaxgroups = *grpcnt;\n\n\t \n\tif (ngroups >= maxgroups) {\n\t\t*grpcnt = ngroups;\n\t\treturn (-1);\n\t}\n\tgroups[ngroups++] = agroup;\n\n\t \n\tsetgrent();\n\twhile ((grp = getgrent())) {\n\t\tif (grp->gr_gid == agroup)\n\t\t\tcontinue;\n\t\tfor (bail = 0, i = 0; bail == 0 && i < ngroups; i++)\n\t\t\tif (groups[i] == grp->gr_gid)\n\t\t\t\tbail = 1;\n\t\tif (bail)\n\t\t\tcontinue;\n\t\tfor (i = 0; grp->gr_mem[i]; i++) {\n\t\t\tif (!strcmp(grp->gr_mem[i], uname)) {\n\t\t\t\tif (ngroups >= maxgroups) {\n\t\t\t\t\tret = -1;\n\t\t\t\t\tgoto out;\n\t\t\t\t}\n\t\t\t\tgroups[ngroups++] = grp->gr_gid;\n\t\t\t\tbreak;\n\t\t\t}\n\t\t}\n\t}\nout:\n\tendgrent();\n\t*grpcnt = ngroups;\n\treturn (ret);\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "824f2ff0d57a75da1c0812c8802f86749efcc79083c1c133b2e958b1e76884fe",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/accessibility/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nmenuconfig ACCESSIBILITY\n\tbool \"Accessibility support\"\n\thelp\n\t  Accessibility handles all special kinds of hardware devices or\n\t  software adapters which help people with disabilities (e.g.\n\t  blindness) to use computers.\n\n\t  That includes braille devices, speech synthesis, keyboard\n\t  remapping, etc.\n\n\t  Say Y here to get to see options for accessibility.\n\t  This option alone does not add any kernel code.\n\n\t  If you say N, all options in this submenu will be skipped and disabled.\n\n\t  If unsure, say N.\n\nif ACCESSIBILITY\nconfig A11Y_BRAILLE_CONSOLE\n\tbool \"Console on braille device\"\n\tdepends on VT\n\tdepends on SERIAL_CORE_CONSOLE\n\thelp\n\t  Enables console output on a braille device connected to a 8250\n\t  serial port. For now only the VisioBraille device is supported.\n\n\t  To actually enable it, you need to pass option\n\t  console=brl,ttyS0\n\t  to the kernel. Options are the same as for serial console.\n\n\t  If unsure, say N.\n\nsource \"drivers/accessibility/speakup/Kconfig\"\n\nendif # ACCESSIBILITY\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

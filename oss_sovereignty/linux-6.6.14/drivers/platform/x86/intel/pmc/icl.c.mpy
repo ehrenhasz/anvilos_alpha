@@ -1,0 +1,9 @@
+{
+  "module_name": "icl.c",
+  "hash_id": "a94617ce5df5239f5da420ff7da169ec74459bd6da7859620ba280494b20841a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/platform/x86/intel/pmc/icl.c",
+  "human_readable_source": "\n \n\n#include \"core.h\"\n\nconst struct pmc_bit_map icl_pfear_map[] = {\n\t{\"RES_65\",\t\tBIT(0)},\n\t{\"RES_66\",\t\tBIT(1)},\n\t{\"RES_67\",\t\tBIT(2)},\n\t{\"TAM\",\t\t\tBIT(3)},\n\t{\"GBETSN\",\t\tBIT(4)},\n\t{\"TBTLSX\",\t\tBIT(5)},\n\t{\"RES_71\",\t\tBIT(6)},\n\t{\"RES_72\",\t\tBIT(7)},\n\t{}\n};\n\nconst struct pmc_bit_map *ext_icl_pfear_map[] = {\n\t \n\tcnp_pfear_map,\n\ticl_pfear_map,\n\tNULL\n};\n\nconst struct pmc_reg_map icl_reg_map = {\n\t.pfear_sts = ext_icl_pfear_map,\n\t.slp_s0_offset = CNP_PMC_SLP_S0_RES_COUNTER_OFFSET,\n\t.slp_s0_res_counter_step = ICL_PMC_SLP_S0_RES_COUNTER_STEP,\n\t.slps0_dbg_maps = cnp_slps0_dbg_maps,\n\t.ltr_show_sts = cnp_ltr_show_map,\n\t.msr_sts = msr_map,\n\t.slps0_dbg_offset = CNP_PMC_SLPS0_DBG_OFFSET,\n\t.ltr_ignore_offset = CNP_PMC_LTR_IGNORE_OFFSET,\n\t.regmap_length = CNP_PMC_MMIO_REG_LEN,\n\t.ppfear0_offset = CNP_PMC_HOST_PPFEAR0A,\n\t.ppfear_buckets = ICL_PPFEAR_NUM_ENTRIES,\n\t.pm_cfg_offset = CNP_PMC_PM_CFG_OFFSET,\n\t.pm_read_disable_bit = CNP_PMC_READ_DISABLE_BIT,\n\t.ltr_ignore_max = ICL_NUM_IP_IGN_ALLOWED,\n\t.etr3_offset = ETR3_OFFSET,\n};\n\nint icl_core_init(struct pmc_dev *pmcdev)\n{\n\tstruct pmc *pmc = pmcdev->pmcs[PMC_IDX_MAIN];\n\n\tpmc->map = &icl_reg_map;\n\treturn get_primary_reg_base(pmc);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

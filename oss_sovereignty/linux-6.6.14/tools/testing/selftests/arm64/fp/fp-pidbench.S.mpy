@@ -1,0 +1,9 @@
+{
+  "module_name": "fp-pidbench.S",
+  "hash_id": "c93c5589be8ff6ad087fb7233a511c6719ca606ab0ec712e7427663102270548",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/arm64/fp/fp-pidbench.S",
+  "human_readable_source": " \n \n \n \n \n \n \n \n\n#include <asm/unistd.h>\n#include \"assembler.h\"\n\n.arch_extension sve\n\n.macro test_loop per_loop\n\tmov\tx10, x20\n\tmov\tx8, #__NR_getpid\n\tmrs\tx11, CNTVCT_EL0\n1:\n\t\\per_loop\n\tsvc\t#0\n\tsub\tx10, x10, #1\n\tcbnz\tx10, 1b\n\n\tmrs\tx12, CNTVCT_EL0\n\tsub\tx0, x12, x11\n\tbl\tputdec\n\tputs\t\"\\n\"\n.endm\n\n \n.globl _start\nfunction _start\n\tputs\t\"Iterations per test: \"\n\tmov\tx20, #10000\n\tlsl\tx20, x20, #8\n\tmov\tx0, x20\n\tbl\tputdec\n\tputs\t\"\\n\"\n\n\t \n\tputs\t\"No SVE: \"\n\ttest_loop\n\n\t \n\tmrs\tx0, ID_AA64PFR0_EL1\n\tubfx\tx0, x0, #32, #4\n\tcbnz\tx0, 1f\n\tputs\t\"System does not support SVE\\n\"\n\tb\tout\n1:\n\n\t \n\tputs\t\"SVE VL: \"\n\trdvl\tx0, #8\n\tbl\tputdec\n\tputs\t\"\\n\"\n\n\tputs\t\"SVE used once: \"\n\ttest_loop\n\n\t \n\tputs\t\"SVE used per syscall: \"\n\ttest_loop \"rdvl x0, #8\"\n\n\t \nout:\n\tmov\tx0, #0\n\tmov\tx8, #__NR_exit\n\tsvc\t#0\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

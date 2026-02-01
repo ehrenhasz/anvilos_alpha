@@ -1,0 +1,9 @@
+{
+  "module_name": "bsd-nextstep.c",
+  "hash_id": "bbd9d0c5671cf123e7f21c622a65c10a57868d5a8bb16b93937c77959b49bbc0",
+  "original_prompt": "Ingested from openssh-9.6p1/openbsd-compat/bsd-nextstep.c",
+  "human_readable_source": " \n\n#include \"includes.h\"\n\n#ifdef HAVE_NEXT\n#include <errno.h>\n#include <sys/wait.h>\n#include \"bsd-nextstep.h\"\n\npid_t\nposix_wait(int *status)\n{\n\tunion wait statusp;\n\tpid_t wait_pid;\n\n\t#undef wait\t\t\t \n\twait_pid = wait(&statusp);\n\tif (status)\n\t\t*status = (int) statusp.w_status;\n\n\treturn (wait_pid);\n}\n\nint\ntcgetattr(int fd, struct termios *t)\n{\n\treturn (ioctl(fd, TIOCGETA, t));\n}\n\nint\ntcsetattr(int fd, int opt, const struct termios *t)\n{\n\tstruct termios localterm;\n\n\tif (opt & TCSASOFT) {\n\t\tlocalterm = *t;\n\t\tlocalterm.c_cflag |= CIGNORE;\n\t\tt = &localterm;\n\t}\n\tswitch (opt & ~TCSASOFT) {\n\tcase TCSANOW:\n\t\treturn (ioctl(fd, TIOCSETA, t));\n\tcase TCSADRAIN:\n\t\treturn (ioctl(fd, TIOCSETAW, t));\n\tcase TCSAFLUSH:\n\t\treturn (ioctl(fd, TIOCSETAF, t));\n\tdefault:\n\t\terrno = EINVAL;\n\t\treturn (-1);\n\t}\n}\n\nint tcsetpgrp(int fd, pid_t pgrp)\n{\n\treturn (ioctl(fd, TIOCSPGRP, &pgrp));\n}\n\nspeed_t cfgetospeed(const struct termios *t)\n{\n\treturn (t->c_ospeed);\n}\n\nspeed_t cfgetispeed(const struct termios *t)\n{\n\treturn (t->c_ispeed);\n}\n\nint\ncfsetospeed(struct termios *t,int speed)\n{\n\tt->c_ospeed = speed;\n\treturn (0);\n}\n\nint\ncfsetispeed(struct termios *t, int speed)\n{\n\tt->c_ispeed = speed;\n\treturn (0);\n}\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "phy-ocelot-serdes.h",
+  "hash_id": "3392d5a00ec6b7842d6d8c6962d788d6dbd697992d2aaebaf42b479d849dbbf2",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/phy/phy-ocelot-serdes.h",
+  "human_readable_source": " \n \n#ifndef __PHY_OCELOT_SERDES_H__\n#define __PHY_OCELOT_SERDES_H__\n\n#define SERDES1G(x)\t(x)\n#define SERDES1G_MAX\tSERDES1G(5)\n#define SERDES6G(x)\t(SERDES1G_MAX + 1 + (x))\n#define SERDES6G_MAX\tSERDES6G(2)\n#define SERDES_MAX\t(SERDES6G_MAX + 1)\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

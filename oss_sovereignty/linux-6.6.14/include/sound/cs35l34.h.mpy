@@ -1,0 +1,9 @@
+{
+  "module_name": "cs35l34.h",
+  "hash_id": "5a9c1662e6087c6b2f206a63f8258b260b8c3765537adbf9983d7ea95c3d101d",
+  "original_prompt": "Ingested from linux-6.6.14/include/sound/cs35l34.h",
+  "human_readable_source": " \n \n\n#ifndef __CS35L34_H\n#define __CS35L34_H\n\nstruct cs35l34_platform_data {\n\t \n\tbool aif_half_drv;\n\t \n\tbool digsft_disable;\n\t \n\tbool amp_inv;\n\t \n\tunsigned int boost_peak;\n\t \n\tunsigned int boost_ind;\n\t \n\tunsigned int boost_vtge;\n\t \n\tbool gain_zc_disable;\n\t \n\tunsigned int i2s_sdinloc;\n\t \n\tbool tdm_rising_edge;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

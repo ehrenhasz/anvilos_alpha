@@ -1,0 +1,9 @@
+{
+  "module_name": "cmd.c",
+  "hash_id": "1efb454bc92a658ebaf82dde99c06fe372c3e4bd8956fa5ba27f4bd63fe7e1d5",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/mellanox/mlx5/core/sf/cmd.c",
+  "human_readable_source": "\n \n\n#include <linux/mlx5/driver.h>\n#include \"priv.h\"\n\nint mlx5_cmd_alloc_sf(struct mlx5_core_dev *dev, u16 function_id)\n{\n\tu32 out[MLX5_ST_SZ_DW(alloc_sf_out)] = {};\n\tu32 in[MLX5_ST_SZ_DW(alloc_sf_in)] = {};\n\n\tMLX5_SET(alloc_sf_in, in, opcode, MLX5_CMD_OP_ALLOC_SF);\n\tMLX5_SET(alloc_sf_in, in, function_id, function_id);\n\n\treturn mlx5_cmd_exec(dev, in, sizeof(in), out, sizeof(out));\n}\n\nint mlx5_cmd_dealloc_sf(struct mlx5_core_dev *dev, u16 function_id)\n{\n\tu32 out[MLX5_ST_SZ_DW(dealloc_sf_out)] = {};\n\tu32 in[MLX5_ST_SZ_DW(dealloc_sf_in)] = {};\n\n\tMLX5_SET(dealloc_sf_in, in, opcode, MLX5_CMD_OP_DEALLOC_SF);\n\tMLX5_SET(dealloc_sf_in, in, function_id, function_id);\n\n\treturn mlx5_cmd_exec(dev, in, sizeof(in), out, sizeof(out));\n}\n\nint mlx5_cmd_sf_enable_hca(struct mlx5_core_dev *dev, u16 func_id)\n{\n\tu32 out[MLX5_ST_SZ_DW(enable_hca_out)] = {};\n\tu32 in[MLX5_ST_SZ_DW(enable_hca_in)] = {};\n\n\tMLX5_SET(enable_hca_in, in, opcode, MLX5_CMD_OP_ENABLE_HCA);\n\tMLX5_SET(enable_hca_in, in, function_id, func_id);\n\tMLX5_SET(enable_hca_in, in, embedded_cpu_function, 0);\n\treturn mlx5_cmd_exec(dev, &in, sizeof(in), &out, sizeof(out));\n}\n\nint mlx5_cmd_sf_disable_hca(struct mlx5_core_dev *dev, u16 func_id)\n{\n\tu32 out[MLX5_ST_SZ_DW(disable_hca_out)] = {};\n\tu32 in[MLX5_ST_SZ_DW(disable_hca_in)] = {};\n\n\tMLX5_SET(disable_hca_in, in, opcode, MLX5_CMD_OP_DISABLE_HCA);\n\tMLX5_SET(disable_hca_in, in, function_id, func_id);\n\tMLX5_SET(enable_hca_in, in, embedded_cpu_function, 0);\n\treturn mlx5_cmd_exec(dev, in, sizeof(in), out, sizeof(out));\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

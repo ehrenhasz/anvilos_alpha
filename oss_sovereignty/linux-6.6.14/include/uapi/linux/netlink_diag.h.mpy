@@ -1,0 +1,9 @@
+{
+  "module_name": "netlink_diag.h",
+  "hash_id": "ec51efea54eb08c3b02a9e46a492a62b33bae73aa854a8cc116c6b2154902cfb",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/netlink_diag.h",
+  "human_readable_source": " \n#ifndef __NETLINK_DIAG_H__\n#define __NETLINK_DIAG_H__\n\n#include <linux/types.h>\n\nstruct netlink_diag_req {\n\t__u8\tsdiag_family;\n\t__u8\tsdiag_protocol;\n\t__u16\tpad;\n\t__u32\tndiag_ino;\n\t__u32\tndiag_show;\n\t__u32\tndiag_cookie[2];\n};\n\nstruct netlink_diag_msg {\n\t__u8\tndiag_family;\n\t__u8\tndiag_type;\n\t__u8\tndiag_protocol;\n\t__u8\tndiag_state;\n\n\t__u32\tndiag_portid;\n\t__u32\tndiag_dst_portid;\n\t__u32\tndiag_dst_group;\n\t__u32\tndiag_ino;\n\t__u32\tndiag_cookie[2];\n};\n\nstruct netlink_diag_ring {\n\t__u32\tndr_block_size;\n\t__u32\tndr_block_nr;\n\t__u32\tndr_frame_size;\n\t__u32\tndr_frame_nr;\n};\n\nenum {\n\t \n\tNETLINK_DIAG_MEMINFO,\n\tNETLINK_DIAG_GROUPS,\n\tNETLINK_DIAG_RX_RING,\n\tNETLINK_DIAG_TX_RING,\n\tNETLINK_DIAG_FLAGS,\n\n\t__NETLINK_DIAG_MAX,\n};\n\n#define NETLINK_DIAG_MAX (__NETLINK_DIAG_MAX - 1)\n\n#define NDIAG_PROTO_ALL\t\t((__u8) ~0)\n\n#define NDIAG_SHOW_MEMINFO\t0x00000001  \n#define NDIAG_SHOW_GROUPS\t0x00000002  \n#ifndef __KERNEL__\n \n#define NDIAG_SHOW_RING_CFG\t0x00000004  \n#endif\n#define NDIAG_SHOW_FLAGS\t0x00000008  \n\n \n#define NDIAG_FLAG_CB_RUNNING\t\t0x00000001\n#define NDIAG_FLAG_PKTINFO\t\t0x00000002\n#define NDIAG_FLAG_BROADCAST_ERROR\t0x00000004\n#define NDIAG_FLAG_NO_ENOBUFS\t\t0x00000008\n#define NDIAG_FLAG_LISTEN_ALL_NSID\t0x00000010\n#define NDIAG_FLAG_CAP_ACK\t\t0x00000020\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

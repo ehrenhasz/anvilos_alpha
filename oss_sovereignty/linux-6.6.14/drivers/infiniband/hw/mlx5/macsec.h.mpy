@@ -1,0 +1,9 @@
+{
+  "module_name": "macsec.h",
+  "hash_id": "1d09a119fdbdd682dc5f5ead3430ff50d939d4f6c4a3d8e6a7de7e8057f3b2e0",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/infiniband/hw/mlx5/macsec.h",
+  "human_readable_source": " \n \n\n#ifndef __MLX5_MACSEC_H__\n#define __MLX5_MACSEC_H__\n\n#include <net/macsec.h>\n#include <rdma/ib_cache.h>\n#include <rdma/ib_addr.h>\n#include \"mlx5_ib.h\"\n\n#ifdef CONFIG_MLX5_MACSEC\nstruct mlx5_reserved_gids;\n\nint mlx5r_add_gid_macsec_operations(const struct ib_gid_attr *attr);\nvoid mlx5r_del_gid_macsec_operations(const struct ib_gid_attr *attr);\nint mlx5r_macsec_init_gids_and_devlist(struct mlx5_ib_dev *dev);\nvoid mlx5r_macsec_dealloc_gids(struct mlx5_ib_dev *dev);\nvoid mlx5r_macsec_event_register(struct mlx5_ib_dev *dev);\nvoid mlx5r_macsec_event_unregister(struct mlx5_ib_dev *dev);\n#else\nstatic inline int mlx5r_add_gid_macsec_operations(const struct ib_gid_attr *attr) { return 0; }\nstatic inline void mlx5r_del_gid_macsec_operations(const struct ib_gid_attr *attr) {}\nstatic inline int mlx5r_macsec_init_gids_and_devlist(struct mlx5_ib_dev *dev) { return 0; }\nstatic inline void mlx5r_macsec_dealloc_gids(struct mlx5_ib_dev *dev) {}\nstatic inline void mlx5r_macsec_event_register(struct mlx5_ib_dev *dev) {}\nstatic inline void mlx5r_macsec_event_unregister(struct mlx5_ib_dev *dev) {}\n#endif\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

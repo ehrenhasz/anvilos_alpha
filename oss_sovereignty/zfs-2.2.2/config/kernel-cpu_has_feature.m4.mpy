@@ -1,0 +1,9 @@
+{
+  "module_name": "kernel-cpu_has_feature.m4",
+  "hash_id": "3fed24a31c3505aae3779d88a40bd435694405944087ae5c63e06dc1c09af905",
+  "original_prompt": "Ingested from zfs-2.2.2/config/kernel-cpu_has_feature.m4",
+  "human_readable_source": "dnl #\ndnl # cpu_has_feature() may referencing GPL-only cpu_feature_keys on powerpc\ndnl #\n\ndnl #\ndnl # Checking if cpu_has_feature is exported GPL-only\ndnl #\nAC_DEFUN([ZFS_AC_KERNEL_SRC_CPU_HAS_FEATURE], [\n\tZFS_LINUX_TEST_SRC([cpu_has_feature], [\n\t\t#include <linux/version.h>\n\t\t#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 7, 0)\n\t\t#include <asm/cpu_has_feature.h>\n\t\t#else\n\t\t#include <asm/cputable.h>\n\t\t#endif\n\t], [\n\t\treturn cpu_has_feature(CPU_FTR_ALTIVEC) ? 0 : 1;\n\t], [], [ZFS_META_LICENSE])\n])\nAC_DEFUN([ZFS_AC_KERNEL_CPU_HAS_FEATURE], [\n\tAC_MSG_CHECKING([whether cpu_has_feature() is GPL-only])\n\tZFS_LINUX_TEST_RESULT([cpu_has_feature_license], [\n\t\tAC_MSG_RESULT(no)\n\t], [\n\t\tAC_MSG_RESULT(yes)\n\t\tAC_DEFINE(HAVE_CPU_HAS_FEATURE_GPL_ONLY, 1,\n\t\t    [cpu_has_feature() is GPL-only])\n\t])\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

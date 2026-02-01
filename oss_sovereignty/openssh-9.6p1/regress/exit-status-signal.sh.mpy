@@ -1,0 +1,9 @@
+{
+  "module_name": "exit-status-signal.sh",
+  "hash_id": "3a2acd2150907017d9f852f7907fa7fa418f70433677534519cc98363f6c6a2f",
+  "original_prompt": "Ingested from openssh-9.6p1/regress/exit-status-signal.sh",
+  "human_readable_source": "# This test performs validation that ssh client is not successive on being terminated\n\ntid=\"exit status on signal\"\n\n# spawn client in background\nrm -f $OBJ/remote_pid\n${SSH} -F $OBJ/ssh_proxy somehost 'echo $$ >'$OBJ'/remote_pid; sleep 444' &\nssh_pid=$!\n\n# wait for it to start\nn=20\nwhile [ ! -f $OBJ/remote_pid ] && [ $n -gt 0 ]; do\n\tn=$(($n - 1))\n\tsleep 1\ndone\n\nkill $ssh_pid\nwait $ssh_pid\nexit_code=$?\n\nif [ $exit_code -eq 0 ]; then\n\tfail \"ssh client should fail on signal\"\nfi\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

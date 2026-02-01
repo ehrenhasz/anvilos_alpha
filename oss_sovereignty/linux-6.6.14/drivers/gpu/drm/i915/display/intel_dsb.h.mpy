@@ -1,0 +1,9 @@
+{
+  "module_name": "intel_dsb.h",
+  "hash_id": "f239959d2e240cb228a09b22b919c1e40c0d386822b91e9ec07469cf677d0a6b",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/display/intel_dsb.h",
+  "human_readable_source": " \n\n#ifndef _INTEL_DSB_H\n#define _INTEL_DSB_H\n\n#include <linux/types.h>\n\n#include \"i915_reg_defs.h\"\n\nstruct intel_crtc;\nstruct intel_dsb;\n\nstruct intel_dsb *intel_dsb_prepare(struct intel_crtc *crtc,\n\t\t\t\t    unsigned int max_cmds);\nvoid intel_dsb_finish(struct intel_dsb *dsb);\nvoid intel_dsb_cleanup(struct intel_dsb *dsb);\nvoid intel_dsb_reg_write(struct intel_dsb *dsb,\n\t\t\t i915_reg_t reg, u32 val);\nvoid intel_dsb_commit(struct intel_dsb *dsb,\n\t\t      bool wait_for_vblank);\nvoid intel_dsb_wait(struct intel_dsb *dsb);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

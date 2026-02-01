@@ -1,0 +1,9 @@
+{
+  "module_name": "horus3a.h",
+  "hash_id": "a4e8fb19489e49994bd161763ed80e591580cf3bf2886e380b9d0c90c7e3f7a7",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/dvb-frontends/horus3a.h",
+  "human_readable_source": " \n \n\n#ifndef __DVB_HORUS3A_H__\n#define __DVB_HORUS3A_H__\n\n#include <linux/dvb/frontend.h>\n#include <linux/i2c.h>\n\n \nstruct horus3a_config {\n\tu8\ti2c_address;\n\tu8\txtal_freq_mhz;\n\tvoid\t*set_tuner_priv;\n\tint\t(*set_tuner_callback)(void *, int);\n};\n\n#if IS_REACHABLE(CONFIG_DVB_HORUS3A)\n \nextern struct dvb_frontend *horus3a_attach(struct dvb_frontend *fe,\n\t\t\t\t\tconst struct horus3a_config *config,\n\t\t\t\t\tstruct i2c_adapter *i2c);\n#else\nstatic inline struct dvb_frontend *horus3a_attach(struct dvb_frontend *fe,\n\t\t\t\t\tconst struct horus3a_config *config,\n\t\t\t\t\tstruct i2c_adapter *i2c)\n{\n\tprintk(KERN_WARNING \"%s: driver disabled by Kconfig\\n\", __func__);\n\treturn NULL;\n}\n#endif\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

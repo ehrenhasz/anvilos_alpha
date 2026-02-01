@@ -1,0 +1,9 @@
+{
+  "module_name": "lib_colorset.c",
+  "hash_id": "9d6b3b4b614cad5cb468ef1db50bebcc50478855e1c3b9e0d94a6bb745065501",
+  "original_prompt": "Ingested from ncurses-6.4/ncurses/base/lib_colorset.c",
+  "human_readable_source": " \n\n \n\n \n\n#include <curses.priv.h>\n#include <ctype.h>\n\nMODULE_ID(\"$Id: lib_colorset.c,v 1.16 2020/02/02 23:34:34 tom Exp $\")\n\nNCURSES_EXPORT(int)\nwcolor_set(WINDOW *win, NCURSES_PAIRS_T pair_arg, void *opts)\n{\n    int code = ERR;\n    int color_pair = pair_arg;\n\n    T((T_CALLED(\"wcolor_set(%p,%d)\"), (void *) win, color_pair));\n    set_extended_pair(opts, color_pair);\n    if (win\n\t&& (SP != 0)\n\t&& (color_pair >= 0)\n\t&& (color_pair < SP->_pair_limit)) {\n\tTR(TRACE_ATTRS, (\"... current %ld\", (long) GET_WINDOW_PAIR(win)));\n\tSET_WINDOW_PAIR(win, color_pair);\n\tif_EXT_COLORS(win->_color = color_pair);\n\tcode = OK;\n    }\n    returnCode(code);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

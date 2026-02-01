@@ -1,0 +1,9 @@
+{
+  "module_name": "test-vprintf-posix.c",
+  "hash_id": "071c7c7c33fac92fb5828b0f3461352c6c7b5ab216c324c42dac6e2cb6a9df2e",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-vprintf-posix.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#include <stdio.h>\n\n#include \"signature.h\"\nSIGNATURE_CHECK (vprintf, int, (char const *, va_list));\n\n#include <stdarg.h>\n#include <stddef.h>\n#include <stdint.h>\n#include <string.h>\n\n#include \"macros.h\"\n\n#include \"test-printf-posix.h\"\n\nstatic int\nmy_printf (const char *format, ...)\n{\n  va_list args;\n  int ret;\n\n  va_start (args, format);\n  ret = vprintf (format, args);\n  va_end (args);\n  return ret;\n}\n\nint\nmain (int argc, char *argv[])\n{\n  test_function (my_printf);\n  return 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

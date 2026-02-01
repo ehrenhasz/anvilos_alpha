@@ -1,0 +1,9 @@
+{
+  "module_name": "vexpress.h",
+  "hash_id": "cb5ac2c93c26892e35053f6326c0ce28ce6798351ec3863bf3a46f3c0ade2fb7",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/vexpress.h",
+  "human_readable_source": " \n \n\n#ifndef _LINUX_VEXPRESS_H\n#define _LINUX_VEXPRESS_H\n\n#include <linux/device.h>\n#include <linux/regmap.h>\n\n \n\nstruct regmap *devm_regmap_init_vexpress_config(struct device *dev);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

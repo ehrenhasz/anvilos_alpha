@@ -1,0 +1,9 @@
+{
+  "module_name": "spinlock_types_up.h",
+  "hash_id": "cb34de815f4e1bc6ac256d36b92df24d1263d761298f80583d36a8a6d7cfbf75",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/spinlock_types_up.h",
+  "human_readable_source": "#ifndef __LINUX_SPINLOCK_TYPES_UP_H\n#define __LINUX_SPINLOCK_TYPES_UP_H\n\n#ifndef __LINUX_SPINLOCK_TYPES_RAW_H\n# error \"please don't include this file directly\"\n#endif\n\n \n\n#ifdef CONFIG_DEBUG_SPINLOCK\n\ntypedef struct {\n\tvolatile unsigned int slock;\n} arch_spinlock_t;\n\n#define __ARCH_SPIN_LOCK_UNLOCKED { 1 }\n\n#else\n\ntypedef struct { } arch_spinlock_t;\n\n#define __ARCH_SPIN_LOCK_UNLOCKED { }\n\n#endif\n\ntypedef struct {\n\t \n} arch_rwlock_t;\n\n#define __ARCH_RW_LOCK_UNLOCKED { }\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

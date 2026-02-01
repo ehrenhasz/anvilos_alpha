@@ -1,0 +1,9 @@
+{
+  "module_name": "st_shmem_utils.c",
+  "hash_id": "add1dcb6dae056b176d76b1ad21edce9641ec7b4c3cc80f4202ab2636c791ff9",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/gt/st_shmem_utils.c",
+  "human_readable_source": "\n \n\n \n\nstatic int igt_shmem_basic(void *ignored)\n{\n\tu32 datum = 0xdeadbeef, result;\n\tstruct file *file;\n\tu32 *map;\n\tint err;\n\n\tfile = shmem_create_from_data(\"mock\", &datum, sizeof(datum));\n\tif (IS_ERR(file))\n\t\treturn PTR_ERR(file);\n\n\tresult = 0;\n\terr = shmem_read(file, 0, &result, sizeof(result));\n\tif (err)\n\t\tgoto out_file;\n\n\tif (result != datum) {\n\t\tpr_err(\"Incorrect read back from shmemfs: %x != %x\\n\",\n\t\t       result, datum);\n\t\terr = -EINVAL;\n\t\tgoto out_file;\n\t}\n\n\tresult = 0xc0ffee;\n\terr = shmem_write(file, 0, &result, sizeof(result));\n\tif (err)\n\t\tgoto out_file;\n\n\tmap = shmem_pin_map(file);\n\tif (!map) {\n\t\terr = -ENOMEM;\n\t\tgoto out_file;\n\t}\n\n\tif (*map != result) {\n\t\tpr_err(\"Incorrect read back via mmap of last write: %x != %x\\n\",\n\t\t       *map, result);\n\t\terr = -EINVAL;\n\t\tgoto out_map;\n\t}\n\nout_map:\n\tshmem_unpin_map(file, map);\nout_file:\n\tfput(file);\n\treturn err;\n}\n\nint shmem_utils_mock_selftests(void)\n{\n\tstatic const struct i915_subtest tests[] = {\n\t\tSUBTEST(igt_shmem_basic),\n\t};\n\n\treturn i915_subtests(tests, NULL);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

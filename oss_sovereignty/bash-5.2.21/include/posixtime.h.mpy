@@ -1,0 +1,9 @@
+{
+  "module_name": "posixtime.h",
+  "hash_id": "620cf530472d18bb8dc9c7504eb33b37963babcf461d4af4b8120422ce8f90ac",
+  "original_prompt": "Ingested from bash-5.2.21/include/posixtime.h",
+  "human_readable_source": " \n\n \n\n#ifndef _POSIXTIME_H_\n#define _POSIXTIME_H_\n\n \n \n#if defined (HAVE_SYS_TIME_H)\n#  include <sys/time.h>\n#endif\n#include <time.h>\n\n#if !defined (HAVE_SYSCONF) || !defined (_SC_CLK_TCK)\n#  if !defined (CLK_TCK)\n#    if defined (HZ)\n#      define CLK_TCK\tHZ\n#    else\n#      define CLK_TCK\t60\t\t\t \n#    endif\n#  endif  \n#endif  \n\n#if !HAVE_TIMEVAL\nstruct timeval\n{\n  time_t tv_sec;\n  long int tv_usec;\n};\n#endif\n\n#if !HAVE_GETTIMEOFDAY\nextern int gettimeofday PARAMS((struct timeval *, void *));\n#endif\n\n \n#if !defined (timerclear)\n#  define timerclear(tvp)\tdo { (tvp)->tv_sec = 0; (tvp)->tv_usec = 0; } while (0)\n#endif\n#if !defined (timerisset)\n#  define timerisset(tvp)\t((tvp)->tv_sec || (tvp)->tv_usec)\n#endif\n#if !defined (timercmp)\n#  define timercmp(a, b, CMP) \\\n\t(((a)->tv_sec == (b)->tv_sec) ? ((a)->tv_usec CMP (b)->tv_usec) \\\n\t\t\t\t      : ((a)->tv_sec CMP (b)->tv_sec))\n#endif\n\n \n#if !defined (timerisunset)\n#  define timerisunset(tvp)\t((tvp)->tv_sec == 0 && (tvp)->tv_usec == 0)\n#endif\n#if !defined (timerset)\n#  define timerset(tvp, s, u)\tdo { tvp->tv_sec = s; tvp->tv_usec = u; } while (0)\n#endif\n\n#ifndef TIMEVAL_TO_TIMESPEC\n#  define TIMEVAL_TO_TIMESPEC(tv, ts) \\\n  do { \\\n    (ts)->tv_sec = (tv)->tv_sec; \\\n    (ts)->tv_nsec = (tv)->tv_usec * 1000; \\\n  } while (0)\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "vnic_snic.h",
+  "hash_id": "9054d4b23ba1b4af08833117c93d1e29af1d5ec824541f2535cf9644c25ddbfd",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/scsi/snic/vnic_snic.h",
+  "human_readable_source": " \n \n\n#ifndef _VNIC_SNIC_H_\n#define _VNIC_SNIC_H_\n\n#define VNIC_SNIC_WQ_DESCS_MIN              64\n#define VNIC_SNIC_WQ_DESCS_MAX              1024\n\n#define VNIC_SNIC_MAXDATAFIELDSIZE_MIN      256\n#define VNIC_SNIC_MAXDATAFIELDSIZE_MAX      2112\n\n#define VNIC_SNIC_IO_THROTTLE_COUNT_MIN     1\n#define VNIC_SNIC_IO_THROTTLE_COUNT_MAX     1024\n\n#define VNIC_SNIC_PORT_DOWN_TIMEOUT_MIN     0\n#define VNIC_SNIC_PORT_DOWN_TIMEOUT_MAX     240000\n\n#define VNIC_SNIC_PORT_DOWN_IO_RETRIES_MIN  0\n#define VNIC_SNIC_PORT_DOWN_IO_RETRIES_MAX  255\n\n#define VNIC_SNIC_LUNS_PER_TARGET_MIN       1\n#define VNIC_SNIC_LUNS_PER_TARGET_MAX       1024\n\n \nstruct vnic_snic_config {\n\tu32 flags;\n\tu32 wq_enet_desc_count;\n\tu32 io_throttle_count;\n\tu32 port_down_timeout;\n\tu32 port_down_io_retries;\n\tu32 luns_per_tgt;\n\tu16 maxdatafieldsize;\n\tu16 intr_timer;\n\tu8 intr_timer_type;\n\tu8 _resvd2;\n\tu8 xpt_type;\n\tu8 hid;\n};\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

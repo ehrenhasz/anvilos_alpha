@@ -1,0 +1,9 @@
+{
+  "module_name": "tc_skbmod.h",
+  "hash_id": "1136aae5adcb547928016fd81efd02656b84615fd45bee486f77e81ad2f8c0ab",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/tc_act/tc_skbmod.h",
+  "human_readable_source": " \n \n\n#ifndef __LINUX_TC_SKBMOD_H\n#define __LINUX_TC_SKBMOD_H\n\n#include <linux/pkt_cls.h>\n\n#define SKBMOD_F_DMAC\t0x1\n#define SKBMOD_F_SMAC\t0x2\n#define SKBMOD_F_ETYPE\t0x4\n#define SKBMOD_F_SWAPMAC 0x8\n#define SKBMOD_F_ECN\t0x10\n\nstruct tc_skbmod {\n\ttc_gen;\n\t__u64 flags;\n};\n\nenum {\n\tTCA_SKBMOD_UNSPEC,\n\tTCA_SKBMOD_TM,\n\tTCA_SKBMOD_PARMS,\n\tTCA_SKBMOD_DMAC,\n\tTCA_SKBMOD_SMAC,\n\tTCA_SKBMOD_ETYPE,\n\tTCA_SKBMOD_PAD,\n\t__TCA_SKBMOD_MAX\n};\n#define TCA_SKBMOD_MAX (__TCA_SKBMOD_MAX - 1)\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "1c06893a0fea6fba495e5cc3c2324b4be1dce1e4908de52736f2496a68506729",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/ufs/core/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n\nobj-$(CONFIG_SCSI_UFSHCD)\t\t+= ufshcd-core.o\nufshcd-core-y\t\t\t\t+= ufshcd.o ufs-sysfs.o ufs-mcq.o\nufshcd-core-$(CONFIG_DEBUG_FS)\t\t+= ufs-debugfs.o\nufshcd-core-$(CONFIG_SCSI_UFS_BSG)\t+= ufs_bsg.o\nufshcd-core-$(CONFIG_SCSI_UFS_CRYPTO)\t+= ufshcd-crypto.o\nufshcd-core-$(CONFIG_SCSI_UFS_FAULT_INJECTION) += ufs-fault-injection.o\nufshcd-core-$(CONFIG_SCSI_UFS_HWMON)\t+= ufs-hwmon.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "iwl-dbg-tlv.h",
+  "hash_id": "623c44c004b6ce4b4e711167b8eab3c75ae1f82cbd0ba591c1a982960cbba94d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/intel/iwlwifi/iwl-dbg-tlv.h",
+  "human_readable_source": " \n \n#ifndef __iwl_dbg_tlv_h__\n#define __iwl_dbg_tlv_h__\n\n#include <linux/device.h>\n#include <linux/types.h>\n#include <fw/file.h>\n#include <fw/api/dbg-tlv.h>\n\n#define IWL_DBG_TLV_MAX_PRESET\t15\n#define ENABLE_INI\t\t(IWL_DBG_TLV_MAX_PRESET + 1)\n\n \nstruct iwl_dbg_tlv_node {\n\tstruct list_head list;\n\tstruct iwl_ucode_tlv tlv;\n};\n\n \nunion iwl_dbg_tlv_tp_data {\n\tstruct iwl_rx_packet *fw_pkt;\n};\n\n \nstruct iwl_dbg_tlv_time_point_data {\n\tstruct list_head trig_list;\n\tstruct list_head active_trig_list;\n\tstruct list_head hcmd_list;\n\tstruct list_head config_list;\n};\n\nstruct iwl_trans;\nstruct iwl_fw_runtime;\n\nvoid iwl_dbg_tlv_load_bin(struct device *dev, struct iwl_trans *trans);\nvoid iwl_dbg_tlv_free(struct iwl_trans *trans);\nvoid iwl_dbg_tlv_alloc(struct iwl_trans *trans, const struct iwl_ucode_tlv *tlv,\n\t\t       bool ext);\nvoid iwl_dbg_tlv_init(struct iwl_trans *trans);\nvoid _iwl_dbg_tlv_time_point(struct iwl_fw_runtime *fwrt,\n\t\t\t     enum iwl_fw_ini_time_point tp_id,\n\t\t\t     union iwl_dbg_tlv_tp_data *tp_data,\n\t\t\t     bool sync);\n\nstatic inline void iwl_dbg_tlv_time_point(struct iwl_fw_runtime *fwrt,\n\t\t\t\t\t  enum iwl_fw_ini_time_point tp_id,\n\t\t\t\t\t  union iwl_dbg_tlv_tp_data *tp_data)\n{\n\t_iwl_dbg_tlv_time_point(fwrt, tp_id, tp_data, false);\n}\n\nstatic inline void iwl_dbg_tlv_time_point_sync(struct iwl_fw_runtime *fwrt,\n\t\t\t\t\t       enum iwl_fw_ini_time_point tp_id,\n\t\t\t\t\t       union iwl_dbg_tlv_tp_data *tp_data)\n{\n\t_iwl_dbg_tlv_time_point(fwrt, tp_id, tp_data, true);\n}\n\nvoid iwl_dbg_tlv_del_timers(struct iwl_trans *trans);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

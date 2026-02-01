@@ -1,0 +1,9 @@
+{
+  "module_name": "benchmark.h",
+  "hash_id": "49ee03a0907f277b79bca02e9c1ab8c2eed3d30519f2f4ad4ee0020846dffac7",
+  "original_prompt": "Ingested from linux-6.6.14/tools/power/cpupower/bench/benchmark.h",
+  "human_readable_source": " \n \n\n \n#define ROUNDS(x) {unsigned int rcnt;\t\t\t       \\\n\t\tfor (rcnt = 0; rcnt < x*1000; rcnt++) { \\\n\t\t\t(void)(((int)(pow(rcnt, rcnt) * \\\n\t\t\t\t      sqrt(rcnt*7230970)) ^ 7230716) ^ \\\n\t\t\t\t      (int)atan2(rcnt, rcnt));\t       \\\n\t\t} }\t\t\t\t\t\t\t\\\n\n\nvoid start_benchmark(struct config *config);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

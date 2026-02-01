@@ -1,0 +1,9 @@
+{
+  "module_name": "overlay_20.dtso",
+  "hash_id": "b4aa8faac7a6e7d954e34d1ce36bf2ed1626dbc2a994b63ef1c541a216f6e95e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/of/unittest-data/overlay_20.dtso",
+  "human_readable_source": "// SPDX-License-Identifier: GPL-2.0\n/dts-v1/;\n/plugin/;\n\n/* overlay_20 - notify test */\n\n&unittest_test_bus {\n\t#address-cells = <1>;\n\t#size-cells = <0>;\n\n\ttest-unittest20 {\n\t\tcompatible = \"unittest\";\n\t\treg = <20>;\n\t};\n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

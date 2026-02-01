@@ -1,0 +1,9 @@
+{
+  "module_name": "hid-roccat-lua.h",
+  "hash_id": "433bd8657e2cc5c719555cb4da49e6137b6126513391806ba3b70df0db1afb73",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/hid/hid-roccat-lua.h",
+  "human_readable_source": " \n#ifndef __HID_ROCCAT_LUA_H\n#define __HID_ROCCAT_LUA_H\n\n \n\n \n\n#include <linux/types.h>\n\nenum {\n\tLUA_SIZE_CONTROL = 8,\n};\n\nenum lua_commands {\n\tLUA_COMMAND_CONTROL = 3,\n};\n\nstruct lua_device {\n\tstruct mutex lua_lock;\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

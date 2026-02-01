@@ -1,0 +1,9 @@
+{
+  "module_name": "test_xdp_context_test_run.c",
+  "hash_id": "ff4bcffc8a1ba306d350b13ea9ab85f7ded0dfdcbb5898bdab23edb301285610",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/test_xdp_context_test_run.c",
+  "human_readable_source": "\n#include <linux/bpf.h>\n#include <bpf/bpf_helpers.h>\n\nSEC(\"xdp\")\nint xdp_context(struct xdp_md *xdp)\n{\n\tvoid *data = (void *)(long)xdp->data;\n\t__u32 *metadata = (void *)(long)xdp->data_meta;\n\t__u32 ret;\n\n\tif (metadata + 1 > data)\n\t\treturn XDP_ABORTED;\n\tret = *metadata;\n\tif (bpf_xdp_adjust_meta(xdp, 4))\n\t\treturn XDP_ABORTED;\n\treturn ret;\n}\n\nchar _license[] SEC(\"license\") = \"GPL\";\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

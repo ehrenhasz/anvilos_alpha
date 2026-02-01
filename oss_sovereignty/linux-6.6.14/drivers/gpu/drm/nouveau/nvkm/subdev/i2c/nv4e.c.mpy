@@ -1,0 +1,9 @@
+{
+  "module_name": "nv4e.c",
+  "hash_id": "8556b2a16128fa945d0572ab084a22d0ed07e3a2683e3458d3ee0b09c9698216",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/subdev/i2c/nv4e.c",
+  "human_readable_source": " \n#include \"priv.h\"\n#include \"pad.h\"\n\nstatic const struct nvkm_i2c_func\nnv4e_i2c = {\n\t.pad_x_new = nv4e_i2c_pad_new,\n};\n\nint\nnv4e_i2c_new(struct nvkm_device *device, enum nvkm_subdev_type type, int inst,\n\t     struct nvkm_i2c **pi2c)\n{\n\treturn nvkm_i2c_new_(&nv4e_i2c, device, type, inst, pi2c);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

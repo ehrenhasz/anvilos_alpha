@@ -1,0 +1,9 @@
+{
+  "module_name": "nohz.h",
+  "hash_id": "a2748333d932b76d2e299d49002b09bba7b5326e434f033a25f4b5475fdcf38c",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/sched/nohz.h",
+  "human_readable_source": " \n#ifndef _LINUX_SCHED_NOHZ_H\n#define _LINUX_SCHED_NOHZ_H\n\n \n\n#if defined(CONFIG_SMP) && defined(CONFIG_NO_HZ_COMMON)\nextern void nohz_balance_enter_idle(int cpu);\nextern int get_nohz_timer_target(void);\n#else\nstatic inline void nohz_balance_enter_idle(int cpu) { }\n#endif\n\n#ifdef CONFIG_NO_HZ_COMMON\nvoid calc_load_nohz_start(void);\nvoid calc_load_nohz_remote(struct rq *rq);\nvoid calc_load_nohz_stop(void);\n#else\nstatic inline void calc_load_nohz_start(void) { }\nstatic inline void calc_load_nohz_remote(struct rq *rq) { }\nstatic inline void calc_load_nohz_stop(void) { }\n#endif  \n\n#if defined(CONFIG_NO_HZ_COMMON) && defined(CONFIG_SMP)\nextern void wake_up_nohz_cpu(int cpu);\n#else\nstatic inline void wake_up_nohz_cpu(int cpu) { }\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

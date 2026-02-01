@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "a6dc7d310cc15a6738da308bb7f456f2b90c6acb5ad7fefc0a1039ae588ba64d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/deprecated/atmel/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\natmel-isc-objs = atmel-sama5d2-isc.o\natmel-xisc-objs = atmel-sama7g5-isc.o\natmel-isc-common-objs = atmel-isc-base.o atmel-isc-clk.o\n\nobj-$(CONFIG_VIDEO_ATMEL_ISC_BASE) += atmel-isc-common.o\nobj-$(CONFIG_VIDEO_ATMEL_ISC) += atmel-isc.o\nobj-$(CONFIG_VIDEO_ATMEL_XISC) += atmel-xisc.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

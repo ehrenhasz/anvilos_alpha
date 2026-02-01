@@ -1,0 +1,9 @@
+{
+  "module_name": "led.h",
+  "hash_id": "6605b05ad169ef1533b44746be1ea0e949988bb9453f62801f5c11427782ba8c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/realtek/rtlwifi/rtl8821ae/led.h",
+  "human_readable_source": " \n \n\n#ifndef __RTL8821AE_LED_H__\n#define __RTL8821AE_LED_H__\n\nvoid rtl8821ae_sw_led_on(struct ieee80211_hw *hw, enum rtl_led_pin pin);\nvoid rtl8812ae_sw_led_on(struct ieee80211_hw *hw, enum rtl_led_pin pin);\nvoid rtl8821ae_sw_led_off(struct ieee80211_hw *hw, enum rtl_led_pin pin);\nvoid rtl8812ae_sw_led_off(struct ieee80211_hw *hw, enum rtl_led_pin pin);\nvoid rtl8821ae_led_control(struct ieee80211_hw *hw,\n\t\t\t   enum led_ctl_mode ledaction);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

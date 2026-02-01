@@ -1,0 +1,9 @@
+{
+  "module_name": "xen.config",
+  "hash_id": "0a9f8a44b2630eb28d085b8de2c1efcc2a42f2a9e6da84e442b1d4a40afe1522",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/configs/xen.config",
+  "human_readable_source": "# global x86 required specific stuff\n# On 32-bit HIGHMEM4G is not allowed\nCONFIG_HIGHMEM64G=y\nCONFIG_64BIT=y\n\n# These enable us to allow some of the\n# not so generic stuff below\nCONFIG_HYPERVISOR_GUEST=y\nCONFIG_PCI=y\nCONFIG_PCI_MSI=y\nCONFIG_X86_MCE=y\nCONFIG_ACPI_PROCESSOR=y\nCONFIG_CPU_FREQ=y\n\n# x86 xen specific config options\nCONFIG_XEN_PVH=y\nCONFIG_XEN_SAVE_RESTORE=y\n# CONFIG_XEN_DEBUG_FS is not set\nCONFIG_XEN_MCE_LOG=y\nCONFIG_XEN_ACPI_PROCESSOR=m\n# x86 specific backend drivers\nCONFIG_XEN_PCIDEV_BACKEND=m\n# x86 specific frontend drivers\nCONFIG_XEN_PCIDEV_FRONTEND=m\n# depends on MEMORY_HOTPLUG, arm64 doesn't enable this yet,\n# move to generic config if it ever does.\nCONFIG_XEN_BALLOON_MEMORY_HOTPLUG=y\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

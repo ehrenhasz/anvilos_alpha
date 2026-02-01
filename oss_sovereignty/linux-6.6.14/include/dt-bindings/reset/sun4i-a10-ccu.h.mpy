@@ -1,0 +1,9 @@
+{
+  "module_name": "sun4i-a10-ccu.h",
+  "hash_id": "aa5c83a98b2f01d6dd785d7074f124ea4e78308e6012c786d2ea9d178b110b82",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/reset/sun4i-a10-ccu.h",
+  "human_readable_source": " \n\n#ifndef _DT_BINDINGS_RST_SUN4I_A10_H\n#define _DT_BINDINGS_RST_SUN4I_A10_H\n\n#define\tRST_USB_PHY0\t\t1\n#define\tRST_USB_PHY1\t\t2\n#define\tRST_USB_PHY2\t\t3\n#define\tRST_GPS\t\t\t4\n#define\tRST_DE_BE0\t\t5\n#define\tRST_DE_BE1\t\t6\n#define\tRST_DE_FE0\t\t7\n#define\tRST_DE_FE1\t\t8\n#define\tRST_DE_MP\t\t9\n#define\tRST_TVE0\t\t10\n#define\tRST_TCON0\t\t11\n#define\tRST_TVE1\t\t12\n#define\tRST_TCON1\t\t13\n#define\tRST_CSI0\t\t14\n#define\tRST_CSI1\t\t15\n#define\tRST_VE\t\t\t16\n#define\tRST_ACE\t\t\t17\n#define\tRST_LVDS\t\t18\n#define\tRST_GPU\t\t\t19\n#define\tRST_HDMI_H\t\t20\n#define\tRST_HDMI_SYS\t\t21\n#define\tRST_HDMI_AUDIO_DMA\t22\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

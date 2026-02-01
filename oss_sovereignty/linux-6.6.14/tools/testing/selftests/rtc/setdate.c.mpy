@@ -1,0 +1,9 @@
+{
+  "module_name": "setdate.c",
+  "hash_id": "5764ef78dd3f68bf7352c28c998eebbd0a25d9f014ba81c8fe1768c24f1821b6",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/rtc/setdate.c",
+  "human_readable_source": "\n \n\n#include <stdio.h>\n#include <linux/rtc.h>\n#include <sys/ioctl.h>\n#include <sys/time.h>\n#include <sys/types.h>\n#include <fcntl.h>\n#include <unistd.h>\n#include <stdlib.h>\n#include <errno.h>\n\nstatic const char default_time[] = \"00:00:00\";\n\nint main(int argc, char **argv)\n{\n\tint fd, retval;\n\tstruct rtc_time new, current;\n\tconst char *rtc, *date;\n\tconst char *time = default_time;\n\n\tswitch (argc) {\n\tcase 4:\n\t\ttime = argv[3];\n\t\t \n\tcase 3:\n\t\tdate = argv[2];\n\t\trtc = argv[1];\n\t\tbreak;\n\tdefault:\n\t\tfprintf(stderr, \"usage: rtctest_setdate <rtcdev> <DD-MM-YYYY> [HH:MM:SS]\\n\");\n\t\treturn 1;\n\t}\n\n\tfd = open(rtc, O_RDONLY);\n\tif (fd == -1) {\n\t\tperror(rtc);\n\t\texit(errno);\n\t}\n\n\tsscanf(date, \"%d-%d-%d\", &new.tm_mday, &new.tm_mon, &new.tm_year);\n\tnew.tm_mon -= 1;\n\tnew.tm_year -= 1900;\n\tsscanf(time, \"%d:%d:%d\", &new.tm_hour, &new.tm_min, &new.tm_sec);\n\n\tfprintf(stderr, \"Test will set RTC date/time to %d-%d-%d, %02d:%02d:%02d.\\n\",\n\t\tnew.tm_mday, new.tm_mon + 1, new.tm_year + 1900,\n\t\tnew.tm_hour, new.tm_min, new.tm_sec);\n\n\t \n\tretval = ioctl(fd, RTC_SET_TIME, &new);\n\tif (retval == -1) {\n\t\tperror(\"RTC_SET_TIME ioctl\");\n\t\tclose(fd);\n\t\texit(errno);\n\t}\n\n\t \n\tretval = ioctl(fd, RTC_RD_TIME, &current);\n\tif (retval == -1) {\n\t\tperror(\"RTC_RD_TIME ioctl\");\n\t\texit(errno);\n\t}\n\n\tfprintf(stderr, \"\\n\\nCurrent RTC date/time is %d-%d-%d, %02d:%02d:%02d.\\n\",\n\t\tcurrent.tm_mday, current.tm_mon + 1, current.tm_year + 1900,\n\t\tcurrent.tm_hour, current.tm_min, current.tm_sec);\n\n\tclose(fd);\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "a122fd7c28002db154cfcf494d261612200f5bd0f263549c544b75404fafdffe",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/fieldbus/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for fieldbus_dev drivers.\n#\n\nobj-$(CONFIG_FIELDBUS_DEV)\t+= fieldbus_dev.o anybuss/\nfieldbus_dev-y\t\t\t:= dev_core.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

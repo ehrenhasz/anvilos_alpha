@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "9da8aebbb19e8f5d0c859260de5dfee86055cc0cfbc278f72e5c64813c4e726c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/pnp/isapnp/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# ISA Plug and Play configuration\n#\nconfig ISAPNP\n\tbool \"ISA Plug and Play support\"\n\tdepends on ISA || COMPILE_TEST\n\thelp\n\t  Say Y here if you would like support for ISA Plug and Play devices.\n\t  Some information is in <file:Documentation/driver-api/isapnp.rst>.\n\n\t  If unsure, say Y.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "7dc39962b77e7cf2a91a3fac2e53a01465bb6a9c5c2443d21ead78325f46d461",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/clk/ralink/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# MediaTek Mt7621 Clock Driver\n#\nconfig CLK_MT7621\n\tbool \"Clock driver for MediaTek MT7621\"\n\tdepends on SOC_MT7621 || COMPILE_TEST\n\tdefault SOC_MT7621\n\tselect MFD_SYSCON\n\thelp\n\t  This driver supports MediaTek MT7621 basic clocks.\n\nconfig CLK_MTMIPS\n\tbool \"Clock driver for MTMIPS SoCs\"\n\tdepends on SOC_RT305X || SOC_RT288X || SOC_RT3883 || SOC_MT7620 || COMPILE_TEST\n\tselect MFD_SYSCON\n\thelp\n\t  This driver supports MTMIPS basic clocks.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "@@__@@__py__modstruct.c.compress",
+  "hash_id": "7e3082766a9670b52250e3d34a1d3811d100edcb0ee734b7a2c4b69e54dfd147",
+  "original_prompt": "Ingested from sys_09_Anvil/source/ports/unix/build-bicameral/genhdr/compress/@@__@@__py__modstruct.c.compress",
+  "human_readable_source": "buffer too small\nbuffer too small\nbuffer too small\nbuffer too small\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

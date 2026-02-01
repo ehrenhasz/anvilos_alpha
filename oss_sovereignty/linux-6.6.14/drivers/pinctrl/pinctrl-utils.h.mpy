@@ -1,0 +1,9 @@
+{
+  "module_name": "pinctrl-utils.h",
+  "hash_id": "e190973e45ff953ea1d7bb1dbc10da0d37afc9c7a9003a945918bd245be15707",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/pinctrl/pinctrl-utils.h",
+  "human_readable_source": " \n \n#ifndef __PINCTRL_UTILS_H__\n#define __PINCTRL_UTILS_H__\n\n#include <linux/pinctrl/machine.h>\n\nstruct pinctrl_dev;\nstruct pinctrl_map;\n\nint pinctrl_utils_reserve_map(struct pinctrl_dev *pctldev,\n\t\tstruct pinctrl_map **map, unsigned *reserved_maps,\n\t\tunsigned *num_maps, unsigned reserve);\nint pinctrl_utils_add_map_mux(struct pinctrl_dev *pctldev,\n\t\tstruct pinctrl_map **map, unsigned *reserved_maps,\n\t\tunsigned *num_maps, const char *group,\n\t\tconst char *function);\nint pinctrl_utils_add_map_configs(struct pinctrl_dev *pctldev,\n\t\tstruct pinctrl_map **map, unsigned *reserved_maps,\n\t\tunsigned *num_maps, const char *group,\n\t\tunsigned long *configs, unsigned num_configs,\n\t\tenum pinctrl_map_type type);\nint pinctrl_utils_add_config(struct pinctrl_dev *pctldev,\n\t\tunsigned long **configs, unsigned *num_configs,\n\t\tunsigned long config);\nvoid pinctrl_utils_free_map(struct pinctrl_dev *pctldev,\n\t\tstruct pinctrl_map *map, unsigned num_maps);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

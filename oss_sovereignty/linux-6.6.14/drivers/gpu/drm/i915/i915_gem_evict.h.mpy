@@ -1,0 +1,9 @@
+{
+  "module_name": "i915_gem_evict.h",
+  "hash_id": "4e0323a73d46a669785329c69aada9629d885b183b3354c50748619209ed7554",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/i915_gem_evict.h",
+  "human_readable_source": " \n \n\n#ifndef __I915_GEM_EVICT_H__\n#define __I915_GEM_EVICT_H__\n\n#include <linux/types.h>\n\nstruct drm_mm_node;\nstruct i915_address_space;\nstruct i915_gem_ww_ctx;\nstruct drm_i915_gem_object;\n\nint __must_check i915_gem_evict_something(struct i915_address_space *vm,\n\t\t\t\t\t  struct i915_gem_ww_ctx *ww,\n\t\t\t\t\t  u64 min_size, u64 alignment,\n\t\t\t\t\t  unsigned long color,\n\t\t\t\t\t  u64 start, u64 end,\n\t\t\t\t\t  unsigned flags);\nint __must_check i915_gem_evict_for_node(struct i915_address_space *vm,\n\t\t\t\t\t struct i915_gem_ww_ctx *ww,\n\t\t\t\t\t struct drm_mm_node *node,\n\t\t\t\t\t unsigned int flags);\nint i915_gem_evict_vm(struct i915_address_space *vm,\n\t\t      struct i915_gem_ww_ctx *ww,\n\t\t      struct drm_i915_gem_object **busy_bo);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

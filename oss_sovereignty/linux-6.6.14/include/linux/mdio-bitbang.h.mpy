@@ -1,0 +1,9 @@
+{
+  "module_name": "mdio-bitbang.h",
+  "hash_id": "8f0871d20e30f43b924d05803c2dacdb6417a3b015c4644ebd2fa67b7b7beb1f",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/mdio-bitbang.h",
+  "human_readable_source": " \n#ifndef __LINUX_MDIO_BITBANG_H\n#define __LINUX_MDIO_BITBANG_H\n\n#include <linux/phy.h>\n\nstruct module;\n\nstruct mdiobb_ctrl;\n\nstruct mdiobb_ops {\n\tstruct module *owner;\n\n\t \n\tvoid (*set_mdc)(struct mdiobb_ctrl *ctrl, int level);\n\n\t \n\tvoid (*set_mdio_dir)(struct mdiobb_ctrl *ctrl, int output);\n\n\t \n\tvoid (*set_mdio_data)(struct mdiobb_ctrl *ctrl, int value);\n\n\t \n\tint (*get_mdio_data)(struct mdiobb_ctrl *ctrl);\n};\n\nstruct mdiobb_ctrl {\n\tconst struct mdiobb_ops *ops;\n\tunsigned int override_op_c22;\n\tu8 op_c22_read;\n\tu8 op_c22_write;\n};\n\nint mdiobb_read_c22(struct mii_bus *bus, int phy, int reg);\nint mdiobb_write_c22(struct mii_bus *bus, int phy, int reg, u16 val);\nint mdiobb_read_c45(struct mii_bus *bus, int devad, int phy, int reg);\nint mdiobb_write_c45(struct mii_bus *bus, int devad, int phy, int reg, u16 val);\n\n \nstruct mii_bus *alloc_mdio_bitbang(struct mdiobb_ctrl *ctrl);\n\n \nvoid free_mdio_bitbang(struct mii_bus *bus);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

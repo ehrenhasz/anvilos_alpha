@@ -1,0 +1,9 @@
+{
+  "module_name": "i915_sysfs.h",
+  "hash_id": "4e5c7dde082b272ad13280123b075fcd8c3538afc49083a27d2f0f43aebbbf02",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/i915_sysfs.h",
+  "human_readable_source": " \n \n\n#ifndef __I915_SYSFS_H__\n#define __I915_SYSFS_H__\n\nstruct device;\nstruct drm_i915_private;\n\nstruct drm_i915_private *kdev_minor_to_i915(struct device *kdev);\n\nvoid i915_setup_sysfs(struct drm_i915_private *i915);\nvoid i915_teardown_sysfs(struct drm_i915_private *i915);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

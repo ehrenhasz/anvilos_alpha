@@ -1,0 +1,9 @@
+{
+  "module_name": "selq.h",
+  "hash_id": "d74be69540df02066feea5ad813e3f0c14fa4b166a8ba59df5ac04dfd78f91fa",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/mellanox/mlx5/core/en/selq.h",
+  "human_readable_source": " \n \n\n#ifndef __MLX5_EN_SELQ_H__\n#define __MLX5_EN_SELQ_H__\n\n#include <linux/kernel.h>\n\nstruct mlx5e_selq_params;\n\nstruct mlx5e_selq {\n\tstruct mlx5e_selq_params __rcu *active;\n\tstruct mlx5e_selq_params *standby;\n\tstruct mutex *state_lock;  \n\tbool is_prepared;\n};\n\nstruct mlx5e_params;\nstruct net_device;\nstruct sk_buff;\n\nint mlx5e_selq_init(struct mlx5e_selq *selq, struct mutex *state_lock);\nvoid mlx5e_selq_cleanup(struct mlx5e_selq *selq);\nvoid mlx5e_selq_prepare_params(struct mlx5e_selq *selq, struct mlx5e_params *params);\nvoid mlx5e_selq_prepare_htb(struct mlx5e_selq *selq, u16 htb_maj_id, u16 htb_defcls);\nbool mlx5e_selq_is_htb_enabled(struct mlx5e_selq *selq);\nvoid mlx5e_selq_apply(struct mlx5e_selq *selq);\nvoid mlx5e_selq_cancel(struct mlx5e_selq *selq);\n\nstatic inline u16 mlx5e_txq_to_ch_ix(u16 txq, u16 num_channels)\n{\n\twhile (unlikely(txq >= num_channels))\n\t\ttxq -= num_channels;\n\treturn txq;\n}\n\nstatic inline u16 mlx5e_txq_to_ch_ix_htb(u16 txq, u16 num_channels)\n{\n\tif (unlikely(txq >= num_channels)) {\n\t\tif (unlikely(txq >= num_channels << 3))\n\t\t\ttxq %= num_channels;\n\t\telse\n\t\t\tdo\n\t\t\t\ttxq -= num_channels;\n\t\t\twhile (txq >= num_channels);\n\t}\n\treturn txq;\n}\n\nu16 mlx5e_select_queue(struct net_device *dev, struct sk_buff *skb,\n\t\t       struct net_device *sb_dev);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

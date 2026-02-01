@@ -1,0 +1,9 @@
+{
+  "module_name": "ip6t_ipv6header.h",
+  "hash_id": "49ca678a7d312fbb209f32e47fe943c22fab3f216865b42131b1a31b894a7142",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/netfilter_ipv6/ip6t_ipv6header.h",
+  "human_readable_source": " \n \n\n \n\n\n#ifndef __IPV6HEADER_H\n#define __IPV6HEADER_H\n\n#include <linux/types.h>\n\nstruct ip6t_ipv6header_info {\n\t__u8 matchflags;\n\t__u8 invflags;\n\t__u8 modeflag;\n};\n\n#define MASK_HOPOPTS    128\n#define MASK_DSTOPTS    64\n#define MASK_ROUTING    32\n#define MASK_FRAGMENT   16\n#define MASK_AH         8\n#define MASK_ESP        4\n#define MASK_NONE       2\n#define MASK_PROTO      1\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "pcm3060-i2c.c",
+  "hash_id": "f307e019c1d3b628bafafde2b839bda74128717f837f206b999039607091be7a",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/codecs/pcm3060-i2c.c",
+  "human_readable_source": "\n\n\n\n\n\n#include <linux/i2c.h>\n#include <linux/module.h>\n#include <sound/soc.h>\n\n#include \"pcm3060.h\"\n\nstatic int pcm3060_i2c_probe(struct i2c_client *i2c)\n{\n\tstruct pcm3060_priv *priv;\n\n\tpriv = devm_kzalloc(&i2c->dev, sizeof(*priv), GFP_KERNEL);\n\tif (!priv)\n\t\treturn -ENOMEM;\n\n\ti2c_set_clientdata(i2c, priv);\n\n\tpriv->regmap = devm_regmap_init_i2c(i2c, &pcm3060_regmap);\n\tif (IS_ERR(priv->regmap))\n\t\treturn PTR_ERR(priv->regmap);\n\n\treturn pcm3060_probe(&i2c->dev);\n}\n\nstatic const struct i2c_device_id pcm3060_i2c_id[] = {\n\t{ .name = \"pcm3060\" },\n\t{ },\n};\nMODULE_DEVICE_TABLE(i2c, pcm3060_i2c_id);\n\n#ifdef CONFIG_OF\nstatic const struct of_device_id pcm3060_of_match[] = {\n\t{ .compatible = \"ti,pcm3060\" },\n\t{ },\n};\nMODULE_DEVICE_TABLE(of, pcm3060_of_match);\n#endif  \n\nstatic struct i2c_driver pcm3060_i2c_driver = {\n\t.driver = {\n\t\t.name = \"pcm3060\",\n#ifdef CONFIG_OF\n\t\t.of_match_table = pcm3060_of_match,\n#endif  \n\t},\n\t.id_table = pcm3060_i2c_id,\n\t.probe = pcm3060_i2c_probe,\n};\n\nmodule_i2c_driver(pcm3060_i2c_driver);\n\nMODULE_DESCRIPTION(\"PCM3060 I2C driver\");\nMODULE_AUTHOR(\"Kirill Marinushkin <kmarinushkin@birdec.com>\");\nMODULE_LICENSE(\"GPL v2\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

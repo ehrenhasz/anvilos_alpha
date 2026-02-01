@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "3e4b7f3b829b3ef489ad286e19b9b0619cec4c0b13001d1fd855478325585df7",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/board/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nobj-y\t:= board.o\nobj-$(CONFIG_ARCH_EMEV2)\t+= kzm9d.o\nobj-$(CONFIG_ARCH_R8A7740)\t+= armadillo800eva.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

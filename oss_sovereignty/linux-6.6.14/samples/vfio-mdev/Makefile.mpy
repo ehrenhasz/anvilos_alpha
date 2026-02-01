@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "d9b48bf959988f76de7338441fd6a3c8b9f6a5dc599ff350ff2273ec818faaf1",
+  "original_prompt": "Ingested from linux-6.6.14/samples/vfio-mdev/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-$(CONFIG_SAMPLE_VFIO_MDEV_MTTY) += mtty.o\nobj-$(CONFIG_SAMPLE_VFIO_MDEV_MDPY) += mdpy.o\nobj-$(CONFIG_SAMPLE_VFIO_MDEV_MDPY_FB) += mdpy-fb.o\nobj-$(CONFIG_SAMPLE_VFIO_MDEV_MBOCHS) += mbochs.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

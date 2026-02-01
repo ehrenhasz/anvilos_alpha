@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "9bb1404bf2f36a8bac0acea5a1b941b3569098665de49f8fb8b9810e114a94ce",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/video/fbdev/vermilion/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-$(CONFIG_FB_LE80578) += vmlfb.o\nobj-$(CONFIG_FB_CARILLO_RANCH) += crvml.o\n\nvmlfb-objs := vermilion.o\ncrvml-objs := cr_pll.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

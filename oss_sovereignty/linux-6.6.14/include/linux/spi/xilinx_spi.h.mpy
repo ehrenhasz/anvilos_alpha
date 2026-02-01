@@ -1,0 +1,9 @@
+{
+  "module_name": "xilinx_spi.h",
+  "hash_id": "952e8109d8188bb4f0e44b7c80e9b35002f8f6100079fb3fc03c8bfe04d078d0",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/spi/xilinx_spi.h",
+  "human_readable_source": " \n#ifndef __LINUX_SPI_XILINX_SPI_H\n#define __LINUX_SPI_XILINX_SPI_H\n\n \nstruct xspi_platform_data {\n\tu16 num_chipselect;\n\tu8 bits_per_word;\n\tstruct spi_board_info *devices;\n\tu8 num_devices;\n\tbool force_irq;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

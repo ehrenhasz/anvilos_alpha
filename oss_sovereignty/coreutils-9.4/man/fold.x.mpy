@@ -1,0 +1,9 @@
+{
+  "module_name": "fold.x",
+  "hash_id": "82198e3af038dd7146b9610b15a8cb59e557313942f10596bc299a229fcc394f",
+  "original_prompt": "Ingested from coreutils-9.4/man/fold.x",
+  "human_readable_source": "[NAME]\nfold \\- wrap each input line to fit in specified width\n[DESCRIPTION]\n.\\\" Add any additional description here\n[SEE ALSO]\nfmt(1)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

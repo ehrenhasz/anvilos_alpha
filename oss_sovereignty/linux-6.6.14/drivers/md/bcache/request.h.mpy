@@ -1,0 +1,9 @@
+{
+  "module_name": "request.h",
+  "hash_id": "c22002d7b04d9a6a064937faeeae7a9674c199fcbe69ac44e14ccf48f33a2752",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/md/bcache/request.h",
+  "human_readable_source": " \n#ifndef _BCACHE_REQUEST_H_\n#define _BCACHE_REQUEST_H_\n\nstruct data_insert_op {\n\tstruct closure\t\tcl;\n\tstruct cache_set\t*c;\n\tstruct bio\t\t*bio;\n\tstruct workqueue_struct *wq;\n\n\tunsigned int\t\tinode;\n\tuint16_t\t\twrite_point;\n\tuint16_t\t\twrite_prio;\n\tblk_status_t\t\tstatus;\n\n\tunion {\n\t\tuint16_t\tflags;\n\n\tstruct {\n\t\tunsigned int\tbypass:1;\n\t\tunsigned int\twriteback:1;\n\t\tunsigned int\tflush_journal:1;\n\t\tunsigned int\tcsum:1;\n\n\t\tunsigned int\treplace:1;\n\t\tunsigned int\treplace_collision:1;\n\n\t\tunsigned int\tinsert_data_done:1;\n\t};\n\t};\n\n\tstruct keylist\t\tinsert_keys;\n\tBKEY_PADDED(replace_key);\n};\n\nunsigned int bch_get_congested(const struct cache_set *c);\nvoid bch_data_insert(struct closure *cl);\n\nvoid bch_cached_dev_request_init(struct cached_dev *dc);\nvoid cached_dev_submit_bio(struct bio *bio);\n\nvoid bch_flash_dev_request_init(struct bcache_device *d);\nvoid flash_dev_submit_bio(struct bio *bio);\n\nextern struct kmem_cache *bch_search_cache;\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

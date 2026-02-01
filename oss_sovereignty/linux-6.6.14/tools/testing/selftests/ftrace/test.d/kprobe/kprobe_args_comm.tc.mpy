@@ -1,0 +1,9 @@
+{
+  "module_name": "kprobe_args_comm.tc",
+  "hash_id": "2c2ca3eba5ecffcf94bb49ea04eb91e7f6f45b5ad9c1a314e830b733ba0059b6",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/ftrace/test.d/kprobe/kprobe_args_comm.tc",
+  "human_readable_source": "#!/bin/sh\n# SPDX-License-Identifier: GPL-2.0\n# description: Kprobe event with comm arguments\n# requires: kprobe_events\n\ngrep -A1 \"fetcharg:\" README | grep -q \"\\$comm\" || exit_unsupported # this is too old\n\necho \"p:testprobe $FUNCTION_FORK comm=\\$comm \" > kprobe_events\ngrep testprobe kprobe_events | grep -q 'comm=$comm'\ntest -d events/kprobes/testprobe\n\necho 1 > events/kprobes/testprobe/enable\n( echo \"forked\")\ngrep testprobe trace | grep -q 'comm=\".*\"'\n\nexit 0\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

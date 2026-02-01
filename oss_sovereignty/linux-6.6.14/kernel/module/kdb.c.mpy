@@ -1,0 +1,9 @@
+{
+  "module_name": "kdb.c",
+  "hash_id": "a0f9033a3f1be01b7c500c2aef46b99549e957497a14b54a8a6543ec7559f57c",
+  "original_prompt": "Ingested from linux-6.6.14/kernel/module/kdb.c",
+  "human_readable_source": "\n \n\n#include <linux/module.h>\n#include <linux/kdb.h>\n#include \"internal.h\"\n\n \nint kdb_lsmod(int argc, const char **argv)\n{\n\tstruct module *mod;\n\n\tif (argc != 0)\n\t\treturn KDB_ARGCOUNT;\n\n\tkdb_printf(\"Module                  Size  modstruct     Used by\\n\");\n\tlist_for_each_entry(mod, &modules, list) {\n\t\tif (mod->state == MODULE_STATE_UNFORMED)\n\t\t\tcontinue;\n\n\t\tkdb_printf(\"%-20s%8u\", mod->name, mod->mem[MOD_TEXT].size);\n\t\tkdb_printf(\"/%8u\", mod->mem[MOD_RODATA].size);\n\t\tkdb_printf(\"/%8u\", mod->mem[MOD_RO_AFTER_INIT].size);\n\t\tkdb_printf(\"/%8u\", mod->mem[MOD_DATA].size);\n\n\t\tkdb_printf(\"  0x%px \", (void *)mod);\n#ifdef CONFIG_MODULE_UNLOAD\n\t\tkdb_printf(\"%4d \", module_refcount(mod));\n#endif\n\t\tif (mod->state == MODULE_STATE_GOING)\n\t\t\tkdb_printf(\" (Unloading)\");\n\t\telse if (mod->state == MODULE_STATE_COMING)\n\t\t\tkdb_printf(\" (Loading)\");\n\t\telse\n\t\t\tkdb_printf(\" (Live)\");\n\t\tkdb_printf(\" 0x%px\", mod->mem[MOD_TEXT].base);\n\t\tkdb_printf(\"/0x%px\", mod->mem[MOD_RODATA].base);\n\t\tkdb_printf(\"/0x%px\", mod->mem[MOD_RO_AFTER_INIT].base);\n\t\tkdb_printf(\"/0x%px\", mod->mem[MOD_DATA].base);\n\n#ifdef CONFIG_MODULE_UNLOAD\n\t\t{\n\t\t\tstruct module_use *use;\n\n\t\t\tkdb_printf(\" [ \");\n\t\t\tlist_for_each_entry(use, &mod->source_list,\n\t\t\t\t\t    source_list)\n\t\t\t\tkdb_printf(\"%s \", use->target->name);\n\t\t\tkdb_printf(\"]\\n\");\n\t\t}\n#endif\n\t}\n\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

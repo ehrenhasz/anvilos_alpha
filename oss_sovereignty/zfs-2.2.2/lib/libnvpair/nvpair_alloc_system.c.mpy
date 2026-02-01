@@ -1,0 +1,9 @@
+{
+  "module_name": "nvpair_alloc_system.c",
+  "hash_id": "695719964a2d6a135bf53d89868eda57a56077792c95a220e62c3fbf1c96d352",
+  "original_prompt": "Ingested from zfs-2.2.2/lib/libnvpair/nvpair_alloc_system.c",
+  "human_readable_source": " \n \n\n\n\n#include <rpc/types.h>\n#include <sys/kmem.h>\n#include <sys/nvpair.h>\n\nstatic void *\nnv_alloc_sys(nv_alloc_t *nva, size_t size)\n{\n\treturn (kmem_alloc(size, (int)(uintptr_t)nva->nva_arg));\n}\n\nstatic void\nnv_free_sys(nv_alloc_t *nva, void *buf, size_t size)\n{\n\t(void) nva;\n\tkmem_free(buf, size);\n}\n\nstatic const nv_alloc_ops_t system_ops = {\n\tNULL,\t\t\t \n\tNULL,\t\t\t \n\tnv_alloc_sys,\t\t \n\tnv_free_sys,\t\t \n\tNULL\t\t\t \n};\n\nstatic nv_alloc_t nv_alloc_sleep_def = {\n\t&system_ops,\n\t(void *)KM_SLEEP\n};\n\nstatic nv_alloc_t nv_alloc_nosleep_def = {\n\t&system_ops,\n\t(void *)KM_NOSLEEP\n};\n\nnv_alloc_t *const nv_alloc_sleep = &nv_alloc_sleep_def;\nnv_alloc_t *const nv_alloc_nosleep = &nv_alloc_nosleep_def;\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

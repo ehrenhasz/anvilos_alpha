@@ -1,0 +1,9 @@
+{
+  "module_name": "skein_zfs.c",
+  "hash_id": "fcd51ec1d77548439a6c42302f6dfe87f20f7bbffe002082e515b9de1aa9b1b4",
+  "original_prompt": "Ingested from zfs-2.2.2/module/zfs/skein_zfs.c",
+  "human_readable_source": " \n \n#include <sys/zfs_context.h>\n#include <sys/zio.h>\n#include <sys/zio_checksum.h>\n#include <sys/skein.h>\n\n#include <sys/abd.h>\n\nstatic int\nskein_incremental(void *buf, size_t size, void *arg)\n{\n\tSkein_512_Ctxt_t *ctx = arg;\n\t(void) Skein_512_Update(ctx, buf, size);\n\treturn (0);\n}\n \nvoid\nabd_checksum_skein_native(abd_t *abd, uint64_t size,\n    const void *ctx_template, zio_cksum_t *zcp)\n{\n\tSkein_512_Ctxt_t ctx;\n\n\tASSERT(ctx_template != NULL);\n\tmemcpy(&ctx, ctx_template, sizeof (ctx));\n\t(void) abd_iterate_func(abd, 0, size, skein_incremental, &ctx);\n\t(void) Skein_512_Final(&ctx, (uint8_t *)zcp);\n\tmemset(&ctx, 0, sizeof (ctx));\n}\n\n \nvoid\nabd_checksum_skein_byteswap(abd_t *abd, uint64_t size,\n    const void *ctx_template, zio_cksum_t *zcp)\n{\n\tzio_cksum_t\ttmp;\n\n\tabd_checksum_skein_native(abd, size, ctx_template, &tmp);\n\tzcp->zc_word[0] = BSWAP_64(tmp.zc_word[0]);\n\tzcp->zc_word[1] = BSWAP_64(tmp.zc_word[1]);\n\tzcp->zc_word[2] = BSWAP_64(tmp.zc_word[2]);\n\tzcp->zc_word[3] = BSWAP_64(tmp.zc_word[3]);\n}\n\n \nvoid *\nabd_checksum_skein_tmpl_init(const zio_cksum_salt_t *salt)\n{\n\tSkein_512_Ctxt_t *ctx = kmem_zalloc(sizeof (*ctx), KM_SLEEP);\n\n\t(void) Skein_512_InitExt(ctx, sizeof (zio_cksum_t) * 8, 0,\n\t    salt->zcs_bytes, sizeof (salt->zcs_bytes));\n\treturn (ctx);\n}\n\n \nvoid\nabd_checksum_skein_tmpl_free(void *ctx_template)\n{\n\tSkein_512_Ctxt_t *ctx = ctx_template;\n\n\tmemset(ctx, 0, sizeof (*ctx));\n\tkmem_free(ctx, sizeof (*ctx));\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

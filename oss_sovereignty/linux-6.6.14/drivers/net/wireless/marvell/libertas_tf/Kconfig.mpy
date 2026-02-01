@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "b5a2726d6464032042ff1037c8864cc6be37ed93331b105de59286282354f7d0",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/marvell/libertas_tf/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig LIBERTAS_THINFIRM\n\ttristate \"Marvell 8xxx Libertas WLAN driver support with thin firmware\"\n\tdepends on MAC80211\n\tselect FW_LOADER\n\thelp\n\t  A library for Marvell Libertas 8xxx devices using thinfirm.\n\nconfig LIBERTAS_THINFIRM_DEBUG\n\tbool \"Enable full debugging output in the Libertas thin firmware module.\"\n\tdepends on LIBERTAS_THINFIRM\n\thelp\n\t  Debugging support.\n\nconfig LIBERTAS_THINFIRM_USB\n\ttristate \"Marvell Libertas 8388 USB 802.11b/g cards with thin firmware\"\n\tdepends on LIBERTAS_THINFIRM && USB\n\thelp\n\t  A driver for Marvell Libertas 8388 USB devices using thinfirm.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

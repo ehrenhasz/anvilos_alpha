@@ -1,0 +1,9 @@
+{
+  "module_name": "cx18-firmware.h",
+  "hash_id": "97cac5609b0980de4ba65220b0e09768bd334f6a765fe8d373523676334e030e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/pci/cx18/cx18-firmware.h",
+  "human_readable_source": " \n \n\nint cx18_firmware_init(struct cx18 *cx);\nvoid cx18_halt_firmware(struct cx18 *cx);\nvoid cx18_init_memory(struct cx18 *cx);\nvoid cx18_init_power(struct cx18 *cx, int lowpwr);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

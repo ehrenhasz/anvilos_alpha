@@ -1,0 +1,9 @@
+{
+  "module_name": "input.h",
+  "hash_id": "aefe65708873f5263d971afb5ac4b4beb954e00f54e798763889c925fa38869f",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/input/input.h",
+  "human_readable_source": " \n \n\n#ifndef _DT_BINDINGS_INPUT_INPUT_H\n#define _DT_BINDINGS_INPUT_INPUT_H\n\n#include \"linux-event-codes.h\"\n\n#define MATRIX_KEY(row, col, code)\t\\\n\t((((row) & 0xFF) << 24) | (((col) & 0xFF) << 16) | ((code) & 0xFFFF))\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "gcc-x86_64-has-stack-protector.sh",
+  "hash_id": "58b1f965a140048ae60ffeedb3243a94b5762dfa75f9b6a2f5bedeef4090a461",
+  "original_prompt": "Ingested from linux-6.6.14/scripts/gcc-x86_64-has-stack-protector.sh",
+  "human_readable_source": "#!/bin/sh\n# SPDX-License-Identifier: GPL-2.0\n\necho \"int foo(void) { char X[200]; return 3; }\" | $* -S -x c -c -m64 -O0 -mcmodel=kernel -fno-PIE -fstack-protector - -o - 2> /dev/null | grep -q \"%gs\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "intel_fdi.h",
+  "hash_id": "4638b98ff5e31abff08b7717bef3ba04a35a3e5634df0f40bc977836e538e7c0",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/display/intel_fdi.h",
+  "human_readable_source": " \n \n\n#ifndef _INTEL_FDI_H_\n#define _INTEL_FDI_H_\n\nenum pipe;\nstruct drm_i915_private;\nstruct intel_crtc;\nstruct intel_crtc_state;\nstruct intel_encoder;\n\nint intel_fdi_link_freq(struct drm_i915_private *i915,\n\t\t\tconst struct intel_crtc_state *pipe_config);\nint ilk_fdi_compute_config(struct intel_crtc *intel_crtc,\n\t\t\t   struct intel_crtc_state *pipe_config);\nvoid intel_fdi_normal_train(struct intel_crtc *crtc);\nvoid ilk_fdi_disable(struct intel_crtc *crtc);\nvoid ilk_fdi_pll_disable(struct intel_crtc *intel_crtc);\nvoid ilk_fdi_pll_enable(const struct intel_crtc_state *crtc_state);\nvoid intel_fdi_init_hook(struct drm_i915_private *dev_priv);\nvoid hsw_fdi_link_train(struct intel_encoder *encoder,\n\t\t\tconst struct intel_crtc_state *crtc_state);\nvoid hsw_fdi_disable(struct intel_encoder *encoder);\nvoid intel_fdi_pll_freq_update(struct drm_i915_private *i915);\n\nvoid intel_fdi_link_train(struct intel_crtc *crtc,\n\t\t\t  const struct intel_crtc_state *crtc_state);\n\nvoid assert_fdi_tx_enabled(struct drm_i915_private *i915, enum pipe pipe);\nvoid assert_fdi_tx_disabled(struct drm_i915_private *i915, enum pipe pipe);\nvoid assert_fdi_rx_enabled(struct drm_i915_private *i915, enum pipe pipe);\nvoid assert_fdi_rx_disabled(struct drm_i915_private *i915, enum pipe pipe);\nvoid assert_fdi_tx_pll_enabled(struct drm_i915_private *i915, enum pipe pipe);\nvoid assert_fdi_rx_pll_enabled(struct drm_i915_private *i915, enum pipe pipe);\nvoid assert_fdi_rx_pll_disabled(struct drm_i915_private *i915, enum pipe pipe);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "mman.h",
+  "hash_id": "b57a0218e085d0b3e7fb80bb87cff9c5ad89458c331a80fe0c38fea8de8aedfb",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/include/uapi/asm/mman.h",
+  "human_readable_source": " \n#ifndef _ASM_X86_MMAN_H\n#define _ASM_X86_MMAN_H\n\n#define MAP_32BIT\t0x40\t\t \n#define MAP_ABOVE4G\t0x80\t\t \n\n \n#define SHADOW_STACK_SET_TOKEN\t(1ULL << 0)\t \n\n#include <asm-generic/mman.h>\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

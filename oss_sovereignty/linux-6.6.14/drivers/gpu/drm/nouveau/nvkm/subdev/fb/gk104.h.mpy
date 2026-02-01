@@ -1,0 +1,9 @@
+{
+  "module_name": "gk104.h",
+  "hash_id": "4691efabf43649ad03ad9c1c9ea55f182f2ea8ae73e7adedb449bf2ea5af0515",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/subdev/fb/gk104.h",
+  "human_readable_source": " \n\n#ifndef __GK104_FB_H__\n#define __GK104_FB_H__\n\n#include <subdev/therm.h>\n\nextern const struct nvkm_therm_clkgate_init gk104_fb_clkgate_blcg_init_unk_0[];\nextern const struct nvkm_therm_clkgate_init gk104_fb_clkgate_blcg_init_vm_0[];\nextern const struct nvkm_therm_clkgate_init gk104_fb_clkgate_blcg_init_main_0[];\nextern const struct nvkm_therm_clkgate_init gk104_fb_clkgate_blcg_init_bcast_0[];\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

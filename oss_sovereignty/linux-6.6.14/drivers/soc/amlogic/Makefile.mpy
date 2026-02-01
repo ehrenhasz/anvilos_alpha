@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "cb53c0b64e1d15b047f0372a5406d0b76de3b4d4c016e52066fe2882240f1504",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/soc/amlogic/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-$(CONFIG_MESON_CANVAS) += meson-canvas.o\nobj-$(CONFIG_MESON_CLK_MEASURE) += meson-clk-measure.o\nobj-$(CONFIG_MESON_GX_SOCINFO) += meson-gx-socinfo.o\nobj-$(CONFIG_MESON_MX_SOCINFO) += meson-mx-socinfo.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

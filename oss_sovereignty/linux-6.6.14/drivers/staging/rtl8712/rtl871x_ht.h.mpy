@@ -1,0 +1,9 @@
+{
+  "module_name": "rtl871x_ht.h",
+  "hash_id": "ecd9ff50299789281badae35190df5d8b45086d640a51b7fe8b08cad5d28c35c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/rtl8712/rtl871x_ht.h",
+  "human_readable_source": " \n \n#ifndef _RTL871X_HT_H_\n#define _RTL871X_HT_H_\n\n#include \"osdep_service.h\"\n#include \"wifi.h\"\n\nstruct ht_priv {\n\tunsigned int\tht_option;\n\tunsigned int\tampdu_enable; \n\tunsigned char\tbaddbareq_issued[16];\n\tunsigned int\ttx_amsdu_enable; \n\tunsigned int\ttx_amdsu_maxlen;  \n\tunsigned int\trx_ampdu_maxlen;  \n\tstruct ieee80211_ht_cap ht_cap;\n};\n\n#endif\t \n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

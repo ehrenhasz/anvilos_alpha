@@ -1,0 +1,9 @@
+{
+  "module_name": "hw_irq.h",
+  "hash_id": "9f37ab3b619cbb0c69d75280a2697d2522ee110b164312c7fad727917b9f44ba",
+  "original_prompt": "Ingested from linux-6.6.14/include/asm-generic/hw_irq.h",
+  "human_readable_source": "#ifndef __ASM_GENERIC_HW_IRQ_H\n#define __ASM_GENERIC_HW_IRQ_H\n \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

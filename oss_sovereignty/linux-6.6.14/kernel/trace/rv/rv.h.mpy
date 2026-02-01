@@ -1,0 +1,9 @@
+{
+  "module_name": "rv.h",
+  "hash_id": "754cce03919d0089ec2d1eeff01a7dbcc861f324f34a301a3a0a5839997142f0",
+  "original_prompt": "Ingested from linux-6.6.14/kernel/trace/rv/rv.h",
+  "human_readable_source": " \n#include <linux/mutex.h>\n\nstruct rv_interface {\n\tstruct dentry\t\t*root_dir;\n\tstruct dentry\t\t*monitors_dir;\n};\n\n#include \"../trace.h\"\n#include <linux/tracefs.h>\n#include <linux/rv.h>\n\n#define RV_MODE_WRITE\t\t\tTRACE_MODE_WRITE\n#define RV_MODE_READ\t\t\tTRACE_MODE_READ\n\n#define rv_create_dir\t\t\ttracefs_create_dir\n#define rv_create_file\t\t\ttracefs_create_file\n#define rv_remove\t\t\ttracefs_remove\n\n#define MAX_RV_MONITOR_NAME_SIZE\t32\n#define MAX_RV_REACTOR_NAME_SIZE\t32\n\nextern struct mutex rv_interface_lock;\n\n#ifdef CONFIG_RV_REACTORS\nstruct rv_reactor_def {\n\tstruct list_head\tlist;\n\tstruct rv_reactor\t*reactor;\n\t \n\tint\t\t\tcounter;\n};\n#endif\n\nstruct rv_monitor_def {\n\tstruct list_head\tlist;\n\tstruct rv_monitor\t*monitor;\n\tstruct dentry\t\t*root_d;\n#ifdef CONFIG_RV_REACTORS\n\tstruct rv_reactor_def\t*rdef;\n\tbool\t\t\treacting;\n#endif\n\tbool\t\t\ttask_monitor;\n};\n\nstruct dentry *get_monitors_root(void);\nint rv_disable_monitor(struct rv_monitor_def *mdef);\nint rv_enable_monitor(struct rv_monitor_def *mdef);\n\n#ifdef CONFIG_RV_REACTORS\nint reactor_populate_monitor(struct rv_monitor_def *mdef);\nvoid reactor_cleanup_monitor(struct rv_monitor_def *mdef);\nint init_rv_reactors(struct dentry *root_dir);\n#else\nstatic inline int reactor_populate_monitor(struct rv_monitor_def *mdef)\n{\n\treturn 0;\n}\n\nstatic inline void reactor_cleanup_monitor(struct rv_monitor_def *mdef)\n{\n\treturn;\n}\n\nstatic inline int init_rv_reactors(struct dentry *root_dir)\n{\n\treturn 0;\n}\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

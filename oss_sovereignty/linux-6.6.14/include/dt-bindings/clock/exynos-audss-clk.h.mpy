@@ -1,0 +1,9 @@
+{
+  "module_name": "exynos-audss-clk.h",
+  "hash_id": "5568323875dfbf9597379d688c13591edea533ee65c43a28ed4b81254fc35bbb",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/clock/exynos-audss-clk.h",
+  "human_readable_source": " \n \n\n#ifndef _DT_BINDINGS_CLK_EXYNOS_AUDSS_H\n#define _DT_BINDINGS_CLK_EXYNOS_AUDSS_H\n\n#define EXYNOS_MOUT_AUDSS\t0\n#define EXYNOS_MOUT_I2S\t1\n#define EXYNOS_DOUT_SRP\t2\n#define EXYNOS_DOUT_AUD_BUS\t3\n#define EXYNOS_DOUT_I2S\t4\n#define EXYNOS_SRP_CLK\t\t5\n#define EXYNOS_I2S_BUS\t\t6\n#define EXYNOS_SCLK_I2S\t7\n#define EXYNOS_PCM_BUS\t\t8\n#define EXYNOS_SCLK_PCM\t9\n#define EXYNOS_ADMA\t\t10\n\n#define EXYNOS_AUDSS_MAX_CLKS\t11\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

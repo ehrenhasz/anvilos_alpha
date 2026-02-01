@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "baafb23fed85100a3ccdbfeb96a2c62d3aa5a332b7974fede11646a95039c26b",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/pci/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for the kernel multimedia device drivers.\n#\n\n# Please keep it alphabetically sorted by directory\n# (e. g. LC_ALL=C sort Makefile)\nobj-y        +=\tttpci/\t\t\\\n\t\tb2c2/\t\t\\\n\t\tpluto2/\t\t\\\n\t\tdm1105/\t\t\\\n\t\tpt1/\t\t\\\n\t\tpt3/\t\t\\\n\t\tmantis/\t\t\\\n\t\tngene/\t\t\\\n\t\tddbridge/\t\\\n\t\tsaa7146/\t\\\n\t\tsmipcie/\t\\\n\t\tnetup_unidvb/\t\\\n\t\tintel/\n\n# Please keep it alphabetically sorted by Kconfig name\n# (e. g. LC_ALL=C sort Makefile)\n\nobj-$(CONFIG_STA2X11_VIP) += sta2x11/\n\nobj-$(CONFIG_VIDEO_BT848) += bt8xx/\nobj-$(CONFIG_VIDEO_COBALT) += cobalt/\nobj-$(CONFIG_VIDEO_CX18) += cx18/\nobj-$(CONFIG_VIDEO_CX23885) += cx23885/\nobj-$(CONFIG_VIDEO_CX25821) += cx25821/\nobj-$(CONFIG_VIDEO_CX88) += cx88/\nobj-$(CONFIG_VIDEO_DT3155) += dt3155/\nobj-$(CONFIG_VIDEO_IVTV) += ivtv/\nobj-$(CONFIG_VIDEO_SAA7134) += saa7134/\nobj-$(CONFIG_VIDEO_SAA7164) += saa7164/\nobj-$(CONFIG_VIDEO_SOLO6X10) += solo6x10/\nobj-$(CONFIG_VIDEO_TW5864) += tw5864/\nobj-$(CONFIG_VIDEO_TW686X) += tw686x/\nobj-$(CONFIG_VIDEO_TW68) += tw68/\nobj-$(CONFIG_VIDEO_ZORAN) += zoran/\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

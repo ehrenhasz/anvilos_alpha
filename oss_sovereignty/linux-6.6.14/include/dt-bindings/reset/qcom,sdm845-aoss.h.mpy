@@ -1,0 +1,9 @@
+{
+  "module_name": "qcom,sdm845-aoss.h",
+  "hash_id": "4ab53119ffac4afec1a5fa5d4adb19a19feef6f16dde66fe9240ce3f98d54235",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/reset/qcom,sdm845-aoss.h",
+  "human_readable_source": " \n \n\n#ifndef _DT_BINDINGS_RESET_AOSS_SDM_845_H\n#define _DT_BINDINGS_RESET_AOSS_SDM_845_H\n\n#define AOSS_CC_MSS_RESTART\t0\n#define AOSS_CC_CAMSS_RESTART\t1\n#define AOSS_CC_VENUS_RESTART\t2\n#define AOSS_CC_GPU_RESTART\t3\n#define AOSS_CC_DISPSS_RESTART\t4\n#define AOSS_CC_WCSS_RESTART\t5\n#define AOSS_CC_LPASS_RESTART\t6\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "b69210406e3e06fc7b021d05a28ee4a5504e538087734c1af599ed615524f84c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/scsi/esas2r/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig SCSI_ESAS2R\n\ttristate \"ATTO Technology's ExpressSAS RAID adapter driver\"\n\tdepends on PCI && SCSI\n\thelp\n\t  This driver supports the ATTO ExpressSAS R6xx SAS/SATA RAID controllers.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

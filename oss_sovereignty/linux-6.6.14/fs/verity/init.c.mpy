@@ -1,0 +1,9 @@
+{
+  "module_name": "init.c",
+  "hash_id": "d0a84110b9265230b7e9d9e3decef6cae6db19f7dde6c804f9174513b339d704",
+  "original_prompt": "Ingested from linux-6.6.14/fs/verity/init.c",
+  "human_readable_source": "\n \n\n#include \"fsverity_private.h\"\n\n#include <linux/ratelimit.h>\n\n#ifdef CONFIG_SYSCTL\nstatic struct ctl_table_header *fsverity_sysctl_header;\n\nstatic struct ctl_table fsverity_sysctl_table[] = {\n#ifdef CONFIG_FS_VERITY_BUILTIN_SIGNATURES\n\t{\n\t\t.procname       = \"require_signatures\",\n\t\t.data           = &fsverity_require_signatures,\n\t\t.maxlen         = sizeof(int),\n\t\t.mode           = 0644,\n\t\t.proc_handler   = proc_dointvec_minmax,\n\t\t.extra1         = SYSCTL_ZERO,\n\t\t.extra2         = SYSCTL_ONE,\n\t},\n#endif\n\t{ }\n};\n\nstatic void __init fsverity_init_sysctl(void)\n{\n\tfsverity_sysctl_header = register_sysctl(\"fs/verity\",\n\t\t\t\t\t\t fsverity_sysctl_table);\n\tif (!fsverity_sysctl_header)\n\t\tpanic(\"fsverity sysctl registration failed\");\n}\n#else  \nstatic inline void fsverity_init_sysctl(void)\n{\n}\n#endif  \n\nvoid fsverity_msg(const struct inode *inode, const char *level,\n\t\t  const char *fmt, ...)\n{\n\tstatic DEFINE_RATELIMIT_STATE(rs, DEFAULT_RATELIMIT_INTERVAL,\n\t\t\t\t      DEFAULT_RATELIMIT_BURST);\n\tstruct va_format vaf;\n\tva_list args;\n\n\tif (!__ratelimit(&rs))\n\t\treturn;\n\n\tva_start(args, fmt);\n\tvaf.fmt = fmt;\n\tvaf.va = &args;\n\tif (inode)\n\t\tprintk(\"%sfs-verity (%s, inode %lu): %pV\\n\",\n\t\t       level, inode->i_sb->s_id, inode->i_ino, &vaf);\n\telse\n\t\tprintk(\"%sfs-verity: %pV\\n\", level, &vaf);\n\tva_end(args);\n}\n\nstatic int __init fsverity_init(void)\n{\n\tfsverity_check_hash_algs();\n\tfsverity_init_info_cache();\n\tfsverity_init_workqueue();\n\tfsverity_init_sysctl();\n\tfsverity_init_signature();\n\treturn 0;\n}\nlate_initcall(fsverity_init)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

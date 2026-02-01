@@ -1,0 +1,9 @@
+{
+  "module_name": "kconfig.h",
+  "hash_id": "d17466c192f03e35aa64f8dcdb9124c23ce111e49f7f894947acb5791da63436",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/radix-tree/linux/kconfig.h",
+  "human_readable_source": "#include \"../../../../include/linux/kconfig.h\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

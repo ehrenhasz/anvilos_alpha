@@ -1,0 +1,9 @@
+{
+  "module_name": "ld_dw.c",
+  "hash_id": "d8a1ae125cabbab1e1498d9c0e20bd8c9d19651978cc7d8ba0615fd6a4086133",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/verifier/ld_dw.c",
+  "human_readable_source": "{\n\t\"ld_dw: xor semi-random 64 bit imms, test 1\",\n\t.insns = { },\n\t.data = { },\n\t.fill_helper = bpf_fill_rand_ld_dw,\n\t.prog_type = BPF_PROG_TYPE_SCHED_CLS,\n\t.result = ACCEPT,\n\t.retval = 4090,\n},\n{\n\t\"ld_dw: xor semi-random 64 bit imms, test 2\",\n\t.insns = { },\n\t.data = { },\n\t.fill_helper = bpf_fill_rand_ld_dw,\n\t.prog_type = BPF_PROG_TYPE_SCHED_CLS,\n\t.result = ACCEPT,\n\t.retval = 2047,\n},\n{\n\t\"ld_dw: xor semi-random 64 bit imms, test 3\",\n\t.insns = { },\n\t.data = { },\n\t.fill_helper = bpf_fill_rand_ld_dw,\n\t.prog_type = BPF_PROG_TYPE_SCHED_CLS,\n\t.result = ACCEPT,\n\t.retval = 511,\n},\n{\n\t\"ld_dw: xor semi-random 64 bit imms, test 4\",\n\t.insns = { },\n\t.data = { },\n\t.fill_helper = bpf_fill_rand_ld_dw,\n\t.prog_type = BPF_PROG_TYPE_SCHED_CLS,\n\t.result = ACCEPT,\n\t.retval = 5,\n},\n{\n\t\"ld_dw: xor semi-random 64 bit imms, test 5\",\n\t.insns = { },\n\t.data = { },\n\t.fill_helper = bpf_fill_rand_ld_dw,\n\t.prog_type = BPF_PROG_TYPE_SCHED_CLS,\n\t.result = ACCEPT,\n\t.retval = 1000000 - 6,\n},\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

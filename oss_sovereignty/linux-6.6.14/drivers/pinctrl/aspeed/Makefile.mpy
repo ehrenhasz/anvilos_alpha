@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "d612ce8d8a34f38b049fd912491443898cd2f36cef50c4cc35560eb80859dfd3",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/pinctrl/aspeed/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n# Aspeed pinctrl support\n\nccflags-y += $(call cc-option,-Woverride-init)\nobj-$(CONFIG_PINCTRL_ASPEED)\t+= pinctrl-aspeed.o pinmux-aspeed.o\nobj-$(CONFIG_PINCTRL_ASPEED_G4)\t+= pinctrl-aspeed-g4.o\nobj-$(CONFIG_PINCTRL_ASPEED_G5)\t+= pinctrl-aspeed-g5.o\nobj-$(CONFIG_PINCTRL_ASPEED_G6)\t+= pinctrl-aspeed-g6.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

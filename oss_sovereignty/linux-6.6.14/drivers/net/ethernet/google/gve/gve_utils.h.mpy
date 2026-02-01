@@ -1,0 +1,9 @@
+{
+  "module_name": "gve_utils.h",
+  "hash_id": "5974f43128deaae4b0394b4f7d3f4e6b9cea732c44f4da76fea8211162f24a32",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/google/gve/gve_utils.h",
+  "human_readable_source": " \n\n#ifndef _GVE_UTILS_H\n#define _GVE_UTILS_H\n\n#include <linux/etherdevice.h>\n\n#include \"gve.h\"\n\nvoid gve_tx_remove_from_block(struct gve_priv *priv, int queue_idx);\nvoid gve_tx_add_to_block(struct gve_priv *priv, int queue_idx);\n\nvoid gve_rx_remove_from_block(struct gve_priv *priv, int queue_idx);\nvoid gve_rx_add_to_block(struct gve_priv *priv, int queue_idx);\n\nstruct sk_buff *gve_rx_copy(struct net_device *dev, struct napi_struct *napi,\n\t\t\t    struct gve_rx_slot_page_info *page_info, u16 len);\n\n \nvoid gve_dec_pagecnt_bias(struct gve_rx_slot_page_info *page_info);\n\n#endif  \n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

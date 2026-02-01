@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "ff2792218e655bcdda5d82061b18c386fd1fd60ab0ceb44c2462f57a0afa238e",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/powerpc/ptrace/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n\nTM_TESTS := ptrace-tm-gpr\nTM_TESTS += ptrace-tm-spd-gpr\nTM_TESTS += ptrace-tm-spd-tar\nTM_TESTS += ptrace-tm-spd-vsx\nTM_TESTS += ptrace-tm-spr\nTM_TESTS += ptrace-tm-tar\nTM_TESTS += ptrace-tm-vsx\n\nTESTS_64 := $(TM_TESTS)\nTESTS_64 += core-pkey\nTESTS_64 += perf-hwbreak\nTESTS_64 += ptrace-hwbreak\nTESTS_64 += ptrace-perf-hwbreak\nTESTS_64 += ptrace-pkey\nTESTS_64 += ptrace-syscall\nTESTS_64 += ptrace-tar\nTESTS_64 += ptrace-vsx\n\nTESTS += ptrace-gpr\n\nTEST_GEN_PROGS := $(TESTS) $(TESTS_64)\n\nLOCAL_HDRS += $(patsubst %,$(selfdir)/powerpc/ptrace/%,$(wildcard *.h))\n\ntop_srcdir = ../../../../..\ninclude ../../lib.mk\n\nTM_TESTS := $(patsubst %,$(OUTPUT)/%,$(TM_TESTS))\nTESTS_64 := $(patsubst %,$(OUTPUT)/%,$(TESTS_64))\n\n$(TESTS_64): CFLAGS += -m64\n$(TM_TESTS): CFLAGS += -I../tm -mhtm\n\nCFLAGS += $(KHDR_INCLUDES) -fno-pie\n\n$(OUTPUT)/ptrace-gpr: ptrace-gpr.S\n$(OUTPUT)/ptrace-perf-hwbreak: ptrace-perf-asm.S\n$(OUTPUT)/ptrace-pkey $(OUTPUT)/core-pkey: LDLIBS += -pthread\n\n$(TEST_GEN_PROGS): ../harness.c ../utils.c ../lib/reg.S\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

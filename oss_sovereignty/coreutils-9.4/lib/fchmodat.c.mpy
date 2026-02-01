@@ -1,0 +1,9 @@
+{
+  "module_name": "fchmodat.c",
+  "hash_id": "b80c62f9240c22f8c70dc41a594889994d0e1e2ecbc5fb3c9aad7f20f8127a29",
+  "original_prompt": "Ingested from coreutils-9.4/lib/fchmodat.c",
+  "human_readable_source": " \n\n \n#define __need_system_sys_stat_h\n#include <config.h>\n\n \n#include <sys/stat.h>\n#undef __need_system_sys_stat_h\n\n#if HAVE_FCHMODAT\nstatic int\norig_fchmodat (int dir, char const *file, mode_t mode, int flags)\n{\n  return fchmodat (dir, file, mode, flags);\n}\n#endif\n\n#include <errno.h>\n#include <fcntl.h>\n#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\n#include <unistd.h>\n\n#ifdef __osf__\n \n# include \"sys/stat.h\"\n#else\n# include <sys/stat.h>\n#endif\n\n#include <intprops.h>\n\n \n\n#if HAVE_FCHMODAT\nint\nfchmodat (int dir, char const *file, mode_t mode, int flags)\n{\n# if HAVE_NEARLY_WORKING_FCHMODAT\n   \n  size_t len = strlen (file);\n  if (len && file[len - 1] == '/')\n    {\n      struct stat st;\n      if (fstatat (dir, file, &st, flags & AT_SYMLINK_NOFOLLOW) < 0)\n        return -1;\n      if (!S_ISDIR (st.st_mode))\n        {\n          errno = ENOTDIR;\n          return -1;\n        }\n    }\n# endif\n\n# if NEED_FCHMODAT_NONSYMLINK_FIX\n  if (flags == AT_SYMLINK_NOFOLLOW)\n    {\n#  if HAVE_READLINKAT\n      char readlink_buf[1];\n\n#   ifdef O_PATH\n       \n\n      if (0 <= readlinkat (dir, file, readlink_buf, sizeof readlink_buf))\n        {\n          errno = EOPNOTSUPP;\n          return -1;\n        }\n#  endif\n\n       \n      flags = 0;\n    }\n# endif\n\n  return orig_fchmodat (dir, file, mode, flags);\n}\n#else\n# define AT_FUNC_NAME fchmodat\n# define AT_FUNC_F1 lchmod\n# define AT_FUNC_F2 chmod\n# define AT_FUNC_USE_F1_COND AT_SYMLINK_NOFOLLOW\n# define AT_FUNC_POST_FILE_PARAM_DECLS , mode_t mode, int flag\n# define AT_FUNC_POST_FILE_ARGS        , mode\n# include \"at-func.c\"\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

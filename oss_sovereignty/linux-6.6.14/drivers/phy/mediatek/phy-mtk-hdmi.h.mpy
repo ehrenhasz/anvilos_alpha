@@ -1,0 +1,9 @@
+{
+  "module_name": "phy-mtk-hdmi.h",
+  "hash_id": "e774dcd29a94a62dcd7f5d9dfe2ffe8b7ecabb730bfb405041a5510313b4320d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/phy/mediatek/phy-mtk-hdmi.h",
+  "human_readable_source": " \n \n\n#ifndef _MTK_HDMI_PHY_H\n#define _MTK_HDMI_PHY_H\n#include <linux/clk.h>\n#include <linux/clk-provider.h>\n#include <linux/delay.h>\n#include <linux/mfd/syscon.h>\n#include <linux/module.h>\n#include <linux/phy/phy.h>\n#include <linux/platform_device.h>\n#include <linux/types.h>\n\nstruct mtk_hdmi_phy;\n\nstruct mtk_hdmi_phy_conf {\n\tunsigned long flags;\n\tbool pll_default_off;\n\tconst struct clk_ops *hdmi_phy_clk_ops;\n\tvoid (*hdmi_phy_enable_tmds)(struct mtk_hdmi_phy *hdmi_phy);\n\tvoid (*hdmi_phy_disable_tmds)(struct mtk_hdmi_phy *hdmi_phy);\n\tint (*hdmi_phy_configure)(struct phy *phy, union phy_configure_opts *opts);\n};\n\nstruct mtk_hdmi_phy {\n\tvoid __iomem *regs;\n\tstruct device *dev;\n\tstruct mtk_hdmi_phy_conf *conf;\n\tstruct clk *pll;\n\tstruct clk_hw pll_hw;\n\tunsigned long pll_rate;\n\tunsigned char drv_imp_clk;\n\tunsigned char drv_imp_d2;\n\tunsigned char drv_imp_d1;\n\tunsigned char drv_imp_d0;\n\tunsigned int ibias;\n\tunsigned int ibias_up;\n\tbool tmds_over_340M;\n};\n\nstruct mtk_hdmi_phy *to_mtk_hdmi_phy(struct clk_hw *hw);\n\nextern struct mtk_hdmi_phy_conf mtk_hdmi_phy_8195_conf;\nextern struct mtk_hdmi_phy_conf mtk_hdmi_phy_8173_conf;\nextern struct mtk_hdmi_phy_conf mtk_hdmi_phy_2701_conf;\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

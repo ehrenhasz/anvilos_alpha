@@ -1,0 +1,9 @@
+{
+  "module_name": "sun9i-a80-de.h",
+  "hash_id": "aa1c66c160954e32dbf338634ac93a0153b14c55e14bb34ef6802fba4dd27362",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/reset/sun9i-a80-de.h",
+  "human_readable_source": " \n\n#ifndef _DT_BINDINGS_RESET_SUN9I_A80_DE_H_\n#define _DT_BINDINGS_RESET_SUN9I_A80_DE_H_\n\n#define RST_FE0\t\t0\n#define RST_FE1\t\t1\n#define RST_FE2\t\t2\n#define RST_DEU0\t3\n#define RST_DEU1\t4\n#define RST_BE0\t\t5\n#define RST_BE1\t\t6\n#define RST_BE2\t\t7\n#define RST_DRC0\t8\n#define RST_DRC1\t9\n#define RST_MERGE\t10\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

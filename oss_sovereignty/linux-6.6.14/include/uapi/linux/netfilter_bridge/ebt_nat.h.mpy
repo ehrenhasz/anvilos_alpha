@@ -1,0 +1,9 @@
+{
+  "module_name": "ebt_nat.h",
+  "hash_id": "1e920ff038fc3be589ad26b3e589b05f729dfdd2b2f79c93c8e5c47f1bbcd564",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/netfilter_bridge/ebt_nat.h",
+  "human_readable_source": " \n#ifndef __LINUX_BRIDGE_EBT_NAT_H\n#define __LINUX_BRIDGE_EBT_NAT_H\n\n#include <linux/if_ether.h>\n\n#define NAT_ARP_BIT  (0x00000010)\nstruct ebt_nat_info {\n\tunsigned char mac[ETH_ALEN];\n\t \n\tint target;\n};\n#define EBT_SNAT_TARGET \"snat\"\n#define EBT_DNAT_TARGET \"dnat\"\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

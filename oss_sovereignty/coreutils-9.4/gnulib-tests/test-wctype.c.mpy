@@ -1,0 +1,9 @@
+{
+  "module_name": "test-wctype.c",
+  "hash_id": "41e7e8cf2ec3a57e2b2a29dad1819d58588afc8a911904bd922f16783436ad55",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-wctype.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#include <wctype.h>\n\n#include \"signature.h\"\nSIGNATURE_CHECK (wctype, wctype_t, (const char *));\n\n#include \"macros.h\"\n\nint\nmain (int argc, char *argv[])\n{\n  wctype_t desc;\n\n  desc = wctype (\"any\");\n  ASSERT (desc == (wctype_t) 0);\n\n  desc = wctype (\"blank\");\n  ASSERT (desc != (wctype_t) 0);\n\n  desc = wctype (\"space\");\n  ASSERT (desc != (wctype_t) 0);\n\n  desc = wctype (\"punct\");\n  ASSERT (desc != (wctype_t) 0);\n\n  desc = wctype (\"lower\");\n  ASSERT (desc != (wctype_t) 0);\n\n  desc = wctype (\"upper\");\n  ASSERT (desc != (wctype_t) 0);\n\n  desc = wctype (\"alpha\");\n  ASSERT (desc != (wctype_t) 0);\n\n  desc = wctype (\"digit\");\n  ASSERT (desc != (wctype_t) 0);\n\n  desc = wctype (\"xdigit\");\n  ASSERT (desc != (wctype_t) 0);\n\n  desc = wctype (\"alnum\");\n  ASSERT (desc != (wctype_t) 0);\n\n  desc = wctype (\"cntrl\");\n  ASSERT (desc != (wctype_t) 0);\n\n  desc = wctype (\"graph\");\n  ASSERT (desc != (wctype_t) 0);\n\n  desc = wctype (\"print\");\n  ASSERT (desc != (wctype_t) 0);\n\n  return 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

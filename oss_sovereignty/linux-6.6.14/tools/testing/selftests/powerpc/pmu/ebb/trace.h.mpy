@@ -1,0 +1,9 @@
+{
+  "module_name": "trace.h",
+  "hash_id": "a5d449e8febfe1f6ce702b7336124c77e88524ed24bac369829abda0738053d5",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/powerpc/pmu/ebb/trace.h",
+  "human_readable_source": " \n \n\n#ifndef _SELFTESTS_POWERPC_PMU_EBB_TRACE_H\n#define _SELFTESTS_POWERPC_PMU_EBB_TRACE_H\n\n#include \"utils.h\"\n\n#define TRACE_TYPE_REG\t\t1\n#define TRACE_TYPE_COUNTER\t2\n#define TRACE_TYPE_STRING\t3\n#define TRACE_TYPE_INDENT\t4\n#define TRACE_TYPE_OUTDENT\t5\n\nstruct trace_entry\n{\n\tu8 type;\n\tu8 length;\n\tu8 data[];\n};\n\nstruct trace_buffer\n{\n\tu64  size;\n\tbool overflow;\n\tvoid *tail;\n\tu8   data[];\n};\n\nstruct trace_buffer *trace_buffer_allocate(u64 size);\nint trace_log_reg(struct trace_buffer *tb, u64 reg, u64 value);\nint trace_log_counter(struct trace_buffer *tb, u64 value);\nint trace_log_string(struct trace_buffer *tb, char *str);\nint trace_log_indent(struct trace_buffer *tb);\nint trace_log_outdent(struct trace_buffer *tb);\nvoid trace_buffer_print(struct trace_buffer *tb);\nvoid trace_print_location(struct trace_buffer *tb);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

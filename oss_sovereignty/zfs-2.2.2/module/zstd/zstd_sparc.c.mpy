@@ -1,0 +1,9 @@
+{
+  "module_name": "zstd_sparc.c",
+  "hash_id": "f5ea5ca1280b828e634f7c3bd77fe9d45fe7f770e466715b0d69a61b2d6f0ff7",
+  "original_prompt": "Ingested from zfs-2.2.2/module/zstd/zstd_sparc.c",
+  "human_readable_source": "#ifdef __sparc__\n#include <stdint.h>\n#include <sys/byteorder.h>\n#include \"include/sparc_compat.h\"\nuint64_t __bswapdi2(uint64_t in) {\n\treturn (BSWAP_64(in));\n}\nuint32_t __bswapsi2(uint32_t in) {\n\treturn (BSWAP_32(in));\n}\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

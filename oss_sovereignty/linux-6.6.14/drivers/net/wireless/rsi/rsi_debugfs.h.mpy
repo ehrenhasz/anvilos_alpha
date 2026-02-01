@@ -1,0 +1,9 @@
+{
+  "module_name": "rsi_debugfs.h",
+  "hash_id": "0d5c95bbeb8bdaf50aa382a41070ee4f8ff748d25924b874558502858a359e4f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/rsi/rsi_debugfs.h",
+  "human_readable_source": " \n\n#ifndef __RSI_DEBUGFS_H__\n#define __RSI_DEBUGFS_H__\n\n#include \"rsi_main.h\"\n#include <linux/debugfs.h>\n\n#ifndef CONFIG_RSI_DEBUGFS\nstatic inline int rsi_init_dbgfs(struct rsi_hw *adapter)\n{\n\treturn 0;\n}\n\nstatic inline void rsi_remove_dbgfs(struct rsi_hw *adapter)\n{\n\treturn;\n}\n#else\nstruct rsi_dbg_files {\n\tconst char *name;\n\tumode_t perms;\n\tconst struct file_operations fops;\n};\n\nstruct rsi_debugfs {\n\tstruct dentry *subdir;\n\tstruct rsi_dbg_ops *dfs_get_ops;\n\tstruct dentry *rsi_files[MAX_DEBUGFS_ENTRIES];\n};\nint rsi_init_dbgfs(struct rsi_hw *adapter);\nvoid rsi_remove_dbgfs(struct rsi_hw *adapter);\n#endif\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "ivtvfb.h",
+  "hash_id": "38987c4caea7103605ed8ce736ff2b7f779e276d34cb04cd59c6260273531947",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/ivtvfb.h",
+  "human_readable_source": " \n \n\n#ifndef __LINUX_IVTVFB_H__\n#define __LINUX_IVTVFB_H__\n\n#include <linux/compiler.h>\n#include <linux/types.h>\n\n \n\nstruct ivtvfb_dma_frame {\n\tvoid __user *source;\n\tunsigned long dest_offset;\n\tint count;\n};\n\n#define IVTVFB_IOC_DMA_FRAME \t_IOW('V', BASE_VIDIOC_PRIVATE+0, struct ivtvfb_dma_frame)\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

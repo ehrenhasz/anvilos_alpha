@@ -1,0 +1,9 @@
+{
+  "module_name": "rc-tbs-nec.c",
+  "hash_id": "2d2916eced23e83d63ad511a2d1f5c7fa7f710a4a49f63e9665b0fece0c04ba1",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/rc/keymaps/rc-tbs-nec.c",
+  "human_readable_source": "\n\n\n\n\n\n\n#include <media/rc-map.h>\n#include <linux/module.h>\n\nstatic struct rc_map_table tbs_nec[] = {\n\t{ 0x84, KEY_POWER2},\t\t \n\t{ 0x94, KEY_MUTE},\t\t \n\t{ 0x87, KEY_NUMERIC_1},\n\t{ 0x86, KEY_NUMERIC_2},\n\t{ 0x85, KEY_NUMERIC_3},\n\t{ 0x8b, KEY_NUMERIC_4},\n\t{ 0x8a, KEY_NUMERIC_5},\n\t{ 0x89, KEY_NUMERIC_6},\n\t{ 0x8f, KEY_NUMERIC_7},\n\t{ 0x8e, KEY_NUMERIC_8},\n\t{ 0x8d, KEY_NUMERIC_9},\n\t{ 0x92, KEY_NUMERIC_0},\n\t{ 0xc0, KEY_10CHANNELSUP},\t \n\t{ 0xd0, KEY_10CHANNELSDOWN},\t \n\t{ 0x96, KEY_CHANNELUP},\t\t \n\t{ 0x91, KEY_CHANNELDOWN},\t \n\t{ 0x93, KEY_VOLUMEUP},\t\t \n\t{ 0x8c, KEY_VOLUMEDOWN},\t \n\t{ 0x83, KEY_RECORD},\t\t \n\t{ 0x98, KEY_PAUSE},\t\t \n\t{ 0x99, KEY_OK},\t\t \n\t{ 0x9a, KEY_CAMERA},\t\t \n\t{ 0x81, KEY_UP},\n\t{ 0x90, KEY_LEFT},\n\t{ 0x82, KEY_RIGHT},\n\t{ 0x88, KEY_DOWN},\n\t{ 0x95, KEY_FAVORITES},\t\t \n\t{ 0x97, KEY_SUBTITLE},\t\t \n\t{ 0x9d, KEY_ZOOM},\n\t{ 0x9f, KEY_EXIT},\n\t{ 0x9e, KEY_MENU},\n\t{ 0x9c, KEY_EPG},\n\t{ 0x80, KEY_PREVIOUS},\t\t \n\t{ 0x9b, KEY_MODE},\n};\n\nstatic struct rc_map_list tbs_nec_map = {\n\t.map = {\n\t\t.scan     = tbs_nec,\n\t\t.size     = ARRAY_SIZE(tbs_nec),\n\t\t.rc_proto = RC_PROTO_UNKNOWN,\t \n\t\t.name     = RC_MAP_TBS_NEC,\n\t}\n};\n\nstatic int __init init_rc_map_tbs_nec(void)\n{\n\treturn rc_map_register(&tbs_nec_map);\n}\n\nstatic void __exit exit_rc_map_tbs_nec(void)\n{\n\trc_map_unregister(&tbs_nec_map);\n}\n\nmodule_init(init_rc_map_tbs_nec)\nmodule_exit(exit_rc_map_tbs_nec)\n\nMODULE_LICENSE(\"GPL\");\nMODULE_AUTHOR(\"Mauro Carvalho Chehab\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "aspeed-lpc-ctrl.h",
+  "hash_id": "5ac6236b3af27133bb1cd1f22c00cbb27b1ee5863337aef8dcd3f8fbd86fadfe",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/aspeed-lpc-ctrl.h",
+  "human_readable_source": " \n \n\n#ifndef _UAPI_LINUX_ASPEED_LPC_CTRL_H\n#define _UAPI_LINUX_ASPEED_LPC_CTRL_H\n\n#include <linux/ioctl.h>\n#include <linux/types.h>\n\n \n#define ASPEED_LPC_CTRL_WINDOW_FLASH\t1\n#define ASPEED_LPC_CTRL_WINDOW_MEMORY\t2\n\n \n\nstruct aspeed_lpc_ctrl_mapping {\n\t__u8\twindow_type;\n\t__u8\twindow_id;\n\t__u16\tflags;\n\t__u32\taddr;\n\t__u32\toffset;\n\t__u32\tsize;\n};\n\n#define __ASPEED_LPC_CTRL_IOCTL_MAGIC\t0xb2\n\n#define ASPEED_LPC_CTRL_IOCTL_GET_SIZE\t_IOWR(__ASPEED_LPC_CTRL_IOCTL_MAGIC, \\\n\t\t0x00, struct aspeed_lpc_ctrl_mapping)\n\n#define ASPEED_LPC_CTRL_IOCTL_MAP\t_IOW(__ASPEED_LPC_CTRL_IOCTL_MAGIC, \\\n\t\t0x01, struct aspeed_lpc_ctrl_mapping)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

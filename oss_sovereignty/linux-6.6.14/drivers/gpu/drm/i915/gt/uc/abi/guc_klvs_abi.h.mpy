@@ -1,0 +1,9 @@
+{
+  "module_name": "guc_klvs_abi.h",
+  "hash_id": "63a3fe688b99f7141f2bb477d3ef294fcd19d14199b37db5c8bdd04b17ee864d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/gt/uc/abi/guc_klvs_abi.h",
+  "human_readable_source": " \n \n\n#ifndef _ABI_GUC_KLVS_ABI_H\n#define _ABI_GUC_KLVS_ABI_H\n\n#include <linux/types.h>\n\n \n\n#define GUC_KLV_LEN_MIN\t\t\t\t1u\n#define GUC_KLV_0_KEY\t\t\t\t(0xffff << 16)\n#define GUC_KLV_0_LEN\t\t\t\t(0xffff << 0)\n#define GUC_KLV_n_VALUE\t\t\t\t(0xffffffff << 0)\n\n \n\n#define GUC_KLV_SELF_CFG_H2G_CTB_ADDR_KEY\t\t0x0902\n#define GUC_KLV_SELF_CFG_H2G_CTB_ADDR_LEN\t\t2u\n\n#define GUC_KLV_SELF_CFG_H2G_CTB_DESCRIPTOR_ADDR_KEY\t0x0903\n#define GUC_KLV_SELF_CFG_H2G_CTB_DESCRIPTOR_ADDR_LEN\t2u\n\n#define GUC_KLV_SELF_CFG_H2G_CTB_SIZE_KEY\t\t0x0904\n#define GUC_KLV_SELF_CFG_H2G_CTB_SIZE_LEN\t\t1u\n\n#define GUC_KLV_SELF_CFG_G2H_CTB_ADDR_KEY\t\t0x0905\n#define GUC_KLV_SELF_CFG_G2H_CTB_ADDR_LEN\t\t2u\n\n#define GUC_KLV_SELF_CFG_G2H_CTB_DESCRIPTOR_ADDR_KEY\t0x0906\n#define GUC_KLV_SELF_CFG_G2H_CTB_DESCRIPTOR_ADDR_LEN\t2u\n\n#define GUC_KLV_SELF_CFG_G2H_CTB_SIZE_KEY\t\t0x0907\n#define GUC_KLV_SELF_CFG_G2H_CTB_SIZE_LEN\t\t1u\n\n \nenum {\n\tGUC_SCHEDULING_POLICIES_KLV_ID_RENDER_COMPUTE_YIELD\t= 0x1001,\n};\n\n \nenum {\n\tGUC_CONTEXT_POLICIES_KLV_ID_EXECUTION_QUANTUM\t\t\t= 0x2001,\n\tGUC_CONTEXT_POLICIES_KLV_ID_PREEMPTION_TIMEOUT\t\t\t= 0x2002,\n\tGUC_CONTEXT_POLICIES_KLV_ID_SCHEDULING_PRIORITY\t\t\t= 0x2003,\n\tGUC_CONTEXT_POLICIES_KLV_ID_PREEMPT_TO_IDLE_ON_QUANTUM_EXPIRY\t= 0x2004,\n\tGUC_CONTEXT_POLICIES_KLV_ID_SLPM_GT_FREQUENCY\t\t\t= 0x2005,\n\n\tGUC_CONTEXT_POLICIES_KLV_NUM_IDS = 5,\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

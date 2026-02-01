@@ -1,0 +1,9 @@
+{
+  "module_name": "uart_core.c",
+  "hash_id": "9ed3c6076cdba482a10e7d6b3cb42679adbc46f7b4ac563ad5cebdface200bd9",
+  "original_prompt": "Ingested from sys_09_Anvil/source/ports/minimal/uart_core.c",
+  "human_readable_source": "#include <unistd.h>\n#include \"py/mpconfig.h\"\n\n \n\n#if MICROPY_MIN_USE_STM32_MCU\ntypedef struct {\n    volatile uint32_t SR;\n    volatile uint32_t DR;\n} periph_uart_t;\n#define USART1 ((periph_uart_t *)0x40011000)\n#endif\n\n\nint mp_hal_stdin_rx_chr(void) {\n    unsigned char c = 0;\n    #if MICROPY_MIN_USE_STDOUT\n    int r = read(STDIN_FILENO, &c, 1);\n    (void)r;\n    #elif MICROPY_MIN_USE_STM32_MCU\n    \n    while ((USART1->SR & (1 << 5)) == 0) {\n    }\n    c = USART1->DR;\n    #endif\n    return c;\n}\n\n\nmp_uint_t mp_hal_stdout_tx_strn(const char *str, mp_uint_t len) {\n    mp_uint_t ret = len;\n    #if MICROPY_MIN_USE_STDOUT\n    int r = write(STDOUT_FILENO, str, len);\n    if (r >= 0) {\n        \n        ret = 0;\n    }\n    #elif MICROPY_MIN_USE_STM32_MCU\n    while (len--) {\n        \n        while ((USART1->SR & (1 << 7)) == 0) {\n        }\n        USART1->DR = *str++;\n    }\n    #endif\n    return ret;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

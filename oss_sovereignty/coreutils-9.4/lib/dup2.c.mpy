@@ -1,0 +1,9 @@
+{
+  "module_name": "dup2.c",
+  "hash_id": "da296ade0e69ca474374096350521bfab52a7a4b125dd9f550b34d325982b650",
+  "original_prompt": "Ingested from coreutils-9.4/lib/dup2.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n \n#include <unistd.h>\n\n#include <errno.h>\n#include <fcntl.h>\n\n#undef dup2\n\n#if defined _WIN32 && ! defined __CYGWIN__\n\n \n# define WIN32_LEAN_AND_MEAN\n# include <windows.h>\n\n# if HAVE_MSVC_INVALID_PARAMETER_HANDLER\n#  include \"msvc-inval.h\"\n# endif\n\n \n# if GNULIB_MSVC_NOTHROW\n#  include \"msvc-nothrow.h\"\n# else\n#  include <io.h>\n# endif\n\n# if HAVE_MSVC_INVALID_PARAMETER_HANDLER\nstatic int\ndup2_nothrow (int fd, int desired_fd)\n{\n  int result;\n\n  TRY_MSVC_INVAL\n    {\n      result = _dup2 (fd, desired_fd);\n    }\n  CATCH_MSVC_INVAL\n    {\n      errno = EBADF;\n      result = -1;\n    }\n  DONE_MSVC_INVAL;\n\n  return result;\n}\n# else\n#  define dup2_nothrow _dup2\n# endif\n\nstatic int\nms_windows_dup2 (int fd, int desired_fd)\n{\n  int result;\n\n   \n  if (fd == desired_fd)\n    {\n      if ((HANDLE) _get_osfhandle (fd) == INVALID_HANDLE_VALUE)\n        {\n          errno = EBADF;\n          return -1;\n        }\n      return fd;\n    }\n\n   \n# if HAVE_SETDTABLESIZE\n  setdtablesize (desired_fd + 1);\n# endif\n  if (desired_fd < 0)\n    fd = desired_fd;\n  if (fd == desired_fd)\n    return fcntl (fd, F_GETFL) == -1 ? -1 : fd;\n#endif\n\n  result = dup2 (fd, desired_fd);\n\n   \n  if (result == -1 && errno == EMFILE)\n    errno = EBADF;\n#if REPLACE_FCHDIR\n  if (fd != desired_fd && result != -1)\n    result = _gl_register_dup (fd, result);\n#endif\n  return result;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

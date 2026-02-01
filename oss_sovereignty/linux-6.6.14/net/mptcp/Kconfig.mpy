@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "b08c7e3fe7692646a0f972c39c4ee40211391a90ed8df12f42e2c5db927f3248",
+  "original_prompt": "Ingested from linux-6.6.14/net/mptcp/Kconfig",
+  "human_readable_source": "\nconfig MPTCP\n\tbool \"MPTCP: Multipath TCP\"\n\tdepends on INET\n\tselect SKB_EXTENSIONS\n\tselect CRYPTO_LIB_SHA256\n\tselect CRYPTO\n\thelp\n\t  Multipath TCP (MPTCP) connections send and receive data over multiple\n\t  subflows in order to utilize multiple network paths. Each subflow\n\t  uses the TCP protocol, and TCP options carry header information for\n\t  MPTCP.\n\nif MPTCP\n\nconfig INET_MPTCP_DIAG\n\tdepends on INET_DIAG\n\tdef_tristate INET_DIAG\n\nconfig MPTCP_IPV6\n\tbool \"MPTCP: IPv6 support for Multipath TCP\"\n\tdepends on IPV6=y\n\tdefault y\n\nconfig MPTCP_KUNIT_TEST\n\ttristate \"This builds the MPTCP KUnit tests\" if !KUNIT_ALL_TESTS\n\tdepends on KUNIT\n\tdefault KUNIT_ALL_TESTS\n\thelp\n\t  Currently covers the MPTCP crypto and token helpers.\n\t  Only useful for kernel devs running KUnit test harness and are not\n\t  for inclusion into a production build.\n\n\t  For more information on KUnit and unit tests in general please refer\n\t  to the KUnit documentation in Documentation/dev-tools/kunit/.\n\n\t  If unsure, say N.\n\nendif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

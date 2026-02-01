@@ -1,0 +1,9 @@
+{
+  "module_name": "cl826f.h",
+  "hash_id": "9dc0a2bed7c96b70921a9d4beda7e64edf15c43d7a562c2eaa2d1b07d986e2fb",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/include/nvhw/class/cl826f.h",
+  "human_readable_source": " \n#ifndef _cl826f_h_\n#define _cl826f_h_\n\n#define NV826F_SEMAPHOREA                                          (0x00000010)\n#define NV826F_SEMAPHOREA_OFFSET_UPPER                                     7:0\n#define NV826F_SEMAPHOREB                                          (0x00000014)\n#define NV826F_SEMAPHOREB_OFFSET_LOWER                                   31:00\n#define NV826F_SEMAPHOREC                                          (0x00000018)\n#define NV826F_SEMAPHOREC_PAYLOAD                                         31:0\n#define NV826F_SEMAPHORED                                          (0x0000001C)\n#define NV826F_SEMAPHORED_OPERATION                                        2:0\n#define NV826F_SEMAPHORED_OPERATION_ACQUIRE                         0x00000001\n#define NV826F_SEMAPHORED_OPERATION_RELEASE                         0x00000002\n#define NV826F_SEMAPHORED_OPERATION_ACQ_GEQ                         0x00000004\n#define NV826F_NON_STALLED_INTERRUPT                               (0x00000020)\n#define NV826F_SET_CONTEXT_DMA_SEMAPHORE                           (0x00000060)\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

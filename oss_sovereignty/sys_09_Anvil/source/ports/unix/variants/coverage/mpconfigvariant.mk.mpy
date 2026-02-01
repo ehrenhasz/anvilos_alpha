@@ -1,0 +1,9 @@
+{
+  "module_name": "mpconfigvariant.mk",
+  "hash_id": "6a2448b4b0b2413094e1076e4015d356d272b117b41ab694821536d26877c3fd",
+  "original_prompt": "Ingested from sys_09_Anvil/source/ports/unix/variants/coverage/mpconfigvariant.mk",
+  "human_readable_source": "# Disable optimisations and enable assert() on coverage builds.\nDEBUG ?= 1\n\nCFLAGS += \\\n\t-fprofile-arcs -ftest-coverage \\\n\t-Wformat -Wmissing-declarations -Wmissing-prototypes \\\n\t-Wold-style-definition -Wpointer-arith -Wshadow -Wuninitialized -Wunused-parameter \\\n\t-DMICROPY_UNIX_COVERAGE\n\nLDFLAGS += -fprofile-arcs -ftest-coverage\n\nFROZEN_MANIFEST ?= $(VARIANT_DIR)/manifest.py\nUSER_C_MODULES = $(TOP)/examples/usercmodule\n\nSRC_C += coverage.c\nSRC_CXX += coveragecpp.cpp\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

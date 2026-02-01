@@ -1,0 +1,9 @@
+{
+  "module_name": "kernel.h",
+  "hash_id": "c3aa7eac03cc8d450357a24a83b22ca6975fd4b6668197a35877d769381294e3",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/memblock/linux/kernel.h",
+  "human_readable_source": " \n#ifndef _MEMBLOCK_LINUX_KERNEL_H\n#define _MEMBLOCK_LINUX_KERNEL_H\n\n#include <../../include/linux/kernel.h>\n#include <linux/errno.h>\n#include <string.h>\n#include <linux/printk.h>\n#include <linux/linkage.h>\n#include <linux/kconfig.h>\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "alarmtimer.h",
+  "hash_id": "a19d725ca59c3087ed99ccc1de9c8ad19f721e157eedb2dbb3ce128ad4147224",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/alarmtimer.h",
+  "human_readable_source": " \n#ifndef _LINUX_ALARMTIMER_H\n#define _LINUX_ALARMTIMER_H\n\n#include <linux/time.h>\n#include <linux/hrtimer.h>\n#include <linux/timerqueue.h>\n\nstruct rtc_device;\n\nenum alarmtimer_type {\n\tALARM_REALTIME,\n\tALARM_BOOTTIME,\n\n\t \n\tALARM_NUMTYPE,\n\n\t \n\tALARM_REALTIME_FREEZER,\n\tALARM_BOOTTIME_FREEZER,\n};\n\nenum alarmtimer_restart {\n\tALARMTIMER_NORESTART,\n\tALARMTIMER_RESTART,\n};\n\n\n#define ALARMTIMER_STATE_INACTIVE\t0x00\n#define ALARMTIMER_STATE_ENQUEUED\t0x01\n\n \nstruct alarm {\n\tstruct timerqueue_node\tnode;\n\tstruct hrtimer\t\ttimer;\n\tenum alarmtimer_restart\t(*function)(struct alarm *, ktime_t now);\n\tenum alarmtimer_type\ttype;\n\tint\t\t\tstate;\n\tvoid\t\t\t*data;\n};\n\nvoid alarm_init(struct alarm *alarm, enum alarmtimer_type type,\n\t\tenum alarmtimer_restart (*function)(struct alarm *, ktime_t));\nvoid alarm_start(struct alarm *alarm, ktime_t start);\nvoid alarm_start_relative(struct alarm *alarm, ktime_t start);\nvoid alarm_restart(struct alarm *alarm);\nint alarm_try_to_cancel(struct alarm *alarm);\nint alarm_cancel(struct alarm *alarm);\n\nu64 alarm_forward(struct alarm *alarm, ktime_t now, ktime_t interval);\nu64 alarm_forward_now(struct alarm *alarm, ktime_t interval);\nktime_t alarm_expires_remaining(const struct alarm *alarm);\n\n#ifdef CONFIG_RTC_CLASS\n \nstruct rtc_device *alarmtimer_get_rtcdev(void);\n#else\nstatic inline struct rtc_device *alarmtimer_get_rtcdev(void) { return NULL; }\n#endif\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

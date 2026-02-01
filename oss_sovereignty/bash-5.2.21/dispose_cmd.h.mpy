@@ -1,0 +1,9 @@
+{
+  "module_name": "dispose_cmd.h",
+  "hash_id": "2423f505fdc740101f0b6b4fdc71317faebd65df49a6273f6d447902b4e4d804",
+  "original_prompt": "Ingested from bash-5.2.21/dispose_cmd.h",
+  "human_readable_source": " \n\n \n\n#if !defined (_DISPOSE_CMD_H_)\n#define _DISPOSE_CMD_H_\n\n#include \"stdc.h\"\n\nextern void dispose_command PARAMS((COMMAND *));\nextern void dispose_word_desc PARAMS((WORD_DESC *));\nextern void dispose_word PARAMS((WORD_DESC *));\nextern void dispose_words PARAMS((WORD_LIST *));\nextern void dispose_word_array PARAMS((char **));\nextern void dispose_redirects PARAMS((REDIRECT *));\n\n#if defined (COND_COMMAND)\nextern void dispose_cond_node PARAMS((COND_COM *));\n#endif\n\nextern void dispose_function_def_contents PARAMS((FUNCTION_DEF *));\nextern void dispose_function_def PARAMS((FUNCTION_DEF *));\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

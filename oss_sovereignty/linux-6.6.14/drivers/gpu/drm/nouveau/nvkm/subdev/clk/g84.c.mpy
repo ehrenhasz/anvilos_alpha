@@ -1,0 +1,9 @@
+{
+  "module_name": "g84.c",
+  "hash_id": "de84709d6832c8459659c42400fea3cc971c99a3e6d65362c752ee31bab8c909",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/subdev/clk/g84.c",
+  "human_readable_source": " \n#include \"nv50.h\"\n\nstatic const struct nvkm_clk_func\ng84_clk = {\n\t.read = nv50_clk_read,\n\t.calc = nv50_clk_calc,\n\t.prog = nv50_clk_prog,\n\t.tidy = nv50_clk_tidy,\n\t.domains = {\n\t\t{ nv_clk_src_crystal, 0xff },\n\t\t{ nv_clk_src_href   , 0xff },\n\t\t{ nv_clk_src_core   , 0xff, 0, \"core\", 1000 },\n\t\t{ nv_clk_src_shader , 0xff, 0, \"shader\", 1000 },\n\t\t{ nv_clk_src_mem    , 0xff, 0, \"memory\", 1000 },\n\t\t{ nv_clk_src_vdec   , 0xff },\n\t\t{ nv_clk_src_max }\n\t}\n};\n\nint\ng84_clk_new(struct nvkm_device *device, enum nvkm_subdev_type type, int inst,\n\t    struct nvkm_clk **pclk)\n{\n\treturn nv50_clk_new_(&g84_clk, device, type, inst, (device->chipset >= 0x94), pclk);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

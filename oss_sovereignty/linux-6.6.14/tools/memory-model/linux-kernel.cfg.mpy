@@ -1,0 +1,9 @@
+{
+  "module_name": "linux-kernel.cfg",
+  "hash_id": "02b56963156fdbf6698e9474bc5fdfabf4dfe0107657196aae6ee03ec3d3c80d",
+  "original_prompt": "Ingested from linux-6.6.14/tools/memory-model/linux-kernel.cfg",
+  "human_readable_source": "macros linux-kernel.def\nbell linux-kernel.bell\nmodel linux-kernel.cat\ngraph columns\nsquished true\nshowevents noregs\nmovelabel true\nfontsize 8\nxscale 2.0\nyscale 1.5\narrowsize 0.8\nshowinitrf false\nshowfinalrf false\nshowinitwrites false\nsplines spline\npad 0.1\nedgeattr hb,color,indigo\nedgeattr co,color,blue\nedgeattr mb,color,darkgreen\nedgeattr wmb,color,darkgreen\nedgeattr rmb,color,darkgreen\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

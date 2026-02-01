@@ -1,0 +1,9 @@
+{
+  "module_name": "rsi_91x.h",
+  "hash_id": "68ce05f0bcd3b7a16302481df0f0f7eafb3de3364c8eba64a7498a7411cb999d",
+  "original_prompt": "Ingested from linux-6.6.14/include/net/rsi_91x.h",
+  "human_readable_source": " \n\n#ifndef __RSI_HEADER_H__\n#define __RSI_HEADER_H__\n\n#include <linux/skbuff.h>\n\n \n#define RSI_COEX_Q\t\t\t0x0\n#define RSI_BT_Q\t\t\t0x2\n#define RSI_WLAN_Q                      0x3\n#define RSI_WIFI_MGMT_Q                 0x4\n#define RSI_WIFI_DATA_Q                 0x5\n#define RSI_BT_MGMT_Q\t\t\t0x6\n#define RSI_BT_DATA_Q\t\t\t0x7\n\nenum rsi_coex_queues {\n\tRSI_COEX_Q_INVALID = -1,\n\tRSI_COEX_Q_COMMON = 0,\n\tRSI_COEX_Q_BT,\n\tRSI_COEX_Q_WLAN\n};\n\nenum rsi_host_intf {\n\tRSI_HOST_INTF_SDIO = 0,\n\tRSI_HOST_INTF_USB\n};\n\nstruct rsi_proto_ops {\n\tint (*coex_send_pkt)(void *priv, struct sk_buff *skb, u8 hal_queue);\n\tenum rsi_host_intf (*get_host_intf)(void *priv);\n\tvoid (*set_bt_context)(void *priv, void *context);\n};\n\nstruct rsi_mod_ops {\n\tint (*attach)(void *priv, struct rsi_proto_ops *ops);\n\tvoid (*detach)(void *priv);\n\tint (*recv_pkt)(void *priv, const u8 *msg);\n};\n\nextern const struct rsi_mod_ops rsi_bt_ops;\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

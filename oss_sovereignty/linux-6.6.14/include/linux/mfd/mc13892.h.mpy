@@ -1,0 +1,9 @@
+{
+  "module_name": "mc13892.h",
+  "hash_id": "e8a4541512dc14478ea4bceabc4091cae8b62a0916d68f130267c367b5894d89",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/mfd/mc13892.h",
+  "human_readable_source": " \n \n\n#ifndef __LINUX_MFD_MC13892_H\n#define __LINUX_MFD_MC13892_H\n\n#include <linux/mfd/mc13xxx.h>\n\n#define MC13892_SW1\t\t0\n#define MC13892_SW2\t\t1\n#define MC13892_SW3\t\t2\n#define MC13892_SW4\t\t3\n#define MC13892_SWBST\t4\n#define MC13892_VIOHI\t5\n#define MC13892_VPLL\t6\n#define MC13892_VDIG\t7\n#define MC13892_VSD\t8\n#define MC13892_VUSB2\t9\n#define MC13892_VVIDEO\t10\n#define MC13892_VAUDIO\t11\n#define MC13892_VCAM\t12\n#define MC13892_VGEN1\t13\n#define MC13892_VGEN2\t14\n#define MC13892_VGEN3\t15\n#define MC13892_VUSB\t16\n#define MC13892_GPO1\t17\n#define MC13892_GPO2\t18\n#define MC13892_GPO3\t19\n#define MC13892_GPO4\t20\n#define MC13892_PWGT1SPI\t21\n#define MC13892_PWGT2SPI\t22\n#define MC13892_VCOINCELL\t23\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

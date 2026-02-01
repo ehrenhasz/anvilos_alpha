@@ -1,0 +1,9 @@
+{
+  "module_name": "opendirat.c",
+  "hash_id": "bc20b26629f975a1a944d0c168faa53a858aa68d8c900f87be2ecfc27828aab3",
+  "original_prompt": "Ingested from coreutils-9.4/lib/opendirat.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#include <opendirat.h>\n\n#include <errno.h>\n#include <fcntl--.h>\n#include <unistd.h>\n\n \n\nDIR *\nopendirat (int dir_fd, char const *dir, int extra_flags, int *pnew_fd)\n{\n  int open_flags = (O_RDONLY | O_CLOEXEC | O_DIRECTORY | O_NOCTTY\n                    | O_NONBLOCK | extra_flags);\n  int new_fd = openat (dir_fd, dir, open_flags);\n\n  if (new_fd < 0)\n    return NULL;\n  DIR *dirp = fdopendir (new_fd);\n  if (dirp)\n    *pnew_fd = new_fd;\n  else\n    {\n      int fdopendir_errno = errno;\n      close (new_fd);\n      errno = fdopendir_errno;\n    }\n  return dirp;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

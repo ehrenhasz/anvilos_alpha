@@ -1,0 +1,9 @@
+{
+  "module_name": "u_midi.h",
+  "hash_id": "87b3c0b72b504c7762b13c46edcd6467961192ddcd1a7d2d3005d8ff227abe61",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/usb/gadget/function/u_midi.h",
+  "human_readable_source": " \n \n\n#ifndef U_MIDI_H\n#define U_MIDI_H\n\n#include <linux/usb/composite.h>\n\nstruct f_midi_opts {\n\tstruct usb_function_instance\tfunc_inst;\n\tint\t\t\t\tindex;\n\tchar\t\t\t\t*id;\n\tbool\t\t\t\tid_allocated;\n\tunsigned int\t\t\tin_ports;\n\tunsigned int\t\t\tout_ports;\n\tunsigned int\t\t\tbuflen;\n\tunsigned int\t\t\tqlen;\n\n\t \n\tstruct mutex\t\t\tlock;\n\tint\t\t\t\trefcnt;\n};\n\n#endif  \n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

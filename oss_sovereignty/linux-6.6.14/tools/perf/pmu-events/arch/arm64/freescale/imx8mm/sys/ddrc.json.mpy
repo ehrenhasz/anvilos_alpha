@@ -1,0 +1,9 @@
+{
+  "module_name": "ddrc.json",
+  "hash_id": "47978b09b3497125e3a6eca64fc5548bfce38767bed3c95fa2108b4274028bc6",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/pmu-events/arch/arm64/freescale/imx8mm/sys/ddrc.json",
+  "human_readable_source": "[\n   {\n           \"BriefDescription\": \"ddr cycles event\",\n           \"EventCode\": \"0x00\",\n           \"EventName\": \"imx8mm_ddr.cycles\",\n           \"Unit\": \"imx8_ddr\",\n           \"Compat\": \"i.MX8MM\"\n   },\n   {\n           \"BriefDescription\": \"ddr read-cycles event\",\n           \"EventCode\": \"0x2a\",\n           \"EventName\": \"imx8mm_ddr.read_cycles\",\n           \"Unit\": \"imx8_ddr\",\n           \"Compat\": \"i.MX8MM\"\n   },\n   {\n           \"BriefDescription\": \"ddr write-cycles event\",\n           \"EventCode\": \"0x2b\",\n           \"EventName\": \"imx8mm_ddr.write_cycles\",\n           \"Unit\": \"imx8_ddr\",\n           \"Compat\": \"i.MX8MM\"\n   },\n   {\n           \"BriefDescription\": \"ddr read event\",\n           \"EventCode\": \"0x35\",\n           \"EventName\": \"imx8mm_ddr.read\",\n           \"Unit\": \"imx8_ddr\",\n           \"Compat\": \"i.MX8MM\"\n   },\n   {\n           \"BriefDescription\": \"ddr write event\",\n           \"EventCode\": \"0x38\",\n           \"EventName\": \"imx8mm_ddr.write\",\n           \"Unit\": \"imx8_ddr\",\n           \"Compat\": \"i.MX8MM\"\n   }\n]\n\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

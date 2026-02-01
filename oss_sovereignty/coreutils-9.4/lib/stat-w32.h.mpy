@@ -1,0 +1,9 @@
+{
+  "module_name": "stat-w32.h",
+  "hash_id": "1fb5695869095abff277e0885702d5278b153c3ad2b781466e76b6a0afd526e8",
+  "original_prompt": "Ingested from coreutils-9.4/lib/stat-w32.h",
+  "human_readable_source": " \n#if _GL_WINDOWS_STAT_TIMESPEC\nextern struct timespec _gl_convert_FILETIME_to_timespec (const FILETIME *ft);\n#else\nextern time_t _gl_convert_FILETIME_to_POSIX (const FILETIME *ft);\n#endif\n\n \nextern int _gl_fstat_by_handle (HANDLE h, const char *path, struct stat *buf);\n\n \n#define S_IREAD_UGO  (_S_IREAD | (_S_IREAD >> 3) | (_S_IREAD >> 6))\n#define S_IWRITE_UGO (_S_IWRITE | (_S_IWRITE >> 3) | (_S_IWRITE >> 6))\n#define S_IEXEC_UGO  (_S_IEXEC | (_S_IEXEC >> 3) | (_S_IEXEC >> 6))\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "efc.h",
+  "hash_id": "d85837d75838bb7caa0ddef157998276fdf1922cc0f13c1fc2ef702731aba4c3",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/scsi/elx/libefc/efc.h",
+  "human_readable_source": " \n \n\n#ifndef __EFC_H__\n#define __EFC_H__\n\n#include \"../include/efc_common.h\"\n#include \"efclib.h\"\n#include \"efc_sm.h\"\n#include \"efc_cmds.h\"\n#include \"efc_domain.h\"\n#include \"efc_nport.h\"\n#include \"efc_node.h\"\n#include \"efc_fabric.h\"\n#include \"efc_device.h\"\n#include \"efc_els.h\"\n\n#define EFC_MAX_REMOTE_NODES\t\t\t2048\n#define NODE_SPARAMS_SIZE\t\t\t256\n\nenum efc_scsi_del_initiator_reason {\n\tEFC_SCSI_INITIATOR_DELETED,\n\tEFC_SCSI_INITIATOR_MISSING,\n};\n\nenum efc_scsi_del_target_reason {\n\tEFC_SCSI_TARGET_DELETED,\n\tEFC_SCSI_TARGET_MISSING,\n};\n\n#define EFC_FC_ELS_DEFAULT_RETRIES\t\t3\n\n#define domain_sm_trace(domain) \\\n\tefc_log_debug(domain->efc, \"[domain:%s] %-20s %-20s\\n\", \\\n\t\t      domain->display_name, __func__, efc_sm_event_name(evt)) \\\n\n#define domain_trace(domain, fmt, ...) \\\n\tefc_log_debug(domain->efc, \\\n\t\t      \"[%s]\" fmt, domain->display_name, ##__VA_ARGS__) \\\n\n#define node_sm_trace() \\\n\tefc_log_debug(node->efc, \"[%s] %-20s %-20s\\n\", \\\n\t\t      node->display_name, __func__, efc_sm_event_name(evt)) \\\n\n#define nport_sm_trace(nport) \\\n\tefc_log_debug(nport->efc, \\\n\t\t\"[%s]  %-20s %-20s\\n\", nport->display_name, __func__, efc_sm_event_name(evt)) \\\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "physical_location.h",
+  "hash_id": "fce7a28e41f40620270b53762c4d52bb3d35f86d6d3f4501a1b502c464ac0451",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/base/physical_location.h",
+  "human_readable_source": " \n \n\n#include <linux/device.h>\n\n#ifdef CONFIG_ACPI\nbool dev_add_physical_location(struct device *dev);\nextern const struct attribute_group dev_attr_physical_location_group;\n#else\nstatic inline bool dev_add_physical_location(struct device *dev) { return false; };\nstatic const struct attribute_group dev_attr_physical_location_group = {};\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

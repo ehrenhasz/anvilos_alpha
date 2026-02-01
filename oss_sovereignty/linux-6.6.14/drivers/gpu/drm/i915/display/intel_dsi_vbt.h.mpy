@@ -1,0 +1,9 @@
+{
+  "module_name": "intel_dsi_vbt.h",
+  "hash_id": "56ac257636fe41e78084ba440ecf185741700b85bd64b818f544a2604befc081",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/display/intel_dsi_vbt.h",
+  "human_readable_source": " \n \n\n#ifndef __INTEL_DSI_VBT_H__\n#define __INTEL_DSI_VBT_H__\n\n#include <linux/types.h>\n\nenum mipi_seq;\nstruct intel_dsi;\n\nbool intel_dsi_vbt_init(struct intel_dsi *intel_dsi, u16 panel_id);\nvoid intel_dsi_vbt_gpio_init(struct intel_dsi *intel_dsi, bool panel_is_on);\nvoid intel_dsi_vbt_gpio_cleanup(struct intel_dsi *intel_dsi);\nvoid intel_dsi_vbt_exec_sequence(struct intel_dsi *intel_dsi,\n\t\t\t\t enum mipi_seq seq_id);\nvoid intel_dsi_log_params(struct intel_dsi *intel_dsi);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

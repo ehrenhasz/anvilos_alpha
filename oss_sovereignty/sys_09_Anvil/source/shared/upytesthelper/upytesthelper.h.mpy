@@ -1,0 +1,9 @@
+{
+  "module_name": "upytesthelper.h",
+  "hash_id": "b51cb1e1d422b2e7aa6c6097d9888c6585328e4605f05c2450976049d774ae55",
+  "original_prompt": "Ingested from sys_09_Anvil/source/shared/upytesthelper/upytesthelper.h",
+  "human_readable_source": " \n\n#include <stdbool.h>\n#include <stdio.h>\n#include \"py/mpconfig.h\"\n#include \"lib/tinytest/tinytest.h\"\n#include \"lib/tinytest/tinytest_macros.h\"\n\nvoid upytest_set_heap(void *start, void *end);\nvoid upytest_set_expected_output(const char *output, unsigned len);\nvoid upytest_execute_test(const char *src);\nvoid upytest_output(const char *str, mp_uint_t len);\nbool upytest_is_failed(void);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

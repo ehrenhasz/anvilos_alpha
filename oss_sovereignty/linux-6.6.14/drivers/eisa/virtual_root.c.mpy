@@ -1,0 +1,9 @@
+{
+  "module_name": "virtual_root.c",
+  "hash_id": "727320e99d1052dad36f0a918032e5b62449c2d26d97360481288a77f385fc39",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/eisa/virtual_root.c",
+  "human_readable_source": "\n \n\n#include <linux/kernel.h>\n#include <linux/platform_device.h>\n#include <linux/eisa.h>\n#include <linux/module.h>\n#include <linux/moduleparam.h>\n#include <linux/init.h>\n\n#if defined(CONFIG_ALPHA_JENSEN) || defined(CONFIG_EISA_VLB_PRIMING)\n#define EISA_FORCE_PROBE_DEFAULT 1\n#else\n#define EISA_FORCE_PROBE_DEFAULT 0\n#endif\n\nstatic int force_probe = EISA_FORCE_PROBE_DEFAULT;\nstatic void virtual_eisa_release (struct device *);\n\n \n\nstatic struct platform_device eisa_root_dev = {\n\t.name = \"eisa\",\n\t.id   = 0,\n\t.dev  = {\n\t\t.release = virtual_eisa_release,\n\t},\n};\n\nstatic struct eisa_root_device eisa_bus_root = {\n\t.dev\t\t= &eisa_root_dev.dev,\n\t.bus_base_addr\t= 0,\n\t.res\t\t= &ioport_resource,\n\t.slots\t\t= EISA_MAX_SLOTS,\n\t.dma_mask\t= 0xffffffff,\n};\n\nstatic void virtual_eisa_release (struct device *dev)\n{\n\t \n}\n\nstatic int __init virtual_eisa_root_init (void)\n{\n\tint r;\n\n\tif ((r = platform_device_register (&eisa_root_dev)))\n\t\treturn r;\n\n\teisa_bus_root.force_probe = force_probe;\n\n\tdev_set_drvdata(&eisa_root_dev.dev, &eisa_bus_root);\n\n\tif (eisa_root_register (&eisa_bus_root)) {\n\t\t \n\t\tplatform_device_unregister (&eisa_root_dev);\n\t\treturn -1;\n\t}\n\n\treturn 0;\n}\n\nmodule_param (force_probe, int, 0444);\n\ndevice_initcall (virtual_eisa_root_init);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

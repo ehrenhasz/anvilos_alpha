@@ -1,0 +1,9 @@
+{
+  "module_name": "inject-ra-err.c",
+  "hash_id": "7c95c4975bca634834a5bd929d49d540e280db128f5ef18900bc17cb8a4e5702",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/powerpc/mce/inject-ra-err.c",
+  "human_readable_source": "\n\n#include <errno.h>\n#include <fcntl.h>\n#include <signal.h>\n#include <stdio.h>\n#include <string.h>\n#include <sys/ioctl.h>\n#include <sys/mman.h>\n#include <sys/stat.h>\n#include <sys/types.h>\n#include <unistd.h>\n\n#include \"vas-api.h\"\n#include \"utils.h\"\n\nstatic bool faulted;\n\nstatic void sigbus_handler(int n, siginfo_t *info, void *ctxt_v)\n{\n\tucontext_t *ctxt = (ucontext_t *)ctxt_v;\n\tstruct pt_regs *regs = ctxt->uc_mcontext.regs;\n\n\tfaulted = true;\n\tregs->nip += 4;\n}\n\nstatic int test_ra_error(void)\n{\n\tstruct vas_tx_win_open_attr attr;\n\tint fd, *paste_addr;\n\tchar *devname = \"/dev/crypto/nx-gzip\";\n\tstruct sigaction act = {\n\t\t.sa_sigaction = sigbus_handler,\n\t\t.sa_flags = SA_SIGINFO,\n\t};\n\n\tmemset(&attr, 0, sizeof(attr));\n\tattr.version = 1;\n\tattr.vas_id = 0;\n\n\tSKIP_IF(access(devname, F_OK));\n\n\tfd = open(devname, O_RDWR);\n\tFAIL_IF(fd < 0);\n\tFAIL_IF(ioctl(fd, VAS_TX_WIN_OPEN, &attr) < 0);\n\tFAIL_IF(sigaction(SIGBUS, &act, NULL) != 0);\n\n\tpaste_addr = mmap(NULL, 4096, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0ULL);\n\n\t \n\tmb();\n\t*paste_addr = 1;\n\tmb();\n\n\tFAIL_IF(!faulted);\n\n\treturn 0;\n}\n\nint main(void)\n{\n\treturn test_harness(test_ra_error, \"inject-ra-err\");\n}\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

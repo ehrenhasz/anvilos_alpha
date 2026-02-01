@@ -1,0 +1,9 @@
+{
+  "module_name": "workarounds.h",
+  "hash_id": "ba9cd19689b25d7372141ab3a53530e641fcba8f5ee0b649a33d8f13d5fe4ba4",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/sfc/siena/workarounds.h",
+  "human_readable_source": " \n \n\n#ifndef EFX_WORKAROUNDS_H\n#define EFX_WORKAROUNDS_H\n\n \n\n#define EFX_WORKAROUND_SIENA(efx) (efx_nic_rev(efx) == EFX_REV_SIENA_A0)\n#define EFX_WORKAROUND_EF10(efx) (efx_nic_rev(efx) >= EFX_REV_HUNT_A0)\n#define EFX_WORKAROUND_10G(efx) 1\n\n \n#define EFX_WORKAROUND_7884 EFX_WORKAROUND_10G\n \n#define EFX_WORKAROUND_17213 EFX_WORKAROUND_SIENA\n\n \n#define EFX_EF10_WORKAROUND_61265(efx)\t\t\t\t\t\\\n\t(((struct efx_ef10_nic_data *)efx->nic_data)->workaround_61265)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

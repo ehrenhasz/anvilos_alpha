@@ -1,0 +1,9 @@
+{
+  "module_name": "dell-wmi-descriptor.h",
+  "hash_id": "0e4aad688de134dbd919ee8e498a34fbcb37194a847099c48fc53048fc083700",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/platform/x86/dell/dell-wmi-descriptor.h",
+  "human_readable_source": " \n \n\n#ifndef _DELL_WMI_DESCRIPTOR_H_\n#define _DELL_WMI_DESCRIPTOR_H_\n\n#include <linux/wmi.h>\n\n \nint dell_wmi_get_descriptor_valid(void);\n\nbool dell_wmi_get_interface_version(u32 *version);\nbool dell_wmi_get_size(u32 *size);\nbool dell_wmi_get_hotfix(u32 *hotfix);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

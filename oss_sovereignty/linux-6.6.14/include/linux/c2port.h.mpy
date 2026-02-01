@@ -1,0 +1,9 @@
+{
+  "module_name": "c2port.h",
+  "hash_id": "53a002de45cda64d41f40284b599bd0b310a21b7a047a8b2d45c2d5681691652",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/c2port.h",
+  "human_readable_source": " \n \n\n#define C2PORT_NAME_LEN\t\t\t32\n\nstruct device;\n\n \n\n \nstruct c2port_ops;\nstruct c2port_device {\n\tunsigned int access:1;\n\tunsigned int flash_access:1;\n\n\tint id;\n\tchar name[C2PORT_NAME_LEN];\n\tstruct c2port_ops *ops;\n\tstruct mutex mutex;\t\t \n\n\tstruct device *dev;\n\n\tvoid *private_data;\n};\n\n \nstruct c2port_ops {\n\t \n\tunsigned short block_size;\t \n\tunsigned short blocks_num;\t \n\n\t \n\tvoid (*access)(struct c2port_device *dev, int status);\n\n\t \n\tvoid (*c2d_dir)(struct c2port_device *dev, int dir);\n\n\t \n\tint (*c2d_get)(struct c2port_device *dev);\n\tvoid (*c2d_set)(struct c2port_device *dev, int status);\n\n\t \n\tvoid (*c2ck_set)(struct c2port_device *dev, int status);\n};\n\n \n\nextern struct c2port_device *c2port_device_register(char *name,\n\t\t\t\t\tstruct c2port_ops *ops, void *devdata);\nextern void c2port_device_unregister(struct c2port_device *dev);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

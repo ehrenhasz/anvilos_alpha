@@ -1,0 +1,9 @@
+{
+  "module_name": "posix_types.h",
+  "hash_id": "11a974b0ac7a7eee2572afff0c143487e8a25c6e185fa6d64c4b11a53afd356f",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/include/asm/posix_types.h",
+  "human_readable_source": " \n# ifdef CONFIG_X86_32\n#  include <asm/posix_types_32.h>\n# else\n#  include <asm/posix_types_64.h>\n# endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

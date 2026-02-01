@@ -1,0 +1,9 @@
+{
+  "module_name": "fiemap.h",
+  "hash_id": "a7987fbe563917dfcb8d653e8bf336bd14004f64f2df77f17fbe40b244027ba4",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/fiemap.h",
+  "human_readable_source": " \n \n\n#ifndef _UAPI_LINUX_FIEMAP_H\n#define _UAPI_LINUX_FIEMAP_H\n\n#include <linux/types.h>\n\nstruct fiemap_extent {\n\t__u64 fe_logical;   \n\t__u64 fe_physical;  \n\t__u64 fe_length;    \n\t__u64 fe_reserved64[2];\n\t__u32 fe_flags;     \n\t__u32 fe_reserved[3];\n};\n\nstruct fiemap {\n\t__u64 fm_start;\t\t \n\t__u64 fm_length;\t \n\t__u32 fm_flags;\t\t \n\t__u32 fm_mapped_extents; \n\t__u32 fm_extent_count;   \n\t__u32 fm_reserved;\n\tstruct fiemap_extent fm_extents[];  \n};\n\n#define FIEMAP_MAX_OFFSET\t(~0ULL)\n\n#define FIEMAP_FLAG_SYNC\t0x00000001  \n#define FIEMAP_FLAG_XATTR\t0x00000002  \n#define FIEMAP_FLAG_CACHE\t0x00000004  \n\n#define FIEMAP_FLAGS_COMPAT\t(FIEMAP_FLAG_SYNC | FIEMAP_FLAG_XATTR)\n\n#define FIEMAP_EXTENT_LAST\t\t0x00000001  \n#define FIEMAP_EXTENT_UNKNOWN\t\t0x00000002  \n#define FIEMAP_EXTENT_DELALLOC\t\t0x00000004  \n#define FIEMAP_EXTENT_ENCODED\t\t0x00000008  \n#define FIEMAP_EXTENT_DATA_ENCRYPTED\t0x00000080  \n#define FIEMAP_EXTENT_NOT_ALIGNED\t0x00000100  \n#define FIEMAP_EXTENT_DATA_INLINE\t0x00000200  \n#define FIEMAP_EXTENT_DATA_TAIL\t\t0x00000400  \n#define FIEMAP_EXTENT_UNWRITTEN\t\t0x00000800  \n#define FIEMAP_EXTENT_MERGED\t\t0x00001000  \n#define FIEMAP_EXTENT_SHARED\t\t0x00002000  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

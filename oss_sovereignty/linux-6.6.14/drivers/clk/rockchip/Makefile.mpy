@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "9d5da7a6eedfba9be0061f8f1622f25d9a20c5b0efc9c4e0722d00430546dda8",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/clk/rockchip/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Rockchip Clock specific Makefile\n#\n\nobj-$(CONFIG_COMMON_CLK_ROCKCHIP) += clk-rockchip.o\n\nclk-rockchip-y += clk.o\nclk-rockchip-y += clk-pll.o\nclk-rockchip-y += clk-cpu.o\nclk-rockchip-y += clk-half-divider.o\nclk-rockchip-y += clk-inverter.o\nclk-rockchip-y += clk-mmc-phase.o\nclk-rockchip-y += clk-muxgrf.o\nclk-rockchip-y += clk-ddr.o\nclk-rockchip-$(CONFIG_RESET_CONTROLLER) += softrst.o\n\nobj-$(CONFIG_CLK_PX30)          += clk-px30.o\nobj-$(CONFIG_CLK_RV110X)        += clk-rv1108.o\nobj-$(CONFIG_CLK_RV1126)        += clk-rv1126.o\nobj-$(CONFIG_CLK_RK3036)        += clk-rk3036.o\nobj-$(CONFIG_CLK_RK312X)        += clk-rk3128.o\nobj-$(CONFIG_CLK_RK3188)        += clk-rk3188.o\nobj-$(CONFIG_CLK_RK322X)        += clk-rk3228.o\nobj-$(CONFIG_CLK_RK3288)        += clk-rk3288.o\nobj-$(CONFIG_CLK_RK3308)        += clk-rk3308.o\nobj-$(CONFIG_CLK_RK3328)        += clk-rk3328.o\nobj-$(CONFIG_CLK_RK3368)        += clk-rk3368.o\nobj-$(CONFIG_CLK_RK3399)        += clk-rk3399.o\nobj-$(CONFIG_CLK_RK3568)\t+= clk-rk3568.o\nobj-$(CONFIG_CLK_RK3588)\t+= clk-rk3588.o rst-rk3588.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "ia_css_dpc2.host.c",
+  "hash_id": "c201914567814a5931943ca6b006f14b3d8ffc21c706bf318cf24e9da83f012e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/isp/kernels/dpc2/ia_css_dpc2.host.c",
+  "human_readable_source": "\n \n\n#include \"ia_css_dpc2.host.h\"\n#include \"assert_support.h\"\n\nvoid\nia_css_dpc2_encode(\n    struct ia_css_isp_dpc2_params *to,\n    const struct ia_css_dpc2_config *from,\n    size_t size)\n{\n\t(void)size;\n\n\tassert((from->metric1 >= 0) && (from->metric1 <= METRIC1_ONE_FP));\n\tassert((from->metric3 >= 0) && (from->metric3 <= METRIC3_ONE_FP));\n\tassert((from->metric2 >= METRIC2_ONE_FP) &&\n\t       (from->metric2 < 256 * METRIC2_ONE_FP));\n\tassert((from->wb_gain_gr > 0) && (from->wb_gain_gr < 16 * WBGAIN_ONE_FP));\n\tassert((from->wb_gain_r  > 0) && (from->wb_gain_r  < 16 * WBGAIN_ONE_FP));\n\tassert((from->wb_gain_b  > 0) && (from->wb_gain_b  < 16 * WBGAIN_ONE_FP));\n\tassert((from->wb_gain_gb > 0) && (from->wb_gain_gb < 16 * WBGAIN_ONE_FP));\n\n\tto->metric1 = from->metric1;\n\tto->metric2 = from->metric2;\n\tto->metric3 = from->metric3;\n\n\tto->wb_gain_gr = from->wb_gain_gr;\n\tto->wb_gain_r  = from->wb_gain_r;\n\tto->wb_gain_b  = from->wb_gain_b;\n\tto->wb_gain_gb = from->wb_gain_gb;\n}\n\n \nvoid\nia_css_init_dpc2_state(\n    void *state,\n    size_t size)\n{\n\t(void)state;\n\t(void)size;\n}\n\n#ifndef IA_CSS_NO_DEBUG\n \nvoid\nia_css_dpc2_debug_dtrace(\n    const struct ia_css_dpc2_config *config,\n    unsigned int level)\n{\n\t(void)config;\n\t(void)level;\n}\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

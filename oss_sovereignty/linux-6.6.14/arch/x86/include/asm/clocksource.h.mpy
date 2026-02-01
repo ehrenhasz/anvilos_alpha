@@ -1,0 +1,9 @@
+{
+  "module_name": "clocksource.h",
+  "hash_id": "ac1560d341cc70322b0ae52deb35626589e3d16b37503b7a107e4e1293aca01b",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/include/asm/clocksource.h",
+  "human_readable_source": " \n \n\n#ifndef _ASM_X86_CLOCKSOURCE_H\n#define _ASM_X86_CLOCKSOURCE_H\n\n#include <asm/vdso/clocksource.h>\n\nextern unsigned int vclocks_used;\n\nstatic inline bool vclock_was_used(int vclock)\n{\n\treturn READ_ONCE(vclocks_used) & (1U << vclock);\n}\n\nstatic inline void vclocks_set_used(unsigned int which)\n{\n\tWRITE_ONCE(vclocks_used, READ_ONCE(vclocks_used) | (1 << which));\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

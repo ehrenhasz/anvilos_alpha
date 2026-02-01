@@ -1,0 +1,9 @@
+{
+  "module_name": "ndlc.h",
+  "hash_id": "800b8818dc3148e519199382c4e17f42338229f987e331a1d1573e365220a91a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/nfc/st-nci/ndlc.h",
+  "human_readable_source": " \n \n\n#ifndef __LOCAL_NDLC_H_\n#define __LOCAL_NDLC_H_\n\n#include <linux/skbuff.h>\n#include <net/nfc/nfc.h>\n\nstruct st_nci_se_status;\n\n \nstruct llt_ndlc {\n\tstruct nci_dev *ndev;\n\tconst struct nfc_phy_ops *ops;\n\tvoid *phy_id;\n\n\tstruct timer_list t1_timer;\n\tbool t1_active;\n\n\tstruct timer_list t2_timer;\n\tbool t2_active;\n\n\tstruct sk_buff_head rcv_q;\n\tstruct sk_buff_head send_q;\n\tstruct sk_buff_head ack_pending_q;\n\n\tstruct work_struct sm_work;\n\n\tstruct device *dev;\n\n\t \n\tint hard_fault;\n\tint powered;\n};\n\nint ndlc_open(struct llt_ndlc *ndlc);\nvoid ndlc_close(struct llt_ndlc *ndlc);\nint ndlc_send(struct llt_ndlc *ndlc, struct sk_buff *skb);\nvoid ndlc_recv(struct llt_ndlc *ndlc, struct sk_buff *skb);\nint ndlc_probe(void *phy_id, const struct nfc_phy_ops *phy_ops,\n\t       struct device *dev, int phy_headroom, int phy_tailroom,\n\t       struct llt_ndlc **ndlc_id, struct st_nci_se_status *se_status);\nvoid ndlc_remove(struct llt_ndlc *ndlc);\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

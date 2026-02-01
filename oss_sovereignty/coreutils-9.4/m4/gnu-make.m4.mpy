@@ -1,0 +1,9 @@
+{
+  "module_name": "gnu-make.m4",
+  "hash_id": "873f6ce33712f64f8ee823320c5e6a9de1a74cab575f6e2f61c402681e556e64",
+  "original_prompt": "Ingested from coreutils-9.4/m4/gnu-make.m4",
+  "human_readable_source": "# Determine whether recent-enough GNU Make is being used.\n\n# Copyright (C) 2007, 2009-2023 Free Software Foundation, Inc.\n\n# This file is free software; the Free Software Foundation\n# gives unlimited permission to copy and/or distribute it,\n# with or without modifications, as long as this notice is preserved.\n\n# Written by Paul Eggert.\n\n# Set GNU_MAKE if we are using a recent-enough version of GNU make.\n\nAC_DEFUN([gl_GNU_MAKE],\n[\n  AM_CONDITIONAL([GNU_MAKE],\n    [LC_ALL=C ${MAKE-make} --version 2>/dev/null | sed -e '2,$d' | grep GNU >/dev/null])\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

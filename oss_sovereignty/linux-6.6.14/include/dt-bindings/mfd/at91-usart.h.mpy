@@ -1,0 +1,9 @@
+{
+  "module_name": "at91-usart.h",
+  "hash_id": "52cf1ffda9e5312b32fdd3410927da8dddf33f38041d474cad32d59de6883364",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/mfd/at91-usart.h",
+  "human_readable_source": " \n \n\n#ifndef __DT_BINDINGS_AT91_USART_H__\n#define __DT_BINDINGS_AT91_USART_H__\n\n#define AT91_USART_MODE_SERIAL\t0\n#define AT91_USART_MODE_SPI\t1\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

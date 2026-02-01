@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "d0b60cebd3f08a2f8cfb640a4320d9c3256b45526498a836e09ac5ae143dbcaf",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/platform/st/sti/c8sectpfe/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig DVB_C8SECTPFE\n\ttristate \"STMicroelectronics C8SECTPFE DVB support\"\n\tdepends on DVB_PLATFORM_DRIVERS\n\tdepends on PINCTRL && DVB_CORE && I2C\n\tdepends on ARCH_STI || ARCH_MULTIPLATFORM || COMPILE_TEST\n\tselect FW_LOADER\n\tselect DEBUG_FS\n\tselect DVB_LNBP21 if MEDIA_SUBDRV_AUTOSELECT\n\tselect DVB_STV090x if MEDIA_SUBDRV_AUTOSELECT\n\tselect DVB_STB6100 if MEDIA_SUBDRV_AUTOSELECT\n\tselect DVB_STV6110 if MEDIA_SUBDRV_AUTOSELECT\n\tselect DVB_STV0900 if MEDIA_SUBDRV_AUTOSELECT\n\tselect DVB_STV0367 if MEDIA_SUBDRV_AUTOSELECT\n\tselect MEDIA_TUNER_TDA18212 if MEDIA_SUBDRV_AUTOSELECT\n\n\thelp\n\t  This adds support for DVB front-end cards connected\n\t  to TS inputs of STiH407/410 SoC.\n\n\t  The driver currently supports C8SECTPFE's TS input block,\n\t  memdma engine, and HW PID filtering.\n\n\t  Supported DVB front-end cards are:\n\t  - STMicroelectronics DVB-T B2100A (STV0367 + TDA18212)\n\t  - STMicroelectronics DVB-S/S2 STV0903 + STV6110 + LNBP24 board\n\n\t  To compile this driver as a module, choose M here: the\n\t  module will be called c8sectpfe.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

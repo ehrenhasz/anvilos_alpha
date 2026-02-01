@@ -1,0 +1,9 @@
+{
+  "module_name": "i915-tgl-skips.txt",
+  "hash_id": "ebcf5fe32eae304a27c518b132ed351ccb958d0225f0f35045eac36b4c0f7add",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/ci/xfails/i915-tgl-skips.txt",
+  "human_readable_source": "# Suspend to RAM seems to be broken on this machine\n.*suspend.*\n\n# GPU hangs, then the whole machine\ngem_eio.*\n\n# Whole machine hangs\nkms_flip@absolute-wf_vblank@a-edp1\n\n# This is generating kernel oops with divide error\nkms_plane_scaling@invalid-parameters",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

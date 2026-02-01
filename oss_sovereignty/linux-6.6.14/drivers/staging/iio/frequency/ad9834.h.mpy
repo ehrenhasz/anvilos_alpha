@@ -1,0 +1,9 @@
+{
+  "module_name": "ad9834.h",
+  "hash_id": "007fa6d873d734a103fe1b069d693fb517724f759a732aecf02804ce40a0c797",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/iio/frequency/ad9834.h",
+  "human_readable_source": " \n \n#ifndef IIO_DDS_AD9834_H_\n#define IIO_DDS_AD9834_H_\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

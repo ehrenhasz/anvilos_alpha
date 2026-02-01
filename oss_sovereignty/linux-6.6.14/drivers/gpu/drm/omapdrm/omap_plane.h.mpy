@@ -1,0 +1,9 @@
+{
+  "module_name": "omap_plane.h",
+  "hash_id": "422b8d31f38c89ac0eb999fe3150e8095b32188454df19193764995abbfcd429",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/omapdrm/omap_plane.h",
+  "human_readable_source": " \n \n\n#ifndef __OMAPDRM_PLANE_H__\n#define __OMAPDRM_PLANE_H__\n\n#include <linux/types.h>\n\nenum drm_plane_type;\n\nstruct drm_device;\nstruct drm_mode_object;\nstruct drm_plane;\n\nstruct drm_plane *omap_plane_init(struct drm_device *dev,\n\t\tint idx, enum drm_plane_type type,\n\t\tu32 possible_crtcs);\nvoid omap_plane_install_properties(struct drm_plane *plane,\n\t\tstruct drm_mode_object *obj);\nbool is_omap_plane_dual_overlay(struct drm_plane_state *state);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

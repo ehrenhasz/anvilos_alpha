@@ -1,0 +1,9 @@
+{
+  "module_name": "ssh2putty.sh",
+  "hash_id": "e74c8fe69d7653819f98fe80ee644013e6036063959c6329b609c1bdd8a863ce",
+  "original_prompt": "Ingested from openssh-9.6p1/regress/ssh2putty.sh",
+  "human_readable_source": "#!/bin/sh\n#\t$OpenBSD: ssh2putty.sh,v 1.9 2021/07/25 12:13:03 dtucker Exp $\n\nif test \"x$1\" = \"x\" -o \"x$2\" = \"x\" -o \"x$3\" = \"x\" ; then\n\techo \"Usage: ssh2putty hostname port ssh-private-key\"\n\texit 1\nfi\n\nHOST=$1\nPORT=$2\nKEYFILE=$3\n\nOPENSSL_BIN=\"${OPENSSL_BIN:-openssl}\"\n\n# XXX - support DSA keys too\nif grep \"BEGIN RSA PRIVATE KEY\" $KEYFILE >/dev/null 2>&1 ; then\n\t:\nelse\n\techo \"Unsupported private key format\"\n\texit 1\nfi\n\npublic_exponent=`\n\t$OPENSSL_BIN rsa -noout -text -in $KEYFILE | grep ^publicExponent |\n\tsed 's/.*(//;s/).*//'\n`\ntest $? -ne 0 && exit 1\n\nmodulus=`\n\t$OPENSSL_BIN rsa -noout -modulus -in $KEYFILE | grep ^Modulus= |\n\tsed 's/^Modulus=/0x/' | tr A-Z a-z\n`\ntest $? -ne 0 && exit 1\n\necho \"rsa2@$PORT:$HOST $public_exponent,$modulus\"\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

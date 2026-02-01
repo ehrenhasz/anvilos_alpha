@@ -1,0 +1,9 @@
+{
+  "module_name": "lib_hline.c",
+  "hash_id": "fc660ba5282857465986926748d8d2c3406fed6b03c78fc1512bf098cd971c0e",
+  "original_prompt": "Ingested from ncurses-6.4/ncurses/base/lib_hline.c",
+  "human_readable_source": " \n\n \n\n \n\n#include <curses.priv.h>\n\nMODULE_ID(\"$Id: lib_hline.c,v 1.16 2020/02/02 23:34:34 tom Exp $\")\n\nNCURSES_EXPORT(int)\nwhline(WINDOW *win, chtype ch, int n)\n{\n    int code = ERR;\n\n    T((T_CALLED(\"whline(%p,%s,%d)\"), (void *) win, _tracechtype(ch), n));\n\n    if (win) {\n\tstruct ldat *line = &(win->_line[win->_cury]);\n\tNCURSES_CH_T wch;\n\tint start = win->_curx;\n\tint end = start + n - 1;\n\n\tif (end > win->_maxx)\n\t    end = win->_maxx;\n\n\tCHANGED_RANGE(line, start, end);\n\n\tif (ch == 0)\n\t    SetChar2(wch, ACS_HLINE);\n\telse\n\t    SetChar2(wch, ch);\n\twch = _nc_render(win, wch);\n\n#if USE_WIDEC_SUPPORT\n\tif (start > 0 && isWidecExt(line->text[start])) {\n\t    SetChar2(line->text[start - 1], ' ');\n\t}\n\tif (end < win->_maxx && isWidecExt(line->text[end + 1])) {\n\t    SetChar2(line->text[end + 1], ' ');\n\t}\n#endif\n\twhile (end >= start) {\n\t    line->text[end] = wch;\n\t    end--;\n\t}\n\n\t_nc_synchook(win);\n\tcode = OK;\n    }\n    returnCode(code);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

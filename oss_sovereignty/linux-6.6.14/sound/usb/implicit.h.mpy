@@ -1,0 +1,9 @@
+{
+  "module_name": "implicit.h",
+  "hash_id": "b75660253c9e3530e02669a50abdcbada232cf9e446442e841718fdc73f363a2",
+  "original_prompt": "Ingested from linux-6.6.14/sound/usb/implicit.h",
+  "human_readable_source": "\n#ifndef __USBAUDIO_IMPLICIT_H\n#define __USBAUDIO_IMPLICIT_H\n\nint snd_usb_parse_implicit_fb_quirk(struct snd_usb_audio *chip,\n\t\t\t\t    struct audioformat *fmt,\n\t\t\t\t    struct usb_host_interface *alts);\nconst struct audioformat *\nsnd_usb_find_implicit_fb_sync_format(struct snd_usb_audio *chip,\n\t\t\t\t     const struct audioformat *target,\n\t\t\t\t     const struct snd_pcm_hw_params *params,\n\t\t\t\t     int stream, bool *fixed_rate);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

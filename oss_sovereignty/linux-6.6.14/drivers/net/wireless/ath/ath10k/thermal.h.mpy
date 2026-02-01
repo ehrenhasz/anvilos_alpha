@@ -1,0 +1,9 @@
+{
+  "module_name": "thermal.h",
+  "hash_id": "ae2330e078e5a5754b6e86c89c2b9e2719e5b77f038db0f388710d53792b97cb",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/ath/ath10k/thermal.h",
+  "human_readable_source": " \n \n#ifndef _THERMAL_\n#define _THERMAL_\n\n#define ATH10K_QUIET_PERIOD_DEFAULT     100\n#define ATH10K_QUIET_PERIOD_MIN         25\n#define ATH10K_QUIET_START_OFFSET       10\n#define ATH10K_HWMON_NAME_LEN           15\n#define ATH10K_THERMAL_SYNC_TIMEOUT_HZ (5 * HZ)\n#define ATH10K_THERMAL_THROTTLE_MAX     100\n\nstruct ath10k_thermal {\n\tstruct thermal_cooling_device *cdev;\n\tstruct completion wmi_sync;\n\n\t \n\tu32 throttle_state;\n\tu32 quiet_period;\n\t \n\tint temperature;\n};\n\n#if IS_REACHABLE(CONFIG_THERMAL)\nint ath10k_thermal_register(struct ath10k *ar);\nvoid ath10k_thermal_unregister(struct ath10k *ar);\nvoid ath10k_thermal_event_temperature(struct ath10k *ar, int temperature);\nvoid ath10k_thermal_set_throttling(struct ath10k *ar);\n#else\nstatic inline int ath10k_thermal_register(struct ath10k *ar)\n{\n\treturn 0;\n}\n\nstatic inline void ath10k_thermal_unregister(struct ath10k *ar)\n{\n}\n\nstatic inline void ath10k_thermal_event_temperature(struct ath10k *ar,\n\t\t\t\t\t\t    int temperature)\n{\n}\n\nstatic inline void ath10k_thermal_set_throttling(struct ath10k *ar)\n{\n}\n\n#endif\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

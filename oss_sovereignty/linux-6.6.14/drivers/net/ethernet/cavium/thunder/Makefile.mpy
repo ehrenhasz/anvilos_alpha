@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "3d79d599588954a0b1cf91f618d9ab4e390b2f5b5f2d9e9e17992b547b41f070",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/cavium/thunder/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for Cavium's Thunder ethernet device\n#\n\nobj-$(CONFIG_THUNDER_NIC_RGX) += thunder_xcv.o\nobj-$(CONFIG_THUNDER_NIC_BGX) += thunder_bgx.o\nobj-$(CONFIG_THUNDER_NIC_PF) += nicpf.o\nobj-$(CONFIG_THUNDER_NIC_VF) += nicvf.o\n\nnicpf-y := nic_main.o\nnicvf-y := nicvf_main.o nicvf_queues.o\nnicvf-y += nicvf_ethtool.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

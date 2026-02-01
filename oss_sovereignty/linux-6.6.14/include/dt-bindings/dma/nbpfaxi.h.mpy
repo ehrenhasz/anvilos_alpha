@@ -1,0 +1,9 @@
+{
+  "module_name": "nbpfaxi.h",
+  "hash_id": "933dc0ca18e73abee3de4949e8561d1b415bd6712e89036bd318d36602c79a65",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/dma/nbpfaxi.h",
+  "human_readable_source": " \n \n\n#ifndef DT_BINDINGS_NBPFAXI_H\n#define DT_BINDINGS_NBPFAXI_H\n\n \n#define NBPF_SLAVE_RQ_HIGH\t1\n#define NBPF_SLAVE_RQ_LOW\t2\n#define NBPF_SLAVE_RQ_LEVEL\t4\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

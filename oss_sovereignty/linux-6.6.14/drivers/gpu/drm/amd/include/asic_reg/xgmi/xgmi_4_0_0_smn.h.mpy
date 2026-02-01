@@ -1,0 +1,9 @@
+{
+  "module_name": "xgmi_4_0_0_smn.h",
+  "hash_id": "bed3ce1376a39fed7755c3b4c2f2d971adb8e5d1c906369c50f6a4cfb05ead24",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/include/asic_reg/xgmi/xgmi_4_0_0_smn.h",
+  "human_readable_source": " \n\n#ifndef _xgmi_4_0_0_SMN_HEADER\n#define _xgmi_4_0_0_SMN_HEADER\n\n#define\tsmnXGMI0_PCS_GOPX16_PCS_ERROR_STATUS\t\t\t\t0x11af0210\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

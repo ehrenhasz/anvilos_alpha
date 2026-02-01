@@ -1,0 +1,9 @@
+{
+  "module_name": "sock_diag.h",
+  "hash_id": "8c70e9cd46bda33c7247122178e530d589a19991f39961594e5bb5524949424b",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/sock_diag.h",
+  "human_readable_source": " \n#ifndef _UAPI__SOCK_DIAG_H__\n#define _UAPI__SOCK_DIAG_H__\n\n#include <linux/types.h>\n\n#define SOCK_DIAG_BY_FAMILY 20\n#define SOCK_DESTROY 21\n\nstruct sock_diag_req {\n\t__u8\tsdiag_family;\n\t__u8\tsdiag_protocol;\n};\n\nenum {\n\tSK_MEMINFO_RMEM_ALLOC,\n\tSK_MEMINFO_RCVBUF,\n\tSK_MEMINFO_WMEM_ALLOC,\n\tSK_MEMINFO_SNDBUF,\n\tSK_MEMINFO_FWD_ALLOC,\n\tSK_MEMINFO_WMEM_QUEUED,\n\tSK_MEMINFO_OPTMEM,\n\tSK_MEMINFO_BACKLOG,\n\tSK_MEMINFO_DROPS,\n\n\tSK_MEMINFO_VARS,\n};\n\nenum sknetlink_groups {\n\tSKNLGRP_NONE,\n\tSKNLGRP_INET_TCP_DESTROY,\n\tSKNLGRP_INET_UDP_DESTROY,\n\tSKNLGRP_INET6_TCP_DESTROY,\n\tSKNLGRP_INET6_UDP_DESTROY,\n\t__SKNLGRP_MAX,\n};\n#define SKNLGRP_MAX\t(__SKNLGRP_MAX - 1)\n\nenum {\n\tSK_DIAG_BPF_STORAGE_REQ_NONE,\n\tSK_DIAG_BPF_STORAGE_REQ_MAP_FD,\n\t__SK_DIAG_BPF_STORAGE_REQ_MAX,\n};\n\n#define SK_DIAG_BPF_STORAGE_REQ_MAX\t(__SK_DIAG_BPF_STORAGE_REQ_MAX - 1)\n\nenum {\n\tSK_DIAG_BPF_STORAGE_REP_NONE,\n\tSK_DIAG_BPF_STORAGE,\n\t__SK_DIAG_BPF_STORAGE_REP_MAX,\n};\n\n#define SK_DIAB_BPF_STORAGE_REP_MAX\t(__SK_DIAG_BPF_STORAGE_REP_MAX - 1)\n\nenum {\n\tSK_DIAG_BPF_STORAGE_NONE,\n\tSK_DIAG_BPF_STORAGE_PAD,\n\tSK_DIAG_BPF_STORAGE_MAP_ID,\n\tSK_DIAG_BPF_STORAGE_MAP_VALUE,\n\t__SK_DIAG_BPF_STORAGE_MAX,\n};\n\n#define SK_DIAG_BPF_STORAGE_MAX        (__SK_DIAG_BPF_STORAGE_MAX - 1)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

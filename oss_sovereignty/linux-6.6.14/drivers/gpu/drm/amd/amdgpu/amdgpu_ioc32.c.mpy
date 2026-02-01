@@ -1,0 +1,9 @@
+{
+  "module_name": "amdgpu_ioc32.c",
+  "hash_id": "83882e344537735b24f4dfa10ed3ed8a1a12528f84e9ff3271ecd84cbdb67983",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/amdgpu/amdgpu_ioc32.c",
+  "human_readable_source": " \n#include <linux/compat.h>\n\n#include <drm/amdgpu_drm.h>\n#include <drm/drm_ioctl.h>\n\n#include \"amdgpu_drv.h\"\n\nlong amdgpu_kms_compat_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)\n{\n\tunsigned int nr = DRM_IOCTL_NR(cmd);\n\n\tif (nr < DRM_COMMAND_BASE)\n\t\treturn drm_compat_ioctl(filp, cmd, arg);\n\n\treturn amdgpu_drm_ioctl(filp, cmd, arg);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

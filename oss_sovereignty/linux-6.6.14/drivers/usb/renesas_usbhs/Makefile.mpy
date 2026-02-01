@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "0e3e5033df174c921ee60f39f78a84547811f50304224fd53657ff1e6353da9e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/usb/renesas_usbhs/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# for Renesas USB\n#\n\nobj-$(CONFIG_USB_RENESAS_USBHS)\t+= renesas_usbhs.o\n\nrenesas_usbhs-y\t\t\t:= common.o mod.o pipe.o fifo.o rcar2.o rcar3.o rza.o rza2.o\n\nifneq ($(CONFIG_USB_RENESAS_USBHS_HCD),)\n\trenesas_usbhs-y\t\t+= mod_host.o\nendif\n\nifneq ($(CONFIG_USB_RENESAS_USBHS_UDC),)\n\trenesas_usbhs-y\t\t+= mod_gadget.o\nendif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

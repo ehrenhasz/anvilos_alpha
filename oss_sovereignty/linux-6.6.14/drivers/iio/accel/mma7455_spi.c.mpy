@@ -1,0 +1,9 @@
+{
+  "module_name": "mma7455_spi.c",
+  "hash_id": "f5307d986edd651c5dde72fcf5e28dc6585671b8d626e6527d2f28e834f7ce3b",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/iio/accel/mma7455_spi.c",
+  "human_readable_source": "\n \n\n#include <linux/module.h>\n#include <linux/regmap.h>\n#include <linux/spi/spi.h>\n\n#include \"mma7455.h\"\n\nstatic int mma7455_spi_probe(struct spi_device *spi)\n{\n\tconst struct spi_device_id *id = spi_get_device_id(spi);\n\tstruct regmap *regmap;\n\n\tregmap = devm_regmap_init_spi(spi, &mma7455_core_regmap);\n\tif (IS_ERR(regmap))\n\t\treturn PTR_ERR(regmap);\n\n\treturn mma7455_core_probe(&spi->dev, regmap, id->name);\n}\n\nstatic void mma7455_spi_remove(struct spi_device *spi)\n{\n\tmma7455_core_remove(&spi->dev);\n}\n\nstatic const struct spi_device_id mma7455_spi_ids[] = {\n\t{ \"mma7455\", 0 },\n\t{ \"mma7456\", 0 },\n\t{ }\n};\nMODULE_DEVICE_TABLE(spi, mma7455_spi_ids);\n\nstatic struct spi_driver mma7455_spi_driver = {\n\t.probe = mma7455_spi_probe,\n\t.remove = mma7455_spi_remove,\n\t.id_table = mma7455_spi_ids,\n\t.driver = {\n\t\t.name = \"mma7455-spi\",\n\t},\n};\nmodule_spi_driver(mma7455_spi_driver);\n\nMODULE_AUTHOR(\"Joachim Eastwood <manabian@gmail.com>\");\nMODULE_DESCRIPTION(\"Freescale MMA7455L SPI accelerometer driver\");\nMODULE_LICENSE(\"GPL v2\");\nMODULE_IMPORT_NS(IIO_MMA7455);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

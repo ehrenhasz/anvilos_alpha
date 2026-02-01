@@ -1,0 +1,9 @@
+{
+  "module_name": "mem_32.c",
+  "hash_id": "828858f6deb2aa6cd393119607f206e45d8eec8d02facf08c6b6039b695021bc",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/um/mem_32.c",
+  "human_readable_source": "\n \n\n#include <linux/mm.h>\n#include <asm/elf.h>\n\nstatic struct vm_area_struct gate_vma;\n\nstatic int __init gate_vma_init(void)\n{\n\tif (!FIXADDR_USER_START)\n\t\treturn 0;\n\n\tvma_init(&gate_vma, NULL);\n\tgate_vma.vm_start = FIXADDR_USER_START;\n\tgate_vma.vm_end = FIXADDR_USER_END;\n\tvm_flags_init(&gate_vma, VM_READ | VM_MAYREAD | VM_EXEC | VM_MAYEXEC);\n\tgate_vma.vm_page_prot = PAGE_READONLY;\n\n\treturn 0;\n}\n__initcall(gate_vma_init);\n\nstruct vm_area_struct *get_gate_vma(struct mm_struct *mm)\n{\n\treturn FIXADDR_USER_START ? &gate_vma : NULL;\n}\n\nint in_gate_area_no_mm(unsigned long addr)\n{\n\tif (!FIXADDR_USER_START)\n\t\treturn 0;\n\n\tif ((addr >= FIXADDR_USER_START) && (addr < FIXADDR_USER_END))\n\t\treturn 1;\n\n\treturn 0;\n}\n\nint in_gate_area(struct mm_struct *mm, unsigned long addr)\n{\n\tstruct vm_area_struct *vma = get_gate_vma(mm);\n\n\tif (!vma)\n\t\treturn 0;\n\n\treturn (addr >= vma->vm_start) && (addr < vma->vm_end);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

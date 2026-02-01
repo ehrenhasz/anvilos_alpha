@@ -1,0 +1,9 @@
+{
+  "module_name": "kernel-set-nlink.m4",
+  "hash_id": "909e538421d406b72a6629125511c8bd21bb49d134ad26eca5fe27faafb5f2a9",
+  "original_prompt": "Ingested from zfs-2.2.2/config/kernel-set-nlink.m4",
+  "human_readable_source": "dnl #\ndnl # Linux 3.2 API change\ndnl # set_nlink()\ndnl #\nAC_DEFUN([ZFS_AC_KERNEL_SRC_SET_NLINK], [\n\tZFS_LINUX_TEST_SRC([set_nlink], [\n\t\t#include <linux/fs.h>\n\t],[\n\t\tstruct inode node;\n\t\tunsigned int link = 0;\n\t\t(void) set_nlink(&node, link);\n\t])\n])\n\nAC_DEFUN([ZFS_AC_KERNEL_SET_NLINK], [\n\tAC_MSG_CHECKING([whether set_nlink() is available])\n\tZFS_LINUX_TEST_RESULT([set_nlink], [\n\t\tAC_MSG_RESULT(yes)\n\t],[\n\t\tZFS_LINUX_TEST_ERROR([set_nlink()])\n\t])\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

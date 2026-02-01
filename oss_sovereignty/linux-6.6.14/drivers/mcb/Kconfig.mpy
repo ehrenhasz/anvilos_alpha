@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "0bf4123c225f57563d88073fb6cbc0f31f92c2133792f792cce90cdfad7ef179",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/mcb/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# MEN Chameleon Bus (MCB) support\n#\n\nmenuconfig MCB\n\t   tristate \"MCB support\"\n\t   default n\n\t   depends on HAS_IOMEM\n\t   help\n\n\t   The MCB (MEN Chameleon Bus) is a Bus specific to MEN Mikroelektronik\n\t   FPGA based devices. It is used to identify MCB based IP-Cores within\n\t   an FPGA and provide the necessary framework for instantiating drivers\n\t   for these devices.\n\n\t   If build as a module, the module is called mcb.ko\n\nif MCB\nconfig MCB_PCI\n\t   tristate \"PCI based MCB carrier\"\n\t   default n\n\t   depends on PCI\n\t   help\n\n\t   This is a MCB carrier on a PCI device. Both PCI attached on-board\n\t   FPGAs as well as CompactPCI attached MCB FPGAs are supported with\n\t   this driver.\n\n\t   If build as a module, the module is called mcb-pci.ko\n\nconfig MCB_LPC\n\t   tristate \"LPC (non PCI) based MCB carrier\"\n\t   default n\n\t   help\n\n\t   This is a MCB carrier on a LPC or non PCI device.\n\n\t   If build as a module, the module is called mcb-lpc.ko\n\nendif # MCB\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

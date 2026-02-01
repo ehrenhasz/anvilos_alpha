@@ -1,0 +1,9 @@
+{
+  "module_name": "isys_dma_rmgr.h",
+  "hash_id": "a99adc0be554588a31e8ef7bf186ee57df255ed2a84d028704230a68a4fb048c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/runtime/isys/src/isys_dma_rmgr.h",
+  "human_readable_source": " \n \n\n#ifndef __ISYS_DMA_RMGR_H_INCLUDED__\n#define __ISYS_DMA_RMGR_H_INCLUDED__\n\ntypedef struct isys_dma_rsrc_s\tisys_dma_rsrc_t;\nstruct isys_dma_rsrc_s {\n\tu32 active_table;\n\tu16 num_active;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

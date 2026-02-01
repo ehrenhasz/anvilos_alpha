@@ -1,0 +1,9 @@
+{
+  "module_name": "rtl8712_cmdctrl_regdef.h",
+  "hash_id": "9fd1dcb0e2897f106f7808ece4293403745b303aa54f9f3497c4473e4fe7b97d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/rtl8712/rtl8712_cmdctrl_regdef.h",
+  "human_readable_source": " \n \n#ifndef __RTL8712_CMDCTRL_REGDEF_H__\n#define __RTL8712_CMDCTRL_REGDEF_H__\n\n#define CR\t\t\t(RTL8712_CMDCTRL_ + 0x0000)\n#define TXPAUSE\t\t\t(RTL8712_CMDCTRL_ + 0x0002)\n#define TCR\t\t\t(RTL8712_CMDCTRL_ + 0x0004)\n#define RCR\t\t\t(RTL8712_CMDCTRL_ + 0x0008)\n#define MSR\t\t\t(RTL8712_CMDCTRL_ + 0x000C)\n#define SYSF_CFG\t\t(RTL8712_CMDCTRL_ + 0x000D)\n#define MBIDCTRL\t\t(RTL8712_CMDCTRL_ + 0x000E)\n\n#endif  \n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

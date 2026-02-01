@@ -1,0 +1,9 @@
+{
+  "module_name": "xrs700x.h",
+  "hash_id": "b263777cfc909b99586ea31f060b9868646318676166b10a1e525e063406100c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/dsa/xrs700x/xrs700x.h",
+  "human_readable_source": " \n#include <linux/device.h>\n#include <linux/mutex.h>\n#include <linux/regmap.h>\n#include <linux/workqueue.h>\n#include <linux/u64_stats_sync.h>\n#include <uapi/linux/if_link.h>\n\nstruct xrs700x_info {\n\tunsigned int id;\n\tconst char *name;\n\tsize_t num_ports;\n};\n\nextern const struct xrs700x_info xrs7003e_info;\nextern const struct xrs700x_info xrs7003f_info;\nextern const struct xrs700x_info xrs7004e_info;\nextern const struct xrs700x_info xrs7004f_info;\n\nstruct xrs700x_port {\n\tstruct mutex mib_mutex;  \n\tu64 *mib_data;\n\tstruct rtnl_link_stats64 stats64;\n\tstruct u64_stats_sync syncp;\n};\n\nstruct xrs700x {\n\tstruct dsa_switch *ds;\n\tstruct device *dev;\n\tvoid *priv;\n\tstruct regmap *regmap;\n\tstruct regmap_field *ps_forward;\n\tstruct regmap_field *ps_management;\n\tstruct regmap_field *ps_sel_speed;\n\tstruct regmap_field *ps_cur_speed;\n\tstruct delayed_work mib_work;\n\tstruct xrs700x_port *ports;\n};\n\nstruct xrs700x *xrs700x_switch_alloc(struct device *base, void *devpriv);\nint xrs700x_switch_register(struct xrs700x *priv);\nvoid xrs700x_switch_remove(struct xrs700x *priv);\nvoid xrs700x_switch_shutdown(struct xrs700x *priv);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "b2fc35b528bd4fe17a98d672a32cb3e0d20b8725d348c7e1f8792c2ca939c2ec",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/cec/usb/rainshadow/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-$(CONFIG_USB_RAINSHADOW_CEC) += rainshadow-cec.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "clk_11_0_1_offset.h",
+  "hash_id": "e6036946ebcb7e6e2b6d61e75c144c3552747691c5bdbb5a6b8b6679da728282",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/include/asic_reg/clk/clk_11_0_1_offset.h",
+  "human_readable_source": " \n\n\n#ifndef _clk_11_0_1_OFFSET_HEADER\n#define _clk_11_0_1_OFFSET_HEADER\n\n#define mmCLK4_0_CLK4_CLK_PLL_REQ                                                                      0x460e\n#define mmCLK4_0_CLK4_CLK_PLL_REQ_BASE_IDX                                                             0\n\n#define mmCLK4_0_CLK4_CLK2_CURRENT_CNT                                                                 0x467f\n#define mmCLK4_0_CLK4_CLK2_CURRENT_CNT_BASE_IDX                                                        0\n\n#endif",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

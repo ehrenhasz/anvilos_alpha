@@ -1,0 +1,9 @@
+{
+  "module_name": "cx24113.h",
+  "hash_id": "30700cdf425935953ded46dc4cfffeeb6768f85b92c64c2bedd8d1a597db907a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/dvb-frontends/cx24113.h",
+  "human_readable_source": " \n \n\n#ifndef CX24113_H\n#define CX24113_H\n\nstruct dvb_frontend;\n\nstruct cx24113_config {\n\tu8 i2c_addr;  \n\n\tu32 xtal_khz;\n};\n\n#if IS_REACHABLE(CONFIG_DVB_TUNER_CX24113)\nextern struct dvb_frontend *cx24113_attach(struct dvb_frontend *,\n\tconst struct cx24113_config *config, struct i2c_adapter *i2c);\n\nextern void cx24113_agc_callback(struct dvb_frontend *fe);\n#else\nstatic inline struct dvb_frontend *cx24113_attach(struct dvb_frontend *fe,\n\tconst struct cx24113_config *config, struct i2c_adapter *i2c)\n{\n\tprintk(KERN_WARNING \"%s: driver disabled by Kconfig\\n\", __func__);\n\treturn NULL;\n}\n\nstatic inline void cx24113_agc_callback(struct dvb_frontend *fe)\n{\n\tprintk(KERN_WARNING \"%s: driver disabled by Kconfig\\n\", __func__);\n}\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

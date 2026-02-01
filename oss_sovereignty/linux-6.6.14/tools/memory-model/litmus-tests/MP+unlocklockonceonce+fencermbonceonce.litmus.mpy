@@ -1,0 +1,9 @@
+{
+  "module_name": "MP+unlocklockonceonce+fencermbonceonce.litmus",
+  "hash_id": "464d1c2bad528e18a0f16f19162ae7ba3cf2c59489ebeb96d2f3f54eaf1da7ed",
+  "original_prompt": "Ingested from linux-6.6.14/tools/memory-model/litmus-tests/MP+unlocklockonceonce+fencermbonceonce.litmus",
+  "human_readable_source": "C MP+unlocklockonceonce+fencermbonceonce\n\n(*\n * Result: Never\n *\n * If two locked critical sections execute on the same CPU, stores in the\n * first must propagate to each CPU before stores in the second do, even if\n * the critical sections are protected by different locks.\n *)\n\n{}\n\nP0(spinlock_t *s, spinlock_t *t, int *x, int *y)\n{\n\tspin_lock(s);\n\tWRITE_ONCE(*x, 1);\n\tspin_unlock(s);\n\tspin_lock(t);\n\tWRITE_ONCE(*y, 1);\n\tspin_unlock(t);\n}\n\nP1(int *x, int *y)\n{\n\tint r1;\n\tint r2;\n\n\tr1 = READ_ONCE(*y);\n\tsmp_rmb();\n\tr2 = READ_ONCE(*x);\n}\n\nexists (1:r1=1 /\\ 1:r2=0)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

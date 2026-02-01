@@ -1,0 +1,9 @@
+{
+  "module_name": "intel_guc_ads.h",
+  "hash_id": "90e8f059d060051544f698d44f900fb5c77e9db06f0d580bec599ff239edafd5",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/gt/uc/intel_guc_ads.h",
+  "human_readable_source": " \n \n\n#ifndef _INTEL_GUC_ADS_H_\n#define _INTEL_GUC_ADS_H_\n\n#include <linux/types.h>\n#include <linux/iosys-map.h>\n\nstruct intel_guc;\nstruct drm_printer;\nstruct intel_engine_cs;\n\nint intel_guc_ads_create(struct intel_guc *guc);\nvoid intel_guc_ads_destroy(struct intel_guc *guc);\nvoid intel_guc_ads_init_late(struct intel_guc *guc);\nvoid intel_guc_ads_reset(struct intel_guc *guc);\nvoid intel_guc_ads_print_policy_info(struct intel_guc *guc,\n\t\t\t\t     struct drm_printer *p);\nstruct iosys_map intel_guc_engine_usage_record_map(struct intel_engine_cs *engine);\nu32 intel_guc_engine_usage_offset(struct intel_guc *guc);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

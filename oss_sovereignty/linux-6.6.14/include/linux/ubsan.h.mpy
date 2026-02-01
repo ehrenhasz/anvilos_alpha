@@ -1,0 +1,9 @@
+{
+  "module_name": "ubsan.h",
+  "hash_id": "e5c23902aa9ebfbb4bb9b8f4fa86943c6480f1fff70e17a8c594ddefad79cea0",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/ubsan.h",
+  "human_readable_source": " \n#ifndef _LINUX_UBSAN_H\n#define _LINUX_UBSAN_H\n\n#ifdef CONFIG_UBSAN_TRAP\nconst char *report_ubsan_failure(struct pt_regs *regs, u32 check_type);\n#endif\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

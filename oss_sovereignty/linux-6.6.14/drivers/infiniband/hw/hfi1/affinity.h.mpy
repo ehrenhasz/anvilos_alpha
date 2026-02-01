@@ -1,0 +1,9 @@
+{
+  "module_name": "affinity.h",
+  "hash_id": "df59ba419f844fe0fbcefade58abeb63511278dd268b21be3f41ccc532489d17",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/infiniband/hw/hfi1/affinity.h",
+  "human_readable_source": " \n \n\n#ifndef _HFI1_AFFINITY_H\n#define _HFI1_AFFINITY_H\n\n#include \"hfi.h\"\n\nenum irq_type {\n\tIRQ_SDMA,\n\tIRQ_RCVCTXT,\n\tIRQ_NETDEVCTXT,\n\tIRQ_GENERAL,\n\tIRQ_OTHER\n};\n\n \nenum affinity_flags {\n\tAFF_AUTO,\n\tAFF_NUMA_LOCAL,\n\tAFF_DEV_LOCAL,\n\tAFF_IRQ_LOCAL\n};\n\nstruct cpu_mask_set {\n\tstruct cpumask mask;\n\tstruct cpumask used;\n\tuint gen;\n};\n\nstruct hfi1_msix_entry;\n\n \nvoid init_real_cpu_mask(void);\n \nint hfi1_dev_affinity_init(struct hfi1_devdata *dd);\n \nint hfi1_get_irq_affinity(struct hfi1_devdata *dd,\n\t\t\t  struct hfi1_msix_entry *msix);\n \nvoid hfi1_put_irq_affinity(struct hfi1_devdata *dd,\n\t\t\t   struct hfi1_msix_entry *msix);\n \nint hfi1_get_proc_affinity(int node);\n \nvoid hfi1_put_proc_affinity(int cpu);\n\nstruct hfi1_affinity_node {\n\tint node;\n\tu16 __percpu *comp_vect_affinity;\n\tstruct cpu_mask_set def_intr;\n\tstruct cpu_mask_set rcv_intr;\n\tstruct cpumask general_intr_mask;\n\tstruct cpumask comp_vect_mask;\n\tstruct list_head list;\n};\n\nstruct hfi1_affinity_node_list {\n\tstruct list_head list;\n\tstruct cpumask real_cpu_mask;\n\tstruct cpu_mask_set proc;\n\tint num_core_siblings;\n\tint num_possible_nodes;\n\tint num_online_nodes;\n\tint num_online_cpus;\n\tstruct mutex lock;  \n};\n\nint node_affinity_init(void);\nvoid node_affinity_destroy_all(void);\nextern struct hfi1_affinity_node_list node_affinity;\nvoid hfi1_dev_affinity_clean_up(struct hfi1_devdata *dd);\nint hfi1_comp_vect_mappings_lookup(struct rvt_dev_info *rdi, int comp_vect);\nint hfi1_comp_vectors_set_up(struct hfi1_devdata *dd);\nvoid hfi1_comp_vectors_clean_up(struct hfi1_devdata *dd);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

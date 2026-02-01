@@ -1,0 +1,9 @@
+{
+  "module_name": "unistd_32.h",
+  "hash_id": "f179ef95aee4e4da6d7cad4b3ac0f9aeafdef44510dc702bcc6a6a302a5672d9",
+  "original_prompt": "Ingested from linux-6.6.14/tools/arch/x86/include/uapi/asm/unistd_32.h",
+  "human_readable_source": " \n#ifndef __NR_fork\n#define __NR_fork 2\n#endif\n#ifndef __NR_execve\n#define __NR_execve 11\n#endif\n#ifndef __NR_getppid\n#define __NR_getppid 64\n#endif\n#ifndef __NR_getpgid\n#define __NR_getpgid 132\n#endif\n#ifndef __NR_gettid\n#define __NR_gettid 224\n#endif\n#ifndef __NR_futex\n#define __NR_futex 240\n#endif\n#ifndef __NR_getcpu\n#define __NR_getcpu 318\n#endif\n#ifndef __NR_perf_event_open\n#define __NR_perf_event_open 336\n#endif\n#ifndef __NR_setns\n#define __NR_setns 346\n#endif\n#ifndef __NR_seccomp\n#define __NR_seccomp 354\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

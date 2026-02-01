@@ -1,0 +1,9 @@
+{
+  "module_name": "panfrost_dump.h",
+  "hash_id": "e5e424ce52ba8683cb948ef7edef016607cdd6b78e2f3db70cbdc6966ec81007",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/panfrost/panfrost_dump.h",
+  "human_readable_source": " \n \n\n#ifndef PANFROST_DUMP_H\n#define PANFROST_DUMP_H\n\nstruct panfrost_job;\nvoid panfrost_core_dump(struct panfrost_job *job);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "rlconf.h",
+  "hash_id": "232853a809cc1a6faa9f73261c6c0b1e094f97132e77bd9c2d33f5cb9441c41e",
+  "original_prompt": "Ingested from bash-5.2.21/lib/readline/rlconf.h",
+  "human_readable_source": " \n\n \n\n#if !defined (_RLCONF_H_)\n#define _RLCONF_H_\n\n \n#define VI_MODE\n\n \n#define VISIBLE_STATS\n\n \n#define COLOR_SUPPORT\n\n \n \n#define HANDLE_SIGNALS\n\n \n#define PREFIX_META_HACK\n\n \n#define DEFAULT_INPUTRC \"~/.inputrc\"\n\n \n#define SYS_INPUTRC \"/etc/inputrc\"\n\n \n#define DISPLAY_TABS\n\n \n \n\n \n#define RL_COMMENT_BEGIN_DEFAULT \"#\"\n\n \n#define READLINE_CALLBACKS\n\n \n \n\n \n \n\n \n#define RL_EMACS_MODESTR_DEFAULT\t\"@\"\n#define RL_EMACS_MODESTR_DEFLEN\t\t1\n\n#define RL_VI_INS_MODESTR_DEFAULT\t\"(ins)\"\n#define RL_VI_INS_MODESTR_DEFLEN\t5\n#define RL_VI_CMD_MODESTR_DEFAULT\t\"(cmd)\"\n#define RL_VI_CMD_MODESTR_DEFLEN\t5\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

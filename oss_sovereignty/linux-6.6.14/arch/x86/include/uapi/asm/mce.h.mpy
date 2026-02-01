@@ -1,0 +1,9 @@
+{
+  "module_name": "mce.h",
+  "hash_id": "66bf795ea73c0dc2aaafbfc46ae6ba5eb08d84397975e66af88988abe965d220",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/include/uapi/asm/mce.h",
+  "human_readable_source": " \n#ifndef _UAPI_ASM_X86_MCE_H\n#define _UAPI_ASM_X86_MCE_H\n\n#include <linux/types.h>\n#include <linux/ioctl.h>\n\n \nstruct mce {\n\t__u64 status;\t\t \n\t__u64 misc;\t\t \n\t__u64 addr;\t\t \n\t__u64 mcgstatus;\t \n\t__u64 ip;\t\t \n\t__u64 tsc;\t\t \n\t__u64 time;\t\t \n\t__u8  cpuvendor;\t \n\t__u8  inject_flags;\t \n\t__u8  severity;\t\t \n\t__u8  pad;\n\t__u32 cpuid;\t\t \n\t__u8  cs;\t\t \n\t__u8  bank;\t\t \n\t__u8  cpu;\t\t \n\t__u8  finished;\t\t \n\t__u32 extcpu;\t\t \n\t__u32 socketid;\t\t \n\t__u32 apicid;\t\t \n\t__u64 mcgcap;\t\t \n\t__u64 synd;\t\t \n\t__u64 ipid;\t\t \n\t__u64 ppin;\t\t \n\t__u32 microcode;\t \n\t__u64 kflags;\t\t \n};\n\n#define MCE_GET_RECORD_LEN   _IOR('M', 1, int)\n#define MCE_GET_LOG_LEN      _IOR('M', 2, int)\n#define MCE_GETCLEAR_FLAGS   _IOR('M', 3, int)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

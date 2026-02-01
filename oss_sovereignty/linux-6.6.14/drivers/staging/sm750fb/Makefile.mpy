@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "8719ec0ec1e6bc18473bcd347f9e919a5e3d27d2ec20a6e49769d14029a5d1cb",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/sm750fb/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nobj-$(CONFIG_FB_SM750)\t+= sm750fb.o\n\nsm750fb-objs\t\t:= sm750.o sm750_hw.o sm750_accel.o sm750_cursor.o \\\n\t\t\t   ddk750_chip.o ddk750_power.o ddk750_mode.o \\\n\t\t\t   ddk750_display.o ddk750_swi2c.o ddk750_sii164.o \\\n\t\t\t   ddk750_dvi.o ddk750_hwi2c.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

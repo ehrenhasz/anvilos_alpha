@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "ab34c6b51852f50eac0582cab831912a5ea971edbb3a2ba6f66293dbf81eed18",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/misc/pvpanic/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0+\n#\n# Pvpanic Kconfig\n#\n# Copyright (C) 2021 Oracle.\n#\n\nconfig PVPANIC\n\tbool \"pvpanic device support\"\n\thelp\n\t  This option allows to select a specific pvpanic device driver.\n\t  pvpanic is a paravirtualized device provided by QEMU; it lets\n\t  a virtual machine (guest) communicate panic events to the host.\n\nconfig PVPANIC_MMIO\n\ttristate \"pvpanic MMIO device support\"\n\tdepends on HAS_IOMEM && (ACPI || OF) && PVPANIC\n\thelp\n\t  This driver provides support for the MMIO pvpanic device.\n\nconfig PVPANIC_PCI\n\ttristate \"pvpanic PCI device support\"\n\tdepends on PCI && PVPANIC\n\thelp\n\t  This driver provides support for the PCI pvpanic device.\n\t  pvpanic is a paravirtualized device provided by QEMU which\n\t  forwards the panic events from the guest to the host.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

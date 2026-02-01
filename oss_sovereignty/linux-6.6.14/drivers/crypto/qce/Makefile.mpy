@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "eb9b7bbe2c0721cf04c1baa378ea1e45863a1745fa4a20dec1c0e118c6b913fe",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/crypto/qce/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nobj-$(CONFIG_CRYPTO_DEV_QCE) += qcrypto.o\nqcrypto-objs := core.o \\\n\t\tcommon.o \\\n\t\tdma.o\n\nqcrypto-$(CONFIG_CRYPTO_DEV_QCE_SHA) += sha.o\nqcrypto-$(CONFIG_CRYPTO_DEV_QCE_SKCIPHER) += skcipher.o\nqcrypto-$(CONFIG_CRYPTO_DEV_QCE_AEAD) += aead.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

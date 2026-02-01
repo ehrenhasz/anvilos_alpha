@@ -1,0 +1,9 @@
+{
+  "module_name": "siox.h",
+  "hash_id": "8aab50811005eb42da755433effa7b2bd0513481fd127944afa111745012be46",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/siox/siox.h",
+  "human_readable_source": " \n \n#include <linux/kernel.h>\n#include <linux/kthread.h>\n#include <linux/siox.h>\n\n#define to_siox_master(_dev)\tcontainer_of((_dev), struct siox_master, dev)\nstruct siox_master {\n\t \n\tint busno;\n\tint (*pushpull)(struct siox_master *smaster,\n\t\t\tsize_t setbuf_len, const u8 setbuf[],\n\t\t\tsize_t getbuf_len, u8 getbuf[]);\n\n\t \n\tunsigned long poll_interval;  \n\n\t \n\tstruct mutex lock;\n\tbool active;\n\tstruct module *owner;\n\tstruct device dev;\n\tunsigned int num_devices;\n\tstruct list_head devices;\n\n\tsize_t setbuf_len, getbuf_len;\n\tsize_t buf_len;\n\tu8 *buf;\n\tu8 status;\n\n\tunsigned long last_poll;\n\tstruct task_struct *poll_thread;\n};\n\nstatic inline void *siox_master_get_devdata(struct siox_master *smaster)\n{\n\treturn dev_get_drvdata(&smaster->dev);\n}\n\nstruct siox_master *siox_master_alloc(struct device *dev, size_t size);\nstatic inline void siox_master_put(struct siox_master *smaster)\n{\n\tput_device(&smaster->dev);\n}\n\nint siox_master_register(struct siox_master *smaster);\nvoid siox_master_unregister(struct siox_master *smaster);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

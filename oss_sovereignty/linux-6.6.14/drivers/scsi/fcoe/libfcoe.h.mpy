@@ -1,0 +1,9 @@
+{
+  "module_name": "libfcoe.h",
+  "hash_id": "f50fccd29013790d27717c796774fade7ca43f6b90d5da8a1a9b235f6a8a65db",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/scsi/fcoe/libfcoe.h",
+  "human_readable_source": " \n#ifndef _FCOE_LIBFCOE_H_\n#define _FCOE_LIBFCOE_H_\n\nextern unsigned int libfcoe_debug_logging;\n#define LIBFCOE_LOGGING\t          0x01  \n#define LIBFCOE_FIP_LOGGING       0x02  \n#define LIBFCOE_TRANSPORT_LOGGING 0x04  \n#define LIBFCOE_SYSFS_LOGGING     0x08  \n\n#define LIBFCOE_CHECK_LOGGING(LEVEL, CMD)\t\t\\\ndo {\t\t\t\t\t\t\t\\\n\tif (unlikely(libfcoe_debug_logging & LEVEL))\t\\\n\t\tdo {\t\t\t\t\t\\\n\t\t\tCMD;\t\t\t\t\\\n\t\t} while (0);\t\t\t\t\\\n} while (0)\n\n#define LIBFCOE_DBG(fmt, args...)\t\t\t\t\t\\\n\tLIBFCOE_CHECK_LOGGING(LIBFCOE_LOGGING,\t\t\t\t\\\n\t\t\t      pr_info(\"libfcoe: \" fmt, ##args);)\n\n#define LIBFCOE_FIP_DBG(fip, fmt, args...)\t\t\t\t\\\n\tLIBFCOE_CHECK_LOGGING(LIBFCOE_FIP_LOGGING,\t\t\t\\\n\t\t\t      pr_info(\"host%d: fip: \" fmt,\t\t\\\n\t\t\t\t      (fip)->lp->host->host_no, ##args);)\n\n#define LIBFCOE_TRANSPORT_DBG(fmt, args...)\t\t\t\t\\\n\tLIBFCOE_CHECK_LOGGING(LIBFCOE_TRANSPORT_LOGGING,\t\t\\\n\t\t\t      pr_info(\"%s: \" fmt, __func__, ##args);)\n\n#define LIBFCOE_SYSFS_DBG(cdev, fmt, args...)\t\t\t\t\\\n\tLIBFCOE_CHECK_LOGGING(LIBFCOE_SYSFS_LOGGING,\t\t\t\\\n\t\t\t      pr_info(\"ctlr_%d: \" fmt, cdev->id, ##args);)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

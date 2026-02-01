@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "d658c348de13d2d3b925970ff2568bbae6baa864aeafe3ec500a3d708d8e15b2",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/common/siano/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Siano Mobile Silicon Digital TV device configuration\n#\n\nconfig SMS_SIANO_MDTV\n\ttristate\n\tdepends on DVB_CORE && HAS_DMA\n\tdepends on !RC_CORE || RC_CORE\n\tdepends on SMS_USB_DRV || SMS_SDIO_DRV\n\tdefault y\n\nconfig SMS_SIANO_RC\n\tbool \"Enable Remote Controller support for Siano devices\"\n\tdepends on SMS_SIANO_MDTV && RC_CORE\n\tdepends on SMS_USB_DRV || SMS_SDIO_DRV\n\tdepends on MEDIA_COMMON_OPTIONS\n\tdefault y\n\thelp\n\t  Choose Y to select Remote Controller support for Siano driver.\n\nconfig SMS_SIANO_DEBUGFS\n\tbool \"Enable debugfs for smsdvb\"\n\tdepends on SMS_SIANO_MDTV\n\tdepends on DEBUG_FS\n\tdepends on SMS_USB_DRV = SMS_SDIO_DRV\n\n\thelp\n\t  Choose Y to enable visualizing a dump of the frontend\n\t  statistics response packets via debugfs. Currently, works\n\t  only with Siano USB devices.\n\n\t  Useful only for developers. In doubt, say N.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

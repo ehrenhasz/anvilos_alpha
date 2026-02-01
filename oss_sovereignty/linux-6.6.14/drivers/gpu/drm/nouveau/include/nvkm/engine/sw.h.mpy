@@ -1,0 +1,9 @@
+{
+  "module_name": "sw.h",
+  "hash_id": "2979b69b7228438ae75702f372dbc0c4f2d6430501201856d28bdc061c5a8c45",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/include/nvkm/engine/sw.h",
+  "human_readable_source": " \n#ifndef __NVKM_SW_H__\n#define __NVKM_SW_H__\n#include <core/engine.h>\n\nstruct nvkm_sw {\n\tconst struct nvkm_sw_func *func;\n\tstruct nvkm_engine engine;\n\n\tstruct list_head chan;\n};\n\nbool nvkm_sw_mthd(struct nvkm_sw *sw, int chid, int subc, u32 mthd, u32 data);\n\nint nv04_sw_new(struct nvkm_device *, enum nvkm_subdev_type, int inst, struct nvkm_sw **);\nint nv10_sw_new(struct nvkm_device *, enum nvkm_subdev_type, int inst, struct nvkm_sw **);\nint nv50_sw_new(struct nvkm_device *, enum nvkm_subdev_type, int inst, struct nvkm_sw **);\nint gf100_sw_new(struct nvkm_device *, enum nvkm_subdev_type, int inst, struct nvkm_sw **);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "config.h",
+  "hash_id": "08adbfa4157c3f72c30e35fa7850823e3f5f60f65b60bc5ab793270486539d28",
+  "original_prompt": "Ingested from bash-5.2.21/config.h",
+  "human_readable_source": "#define HAVE_UNISTD_H 1\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

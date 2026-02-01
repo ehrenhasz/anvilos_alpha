@@ -1,0 +1,9 @@
+{
+  "module_name": "fb_hx8357d.h",
+  "hash_id": "c252781df5a1054fcb95a11ae8b4d982f644384bb5355ad3ae7143b922cf032d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/fbtft/fb_hx8357d.h",
+  "human_readable_source": " \n \n\n#ifndef __HX8357_H__\n#define __HX8357_H__\n\n#define HX8357D 0xD\n#define HX8357B 0xB\n\n#define HX8357_TFTWIDTH  320\n#define HX8357_TFTHEIGHT 480\n\n#define HX8357_SETOSC 0xB0\n#define HX8357_SETPWR1 0xB1\n#define HX8357B_SETDISPLAY 0xB2\n#define HX8357_SETRGB 0xB3\n#define HX8357D_SETCOM  0xB6\n\n#define HX8357B_SETDISPMODE  0xB4\n#define HX8357D_SETCYC  0xB4\n#define HX8357B_SETOTP 0xB7\n#define HX8357D_SETC 0xB9\n\n#define HX8357B_SET_PANEL_DRIVING 0xC0\n#define HX8357D_SETSTBA 0xC0\n#define HX8357B_SETDGC  0xC1\n#define HX8357B_SETID  0xC3\n#define HX8357B_SETDDB  0xC4\n#define HX8357B_SETDISPLAYFRAME 0xC5\n#define HX8357B_GAMMASET 0xC8\n#define HX8357B_SETCABC  0xC9\n#define HX8357_SETPANEL  0xCC\n\n#define HX8357B_SETPOWER 0xD0\n#define HX8357B_SETVCOM 0xD1\n#define HX8357B_SETPWRNORMAL 0xD2\n\n#define HX8357B_RDID1   0xDA\n#define HX8357B_RDID2   0xDB\n#define HX8357B_RDID3   0xDC\n#define HX8357B_RDID4   0xDD\n\n#define HX8357D_SETGAMMA 0xE0\n\n#define HX8357B_SETGAMMA 0xC8\n#define HX8357B_SETPANELRELATED  0xE9\n\n \n#define\tHX8357_BLACK   0x0000\n#define\tHX8357_BLUE    0x001F\n#define\tHX8357_RED     0xF800\n#define\tHX8357_GREEN   0x07E0\n#define HX8357_CYAN    0x07FF\n#define HX8357_MAGENTA 0xF81F\n#define HX8357_YELLOW  0xFFE0\n#define HX8357_WHITE   0xFFFF\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

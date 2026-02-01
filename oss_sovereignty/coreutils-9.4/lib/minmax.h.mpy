@@ -1,0 +1,9 @@
+{
+  "module_name": "minmax.h",
+  "hash_id": "48a5690ce8c3f870ed5b926fae6ed1ce76feedae2cf76f4a06576e106c338b56",
+  "original_prompt": "Ingested from coreutils-9.4/lib/minmax.h",
+  "human_readable_source": " \n\n \n#if !_GL_CONFIG_H_INCLUDED\n #error \"Please include config.h first.\"\n#endif\n\n \n#if HAVE_MINMAX_IN_LIMITS_H\n# include <limits.h>\n#elif HAVE_MINMAX_IN_SYS_PARAM_H\n# include <sys/param.h>\n#endif\n\n \n\n \n#ifndef MAX\n# define MAX(a,b) ((a) > (b) ? (a) : (b))\n#endif\n\n \n#ifndef MIN\n# define MIN(a,b) ((a) < (b) ? (a) : (b))\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

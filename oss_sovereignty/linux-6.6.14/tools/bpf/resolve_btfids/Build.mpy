@@ -1,0 +1,9 @@
+{
+  "module_name": "Build",
+  "hash_id": "5bda3cf5b747def5354800af36bfe6a1573dd097198e09f74acdbf0932ec9032",
+  "original_prompt": "Ingested from linux-6.6.14/tools/bpf/resolve_btfids/Build",
+  "human_readable_source": "hostprogs := resolve_btfids\n\nresolve_btfids-y += main.o\nresolve_btfids-y += rbtree.o\nresolve_btfids-y += zalloc.o\nresolve_btfids-y += string.o\nresolve_btfids-y += ctype.o\nresolve_btfids-y += str_error_r.o\n\n$(OUTPUT)%.o: ../../lib/%.c FORCE\n\t$(call rule_mkdir)\n\t$(call if_changed_dep,host_cc_o_c)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

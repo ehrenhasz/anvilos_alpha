@@ -1,0 +1,9 @@
+{
+  "module_name": "build_bug.h",
+  "hash_id": "c4fd59947043f6f7b690e7f58fbb9ef8d49e01c3bf0a201587e3fabe52d68888",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/build_bug.h",
+  "human_readable_source": " \n#ifndef _LINUX_BUILD_BUG_H\n#define _LINUX_BUILD_BUG_H\n\n#include <linux/compiler.h>\n\n#ifdef __CHECKER__\n#define BUILD_BUG_ON_ZERO(e) (0)\n#else  \n \n#define BUILD_BUG_ON_ZERO(e) ((int)(sizeof(struct { int:(-!!(e)); })))\n#endif  \n\n \n#define __BUILD_BUG_ON_NOT_POWER_OF_2(n)\t\\\n\tBUILD_BUG_ON(((n) & ((n) - 1)) != 0)\n#define BUILD_BUG_ON_NOT_POWER_OF_2(n)\t\t\t\\\n\tBUILD_BUG_ON((n) == 0 || (((n) & ((n) - 1)) != 0))\n\n \n#define BUILD_BUG_ON_INVALID(e) ((void)(sizeof((__force long)(e))))\n\n \n#define BUILD_BUG_ON_MSG(cond, msg) compiletime_assert(!(cond), msg)\n\n \n#define BUILD_BUG_ON(condition) \\\n\tBUILD_BUG_ON_MSG(condition, \"BUILD_BUG_ON failed: \" #condition)\n\n \n#define BUILD_BUG() BUILD_BUG_ON_MSG(1, \"BUILD_BUG failed\")\n\n \n#define static_assert(expr, ...) __static_assert(expr, ##__VA_ARGS__, #expr)\n#define __static_assert(expr, msg, ...) _Static_assert(expr, msg)\n\n\n \n#define ASSERT_STRUCT_OFFSET(type, field, expected_offset)\t\\\n\tBUILD_BUG_ON_MSG(offsetof(type, field) != (expected_offset),\t\\\n\t\t\"Offset of \" #field \" in \" #type \" has changed.\")\n\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

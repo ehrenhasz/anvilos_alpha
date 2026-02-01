@@ -1,0 +1,9 @@
+{
+  "module_name": "changelog",
+  "hash_id": "544932d8a5ad8775ae4d5dc3c1863fb534d926480d7f4ebb7a9d64addfa40cc0",
+  "original_prompt": "Ingested from ncurses-6.4/package/debian-mingw64/changelog",
+  "human_readable_source": "ncurses6 (6.4+20221231) unstable; urgency=low\n\n  * latest weekly patch\n\n -- Thomas E. Dickey <dickey@invisible-island.net>  Thu, 29 Dec 2022 15:15:31 -0500\n\nncurses6 (5.9+20131005) unstable; urgency=low\n\n  * initial release\n\n -- Thomas E. Dickey <dickey@invisible-island.net>  Sat, 05 Oct 2013 13:35:29 -0400\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

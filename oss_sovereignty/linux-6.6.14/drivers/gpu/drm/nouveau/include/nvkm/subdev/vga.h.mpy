@@ -1,0 +1,9 @@
+{
+  "module_name": "vga.h",
+  "hash_id": "fb5d4bbf27127bd66cd7b6af2f8bc74f1e54813f391850b09d10818ab5074dc7",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/include/nvkm/subdev/vga.h",
+  "human_readable_source": " \n#ifndef __NOUVEAU_VGA_H__\n#define __NOUVEAU_VGA_H__\n#include <core/subdev.h>\n\n \nu8   nvkm_rdport(struct nvkm_device *, int head, u16 port);\nvoid nvkm_wrport(struct nvkm_device *, int head, u16 port, u8 value);\n\n \nu8   nvkm_rdvgas(struct nvkm_device *, int head, u8 index);\nvoid nvkm_wrvgas(struct nvkm_device *, int head, u8 index, u8 value);\n\n \nu8   nvkm_rdvgag(struct nvkm_device *, int head, u8 index);\nvoid nvkm_wrvgag(struct nvkm_device *, int head, u8 index, u8 value);\n\n \nu8   nvkm_rdvgac(struct nvkm_device *, int head, u8 index);\nvoid nvkm_wrvgac(struct nvkm_device *, int head, u8 index, u8 value);\n\n \nu8   nvkm_rdvgai(struct nvkm_device *, int head, u16 port, u8 index);\nvoid nvkm_wrvgai(struct nvkm_device *, int head, u16 port, u8 index, u8 value);\n\nbool nvkm_lockvgac(struct nvkm_device *, bool lock);\nu8   nvkm_rdvgaowner(struct nvkm_device *);\nvoid nvkm_wrvgaowner(struct nvkm_device *, u8);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

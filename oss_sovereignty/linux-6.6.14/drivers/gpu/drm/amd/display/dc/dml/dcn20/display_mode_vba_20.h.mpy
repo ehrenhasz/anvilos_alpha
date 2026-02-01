@@ -1,0 +1,9 @@
+{
+  "module_name": "display_mode_vba_20.h",
+  "hash_id": "8fc8c95fe1a98acb26c5a5c15e21a58b7e62262f3d97c8e89be53d6c9057a59d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/dc/dml/dcn20/display_mode_vba_20.h",
+  "human_readable_source": " \n\n#ifndef _DCN20_DISPLAY_MODE_VBA_H_\n#define _DCN20_DISPLAY_MODE_VBA_H_\n\nvoid dml20_recalculate(struct display_mode_lib *mode_lib);\nvoid dml20_ModeSupportAndSystemConfigurationFull(struct display_mode_lib *mode_lib);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

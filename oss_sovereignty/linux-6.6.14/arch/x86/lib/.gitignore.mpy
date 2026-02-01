@@ -1,0 +1,9 @@
+{
+  "module_name": ".gitignore",
+  "hash_id": "c3564c84b95b516213fc3f80bbc354cc7f08f206944d57c76bbe163362f64fa9",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/lib/.gitignore",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\ninat-tables.c\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

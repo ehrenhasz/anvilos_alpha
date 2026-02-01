@@ -1,0 +1,9 @@
+{
+  "module_name": "zfs.release.in",
+  "hash_id": "92fdd2c9072405fd6ed67dc0a4bb138673a982523ee7b342a69a9a9d15a90bcd",
+  "original_prompt": "Ingested from zfs-2.2.2/zfs.release.in",
+  "human_readable_source": "@ZFS_META_VERSION@-@ZFS_META_RELEASE@\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

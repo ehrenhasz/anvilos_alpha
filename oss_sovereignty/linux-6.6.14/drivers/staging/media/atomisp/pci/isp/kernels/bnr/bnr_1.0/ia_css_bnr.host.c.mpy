@@ -1,0 +1,9 @@
+{
+  "module_name": "ia_css_bnr.host.c",
+  "hash_id": "a6fcec998ee6f26f591bce09031083cb9e8da6b904f77816f7189a4901969f4f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/isp/kernels/bnr/bnr_1.0/ia_css_bnr.host.c",
+  "human_readable_source": "\n \n\n#include \"ia_css_types.h\"\n#include \"sh_css_defs.h\"\n#include \"ia_css_debug.h\"\n#include \"sh_css_frac.h\"\n\n#include \"ia_css_bnr.host.h\"\n\nvoid\nia_css_bnr_encode(\n    struct sh_css_isp_bnr_params *to,\n    const struct ia_css_nr_config *from,\n    unsigned int size)\n{\n\t(void)size;\n\t \n\tto->threshold_low =\n\t    uDIGIT_FITTING(from->direction, 16, SH_CSS_BAYER_BITS);\n\tto->threshold_width_log2 = uFRACTION_BITS_FITTING(8);\n\tto->threshold_width =\n\t    1 << to->threshold_width_log2;\n\tto->gain_all =\n\t    uDIGIT_FITTING(from->bnr_gain, 16, SH_CSS_BNR_GAIN_SHIFT);\n\tto->gain_dir =\n\t    uDIGIT_FITTING(from->bnr_gain, 16, SH_CSS_BNR_GAIN_SHIFT);\n\tto->clip = uDIGIT_FITTING(16384U, 16, SH_CSS_BAYER_BITS);\n}\n\nvoid\nia_css_bnr_dump(\n    const struct sh_css_isp_bnr_params *bnr,\n    unsigned int level)\n{\n\tif (!bnr) return;\n\tia_css_debug_dtrace(level, \"Bayer Noise Reduction:\\n\");\n\tia_css_debug_dtrace(level, \"\\t%-32s = %d\\n\",\n\t\t\t    \"bnr_gain_all\", bnr->gain_all);\n\tia_css_debug_dtrace(level, \"\\t%-32s = %d\\n\",\n\t\t\t    \"bnr_gain_dir\", bnr->gain_dir);\n\tia_css_debug_dtrace(level, \"\\t%-32s = %d\\n\",\n\t\t\t    \"bnr_threshold_low\",\n\t\t\t    bnr->threshold_low);\n\tia_css_debug_dtrace(level, \"\\t%-32s = %d\\n\",\n\t\t\t    \"bnr_threshold_width_log2\",\n\t\t\t    bnr->threshold_width_log2);\n\tia_css_debug_dtrace(level, \"\\t%-32s = %d\\n\",\n\t\t\t    \"bnr_threshold_width\",\n\t\t\t    bnr->threshold_width);\n\tia_css_debug_dtrace(level, \"\\t%-32s = %d\\n\",\n\t\t\t    \"bnr_clip\", bnr->clip);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

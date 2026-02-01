@@ -1,0 +1,9 @@
+{
+  "module_name": "cz_ih.h",
+  "hash_id": "67e3149e5bf01ef1b4b28bffa8659079fb3fde768ebe43312693abcd0654f112",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/amdgpu/cz_ih.h",
+  "human_readable_source": " \n\n#ifndef __CZ_IH_H__\n#define __CZ_IH_H__\n\nextern const struct amdgpu_ip_block_version cz_ih_ip_block;\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

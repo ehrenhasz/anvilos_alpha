@@ -1,0 +1,9 @@
+{
+  "module_name": "mconf-cfg.sh",
+  "hash_id": "f7f36f3e19948a1ec1c1fa14f7878aa7f51ce82b161c241dc9631a39c5a94c38",
+  "original_prompt": "Ingested from linux-6.6.14/scripts/kconfig/mconf-cfg.sh",
+  "human_readable_source": "#!/bin/sh\n# SPDX-License-Identifier: GPL-2.0\n\ncflags=$1\nlibs=$2\n\nPKG=\"ncursesw\"\nPKG2=\"ncurses\"\n\nif [ -n \"$(command -v ${HOSTPKG_CONFIG})\" ]; then\n\tif ${HOSTPKG_CONFIG} --exists $PKG; then\n\t\t${HOSTPKG_CONFIG} --cflags ${PKG} > ${cflags}\n\t\t${HOSTPKG_CONFIG} --libs ${PKG} > ${libs}\n\t\texit 0\n\tfi\n\n\tif ${HOSTPKG_CONFIG} --exists ${PKG2}; then\n\t\t${HOSTPKG_CONFIG} --cflags ${PKG2} > ${cflags}\n\t\t${HOSTPKG_CONFIG} --libs ${PKG2} > ${libs}\n\t\texit 0\n\tfi\nfi\n\n# Check the default paths in case pkg-config is not installed.\n# (Even if it is installed, some distributions such as openSUSE cannot\n# find ncurses by pkg-config.)\nif [ -f /usr/include/ncursesw/ncurses.h ]; then\n\techo -D_GNU_SOURCE -I/usr/include/ncursesw > ${cflags}\n\techo -lncursesw > ${libs}\n\texit 0\nfi\n\nif [ -f /usr/include/ncurses/ncurses.h ]; then\n\techo -D_GNU_SOURCE -I/usr/include/ncurses > ${cflags}\n\techo -lncurses > ${libs}\n\texit 0\nfi\n\n# As a final fallback before giving up, check if $HOSTCC knows of a default\n# ncurses installation (e.g. from a vendor-specific sysroot).\nif echo '#include <ncurses.h>' | ${HOSTCC} -E - >/dev/null 2>&1; then\n\techo -D_GNU_SOURCE > ${cflags}\n\techo -lncurses > ${libs}\n\texit 0\nfi\n\necho >&2 \"*\"\necho >&2 \"* Unable to find the ncurses package.\"\necho >&2 \"* Install ncurses (ncurses-devel or libncurses-dev\"\necho >&2 \"* depending on your distribution).\"\necho >&2 \"*\"\necho >&2 \"* You may also need to install ${HOSTPKG_CONFIG} to find the\"\necho >&2 \"* ncurses installed in a non-default location.\"\necho >&2 \"*\"\nexit 1\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

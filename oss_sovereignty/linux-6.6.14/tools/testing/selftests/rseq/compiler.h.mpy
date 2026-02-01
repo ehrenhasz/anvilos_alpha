@@ -1,0 +1,9 @@
+{
+  "module_name": "compiler.h",
+  "hash_id": "e9df4c1797cf6a252dfc1346d64f9d65215399394656af59ecbbc08de15bac09",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/rseq/compiler.h",
+  "human_readable_source": " \n \n\n#ifndef RSEQ_COMPILER_H\n#define RSEQ_COMPILER_H\n\n \n#define rseq_after_asm_goto()\tasm volatile (\"\" : : : \"memory\")\n\n \n#define RSEQ__COMBINE_TOKENS(_tokena, _tokenb)\t\\\n\t_tokena##_tokenb\n#define RSEQ_COMBINE_TOKENS(_tokena, _tokenb)\t\\\n\tRSEQ__COMBINE_TOKENS(_tokena, _tokenb)\n\n#ifdef __cplusplus\n#define rseq_unqual_scalar_typeof(x)\t\t\t\t\t\\\n\tstd::remove_cv<std::remove_reference<decltype(x)>::type>::type\n#else\n#define rseq_scalar_type_to_expr(type)\t\t\t\t\t\\\n\tunsigned type: (unsigned type)0,\t\t\t\t\\\n\tsigned type: (signed type)0\n\n \n#define rseq_unqual_scalar_typeof(x)\t\t\t\t\t\\\n\t__typeof__(\t\t\t\t\t\t\t\\\n\t\t_Generic((x),\t\t\t\t\t\t\\\n\t\t\tchar: (char)0,\t\t\t\t\t\\\n\t\t\trseq_scalar_type_to_expr(char),\t\t\t\\\n\t\t\trseq_scalar_type_to_expr(short),\t\t\\\n\t\t\trseq_scalar_type_to_expr(int),\t\t\t\\\n\t\t\trseq_scalar_type_to_expr(long),\t\t\t\\\n\t\t\trseq_scalar_type_to_expr(long long),\t\t\\\n\t\t\tdefault: (x)\t\t\t\t\t\\\n\t\t)\t\t\t\t\t\t\t\\\n\t)\n#endif\n\n#endif   \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

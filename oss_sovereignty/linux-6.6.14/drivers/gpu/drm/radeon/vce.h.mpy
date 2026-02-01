@@ -1,0 +1,9 @@
+{
+  "module_name": "vce.h",
+  "hash_id": "c4735eff75e00cc7ad5b7dfe91fdaf70bd87d80696e84c7d11f2adb5a9da2a9a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/radeon/vce.h",
+  "human_readable_source": " \n\n#ifndef __VCE_H__\n#define __VCE_H__\n\nstruct radeon_device;\n\nvoid vce_v1_0_enable_mgcg(struct radeon_device *rdev, bool enable);\nvoid vce_v2_0_enable_mgcg(struct radeon_device *rdev, bool enable);\n\n#endif                          \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

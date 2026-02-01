@@ -1,0 +1,9 @@
+{
+  "module_name": "sun50i-de2.c",
+  "hash_id": "b07b0684bd6eecf2ad0b56a9a5f994a4a2ab12235f6a25b61fe19bcd16a07287",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/bus/sun50i-de2.c",
+  "human_readable_source": "\n \n\n#include <linux/of_platform.h>\n#include <linux/platform_device.h>\n#include <linux/soc/sunxi/sunxi_sram.h>\n\nstatic int sun50i_de2_bus_probe(struct platform_device *pdev)\n{\n\tstruct device_node *np = pdev->dev.of_node;\n\tint ret;\n\n\tret = sunxi_sram_claim(&pdev->dev);\n\tif (ret)\n\t\treturn dev_err_probe(&pdev->dev, ret,\n\t\t\t\t     \"Couldn't map SRAM to device\\n\");\n\n\tof_platform_populate(np, NULL, NULL, &pdev->dev);\n\n\treturn 0;\n}\n\nstatic int sun50i_de2_bus_remove(struct platform_device *pdev)\n{\n\tsunxi_sram_release(&pdev->dev);\n\treturn 0;\n}\n\nstatic const struct of_device_id sun50i_de2_bus_of_match[] = {\n\t{ .compatible = \"allwinner,sun50i-a64-de2\", },\n\t{   }\n};\n\nstatic struct platform_driver sun50i_de2_bus_driver = {\n\t.probe = sun50i_de2_bus_probe,\n\t.remove = sun50i_de2_bus_remove,\n\t.driver = {\n\t\t.name = \"sun50i-de2-bus\",\n\t\t.of_match_table = sun50i_de2_bus_of_match,\n\t},\n};\n\nbuiltin_platform_driver(sun50i_de2_bus_driver);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

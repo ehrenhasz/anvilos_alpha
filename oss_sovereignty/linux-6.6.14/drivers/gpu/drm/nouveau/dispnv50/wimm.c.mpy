@@ -1,0 +1,9 @@
+{
+  "module_name": "wimm.c",
+  "hash_id": "8564d0680c5290ff81f0dce9989cde3d4bb7322f30b1df27ae4c6f32cccaa0c8",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/dispnv50/wimm.c",
+  "human_readable_source": " \n#include \"wimm.h\"\n\n#include <nvif/class.h>\n\nint\nnv50_wimm_init(struct nouveau_drm *drm, struct nv50_wndw *wndw)\n{\n\tstruct {\n\t\ts32 oclass;\n\t\tint version;\n\t\tint (*init)(struct nouveau_drm *, s32, struct nv50_wndw *);\n\t} wimms[] = {\n\t\t{ GA102_DISP_WINDOW_IMM_CHANNEL_DMA, 0, wimmc37b_init },\n\t\t{ TU102_DISP_WINDOW_IMM_CHANNEL_DMA, 0, wimmc37b_init },\n\t\t{ GV100_DISP_WINDOW_IMM_CHANNEL_DMA, 0, wimmc37b_init },\n\t\t{}\n\t};\n\tstruct nv50_disp *disp = nv50_disp(drm->dev);\n\tint cid;\n\n\tcid = nvif_mclass(&disp->disp->object, wimms);\n\tif (cid < 0) {\n\t\tNV_ERROR(drm, \"No supported window immediate class\\n\");\n\t\treturn cid;\n\t}\n\n\treturn wimms[cid].init(drm, wimms[cid].oclass, wndw);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "libthermal.map",
+  "hash_id": "669a0e06fb1f34968f6ca30a7c7662b6b426c017d75110d9754533dff96423fe",
+  "original_prompt": "Ingested from linux-6.6.14/tools/lib/thermal/libthermal.map",
+  "human_readable_source": "LIBTHERMAL_0.0.1 {\n\tglobal:\n\t\tthermal_init;\n\t\tfor_each_thermal_zone;\n\t\tfor_each_thermal_trip;\n\t\tfor_each_thermal_cdev;\n\t\tthermal_zone_find_by_name;\n\t\tthermal_zone_find_by_id;\n\t\tthermal_zone_discover;\n\t\tthermal_init;\n\t\tthermal_events_init;\n\t\tthermal_events_handle;\n\t\tthermal_events_fd;\n\t\tthermal_cmd_init;\n\t\tthermal_cmd_get_tz;\n\t\tthermal_cmd_get_cdev;\n\t\tthermal_cmd_get_trip;\n\t\tthermal_cmd_get_governor;\n\t\tthermal_cmd_get_temp;\n\t\tthermal_sampling_init;\n\t\tthermal_sampling_handle;\n\t\tthermal_sampling_fd;\nlocal:\n\t\t*;\n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

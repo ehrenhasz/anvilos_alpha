@@ -1,0 +1,9 @@
+{
+  "module_name": "CppCheck.am",
+  "hash_id": "962ae16c0c0ec36b0a7edeb829744f07a9fe46f7120d9c446da00e09338dfdb4",
+  "original_prompt": "Ingested from zfs-2.2.2/config/CppCheck.am",
+  "human_readable_source": "#\n# cppcheck for userspace \u2013 nodist_*_SOURCES are kernel code and cppcheck goes crazy on them.\n#\n\nPHONY += cppcheck\n\nCPPCHECKFLAGS  = --std=c99 --quiet --max-configs=1 --error-exitcode=2\nCPPCHECKFLAGS += --inline-suppr -U_KERNEL\n\nCPPCHECKDIRS    =\nCPPCHECKTARGETS =\n\ncppcheck-recursive-%:\n\t$(MAKE) -C $(subst cppcheck-recursive-,,$@) cppcheck\n\n_CTGT = $(subst cppcheck-for-,,$@)\ncppcheck-for-%:\n\t@[ -n \"$($(_CTGT)_SOURCES)$(dist_$(_CTGT)_SOURCES)\" ]\n\t$(CPPCHECK) -j$(CPU_COUNT) $(CPPCHECKFLAGS) $(patsubst -U%,,$(patsubst -D%,,$(filter-out $(AM_CPPFLAGS_NOCHECK),$(or $($(_CTGT)_CPPFLAGS),$(AM_CPPFLAGS))))) $($(_CTGT)_SOURCES) $(dist_$(_CTGT)_SOURCES)\n\ncppcheck: $(addprefix cppcheck-for-,$(subst -,_,$(subst .,_,$(subst /,_,$(CPPCHECKTARGETS))))) $(addprefix cppcheck-recursive-,$(CPPCHECKDIRS))\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

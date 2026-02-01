@@ -1,0 +1,9 @@
+{
+  "module_name": "closeout.h",
+  "hash_id": "694a2b60705607a3fe5e89094c7bf4ff7e091fe681c91558d86956f820278031",
+  "original_prompt": "Ingested from coreutils-9.4/lib/closeout.h",
+  "human_readable_source": "/* Close standard output and standard error.\n\n   Copyright (C) 1998, 2000, 2003-2004, 2006, 2008-2023 Free Software\n   Foundation, Inc.\n\n   This program is free software: you can redistribute it and/or modify\n   it under the terms of the GNU General Public License as published by\n   the Free Software Foundation, either version 3 of the License, or\n   (at your option) any later version.\n\n   This program is distributed in the hope that it will be useful,\n   but WITHOUT ANY WARRANTY; without even the implied warranty of\n   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n   GNU General Public License for more details.\n\n   You should have received a copy of the GNU General Public License\n   along with this program.  If not, see <https:\n\n#ifndef CLOSEOUT_H\n# define CLOSEOUT_H 1\n\n# ifdef __cplusplus\nextern \"C\" {\n# endif\n\nvoid close_stdout_set_file_name (const char *file);\nvoid close_stdout_set_ignore_EPIPE (bool ignore);\nvoid close_stdout (void);\n\n# ifdef __cplusplus\n}\n# endif\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

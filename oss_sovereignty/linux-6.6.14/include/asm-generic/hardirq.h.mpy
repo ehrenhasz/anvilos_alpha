@@ -1,0 +1,9 @@
+{
+  "module_name": "hardirq.h",
+  "hash_id": "2977b8ed5efc72d7a8e8b5a5821aecf8a874f3f62febe2d7110c26ceda98048e",
+  "original_prompt": "Ingested from linux-6.6.14/include/asm-generic/hardirq.h",
+  "human_readable_source": " \n#ifndef __ASM_GENERIC_HARDIRQ_H\n#define __ASM_GENERIC_HARDIRQ_H\n\n#include <linux/cache.h>\n#include <linux/threads.h>\n\ntypedef struct {\n\tunsigned int __softirq_pending;\n#ifdef ARCH_WANTS_NMI_IRQSTAT\n\tunsigned int __nmi_count;\n#endif\n} ____cacheline_aligned irq_cpustat_t;\n\nDECLARE_PER_CPU_ALIGNED(irq_cpustat_t, irq_stat);\n\n#include <linux/irq.h>\n\n#ifndef ack_bad_irq\nstatic inline void ack_bad_irq(unsigned int irq)\n{\n\tprintk(KERN_CRIT \"unexpected IRQ trap at vector %02x\\n\", irq);\n}\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

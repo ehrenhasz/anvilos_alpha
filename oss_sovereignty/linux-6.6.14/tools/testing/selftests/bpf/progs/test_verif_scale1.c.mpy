@@ -1,0 +1,9 @@
+{
+  "module_name": "test_verif_scale1.c",
+  "hash_id": "44f8430a7078d19b29e717d58f0c44e6772089dde076bed6e7fd505d719d19ba",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/test_verif_scale1.c",
+  "human_readable_source": "\n\n#include <linux/bpf.h>\n#include <bpf/bpf_helpers.h>\n#define ATTR __attribute__((noinline))\n#include \"test_jhash.h\"\n\nSEC(\"tc\")\nint balancer_ingress(struct __sk_buff *ctx)\n{\n\tvoid *data_end = (void *)(long)ctx->data_end;\n\tvoid *data = (void *)(long)ctx->data;\n\tvoid *ptr;\n\tint nh_off, i = 0;\n\n\tnh_off = 14;\n\n\t \n\n#define C do { \\\n\tptr = data + i; \\\n\tif (ptr + nh_off > data_end) \\\n\t\tbreak; \\\n\tctx->tc_index = jhash(ptr, nh_off, ctx->cb[0] + i++); \\\n\t} while (0);\n#define C30 C;C;C;C;C;C;C;C;C;C;C;C;C;C;C;C;C;C;C;C;C;C;C;C;C;C;C;C;C;C;\n\tC30;C30;C30;  \n\treturn 0;\n}\nchar _license[] SEC(\"license\") = \"GPL\";\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

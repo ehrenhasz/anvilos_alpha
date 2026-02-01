@@ -1,0 +1,9 @@
+{
+  "module_name": "conversion.h",
+  "hash_id": "b57b68d0a6f514c501eb59b030d60a143de0d8d9e9c9b3f882a98bdb5d26a1b4",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/dc/basics/conversion.h",
+  "human_readable_source": " \n\n#ifndef __DAL_CONVERSION_H__\n#define __DAL_CONVERSION_H__\n\n#include \"include/fixed31_32.h\"\n\nuint16_t fixed_point_to_int_frac(\n\tstruct fixed31_32 arg,\n\tuint8_t integer_bits,\n\tuint8_t fractional_bits);\n\nvoid convert_float_matrix(\n\tuint16_t *matrix,\n\tstruct fixed31_32 *flt,\n\tuint32_t buffer_size);\n\nvoid reduce_fraction(uint32_t num, uint32_t den,\n\t\tuint32_t *out_num, uint32_t *out_den);\n\nstatic inline unsigned int log_2(unsigned int num)\n{\n\treturn ilog2(num);\n}\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

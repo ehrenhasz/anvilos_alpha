@@ -1,0 +1,9 @@
+{
+  "module_name": "zmod.h",
+  "hash_id": "6752903c4d45d51964dca51cc0e74881ed166e3b06850ea4457ac5a94c9ea3a0",
+  "original_prompt": "Ingested from zfs-2.2.2/include/os/linux/spl/sys/zmod.h",
+  "human_readable_source": " \n\n#ifndef _SPL_ZMOD_H\n#define\t_SPL_ZMOD_H\n\n#include <sys/types.h>\n#include <linux/zlib.h>\n\nextern int z_compress_level(void *dest, size_t *destLen, const void *source,\n    size_t sourceLen, int level);\nextern int z_uncompress(void *dest, size_t *destLen, const void *source,\n    size_t sourceLen);\n\nint spl_zlib_init(void);\nvoid spl_zlib_fini(void);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

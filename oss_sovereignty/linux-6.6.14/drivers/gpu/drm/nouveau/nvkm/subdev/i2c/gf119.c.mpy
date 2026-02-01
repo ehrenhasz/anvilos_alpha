@@ -1,0 +1,9 @@
+{
+  "module_name": "gf119.c",
+  "hash_id": "f328eff6ec55b70b722c6096c0617b522934027119bda55add01244ebc111ff8",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/subdev/i2c/gf119.c",
+  "human_readable_source": " \n#include \"priv.h\"\n#include \"pad.h\"\n\nstatic const struct nvkm_i2c_func\ngf119_i2c = {\n\t.pad_x_new = gf119_i2c_pad_x_new,\n\t.pad_s_new = gf119_i2c_pad_s_new,\n\t.aux = 4,\n\t.aux_stat = g94_aux_stat,\n\t.aux_mask = g94_aux_mask,\n};\n\nint\ngf119_i2c_new(struct nvkm_device *device, enum nvkm_subdev_type type, int inst,\n\t      struct nvkm_i2c **pi2c)\n{\n\treturn nvkm_i2c_new_(&gf119_i2c, device, type, inst, pi2c);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

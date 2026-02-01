@@ -1,0 +1,9 @@
+{
+  "module_name": "IRIW+fencembonceonces+OnceOnce.litmus",
+  "hash_id": "48232cd78bafb17b29b42b62e6374c3d2b052f3d291aecee9231f690a69a8665",
+  "original_prompt": "Ingested from linux-6.6.14/tools/memory-model/litmus-tests/IRIW+fencembonceonces+OnceOnce.litmus",
+  "human_readable_source": "C IRIW+fencembonceonces+OnceOnce\n\n(*\n * Result: Never\n *\n * Test of independent reads from independent writes with smp_mb()\n * between each pairs of reads.  In other words, is smp_mb() sufficient to\n * cause two different reading processes to agree on the order of a pair\n * of writes, where each write is to a different variable by a different\n * process?  This litmus test exercises LKMM's \"propagation\" rule.\n *)\n\n{}\n\nP0(int *x)\n{\n\tWRITE_ONCE(*x, 1);\n}\n\nP1(int *x, int *y)\n{\n\tint r0;\n\tint r1;\n\n\tr0 = READ_ONCE(*x);\n\tsmp_mb();\n\tr1 = READ_ONCE(*y);\n}\n\nP2(int *y)\n{\n\tWRITE_ONCE(*y, 1);\n}\n\nP3(int *x, int *y)\n{\n\tint r0;\n\tint r1;\n\n\tr0 = READ_ONCE(*y);\n\tsmp_mb();\n\tr1 = READ_ONCE(*x);\n}\n\nexists (1:r0=1 /\\ 1:r1=0 /\\ 3:r0=1 /\\ 3:r1=0)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

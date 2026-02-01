@@ -1,0 +1,9 @@
+{
+  "module_name": "clk-regmap-divider.h",
+  "hash_id": "7a4c515b57fd7b403c6001cbd47ab02c8b3753da9e151403e2fa23207058c134",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/clk/qcom/clk-regmap-divider.h",
+  "human_readable_source": " \n \n\n#ifndef __QCOM_CLK_REGMAP_DIVIDER_H__\n#define __QCOM_CLK_REGMAP_DIVIDER_H__\n\n#include <linux/clk-provider.h>\n#include \"clk-regmap.h\"\n\nstruct clk_regmap_div {\n\tu32\t\t\treg;\n\tu32\t\t\tshift;\n\tu32\t\t\twidth;\n\tstruct clk_regmap\tclkr;\n};\n\nextern const struct clk_ops clk_regmap_div_ops;\nextern const struct clk_ops clk_regmap_div_ro_ops;\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

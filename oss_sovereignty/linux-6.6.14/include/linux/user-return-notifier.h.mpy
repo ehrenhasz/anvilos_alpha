@@ -1,0 +1,9 @@
+{
+  "module_name": "user-return-notifier.h",
+  "hash_id": "5c7e1006d04130aa58ec21943e2477cec6076c108af780349aa185fb04665867",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/user-return-notifier.h",
+  "human_readable_source": " \n#ifndef _LINUX_USER_RETURN_NOTIFIER_H\n#define _LINUX_USER_RETURN_NOTIFIER_H\n\n#ifdef CONFIG_USER_RETURN_NOTIFIER\n\n#include <linux/list.h>\n#include <linux/sched.h>\n\nstruct user_return_notifier {\n\tvoid (*on_user_return)(struct user_return_notifier *urn);\n\tstruct hlist_node link;\n};\n\n\nvoid user_return_notifier_register(struct user_return_notifier *urn);\nvoid user_return_notifier_unregister(struct user_return_notifier *urn);\n\nstatic inline void propagate_user_return_notify(struct task_struct *prev,\n\t\t\t\t\t\tstruct task_struct *next)\n{\n\tif (test_tsk_thread_flag(prev, TIF_USER_RETURN_NOTIFY)) {\n\t\tclear_tsk_thread_flag(prev, TIF_USER_RETURN_NOTIFY);\n\t\tset_tsk_thread_flag(next, TIF_USER_RETURN_NOTIFY);\n\t}\n}\n\nvoid fire_user_return_notifiers(void);\n\nstatic inline void clear_user_return_notifier(struct task_struct *p)\n{\n\tclear_tsk_thread_flag(p, TIF_USER_RETURN_NOTIFY);\n}\n\n#else\n\nstruct user_return_notifier {};\n\nstatic inline void propagate_user_return_notify(struct task_struct *prev,\n\t\t\t\t\t\tstruct task_struct *next)\n{\n}\n\nstatic inline void fire_user_return_notifiers(void) {}\n\nstatic inline void clear_user_return_notifier(struct task_struct *p) {}\n\n#endif\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

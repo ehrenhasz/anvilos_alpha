@@ -1,0 +1,9 @@
+{
+  "module_name": "stmp_device.c",
+  "hash_id": "1b9660d0919e55a8b4f6592af279ad4a013f47b1823b9002c08dca800666577c",
+  "original_prompt": "Ingested from linux-6.6.14/lib/stmp_device.c",
+  "human_readable_source": "\n \n\n#include <linux/io.h>\n#include <linux/errno.h>\n#include <linux/delay.h>\n#include <linux/compiler.h>\n#include <linux/export.h>\n#include <linux/stmp_device.h>\n\n#define STMP_MODULE_CLKGATE\t(1 << 30)\n#define STMP_MODULE_SFTRST\t(1 << 31)\n\n \nstatic int stmp_clear_poll_bit(void __iomem *addr, u32 mask)\n{\n\tint timeout = 0x400;\n\n\twritel(mask, addr + STMP_OFFSET_REG_CLR);\n\tudelay(1);\n\twhile ((readl(addr) & mask) && --timeout)\n\t\t ;\n\n\treturn !timeout;\n}\n\nint stmp_reset_block(void __iomem *reset_addr)\n{\n\tint ret;\n\tint timeout = 0x400;\n\n\t \n\tret = stmp_clear_poll_bit(reset_addr, STMP_MODULE_SFTRST);\n\tif (unlikely(ret))\n\t\tgoto error;\n\n\t \n\twritel(STMP_MODULE_CLKGATE, reset_addr + STMP_OFFSET_REG_CLR);\n\n\t \n\twritel(STMP_MODULE_SFTRST, reset_addr + STMP_OFFSET_REG_SET);\n\tudelay(1);\n\n\t \n\twhile ((!(readl(reset_addr) & STMP_MODULE_CLKGATE)) && --timeout)\n\t\t ;\n\tif (unlikely(!timeout))\n\t\tgoto error;\n\n\t \n\tret = stmp_clear_poll_bit(reset_addr, STMP_MODULE_SFTRST);\n\tif (unlikely(ret))\n\t\tgoto error;\n\n\t \n\tret = stmp_clear_poll_bit(reset_addr, STMP_MODULE_CLKGATE);\n\tif (unlikely(ret))\n\t\tgoto error;\n\n\treturn 0;\n\nerror:\n\tpr_err(\"%s(%p): module reset timeout\\n\", __func__, reset_addr);\n\treturn -ETIMEDOUT;\n}\nEXPORT_SYMBOL(stmp_reset_block);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "control",
+  "hash_id": "975b8e48ddffeccbc93d3c8ed7a03a4ee0f5d7d9c646e79dc74f1ee144d3fa81",
+  "original_prompt": "Ingested from ncurses-6.4/package/debian/control",
+  "human_readable_source": "Source: ncurses6\nSection: libdevel\nPriority: optional\nMaintainer: Thomas E. Dickey <dickey@invisible-island.net>\nHomepage: https://invisible-island.net/ncurses/\nBuild-Depends: debhelper (>= 8.1.3)\nStandards-Version: 4.6.1.0\n\nPackage: ncurses6\nArchitecture: any\nDepends: ${misc:Depends}, libc6 (>= 2.4)\nDescription: shared libraries for terminal handling\n The ncurses library routines are a terminal-independent method of\n updating character screens with reasonable optimization.\n .\n This package is used for testing ABI 6.\n\nPackage: ncursest6\nArchitecture: any\nDepends: ${misc:Depends}, libc6 (>= 2.4)\nDescription: shared libraries for terminal handling\n The ncurses library routines are a terminal-independent method of\n updating character screens with reasonable optimization.\n .\n This package is used for testing ABI 6 with pthreads.\n\nPackage: ncurses6-doc\nSection: doc\nArchitecture: all\nDepends: groff-base\nDescription: shared libraries for terminal handling\n The ncurses library routines are a terminal-independent method of\n updating character screens with reasonable optimization.\n .\n This package is used for testing ncurses6 document packaging.\n\nPackage: ncurses6-doc-html\nSection: doc\nArchitecture: all\nDescription: shared libraries for terminal handling\n The ncurses library routines are a terminal-independent method of\n updating character screens with reasonable optimization.\n .\n This package is used for testing ncurses6 document packaging.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

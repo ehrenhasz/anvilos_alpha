@@ -1,0 +1,9 @@
+{
+  "module_name": "mtk_mdp_ipi.h",
+  "hash_id": "9822434d40ea8bf5f0f968e0b0e0ddd91ff69a7f2f0f5e07bb356ae6ba65aa61",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/platform/mediatek/mdp/mtk_mdp_ipi.h",
+  "human_readable_source": " \n \n\n#ifndef __MTK_MDP_IPI_H__\n#define __MTK_MDP_IPI_H__\n\n#define MTK_MDP_MAX_NUM_PLANE\t\t3\n\nenum mdp_ipi_msgid {\n\tAP_MDP_INIT\t\t= 0xd000,\n\tAP_MDP_DEINIT\t\t= 0xd001,\n\tAP_MDP_PROCESS\t\t= 0xd002,\n\n\tVPU_MDP_INIT_ACK\t= 0xe000,\n\tVPU_MDP_DEINIT_ACK\t= 0xe001,\n\tVPU_MDP_PROCESS_ACK\t= 0xe002\n};\n\n#pragma pack(push, 4)\n\n \nstruct mdp_ipi_init {\n\tuint32_t msg_id;\n\tuint32_t ipi_id;\n\tuint64_t ap_inst;\n};\n\n \nstruct mdp_ipi_comm {\n\tuint32_t msg_id;\n\tuint32_t ipi_id;\n\tuint64_t ap_inst;\n\tuint32_t vpu_inst_addr;\n\tuint32_t padding;\n};\n\n \nstruct mdp_ipi_comm_ack {\n\tuint32_t msg_id;\n\tuint32_t ipi_id;\n\tuint64_t ap_inst;\n\tuint32_t vpu_inst_addr;\n\tint32_t status;\n};\n\n \nstruct mdp_config {\n\tint32_t x;\n\tint32_t y;\n\tint32_t w;\n\tint32_t h;\n\tint32_t w_stride;\n\tint32_t h_stride;\n\tint32_t crop_x;\n\tint32_t crop_y;\n\tint32_t crop_w;\n\tint32_t crop_h;\n\tint32_t format;\n};\n\nstruct mdp_buffer {\n\tuint64_t addr_mva[MTK_MDP_MAX_NUM_PLANE];\n\tint32_t plane_size[MTK_MDP_MAX_NUM_PLANE];\n\tint32_t plane_num;\n};\n\nstruct mdp_config_misc {\n\tint32_t orientation;  \n\tint32_t hflip;  \n\tint32_t vflip;  \n\tint32_t alpha;  \n};\n\nstruct mdp_process_vsi {\n\tstruct mdp_config src_config;\n\tstruct mdp_buffer src_buffer;\n\tstruct mdp_config dst_config;\n\tstruct mdp_buffer dst_buffer;\n\tstruct mdp_config_misc misc;\n};\n\n#pragma pack(pop)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "blake2b.h",
+  "hash_id": "30030ffcbd4a25cf33865c6bafdc56b55541be1c1d9d88e516a63ac61e880d67",
+  "original_prompt": "Ingested from linux-6.6.14/include/crypto/blake2b.h",
+  "human_readable_source": " \n\n#ifndef _CRYPTO_BLAKE2B_H\n#define _CRYPTO_BLAKE2B_H\n\n#include <linux/bug.h>\n#include <linux/types.h>\n#include <linux/string.h>\n\nenum blake2b_lengths {\n\tBLAKE2B_BLOCK_SIZE = 128,\n\tBLAKE2B_HASH_SIZE = 64,\n\tBLAKE2B_KEY_SIZE = 64,\n\n\tBLAKE2B_160_HASH_SIZE = 20,\n\tBLAKE2B_256_HASH_SIZE = 32,\n\tBLAKE2B_384_HASH_SIZE = 48,\n\tBLAKE2B_512_HASH_SIZE = 64,\n};\n\nstruct blake2b_state {\n\t \n\tu64 h[8];\n\tu64 t[2];\n\tu64 f[2];\n\tu8 buf[BLAKE2B_BLOCK_SIZE];\n\tunsigned int buflen;\n\tunsigned int outlen;\n};\n\nenum blake2b_iv {\n\tBLAKE2B_IV0 = 0x6A09E667F3BCC908ULL,\n\tBLAKE2B_IV1 = 0xBB67AE8584CAA73BULL,\n\tBLAKE2B_IV2 = 0x3C6EF372FE94F82BULL,\n\tBLAKE2B_IV3 = 0xA54FF53A5F1D36F1ULL,\n\tBLAKE2B_IV4 = 0x510E527FADE682D1ULL,\n\tBLAKE2B_IV5 = 0x9B05688C2B3E6C1FULL,\n\tBLAKE2B_IV6 = 0x1F83D9ABFB41BD6BULL,\n\tBLAKE2B_IV7 = 0x5BE0CD19137E2179ULL,\n};\n\nstatic inline void __blake2b_init(struct blake2b_state *state, size_t outlen,\n\t\t\t\t  const void *key, size_t keylen)\n{\n\tstate->h[0] = BLAKE2B_IV0 ^ (0x01010000 | keylen << 8 | outlen);\n\tstate->h[1] = BLAKE2B_IV1;\n\tstate->h[2] = BLAKE2B_IV2;\n\tstate->h[3] = BLAKE2B_IV3;\n\tstate->h[4] = BLAKE2B_IV4;\n\tstate->h[5] = BLAKE2B_IV5;\n\tstate->h[6] = BLAKE2B_IV6;\n\tstate->h[7] = BLAKE2B_IV7;\n\tstate->t[0] = 0;\n\tstate->t[1] = 0;\n\tstate->f[0] = 0;\n\tstate->f[1] = 0;\n\tstate->buflen = 0;\n\tstate->outlen = outlen;\n\tif (keylen) {\n\t\tmemcpy(state->buf, key, keylen);\n\t\tmemset(&state->buf[keylen], 0, BLAKE2B_BLOCK_SIZE - keylen);\n\t\tstate->buflen = BLAKE2B_BLOCK_SIZE;\n\t}\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

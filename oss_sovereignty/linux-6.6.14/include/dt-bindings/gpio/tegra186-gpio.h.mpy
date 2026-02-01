@@ -1,0 +1,9 @@
+{
+  "module_name": "tegra186-gpio.h",
+  "hash_id": "a3300790e9b3018e3aebf50aa3b961e3753d9142f26a242fc1a29136f3b77c17",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/gpio/tegra186-gpio.h",
+  "human_readable_source": " \n \n\n#ifndef _DT_BINDINGS_GPIO_TEGRA186_GPIO_H\n#define _DT_BINDINGS_GPIO_TEGRA186_GPIO_H\n\n#include <dt-bindings/gpio/gpio.h>\n\n \n#define TEGRA186_MAIN_GPIO_PORT_A 0\n#define TEGRA186_MAIN_GPIO_PORT_B 1\n#define TEGRA186_MAIN_GPIO_PORT_C 2\n#define TEGRA186_MAIN_GPIO_PORT_D 3\n#define TEGRA186_MAIN_GPIO_PORT_E 4\n#define TEGRA186_MAIN_GPIO_PORT_F 5\n#define TEGRA186_MAIN_GPIO_PORT_G 6\n#define TEGRA186_MAIN_GPIO_PORT_H 7\n#define TEGRA186_MAIN_GPIO_PORT_I 8\n#define TEGRA186_MAIN_GPIO_PORT_J 9\n#define TEGRA186_MAIN_GPIO_PORT_K 10\n#define TEGRA186_MAIN_GPIO_PORT_L 11\n#define TEGRA186_MAIN_GPIO_PORT_M 12\n#define TEGRA186_MAIN_GPIO_PORT_N 13\n#define TEGRA186_MAIN_GPIO_PORT_O 14\n#define TEGRA186_MAIN_GPIO_PORT_P 15\n#define TEGRA186_MAIN_GPIO_PORT_Q 16\n#define TEGRA186_MAIN_GPIO_PORT_R 17\n#define TEGRA186_MAIN_GPIO_PORT_T 18\n#define TEGRA186_MAIN_GPIO_PORT_X 19\n#define TEGRA186_MAIN_GPIO_PORT_Y 20\n#define TEGRA186_MAIN_GPIO_PORT_BB 21\n#define TEGRA186_MAIN_GPIO_PORT_CC 22\n\n#define TEGRA186_MAIN_GPIO(port, offset) \\\n\t((TEGRA186_MAIN_GPIO_PORT_##port * 8) + offset)\n\n \n#define TEGRA186_AON_GPIO_PORT_S 0\n#define TEGRA186_AON_GPIO_PORT_U 1\n#define TEGRA186_AON_GPIO_PORT_V 2\n#define TEGRA186_AON_GPIO_PORT_W 3\n#define TEGRA186_AON_GPIO_PORT_Z 4\n#define TEGRA186_AON_GPIO_PORT_AA 5\n#define TEGRA186_AON_GPIO_PORT_EE 6\n#define TEGRA186_AON_GPIO_PORT_FF 7\n\n#define TEGRA186_AON_GPIO(port, offset) \\\n\t((TEGRA186_AON_GPIO_PORT_##port * 8) + offset)\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

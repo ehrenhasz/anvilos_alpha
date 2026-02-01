@@ -1,0 +1,9 @@
+{
+  "module_name": "kernel-declare-event-class.m4",
+  "hash_id": "5617712563ac5d0275e92520ebfbd7d003f8863b46abe09dbe41df6c89e2c167",
+  "original_prompt": "Ingested from zfs-2.2.2/config/kernel-declare-event-class.m4",
+  "human_readable_source": "dnl #\ndnl # Ensure the DECLARE_EVENT_CLASS macro is available to non-GPL modules.\ndnl #\nAC_DEFUN([ZFS_AC_KERNEL_DECLARE_EVENT_CLASS], [\n\tAC_MSG_CHECKING([whether DECLARE_EVENT_CLASS() is available])\n\tZFS_LINUX_TRY_COMPILE_HEADER([\n\t\t#include <linux/module.h>\n\t\tMODULE_LICENSE(\"$ZFS_META_LICENSE\");\n\n\t\t#define CREATE_TRACE_POINTS\n\t\t#include \"conftest.h\"\n\t],[\n\t\ttrace_zfs_autoconf_event_one(1UL);\n\t\ttrace_zfs_autoconf_event_two(2UL);\n\t],[\n\t\tAC_MSG_RESULT(yes)\n\t\tAC_DEFINE(HAVE_DECLARE_EVENT_CLASS, 1,\n\t\t    [DECLARE_EVENT_CLASS() is available])\n\t],[\n\t\tAC_MSG_RESULT(no)\n\t],[\n\t\t#if !defined(_CONFTEST_H) || defined(TRACE_HEADER_MULTI_READ)\n\t\t#define _CONFTEST_H\n\n\t\t#undef  TRACE_SYSTEM\n\t\t#define TRACE_SYSTEM zfs\n\t\t#include <linux/tracepoint.h>\n\n\t\tDECLARE_EVENT_CLASS(zfs_autoconf_event_class,\n\t\t\tTP_PROTO(unsigned long i),\n\t\t\tTP_ARGS(i),\n\t\t\tTP_STRUCT__entry(\n\t\t\t\t__field(unsigned long, i)\n\t\t\t),\n\t\t\tTP_fast_assign(\n\t\t\t\t__entry->i = i;\n\t\t\t),\n\t\t\tTP_printk(\"i = %lu\", __entry->i)\n\t\t);\n\n\t\t#define DEFINE_AUTOCONF_EVENT(name) \\\n\t\tDEFINE_EVENT(zfs_autoconf_event_class, name, \\\n\t\t\tTP_PROTO(unsigned long i), \\\n\t\t\tTP_ARGS(i))\n\t\tDEFINE_AUTOCONF_EVENT(zfs_autoconf_event_one);\n\t\tDEFINE_AUTOCONF_EVENT(zfs_autoconf_event_two);\n\n\t\t#endif /* _CONFTEST_H */\n\n\t\t#undef  TRACE_INCLUDE_PATH\n\t\t#define TRACE_INCLUDE_PATH .\n\t\t#define TRACE_INCLUDE_FILE conftest\n\t\t#include <trace/define_trace.h>\n\t])\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

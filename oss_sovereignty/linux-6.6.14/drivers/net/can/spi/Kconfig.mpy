@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "b23faa72bcedf5eed3d64d3b1cdce2e7040bd791c65b73f77b3065f98edcaae8",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/can/spi/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nmenu \"CAN SPI interfaces\"\n\tdepends on SPI\n\nconfig CAN_HI311X\n\ttristate \"Holt HI311x SPI CAN controllers\"\n\thelp\n\t  Driver for the Holt HI311x SPI CAN controllers.\n\nconfig CAN_MCP251X\n\ttristate \"Microchip MCP251x and MCP25625 SPI CAN controllers\"\n\thelp\n\t  Driver for the Microchip MCP251x and MCP25625 SPI CAN\n\t  controllers.\n\nsource \"drivers/net/can/spi/mcp251xfd/Kconfig\"\n\nendmenu\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

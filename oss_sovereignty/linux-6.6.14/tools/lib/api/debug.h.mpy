@@ -1,0 +1,9 @@
+{
+  "module_name": "debug.h",
+  "hash_id": "da640f232c962bd9554a33da5f4c01698c56a8c5367c5a1a876407f1dd799695",
+  "original_prompt": "Ingested from linux-6.6.14/tools/lib/api/debug.h",
+  "human_readable_source": " \n#ifndef __API_DEBUG_H__\n#define __API_DEBUG_H__\n\ntypedef int (*libapi_print_fn_t)(const char *, ...);\n\nvoid libapi_set_print(libapi_print_fn_t warn,\n\t\t      libapi_print_fn_t info,\n\t\t      libapi_print_fn_t debug);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

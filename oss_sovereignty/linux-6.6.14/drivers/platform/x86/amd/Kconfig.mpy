@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "cb19ec301371365906931005405626ed120ce42105360d918cedfa84f30505b7",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/platform/x86/amd/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# AMD x86 Platform Specific Drivers\n#\n\nsource \"drivers/platform/x86/amd/pmf/Kconfig\"\nsource \"drivers/platform/x86/amd/pmc/Kconfig\"\n\nconfig AMD_HSMP\n\ttristate \"AMD HSMP Driver\"\n\tdepends on AMD_NB && X86_64\n\thelp\n\t  The driver provides a way for user space tools to monitor and manage\n\t  system management functionality on EPYC server CPUs from AMD.\n\n\t  Host System Management Port (HSMP) interface is a mailbox interface\n\t  between the x86 core and the System Management Unit (SMU) firmware.\n\n\t  If you choose to compile this driver as a module the module will be\n\t  called amd_hsmp.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "91f9e874c74bcb87a914057f44a3d7d249a34e21f90cdd3330e0dd9cc1b7a67c",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/proc/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nCFLAGS += -Wall -O2 -Wno-unused-function\nCFLAGS += -D_GNU_SOURCE\nLDFLAGS += -pthread\n\nTEST_GEN_PROGS :=\nTEST_GEN_PROGS += fd-001-lookup\nTEST_GEN_PROGS += fd-002-posix-eq\nTEST_GEN_PROGS += fd-003-kthread\nTEST_GEN_PROGS += proc-loadavg-001\nTEST_GEN_PROGS += proc-empty-vm\nTEST_GEN_PROGS += proc-pid-vm\nTEST_GEN_PROGS += proc-self-map-files-001\nTEST_GEN_PROGS += proc-self-map-files-002\nTEST_GEN_PROGS += proc-self-syscall\nTEST_GEN_PROGS += proc-self-wchan\nTEST_GEN_PROGS += proc-subset-pid\nTEST_GEN_PROGS += proc-tid0\nTEST_GEN_PROGS += proc-uptime-001\nTEST_GEN_PROGS += proc-uptime-002\nTEST_GEN_PROGS += read\nTEST_GEN_PROGS += self\nTEST_GEN_PROGS += setns-dcache\nTEST_GEN_PROGS += setns-sysvipc\nTEST_GEN_PROGS += thread-self\nTEST_GEN_PROGS += proc-multiple-procfs\nTEST_GEN_PROGS += proc-fsconfig-hidepid\n\ninclude ../lib.mk\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "thermal_interrupt.h",
+  "hash_id": "8b0822075646f383938434cac96565e12f16565b90588bd29612a1fa812fadbf",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/thermal/intel/thermal_interrupt.h",
+  "human_readable_source": " \n#ifndef _INTEL_THERMAL_INTERRUPT_H\n#define _INTEL_THERMAL_INTERRUPT_H\n\n#define CORE_LEVEL\t0\n#define PACKAGE_LEVEL\t1\n\n \nextern int (*platform_thermal_package_notify)(__u64 msr_val);\n\n \nextern int (*platform_thermal_notify)(__u64 msr_val);\n\n \nextern bool (*platform_thermal_package_rate_control)(void);\n\n \nextern void notify_hwp_interrupt(void);\n\n \nextern void thermal_clear_package_intr_status(int level, u64 bit_mask);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

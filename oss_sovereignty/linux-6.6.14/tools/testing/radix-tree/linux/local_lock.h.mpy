@@ -1,0 +1,9 @@
+{
+  "module_name": "local_lock.h",
+  "hash_id": "648ac8f6341647507cdfb6f4651b0792c81cd5c6fa27c59360eb9dea393beb79",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/radix-tree/linux/local_lock.h",
+  "human_readable_source": "#ifndef _LINUX_LOCAL_LOCK\n#define _LINUX_LOCAL_LOCK\ntypedef struct { } local_lock_t;\n\nstatic inline void local_lock(local_lock_t *lock) { }\nstatic inline void local_unlock(local_lock_t *lock) { }\n#define INIT_LOCAL_LOCK(x) { }\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

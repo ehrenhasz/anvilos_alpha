@@ -1,0 +1,9 @@
+{
+  "module_name": "test_signals_utils.h",
+  "hash_id": "d5d1e731043e7ac96fc357d9a0c703afcf07e906f781f686b543c03edfd1cfd7",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/arm64/signal/test_signals_utils.h",
+  "human_readable_source": " \n \n\n#ifndef __TEST_SIGNALS_UTILS_H__\n#define __TEST_SIGNALS_UTILS_H__\n\n#include <assert.h>\n#include <stdio.h>\n#include <string.h>\n\n#include <linux/compiler.h>\n\n#include \"test_signals.h\"\n\nint test_init(struct tdescr *td);\nint test_setup(struct tdescr *td);\nvoid test_cleanup(struct tdescr *td);\nint test_run(struct tdescr *td);\nvoid test_result(struct tdescr *td);\n\nstatic inline bool feats_ok(struct tdescr *td)\n{\n\tif (td->feats_incompatible & td->feats_supported)\n\t\treturn false;\n\treturn (td->feats_required & td->feats_supported) == td->feats_required;\n}\n\n \nstatic __always_inline bool get_current_context(struct tdescr *td,\n\t\t\t\t\t\tucontext_t *dest_uc,\n\t\t\t\t\t\tsize_t dest_sz)\n{\n\tstatic volatile bool seen_already;\n\tint i;\n\tchar *uc = (char *)dest_uc;\n\n\tassert(td && dest_uc);\n\t \n\tseen_already = 0;\n\ttd->live_uc_valid = 0;\n\ttd->live_sz = dest_sz;\n\n\t \n\tfor (i = 0; i < td->live_sz; i++) {\n\t\tuc[i] = 0;\n\t\tOPTIMIZER_HIDE_VAR(uc[0]);\n\t}\n\n\ttd->live_uc = dest_uc;\n\t \n\tasm volatile (\"brk #666\"\n\t\t      : \"+m\" (*dest_uc)\n\t\t      :\n\t\t      : \"memory\");\n\n\t \n\tif (td->feats_supported & FEAT_SME)\n\t\tasm volatile(\"msr S0_3_C4_C6_3, xzr\");\n\n\t \n\tif (seen_already) {\n\t\tfprintf(stdout,\n\t\t\t\"Unexpected successful sigreturn detected: live_uc is stale !\\n\");\n\t\treturn 0;\n\t}\n\tseen_already = 1;\n\n\treturn td->live_uc_valid;\n}\n\nint fake_sigreturn(void *sigframe, size_t sz, int misalign_bytes);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

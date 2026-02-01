@@ -1,0 +1,9 @@
+{
+  "module_name": "barrier.h",
+  "hash_id": "a273bd015b4c384a1401630a2d42b1f965b9df5031b4b71383f6d2f63ee2e826",
+  "original_prompt": "Ingested from linux-6.6.14/tools/arch/sh/include/asm/barrier.h",
+  "human_readable_source": " \n \n#ifndef __TOOLS_LINUX_ASM_SH_BARRIER_H\n#define __TOOLS_LINUX_ASM_SH_BARRIER_H\n\n \n#if defined(__SH4A__)\n#define mb()\t\t__asm__ __volatile__ (\"synco\": : :\"memory\")\n#define rmb()\t\tmb()\n#define wmb()\t\tmb()\n#endif\n\n#include <asm-generic/barrier.h>\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

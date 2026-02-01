@@ -1,0 +1,9 @@
+{
+  "module_name": "Build",
+  "hash_id": "05e4768b748d9937c572eb565d24739963df26cbea8c863a11bc591ea8ea32a5",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/jvmti/Build",
+  "human_readable_source": "jvmti-y += libjvmti.o\njvmti-y += jvmti_agent.o\n\n# For strlcpy\njvmti-y += libstring.o libctype.o\n\nCFLAGS_jvmti         = -fPIC -DPIC -I$(JDIR)/include -I$(JDIR)/include/linux\nCFLAGS_REMOVE_jvmti  = -Wmissing-declarations\nCFLAGS_REMOVE_jvmti += -Wstrict-prototypes\nCFLAGS_REMOVE_jvmti += -Wextra\nCFLAGS_REMOVE_jvmti += -Wwrite-strings\n\nCFLAGS_libstring.o += -Wno-unused-parameter -DETC_PERFCONFIG=\"BUILD_STR($(ETC_PERFCONFIG_SQ))\"\n\n$(OUTPUT)jvmti/libstring.o: ../lib/string.c FORCE\n\t$(call rule_mkdir)\n\t$(call if_changed_dep,cc_o_c)\n\n$(OUTPUT)jvmti/libctype.o: ../lib/ctype.c FORCE\n\t$(call rule_mkdir)\n\t$(call if_changed_dep,cc_o_c)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

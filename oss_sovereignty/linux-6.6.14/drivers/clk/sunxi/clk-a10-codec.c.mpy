@@ -1,0 +1,9 @@
+{
+  "module_name": "clk-a10-codec.c",
+  "hash_id": "fbace7e1d344123bce397e9bf263daa9c1789efdaf5284106eb6153ad602033f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/clk/sunxi/clk-a10-codec.c",
+  "human_readable_source": "\n \n\n#include <linux/clk-provider.h>\n#include <linux/of.h>\n#include <linux/of_address.h>\n\n#define SUN4I_CODEC_GATE\t31\n\nstatic void __init sun4i_codec_clk_setup(struct device_node *node)\n{\n\tstruct clk *clk;\n\tconst char *clk_name = node->name, *parent_name;\n\tvoid __iomem *reg;\n\n\treg = of_io_request_and_map(node, 0, of_node_full_name(node));\n\tif (IS_ERR(reg))\n\t\treturn;\n\n\tof_property_read_string(node, \"clock-output-names\", &clk_name);\n\tparent_name = of_clk_get_parent_name(node, 0);\n\n\tclk = clk_register_gate(NULL, clk_name, parent_name,\n\t\t\t\tCLK_SET_RATE_PARENT, reg,\n\t\t\t\tSUN4I_CODEC_GATE, 0, NULL);\n\n\tif (!IS_ERR(clk))\n\t\tof_clk_add_provider(node, of_clk_src_simple_get, clk);\n}\nCLK_OF_DECLARE(sun4i_codec, \"allwinner,sun4i-a10-codec-clk\",\n\t       sun4i_codec_clk_setup);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

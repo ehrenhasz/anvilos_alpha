@@ -1,0 +1,9 @@
+{
+  "module_name": "hash_info.h",
+  "hash_id": "31a015e0a0a8496e21d08b12e9cad53e9ed7be0e460f2e2ec42de51a535ab8e9",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/hash_info.h",
+  "human_readable_source": " \n \n\n#ifndef _UAPI_LINUX_HASH_INFO_H\n#define _UAPI_LINUX_HASH_INFO_H\n\nenum hash_algo {\n\tHASH_ALGO_MD4,\n\tHASH_ALGO_MD5,\n\tHASH_ALGO_SHA1,\n\tHASH_ALGO_RIPE_MD_160,\n\tHASH_ALGO_SHA256,\n\tHASH_ALGO_SHA384,\n\tHASH_ALGO_SHA512,\n\tHASH_ALGO_SHA224,\n\tHASH_ALGO_RIPE_MD_128,\n\tHASH_ALGO_RIPE_MD_256,\n\tHASH_ALGO_RIPE_MD_320,\n\tHASH_ALGO_WP_256,\n\tHASH_ALGO_WP_384,\n\tHASH_ALGO_WP_512,\n\tHASH_ALGO_TGR_128,\n\tHASH_ALGO_TGR_160,\n\tHASH_ALGO_TGR_192,\n\tHASH_ALGO_SM3_256,\n\tHASH_ALGO_STREEBOG_256,\n\tHASH_ALGO_STREEBOG_512,\n\tHASH_ALGO__LAST\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

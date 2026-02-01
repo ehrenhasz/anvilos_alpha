@@ -1,0 +1,9 @@
+{
+  "module_name": "clk-mt6797-img.c",
+  "hash_id": "5493404f36182e0b6cf7aaab3a5d1e0e3c87dd843c3eb343c7191d9f35750dfb",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/clk/mediatek/clk-mt6797-img.c",
+  "human_readable_source": "\n \n\n#include <linux/clk-provider.h>\n#include <linux/platform_device.h>\n#include <dt-bindings/clock/mt6797-clk.h>\n\n#include \"clk-mtk.h\"\n#include \"clk-gate.h\"\n\nstatic const struct mtk_gate_regs img_cg_regs = {\n\t.set_ofs = 0x0004,\n\t.clr_ofs = 0x0008,\n\t.sta_ofs = 0x0000,\n};\n\n#define GATE_IMG(_id, _name, _parent, _shift)\t\t\t\\\n\tGATE_MTK(_id, _name, _parent, &img_cg_regs, _shift, &mtk_clk_gate_ops_setclr)\n\nstatic const struct mtk_gate img_clks[] = {\n\tGATE_IMG(CLK_IMG_FDVT, \"img_fdvt\", \"mm_sel\", 11),\n\tGATE_IMG(CLK_IMG_DPE, \"img_dpe\", \"mm_sel\", 10),\n\tGATE_IMG(CLK_IMG_DIP, \"img_dip\", \"mm_sel\", 6),\n\tGATE_IMG(CLK_IMG_LARB6, \"img_larb6\", \"mm_sel\", 0),\n};\n\nstatic const struct mtk_clk_desc img_desc = {\n\t.clks = img_clks,\n\t.num_clks = ARRAY_SIZE(img_clks),\n};\n\nstatic const struct of_device_id of_match_clk_mt6797_img[] = {\n\t{\n\t\t.compatible = \"mediatek,mt6797-imgsys\",\n\t\t.data = &img_desc,\n\t}, {\n\t\t \n\t}\n};\nMODULE_DEVICE_TABLE(of, of_match_clk_mt6797_img);\n\nstatic struct platform_driver clk_mt6797_img_drv = {\n\t.probe = mtk_clk_simple_probe,\n\t.remove_new = mtk_clk_simple_remove,\n\t.driver = {\n\t\t.name = \"clk-mt6797-img\",\n\t\t.of_match_table = of_match_clk_mt6797_img,\n\t},\n};\nmodule_platform_driver(clk_mt6797_img_drv);\nMODULE_LICENSE(\"GPL\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

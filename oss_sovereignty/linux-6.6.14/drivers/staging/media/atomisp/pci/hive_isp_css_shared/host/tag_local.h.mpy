@@ -1,0 +1,9 @@
+{
+  "module_name": "tag_local.h",
+  "hash_id": "b6b1dec3b36b536cf04143bf3815b0763396cc1166541c5a8216fc156e98dbe6",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/hive_isp_css_shared/host/tag_local.h",
+  "human_readable_source": " \n \n\n#ifndef __TAG_LOCAL_H_INCLUDED__\n#define __TAG_LOCAL_H_INCLUDED__\n\n#include \"tag_global.h\"\n\n#define SH_CSS_MINIMUM_TAG_ID (-1)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

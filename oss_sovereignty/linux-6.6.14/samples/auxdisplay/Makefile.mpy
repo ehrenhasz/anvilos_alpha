@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "a439316012ad97f95dcc1db7dea2baf97457ce14a9954145c1b17e33949a73d3",
+  "original_prompt": "Ingested from linux-6.6.14/samples/auxdisplay/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nuserprogs-always-y += cfag12864b-example\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "defaa9026eb81fbb77de362033d4815d9efa0614276c87b5d62d1ce640b5b6b5",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/soc/canaan/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n\nobj-$(CONFIG_SOC_K210_SYSCTL)\t+= k210-sysctl.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

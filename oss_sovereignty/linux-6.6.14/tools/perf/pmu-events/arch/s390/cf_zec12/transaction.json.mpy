@@ -1,0 +1,9 @@
+{
+  "module_name": "transaction.json",
+  "hash_id": "aca5c459f504bdb770c885c897849cee087d2ed36129fb3db6183a49c39cc301",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/pmu-events/arch/s390/cf_zec12/transaction.json",
+  "human_readable_source": "[\n  {\n    \"BriefDescription\": \"Transaction count\",\n    \"MetricName\": \"transaction\",\n    \"MetricExpr\": \"TX_C_TEND + TX_NC_TEND + TX_NC_TABORT + TX_C_TABORT_SPECIAL + TX_C_TABORT_NO_SPECIAL\"\n  }\n]\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "dm-io-tracker.h",
+  "hash_id": "71b9d39ecbd5f4ae962fe455fc45ae46f518bc2e524bdd7dabe13a97f3865e68",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/md/dm-io-tracker.h",
+  "human_readable_source": " \n \n\n#ifndef DM_IO_TRACKER_H\n#define DM_IO_TRACKER_H\n\n#include <linux/jiffies.h>\n\nstruct dm_io_tracker {\n\tspinlock_t lock;\n\n\t \n\tsector_t in_flight;\n\n\t \n\tunsigned long idle_time;\n\tunsigned long last_update_time;\n};\n\nstatic inline void dm_iot_init(struct dm_io_tracker *iot)\n{\n\tspin_lock_init(&iot->lock);\n\tiot->in_flight = 0ul;\n\tiot->idle_time = 0ul;\n\tiot->last_update_time = jiffies;\n}\n\nstatic inline bool dm_iot_idle_for(struct dm_io_tracker *iot, unsigned long j)\n{\n\tbool r = false;\n\n\tspin_lock_irq(&iot->lock);\n\tif (!iot->in_flight)\n\t\tr = time_after(jiffies, iot->idle_time + j);\n\tspin_unlock_irq(&iot->lock);\n\n\treturn r;\n}\n\nstatic inline unsigned long dm_iot_idle_time(struct dm_io_tracker *iot)\n{\n\tunsigned long r = 0;\n\n\tspin_lock_irq(&iot->lock);\n\tif (!iot->in_flight)\n\t\tr = jiffies - iot->idle_time;\n\tspin_unlock_irq(&iot->lock);\n\n\treturn r;\n}\n\nstatic inline void dm_iot_io_begin(struct dm_io_tracker *iot, sector_t len)\n{\n\tspin_lock_irq(&iot->lock);\n\tiot->in_flight += len;\n\tspin_unlock_irq(&iot->lock);\n}\n\nstatic inline void dm_iot_io_end(struct dm_io_tracker *iot, sector_t len)\n{\n\tunsigned long flags;\n\n\tif (!len)\n\t\treturn;\n\n\tspin_lock_irqsave(&iot->lock, flags);\n\tiot->in_flight -= len;\n\tif (!iot->in_flight)\n\t\tiot->idle_time = jiffies;\n\tspin_unlock_irqrestore(&iot->lock, flags);\n}\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

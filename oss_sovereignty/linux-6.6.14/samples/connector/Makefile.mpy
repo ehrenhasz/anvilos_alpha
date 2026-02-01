@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "1d13156ca4d0c3ede777475128450bc13a9a5249f102cb630b1f2bf603574760",
+  "original_prompt": "Ingested from linux-6.6.14/samples/connector/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nobj-$(CONFIG_SAMPLE_CONNECTOR) += cn_test.o\n\nuserprogs-always-$(CONFIG_CC_CAN_LINK) += ucon\n\nuserccflags += -I usr/include\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

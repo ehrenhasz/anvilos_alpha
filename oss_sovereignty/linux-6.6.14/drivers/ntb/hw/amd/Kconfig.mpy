@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "e63ffb4a4f6538fe8ea70a5763ab8976ce7909e0e758eb97b5cd101869caab55",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/ntb/hw/amd/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig NTB_AMD\n\ttristate \"AMD Non-Transparent Bridge support\"\n\tdepends on X86_64\n\thelp\n\t This driver supports AMD NTB on capable Zeppelin hardware.\n\n\t If unsure, say N.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

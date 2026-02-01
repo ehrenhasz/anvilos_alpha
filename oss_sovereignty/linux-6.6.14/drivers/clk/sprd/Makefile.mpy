@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "68aa612f29a9856ed096b175218f94c0dfcd0ede29fc2c6b702a7304f60047bc",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/clk/sprd/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-$(CONFIG_SPRD_COMMON_CLK)\t+= clk-sprd.o\n\nclk-sprd-y\t+= common.o\nclk-sprd-y\t+= gate.o\nclk-sprd-y\t+= mux.o\nclk-sprd-y\t+= div.o\nclk-sprd-y\t+= composite.o\nclk-sprd-y\t+= pll.o\n\n## SoC support\nobj-$(CONFIG_SPRD_SC9860_CLK)\t+= sc9860-clk.o\nobj-$(CONFIG_SPRD_SC9863A_CLK)\t+= sc9863a-clk.o\nobj-$(CONFIG_SPRD_UMS512_CLK)\t+= ums512-clk.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "hsmmc-omap.h",
+  "hash_id": "475a2fce58dfdc0269e2078a5d262d3a72166ab7bbb4023a526f28dff7cf7c19",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/platform_data/hsmmc-omap.h",
+  "human_readable_source": " \n \n\n \n#define OMAP_HSMMC_SUPPORTS_DUAL_VOLT\t\tBIT(0)\n#define OMAP_HSMMC_BROKEN_MULTIBLOCK_READ\tBIT(1)\n#define OMAP_HSMMC_SWAKEUP_MISSING\t\tBIT(2)\n\nstruct omap_hsmmc_dev_attr {\n\tu8 flags;\n};\n\nstruct mmc_card;\n\nstruct omap_hsmmc_platform_data {\n\t \n\tstruct device *dev;\n\n\t \n\tunsigned int max_freq;\n\n\t \n\tu8 controller_flags;\n\n\t \n\tu16 reg_offset;\n\n\t \n\tu32 caps;\t \n\tu32 pm_caps;\t \n\n\t \n\tunsigned nonremovable:1;\n\n\t \n\tunsigned no_regulator_off_init:1;\n\n\t \n#define HSMMC_HAS_PBIAS\t\t(1 << 0)\n#define HSMMC_HAS_UPDATED_RESET\t(1 << 1)\n#define HSMMC_HAS_HSPE_SUPPORT\t(1 << 2)\n\tunsigned features;\n\n\t \n\tchar *version;\n\n\tconst char *name;\n\tu32 ocr_mask;\n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

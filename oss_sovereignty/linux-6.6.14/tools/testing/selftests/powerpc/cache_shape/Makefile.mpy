@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "4651daad11577f514146e9231bf629b1b2f40547761efa7fdfc7cc7dc4cca6e9",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/powerpc/cache_shape/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nTEST_GEN_PROGS := cache_shape\n\ntop_srcdir = ../../../../..\ninclude ../../lib.mk\n\n$(TEST_GEN_PROGS): ../harness.c ../utils.c\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

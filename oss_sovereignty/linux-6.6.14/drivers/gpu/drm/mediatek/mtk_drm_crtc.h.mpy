@@ -1,0 +1,9 @@
+{
+  "module_name": "mtk_drm_crtc.h",
+  "hash_id": "119bde2fd2336c20825abd1aa70142a14f187245090fcda2fc59a664b4a1f042",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/mediatek/mtk_drm_crtc.h",
+  "human_readable_source": " \n \n\n#ifndef MTK_DRM_CRTC_H\n#define MTK_DRM_CRTC_H\n\n#include <drm/drm_crtc.h>\n#include \"mtk_drm_ddp_comp.h\"\n#include \"mtk_drm_plane.h\"\n\n#define MTK_LUT_SIZE\t512\n#define MTK_MAX_BPC\t10\n#define MTK_MIN_BPC\t3\n\nvoid mtk_drm_crtc_commit(struct drm_crtc *crtc);\nint mtk_drm_crtc_create(struct drm_device *drm_dev,\n\t\t\tconst unsigned int *path,\n\t\t\tunsigned int path_len,\n\t\t\tint priv_data_index);\nint mtk_drm_crtc_plane_check(struct drm_crtc *crtc, struct drm_plane *plane,\n\t\t\t     struct mtk_plane_state *state);\nvoid mtk_drm_crtc_async_update(struct drm_crtc *crtc, struct drm_plane *plane,\n\t\t\t       struct drm_atomic_state *plane_state);\nstruct device *mtk_drm_crtc_dma_dev_get(struct drm_crtc *crtc);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "setsockopt.c",
+  "hash_id": "5efb62797bf1c3a5be6d3e28ddafb06fc494188e6355cb664ec04bb011657990",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/setsockopt.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#define WIN32_LEAN_AND_MEAN\n \n#include <sys/socket.h>\n\n \n#include <sys/time.h>\n\n \n#include \"w32sock.h\"\n\n#undef setsockopt\n\nint\nrpl_setsockopt (int fd, int level, int optname, const void *optval, socklen_t optlen)\n{\n  SOCKET sock = FD_TO_SOCKET (fd);\n  int r;\n\n  if (sock == INVALID_SOCKET)\n    {\n      errno = EBADF;\n      return -1;\n    }\n  else\n    {\n      if (level == SOL_SOCKET\n          && (optname == SO_RCVTIMEO || optname == SO_SNDTIMEO))\n        {\n          const struct timeval *tv = optval;\n          int milliseconds = tv->tv_sec * 1000 + tv->tv_usec / 1000;\n          optval = &milliseconds;\n          r = setsockopt (sock, level, optname, optval, sizeof (int));\n        }\n      else\n        {\n          r = setsockopt (sock, level, optname, optval, optlen);\n        }\n\n      if (r < 0)\n        set_winsock_errno ();\n\n      return r;\n    }\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "net_ratelimit.h",
+  "hash_id": "b25854c935074649389158d1df7d1967103793807db98da17e6efe70c49bfb4e",
+  "original_prompt": "Ingested from linux-6.6.14/include/net/net_ratelimit.h",
+  "human_readable_source": " \n#ifndef _LINUX_NET_RATELIMIT_H\n#define _LINUX_NET_RATELIMIT_H\n\n#include <linux/ratelimit.h>\n\nextern struct ratelimit_state net_ratelimit_state;\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

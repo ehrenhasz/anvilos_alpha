@@ -1,0 +1,9 @@
+{
+  "module_name": "arch_uml.config",
+  "hash_id": "ac2760dd04bbb07efffc0d9f3b9381fd16b39c81c4e94d9ba6cbeabd034a83f5",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/kunit/configs/arch_uml.config",
+  "human_readable_source": "# Config options which are added to UML builds by default\n\n# Enable virtio/pci, as a lot of tests require it.\nCONFIG_VIRTIO_UML=y\nCONFIG_UML_PCI_OVER_VIRTIO=y\n\n# Enable FORTIFY_SOURCE for wider checking.\nCONFIG_FORTIFY_SOURCE=y\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

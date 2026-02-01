@@ -1,0 +1,9 @@
+{
+  "module_name": "meson-g12b-flakes.txt",
+  "hash_id": "af8a93801e138c130a5118b791f87d77d0348810bddfef6475d53cbb08e11cfd",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/ci/xfails/meson-g12b-flakes.txt",
+  "human_readable_source": "kms_force_connector_basic@force-connector-state\nkms_force_connector_basic@force-edid\nkms_force_connector_basic@force-load-detect\nkms_force_connector_basic@prune-stale-modes",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

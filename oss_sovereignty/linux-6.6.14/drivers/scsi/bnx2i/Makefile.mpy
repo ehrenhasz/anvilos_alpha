@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "602b42b5704ec1b3ffdc7216a036863fa3b86b93274b8abc7a291f7db973d10c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/scsi/bnx2i/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nbnx2i-y := bnx2i_init.o bnx2i_hwi.o bnx2i_iscsi.o bnx2i_sysfs.o\n\nobj-$(CONFIG_SCSI_BNX2_ISCSI) += bnx2i.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

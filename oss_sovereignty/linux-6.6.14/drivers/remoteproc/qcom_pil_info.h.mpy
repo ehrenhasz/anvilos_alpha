@@ -1,0 +1,9 @@
+{
+  "module_name": "qcom_pil_info.h",
+  "hash_id": "c571ef16eefab306cf65a851afe5a1e2239a114dc61e6efb90f83e62ebbe1d95",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/remoteproc/qcom_pil_info.h",
+  "human_readable_source": " \n#ifndef __QCOM_PIL_INFO_H__\n#define __QCOM_PIL_INFO_H__\n\n#include <linux/types.h>\n\nint qcom_pil_info_store(const char *image, phys_addr_t base, size_t size);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

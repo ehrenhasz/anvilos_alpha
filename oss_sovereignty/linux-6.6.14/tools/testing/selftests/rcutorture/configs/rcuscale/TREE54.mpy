@@ -1,0 +1,9 @@
+{
+  "module_name": "TREE54",
+  "hash_id": "c0ce7be290f923650650da69308ae1bf66c715484431d6f77b5dd31682cc5e3f",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/rcutorture/configs/rcuscale/TREE54",
+  "human_readable_source": "CONFIG_SMP=y\nCONFIG_NR_CPUS=54\nCONFIG_PREEMPT_NONE=n\nCONFIG_PREEMPT_VOLUNTARY=n\nCONFIG_PREEMPT=y\n#CHECK#CONFIG_PREEMPT_RCU=y\nCONFIG_HZ_PERIODIC=n\nCONFIG_NO_HZ_IDLE=y\nCONFIG_NO_HZ_FULL=n\nCONFIG_HOTPLUG_CPU=y\nCONFIG_SUSPEND=n\nCONFIG_HIBERNATION=n\nCONFIG_RCU_FANOUT=3\nCONFIG_RCU_FANOUT_LEAF=2\nCONFIG_RCU_NOCB_CPU=n\nCONFIG_DEBUG_LOCK_ALLOC=n\nCONFIG_PROVE_LOCKING=n\nCONFIG_RCU_BOOST=n\nCONFIG_DEBUG_OBJECTS_RCU_HEAD=n\nCONFIG_RCU_EXPERT=y\nCONFIG_RCU_TRACE=y\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "tc90522.h",
+  "hash_id": "d8965b9c57392c959874410cdad8e4985aecfa7d45ec0deccd74af7eb7363eaf",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/dvb-frontends/tc90522.h",
+  "human_readable_source": " \n \n\n \n\n#ifndef TC90522_H\n#define TC90522_H\n\n#include <linux/i2c.h>\n#include <media/dvb_frontend.h>\n\n \n#define TC90522_I2C_DEV_SAT \"tc90522sat\"\n#define TC90522_I2C_DEV_TER \"tc90522ter\"\n\nstruct tc90522_config {\n\t \n\tstruct dvb_frontend *fe;\n\n\t \n\tstruct i2c_adapter *tuner_i2c;\n\n\t \n\tbool split_tuner_read_i2c;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "dw-dmac.h",
+  "hash_id": "0ba7fdad8230eadc8a6e8d8098c8e4f622785cf5bc99cf2bafdba3c9db7f6582",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/dma/dw-dmac.h",
+  "human_readable_source": " \n\n#ifndef __DT_BINDINGS_DMA_DW_DMAC_H__\n#define __DT_BINDINGS_DMA_DW_DMAC_H__\n\n \n#define DW_DMAC_HPROT1_PRIVILEGED_MODE\t(1 << 0)\t \n#define DW_DMAC_HPROT2_BUFFERABLE\t(1 << 1)\t \n#define DW_DMAC_HPROT3_CACHEABLE\t(1 << 2)\t \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

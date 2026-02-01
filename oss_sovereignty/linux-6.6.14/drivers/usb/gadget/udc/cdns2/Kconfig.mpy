@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "be8ff26cb6cf2c3db613fb54e0e5ff7b69cc666f591d125a05698317467615ed",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/usb/gadget/udc/cdns2/Kconfig",
+  "human_readable_source": "config USB_CDNS2_UDC\n\ttristate \"Cadence USBHS Device Controller\"\n\tdepends on USB_PCI && ACPI && HAS_DMA\n\thelp\n\t  Cadence USBHS Device controller is a PCI based USB peripheral\n\t  controller which supports both full and high speed USB 2.0\n\t  data transfers.\n\n\t  Say \"y\" to link the driver statically, or \"m\" to build a\n\t  dynamically linked module called \"cdns2-udc-pci.ko\" and to\n\t  force all gadget drivers to also be dynamically linked.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

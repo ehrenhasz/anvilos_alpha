@@ -1,0 +1,9 @@
+{
+  "module_name": ".gitignore",
+  "hash_id": "ae94ee8dc5002187b36a01760bdb55da08fc6c96db465a0e3f257fdcfb2733d4",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/entry/vdso/.gitignore",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nvdso.lds\nvdsox32.lds\nvdso32-syscall-syms.lds\nvdso32-sysenter-syms.lds\nvdso32-int80-syms.lds\nvdso-image-*.c\nvdso2c\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

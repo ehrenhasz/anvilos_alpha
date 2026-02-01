@@ -1,0 +1,9 @@
+{
+  "module_name": "signal.h",
+  "hash_id": "963fd33fa66e7247cacdfd08595190d7c0785512c2814d8fe0b391ab3b9c0f0e",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/arm64/bti/signal.h",
+  "human_readable_source": " \n \n\n#ifndef SIGNAL_H\n#define SIGNAL_H\n\n#include <linux/signal.h>\n\n#include \"system.h\"\n\ntypedef __sighandler_t sighandler_t;\n\nint sigemptyset(sigset_t *s);\nint sigaddset(sigset_t *s, int n);\nint sigaction(int n, struct sigaction *sa, const struct sigaction *old);\nint sigprocmask(int how, const sigset_t *mask, sigset_t *old);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

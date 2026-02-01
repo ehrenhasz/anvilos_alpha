@@ -1,0 +1,9 @@
+{
+  "module_name": "diskio.h",
+  "hash_id": "0c43c14fc1e5c1e6afb459137ef3f66cf1bb04440e318064b2c2e73074e952c7",
+  "original_prompt": "Ingested from sys_09_Anvil/source/lib/oofatfs/diskio.h",
+  "human_readable_source": " \n\n \n\n#ifndef _DISKIO_DEFINED\n#define _DISKIO_DEFINED\n\n#ifdef __cplusplus\nextern \"C\" {\n#endif\n\n \ntypedef BYTE    DSTATUS;\n\n \ntypedef enum {\n    RES_OK = 0,      \n    RES_ERROR,       \n    RES_WRPRT,       \n    RES_NOTRDY,      \n    RES_PARERR       \n} DRESULT;\n\n\n \n \n\n\nDRESULT disk_read (void *drv, BYTE* buff, DWORD sector, UINT count);\nDRESULT disk_write (void *drv, const BYTE* buff, DWORD sector, UINT count);\nDRESULT disk_ioctl (void *drv, BYTE cmd, void* buff);\n\n\n \n\n#define STA_NOINIT      0x01     \n#define STA_NODISK      0x02     \n#define STA_PROTECT     0x04     \n\n\n \n\n \n#define CTRL_SYNC           0    \n#define GET_SECTOR_COUNT    1    \n#define GET_SECTOR_SIZE     2    \n#define GET_BLOCK_SIZE      3    \n#define CTRL_TRIM           4    \n#define IOCTL_INIT          5\n#define IOCTL_STATUS        6\n\n \n#define CTRL_POWER          5    \n#define CTRL_LOCK           6    \n#define CTRL_EJECT          7    \n#define CTRL_FORMAT         8    \n\n \n#define MMC_GET_TYPE        10   \n#define MMC_GET_CSD         11   \n#define MMC_GET_CID         12   \n#define MMC_GET_OCR         13   \n#define MMC_GET_SDSTAT      14   \n#define ISDIO_READ          55   \n#define ISDIO_WRITE         56   \n#define ISDIO_MRITE         57   \n\n \n#define ATA_GET_REV         20   \n#define ATA_GET_MODEL       21   \n#define ATA_GET_SN          22   \n\n#ifdef __cplusplus\n}\n#endif\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "bioscall.S",
+  "hash_id": "5ad43fd528f9e218cc4f2856e877f772b9ef6eaad5ab6b40cc24682f6ca7f661",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/realmode/rm/bioscall.S",
+  "human_readable_source": "#include \"../../boot/bioscall.S\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

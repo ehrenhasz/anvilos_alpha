@@ -1,0 +1,9 @@
+{
+  "module_name": "base.c",
+  "hash_id": "6ef19b3bf113ef424531fb825ba64811f6e779b6dfa78375ae40b3e67d7edb15",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/engine/nvdec/base.c",
+  "human_readable_source": " \n#include \"priv.h\"\n#include <core/firmware.h>\n\nstatic void *\nnvkm_nvdec_dtor(struct nvkm_engine *engine)\n{\n\tstruct nvkm_nvdec *nvdec = nvkm_nvdec(engine);\n\tnvkm_falcon_dtor(&nvdec->falcon);\n\treturn nvdec;\n}\n\nstatic const struct nvkm_engine_func\nnvkm_nvdec = {\n\t.dtor = nvkm_nvdec_dtor,\n};\n\nint\nnvkm_nvdec_new_(const struct nvkm_nvdec_fwif *fwif, struct nvkm_device *device,\n\t\tenum nvkm_subdev_type type, int inst, u32 addr, struct nvkm_nvdec **pnvdec)\n{\n\tstruct nvkm_nvdec *nvdec;\n\tint ret;\n\n\tif (!(nvdec = *pnvdec = kzalloc(sizeof(*nvdec), GFP_KERNEL)))\n\t\treturn -ENOMEM;\n\n\tret = nvkm_engine_ctor(&nvkm_nvdec, device, type, inst, true,\n\t\t\t       &nvdec->engine);\n\tif (ret)\n\t\treturn ret;\n\n\tfwif = nvkm_firmware_load(&nvdec->engine.subdev, fwif, \"Nvdec\", nvdec);\n\tif (IS_ERR(fwif))\n\t\treturn -ENODEV;\n\n\tnvdec->func = fwif->func;\n\n\treturn nvkm_falcon_ctor(nvdec->func->flcn, &nvdec->engine.subdev,\n\t\t\t\tnvdec->engine.subdev.name, addr, &nvdec->falcon);\n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "debugfs_sta.h",
+  "hash_id": "10c14a794486a1ba24446ba969a6bfc3a2c52ac9edb1f73a1ab13e9f90ea1792",
+  "original_prompt": "Ingested from linux-6.6.14/net/mac80211/debugfs_sta.h",
+  "human_readable_source": " \n#ifndef __MAC80211_DEBUGFS_STA_H\n#define __MAC80211_DEBUGFS_STA_H\n\n#include \"sta_info.h\"\n\n#ifdef CONFIG_MAC80211_DEBUGFS\nvoid ieee80211_sta_debugfs_add(struct sta_info *sta);\nvoid ieee80211_sta_debugfs_remove(struct sta_info *sta);\n\nvoid ieee80211_link_sta_debugfs_add(struct link_sta_info *link_sta);\nvoid ieee80211_link_sta_debugfs_remove(struct link_sta_info *link_sta);\n\nvoid ieee80211_link_sta_debugfs_drv_add(struct link_sta_info *link_sta);\nvoid ieee80211_link_sta_debugfs_drv_remove(struct link_sta_info *link_sta);\n#else\nstatic inline void ieee80211_sta_debugfs_add(struct sta_info *sta) {}\nstatic inline void ieee80211_sta_debugfs_remove(struct sta_info *sta) {}\n\nstatic inline void ieee80211_link_sta_debugfs_add(struct link_sta_info *link_sta) {}\nstatic inline void ieee80211_link_sta_debugfs_remove(struct link_sta_info *link_sta) {}\n\nstatic inline void ieee80211_link_sta_debugfs_drv_add(struct link_sta_info *link_sta) {}\nstatic inline void ieee80211_link_sta_debugfs_drv_remove(struct link_sta_info *link_sta) {}\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

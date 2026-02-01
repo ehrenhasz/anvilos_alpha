@@ -1,0 +1,9 @@
+{
+  "module_name": "hid_bpf_dispatch.h",
+  "hash_id": "8fb887fbfb17997cfea6c0be83c11f825283b9e654dd068e4d2568a732cd6864",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/hid/bpf/hid_bpf_dispatch.h",
+  "human_readable_source": " \n\n#ifndef _BPF_HID_BPF_DISPATCH_H\n#define _BPF_HID_BPF_DISPATCH_H\n\n#include <linux/hid.h>\n\nstruct hid_bpf_ctx_kern {\n\tstruct hid_bpf_ctx ctx;\n\tu8 *data;\n};\n\nint hid_bpf_preload_skel(void);\nvoid hid_bpf_free_links_and_skel(void);\nint hid_bpf_get_prog_attach_type(int prog_fd);\nint __hid_bpf_attach_prog(struct hid_device *hdev, enum hid_bpf_prog_type prog_type, int prog_fd,\n\t\t\t  __u32 flags);\nvoid __hid_bpf_destroy_device(struct hid_device *hdev);\nint hid_bpf_prog_run(struct hid_device *hdev, enum hid_bpf_prog_type type,\n\t\t     struct hid_bpf_ctx_kern *ctx_kern);\nint hid_bpf_reconnect(struct hid_device *hdev);\n\nstruct bpf_prog;\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

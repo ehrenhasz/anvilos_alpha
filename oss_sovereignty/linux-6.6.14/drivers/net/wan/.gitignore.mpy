@@ -1,0 +1,9 @@
+{
+  "module_name": ".gitignore",
+  "hash_id": "42bdfb2c5ebb18f7408808a4c691eac1ff0983196ee13c70bbb92be0df6f2be1",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wan/.gitignore",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nwanxlfw.inc\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

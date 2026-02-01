@@ -1,0 +1,9 @@
+{
+  "module_name": "platform_get_irq.cocci",
+  "hash_id": "0eec77a1551843d3f5bbd04003c4b51444d6411cec10913850604e61cb6c3301",
+  "original_prompt": "Ingested from linux-6.6.14/scripts/coccinelle/api/platform_get_irq.cocci",
+  "human_readable_source": "// SPDX-License-Identifier: GPL-2.0\n/// Remove dev_err() messages after platform_get_irq*() failures\n//\n// Confidence: Medium\n// Options: --include-headers\n\nvirtual patch\nvirtual context\nvirtual org\nvirtual report\n\n@depends on context@\nexpression ret;\nstruct platform_device *E;\n@@\n\nret =\n(\nplatform_get_irq\n|\nplatform_get_irq_byname\n)(E, ...);\n\nif ( \\( ret < 0 \\| ret <= 0 \\) )\n{\n(\nif (ret != -EPROBE_DEFER)\n{ ...\n*dev_err(...);\n... }\n|\n...\n*dev_err(...);\n)\n...\n}\n\n@depends on patch@\nexpression ret;\nstruct platform_device *E;\n@@\n\nret =\n(\nplatform_get_irq\n|\nplatform_get_irq_byname\n)(E, ...);\n\nif ( \\( ret < 0 \\| ret <= 0 \\) )\n{\n(\n-if (ret != -EPROBE_DEFER)\n-{ ...\n-dev_err(...);\n-... }\n|\n...\n-dev_err(...);\n)\n...\n}\n\n@r depends on org || report@\nposition p1;\nexpression ret;\nstruct platform_device *E;\n@@\n\nret =\n(\nplatform_get_irq\n|\nplatform_get_irq_byname\n)(E, ...);\n\nif ( \\( ret < 0 \\| ret <= 0 \\) )\n{\n(\nif (ret != -EPROBE_DEFER)\n{ ...\ndev_err@p1(...);\n... }\n|\n...\ndev_err@p1(...);\n)\n...\n}\n\n@script:python depends on org@\np1 << r.p1;\n@@\n\ncocci.print_main(p1)\n\n@script:python depends on report@\np1 << r.p1;\n@@\n\nmsg = \"line %s is redundant because platform_get_irq() already prints an error\" % (p1[0].line)\ncoccilib.report.print_report(p1[0],msg)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

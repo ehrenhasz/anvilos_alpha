@@ -1,0 +1,9 @@
+{
+  "module_name": "base.c",
+  "hash_id": "745babade8323afa6b1470bef0ed69a929c885abb44fc356a83a29737b5c3a2f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/subdev/fuse/base.c",
+  "human_readable_source": " \n#include \"priv.h\"\n\nu32\nnvkm_fuse_read(struct nvkm_fuse *fuse, u32 addr)\n{\n\treturn fuse->func->read(fuse, addr);\n}\n\nstatic void *\nnvkm_fuse_dtor(struct nvkm_subdev *subdev)\n{\n\treturn nvkm_fuse(subdev);\n}\n\nstatic const struct nvkm_subdev_func\nnvkm_fuse = {\n\t.dtor = nvkm_fuse_dtor,\n};\n\nint\nnvkm_fuse_new_(const struct nvkm_fuse_func *func, struct nvkm_device *device,\n\t       enum nvkm_subdev_type type, int inst, struct nvkm_fuse **pfuse)\n{\n\tstruct nvkm_fuse *fuse;\n\tif (!(fuse = *pfuse = kzalloc(sizeof(*fuse), GFP_KERNEL)))\n\t\treturn -ENOMEM;\n\tnvkm_subdev_ctor(&nvkm_fuse, device, type, inst, &fuse->subdev);\n\tfuse->func = func;\n\tspin_lock_init(&fuse->lock);\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

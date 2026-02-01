@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "0f6329d687f602cb67a33ce10a646468d0350d5379f4467ea0eab863db2a9a8a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/usb/pvrusb2/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nobj-pvrusb2-sysfs-$(CONFIG_VIDEO_PVRUSB2_SYSFS) := pvrusb2-sysfs.o\nobj-pvrusb2-debugifc-$(CONFIG_VIDEO_PVRUSB2_DEBUGIFC) := pvrusb2-debugifc.o\nobj-pvrusb2-dvb-$(CONFIG_VIDEO_PVRUSB2_DVB) := pvrusb2-dvb.o\n\npvrusb2-objs\t:= pvrusb2-i2c-core.o \\\n\t\t   pvrusb2-audio.o \\\n\t\t   pvrusb2-encoder.o pvrusb2-video-v4l.o \\\n\t\t   pvrusb2-eeprom.o \\\n\t\t   pvrusb2-main.o pvrusb2-hdw.o pvrusb2-v4l2.o \\\n\t\t   pvrusb2-ctrl.o pvrusb2-std.o pvrusb2-devattr.o \\\n\t\t   pvrusb2-context.o pvrusb2-io.o pvrusb2-ioread.o \\\n\t\t   pvrusb2-cx2584x-v4l.o pvrusb2-wm8775.o \\\n\t\t   pvrusb2-cs53l32a.o \\\n\t\t   $(obj-pvrusb2-dvb-y) \\\n\t\t   $(obj-pvrusb2-sysfs-y) $(obj-pvrusb2-debugifc-y)\n\nobj-$(CONFIG_VIDEO_PVRUSB2) += pvrusb2.o\n\nccflags-y += -I $(srctree)/drivers/media/tuners\nccflags-y += -I $(srctree)/drivers/media/dvb-frontends\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

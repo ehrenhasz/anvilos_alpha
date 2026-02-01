@@ -1,0 +1,9 @@
+{
+  "module_name": "bnxt_sriov.h",
+  "hash_id": "d84958e52d08aa4cd860fdc87a2fcbe9208934dcc24254b4c9cb6775ec8e7b2e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/broadcom/bnxt/bnxt_sriov.h",
+  "human_readable_source": " \n\n#ifndef BNXT_SRIOV_H\n#define BNXT_SRIOV_H\n\n#define BNXT_FWD_RESP_SIZE_ERR(n)\t\t\t\t\t\\\n\t((offsetof(struct hwrm_fwd_resp_input, encap_resp) + n) >\t\\\n\t sizeof(struct hwrm_fwd_resp_input))\n\n#define BNXT_EXEC_FWD_RESP_SIZE_ERR(n)\t\t\t\t\t\\\n\t((offsetof(struct hwrm_exec_fwd_resp_input, encap_request) + n) >\\\n\t offsetof(struct hwrm_exec_fwd_resp_input, encap_resp_target_id))\n\n#define BNXT_REJ_FWD_RESP_SIZE_ERR(n)\t\t\t\t\t\\\n\t((offsetof(struct hwrm_reject_fwd_resp_input, encap_request) + n) >\\\n\t offsetof(struct hwrm_reject_fwd_resp_input, encap_resp_target_id))\n\n#define BNXT_VF_MIN_RSS_CTX\t1\n#define BNXT_VF_MAX_RSS_CTX\t1\n#define BNXT_VF_MIN_L2_CTX\t1\n#define BNXT_VF_MAX_L2_CTX\t4\n\nint bnxt_get_vf_config(struct net_device *, int, struct ifla_vf_info *);\nint bnxt_set_vf_mac(struct net_device *, int, u8 *);\nint bnxt_set_vf_vlan(struct net_device *, int, u16, u8, __be16);\nint bnxt_set_vf_bw(struct net_device *, int, int, int);\nint bnxt_set_vf_link_state(struct net_device *, int, int);\nint bnxt_set_vf_spoofchk(struct net_device *, int, bool);\nbool bnxt_is_trusted_vf(struct bnxt *bp, struct bnxt_vf_info *vf);\nint bnxt_set_vf_trust(struct net_device *dev, int vf_id, bool trust);\nint bnxt_sriov_configure(struct pci_dev *pdev, int num_vfs);\nint bnxt_cfg_hw_sriov(struct bnxt *bp, int *num_vfs, bool reset);\nvoid bnxt_sriov_disable(struct bnxt *);\nvoid bnxt_hwrm_exec_fwd_req(struct bnxt *);\nvoid bnxt_update_vf_mac(struct bnxt *);\nint bnxt_approve_mac(struct bnxt *, const u8 *, bool);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

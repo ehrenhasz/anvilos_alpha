@@ -1,0 +1,9 @@
+{
+  "module_name": "pch_gbe_phy.h",
+  "hash_id": "acc7ce49f89fee9cfeedaab71b6ff207859c1ed01db030b21315b073a5891b19",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/oki-semi/pch_gbe/pch_gbe_phy.h",
+  "human_readable_source": " \n \n#ifndef _PCH_GBE_PHY_H_\n#define _PCH_GBE_PHY_H_\n\n#define PCH_GBE_PHY_REGS_LEN\t\t32\n#define\tPCH_GBE_PHY_RESET_DELAY_US\t10\n\ns32 pch_gbe_phy_get_id(struct pch_gbe_hw *hw);\ns32 pch_gbe_phy_read_reg_miic(struct pch_gbe_hw *hw, u32 offset, u16 *data);\ns32 pch_gbe_phy_write_reg_miic(struct pch_gbe_hw *hw, u32 offset, u16 data);\nvoid pch_gbe_phy_hw_reset(struct pch_gbe_hw *hw);\nvoid pch_gbe_phy_power_up(struct pch_gbe_hw *hw);\nvoid pch_gbe_phy_power_down(struct pch_gbe_hw *hw);\nvoid pch_gbe_phy_set_rgmii(struct pch_gbe_hw *hw);\nvoid pch_gbe_phy_init_setting(struct pch_gbe_hw *hw);\nint pch_gbe_phy_disable_hibernate(struct pch_gbe_hw *hw);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

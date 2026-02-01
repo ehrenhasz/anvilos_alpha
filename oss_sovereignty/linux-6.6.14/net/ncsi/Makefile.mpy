@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "43bd29b25d3db5afedef15ee69ed1976c465956bad31b61e484ad0eac0b61d64",
+  "original_prompt": "Ingested from linux-6.6.14/net/ncsi/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Makefile for NCSI API\n#\nobj-$(CONFIG_NET_NCSI) += ncsi-cmd.o ncsi-rsp.o ncsi-aen.o ncsi-manage.o ncsi-netlink.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "xt_rateest.h",
+  "hash_id": "030294ebe2e6f5e1dc6f5f7237d6e15f9db32c2c9b680435eb7823ec3a88a0d6",
+  "original_prompt": "Ingested from linux-6.6.14/include/net/netfilter/xt_rateest.h",
+  "human_readable_source": " \n#ifndef _XT_RATEEST_H\n#define _XT_RATEEST_H\n\n#include <net/gen_stats.h>\n\nstruct xt_rateest {\n\t \n\tstruct gnet_stats_basic_sync\tbstats;\n\tspinlock_t\t\t\tlock;\n\n\n\t \n\tunsigned int\t\t\trefcnt;\n\tstruct hlist_node\t\tlist;\n\tchar\t\t\t\tname[IFNAMSIZ];\n\tstruct gnet_estimator\t\tparams;\n\tstruct rcu_head\t\t\trcu;\n\n\t \n\tstruct net_rate_estimator __rcu *rate_est;\n};\n\nstruct xt_rateest *xt_rateest_lookup(struct net *net, const char *name);\nvoid xt_rateest_put(struct net *net, struct xt_rateest *est);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

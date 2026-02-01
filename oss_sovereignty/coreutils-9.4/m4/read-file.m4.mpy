@@ -1,0 +1,9 @@
+{
+  "module_name": "read-file.m4",
+  "hash_id": "b2e716db37d124f6ecf409593ab6813e0b0d5aa0092e26817bdf220aa8f88a4b",
+  "original_prompt": "Ingested from coreutils-9.4/m4/read-file.m4",
+  "human_readable_source": "# read-file.m4 serial 3\ndnl Copyright (C) 2002-2006, 2009-2023 Free Software Foundation, Inc.\ndnl This file is free software; the Free Software Foundation\ndnl gives unlimited permission to copy and/or distribute it,\ndnl with or without modifications, as long as this notice is preserved.\n\n# Prerequisites of lib/read-file.c.\nAC_DEFUN([gl_PREREQ_READ_FILE], [:])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

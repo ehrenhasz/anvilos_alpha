@@ -1,0 +1,9 @@
+{
+  "module_name": "svcsock.h",
+  "hash_id": "f44fee03bfb328bd7470aec3484682f53ccdda2aeae268a3658461a763f2e4c9",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/sunrpc/svcsock.h",
+  "human_readable_source": " \n \n\n#ifndef SUNRPC_SVCSOCK_H\n#define SUNRPC_SVCSOCK_H\n\n#include <linux/sunrpc/svc.h>\n#include <linux/sunrpc/svc_xprt.h>\n\n \nstruct svc_sock {\n\tstruct svc_xprt\t\tsk_xprt;\n\tstruct socket *\t\tsk_sock;\t \n\tstruct sock *\t\tsk_sk;\t\t \n\n\t \n\tvoid\t\t\t(*sk_ostate)(struct sock *);\n\tvoid\t\t\t(*sk_odata)(struct sock *);\n\tvoid\t\t\t(*sk_owspace)(struct sock *);\n\n\t \n\t \n\t__be32\t\t\tsk_marker;\n\t \n\tu32\t\t\tsk_tcplen;\n\t \n\tu32\t\t\tsk_datalen;\n\n\tstruct page_frag_cache  sk_frag_cache;\n\n\tstruct completion\tsk_handshake_done;\n\n\tstruct page *\t\tsk_pages[RPCSVC_MAXPAGES];\t \n};\n\nstatic inline u32 svc_sock_reclen(struct svc_sock *svsk)\n{\n\treturn be32_to_cpu(svsk->sk_marker) & RPC_FRAGMENT_SIZE_MASK;\n}\n\nstatic inline u32 svc_sock_final_rec(struct svc_sock *svsk)\n{\n\treturn be32_to_cpu(svsk->sk_marker) & RPC_LAST_STREAM_FRAGMENT;\n}\n\n \nvoid\t\tsvc_recv(struct svc_rqst *rqstp);\nvoid\t\tsvc_send(struct svc_rqst *rqstp);\nvoid\t\tsvc_drop(struct svc_rqst *);\nvoid\t\tsvc_sock_update_bufs(struct svc_serv *serv);\nint\t\tsvc_addsock(struct svc_serv *serv, struct net *net,\n\t\t\t    const int fd, char *name_return, const size_t len,\n\t\t\t    const struct cred *cred);\nvoid\t\tsvc_init_xprt_sock(void);\nvoid\t\tsvc_cleanup_xprt_sock(void);\n\n \n#define SVC_SOCK_DEFAULTS\t(0U)\n#define SVC_SOCK_ANONYMOUS\t(1U << 0)\t \n#define SVC_SOCK_TEMPORARY\t(1U << 1)\t \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

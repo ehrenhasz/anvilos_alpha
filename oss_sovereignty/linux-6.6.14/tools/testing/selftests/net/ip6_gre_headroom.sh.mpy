@@ -1,0 +1,9 @@
+{
+  "module_name": "ip6_gre_headroom.sh",
+  "hash_id": "11fa5b0961939975ba153cf5b8dc4109210656c3609eb3f1398fce5c32b07c3b",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/net/ip6_gre_headroom.sh",
+  "human_readable_source": "#!/bin/bash\n# SPDX-License-Identifier: GPL-2.0\n#\n# Test that enough headroom is reserved for the first packet passing through an\n# IPv6 GRE-like netdevice.\n\nsetup_prepare()\n{\n\tip link add h1 type veth peer name swp1\n\tip link add h3 type veth peer name swp3\n\n\tip link set dev h1 up\n\tip address add 192.0.2.1/28 dev h1\n\n\tip link add dev vh3 type vrf table 20\n\tip link set dev h3 master vh3\n\tip link set dev vh3 up\n\tip link set dev h3 up\n\n\tip link set dev swp3 up\n\tip address add dev swp3 2001:db8:2::1/64\n\tip address add dev swp3 2001:db8:2::3/64\n\n\tip link set dev swp1 up\n\ttc qdisc add dev swp1 clsact\n\n\tip link add name er6 type ip6erspan \\\n\t   local 2001:db8:2::1 remote 2001:db8:2::2 oseq okey 123\n\tip link set dev er6 up\n\n\tip link add name gt6 type ip6gretap \\\n\t   local 2001:db8:2::3 remote 2001:db8:2::4\n\tip link set dev gt6 up\n\n\tsleep 1\n}\n\ncleanup()\n{\n\tip link del dev gt6\n\tip link del dev er6\n\tip link del dev swp1\n\tip link del dev swp3\n\tip link del dev vh3\n}\n\ntest_headroom()\n{\n\tlocal type=$1; shift\n\tlocal tundev=$1; shift\n\n\ttc filter add dev swp1 ingress pref 1000 matchall skip_hw \\\n\t\taction mirred egress mirror dev $tundev\n\tping -I h1 192.0.2.2 -c 1 -w 2 &> /dev/null\n\ttc filter del dev swp1 ingress pref 1000\n\n\t# If it doesn't panic, it passes.\n\tprintf \"TEST: %-60s  [PASS]\\n\" \"$type headroom\"\n}\n\ntrap cleanup EXIT\n\nsetup_prepare\ntest_headroom ip6gretap gt6\ntest_headroom ip6erspan er6\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

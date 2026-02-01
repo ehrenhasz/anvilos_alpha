@@ -1,0 +1,9 @@
+{
+  "module_name": "comedilib.h",
+  "hash_id": "1b8bf8cfd31f44294fd99b3f4e33a060d67b25217807867234a1611c5d0d61fe",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/comedi/comedilib.h",
+  "human_readable_source": " \n \n\n#ifndef _LINUX_COMEDILIB_H\n#define _LINUX_COMEDILIB_H\n\nstruct comedi_device *comedi_open(const char *path);\nint comedi_close(struct comedi_device *dev);\nint comedi_dio_get_config(struct comedi_device *dev, unsigned int subdev,\n\t\t\t  unsigned int chan, unsigned int *io);\nint comedi_dio_config(struct comedi_device *dev, unsigned int subdev,\n\t\t      unsigned int chan, unsigned int io);\nint comedi_dio_bitfield2(struct comedi_device *dev, unsigned int subdev,\n\t\t\t unsigned int mask, unsigned int *bits,\n\t\t\t unsigned int base_channel);\nint comedi_find_subdevice_by_type(struct comedi_device *dev, int type,\n\t\t\t\t  unsigned int subd);\nint comedi_get_n_channels(struct comedi_device *dev, unsigned int subdevice);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

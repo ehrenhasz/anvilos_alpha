@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "1bc089698d91c51efd195e1390f754fb58cca34efc1eea7849e978a30bfed726",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/marvell/prestera/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nobj-$(CONFIG_PRESTERA)\t+= prestera.o\nprestera-objs\t\t:= prestera_main.o prestera_hw.o prestera_dsa.o \\\n\t\t\t   prestera_rxtx.o prestera_devlink.o prestera_ethtool.o \\\n\t\t\t   prestera_switchdev.o prestera_acl.o prestera_flow.o \\\n\t\t\t   prestera_flower.o prestera_span.o prestera_counter.o \\\n\t\t\t   prestera_router.o prestera_router_hw.o prestera_matchall.o\n\nobj-$(CONFIG_PRESTERA_PCI)\t+= prestera_pci.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

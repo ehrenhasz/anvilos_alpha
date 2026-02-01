@@ -1,0 +1,9 @@
+{
+  "module_name": "mmu_v2_0.h",
+  "hash_id": "0e9ada20f600a42136de0bdbc8c48ebdbce214ac4357880344b68606641fa83d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/accel/habanalabs/include/hw_ip/mmu/mmu_v2_0.h",
+  "human_readable_source": " \n\n#ifndef INCLUDE_MMU_V2_0_H_\n#define INCLUDE_MMU_V2_0_H_\n\n#define HOP0_MASK_4K\t\t\t0xFE00000000000000ull\n#define HOP1_MASK_4K\t\t\t0x01FF000000000000ull\n#define HOP2_MASK_4K\t\t\t0x0000FF8000000000ull\n#define HOP3_MASK_4K\t\t\t0x0000007FC0000000ull\n#define HOP4_MASK_4K\t\t\t0x000000003FE00000ull\n#define HOP5_MASK_4K\t\t\t0x00000000001FF000ull\n\n#define HOP0_MASK_64K\t\t\t0xFF00000000000000ull\n#define HOP1_MASK_64K\t\t\t0x00FF000000000000ull\n#define HOP2_MASK_64K\t\t\t0x0000FF0000000000ull\n#define HOP3_MASK_64K\t\t\t0x000000FF00000000ull\n#define HOP4_MASK_64K\t\t\t0x00000000FF000000ull\n#define HOP5_MASK_64K\t\t\t0x0000000000FF0000ull\n\n#define HOP0_SHIFT_4K\t\t\t57\n#define HOP1_SHIFT_4K\t\t\t48\n#define HOP2_SHIFT_4K\t\t\t39\n#define HOP3_SHIFT_4K\t\t\t30\n#define HOP4_SHIFT_4K\t\t\t21\n#define HOP5_SHIFT_4K\t\t\t12\n\n#define HOP0_SHIFT_64K\t\t\t56\n#define HOP1_SHIFT_64K\t\t\t48\n#define HOP2_SHIFT_64K\t\t\t40\n#define HOP3_SHIFT_64K\t\t\t32\n#define HOP4_SHIFT_64K\t\t\t24\n#define HOP5_SHIFT_64K\t\t\t16\n\n#define DHOP0_MASK\t\t\tHOP0_MASK_4K\n#define DHOP1_MASK\t\t\tHOP1_MASK_4K\n#define DHOP2_MASK\t\t\tHOP2_MASK_4K\n#define DHOP3_MASK\t\t\tHOP3_MASK_4K\n#define DHOP4_MASK\t\t\t0x000003C000000ull\n\n#define DHOP0_SHIFT\t\t\tHOP0_SHIFT_4K\n#define DHOP1_SHIFT\t\t\tHOP1_SHIFT_4K\n#define DHOP2_SHIFT\t\t\tHOP2_SHIFT_4K\n#define DHOP3_SHIFT\t\t\tHOP3_SHIFT_4K\n#define DHOP4_SHIFT\t\t\t26\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

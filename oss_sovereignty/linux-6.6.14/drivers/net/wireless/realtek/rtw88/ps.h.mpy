@@ -1,0 +1,9 @@
+{
+  "module_name": "ps.h",
+  "hash_id": "b72dccb7749f61b0763a211e509705bb0ba68eac3ddb03fd47163815567115e4",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/realtek/rtw88/ps.h",
+  "human_readable_source": " \n \n\n#ifndef __RTW_PS_H_\n#define __RTW_PS_H_\n\n#define RTW_LPS_THRESHOLD\t50\n\n#define POWER_MODE_ACK\t\tBIT(6)\n#define POWER_MODE_PG\t\tBIT(4)\n#define POWER_TX_WAKE\t\tBIT(1)\n#define POWER_MODE_LCLK\t\tBIT(0)\n\n#define LEAVE_LPS_TRY_CNT\t5\n#define LEAVE_LPS_TIMEOUT\tmsecs_to_jiffies(100)\n\nint rtw_enter_ips(struct rtw_dev *rtwdev);\nint rtw_leave_ips(struct rtw_dev *rtwdev);\n\nvoid rtw_power_mode_change(struct rtw_dev *rtwdev, bool enter);\nvoid rtw_enter_lps(struct rtw_dev *rtwdev, u8 port_id);\nvoid rtw_leave_lps(struct rtw_dev *rtwdev);\nvoid rtw_leave_lps_deep(struct rtw_dev *rtwdev);\nenum rtw_lps_deep_mode rtw_get_lps_deep_mode(struct rtw_dev *rtwdev);\nvoid rtw_recalc_lps(struct rtw_dev *rtwdev, struct ieee80211_vif *new_vif);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

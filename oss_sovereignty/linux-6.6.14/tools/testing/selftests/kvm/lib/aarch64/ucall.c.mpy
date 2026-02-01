@@ -1,0 +1,9 @@
+{
+  "module_name": "ucall.c",
+  "hash_id": "107f693f85242ecc7690308b93faa4560a93ed01c1c15249ede58458d6ccb7f8",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/kvm/lib/aarch64/ucall.c",
+  "human_readable_source": "\n \n#include \"kvm_util.h\"\n\nvm_vaddr_t *ucall_exit_mmio_addr;\n\nvoid ucall_arch_init(struct kvm_vm *vm, vm_paddr_t mmio_gpa)\n{\n\tvm_vaddr_t mmio_gva = vm_vaddr_unused_gap(vm, vm->page_size, KVM_UTIL_MIN_VADDR);\n\n\tvirt_map(vm, mmio_gva, mmio_gpa, 1);\n\n\tvm->ucall_mmio_addr = mmio_gpa;\n\n\twrite_guest_global(vm, ucall_exit_mmio_addr, (vm_vaddr_t *)mmio_gva);\n}\n\nvoid *ucall_arch_get_ucall(struct kvm_vcpu *vcpu)\n{\n\tstruct kvm_run *run = vcpu->run;\n\n\tif (run->exit_reason == KVM_EXIT_MMIO &&\n\t    run->mmio.phys_addr == vcpu->vm->ucall_mmio_addr) {\n\t\tTEST_ASSERT(run->mmio.is_write && run->mmio.len == sizeof(uint64_t),\n\t\t\t    \"Unexpected ucall exit mmio address access\");\n\t\treturn (void *)(*((uint64_t *)run->mmio.data));\n\t}\n\n\treturn NULL;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

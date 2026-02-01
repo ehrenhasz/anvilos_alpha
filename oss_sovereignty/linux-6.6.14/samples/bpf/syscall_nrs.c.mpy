@@ -1,0 +1,9 @@
+{
+  "module_name": "syscall_nrs.c",
+  "hash_id": "39f6a9e66e5f2749d28164a1772128928d811b0795f45f4f293d2f2b519a0139",
+  "original_prompt": "Ingested from linux-6.6.14/samples/bpf/syscall_nrs.c",
+  "human_readable_source": "\n#include <uapi/linux/unistd.h>\n#include <linux/kbuild.h>\n\n#define SYSNR(_NR) DEFINE(SYS ## _NR, _NR)\n\nvoid syscall_defines(void)\n{\n\tCOMMENT(\"Linux system call numbers.\");\n\tSYSNR(__NR_write);\n\tSYSNR(__NR_read);\n#ifdef __NR_mmap2\n\tSYSNR(__NR_mmap2);\n#endif\n#ifdef __NR_mmap\n\tSYSNR(__NR_mmap);\n#endif\n\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

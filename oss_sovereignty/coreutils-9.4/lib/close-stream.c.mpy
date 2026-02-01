@@ -1,0 +1,9 @@
+{
+  "module_name": "close-stream.c",
+  "hash_id": "311b90e2db43553182d5ba1171bdba03ade4e3d95f5d335e0a3915af7402dd7c",
+  "original_prompt": "Ingested from coreutils-9.4/lib/close-stream.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#include \"close-stream.h\"\n\n#include <errno.h>\n\n#include \"fpending.h\"\n\n#if USE_UNLOCKED_IO\n# include \"unlocked-io.h\"\n#endif\n\n \n\nint\nclose_stream (FILE *stream)\n{\n  const bool some_pending = (__fpending (stream) != 0);\n  const bool prev_fail = (ferror (stream) != 0);\n  const bool fclose_fail = (fclose (stream) != 0);\n\n   \n\n  if (prev_fail || (fclose_fail && (some_pending || errno != EBADF)))\n    {\n      if (! fclose_fail)\n        errno = 0;\n      return EOF;\n    }\n\n  return 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

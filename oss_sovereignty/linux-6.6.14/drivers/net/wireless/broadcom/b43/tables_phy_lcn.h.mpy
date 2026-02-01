@@ -1,0 +1,9 @@
+{
+  "module_name": "tables_phy_lcn.h",
+  "hash_id": "702484de9613a17878ccb0df67f9f0ecdf025e98e34de322c4458b2d51cf7b10",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/broadcom/b43/tables_phy_lcn.h",
+  "human_readable_source": " \n#ifndef B43_TABLES_PHY_LCN_H_\n#define B43_TABLES_PHY_LCN_H_\n\n \n#define B43_LCNTAB_TYPEMASK\t\t0xF0000000\n#define B43_LCNTAB_8BIT\t\t\t0x10000000\n#define B43_LCNTAB_16BIT\t\t0x20000000\n#define B43_LCNTAB_32BIT\t\t0x30000000\n#define B43_LCNTAB8(table, offset)\t(((table) << 10) | (offset) | B43_LCNTAB_8BIT)\n#define B43_LCNTAB16(table, offset)\t(((table) << 10) | (offset) | B43_LCNTAB_16BIT)\n#define B43_LCNTAB32(table, offset)\t(((table) << 10) | (offset) | B43_LCNTAB_32BIT)\n\n#define B43_LCNTAB_TX_GAIN_SIZE\t\t128\n\nu32 b43_lcntab_read(struct b43_wldev *dev, u32 offset);\nvoid b43_lcntab_read_bulk(struct b43_wldev *dev, u32 offset,\n\t\t\t  unsigned int nr_elements, void *_data);\nvoid b43_lcntab_write(struct b43_wldev *dev, u32 offset, u32 value);\nvoid b43_lcntab_write_bulk(struct b43_wldev *dev, u32 offset,\n\t\t\t   unsigned int nr_elements, const void *_data);\n\nvoid b43_phy_lcn_tables_init(struct b43_wldev *dev);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

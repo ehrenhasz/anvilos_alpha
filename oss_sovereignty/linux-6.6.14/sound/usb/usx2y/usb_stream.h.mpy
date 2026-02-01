@@ -1,0 +1,9 @@
+{
+  "module_name": "usb_stream.h",
+  "hash_id": "c5a68bcf62e87c7a0ac7eb5a16c0bf03485c44a4319ff4034573390b4abf263b",
+  "original_prompt": "Ingested from linux-6.6.14/sound/usb/usx2y/usb_stream.h",
+  "human_readable_source": " \n#ifndef __USB_STREAM_H\n#define __USB_STREAM_H\n\n#include <uapi/sound/usb_stream.h>\n\n#define USB_STREAM_NURBS 4\n#define USB_STREAM_URBDEPTH 4\n\nstruct usb_stream_kernel {\n\tstruct usb_stream *s;\n\n\tvoid *write_page;\n\n\tunsigned int n_o_ps;\n\n\tstruct urb *inurb[USB_STREAM_NURBS];\n\tstruct urb *idle_inurb;\n\tstruct urb *completed_inurb;\n\tstruct urb *outurb[USB_STREAM_NURBS];\n\tstruct urb *idle_outurb;\n\tstruct urb *completed_outurb;\n\tstruct urb *i_urb;\n\n\tint iso_frame_balance;\n\n\twait_queue_head_t sleep;\n\n\tunsigned int out_phase;\n\tunsigned int out_phase_peeked;\n\tunsigned int freqn;\n};\n\nstruct usb_stream *usb_stream_new(struct usb_stream_kernel *sk,\n\t\t\t\t  struct usb_device *dev,\n\t\t\t\t  unsigned int in_endpoint,\n\t\t\t\t  unsigned int out_endpoint,\n\t\t\t\t  unsigned int sample_rate,\n\t\t\t\t  unsigned int use_packsize,\n\t\t\t\t  unsigned int period_frames,\n\t\t\t\t  unsigned int frame_size);\nvoid usb_stream_free(struct usb_stream_kernel *sk);\nint usb_stream_start(struct usb_stream_kernel *sk);\nvoid usb_stream_stop(struct usb_stream_kernel *sk);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "mxl111sf-gpio.h",
+  "hash_id": "785dcbd9a04b84d49e9456b4fd553caacbcbb8a5b9e92a7abe9567d24152a65a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/usb/dvb-usb-v2/mxl111sf-gpio.h",
+  "human_readable_source": " \n \n\n#ifndef _DVB_USB_MXL111SF_GPIO_H_\n#define _DVB_USB_MXL111SF_GPIO_H_\n\n#include \"mxl111sf.h\"\n\nint mxl111sf_set_gpio(struct mxl111sf_state *state, int gpio, int val);\nint mxl111sf_init_port_expander(struct mxl111sf_state *state);\n\n#define MXL111SF_GPIO_MOD_DVBT\t0\n#define MXL111SF_GPIO_MOD_MH\t1\n#define MXL111SF_GPIO_MOD_ATSC\t2\nint mxl111sf_gpio_mode_switch(struct mxl111sf_state *state, unsigned int mode);\n\nenum mxl111sf_mux_config {\n\tPIN_MUX_DEFAULT = 0,\n\tPIN_MUX_TS_OUT_PARALLEL,\n\tPIN_MUX_TS_OUT_SERIAL,\n\tPIN_MUX_GPIO_MODE,\n\tPIN_MUX_TS_SERIAL_IN_MODE_0,\n\tPIN_MUX_TS_SERIAL_IN_MODE_1,\n\tPIN_MUX_TS_SPI_IN_MODE_0,\n\tPIN_MUX_TS_SPI_IN_MODE_1,\n\tPIN_MUX_TS_PARALLEL_IN,\n\tPIN_MUX_BT656_I2S_MODE,\n};\n\nint mxl111sf_config_pin_mux_modes(struct mxl111sf_state *state,\n\t\t\t\t  enum mxl111sf_mux_config pin_mux_config);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

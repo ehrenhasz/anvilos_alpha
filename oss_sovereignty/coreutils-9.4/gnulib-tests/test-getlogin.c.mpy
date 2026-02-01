@@ -1,0 +1,9 @@
+{
+  "module_name": "test-getlogin.c",
+  "hash_id": "59edb21c2c8dbd0a723460e7126d384e49cc8807f9759b7d19c5126b3d0e00a4",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-getlogin.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#include <unistd.h>\n\n#include \"signature.h\"\nSIGNATURE_CHECK (getlogin, char *, (void));\n\n#include \"test-getlogin.h\"\n\nint\nmain (void)\n{\n   \n  char *buf = getlogin ();\n  int err = buf ? 0 : errno;\n#if defined __sun\n  if (buf == NULL && err == 0)\n    {\n       \n      fprintf (stderr, \"Skipping test: no entry in /var/adm/utmpx.\\n\");\n      exit (77);\n    }\n#endif\n  test_getlogin_result (buf, err);\n\n  return 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

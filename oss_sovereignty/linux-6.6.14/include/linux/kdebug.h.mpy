@@ -1,0 +1,9 @@
+{
+  "module_name": "kdebug.h",
+  "hash_id": "f0cf57bd777e8bc644419e2e58b9ea42457f18703952dd8b4fbae4d071a67f33",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/kdebug.h",
+  "human_readable_source": " \n#ifndef _LINUX_KDEBUG_H\n#define _LINUX_KDEBUG_H\n\n#include <asm/kdebug.h>\n\nstruct notifier_block;\n\nstruct die_args {\n\tstruct pt_regs *regs;\n\tconst char *str;\n\tlong err;\n\tint trapnr;\n\tint signr;\n};\n\nint register_die_notifier(struct notifier_block *nb);\nint unregister_die_notifier(struct notifier_block *nb);\n\nint notify_die(enum die_val val, const char *str,\n\t       struct pt_regs *regs, long err, int trap, int sig);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

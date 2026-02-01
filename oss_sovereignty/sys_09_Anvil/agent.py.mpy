@@ -1,0 +1,9 @@
+{
+  "module_name": "agent.py",
+  "hash_id": "967f3d1b426576c4822b2e3d8679c80cb714fc997eb215b2b336a25762475de5",
+  "original_prompt": "Ingested from sys_09_Anvil/agent.py",
+  "human_readable_source": "import sys\nprint(\">> ANVIL_AGENT_BOOT\")\nprint(f\">> SYSTEM: {sys.platform}\")\nprint(\">> SOVEREIGNTY: CONFIRMED\")\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

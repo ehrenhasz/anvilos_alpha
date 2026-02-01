@@ -1,0 +1,9 @@
+{
+  "module_name": "doorbell.h",
+  "hash_id": "467f533a18584977973271a0cfa0f2ba310199ec98a1d8eb069cd9d3edbe1433",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/mlx4/doorbell.h",
+  "human_readable_source": " \n\n#ifndef MLX4_DOORBELL_H\n#define MLX4_DOORBELL_H\n\n#include <linux/types.h>\n#include <linux/io.h>\n\n#define MLX4_SEND_DOORBELL    0x14\n#define MLX4_CQ_DOORBELL      0x20\n\n#if BITS_PER_LONG == 64\n \n\n#define MLX4_DECLARE_DOORBELL_LOCK(name)\n#define MLX4_INIT_DOORBELL_LOCK(ptr)    do { } while (0)\n#define MLX4_GET_DOORBELL_LOCK(ptr)      (NULL)\n\nstatic inline void mlx4_write64(__be32 val[2], void __iomem *dest,\n\t\t\t\tspinlock_t *doorbell_lock)\n{\n\t__raw_writeq(*(u64 *) val, dest);\n}\n\n#else\n\n \n\n#define MLX4_DECLARE_DOORBELL_LOCK(name) spinlock_t name;\n#define MLX4_INIT_DOORBELL_LOCK(ptr)     spin_lock_init(ptr)\n#define MLX4_GET_DOORBELL_LOCK(ptr)      (ptr)\n\nstatic inline void mlx4_write64(__be32 val[2], void __iomem *dest,\n\t\t\t\tspinlock_t *doorbell_lock)\n{\n\tunsigned long flags;\n\n\tspin_lock_irqsave(doorbell_lock, flags);\n\t__raw_writel((__force u32) val[0], dest);\n\t__raw_writel((__force u32) val[1], dest + 4);\n\tspin_unlock_irqrestore(doorbell_lock, flags);\n}\n\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

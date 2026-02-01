@@ -1,0 +1,9 @@
+{
+  "module_name": "xt_connlabel.h",
+  "hash_id": "6280432679a688349bf733abee8561f61d1455952b30fdccf2cdd1049a50ecff",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/netfilter/xt_connlabel.h",
+  "human_readable_source": " \n\n#ifndef _UAPI_XT_CONNLABEL_H\n#define _UAPI_XT_CONNLABEL_H\n\n#include <linux/types.h>\n\n#define XT_CONNLABEL_MAXBIT 127\nenum xt_connlabel_mtopts {\n\tXT_CONNLABEL_OP_INVERT = 1 << 0,\n\tXT_CONNLABEL_OP_SET    = 1 << 1,\n};\n\nstruct xt_connlabel_mtinfo {\n\t__u16 bit;\n\t__u16 options;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

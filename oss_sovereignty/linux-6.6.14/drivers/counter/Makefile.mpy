@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "0146a96706d9786bda5c766282068ae59f49c643201b693c0efe5d0de900dd2e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/counter/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Makefile for Counter devices\n#\n\nobj-$(CONFIG_COUNTER) += counter.o\ncounter-y := counter-core.o counter-sysfs.o counter-chrdev.o\n\nobj-$(CONFIG_I8254)\t\t+= i8254.o\nobj-$(CONFIG_104_QUAD_8)\t+= 104-quad-8.o\nobj-$(CONFIG_INTERRUPT_CNT)\t\t+= interrupt-cnt.o\nobj-$(CONFIG_RZ_MTU3_CNT)\t+= rz-mtu3-cnt.o\nobj-$(CONFIG_STM32_TIMER_CNT)\t+= stm32-timer-cnt.o\nobj-$(CONFIG_STM32_LPTIMER_CNT)\t+= stm32-lptimer-cnt.o\nobj-$(CONFIG_TI_EQEP)\t\t+= ti-eqep.o\nobj-$(CONFIG_FTM_QUADDEC)\t+= ftm-quaddec.o\nobj-$(CONFIG_MICROCHIP_TCB_CAPTURE)\t+= microchip-tcb-capture.o\nobj-$(CONFIG_INTEL_QEP)\t\t+= intel-qep.o\nobj-$(CONFIG_TI_ECAP_CAPTURE)\t+= ti-ecap-capture.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

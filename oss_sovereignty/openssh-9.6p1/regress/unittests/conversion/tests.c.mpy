@@ -1,0 +1,9 @@
+{
+  "module_name": "tests.c",
+  "hash_id": "c0232362b7f185c2b08fa4d3034d1625285fffe05ee2db2d7916addba1aed899",
+  "original_prompt": "Ingested from openssh-9.6p1/regress/unittests/conversion/tests.c",
+  "human_readable_source": " \n \n\n#include \"includes.h\"\n\n#include <sys/types.h>\n#include <stdio.h>\n#ifdef HAVE_STDINT_H\n#include <stdint.h>\n#endif\n#include <stdlib.h>\n#include <string.h>\n\n#include \"../test_helper/test_helper.h\"\n\n#include \"misc.h\"\n\nvoid\ntests(void)\n{\n\tchar buf[1024];\n\n\tTEST_START(\"conversion_convtime\");\n\tASSERT_INT_EQ(convtime(\"0\"), 0);\n\tASSERT_INT_EQ(convtime(\"1\"), 1);\n\tASSERT_INT_EQ(convtime(\"1S\"), 1);\n\t \n\tASSERT_INT_EQ(convtime(\"90m\"), 5400);\n\tASSERT_INT_EQ(convtime(\"1h30m\"), 5400);\n\tASSERT_INT_EQ(convtime(\"2d\"), 172800);\n\tASSERT_INT_EQ(convtime(\"1w\"), 604800);\n\n\t \n\tASSERT_INT_EQ(convtime(\"-7\"), -1);\n\tASSERT_INT_EQ(convtime(\"-9d\"), -1);\n\t\n\t \n\tsnprintf(buf, sizeof buf, \"%llu\", (unsigned long long)INT_MAX);\n\tASSERT_INT_EQ(convtime(buf), INT_MAX);\n\tsnprintf(buf, sizeof buf, \"%llu\", (unsigned long long)INT_MAX + 1);\n\tASSERT_INT_EQ(convtime(buf), -1);\n\n\t \n\tsnprintf(buf, sizeof buf, \"%lluM\", (unsigned long long)INT_MAX/60 + 1);\n\tASSERT_INT_EQ(convtime(buf), -1);\n\tASSERT_INT_EQ(convtime(\"1000000000000000000000w\"), -1);\n\tTEST_DONE();\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

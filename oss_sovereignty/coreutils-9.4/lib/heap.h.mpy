@@ -1,0 +1,9 @@
+{
+  "module_name": "heap.h",
+  "hash_id": "3c44313e36e592a44948ae9bac99fe4db6eb8b6de7aadbd8244ad8588519e9eb",
+  "original_prompt": "Ingested from coreutils-9.4/lib/heap.h",
+  "human_readable_source": " \n\n#include <stddef.h>\n\nstruct heap;\n\nvoid heap_free (struct heap *) _GL_ATTRIBUTE_NONNULL ();\n\nstruct heap *heap_alloc (int (*) (void const *, void const *), size_t)\n  _GL_ATTRIBUTE_MALLOC _GL_ATTRIBUTE_DEALLOC (heap_free, 1)\n  _GL_ATTRIBUTE_RETURNS_NONNULL;\n\nint heap_insert (struct heap *heap, void *item) _GL_ATTRIBUTE_NONNULL ();\nvoid *heap_remove_top (struct heap *heap) _GL_ATTRIBUTE_NONNULL ();\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "fpu_syscall.c",
+  "hash_id": "5846e01d419886da235aa8e79c2d079702d73e65939c6bc36edf0b2ed57f2a30",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/powerpc/math/fpu_syscall.c",
+  "human_readable_source": "\n \n\n#include <stdio.h>\n#include <unistd.h>\n#include <sys/syscall.h>\n#include <sys/time.h>\n#include <sys/types.h>\n#include <sys/wait.h>\n#include <stdlib.h>\n\n#include \"utils.h\"\n\nextern int test_fpu(double *darray, pid_t *pid);\n\ndouble darray[] = {0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0,\n\t\t     1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7, 1.8, 1.9, 2.0,\n\t\t     2.1};\n\nint syscall_fpu(void)\n{\n\tpid_t fork_pid;\n\tint i;\n\tint ret;\n\tint child_ret;\n\tfor (i = 0; i < 1000; i++) {\n\t\t \n\t\tret = test_fpu(darray, &fork_pid);\n\t\tif (fork_pid == -1)\n\t\t\treturn -1;\n\t\tif (fork_pid == 0)\n\t\t\texit(ret);\n\t\twaitpid(fork_pid, &child_ret, 0);\n\t\tif (ret || child_ret)\n\t\t\treturn 1;\n\t}\n\n\treturn 0;\n}\n\nint test_syscall_fpu(void)\n{\n\t \n\tpid_t pid2;\n\tpid_t pid = fork();\n\tint ret;\n\tint child_ret;\n\tFAIL_IF(pid == -1);\n\n\tpid2 = fork();\n\t \n\tif (pid2 == -1) {\n\t\t \n\t\tchild_ret = ret = 1;\n\t} else {\n\t\tret = syscall_fpu();\n\t\tif (pid2)\n\t\t\twaitpid(pid2, &child_ret, 0);\n\t\telse\n\t\t\texit(ret);\n\t}\n\n\tret |= child_ret;\n\n\tif (pid)\n\t\twaitpid(pid, &child_ret, 0);\n\telse\n\t\texit(ret);\n\n\tFAIL_IF(ret || child_ret);\n\treturn 0;\n}\n\nint main(int argc, char *argv[])\n{\n\treturn test_harness(test_syscall_fpu, \"syscall_fpu\");\n\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

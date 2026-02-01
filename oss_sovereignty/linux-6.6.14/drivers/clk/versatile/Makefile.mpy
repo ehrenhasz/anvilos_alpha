@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "3590a16b522634be8be8554665cfa4a09e19572f037b7c7f634e57df74d2a7ec",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/clk/versatile/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n# Makefile for Versatile-specific clocks\nobj-$(CONFIG_CLK_ICST)\t\t+= icst.o clk-icst.o clk-versatile.o\nobj-$(CONFIG_INTEGRATOR_IMPD1)\t+= clk-impd1.o\nobj-$(CONFIG_CLK_SP810)\t\t+= clk-sp810.o\nobj-$(CONFIG_CLK_VEXPRESS_OSC)\t+= clk-vexpress-osc.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "dscr_inherit_test.c",
+  "hash_id": "a03a31122f3c4c7a51c57ada0ceb1caccc32576c5ba2091ae30725c9ddee24c4",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/powerpc/dscr/dscr_inherit_test.c",
+  "human_readable_source": "\n \n#include \"dscr.h\"\n\nint dscr_inherit(void)\n{\n\tunsigned long i, dscr = 0;\n\tpid_t pid;\n\n\tSKIP_IF(!have_hwcap2(PPC_FEATURE2_DSCR));\n\n\tsrand(getpid());\n\tset_dscr(dscr);\n\n\tfor (i = 0; i < COUNT; i++) {\n\t\tunsigned long cur_dscr, cur_dscr_usr;\n\n\t\tdscr++;\n\t\tif (dscr > DSCR_MAX)\n\t\t\tdscr = 0;\n\n\t\tif (i % 2 == 0)\n\t\t\tset_dscr_usr(dscr);\n\t\telse\n\t\t\tset_dscr(dscr);\n\n\t\tpid = fork();\n\t\tif (pid == -1) {\n\t\t\tperror(\"fork() failed\");\n\t\t\texit(1);\n\t\t} else if (pid) {\n\t\t\tint status;\n\n\t\t\tif (waitpid(pid, &status, 0) == -1) {\n\t\t\t\tperror(\"waitpid() failed\");\n\t\t\t\texit(1);\n\t\t\t}\n\n\t\t\tif (!WIFEXITED(status)) {\n\t\t\t\tfprintf(stderr, \"Child didn't exit cleanly\\n\");\n\t\t\t\texit(1);\n\t\t\t}\n\n\t\t\tif (WEXITSTATUS(status) != 0) {\n\t\t\t\tfprintf(stderr, \"Child didn't exit cleanly\\n\");\n\t\t\t\treturn 1;\n\t\t\t}\n\t\t} else {\n\t\t\tcur_dscr = get_dscr();\n\t\t\tif (cur_dscr != dscr) {\n\t\t\t\tfprintf(stderr, \"Kernel DSCR should be %ld \"\n\t\t\t\t\t\"but is %ld\\n\", dscr, cur_dscr);\n\t\t\t\texit(1);\n\t\t\t}\n\n\t\t\tcur_dscr_usr = get_dscr_usr();\n\t\t\tif (cur_dscr_usr != dscr) {\n\t\t\t\tfprintf(stderr, \"User DSCR should be %ld \"\n\t\t\t\t\t\"but is %ld\\n\", dscr, cur_dscr_usr);\n\t\t\t\texit(1);\n\t\t\t}\n\t\t\texit(0);\n\t\t}\n\t}\n\treturn 0;\n}\n\nint main(int argc, char *argv[])\n{\n\treturn test_harness(dscr_inherit, \"dscr_inherit_test\");\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

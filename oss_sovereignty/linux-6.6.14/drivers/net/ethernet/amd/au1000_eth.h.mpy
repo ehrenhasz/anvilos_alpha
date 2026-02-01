@@ -1,0 +1,9 @@
+{
+  "module_name": "au1000_eth.h",
+  "hash_id": "2cb5cc1ddba8bc5c4e3afdbbd40ab5259ece811501c656da32c9d0807ec14783",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/amd/au1000_eth.h",
+  "human_readable_source": " \n \n\n\n#define MAC_IOSIZE 0x10000\n#define NUM_RX_DMA 4        \n#define NUM_TX_DMA 4        \n\n#define NUM_RX_BUFFS 4\n#define NUM_TX_BUFFS 4\n#define MAX_BUF_SIZE 2048\n\n#define ETH_TX_TIMEOUT (HZ/4)\n#define MAC_MIN_PKT_SIZE 64\n\n#define MULTICAST_FILTER_LIMIT 64\n\n \nstruct db_dest {\n\tstruct db_dest *pnext;\n\tu32 *vaddr;\n\tdma_addr_t dma_addr;\n};\n\n \nstruct tx_dma {\n\tu32 status;\n\tu32 buff_stat;\n\tu32 len;\n\tu32 pad;\n};\n\nstruct rx_dma {\n\tu32 status;\n\tu32 buff_stat;\n\tu32 pad[2];\n};\n\n\n \nstruct mac_reg {\n\tu32 control;\n\tu32 mac_addr_high;\n\tu32 mac_addr_low;\n\tu32 multi_hash_high;\n\tu32 multi_hash_low;\n\tu32 mii_control;\n\tu32 mii_data;\n\tu32 flow_control;\n\tu32 vlan1_tag;\n\tu32 vlan2_tag;\n};\n\n\nstruct au1000_private {\n\tstruct db_dest *pDBfree;\n\tstruct db_dest db[NUM_RX_BUFFS+NUM_TX_BUFFS];\n\tstruct rx_dma *rx_dma_ring[NUM_RX_DMA];\n\tstruct tx_dma *tx_dma_ring[NUM_TX_DMA];\n\tstruct db_dest *rx_db_inuse[NUM_RX_DMA];\n\tstruct db_dest *tx_db_inuse[NUM_TX_DMA];\n\tu32 rx_head;\n\tu32 tx_head;\n\tu32 tx_tail;\n\tu32 tx_full;\n\n\tint mac_id;\n\n\tint mac_enabled;        \n\n\tint old_link;           \n\tint old_speed;\n\tint old_duplex;\n\n\tstruct mii_bus *mii_bus;\n\n\t \n\tint phy_static_config;\n\tint phy_search_highest_addr;\n\tint phy1_search_mac0;\n\n\tint phy_addr;\n\tint phy_busid;\n\tint phy_irq;\n\n\t \n\tstruct mac_reg *mac;   \n\tu32 *enable;      \n\tvoid __iomem *macdma;\t \n\tvoid *vaddr;\t\t \n\tdma_addr_t dma_addr;\t \n\n\tspinlock_t lock;        \n\n\tu32 msg_enable;\n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

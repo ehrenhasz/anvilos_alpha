@@ -1,0 +1,9 @@
+{
+  "module_name": "test-sys_random.c",
+  "hash_id": "fc1e24a42f0992a94e47170466b4c98ca22674c7b303d7ab7328def1ead1f1d5",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-sys_random.c",
+  "human_readable_source": " \nint flags[] =\n  {\n    GRND_RANDOM,\n    GRND_NONBLOCK\n  };\n\nint\nmain (void)\n{\n  return 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

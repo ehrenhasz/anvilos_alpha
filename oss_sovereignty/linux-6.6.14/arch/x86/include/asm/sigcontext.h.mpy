@@ -1,0 +1,9 @@
+{
+  "module_name": "sigcontext.h",
+  "hash_id": "e9ab24c7bc76b5ba431abbd49ff4d2221f3bbea18175f14d6d17596afd60f79b",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/include/asm/sigcontext.h",
+  "human_readable_source": " \n#ifndef _ASM_X86_SIGCONTEXT_H\n#define _ASM_X86_SIGCONTEXT_H\n\n \n\n#include <uapi/asm/sigcontext.h>\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

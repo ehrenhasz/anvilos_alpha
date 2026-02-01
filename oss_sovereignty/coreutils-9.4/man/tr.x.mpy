@@ -1,0 +1,9 @@
+{
+  "module_name": "tr.x",
+  "hash_id": "a775167a841741ef06a971e11b4018af99f3f30f0e79b24aa1fb381f9f565deb",
+  "original_prompt": "Ingested from coreutils-9.4/man/tr.x",
+  "human_readable_source": "[NAME]\ntr \\- translate or delete characters\n[DESCRIPTION]\n.\\\" Add any additional description here\n[BUGS]\n.PP\nFull support is available only for safe single-byte locales,\nin which every possible input byte represents a single character.\nThe C locale is safe in GNU systems, so you can avoid this issue\nin the shell by running\n.B \"LC_ALL=C tr\"\ninstead of plain\n.BR tr .\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

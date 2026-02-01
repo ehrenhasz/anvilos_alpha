@@ -1,0 +1,9 @@
+{
+  "module_name": "basic1.tc",
+  "hash_id": "9b2bd325e925c24dbda2edfe992f30a056d3771349b5501c97add53b7429386a",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/ftrace/test.d/00basic/basic1.tc",
+  "human_readable_source": "#!/bin/sh\n# description: Basic trace file check\ntest -f README -a -f trace -a -f tracing_on -a -f trace_pipe\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

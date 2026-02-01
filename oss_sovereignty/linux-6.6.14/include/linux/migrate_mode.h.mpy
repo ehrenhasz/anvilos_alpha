@@ -1,0 +1,9 @@
+{
+  "module_name": "migrate_mode.h",
+  "hash_id": "fd752f8633ee68ce753329f360cd1872ce1fc3a43f817ea8ec14cb464c2f3d17",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/migrate_mode.h",
+  "human_readable_source": " \n#ifndef MIGRATE_MODE_H_INCLUDED\n#define MIGRATE_MODE_H_INCLUDED\n \nenum migrate_mode {\n\tMIGRATE_ASYNC,\n\tMIGRATE_SYNC_LIGHT,\n\tMIGRATE_SYNC,\n\tMIGRATE_SYNC_NO_COPY,\n};\n\nenum migrate_reason {\n\tMR_COMPACTION,\n\tMR_MEMORY_FAILURE,\n\tMR_MEMORY_HOTPLUG,\n\tMR_SYSCALL,\t\t \n\tMR_MEMPOLICY_MBIND,\n\tMR_NUMA_MISPLACED,\n\tMR_CONTIG_RANGE,\n\tMR_LONGTERM_PIN,\n\tMR_DEMOTION,\n\tMR_TYPES\n};\n\n#endif\t\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

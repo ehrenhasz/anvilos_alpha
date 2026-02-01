@@ -1,0 +1,9 @@
+{
+  "module_name": "test-xstrtoul.c",
+  "hash_id": "54c2b16099a222e6bc15d83a1911f4725f1e7ba22a3f302408dacfd3bd5c05a5",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-xstrtoul.c",
+  "human_readable_source": "#define __xstrtol xstrtoul\n#define __strtol_t unsigned long int\n#define __spec \"lu\"\n#include \"test-xstrtol.c\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

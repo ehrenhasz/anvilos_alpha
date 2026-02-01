@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "628056887ebb56b90da2f8fb2637e054709ee8dce140059635bbbca7bd225ea4",
+  "original_prompt": "Ingested from linux-6.6.14/lib/kunit/Makefile",
+  "human_readable_source": "obj-$(CONFIG_KUNIT) +=\t\t\tkunit.o\n\nkunit-objs +=\t\t\t\ttest.o \\\n\t\t\t\t\tresource.o \\\n\t\t\t\t\tstatic_stub.o \\\n\t\t\t\t\tstring-stream.o \\\n\t\t\t\t\tassert.o \\\n\t\t\t\t\ttry-catch.o \\\n\t\t\t\t\texecutor.o \\\n\t\t\t\t\tattributes.o\n\nifeq ($(CONFIG_KUNIT_DEBUGFS),y)\nkunit-objs +=\t\t\t\tdebugfs.o\nendif\n\n# KUnit 'hooks' are built-in even when KUnit is built as a module.\nobj-y +=\t\t\t\thooks.o\n\nobj-$(CONFIG_KUNIT_TEST) +=\t\tkunit-test.o\n\n# string-stream-test compiles built-in only.\nifeq ($(CONFIG_KUNIT_TEST),y)\nobj-$(CONFIG_KUNIT_TEST) +=\t\tstring-stream-test.o\nendif\n\nobj-$(CONFIG_KUNIT_EXAMPLE_TEST) +=\tkunit-example-test.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "0550585f9af8f73a12d60b46ee5609aa76a1c03ad999f539a2c643a3228c96f5",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/platform/goldfish/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nmenuconfig GOLDFISH\n\tbool \"Platform support for Goldfish virtual devices\"\n\tdepends on HAS_IOMEM && HAS_DMA\n\thelp\n\t  Say Y here to get to see options for the Goldfish virtual platform.\n\t  This option alone does not add any kernel code.\n\n\t  Unless you are building for the Android Goldfish emulator say N here.\n\nif GOLDFISH\n\nconfig GOLDFISH_PIPE\n\ttristate \"Goldfish virtual device for QEMU pipes\"\n\thelp\n\t  This is a virtual device to drive the QEMU pipe interface used by\n\t  the Goldfish Android Virtual Device.\n\nendif # GOLDFISH\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

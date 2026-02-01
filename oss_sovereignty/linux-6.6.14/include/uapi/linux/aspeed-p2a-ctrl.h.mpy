@@ -1,0 +1,9 @@
+{
+  "module_name": "aspeed-p2a-ctrl.h",
+  "hash_id": "90a46725e770b20bd5677ab4c0ef7ef748c1f8f39d38e2e2cd05d01ab81778d0",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/aspeed-p2a-ctrl.h",
+  "human_readable_source": " \n \n\n#ifndef _UAPI_LINUX_ASPEED_P2A_CTRL_H\n#define _UAPI_LINUX_ASPEED_P2A_CTRL_H\n\n#include <linux/ioctl.h>\n#include <linux/types.h>\n\n#define ASPEED_P2A_CTRL_READ_ONLY 0\n#define ASPEED_P2A_CTRL_READWRITE 1\n\n \n\n \nstruct aspeed_p2a_ctrl_mapping {\n\t__u64 addr;\n\t__u32 length;\n\t__u32 flags;\n};\n\n#define __ASPEED_P2A_CTRL_IOCTL_MAGIC 0xb3\n\n \n#define ASPEED_P2A_CTRL_IOCTL_SET_WINDOW _IOW(__ASPEED_P2A_CTRL_IOCTL_MAGIC, \\\n\t\t0x00, struct aspeed_p2a_ctrl_mapping)\n\n \n#define ASPEED_P2A_CTRL_IOCTL_GET_MEMORY_CONFIG \\\n\t_IOWR(__ASPEED_P2A_CTRL_IOCTL_MAGIC, \\\n\t\t0x01, struct aspeed_p2a_ctrl_mapping)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

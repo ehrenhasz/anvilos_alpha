@@ -1,0 +1,9 @@
+{
+  "module_name": "vnic_vic.c",
+  "hash_id": "01045e369ee6e433276273fe72354c366b3dfb54b3ee6ab456d262dc6540cb28",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/cisco/enic/vnic_vic.c",
+  "human_readable_source": "\n\n\n#include <linux/kernel.h>\n#include <linux/errno.h>\n#include <linux/types.h>\n#include <linux/slab.h>\n\n#include \"vnic_vic.h\"\n\nstruct vic_provinfo *vic_provinfo_alloc(gfp_t flags, const u8 *oui,\n\tconst u8 type)\n{\n\tstruct vic_provinfo *vp;\n\n\tif (!oui)\n\t\treturn NULL;\n\n\tvp = kzalloc(VIC_PROVINFO_MAX_DATA, flags);\n\tif (!vp)\n\t\treturn NULL;\n\n\tmemcpy(vp->oui, oui, sizeof(vp->oui));\n\tvp->type = type;\n\tvp->length = htonl(sizeof(vp->num_tlvs));\n\n\treturn vp;\n}\n\nvoid vic_provinfo_free(struct vic_provinfo *vp)\n{\n\tkfree(vp);\n}\n\nint vic_provinfo_add_tlv(struct vic_provinfo *vp, u16 type, u16 length,\n\tconst void *value)\n{\n\tstruct vic_provinfo_tlv *tlv;\n\n\tif (!vp || !value)\n\t\treturn -EINVAL;\n\n\tif (ntohl(vp->length) + offsetof(struct vic_provinfo_tlv, value) +\n\t\tlength > VIC_PROVINFO_MAX_TLV_DATA)\n\t\treturn -ENOMEM;\n\n\ttlv = (struct vic_provinfo_tlv *)((u8 *)vp->tlv +\n\t\tntohl(vp->length) - sizeof(vp->num_tlvs));\n\n\ttlv->type = htons(type);\n\ttlv->length = htons(length);\n\tmemcpy(tlv->value, value, length);\n\n\tvp->num_tlvs = htonl(ntohl(vp->num_tlvs) + 1);\n\tvp->length = htonl(ntohl(vp->length) +\n\t\toffsetof(struct vic_provinfo_tlv, value) + length);\n\n\treturn 0;\n}\n\nsize_t vic_provinfo_size(struct vic_provinfo *vp)\n{\n\treturn vp ?  ntohl(vp->length) + sizeof(*vp) - sizeof(vp->num_tlvs) : 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

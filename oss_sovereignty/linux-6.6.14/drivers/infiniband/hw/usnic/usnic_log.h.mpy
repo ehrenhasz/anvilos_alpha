@@ -1,0 +1,9 @@
+{
+  "module_name": "usnic_log.h",
+  "hash_id": "64b00d8ebef9baff86ca04f5868104b7d9cd8e15a2cc5afb1c3ad12b4ee11614",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/infiniband/hw/usnic/usnic_log.h",
+  "human_readable_source": " \n\n#ifndef USNIC_LOG_H_\n#define USNIC_LOG_H_\n\n#include \"usnic.h\"\n\nextern unsigned int usnic_log_lvl;\n\n#define USNIC_LOG_LVL_NONE\t\t(0)\n#define USNIC_LOG_LVL_ERR\t\t(1)\n#define USNIC_LOG_LVL_INFO\t\t(2)\n#define USNIC_LOG_LVL_DBG\t\t(3)\n\n#define usnic_printk(lvl, args...) \\\n\tdo { \\\n\t\tprintk(lvl \"%s:%s:%d: \", DRV_NAME, __func__, \\\n\t\t\t\t__LINE__); \\\n\t\tprintk(args); \\\n\t} while (0)\n\n#define usnic_dbg(args...) \\\n\tdo { \\\n\t\tif (unlikely(usnic_log_lvl >= USNIC_LOG_LVL_DBG)) { \\\n\t\t\tusnic_printk(KERN_INFO, args); \\\n\t} \\\n} while (0)\n\n#define usnic_info(args...) \\\ndo { \\\n\tif (usnic_log_lvl >= USNIC_LOG_LVL_INFO) { \\\n\t\t\tusnic_printk(KERN_INFO, args); \\\n\t} \\\n} while (0)\n\n#define usnic_err(args...) \\\n\tdo { \\\n\t\tif (usnic_log_lvl >= USNIC_LOG_LVL_ERR) { \\\n\t\t\tusnic_printk(KERN_ERR, args); \\\n\t\t} \\\n\t} while (0)\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

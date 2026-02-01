@@ -1,0 +1,9 @@
+{
+  "module_name": "uts.h",
+  "hash_id": "026f2b22c1cbf78521cbcd5dbd88269738037270f606292ba3b3cb84a775e71e",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/uts.h",
+  "human_readable_source": " \n#ifndef _LINUX_UTS_H\n#define _LINUX_UTS_H\n\n \n#ifndef UTS_SYSNAME\n#define UTS_SYSNAME \"Linux\"\n#endif\n\n#ifndef UTS_NODENAME\n#define UTS_NODENAME CONFIG_DEFAULT_HOSTNAME  \n#endif\n\n#ifndef UTS_DOMAINNAME\n#define UTS_DOMAINNAME \"(none)\"\t \n#endif\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

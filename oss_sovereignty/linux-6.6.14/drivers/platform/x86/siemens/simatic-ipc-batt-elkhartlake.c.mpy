@@ -1,0 +1,9 @@
+{
+  "module_name": "simatic-ipc-batt-elkhartlake.c",
+  "hash_id": "662fb33347e6d3b559cf351d70e62c1a77cb675027b9f0ab64ad54a81a988d87",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/platform/x86/siemens/simatic-ipc-batt-elkhartlake.c",
+  "human_readable_source": "\n \n\n#include <linux/gpio/machine.h>\n#include <linux/gpio/consumer.h>\n#include <linux/kernel.h>\n#include <linux/module.h>\n#include <linux/platform_device.h>\n\n#include \"simatic-ipc-batt.h\"\n\nstatic struct gpiod_lookup_table simatic_ipc_batt_gpio_table_bx_21a = {\n\t.table = {\n\t\tGPIO_LOOKUP_IDX(\"INTC1020:04\", 18, NULL, 0, GPIO_ACTIVE_HIGH),\n\t\tGPIO_LOOKUP_IDX(\"INTC1020:04\", 19, NULL, 1, GPIO_ACTIVE_HIGH),\n\t\tGPIO_LOOKUP_IDX(\"INTC1020:01\", 66, NULL, 2, GPIO_ACTIVE_HIGH),\n\t\t{}  \n\t},\n};\n\nstatic int simatic_ipc_batt_elkhartlake_remove(struct platform_device *pdev)\n{\n\treturn simatic_ipc_batt_remove(pdev, &simatic_ipc_batt_gpio_table_bx_21a);\n}\n\nstatic int simatic_ipc_batt_elkhartlake_probe(struct platform_device *pdev)\n{\n\treturn simatic_ipc_batt_probe(pdev, &simatic_ipc_batt_gpio_table_bx_21a);\n}\n\nstatic struct platform_driver simatic_ipc_batt_driver = {\n\t.probe = simatic_ipc_batt_elkhartlake_probe,\n\t.remove = simatic_ipc_batt_elkhartlake_remove,\n\t.driver = {\n\t\t.name = KBUILD_MODNAME,\n\t},\n};\n\nmodule_platform_driver(simatic_ipc_batt_driver);\n\nMODULE_LICENSE(\"GPL\");\nMODULE_ALIAS(\"platform:\" KBUILD_MODNAME);\nMODULE_SOFTDEP(\"pre: simatic-ipc-batt platform:elkhartlake-pinctrl\");\nMODULE_AUTHOR(\"Henning Schild <henning.schild@siemens.com>\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

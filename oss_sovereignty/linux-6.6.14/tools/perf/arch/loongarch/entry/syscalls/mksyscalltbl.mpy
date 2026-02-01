@@ -1,0 +1,9 @@
+{
+  "module_name": "mksyscalltbl",
+  "hash_id": "68edeceabb1fcd6d0547cb28ac018fdc54a383e64b3acacd19db2c82cbd450a8",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/arch/loongarch/entry/syscalls/mksyscalltbl",
+  "human_readable_source": "#!/bin/sh\n# SPDX-License-Identifier: GPL-2.0\n#\n# Generate system call table for perf. Derived from\n# powerpc script.\n#\n# Author(s):  Ming Wang <wangming01@loongson.cn>\n# Author(s):  Huacai Chen <chenhuacai@loongson.cn>\n# Copyright (C) 2020-2023 Loongson Technology Corporation Limited\n\ngcc=$1\nhostcc=$2\nincpath=$3\ninput=$4\n\nif ! test -r $input; then\n\techo \"Could not read input file\" >&2\n\texit 1\nfi\n\ncreate_sc_table()\n{\n\tlocal sc nr max_nr\n\n\twhile read sc nr; do\n\t\tprintf \"%s\\n\" \"\t[$nr] = \\\"$sc\\\",\"\n\t\tmax_nr=$nr\n\tdone\n\n\techo \"#define SYSCALLTBL_LOONGARCH_MAX_ID $max_nr\"\n}\n\ncreate_table()\n{\n\techo \"#include \\\"$input\\\"\"\n\techo \"static const char *const syscalltbl_loongarch[] = {\"\n\tcreate_sc_table\n\techo \"};\"\n}\n\n$gcc -E -dM -x c -I $incpath/include/uapi $input \\\n\t|awk '$2 ~ \"__NR\" && $3 !~ \"__NR3264_\" {\n\t\tsub(\"^#define __NR(3264)?_\", \"\");\n\t\tprint | \"sort -k2 -n\"}' \\\n\t|create_table\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

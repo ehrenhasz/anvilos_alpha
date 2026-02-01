@@ -1,0 +1,9 @@
+{
+  "module_name": "c_threaded_variables.c",
+  "hash_id": "b6d67c9a3c3cc7bda16f44d689356f401e3ce03949d055f317172e4a25264dbd",
+  "original_prompt": "Ingested from ncurses-6.4/Ada95/src/c_threaded_variables.c",
+  "human_readable_source": " \n\n \n\n#include \"c_threaded_variables.h\"\n\n#define WRAP(type, name)        \\\n  type                          \\\n  name ## _as_function (void)   \\\n  {                             \\\n    return name;                \\\n  }\n \nWRAP(WINDOW *, stdscr)\nWRAP(WINDOW *, curscr)\n\nWRAP(int, LINES)\nWRAP(int, COLS)\nWRAP(int, TABSIZE)\nWRAP(int, COLORS)\nWRAP(int, COLOR_PAIRS)\n\nchtype\nacs_map_as_function(char inx)\n{\n  return acs_map[(unsigned char) inx];\n}\n \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

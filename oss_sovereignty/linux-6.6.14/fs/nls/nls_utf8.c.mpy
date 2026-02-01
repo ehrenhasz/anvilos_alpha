@@ -1,0 +1,9 @@
+{
+  "module_name": "nls_utf8.c",
+  "hash_id": "1aa1e0aa0a0da00186e564f524167e60ee4bf7aa141661da7a2dfe0b8d3b0660",
+  "original_prompt": "Ingested from linux-6.6.14/fs/nls/nls_utf8.c",
+  "human_readable_source": " \n\n#include <linux/module.h>\n#include <linux/kernel.h>\n#include <linux/string.h>\n#include <linux/nls.h>\n#include <linux/errno.h>\n\nstatic unsigned char identity[256];\n\nstatic int uni2char(wchar_t uni, unsigned char *out, int boundlen)\n{\n\tint n;\n\n\tif (boundlen <= 0)\n\t\treturn -ENAMETOOLONG;\n\n\tn = utf32_to_utf8(uni, out, boundlen);\n\tif (n < 0) {\n\t\t*out = '?';\n\t\treturn -EINVAL;\n\t}\n\treturn n;\n}\n\nstatic int char2uni(const unsigned char *rawstring, int boundlen, wchar_t *uni)\n{\n\tint n;\n\tunicode_t u;\n\n\tn = utf8_to_utf32(rawstring, boundlen, &u);\n\tif (n < 0 || u > MAX_WCHAR_T) {\n\t\t*uni = 0x003f;\t \n\t\treturn -EINVAL;\n\t}\n\t*uni = (wchar_t) u;\n\treturn n;\n}\n\nstatic struct nls_table table = {\n\t.charset\t= \"utf8\",\n\t.uni2char\t= uni2char,\n\t.char2uni\t= char2uni,\n\t.charset2lower\t= identity,\t \n\t.charset2upper\t= identity,\n};\n\nstatic int __init init_nls_utf8(void)\n{\n\tint i;\n\tfor (i=0; i<256; i++)\n\t\tidentity[i] = i;\n\n        return register_nls(&table);\n}\n\nstatic void __exit exit_nls_utf8(void)\n{\n        unregister_nls(&table);\n}\n\nmodule_init(init_nls_utf8)\nmodule_exit(exit_nls_utf8)\nMODULE_LICENSE(\"Dual BSD/GPL\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "32be5f1b41f0dfb1f13800f20cdaef7687ed42ecabff05d6651175e851f56c5c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/firmware/tegra/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nmenu \"Tegra firmware driver\"\n\nconfig TEGRA_IVC\n\tbool \"Tegra IVC protocol\"\n\tdepends on ARCH_TEGRA\n\thelp\n\t  IVC (Inter-VM Communication) protocol is part of the IPC\n\t  (Inter Processor Communication) framework on Tegra. It maintains the\n\t  data and the different communication channels in SysRAM or RAM and\n\t  keeps the content is synchronization between host CPU and remote\n\t  processors.\n\nconfig TEGRA_BPMP\n\tbool \"Tegra BPMP driver\"\n\tdepends on ARCH_TEGRA && TEGRA_HSP_MBOX && TEGRA_IVC\n\tdepends on !CPU_BIG_ENDIAN\n\thelp\n\t  BPMP (Boot and Power Management Processor) is designed to off-loading\n\t  the PM functions which include clock/DVFS/thermal/power from the CPU.\n\t  It needs HSP as the HW synchronization and notification module and\n\t  IVC module as the message communication protocol.\n\n\t  This driver manages the IPC interface between host CPU and the\n\t  firmware running on BPMP.\n\nendmenu\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

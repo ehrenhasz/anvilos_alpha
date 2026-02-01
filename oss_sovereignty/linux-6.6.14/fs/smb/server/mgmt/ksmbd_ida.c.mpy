@@ -1,0 +1,9 @@
+{
+  "module_name": "ksmbd_ida.c",
+  "hash_id": "113f904e3648e4598c0e44d2c8ae5d03d1ec17b6fc39b6897ab99157272ea78b",
+  "original_prompt": "Ingested from linux-6.6.14/fs/smb/server/mgmt/ksmbd_ida.c",
+  "human_readable_source": "\n \n\n#include \"ksmbd_ida.h\"\n\nstatic inline int __acquire_id(struct ida *ida, int from, int to)\n{\n\treturn ida_simple_get(ida, from, to, GFP_KERNEL);\n}\n\nint ksmbd_acquire_smb2_tid(struct ida *ida)\n{\n\tint id;\n\n\tid = __acquire_id(ida, 1, 0xFFFFFFFF);\n\n\treturn id;\n}\n\nint ksmbd_acquire_smb2_uid(struct ida *ida)\n{\n\tint id;\n\n\tid = __acquire_id(ida, 1, 0);\n\tif (id == 0xFFFE)\n\t\tid = __acquire_id(ida, 1, 0);\n\n\treturn id;\n}\n\nint ksmbd_acquire_async_msg_id(struct ida *ida)\n{\n\treturn __acquire_id(ida, 1, 0);\n}\n\nint ksmbd_acquire_id(struct ida *ida)\n{\n\treturn __acquire_id(ida, 0, 0);\n}\n\nvoid ksmbd_release_id(struct ida *ida, int id)\n{\n\tida_simple_remove(ida, id);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

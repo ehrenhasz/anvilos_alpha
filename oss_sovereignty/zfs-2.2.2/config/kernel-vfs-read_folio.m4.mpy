@@ -1,0 +1,9 @@
+{
+  "module_name": "kernel-vfs-read_folio.m4",
+  "hash_id": "a15ff967b577848821233660c602d6aaf0f4204d32ca5846c835c40dac2092b6",
+  "original_prompt": "Ingested from zfs-2.2.2/config/kernel-vfs-read_folio.m4",
+  "human_readable_source": "dnl #\ndnl # Linux 5.19 uses read_folio in lieu of readpage\ndnl #\nAC_DEFUN([ZFS_AC_KERNEL_SRC_VFS_READ_FOLIO], [\n\tZFS_LINUX_TEST_SRC([vfs_has_read_folio], [\n\t\t#include <linux/fs.h>\n\n\t\tstatic int\n\t\ttest_read_folio(struct file *file, struct folio *folio) {\n\t\t\t(void) file; (void) folio;\n\t\t\treturn (0);\n\t\t}\n\n\t\tstatic const struct address_space_operations\n\t\t    aops __attribute__ ((unused)) = {\n\t\t\t.read_folio\t= test_read_folio,\n\t\t};\n\t],[])\n])\n\nAC_DEFUN([ZFS_AC_KERNEL_VFS_READ_FOLIO], [\n\tdnl #\n\tdnl # Linux 5.19 uses read_folio in lieu of readpage\n\tdnl #\n\tAC_MSG_CHECKING([whether read_folio exists])\n\tZFS_LINUX_TEST_RESULT([vfs_has_read_folio], [\n\t\tAC_MSG_RESULT([yes])\n\t\tAC_DEFINE(HAVE_VFS_READ_FOLIO, 1, [read_folio exists])\n\t],[\n\t\tAC_MSG_RESULT([no])\n\t])\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

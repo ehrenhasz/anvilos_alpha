@@ -1,0 +1,9 @@
+{
+  "module_name": "head.x",
+  "hash_id": "1b534c6d683ec78183ba92d18d4bf89b28d0a79d2862e52fd3a94ab4a6bade9e",
+  "original_prompt": "Ingested from coreutils-9.4/man/head.x",
+  "human_readable_source": "[NAME]\nhead \\- output the first part of files\n[DESCRIPTION]\n.\\\" Add any additional description here\n[SEE ALSO]\ntail(1)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

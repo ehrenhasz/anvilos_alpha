@@ -1,0 +1,9 @@
+{
+  "module_name": "test-jvmti.c",
+  "hash_id": "eb7cec5445dd9d155e6e8a741cd6b683c7fe4d0906a25cce78ea214f8bf00065",
+  "original_prompt": "Ingested from linux-6.6.14/tools/build/feature/test-jvmti.c",
+  "human_readable_source": "\n#include <jvmti.h>\n\nint main(void)\n{\n\tJavaVM\t\t\tjvm\t__attribute__((unused));\n\tjvmtiEventCallbacks\tcb\t__attribute__((unused));\n\tjvmtiCapabilities\tcaps\t__attribute__((unused));\n\tjvmtiJlocationFormat\tformat\t__attribute__((unused));\n\tjvmtiEnv\t\tjvmti\t__attribute__((unused));\n\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

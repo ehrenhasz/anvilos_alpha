@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "a621401c8cd0f4c015d3d507698036993e3c12b1c5f3c04bcd81c47c3c8c6cef",
+  "original_prompt": "Ingested from linux-6.6.14/fs/smb/client/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for Linux CIFS/SMB2/SMB3 VFS client\n#\nccflags-y += -I$(src)\t\t# needed for trace events\nobj-$(CONFIG_CIFS) += cifs.o\n\ncifs-y := trace.o cifsfs.o cifs_debug.o connect.o dir.o file.o \\\n\t  inode.o link.o misc.o netmisc.o smbencrypt.o transport.o \\\n\t  cached_dir.o cifs_unicode.o nterr.o cifsencrypt.o \\\n\t  readdir.o ioctl.o sess.o export.o unc.o winucase.o \\\n\t  smb2ops.o smb2maperror.o smb2transport.o \\\n\t  smb2misc.o smb2pdu.o smb2inode.o smb2file.o cifsacl.o fs_context.o \\\n\t  dns_resolve.o cifs_spnego_negtokeninit.asn1.o asn1.o \\\n\t  namespace.o\n\n$(obj)/asn1.o: $(obj)/cifs_spnego_negtokeninit.asn1.h\n\n$(obj)/cifs_spnego_negtokeninit.asn1.o: $(obj)/cifs_spnego_negtokeninit.asn1.c $(obj)/cifs_spnego_negtokeninit.asn1.h\n\ncifs-$(CONFIG_CIFS_XATTR) += xattr.o\n\ncifs-$(CONFIG_CIFS_UPCALL) += cifs_spnego.o\n\ncifs-$(CONFIG_CIFS_DFS_UPCALL) += dfs_cache.o dfs.o\n\ncifs-$(CONFIG_CIFS_SWN_UPCALL) += netlink.o cifs_swn.o\n\ncifs-$(CONFIG_CIFS_FSCACHE) += fscache.o\n\ncifs-$(CONFIG_CIFS_SMB_DIRECT) += smbdirect.o\n\ncifs-$(CONFIG_CIFS_ROOT) += cifsroot.o\n\ncifs-$(CONFIG_CIFS_ALLOW_INSECURE_LEGACY) += smb1ops.o cifssmb.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

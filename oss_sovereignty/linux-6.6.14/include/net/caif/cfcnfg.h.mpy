@@ -1,0 +1,9 @@
+{
+  "module_name": "cfcnfg.h",
+  "hash_id": "5b15b836055df60f946236e642350f1ffb144ea7a1e749a6ec0845b256057a9e",
+  "original_prompt": "Ingested from linux-6.6.14/include/net/caif/cfcnfg.h",
+  "human_readable_source": " \n \n\n#ifndef CFCNFG_H_\n#define CFCNFG_H_\n#include <linux/spinlock.h>\n#include <linux/netdevice.h>\n#include <net/caif/caif_layer.h>\n#include <net/caif/cfctrl.h>\n\nstruct cfcnfg;\n\n \nenum cfcnfg_phy_preference {\n\tCFPHYPREF_UNSPECIFIED,\n\tCFPHYPREF_LOW_LAT,\n\tCFPHYPREF_HIGH_BW,\n\tCFPHYPREF_LOOP\n};\n\n \nstruct cfcnfg *get_cfcnfg(struct net *net);\n\n \nstruct cfcnfg *cfcnfg_create(void);\n\n \nvoid cfcnfg_remove(struct cfcnfg *cfg);\n\n \nint\ncfcnfg_add_phy_layer(struct cfcnfg *cnfg,\n\t\t     struct net_device *dev, struct cflayer *phy_layer,\n\t\t     enum cfcnfg_phy_preference pref,\n\t\t     struct cflayer *link_support,\n\t\t     bool fcs, int head_room);\n\n \nint cfcnfg_del_phy_layer(struct cfcnfg *cnfg, struct cflayer *phy_layer);\n\n \nint cfcnfg_set_phy_state(struct cfcnfg *cnfg, struct cflayer *phy_layer,\n\t\t\t\tbool up);\n\n#endif\t\t\t\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

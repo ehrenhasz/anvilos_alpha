@@ -1,0 +1,9 @@
+{
+  "module_name": "si2168.h",
+  "hash_id": "f50fb0332b76095594384d4d45edcbdfbedfa7cdc3b22435c230339e0ab85e79",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/dvb-frontends/si2168.h",
+  "human_readable_source": " \n \n\n#ifndef SI2168_H\n#define SI2168_H\n\n#include <linux/dvb/frontend.h>\n \nstruct si2168_config {\n\tstruct dvb_frontend **fe;\n\tstruct i2c_adapter **i2c_adapter;\n\n#define SI2168_TS_PARALLEL\t0x06\n#define SI2168_TS_SERIAL\t0x03\n#define SI2168_TS_TRISTATE\t0x00\n#define SI2168_TS_CLK_MANUAL\t0x20\n\tu8 ts_mode;\n\n\t \n\tunsigned int ts_clock_inv:1;\n\tunsigned int ts_clock_gapped:1;\n\tunsigned int spectral_inversion:1;\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

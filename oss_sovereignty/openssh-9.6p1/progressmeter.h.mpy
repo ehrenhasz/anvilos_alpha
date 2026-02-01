@@ -1,0 +1,9 @@
+{
+  "module_name": "progressmeter.h",
+  "hash_id": "f64c4da06aa912080b51818152ba2a870e41cabe353a61e14479ffef6e7ef0ab",
+  "original_prompt": "Ingested from openssh-9.6p1/progressmeter.h",
+  "human_readable_source": " \n \n\nvoid\tstart_progress_meter(const char *, off_t, off_t *);\nvoid\trefresh_progress_meter(int);\nvoid\tstop_progress_meter(void);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

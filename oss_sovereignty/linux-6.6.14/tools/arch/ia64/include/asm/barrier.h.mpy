@@ -1,0 +1,9 @@
+{
+  "module_name": "barrier.h",
+  "hash_id": "3eee656eac17bc2311fa4489c7ae6b9a875404cfcdac44caae12b360e093481c",
+  "original_prompt": "Ingested from linux-6.6.14/tools/arch/ia64/include/asm/barrier.h",
+  "human_readable_source": " \n \n#ifndef _TOOLS_LINUX_ASM_IA64_BARRIER_H\n#define _TOOLS_LINUX_ASM_IA64_BARRIER_H\n\n#include <linux/compiler.h>\n\n \n\n#define mb()\t\tia64_mf()\n#define rmb()\t\tmb()\n#define wmb()\t\tmb()\n\n#define smp_store_release(p, v)\t\t\t\\\ndo {\t\t\t\t\t\t\\\n\tbarrier();\t\t\t\t\\\n\tWRITE_ONCE(*p, v);\t\t\t\\\n} while (0)\n\n#define smp_load_acquire(p)\t\t\t\\\n({\t\t\t\t\t\t\\\n\ttypeof(*p) ___p1 = READ_ONCE(*p);\t\\\n\tbarrier();\t\t\t\t\\\n\t___p1;\t\t\t\t\t\\\n})\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

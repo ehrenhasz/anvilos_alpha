@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "1232de4ef6879038158f0b7b0bafefefeebda0b7045bf4231b23a935c19b216a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/quantenna/qtnfmac/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig QTNFMAC\n\ttristate\n\tdepends on QTNFMAC_PCIE\n\tdefault m if QTNFMAC_PCIE=m\n\tdefault y if QTNFMAC_PCIE=y\n\nconfig QTNFMAC_PCIE\n\ttristate \"Quantenna QSR1000/QSR2000/QSR10g PCIe support\"\n\tdefault n\n\tdepends on PCI && CFG80211\n\tselect QTNFMAC\n\tselect FW_LOADER\n\tselect CRC32\n\thelp\n\t  This option adds support for wireless adapters based on Quantenna\n\t  802.11ac QSR10g (aka Pearl) and QSR1000/QSR2000 (aka Topaz)\n\t  FullMAC chipsets running over PCIe.\n\n\t  If you choose to build it as a module, two modules will be built:\n\t  qtnfmac.ko and qtnfmac_pcie.ko.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

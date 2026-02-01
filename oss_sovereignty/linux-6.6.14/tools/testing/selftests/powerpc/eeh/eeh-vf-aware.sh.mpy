@@ -1,0 +1,9 @@
+{
+  "module_name": "eeh-vf-aware.sh",
+  "hash_id": "f3b96afe924048087dc9864332433e3e621f807c2dd596f05fbb52f4d378468a",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/powerpc/eeh/eeh-vf-aware.sh",
+  "human_readable_source": "#!/bin/sh\n# SPDX-License-Identifier: GPL-2.0-only\n\n. ./eeh-functions.sh\n\neeh_test_prep # NB: may exit\n\nvf_list=\"$(eeh_enable_vfs)\";\nif $? != 0 ; then\n\tlog \"No usable VFs found. Skipping EEH unaware VF test\"\n\texit $KSELFTESTS_SKIP;\nfi\n\nlog \"Enabled VFs: $vf_list\"\n\ntested=0\npassed=0\nfor vf in $vf_list ; do\n\tlog \"Testing $vf\"\n\n\tif ! eeh_can_recover $vf ; then\n\t\tlog \"Driver for $vf doesn't support error recovery, skipping\"\n\t\tcontinue;\n\tfi\n\n\ttested=\"$((tested + 1))\"\n\n\tlog \"Breaking $vf...\"\n\tif ! eeh_one_dev $vf ; then\n\t\tlog \"$vf failed to recover\"\n\t\tcontinue;\n\tfi\n\n\tpassed=\"$((passed + 1))\"\ndone\n\neeh_disable_vfs\n\nif [ \"$tested\" == 0 ] ; then\n\techo \"No VFs with EEH aware drivers found, skipping\"\n\texit $KSELFTESTS_SKIP\nfi\n\ntest \"$failed\" != 0\nexit $?;\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

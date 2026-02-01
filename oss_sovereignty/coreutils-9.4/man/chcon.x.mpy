@@ -1,0 +1,9 @@
+{
+  "module_name": "chcon.x",
+  "hash_id": "d1e2d12958fc40ba2015cf8f0d2e6d4022a3d3976112b606a1986266b812386d",
+  "original_prompt": "Ingested from coreutils-9.4/man/chcon.x",
+  "human_readable_source": "[NAME]\nchcon \\- change file security context\n[DESCRIPTION]\n.\\\" Add any additional description here\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "@@__@@__extmod__vfs_posix.c.qstr",
+  "hash_id": "436335b8c0035535b9bf2bd7fb4f61e916280889a7544d6f16b247624de6519e",
+  "original_prompt": "Ingested from sys_09_Anvil/source/ports/unix/build-bicameral/genhdr/qstr/@@__@@__extmod__vfs_posix.c.qstr",
+  "human_readable_source": "Q(mount)\nQ(umount)\nQ(open)\nQ(chdir)\nQ(getcwd)\nQ(ilistdir)\nQ(mkdir)\nQ(remove)\nQ(rename)\nQ(rmdir)\nQ(stat)\nQ(statvfs)\nQ(VfsPosix)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

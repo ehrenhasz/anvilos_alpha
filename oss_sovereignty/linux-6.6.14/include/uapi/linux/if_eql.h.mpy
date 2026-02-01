@@ -1,0 +1,9 @@
+{
+  "module_name": "if_eql.h",
+  "hash_id": "187dade64956075bcfddb950d716ac6ac4154590d0789b755a1382ee94af22b5",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/if_eql.h",
+  "human_readable_source": " \n \n\n#ifndef _UAPI_LINUX_IF_EQL_H\n#define _UAPI_LINUX_IF_EQL_H\n\n#define EQL_DEFAULT_SLAVE_PRIORITY 28800\n#define EQL_DEFAULT_MAX_SLAVES     4\n#define EQL_DEFAULT_MTU            576\n#define EQL_DEFAULT_RESCHED_IVAL   HZ\n\n#define EQL_ENSLAVE     (SIOCDEVPRIVATE)\n#define EQL_EMANCIPATE  (SIOCDEVPRIVATE + 1)\n\n#define EQL_GETSLAVECFG (SIOCDEVPRIVATE + 2)\n#define EQL_SETSLAVECFG (SIOCDEVPRIVATE + 3)\n\n#define EQL_GETMASTRCFG (SIOCDEVPRIVATE + 4)\n#define EQL_SETMASTRCFG (SIOCDEVPRIVATE + 5)\n\n\ntypedef struct master_config {\n\tchar\tmaster_name[16];\n\tint\tmax_slaves;\n\tint\tmin_slaves;\n} master_config_t;\n\ntypedef struct slave_config {\n\tchar\tslave_name[16];\n\tlong\tpriority;\n} slave_config_t;\n\ntypedef struct slaving_request {\n\tchar\tslave_name[16];\n\tlong\tpriority;\n} slaving_request_t;\n\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

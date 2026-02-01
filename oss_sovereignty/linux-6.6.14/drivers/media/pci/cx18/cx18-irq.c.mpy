@@ -1,0 +1,9 @@
+{
+  "module_name": "cx18-irq.c",
+  "hash_id": "1041654b263f16199e2dd0b074242303a403d010eccf129bf4b5b9098271787e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/pci/cx18/cx18-irq.c",
+  "human_readable_source": "\n \n\n#include \"cx18-driver.h\"\n#include \"cx18-io.h\"\n#include \"cx18-irq.h\"\n#include \"cx18-mailbox.h\"\n#include \"cx18-scb.h\"\n\nstatic void xpu_ack(struct cx18 *cx, u32 sw2)\n{\n\tif (sw2 & IRQ_CPU_TO_EPU_ACK)\n\t\twake_up(&cx->mb_cpu_waitq);\n\tif (sw2 & IRQ_APU_TO_EPU_ACK)\n\t\twake_up(&cx->mb_apu_waitq);\n}\n\nstatic void epu_cmd(struct cx18 *cx, u32 sw1)\n{\n\tif (sw1 & IRQ_CPU_TO_EPU)\n\t\tcx18_api_epu_cmd_irq(cx, CPU);\n\tif (sw1 & IRQ_APU_TO_EPU)\n\t\tcx18_api_epu_cmd_irq(cx, APU);\n}\n\nirqreturn_t cx18_irq_handler(int irq, void *dev_id)\n{\n\tstruct cx18 *cx = dev_id;\n\tu32 sw1, sw2, hw2;\n\n\tsw1 = cx18_read_reg(cx, SW1_INT_STATUS) & cx->sw1_irq_mask;\n\tsw2 = cx18_read_reg(cx, SW2_INT_STATUS) & cx->sw2_irq_mask;\n\thw2 = cx18_read_reg(cx, HW2_INT_CLR_STATUS) & cx->hw2_irq_mask;\n\n\tif (sw1)\n\t\tcx18_write_reg_expect(cx, sw1, SW1_INT_STATUS, ~sw1, sw1);\n\tif (sw2)\n\t\tcx18_write_reg_expect(cx, sw2, SW2_INT_STATUS, ~sw2, sw2);\n\tif (hw2)\n\t\tcx18_write_reg_expect(cx, hw2, HW2_INT_CLR_STATUS, ~hw2, hw2);\n\n\tif (sw1 || sw2 || hw2)\n\t\tCX18_DEBUG_HI_IRQ(\"received interrupts SW1: %x\tSW2: %x  HW2: %x\\n\",\n\t\t\t\t  sw1, sw2, hw2);\n\n\t \n\tif (sw1)\n\t\tepu_cmd(cx, sw1);\n\n\t \n\n\tif (sw2)\n\t\txpu_ack(cx, sw2);\n\n\treturn (sw1 || sw2 || hw2) ? IRQ_HANDLED : IRQ_NONE;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

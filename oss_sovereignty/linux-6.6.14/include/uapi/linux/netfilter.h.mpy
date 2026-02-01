@@ -1,0 +1,9 @@
+{
+  "module_name": "netfilter.h",
+  "hash_id": "c1228a98f9dc57265beeb0a1dabcb61410b2ce823bf03ff5a1600778968b95a2",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/netfilter.h",
+  "human_readable_source": " \n#ifndef _UAPI__LINUX_NETFILTER_H\n#define _UAPI__LINUX_NETFILTER_H\n\n#include <linux/types.h>\n#include <linux/compiler.h>\n#include <linux/in.h>\n#include <linux/in6.h>\n\n \n#define NF_DROP 0\n#define NF_ACCEPT 1\n#define NF_STOLEN 2\n#define NF_QUEUE 3\n#define NF_REPEAT 4\n#define NF_STOP 5\t \n#define NF_MAX_VERDICT NF_STOP\n\n \n#define NF_VERDICT_MASK 0x000000ff\n\n \n#define NF_VERDICT_FLAG_QUEUE_BYPASS\t0x00008000\n\n \n#define NF_VERDICT_QMASK 0xffff0000\n#define NF_VERDICT_QBITS 16\n\n#define NF_QUEUE_NR(x) ((((x) << 16) & NF_VERDICT_QMASK) | NF_QUEUE)\n\n#define NF_DROP_ERR(x) (((-x) << 16) | NF_DROP)\n\n \n#ifndef __KERNEL__\n\n \n#define NF_VERDICT_BITS 16\n#endif\n\nenum nf_inet_hooks {\n\tNF_INET_PRE_ROUTING,\n\tNF_INET_LOCAL_IN,\n\tNF_INET_FORWARD,\n\tNF_INET_LOCAL_OUT,\n\tNF_INET_POST_ROUTING,\n\tNF_INET_NUMHOOKS,\n\tNF_INET_INGRESS = NF_INET_NUMHOOKS,\n};\n\nenum nf_dev_hooks {\n\tNF_NETDEV_INGRESS,\n\tNF_NETDEV_EGRESS,\n\tNF_NETDEV_NUMHOOKS\n};\n\nenum {\n\tNFPROTO_UNSPEC =  0,\n\tNFPROTO_INET   =  1,\n\tNFPROTO_IPV4   =  2,\n\tNFPROTO_ARP    =  3,\n\tNFPROTO_NETDEV =  5,\n\tNFPROTO_BRIDGE =  7,\n\tNFPROTO_IPV6   = 10,\n#ifndef __KERNEL__  \n\tNFPROTO_DECNET = 12,\n#endif\n\tNFPROTO_NUMPROTO,\n};\n\nunion nf_inet_addr {\n\t__u32\t\tall[4];\n\t__be32\t\tip;\n\t__be32\t\tip6[4];\n\tstruct in_addr\tin;\n\tstruct in6_addr\tin6;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

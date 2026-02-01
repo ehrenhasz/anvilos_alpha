@@ -1,0 +1,9 @@
+{
+  "module_name": "test-zlib.c",
+  "hash_id": "da70f8ca525d2137dc86f099884a9f7698c9b517fb46229639226bcba164d46e",
+  "original_prompt": "Ingested from linux-6.6.14/tools/build/feature/test-zlib.c",
+  "human_readable_source": "\n#include <zlib.h>\n\nint main(void)\n{\n\tz_stream zs;\n\n\tinflateInit(&zs);\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

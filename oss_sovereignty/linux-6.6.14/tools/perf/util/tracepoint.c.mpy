@@ -1,0 +1,9 @@
+{
+  "module_name": "tracepoint.c",
+  "hash_id": "01b24c8af218a060ff41d86860255cf7af6a5735cb32550736288c9d730e9b76",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/util/tracepoint.c",
+  "human_readable_source": "\n#include \"tracepoint.h\"\n\n#include <errno.h>\n#include <fcntl.h>\n#include <stdio.h>\n#include <sys/param.h>\n#include <unistd.h>\n\n#include <api/fs/tracing_path.h>\n\nint tp_event_has_id(const char *dir_path, struct dirent *evt_dir)\n{\n\tchar evt_path[MAXPATHLEN];\n\tint fd;\n\n\tsnprintf(evt_path, MAXPATHLEN, \"%s/%s/id\", dir_path, evt_dir->d_name);\n\tfd = open(evt_path, O_RDONLY);\n\tif (fd < 0)\n\t\treturn -EINVAL;\n\tclose(fd);\n\n\treturn 0;\n}\n\n \nint is_valid_tracepoint(const char *event_string)\n{\n\tDIR *sys_dir, *evt_dir;\n\tstruct dirent *sys_dirent, *evt_dirent;\n\tchar evt_path[MAXPATHLEN];\n\tchar *dir_path;\n\n\tsys_dir = tracing_events__opendir();\n\tif (!sys_dir)\n\t\treturn 0;\n\n\tfor_each_subsystem(sys_dir, sys_dirent) {\n\t\tdir_path = get_events_file(sys_dirent->d_name);\n\t\tif (!dir_path)\n\t\t\tcontinue;\n\t\tevt_dir = opendir(dir_path);\n\t\tif (!evt_dir)\n\t\t\tgoto next;\n\n\t\tfor_each_event(dir_path, evt_dir, evt_dirent) {\n\t\t\tsnprintf(evt_path, MAXPATHLEN, \"%s:%s\",\n\t\t\t\t sys_dirent->d_name, evt_dirent->d_name);\n\t\t\tif (!strcmp(evt_path, event_string)) {\n\t\t\t\tclosedir(evt_dir);\n\t\t\t\tput_events_file(dir_path);\n\t\t\t\tclosedir(sys_dir);\n\t\t\t\treturn 1;\n\t\t\t}\n\t\t}\n\t\tclosedir(evt_dir);\nnext:\n\t\tput_events_file(dir_path);\n\t}\n\tclosedir(sys_dir);\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

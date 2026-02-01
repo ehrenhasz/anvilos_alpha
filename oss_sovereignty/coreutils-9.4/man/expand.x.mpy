@@ -1,0 +1,9 @@
+{
+  "module_name": "expand.x",
+  "hash_id": "5b8ceef53a54c1bbadc9cd3a32013f21c739c673a6e98cd16b4bec7dd99a1000",
+  "original_prompt": "Ingested from coreutils-9.4/man/expand.x",
+  "human_readable_source": "[NAME]\nexpand \\- convert tabs to spaces\n[DESCRIPTION]\n.\\\" Add any additional description here\n[SEE ALSO]\nunexpand(1)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

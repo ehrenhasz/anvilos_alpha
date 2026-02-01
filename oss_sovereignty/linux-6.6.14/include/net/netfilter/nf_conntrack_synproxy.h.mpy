@@ -1,0 +1,9 @@
+{
+  "module_name": "nf_conntrack_synproxy.h",
+  "hash_id": "2abcc2d3a613f7070a66da8f6b678032e4e1cc6df480b3693e72f3b2fc3b0714",
+  "original_prompt": "Ingested from linux-6.6.14/include/net/netfilter/nf_conntrack_synproxy.h",
+  "human_readable_source": " \n#ifndef _NF_CONNTRACK_SYNPROXY_H\n#define _NF_CONNTRACK_SYNPROXY_H\n\n#include <net/netfilter/nf_conntrack_seqadj.h>\n#include <net/netns/generic.h>\n\nstruct nf_conn_synproxy {\n\tu32\tisn;\n\tu32\tits;\n\tu32\ttsoff;\n};\n\nstatic inline struct nf_conn_synproxy *nfct_synproxy(const struct nf_conn *ct)\n{\n#if IS_ENABLED(CONFIG_NETFILTER_SYNPROXY)\n\treturn nf_ct_ext_find(ct, NF_CT_EXT_SYNPROXY);\n#else\n\treturn NULL;\n#endif\n}\n\nstatic inline struct nf_conn_synproxy *nfct_synproxy_ext_add(struct nf_conn *ct)\n{\n#if IS_ENABLED(CONFIG_NETFILTER_SYNPROXY)\n\treturn nf_ct_ext_add(ct, NF_CT_EXT_SYNPROXY, GFP_ATOMIC);\n#else\n\treturn NULL;\n#endif\n}\n\nstatic inline bool nf_ct_add_synproxy(struct nf_conn *ct,\n\t\t\t\t      const struct nf_conn *tmpl)\n{\n#if IS_ENABLED(CONFIG_NETFILTER_SYNPROXY)\n\tif (tmpl && nfct_synproxy(tmpl)) {\n\t\tif (!nfct_seqadj_ext_add(ct))\n\t\t\treturn false;\n\n\t\tif (!nfct_synproxy_ext_add(ct))\n\t\t\treturn false;\n\t}\n#endif\n\n\treturn true;\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

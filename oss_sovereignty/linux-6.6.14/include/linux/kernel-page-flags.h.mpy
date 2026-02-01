@@ -1,0 +1,9 @@
+{
+  "module_name": "kernel-page-flags.h",
+  "hash_id": "bf3bdd42f1ecb02d463067ad932a0c99d71f26e59c6e90318ef2e7db1091f6dc",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/kernel-page-flags.h",
+  "human_readable_source": " \n#ifndef LINUX_KERNEL_PAGE_FLAGS_H\n#define LINUX_KERNEL_PAGE_FLAGS_H\n\n#include <uapi/linux/kernel-page-flags.h>\n\n\n \n#define KPF_RESERVED\t\t32\n#define KPF_MLOCKED\t\t33\n#define KPF_MAPPEDTODISK\t34\n#define KPF_PRIVATE\t\t35\n#define KPF_PRIVATE_2\t\t36\n#define KPF_OWNER_PRIVATE\t37\n#define KPF_ARCH\t\t38\n#define KPF_UNCACHED\t\t39\n#define KPF_SOFTDIRTY\t\t40\n#define KPF_ARCH_2\t\t41\n#define KPF_ARCH_3\t\t42\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

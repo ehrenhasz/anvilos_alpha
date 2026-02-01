@@ -1,0 +1,9 @@
+{
+  "module_name": "syscalltbl.sh",
+  "hash_id": "269a5719a506b789a8911e133eb18013279355a0712ac03e10bfad28e7d36e67",
+  "original_prompt": "Ingested from linux-6.6.14/scripts/syscalltbl.sh",
+  "human_readable_source": "#!/bin/sh\n# SPDX-License-Identifier: GPL-2.0-only\n#\n# Generate a syscall table header.\n#\n# Each line of the syscall table should have the following format:\n#\n# NR ABI NAME [NATIVE] [COMPAT]\n#\n# NR       syscall number\n# ABI      ABI name\n# NAME     syscall name\n# NATIVE   native entry point (optional)\n# COMPAT   compat entry point (optional)\n\nset -e\n\nusage() {\n\techo >&2 \"usage: $0 [--abis ABIS] INFILE OUTFILE\" >&2\n\techo >&2\n\techo >&2 \"  INFILE    input syscall table\"\n\techo >&2 \"  OUTFILE   output header file\"\n\techo >&2\n\techo >&2 \"options:\"\n\techo >&2 \"  --abis ABIS        ABI(s) to handle (By default, all lines are handled)\"\n\texit 1\n}\n\n# default unless specified by options\nabis=\n\nwhile [ $# -gt 0 ]\ndo\n\tcase $1 in\n\t--abis)\n\t\tabis=$(echo \"($2)\" | tr ',' '|')\n\t\tshift 2;;\n\t-*)\n\t\techo \"$1: unknown option\" >&2\n\t\tusage;;\n\t*)\n\t\tbreak;;\n\tesac\ndone\n\nif [ $# -ne 2 ]; then\n\tusage\nfi\n\ninfile=\"$1\"\noutfile=\"$2\"\n\nnxt=0\n\ngrep -E \"^[0-9]+[[:space:]]+$abis\" \"$infile\" | {\n\n\twhile read nr abi name native compat ; do\n\n\t\tif [ $nxt -gt $nr ]; then\n\t\t\techo \"error: $infile: syscall table is not sorted or duplicates the same syscall number\" >&2\n\t\t\texit 1\n\t\tfi\n\n\t\twhile [ $nxt -lt $nr ]; do\n\t\t\techo \"__SYSCALL($nxt, sys_ni_syscall)\"\n\t\t\tnxt=$((nxt + 1))\n\t\tdone\n\n\t\tif [ -n \"$compat\" ]; then\n\t\t\techo \"__SYSCALL_WITH_COMPAT($nr, $native, $compat)\"\n\t\telif [ -n \"$native\" ]; then\n\t\t\techo \"__SYSCALL($nr, $native)\"\n\t\telse\n\t\t\techo \"__SYSCALL($nr, sys_ni_syscall)\"\n\t\tfi\n\t\tnxt=$((nr + 1))\n\tdone\n} > \"$outfile\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "spi.h",
+  "hash_id": "78d9514233cd879535d94e70a85e6fd3c3591e3fe44ec26e12a84ff8d3b16091",
+  "original_prompt": "Ingested from sys_09_Anvil/source/drivers/bus/spi.h",
+  "human_readable_source": " \n#ifndef MICROPY_INCLUDED_DRIVERS_BUS_SPI_H\n#define MICROPY_INCLUDED_DRIVERS_BUS_SPI_H\n\n#include \"py/mphal.h\"\n\nenum {\n    MP_SPI_IOCTL_INIT,\n    MP_SPI_IOCTL_DEINIT,\n};\n\ntypedef struct _mp_spi_proto_t {\n    int (*ioctl)(void *self, uint32_t cmd);\n    void (*transfer)(void *self, size_t len, const uint8_t *src, uint8_t *dest);\n} mp_spi_proto_t;\n\ntypedef struct _mp_soft_spi_obj_t {\n    uint32_t delay_half; \n    uint8_t polarity;\n    uint8_t phase;\n    mp_hal_pin_obj_t sck;\n    mp_hal_pin_obj_t mosi;\n    mp_hal_pin_obj_t miso;\n} mp_soft_spi_obj_t;\n\nextern const mp_spi_proto_t mp_soft_spi_proto;\n\nint mp_soft_spi_ioctl(void *self, uint32_t cmd);\nvoid mp_soft_spi_transfer(void *self, size_t len, const uint8_t *src, uint8_t *dest);\n\n#endif \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

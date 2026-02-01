@@ -1,0 +1,9 @@
+{
+  "module_name": "ed25519",
+  "hash_id": "c4683c666d6394fc5e8f3455b5379304979e0b41502560ddef20c824fa9fb66b",
+  "original_prompt": "Ingested from openssh-9.6p1/regress/unittests/sshsig/testdata/ed25519",
+  "human_readable_source": "-----BEGIN OPENSSH PRIVATE KEY-----\nb3BlbnNzaC1rZXktdjEAAAAABG5vbmUAAAAEbm9uZQAAAAAAAAABAAAAMwAAAAtzc2gtZW\nQyNTUxOQAAACCJYs0iDdw0Fe/FTzY1b78I4H/j+R6mz2AmLtwTjHYwBAAAAJjpGas/6Rmr\nPwAAAAtzc2gtZWQyNTUxOQAAACCJYs0iDdw0Fe/FTzY1b78I4H/j+R6mz2AmLtwTjHYwBA\nAAAEDpSKRA1QKW6kYiQftGRWh+H0fNekzYLG6c3bzseoCpEolizSIN3DQV78VPNjVvvwjg\nf+P5HqbPYCYu3BOMdjAEAAAAEEVEMjU1MTkgdGVzdCBrZXkBAgMEBQ==\n-----END OPENSSH PRIVATE KEY-----\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

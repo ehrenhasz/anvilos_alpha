@@ -1,0 +1,9 @@
+{
+  "module_name": "em_u32.c",
+  "hash_id": "5e90ebe7cf99070a0dd948c9c4220cdd3774cdbf438d3f310c4e326ee3749939",
+  "original_prompt": "Ingested from linux-6.6.14/net/sched/em_u32.c",
+  "human_readable_source": "\n \n\n#include <linux/module.h>\n#include <linux/types.h>\n#include <linux/kernel.h>\n#include <linux/skbuff.h>\n#include <net/pkt_cls.h>\n\nstatic int em_u32_match(struct sk_buff *skb, struct tcf_ematch *em,\n\t\t\tstruct tcf_pkt_info *info)\n{\n\tstruct tc_u32_key *key = (struct tc_u32_key *) em->data;\n\tconst unsigned char *ptr = skb_network_header(skb);\n\n\tif (info) {\n\t\tif (info->ptr)\n\t\t\tptr = info->ptr;\n\t\tptr += (info->nexthdr & key->offmask);\n\t}\n\n\tptr += key->off;\n\n\tif (!tcf_valid_offset(skb, ptr, sizeof(u32)))\n\t\treturn 0;\n\n\treturn !(((*(__be32 *) ptr)  ^ key->val) & key->mask);\n}\n\nstatic struct tcf_ematch_ops em_u32_ops = {\n\t.kind\t  = TCF_EM_U32,\n\t.datalen  = sizeof(struct tc_u32_key),\n\t.match\t  = em_u32_match,\n\t.owner\t  = THIS_MODULE,\n\t.link\t  = LIST_HEAD_INIT(em_u32_ops.link)\n};\n\nstatic int __init init_em_u32(void)\n{\n\treturn tcf_em_register(&em_u32_ops);\n}\n\nstatic void __exit exit_em_u32(void)\n{\n\ttcf_em_unregister(&em_u32_ops);\n}\n\nMODULE_LICENSE(\"GPL\");\n\nmodule_init(init_em_u32);\nmodule_exit(exit_em_u32);\n\nMODULE_ALIAS_TCF_EMATCH(TCF_EM_U32);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

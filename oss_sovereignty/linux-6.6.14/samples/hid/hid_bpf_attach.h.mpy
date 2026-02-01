@@ -1,0 +1,9 @@
+{
+  "module_name": "hid_bpf_attach.h",
+  "hash_id": "22fe7bf99dfc3e91356925793f6e1b930c7d3d25f44f189b87d481f600307a51",
+  "original_prompt": "Ingested from linux-6.6.14/samples/hid/hid_bpf_attach.h",
+  "human_readable_source": " \n \n\n#ifndef __HID_BPF_ATTACH_H\n#define __HID_BPF_ATTACH_H\n\nstruct attach_prog_args {\n\tint prog_fd;\n\tunsigned int hid;\n\tint retval;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

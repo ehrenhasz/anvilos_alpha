@@ -1,0 +1,9 @@
+{
+  "module_name": "hw_cache_event_type_test.c",
+  "hash_id": "7501e2855710bda6e2b178c16ab95bf480b8142fe79187e04d1f5486bb6aae58",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/powerpc/pmu/event_code_tests/hw_cache_event_type_test.c",
+  "human_readable_source": "\n \n\n#include <stdio.h>\n#include <stdlib.h>\n\n#include \"../event.h\"\n#include \"utils.h\"\n#include \"../sampling_tests/misc.h\"\n\n \n#define EventCode_1 0x10000\n \n#define EventCode_2 0x0100\n \n#define EventCode_3 0x0103\n \n#define EventCode_4 0x030000\n\n \nstatic int hw_cache_event_type_test(void)\n{\n\tstruct event event;\n\n\t \n\tSKIP_IF(platform_check_for_tests());\n\n\t \n\tSKIP_IF(check_for_generic_compat_pmu());\n\n\t \n\tevent_init_opts(&event, EventCode_1, PERF_TYPE_HW_CACHE, \"event\");\n\n\t \n\tFAIL_IF(event_open(&event));\n\tevent_close(&event);\n\n\t \n\tevent_init_opts(&event, EventCode_2, PERF_TYPE_HW_CACHE, \"event\");\n\n\t \n\tFAIL_IF(!event_open(&event));\n\tevent_close(&event);\n\n\t \n\tevent_init_opts(&event, EventCode_3, PERF_TYPE_HW_CACHE, \"event\");\n\n\t \n\tFAIL_IF(!event_open(&event));\n\tevent_close(&event);\n\n\t \n\tevent_init_opts(&event, EventCode_4, PERF_TYPE_HW_CACHE, \"event\");\n\n\t \n\tFAIL_IF(!event_open(&event));\n\tevent_close(&event);\n\n\treturn 0;\n}\n\nint main(void)\n{\n\treturn test_harness(hw_cache_event_type_test, \"hw_cache_event_type_test\");\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "ca82e740606bd10bfaf61866821b163c536e755954275b39de82092db790eab5",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/bus/mhi/ep/Kconfig",
+  "human_readable_source": "config MHI_BUS_EP\n\ttristate \"Modem Host Interface (MHI) bus Endpoint implementation\"\n\thelp\n\t  Bus driver for MHI protocol. Modem Host Interface (MHI) is a\n\t  communication protocol used by a host processor to control\n\t  and communicate a modem device over a high speed peripheral\n\t  bus or shared memory.\n\n\t  MHI_BUS_EP implements the MHI protocol for the endpoint devices,\n\t  such as SDX55 modem connected to the host machine over PCIe.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

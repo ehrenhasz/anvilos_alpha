@@ -1,0 +1,9 @@
+{
+  "module_name": "mangle_pstate_invalid_mode_el2t.c",
+  "hash_id": "72953d3a8c4d22f1518a67e9245f805df4265a222f5f5ff44d06a7f344b68e85",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/arm64/signal/testcases/mangle_pstate_invalid_mode_el2t.c",
+  "human_readable_source": "\n \n\n#include \"test_signals_utils.h\"\n#include \"testcases.h\"\n\n#include \"mangle_pstate_invalid_mode_template.h\"\n\nDEFINE_TESTCASE_MANGLE_PSTATE_INVALID_MODE(2t);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "ebt_pkttype.c",
+  "hash_id": "9fd0613a5f4f1efd49e57692cb36e70afe326894e469460bedf8d5b232996fe3",
+  "original_prompt": "Ingested from linux-6.6.14/net/bridge/netfilter/ebt_pkttype.c",
+  "human_readable_source": "\n \n#include <linux/module.h>\n#include <linux/netfilter/x_tables.h>\n#include <linux/netfilter_bridge/ebtables.h>\n#include <linux/netfilter_bridge/ebt_pkttype.h>\n\nstatic bool\nebt_pkttype_mt(const struct sk_buff *skb, struct xt_action_param *par)\n{\n\tconst struct ebt_pkttype_info *info = par->matchinfo;\n\n\treturn (skb->pkt_type == info->pkt_type) ^ info->invert;\n}\n\nstatic int ebt_pkttype_mt_check(const struct xt_mtchk_param *par)\n{\n\tconst struct ebt_pkttype_info *info = par->matchinfo;\n\n\tif (info->invert != 0 && info->invert != 1)\n\t\treturn -EINVAL;\n\t \n\treturn 0;\n}\n\nstatic struct xt_match ebt_pkttype_mt_reg __read_mostly = {\n\t.name\t\t= \"pkttype\",\n\t.revision\t= 0,\n\t.family\t\t= NFPROTO_BRIDGE,\n\t.match\t\t= ebt_pkttype_mt,\n\t.checkentry\t= ebt_pkttype_mt_check,\n\t.matchsize\t= sizeof(struct ebt_pkttype_info),\n\t.me\t\t= THIS_MODULE,\n};\n\nstatic int __init ebt_pkttype_init(void)\n{\n\treturn xt_register_match(&ebt_pkttype_mt_reg);\n}\n\nstatic void __exit ebt_pkttype_fini(void)\n{\n\txt_unregister_match(&ebt_pkttype_mt_reg);\n}\n\nmodule_init(ebt_pkttype_init);\nmodule_exit(ebt_pkttype_fini);\nMODULE_DESCRIPTION(\"Ebtables: Link layer packet type match\");\nMODULE_LICENSE(\"GPL\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

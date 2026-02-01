@@ -1,0 +1,9 @@
+{
+  "module_name": "parsenumbase.c",
+  "hash_id": "59a97a798d1a81213d340a67628415b1585589060b2dfd07d85894c49bb74c1e",
+  "original_prompt": "Ingested from sys_09_Anvil/source/py/parsenumbase.c",
+  "human_readable_source": " \n\n#include \"py/mpconfig.h\"\n#include \"py/misc.h\"\n#include \"py/parsenumbase.h\"\n\n\n\nsize_t mp_parse_num_base(const char *str, size_t len, int *base) {\n    const byte *p = (const byte *)str;\n    if (len <= 1) {\n        goto no_prefix;\n    }\n    unichar c = *(p++);\n    if ((*base == 0 || *base == 16) && c == '0') {\n        c = *(p++);\n        if ((c | 32) == 'x') {\n            *base = 16;\n        } else if (*base == 0 && (c | 32) == 'o') {\n            *base = 8;\n        } else if (*base == 0 && (c | 32) == 'b') {\n            *base = 2;\n        } else {\n            if (*base == 0) {\n                *base = 10;\n            }\n            p -= 2;\n        }\n    } else if (*base == 8 && c == '0') {\n        c = *(p++);\n        if ((c | 32) != 'o') {\n            p -= 2;\n        }\n    } else if (*base == 2 && c == '0') {\n        c = *(p++);\n        if ((c | 32) != 'b') {\n            p -= 2;\n        }\n    } else {\n        p--;\n    no_prefix:\n        if (*base == 0) {\n            *base = 10;\n        }\n    }\n    return p - (const byte *)str;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

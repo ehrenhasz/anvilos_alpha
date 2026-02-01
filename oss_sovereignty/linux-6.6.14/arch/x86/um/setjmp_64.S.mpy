@@ -1,0 +1,9 @@
+{
+  "module_name": "setjmp_64.S",
+  "hash_id": "f2f2e5968f034657849021631c8ad73e104616ca633727bc815282a00e073d74",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/um/setjmp_64.S",
+  "human_readable_source": " \n#\n# arch/x86_64/setjmp.S\n#\n# setjmp/longjmp for the x86-64 architecture\n#\n\n#\n# The jmp_buf is assumed to contain the following, in order:\n#\t%rbx\n#\t%rsp (post-return)\n#\t%rbp\n#\t%r12\n#\t%r13\n#\t%r14\n#\t%r15\n#\t<return address>\n#\n\n\t.text\n\t.align 4\n\t.globl kernel_setjmp\n\t.type kernel_setjmp, @function\nkernel_setjmp:\n\tpop  %rsi\t\t\t# Return address, and adjust the stack\n\txorl %eax,%eax\t\t\t# Return value\n\tmovq %rbx,(%rdi)\n\tmovq %rsp,8(%rdi)\t\t# Post-return %rsp!\n\tpush %rsi\t\t\t# Make the call/return stack happy\n\tmovq %rbp,16(%rdi)\n\tmovq %r12,24(%rdi)\n\tmovq %r13,32(%rdi)\n\tmovq %r14,40(%rdi)\n\tmovq %r15,48(%rdi)\n\tmovq %rsi,56(%rdi)\t\t# Return address\n\tRET\n\n\t.size kernel_setjmp,.-kernel_setjmp\n\n\t.text\n\t.align 4\n\t.globl kernel_longjmp\n\t.type kernel_longjmp, @function\nkernel_longjmp:\n\tmovl %esi,%eax\t\t\t# Return value (int)\n\tmovq (%rdi),%rbx\n\tmovq 8(%rdi),%rsp\n\tmovq 16(%rdi),%rbp\n\tmovq 24(%rdi),%r12\n\tmovq 32(%rdi),%r13\n\tmovq 40(%rdi),%r14\n\tmovq 48(%rdi),%r15\n\tjmp *56(%rdi)\n\n\t.size kernel_longjmp,.-kernel_longjmp\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

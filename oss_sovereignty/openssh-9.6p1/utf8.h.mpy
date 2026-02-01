@@ -1,0 +1,9 @@
+{
+  "module_name": "utf8.h",
+  "hash_id": "ca3d4c176f16c15644d178d83672cabde2939a3488efbb9cd433bea3e66cbec5",
+  "original_prompt": "Ingested from openssh-9.6p1/utf8.h",
+  "human_readable_source": " \n \n\nint\t vasnmprintf(char **, size_t, int *, const char *, va_list);\nint\t mprintf(const char *, ...)\n\t    __attribute__((format(printf, 1, 2)));\nint\t fmprintf(FILE *, const char *, ...)\n\t    __attribute__((format(printf, 2, 3)));\nint\t vfmprintf(FILE *, const char *, va_list);\nint\t snmprintf(char *, size_t, int *, const char *, ...)\n\t    __attribute__((format(printf, 4, 5)));\nint\t asmprintf(char **, size_t, int *, const char *, ...)\n\t    __attribute__((format(printf, 4, 5)));\nvoid\t msetlocale(void);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

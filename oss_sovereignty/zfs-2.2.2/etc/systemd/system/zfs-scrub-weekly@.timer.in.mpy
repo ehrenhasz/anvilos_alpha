@@ -1,0 +1,9 @@
+{
+  "module_name": "zfs-scrub-weekly@.timer.in",
+  "hash_id": "2e41d0abbf565b6ccbd4ffd97b43bede9370a00fc3d5745142087d4ff5dd5151",
+  "original_prompt": "Ingested from zfs-2.2.2/etc/systemd/system/zfs-scrub-weekly@.timer.in",
+  "human_readable_source": "[Unit]\nDescription=Weekly zpool scrub timer for %i\nDocumentation=man:zpool-scrub(8)\n\n[Timer]\nOnCalendar=weekly\nPersistent=true\nRandomizedDelaySec=1h\nUnit=zfs-scrub@%i.service\n\n[Install]\nWantedBy=timers.target\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

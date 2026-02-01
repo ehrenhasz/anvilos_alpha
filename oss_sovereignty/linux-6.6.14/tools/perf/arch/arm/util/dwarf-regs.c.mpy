@@ -1,0 +1,9 @@
+{
+  "module_name": "dwarf-regs.c",
+  "hash_id": "2d9b6a32c9b54c4f932ff0a2f0c348c79513368bcf955feccb53206a840291ad",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/arch/arm/util/dwarf-regs.c",
+  "human_readable_source": "\n \n\n#include <stddef.h>\n#include <linux/stringify.h>\n#include <dwarf-regs.h>\n\nstruct pt_regs_dwarfnum {\n\tconst char *name;\n\tunsigned int dwarfnum;\n};\n\n#define REG_DWARFNUM_NAME(r, num) {.name = r, .dwarfnum = num}\n#define GPR_DWARFNUM_NAME(num) \\\n\t{.name = __stringify(%r##num), .dwarfnum = num}\n#define REG_DWARFNUM_END {.name = NULL, .dwarfnum = 0}\n\n \nstatic const struct pt_regs_dwarfnum regdwarfnum_table[] = {\n\tGPR_DWARFNUM_NAME(0),\n\tGPR_DWARFNUM_NAME(1),\n\tGPR_DWARFNUM_NAME(2),\n\tGPR_DWARFNUM_NAME(3),\n\tGPR_DWARFNUM_NAME(4),\n\tGPR_DWARFNUM_NAME(5),\n\tGPR_DWARFNUM_NAME(6),\n\tGPR_DWARFNUM_NAME(7),\n\tGPR_DWARFNUM_NAME(8),\n\tGPR_DWARFNUM_NAME(9),\n\tGPR_DWARFNUM_NAME(10),\n\tREG_DWARFNUM_NAME(\"%fp\", 11),\n\tREG_DWARFNUM_NAME(\"%ip\", 12),\n\tREG_DWARFNUM_NAME(\"%sp\", 13),\n\tREG_DWARFNUM_NAME(\"%lr\", 14),\n\tREG_DWARFNUM_NAME(\"%pc\", 15),\n\tREG_DWARFNUM_END,\n};\n\n \nconst char *get_arch_regstr(unsigned int n)\n{\n\tconst struct pt_regs_dwarfnum *roff;\n\tfor (roff = regdwarfnum_table; roff->name != NULL; roff++)\n\t\tif (roff->dwarfnum == n)\n\t\t\treturn roff->name;\n\treturn NULL;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

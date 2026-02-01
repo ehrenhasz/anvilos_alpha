@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "ec8d659ed7cd12845a5934c5fe83344eaf05f266fbefaa8af090e2ad3868f18a",
+  "original_prompt": "Ingested from linux-6.6.14/sound/xen/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0 OR MIT\n\nsnd_xen_front-objs := xen_snd_front.o \\\n\t\t      xen_snd_front_cfg.o \\\n\t\t      xen_snd_front_evtchnl.o \\\n\t\t      xen_snd_front_alsa.o\n\nobj-$(CONFIG_SND_XEN_FRONTEND) += snd_xen_front.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

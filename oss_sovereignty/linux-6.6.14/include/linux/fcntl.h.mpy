@@ -1,0 +1,9 @@
+{
+  "module_name": "fcntl.h",
+  "hash_id": "d107590020bbb0efd9745f6ab5e2300646c0d475399c5dad08e4da2895c30d8b",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/fcntl.h",
+  "human_readable_source": " \n#ifndef _LINUX_FCNTL_H\n#define _LINUX_FCNTL_H\n\n#include <linux/stat.h>\n#include <uapi/linux/fcntl.h>\n\n \n#define VALID_OPEN_FLAGS \\\n\t(O_RDONLY | O_WRONLY | O_RDWR | O_CREAT | O_EXCL | O_NOCTTY | O_TRUNC | \\\n\t O_APPEND | O_NDELAY | O_NONBLOCK | __O_SYNC | O_DSYNC | \\\n\t FASYNC\t| O_DIRECT | O_LARGEFILE | O_DIRECTORY | O_NOFOLLOW | \\\n\t O_NOATIME | O_CLOEXEC | O_PATH | __O_TMPFILE)\n\n \n#define VALID_RESOLVE_FLAGS \\\n\t(RESOLVE_NO_XDEV | RESOLVE_NO_MAGICLINKS | RESOLVE_NO_SYMLINKS | \\\n\t RESOLVE_BENEATH | RESOLVE_IN_ROOT | RESOLVE_CACHED)\n\n \n#define OPEN_HOW_SIZE_VER0\t24  \n#define OPEN_HOW_SIZE_LATEST\tOPEN_HOW_SIZE_VER0\n\n#ifndef force_o_largefile\n#define force_o_largefile() (!IS_ENABLED(CONFIG_ARCH_32BIT_OFF_T))\n#endif\n\n#if BITS_PER_LONG == 32\n#define IS_GETLK32(cmd)\t\t((cmd) == F_GETLK)\n#define IS_SETLK32(cmd)\t\t((cmd) == F_SETLK)\n#define IS_SETLKW32(cmd)\t((cmd) == F_SETLKW)\n#define IS_GETLK64(cmd)\t\t((cmd) == F_GETLK64)\n#define IS_SETLK64(cmd)\t\t((cmd) == F_SETLK64)\n#define IS_SETLKW64(cmd)\t((cmd) == F_SETLKW64)\n#else\n#define IS_GETLK32(cmd)\t\t(0)\n#define IS_SETLK32(cmd)\t\t(0)\n#define IS_SETLKW32(cmd)\t(0)\n#define IS_GETLK64(cmd)\t\t((cmd) == F_GETLK)\n#define IS_SETLK64(cmd)\t\t((cmd) == F_SETLK)\n#define IS_SETLKW64(cmd)\t((cmd) == F_SETLKW)\n#endif  \n\n#define IS_GETLK(cmd)\t(IS_GETLK32(cmd)  || IS_GETLK64(cmd))\n#define IS_SETLK(cmd)\t(IS_SETLK32(cmd)  || IS_SETLK64(cmd))\n#define IS_SETLKW(cmd)\t(IS_SETLKW32(cmd) || IS_SETLKW64(cmd))\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

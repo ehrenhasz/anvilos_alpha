@@ -1,0 +1,9 @@
+{
+  "module_name": "smuio_12_0_0_offset.h",
+  "hash_id": "154d17cfbb74145eed92c24ee24b720fc9a2fab0274cb501a581b0f2d7309b5c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/include/asic_reg/smuio/smuio_12_0_0_offset.h",
+  "human_readable_source": " \n#ifndef _smuio_12_0_0_OFFSET_HEADER\n#define _smuio_12_0_0_OFFSET_HEADER\n\n#define mmSMUIO_GFX_MISC_CNTL                                                                          0x00c8\n#define mmSMUIO_GFX_MISC_CNTL_BASE_IDX                                                                 0\n\n#define mmPWR_MISC_CNTL_STATUS                                                                         0x0183\n#define mmPWR_MISC_CNTL_STATUS_BASE_IDX                                                                1\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

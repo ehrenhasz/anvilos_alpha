@@ -1,0 +1,9 @@
+{
+  "module_name": "test_mmap.c",
+  "hash_id": "3f87276988bfcde5dc4abe5eb95ff966805f08fa83c6fad7a659cceb06371231",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/test_mmap.c",
+  "human_readable_source": "\n\n\n#include <linux/bpf.h>\n#include <stdint.h>\n#include <bpf/bpf_helpers.h>\n\nchar _license[] SEC(\"license\") = \"GPL\";\n\nstruct {\n\t__uint(type, BPF_MAP_TYPE_ARRAY);\n\t__uint(map_flags, BPF_F_MMAPABLE | BPF_F_RDONLY_PROG);\n\t__type(key, __u32);\n\t__type(value, char);\n} rdonly_map SEC(\".maps\");\n\nstruct {\n\t__uint(type, BPF_MAP_TYPE_ARRAY);\n\t__uint(map_flags, BPF_F_MMAPABLE);\n\t__type(key, __u32);\n\t__type(value, __u64);\n} data_map SEC(\".maps\");\n\n__u64 in_val = 0;\n__u64 out_val = 0;\n\nSEC(\"raw_tracepoint/sys_enter\")\nint test_mmap(void *ctx)\n{\n\tint zero = 0, one = 1, two = 2, far = 1500;\n\t__u64 val, *p;\n\n\tout_val = in_val;\n\n\t \n\tbpf_map_update_elem(&data_map, &two, (const void *)&in_val, 0);\n\n\t \n\tp = bpf_map_lookup_elem(&data_map, &zero);\n\tif (p) {\n\t\tval = (*p) * 2;\n\t\tbpf_map_update_elem(&data_map, &one, &val, 0);\n\t}\n\n\t \n\tval = in_val * 3;\n\tbpf_map_update_elem(&data_map, &far, &val, 0);\n\n\treturn 0;\n}\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

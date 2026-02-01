@@ -1,0 +1,9 @@
+{
+  "module_name": "audit_arch.h",
+  "hash_id": "d1738b15d685b86bb7d96f9841e753c99fc9a790fd551366ac601817a5876b78",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/audit_arch.h",
+  "human_readable_source": " \n \n#ifndef _LINUX_AUDIT_ARCH_H_\n#define _LINUX_AUDIT_ARCH_H_\n\nenum auditsc_class_t {\n\tAUDITSC_NATIVE = 0,\n\tAUDITSC_COMPAT,\n\tAUDITSC_OPEN,\n\tAUDITSC_OPENAT,\n\tAUDITSC_SOCKETCALL,\n\tAUDITSC_EXECVE,\n\tAUDITSC_OPENAT2,\n\n\tAUDITSC_NVALS  \n};\n\nextern int audit_classify_compat_syscall(int abi, unsigned syscall);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

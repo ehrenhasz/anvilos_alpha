@@ -1,0 +1,9 @@
+{
+  "module_name": "alignof.h",
+  "hash_id": "78aedae3442e39601d629d88b3d027fcafcff06f5c4c4a75b838e229635fa81e",
+  "original_prompt": "Ingested from coreutils-9.4/lib/alignof.h",
+  "human_readable_source": " \n#if !_GL_CONFIG_H_INCLUDED\n #error \"Please include config.h first.\"\n#endif\n\n#include <stddef.h>\n\n \n#if defined __cplusplus\n  template <class type> struct alignof_helper { char __slot1; type __slot2; };\n# define alignof_slot(type) offsetof (alignof_helper<type>, __slot2)\n#else\n# define alignof_slot(type) alignof (type)\n#endif\n\n \n#if defined __GNUC__ || defined __clang__ || defined __IBM__ALIGNOF__\n# define alignof_type __alignof__\n#else\n# define alignof_type alignof_slot\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

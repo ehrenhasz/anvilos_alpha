@@ -1,0 +1,9 @@
+{
+  "module_name": "utils.h",
+  "hash_id": "68fe67883fa7ea0741606f0291701fea9ece9ce5ab13fb31bae91192665728f7",
+  "original_prompt": "Ingested from linux-6.6.14/tools/usb/usbip/src/utils.h",
+  "human_readable_source": " \n \n\n#ifndef __UTILS_H\n#define __UTILS_H\n\nint modify_match_busid(char *busid, int add);\n\n#endif  \n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

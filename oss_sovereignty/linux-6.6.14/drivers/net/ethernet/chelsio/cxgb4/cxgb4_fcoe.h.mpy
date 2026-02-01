@@ -1,0 +1,9 @@
+{
+  "module_name": "cxgb4_fcoe.h",
+  "hash_id": "6949afa5c513bc6f13f43bbc3a928fb496656e96564a07fe8e30f9cb2fb15390",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/chelsio/cxgb4/cxgb4_fcoe.h",
+  "human_readable_source": " \n\n#ifndef __CXGB4_FCOE_H__\n#define __CXGB4_FCOE_H__\n\n#ifdef CONFIG_CHELSIO_T4_FCOE\n\n#define CXGB_FCOE_TXPKT_CSUM_START\t28\n#define CXGB_FCOE_TXPKT_CSUM_END\t8\n\n \nenum {\n\tCXGB_FCOE_ENABLED     = (1 << 0),\n};\n\nstruct cxgb_fcoe {\n\tu8\tflags;\n};\n\nint cxgb_fcoe_enable(struct net_device *);\nint cxgb_fcoe_disable(struct net_device *);\nbool cxgb_fcoe_sof_eof_supported(struct adapter *, struct sk_buff *);\n\n#endif  \n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

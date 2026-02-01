@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "538334bd6a81cf41d3aac1683140bffc7be1dbc9da57a47fc27f862a9b7ddf4b",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/neterion/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Exar device configuration\n#\n\nconfig NET_VENDOR_NETERION\n\tbool \"Neterion (Exar) devices\"\n\tdefault y\n\tdepends on PCI\n\thelp\n\t  If you have a network (Ethernet) card belonging to this class, say Y.\n\n\t  Note that the answer to this question doesn't directly affect the\n\t  kernel: saying N will just cause the configurator to skip all\n\t  the questions about Neterion/Exar cards. If you say Y, you will be\n\t  asked for your specific card in the following questions.\n\nif NET_VENDOR_NETERION\n\nconfig S2IO\n\ttristate \"Neterion (Exar) Xframe 10Gb Ethernet Adapter\"\n\tdepends on PCI\n\thelp\n\t  This driver supports Exar Corp's Xframe Series 10Gb Ethernet Adapters.\n\t  These were originally released from S2IO, which renamed itself\n\t  Neterion.  So, the adapters might be labeled as either one, depending\n\t  on its age.\n\n\t  More specific information on configuring the driver is in\n\t  <file:Documentation/networking/device_drivers/ethernet/neterion/s2io.rst>.\n\n\t  To compile this driver as a module, choose M here. The module\n\t  will be called s2io.\n\nendif # NET_VENDOR_NETERION\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

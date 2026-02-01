@@ -1,0 +1,9 @@
+{
+  "module_name": "dcn314_resource.h",
+  "hash_id": "acf6df77e83a6ebf29fc5e3f6a749ab58228f77b4177908ba2e4f4e5b11ce49f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/dc/dcn314/dcn314_resource.h",
+  "human_readable_source": " \n \n\n#ifndef _DCN314_RESOURCE_H_\n#define _DCN314_RESOURCE_H_\n\n#include \"core_types.h\"\n\nextern struct _vcs_dpi_ip_params_st dcn3_14_ip;\nextern struct _vcs_dpi_soc_bounding_box_st dcn3_14_soc;\n\n#define TO_DCN314_RES_POOL(pool)\\\n\tcontainer_of(pool, struct dcn314_resource_pool, base)\n\nstruct dcn314_resource_pool {\n\tstruct resource_pool base;\n};\n\nbool dcn314_validate_bandwidth(struct dc *dc,\n\t\tstruct dc_state *context,\n\t\tbool fast_validate);\n\nstruct resource_pool *dcn314_create_resource_pool(\n\t\tconst struct dc_init_data *init_data,\n\t\tstruct dc *dc);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

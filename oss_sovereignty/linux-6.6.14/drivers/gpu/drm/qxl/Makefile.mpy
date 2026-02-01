@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "f0c95174f594557d1a2778b584fb9f456cf784fd9d5a24555cf05d1858cf376a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/qxl/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Makefile for the drm device driver.  This driver provides support for the\n# Direct Rendering Infrastructure (DRI) in XFree86 4.1.0 and higher.\n\nqxl-y := qxl_drv.o qxl_kms.o qxl_display.o qxl_ttm.o qxl_object.o qxl_gem.o qxl_cmd.o qxl_image.o qxl_draw.o qxl_debugfs.o qxl_irq.o qxl_dumb.o qxl_ioctl.o qxl_release.o qxl_prime.o\n\nobj-$(CONFIG_DRM_QXL)+= qxl.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

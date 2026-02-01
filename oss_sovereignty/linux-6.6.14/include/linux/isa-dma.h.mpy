@@ -1,0 +1,9 @@
+{
+  "module_name": "isa-dma.h",
+  "hash_id": "a69021c890e2a7438828ca8207d918c73567731ba9094433284ef8ff9c868cc2",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/isa-dma.h",
+  "human_readable_source": " \n\n#ifndef __LINUX_ISA_DMA_H\n#define __LINUX_ISA_DMA_H\n\n#include <asm/dma.h>\n\n#if defined(CONFIG_PCI) && defined(CONFIG_X86_32)\nextern int isa_dma_bridge_buggy;\n#else\n#define isa_dma_bridge_buggy\t(0)\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

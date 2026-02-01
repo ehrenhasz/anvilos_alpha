@@ -1,0 +1,9 @@
+{
+  "module_name": "hello.py",
+  "hash_id": "1b81b25d73d1150ca5e053415da0d595bdc4a9d37823b808cac34f3011f7bf34",
+  "original_prompt": "Ingested from sys_09_Anvil/hello.py",
+  "human_readable_source": "print(\">> HELLO WORLD FROM THE ANVIL\")\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "fan53555.h",
+  "hash_id": "016b10fafd2e9389809511a91d734e13b50b3700381025e39acdbbc8a2deb25f",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/regulator/fan53555.h",
+  "human_readable_source": " \n \n\n#ifndef __FAN53555_H__\n#define __FAN53555_H__\n\n \nenum {\n\tFAN53555_VSEL_ID_0 = 0,\n\tFAN53555_VSEL_ID_1,\n};\n\n \nenum {\n\tFAN53555_SLEW_RATE_64MV = 0,\n\tFAN53555_SLEW_RATE_32MV,\n\tFAN53555_SLEW_RATE_16MV,\n\tFAN53555_SLEW_RATE_8MV,\n\tFAN53555_SLEW_RATE_4MV,\n\tFAN53555_SLEW_RATE_2MV,\n\tFAN53555_SLEW_RATE_1MV,\n\tFAN53555_SLEW_RATE_0_5MV,\n};\n\nstruct fan53555_platform_data {\n\tstruct regulator_init_data *regulator;\n\tunsigned int slew_rate;\n\t \n\tunsigned int sleep_vsel_id;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

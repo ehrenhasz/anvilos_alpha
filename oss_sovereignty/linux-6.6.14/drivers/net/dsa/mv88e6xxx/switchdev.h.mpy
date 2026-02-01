@@ -1,0 +1,9 @@
+{
+  "module_name": "switchdev.h",
+  "hash_id": "e8a537a2351af4d89bc7a1a5b0b9b0660983ba18cdcbc4f94565ce9b3b65190e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/dsa/mv88e6xxx/switchdev.h",
+  "human_readable_source": " \n\n#ifndef _MV88E6XXX_SWITCHDEV_H_\n#define _MV88E6XXX_SWITCHDEV_H_\n\n#include \"chip.h\"\n\nint mv88e6xxx_handle_miss_violation(struct mv88e6xxx_chip *chip, int port,\n\t\t\t\t    struct mv88e6xxx_atu_entry *entry,\n\t\t\t\t    u16 fid);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

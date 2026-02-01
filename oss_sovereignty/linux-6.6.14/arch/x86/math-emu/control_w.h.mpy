@@ -1,0 +1,9 @@
+{
+  "module_name": "control_w.h",
+  "hash_id": "7cc8097aa5ecbb2a0741c3bbda90eaefdf514eaa67310396e58ec1197ffd2924",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/math-emu/control_w.h",
+  "human_readable_source": " \n \n\n#ifndef _CONTROLW_H_\n#define _CONTROLW_H_\n\n#ifdef __ASSEMBLY__\n#define\t_Const_(x)\t$##x\n#else\n#define\t_Const_(x)\tx\n#endif\n\n#define CW_RC\t\t_Const_(0x0C00)\t \n#define CW_PC\t\t_Const_(0x0300)\t \n\n#define CW_Precision\tConst_(0x0020)\t \n#define CW_Underflow\tConst_(0x0010)\t \n#define CW_Overflow\tConst_(0x0008)\t \n#define CW_ZeroDiv\tConst_(0x0004)\t \n#define CW_Denormal\tConst_(0x0002)\t \n#define CW_Invalid\tConst_(0x0001)\t \n\n#define CW_Exceptions  \t_Const_(0x003f)\t \n\n#define RC_RND\t\t_Const_(0x0000)\n#define RC_DOWN\t\t_Const_(0x0400)\n#define RC_UP\t\t_Const_(0x0800)\n#define RC_CHOP\t\t_Const_(0x0C00)\n\n \n#define PR_24_BITS        _Const_(0x000)\n#define PR_53_BITS        _Const_(0x200)\n#define PR_64_BITS        _Const_(0x300)\n#define PR_RESERVED_BITS  _Const_(0x100)\n \n#define FULL_PRECISION  (PR_64_BITS | RC_RND | 0x3f)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

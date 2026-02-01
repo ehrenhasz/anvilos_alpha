@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "bc6a5e921b509fb02d63a6121c22fd18ea5b0e96eba17e9cb7cb4dc2089f817e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/nfc/nxp-nci/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig NFC_NXP_NCI\n\ttristate \"NXP-NCI NFC driver\"\n\tdepends on NFC_NCI\n\thelp\n\t  Generic core driver for NXP NCI chips such as the NPC100 (PN547),\n\t  NPC300 (PN548) or PN7150 families.\n\t  This is a driver based on the NCI NFC kernel layers and\n\t  will thus not work with NXP libnfc library.\n\n\t  To compile this driver as a module, choose m here. The module will\n\t  be called nxp_nci.\n\t  Say N if unsure.\n\nconfig NFC_NXP_NCI_I2C\n\ttristate \"NXP-NCI I2C support\"\n\tdepends on NFC_NXP_NCI && I2C\n\thelp\n\t  This module adds support for an I2C interface to the NXP NCI\n\t  chips.\n\t  Select this if your platform is using the I2C bus.\n\n\t  To compile this driver as a module, choose m here. The module will\n\t  be called nxp_nci_i2c.\n\t  Say N if unsure.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

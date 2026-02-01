@@ -1,0 +1,9 @@
+{
+  "module_name": "segv_errors.c",
+  "hash_id": "b115c648bcb054c6f33b5882269e274f98370f648648fa8811190cf79ad424fe",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/powerpc/mm/segv_errors.c",
+  "human_readable_source": "\n\n \n\n#include <stdbool.h>\n#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\n#include <unistd.h>\n#include <signal.h>\n#include <sys/mman.h>\n#include <assert.h>\n#include <ucontext.h>\n\n#include \"utils.h\"\n\nstatic bool faulted;\nstatic int si_code;\n\nstatic void segv_handler(int n, siginfo_t *info, void *ctxt_v)\n{\n\tucontext_t *ctxt = (ucontext_t *)ctxt_v;\n\tstruct pt_regs *regs = ctxt->uc_mcontext.regs;\n\n\tfaulted = true;\n\tsi_code = info->si_code;\n\tregs->nip += 4;\n}\n\nint test_segv_errors(void)\n{\n\tstruct sigaction act = {\n\t\t.sa_sigaction = segv_handler,\n\t\t.sa_flags = SA_SIGINFO,\n\t};\n\tchar c, *p = NULL;\n\n\tp = mmap(NULL, getpagesize(), 0, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0);\n\tFAIL_IF(p == MAP_FAILED);\n\n\tFAIL_IF(sigaction(SIGSEGV, &act, NULL) != 0);\n\n\tfaulted = false;\n\tsi_code = 0;\n\n\t \n\tmb();\n\tc = *p;\n\tmb();\n\n\tFAIL_IF(!faulted);\n\tFAIL_IF(si_code != SEGV_ACCERR);\n\n\tfaulted = false;\n\tsi_code = 0;\n\n\tmb();\n\t*p = c;\n\tmb();\n\n\tFAIL_IF(!faulted);\n\tFAIL_IF(si_code != SEGV_ACCERR);\n\n\treturn 0;\n}\n\nint main(void)\n{\n\treturn test_harness(test_segv_errors, \"segv_errors\");\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

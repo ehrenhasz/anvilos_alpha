@@ -1,0 +1,9 @@
+{
+  "module_name": "pl320-ipc.h",
+  "hash_id": "fd0680ae219052885abbf76d01672b5352dab30eb5ea72e90de06eb30a52d708",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/pl320-ipc.h",
+  "human_readable_source": " \n \n\nint pl320_ipc_transmit(u32 *data);\nint pl320_ipc_register_notifier(struct notifier_block *nb);\nint pl320_ipc_unregister_notifier(struct notifier_block *nb);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

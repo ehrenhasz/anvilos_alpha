@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "8909a8e0f2f31eae8c06288dbf815697cb53dba0c5b0fa8b3c94bc910d103363",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/platform/mediatek/vcodec/common/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n\nobj-$(CONFIG_VIDEO_MEDIATEK_VCODEC) += mtk-vcodec-common.o\n\nmtk-vcodec-common-y := mtk_vcodec_intr.o \\\n\t\tmtk_vcodec_util.o \\\n\t\tmtk_vcodec_fw.o \\\n\nifneq ($(CONFIG_VIDEO_MEDIATEK_VCODEC_VPU),)\nmtk-vcodec-common-y += mtk_vcodec_fw_vpu.o\nendif\n\nifneq ($(CONFIG_VIDEO_MEDIATEK_VCODEC_SCP),)\nmtk-vcodec-common-y += mtk_vcodec_fw_scp.o\nendif\n\nifneq ($(CONFIG_DEBUG_FS),)\nobj-$(CONFIG_VIDEO_MEDIATEK_VCODEC) += mtk-vcodec-dbgfs.o\n\nmtk-vcodec-dbgfs-y := mtk_vcodec_dbgfs.o\nendif",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

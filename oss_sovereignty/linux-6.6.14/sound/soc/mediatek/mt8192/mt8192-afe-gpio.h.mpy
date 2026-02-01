@@ -1,0 +1,9 @@
+{
+  "module_name": "mt8192-afe-gpio.h",
+  "hash_id": "65efad80f96d4ec9a4af9514c2d2bf440c7cd45ff99406940082a16cfc6af2bf",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/mediatek/mt8192/mt8192-afe-gpio.h",
+  "human_readable_source": " \n \n\n#ifndef _MT8192_AFE_GPIO_H_\n#define _MT8192_AFE_GPIO_H_\n\nstruct device;\n\nint mt8192_afe_gpio_init(struct device *dev);\n\nint mt8192_afe_gpio_request(struct device *dev, bool enable,\n\t\t\t    int dai, int uplink);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

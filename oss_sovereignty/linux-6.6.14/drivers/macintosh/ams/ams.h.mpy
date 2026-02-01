@@ -1,0 +1,9 @@
+{
+  "module_name": "ams.h",
+  "hash_id": "89a391411eae9b4c8a8b19025e95dd9c0621bfc1189b2638b3e00b2dd25a6ed0",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/macintosh/ams/ams.h",
+  "human_readable_source": " \n#ifndef _AMS_H\n#define _AMS_H\n\n#include <linux/i2c.h>\n#include <linux/input.h>\n#include <linux/kthread.h>\n#include <linux/mutex.h>\n#include <linux/platform_device.h>\n#include <linux/spinlock.h>\n#include <linux/types.h>\n\nenum ams_irq {\n\tAMS_IRQ_FREEFALL = 0x01,\n\tAMS_IRQ_SHOCK = 0x02,\n\tAMS_IRQ_GLOBAL = 0x04,\n\tAMS_IRQ_ALL =\n\t\tAMS_IRQ_FREEFALL |\n\t\tAMS_IRQ_SHOCK |\n\t\tAMS_IRQ_GLOBAL,\n};\n\nstruct ams {\n\t \n\tspinlock_t irq_lock;\n\tstruct mutex lock;\n\n\t \n\tstruct device_node *of_node;\n\tstruct platform_device *of_dev;\n\tchar has_device;\n\tchar vflag;\n\tu32 orient1;\n\tu32 orient2;\n\n\t \n\tstruct work_struct worker;\n\tu8 worker_irqs;\n\n\t \n\tvoid (*exit)(void);\n\n\tvoid (*get_xyz)(s8 *x, s8 *y, s8 *z);\n\tu8 (*get_vendor)(void);\n\n\tvoid (*clear_irq)(enum ams_irq reg);\n\n#ifdef CONFIG_SENSORS_AMS_I2C\n\t \n\tstruct i2c_client *i2c_client;\n#endif\n\n\t \n\tstruct input_dev *idev;\n\t__u16 bustype;\n\n\t \n\tint xcalib, ycalib, zcalib;\n};\n\nextern struct ams ams_info;\n\nextern void ams_sensors(s8 *x, s8 *y, s8 *z);\nextern int ams_sensor_attach(void);\nextern void ams_sensor_detach(void);\n\nextern int ams_pmu_init(struct device_node *np);\nextern int ams_i2c_init(struct device_node *np);\n\nextern int ams_input_init(void);\nextern void ams_input_exit(void);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

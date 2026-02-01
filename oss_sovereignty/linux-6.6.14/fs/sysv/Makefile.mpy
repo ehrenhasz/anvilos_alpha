@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "f704f6f9e4198482d6545507ea57b49d1c1d291ce0f523c608df5dd9add43a10",
+  "original_prompt": "Ingested from linux-6.6.14/fs/sysv/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Makefile for the Linux SystemV/Coherent filesystem routines.\n#\n\nobj-$(CONFIG_SYSV_FS) += sysv.o\n\nsysv-objs := ialloc.o balloc.o inode.o itree.o file.o dir.o \\\n\t     namei.o super.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

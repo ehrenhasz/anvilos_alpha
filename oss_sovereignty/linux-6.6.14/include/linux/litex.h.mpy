@@ -1,0 +1,9 @@
+{
+  "module_name": "litex.h",
+  "hash_id": "c64537df43d133de574fa5f348aff2b3d02ebfba2ff5f2785f1eec4f5845f09b",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/litex.h",
+  "human_readable_source": " \n \n\n#ifndef _LINUX_LITEX_H\n#define _LINUX_LITEX_H\n\n#include <linux/io.h>\n\nstatic inline void _write_litex_subregister(u32 val, void __iomem *addr)\n{\n\twritel((u32 __force)cpu_to_le32(val), addr);\n}\n\nstatic inline u32 _read_litex_subregister(void __iomem *addr)\n{\n\treturn le32_to_cpu((__le32 __force)readl(addr));\n}\n\n \n\nstatic inline void litex_write8(void __iomem *reg, u8 val)\n{\n\t_write_litex_subregister(val, reg);\n}\n\nstatic inline void litex_write16(void __iomem *reg, u16 val)\n{\n\t_write_litex_subregister(val, reg);\n}\n\nstatic inline void litex_write32(void __iomem *reg, u32 val)\n{\n\t_write_litex_subregister(val, reg);\n}\n\nstatic inline void litex_write64(void __iomem *reg, u64 val)\n{\n\t_write_litex_subregister(val >> 32, reg);\n\t_write_litex_subregister(val, reg + 4);\n}\n\nstatic inline u8 litex_read8(void __iomem *reg)\n{\n\treturn _read_litex_subregister(reg);\n}\n\nstatic inline u16 litex_read16(void __iomem *reg)\n{\n\treturn _read_litex_subregister(reg);\n}\n\nstatic inline u32 litex_read32(void __iomem *reg)\n{\n\treturn _read_litex_subregister(reg);\n}\n\nstatic inline u64 litex_read64(void __iomem *reg)\n{\n\treturn ((u64)_read_litex_subregister(reg) << 32) |\n\t\t_read_litex_subregister(reg + 4);\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

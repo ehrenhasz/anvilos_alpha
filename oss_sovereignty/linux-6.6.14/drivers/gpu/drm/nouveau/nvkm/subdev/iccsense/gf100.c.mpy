@@ -1,0 +1,9 @@
+{
+  "module_name": "gf100.c",
+  "hash_id": "f035108b6befe107f699d6ade4609d42b9ce01d3916d69f597d5471b488b2e87",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/subdev/iccsense/gf100.c",
+  "human_readable_source": " \n#include \"priv.h\"\n\nint\ngf100_iccsense_new(struct nvkm_device *device, enum nvkm_subdev_type type, int inst,\n\t\t   struct nvkm_iccsense **piccsense)\n{\n\treturn nvkm_iccsense_new_(device, type, inst, piccsense);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

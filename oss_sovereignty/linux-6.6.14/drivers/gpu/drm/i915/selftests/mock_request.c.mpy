@@ -1,0 +1,9 @@
+{
+  "module_name": "mock_request.c",
+  "hash_id": "1f98edef89363aa1c256adc49f4c294cc4c1c1ca14db8d15f751f33f86a12293",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/selftests/mock_request.c",
+  "human_readable_source": " \n\n#include \"gem/selftests/igt_gem_utils.h\"\n#include \"gt/mock_engine.h\"\n\n#include \"mock_request.h\"\n\nstruct i915_request *\nmock_request(struct intel_context *ce, unsigned long delay)\n{\n\tstruct i915_request *request;\n\n\t \n\trequest = intel_context_create_request(ce);\n\tif (IS_ERR(request))\n\t\treturn NULL;\n\n\trequest->mock.delay = delay;\n\treturn request;\n}\n\nbool mock_cancel_request(struct i915_request *request)\n{\n\tstruct mock_engine *engine =\n\t\tcontainer_of(request->engine, typeof(*engine), base);\n\tbool was_queued;\n\n\tspin_lock_irq(&engine->hw_lock);\n\twas_queued = !list_empty(&request->mock.link);\n\tlist_del_init(&request->mock.link);\n\tspin_unlock_irq(&engine->hw_lock);\n\n\tif (was_queued)\n\t\ti915_request_unsubmit(request);\n\n\treturn was_queued;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

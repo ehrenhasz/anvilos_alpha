@@ -1,0 +1,9 @@
+{
+  "module_name": "am43xx.h",
+  "hash_id": "77433c169504c7c869d0aeba46a9a25549caeee40804a4e47fa36c530c45ac97",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/pinctrl/am43xx.h",
+  "human_readable_source": " \n \n\n#ifndef _DT_BINDINGS_PINCTRL_AM43XX_H\n#define _DT_BINDINGS_PINCTRL_AM43XX_H\n\n#define MUX_MODE0\t0\n#define MUX_MODE1\t1\n#define MUX_MODE2\t2\n#define MUX_MODE3\t3\n#define MUX_MODE4\t4\n#define MUX_MODE5\t5\n#define MUX_MODE6\t6\n#define MUX_MODE7\t7\n#define MUX_MODE8\t8\n#define MUX_MODE9\t9\n\n#define PULL_DISABLE\t\t(1 << 16)\n#define PULL_UP\t\t\t(1 << 17)\n#define INPUT_EN\t\t(1 << 18)\n#define SLEWCTRL_SLOW\t\t(1 << 19)\n#define SLEWCTRL_FAST\t\t0\n#define DS0_FORCE_OFF_MODE\t(1 << 24)\n#define DS0_INPUT\t\t(1 << 25)\n#define DS0_FORCE_OUT_HIGH\t(1 << 26)\n#define DS0_PULL_UP_DOWN_EN\t(0 << 27)\n#define DS0_PULL_UP_DOWN_DIS\t(1 << 27)\n#define DS0_PULL_UP_SEL\t\t(1 << 28)\n#define WAKEUP_ENABLE\t\t(1 << 29)\n\n#define DS0_PIN_OUTPUT\t\t(DS0_FORCE_OFF_MODE)\n#define DS0_PIN_OUTPUT_HIGH\t(DS0_FORCE_OFF_MODE | DS0_FORCE_OUT_HIGH)\n#define DS0_PIN_OUTPUT_PULLUP\t(DS0_FORCE_OFF_MODE | DS0_PULL_UP_DOWN_EN | DS0_PULL_UP_SEL)\n#define DS0_PIN_OUTPUT_PULLDOWN\t(DS0_FORCE_OFF_MODE | DS0_PULL_UP_DOWN_EN)\n#define DS0_PIN_INPUT\t\t(DS0_FORCE_OFF_MODE | DS0_INPUT)\n#define DS0_PIN_INPUT_PULLUP\t(DS0_FORCE_OFF_MODE | DS0_INPUT | DS0_PULL_UP_DOWN_EN | DS0_PULL_UP_SEL)\n#define DS0_PIN_INPUT_PULLDOWN\t(DS0_FORCE_OFF_MODE | DS0_INPUT | DS0_PULL_UP_DOWN_EN)\n\n#define PIN_OUTPUT\t\t(PULL_DISABLE)\n#define PIN_OUTPUT_PULLUP\t(PULL_UP)\n#define PIN_OUTPUT_PULLDOWN\t0\n#define PIN_INPUT\t\t(INPUT_EN | PULL_DISABLE)\n#define PIN_INPUT_PULLUP\t(INPUT_EN | PULL_UP)\n#define PIN_INPUT_PULLDOWN\t(INPUT_EN)\n\n \n#define AM4372_IOPAD(pa, val)\t(((pa) & 0xffff) - 0x0800) (val)\n\n#endif\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

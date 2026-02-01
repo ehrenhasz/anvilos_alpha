@@ -1,0 +1,9 @@
+{
+  "module_name": "acrn.c",
+  "hash_id": "43cc368d63aec23d4e7b35060d2c594bfc3db4b680ad76d1139d1ffc8aaddf0b",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/kernel/cpu/acrn.c",
+  "human_readable_source": "\n \n\n#include <linux/interrupt.h>\n\n#include <asm/acrn.h>\n#include <asm/apic.h>\n#include <asm/cpufeatures.h>\n#include <asm/desc.h>\n#include <asm/hypervisor.h>\n#include <asm/idtentry.h>\n#include <asm/irq_regs.h>\n\nstatic u32 __init acrn_detect(void)\n{\n\treturn acrn_cpuid_base();\n}\n\nstatic void __init acrn_init_platform(void)\n{\n\t \n\talloc_intr_gate(HYPERVISOR_CALLBACK_VECTOR, asm_sysvec_acrn_hv_callback);\n\n\tx86_platform.calibrate_tsc = acrn_get_tsc_khz;\n\tx86_platform.calibrate_cpu = acrn_get_tsc_khz;\n}\n\nstatic bool acrn_x2apic_available(void)\n{\n\treturn boot_cpu_has(X86_FEATURE_X2APIC);\n}\n\nstatic void (*acrn_intr_handler)(void);\n\nDEFINE_IDTENTRY_SYSVEC(sysvec_acrn_hv_callback)\n{\n\tstruct pt_regs *old_regs = set_irq_regs(regs);\n\n\t \n\tapic_eoi();\n\tinc_irq_stat(irq_hv_callback_count);\n\n\tif (acrn_intr_handler)\n\t\tacrn_intr_handler();\n\n\tset_irq_regs(old_regs);\n}\n\nvoid acrn_setup_intr_handler(void (*handler)(void))\n{\n\tacrn_intr_handler = handler;\n}\nEXPORT_SYMBOL_GPL(acrn_setup_intr_handler);\n\nvoid acrn_remove_intr_handler(void)\n{\n\tacrn_intr_handler = NULL;\n}\nEXPORT_SYMBOL_GPL(acrn_remove_intr_handler);\n\nconst __initconst struct hypervisor_x86 x86_hyper_acrn = {\n\t.name                   = \"ACRN\",\n\t.detect                 = acrn_detect,\n\t.type\t\t\t= X86_HYPER_ACRN,\n\t.init.init_platform     = acrn_init_platform,\n\t.init.x2apic_available  = acrn_x2apic_available,\n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "fragmentation.h",
+  "hash_id": "734cf33b430e606b1a057d912246bc56944cb4421539319d6238361ac52c7ebf",
+  "original_prompt": "Ingested from linux-6.6.14/net/batman-adv/fragmentation.h",
+  "human_readable_source": " \n \n\n#ifndef _NET_BATMAN_ADV_FRAGMENTATION_H_\n#define _NET_BATMAN_ADV_FRAGMENTATION_H_\n\n#include \"main.h\"\n\n#include <linux/compiler.h>\n#include <linux/list.h>\n#include <linux/skbuff.h>\n#include <linux/stddef.h>\n#include <linux/types.h>\n\nvoid batadv_frag_purge_orig(struct batadv_orig_node *orig,\n\t\t\t    bool (*check_cb)(struct batadv_frag_table_entry *));\nbool batadv_frag_skb_fwd(struct sk_buff *skb,\n\t\t\t struct batadv_hard_iface *recv_if,\n\t\t\t struct batadv_orig_node *orig_node_src);\nbool batadv_frag_skb_buffer(struct sk_buff **skb,\n\t\t\t    struct batadv_orig_node *orig_node);\nint batadv_frag_send_packet(struct sk_buff *skb,\n\t\t\t    struct batadv_orig_node *orig_node,\n\t\t\t    struct batadv_neigh_node *neigh_node);\n\n \nstatic inline bool\nbatadv_frag_check_entry(struct batadv_frag_table_entry *frags_entry)\n{\n\tif (!hlist_empty(&frags_entry->fragment_list) &&\n\t    batadv_has_timed_out(frags_entry->timestamp, BATADV_FRAG_TIMEOUT))\n\t\treturn true;\n\treturn false;\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

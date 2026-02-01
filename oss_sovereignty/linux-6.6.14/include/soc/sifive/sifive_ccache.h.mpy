@@ -1,0 +1,9 @@
+{
+  "module_name": "sifive_ccache.h",
+  "hash_id": "02e1c7ff53f572baa6bb34443f9859a56485a032bebc330d54f17827f5552840",
+  "original_prompt": "Ingested from linux-6.6.14/include/soc/sifive/sifive_ccache.h",
+  "human_readable_source": " \n \n\n#ifndef __SOC_SIFIVE_CCACHE_H\n#define __SOC_SIFIVE_CCACHE_H\n\nextern int register_sifive_ccache_error_notifier(struct notifier_block *nb);\nextern int unregister_sifive_ccache_error_notifier(struct notifier_block *nb);\n\n#define SIFIVE_CCACHE_ERR_TYPE_CE 0\n#define SIFIVE_CCACHE_ERR_TYPE_UE 1\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

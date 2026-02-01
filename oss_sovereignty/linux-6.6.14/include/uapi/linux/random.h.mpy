@@ -1,0 +1,9 @@
+{
+  "module_name": "random.h",
+  "hash_id": "4a89e20b1baf729764b9b666bdd75b44be88ee24370463af3bebf38823a621f1",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/random.h",
+  "human_readable_source": " \n \n\n#ifndef _UAPI_LINUX_RANDOM_H\n#define _UAPI_LINUX_RANDOM_H\n\n#include <linux/types.h>\n#include <linux/ioctl.h>\n#include <linux/irqnr.h>\n\n \n\n \n#define RNDGETENTCNT\t_IOR( 'R', 0x00, int )\n\n \n#define RNDADDTOENTCNT\t_IOW( 'R', 0x01, int )\n\n \n#define RNDGETPOOL\t_IOR( 'R', 0x02, int [2] )\n\n \n#define RNDADDENTROPY\t_IOW( 'R', 0x03, int [2] )\n\n \n#define RNDZAPENTCNT\t_IO( 'R', 0x04 )\n\n \n#define RNDCLEARPOOL\t_IO( 'R', 0x06 )\n\n \n#define RNDRESEEDCRNG\t_IO( 'R', 0x07 )\n\nstruct rand_pool_info {\n\tint\tentropy_count;\n\tint\tbuf_size;\n\t__u32\tbuf[];\n};\n\n \n#define GRND_NONBLOCK\t0x0001\n#define GRND_RANDOM\t0x0002\n#define GRND_INSECURE\t0x0004\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

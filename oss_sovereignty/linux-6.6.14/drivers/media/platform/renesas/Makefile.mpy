@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "7948757ec41a110bfacfb1399a96978abe5ef7047ad4b1a988d729ae51f75e17",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/platform/renesas/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Makefile for the Renesas capture/playback device drivers.\n#\n\nobj-y += rcar-vin/\nobj-y += rzg2l-cru/\nobj-y += vsp1/\n\nobj-$(CONFIG_VIDEO_RCAR_DRIF) += rcar_drif.o\nobj-$(CONFIG_VIDEO_RCAR_ISP) += rcar-isp.o\nobj-$(CONFIG_VIDEO_RENESAS_CEU) += renesas-ceu.o\nobj-$(CONFIG_VIDEO_RENESAS_FCP) += rcar-fcp.o\nobj-$(CONFIG_VIDEO_RENESAS_FDP1) += rcar_fdp1.o\nobj-$(CONFIG_VIDEO_RENESAS_JPU) += rcar_jpu.o\nobj-$(CONFIG_VIDEO_SH_VOU) += sh_vou.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "tty_settings.c",
+  "hash_id": "4891395593c4a54843df2b0badca74b1577fdfa03f6e98d0a82215d0f7f0cf13",
+  "original_prompt": "Ingested from ncurses-6.4/progs/tty_settings.c",
+  "human_readable_source": " \n\n \n\n#define USE_LIBTINFO\n#include <tty_settings.h>\n\n#include <fcntl.h>\n\nMODULE_ID(\"$Id: tty_settings.c,v 1.7 2021/10/08 23:53:32 tom Exp $\")\n\nstatic int my_fd;\nstatic TTY original_settings;\nstatic bool can_restore = FALSE;\n\nstatic void\nfailed(const char *msg)\n{\n    int code = errno;\n\n    (void) fprintf(stderr, \"%s: %s: %s\\n\", _nc_progname, msg, strerror(code));\n    restore_tty_settings();\n    (void) fprintf(stderr, \"\\n\");\n    ExitProgram(ErrSystem(code));\n     \n}\n\nstatic bool\nget_tty_settings(int fd, TTY * tty_settings)\n{\n    bool success = TRUE;\n    my_fd = fd;\n    if (fd < 0 || GET_TTY(my_fd, tty_settings) < 0) {\n\tsuccess = FALSE;\n    }\n    return success;\n}\n\n \nint\nsave_tty_settings(TTY * tty_settings, bool need_tty)\n{\n    if (!get_tty_settings(STDERR_FILENO, tty_settings) &&\n\t!get_tty_settings(STDOUT_FILENO, tty_settings) &&\n\t!get_tty_settings(STDIN_FILENO, tty_settings)) {\n\tif (need_tty) {\n\t    int fd = open(\"/dev/tty\", O_RDWR);\n\t    if (!get_tty_settings(fd, tty_settings)) {\n\t\tfailed(\"terminal attributes\");\n\t    }\n\t} else {\n\t    my_fd = fileno(stdout);\n\t}\n    } else {\n\tcan_restore = TRUE;\n\toriginal_settings = *tty_settings;\n    }\n    return my_fd;\n}\n\nvoid\nrestore_tty_settings(void)\n{\n    if (can_restore)\n\tSET_TTY(my_fd, &original_settings);\n}\n\n \nvoid\nupdate_tty_settings(TTY * old_settings, TTY * new_settings)\n{\n    if (memcmp(new_settings, old_settings, sizeof(TTY))) {\n\tSET_TTY(my_fd, new_settings);\n    }\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

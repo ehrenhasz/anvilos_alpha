@@ -1,0 +1,9 @@
+{
+  "module_name": ".gitignore",
+  "hash_id": "118b19de63c879da1b34fe685ad8e83effa5736f0573b44ac57bae0739c19cd1",
+  "original_prompt": "Ingested from linux-6.6.14/tools/tracing/rtla/.gitignore",
+  "human_readable_source": "/rtla\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

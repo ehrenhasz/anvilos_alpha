@@ -1,0 +1,9 @@
+{
+  "module_name": "microchip,mpfs-clock.h",
+  "hash_id": "aa262132b1b052d9c99d93596dcb483cc72d9656ecddd2617887b41589c43a92",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/clock/microchip,mpfs-clock.h",
+  "human_readable_source": " \n \n\n#ifndef _DT_BINDINGS_CLK_MICROCHIP_MPFS_H_\n#define _DT_BINDINGS_CLK_MICROCHIP_MPFS_H_\n\n#define CLK_CPU\t\t0\n#define CLK_AXI\t\t1\n#define CLK_AHB\t\t2\n\n#define CLK_ENVM\t3\n#define CLK_MAC0\t4\n#define CLK_MAC1\t5\n#define CLK_MMC\t\t6\n#define CLK_TIMER\t7\n#define CLK_MMUART0\t8\n#define CLK_MMUART1\t9\n#define CLK_MMUART2\t10\n#define CLK_MMUART3\t11\n#define CLK_MMUART4\t12\n#define CLK_SPI0\t13\n#define CLK_SPI1\t14\n#define CLK_I2C0\t15\n#define CLK_I2C1\t16\n#define CLK_CAN0\t17\n#define CLK_CAN1\t18\n#define CLK_USB\t\t19\n#define CLK_RESERVED\t20\n#define CLK_RTC\t\t21\n#define CLK_QSPI\t22\n#define CLK_GPIO0\t23\n#define CLK_GPIO1\t24\n#define CLK_GPIO2\t25\n#define CLK_DDRC\t26\n#define CLK_FIC0\t27\n#define CLK_FIC1\t28\n#define CLK_FIC2\t29\n#define CLK_FIC3\t30\n#define CLK_ATHENA\t31\n#define CLK_CFM\t\t32\n\n#define CLK_RTCREF\t33\n#define CLK_MSSPLL\t34\n\n \n\n#define CLK_CCC_PLL0\t\t0\n#define CLK_CCC_PLL1\t\t1\n#define CLK_CCC_DLL0\t\t2\n#define CLK_CCC_DLL1\t\t3\n\n#define CLK_CCC_PLL0_OUT0\t4\n#define CLK_CCC_PLL0_OUT1\t5\n#define CLK_CCC_PLL0_OUT2\t6\n#define CLK_CCC_PLL0_OUT3\t7\n\n#define CLK_CCC_PLL1_OUT0\t8\n#define CLK_CCC_PLL1_OUT1\t9\n#define CLK_CCC_PLL1_OUT2\t10\n#define CLK_CCC_PLL1_OUT3\t11\n\n#define CLK_CCC_DLL0_OUT0\t12\n#define CLK_CCC_DLL0_OUT1\t13\n\n#define CLK_CCC_DLL1_OUT0\t14\n#define CLK_CCC_DLL1_OUT1\t15\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

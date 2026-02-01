@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "851ec273e8770e6d9ed4611667349b751a9eb56dbb499218ca112d8c9ed7eca5",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/vt6656/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n\nvt6656_stage-y +=\tmain_usb.o \\\n\t\t\tcard.o  \\\n\t\t\tmac.o   \\\n\t\t\tbaseband.o \\\n\t\t\twcmd.o\\\n\t\t\trxtx.o \\\n\t\t\tpower.o \\\n\t\t\tkey.o \\\n\t\t\trf.o \\\n\t\t\tusbpipe.o \\\n\t\t\tchannel.o\n\nobj-$(CONFIG_VT6656) +=\tvt6656_stage.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

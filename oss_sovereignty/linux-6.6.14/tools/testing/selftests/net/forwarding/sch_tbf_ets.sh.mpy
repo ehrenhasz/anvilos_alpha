@@ -1,0 +1,9 @@
+{
+  "module_name": "sch_tbf_ets.sh",
+  "hash_id": "e4c3d24768a4a059c9b683ad28b2c27278e1ba26c7ab9258bb46d6716ce3c05f",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/net/forwarding/sch_tbf_ets.sh",
+  "human_readable_source": "#!/bin/bash\n# SPDX-License-Identifier: GPL-2.0\n\nQDISC=\"ets strict\"\n: ${lib_dir:=.}\nsource $lib_dir/sch_tbf_etsprio.sh\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "test-environ.c",
+  "hash_id": "05570b4c7e066c66fd3bae96426aeae695869d99b2bebbb8089b337b4eaf9359",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-environ.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#include <unistd.h>\n\n#include <string.h>\n\nint\nmain ()\n{\n   \n  char **remaining_variables = environ;\n  char *string;\n\n  for (; (string = *remaining_variables) != NULL; remaining_variables++)\n    {\n      if (strncmp (string, \"PATH=\", 5) == 0)\n         \n        return 0;\n    }\n   \n  return 1;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

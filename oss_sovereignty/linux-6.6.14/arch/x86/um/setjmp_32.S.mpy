@@ -1,0 +1,9 @@
+{
+  "module_name": "setjmp_32.S",
+  "hash_id": "9060a980c97ebf3ba7e2c09b2c5593c13aea4086301158f678d03df8c327e1af",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/um/setjmp_32.S",
+  "human_readable_source": " \n#\n# arch/i386/setjmp.S\n#\n# setjmp/longjmp for the i386 architecture\n#\n\n#\n# The jmp_buf is assumed to contain the following, in order:\n#\t%ebx\n#\t%esp\n#\t%ebp\n#\t%esi\n#\t%edi\n#\t<return address>\n#\n\n\t.text\n\t.align 4\n\t.globl kernel_setjmp\n\t.type kernel_setjmp, @function\nkernel_setjmp:\n#ifdef _REGPARM\n\tmovl %eax,%edx\n#else\n\tmovl 4(%esp),%edx\n#endif\n\tpopl %ecx\t\t\t# Return address, and adjust the stack\n\txorl %eax,%eax\t\t\t# Return value\n\tmovl %ebx,(%edx)\n\tmovl %esp,4(%edx)\t\t# Post-return %esp!\n\tpushl %ecx\t\t\t# Make the call/return stack happy\n\tmovl %ebp,8(%edx)\n\tmovl %esi,12(%edx)\n\tmovl %edi,16(%edx)\n\tmovl %ecx,20(%edx)\t\t# Return address\n\tRET\n\n\t.size kernel_setjmp,.-kernel_setjmp\n\n\t.text\n\t.align 4\n\t.globl kernel_longjmp\n\t.type kernel_longjmp, @function\nkernel_longjmp:\n#ifdef _REGPARM\n\txchgl %eax,%edx\n#else\n\tmovl 4(%esp),%edx\t\t# jmp_ptr address\n\tmovl 8(%esp),%eax\t\t# Return value\n#endif\n\tmovl (%edx),%ebx\n\tmovl 4(%edx),%esp\n\tmovl 8(%edx),%ebp\n\tmovl 12(%edx),%esi\n\tmovl 16(%edx),%edi\n\tjmp *20(%edx)\n\n\t.size kernel_longjmp,.-kernel_longjmp\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

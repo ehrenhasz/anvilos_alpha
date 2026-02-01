@@ -1,0 +1,9 @@
+{
+  "module_name": "unlzo.h",
+  "hash_id": "b71806a7084130394b429a834ed5efc3db59b638eb0396dead08b43787f2a499",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/decompress/unlzo.h",
+  "human_readable_source": " \n#ifndef DECOMPRESS_UNLZO_H\n#define DECOMPRESS_UNLZO_H\n\nint unlzo(unsigned char *inbuf, long len,\n\tlong (*fill)(void*, unsigned long),\n\tlong (*flush)(void*, unsigned long),\n\tunsigned char *output,\n\tlong *pos,\n\tvoid(*error)(char *x));\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

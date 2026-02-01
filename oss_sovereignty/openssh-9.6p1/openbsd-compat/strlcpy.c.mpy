@@ -1,0 +1,9 @@
+{
+  "module_name": "strlcpy.c",
+  "hash_id": "a7f827ebcc509d4c0444e87506c5a394477c648f83fcfdec0f2a822ef6c481f2",
+  "original_prompt": "Ingested from openssh-9.6p1/openbsd-compat/strlcpy.c",
+  "human_readable_source": " \n\n \n\n \n\n#include \"includes.h\"\n#ifndef HAVE_STRLCPY\n\n#include <sys/types.h>\n#include <string.h>\n\n \nsize_t\nstrlcpy(char *dst, const char *src, size_t siz)\n{\n\tchar *d = dst;\n\tconst char *s = src;\n\tsize_t n = siz;\n\n\t \n\tif (n != 0) {\n\t\twhile (--n != 0) {\n\t\t\tif ((*d++ = *s++) == '\\0')\n\t\t\t\tbreak;\n\t\t}\n\t}\n\n\t \n\tif (n == 0) {\n\t\tif (siz != 0)\n\t\t\t*d = '\\0';\t\t \n\t\twhile (*s++)\n\t\t\t;\n\t}\n\n\treturn(s - src - 1);\t \n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

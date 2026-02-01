@@ -1,0 +1,9 @@
+{
+  "module_name": "priv.h",
+  "hash_id": "82ea6e64cc591deca87d4f6323c606a788267beaba43779640761ab2234e7186",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/subdev/bus/priv.h",
+  "human_readable_source": " \n#ifndef __NVKM_BUS_PRIV_H__\n#define __NVKM_BUS_PRIV_H__\n#define nvkm_bus(p) container_of((p), struct nvkm_bus, subdev)\n#include <subdev/bus.h>\n\nstruct nvkm_bus_func {\n\tvoid (*init)(struct nvkm_bus *);\n\tvoid (*intr)(struct nvkm_bus *);\n\tint (*hwsq_exec)(struct nvkm_bus *, u32 *, u32);\n\tu32 hwsq_size;\n};\n\nint nvkm_bus_new_(const struct nvkm_bus_func *, struct nvkm_device *, enum nvkm_subdev_type, int,\n\t\t  struct nvkm_bus **);\n\nvoid nv50_bus_init(struct nvkm_bus *);\nvoid nv50_bus_intr(struct nvkm_bus *);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

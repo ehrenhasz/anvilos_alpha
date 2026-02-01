@@ -1,0 +1,9 @@
+{
+  "module_name": "set-process-name.c",
+  "hash_id": "7d2c5c241ebc0cd8d4df04d85cb224a36042b1d1c5cc140a1a656b5dfe318534",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/prctl/set-process-name.c",
+  "human_readable_source": "\n \n\n#include <errno.h>\n#include <sys/prctl.h>\n#include <string.h>\n\n#include \"../kselftest_harness.h\"\n\n#define CHANGE_NAME \"changename\"\n#define EMPTY_NAME \"\"\n#define TASK_COMM_LEN 16\n\nint set_name(char *name)\n{\n\tint res;\n\n\tres = prctl(PR_SET_NAME, name, NULL, NULL, NULL);\n\n\tif (res < 0)\n\t\treturn -errno;\n\treturn res;\n}\n\nint check_is_name_correct(char *check_name)\n{\n\tchar name[TASK_COMM_LEN];\n\tint res;\n\n\tres = prctl(PR_GET_NAME, name, NULL, NULL, NULL);\n\n\tif (res < 0)\n\t\treturn -errno;\n\n\treturn !strcmp(name, check_name);\n}\n\nint check_null_pointer(char *check_name)\n{\n\tchar *name = NULL;\n\tint res;\n\n\tres = prctl(PR_GET_NAME, name, NULL, NULL, NULL);\n\n\treturn res;\n}\n\nTEST(rename_process) {\n\n\tEXPECT_GE(set_name(CHANGE_NAME), 0);\n\tEXPECT_TRUE(check_is_name_correct(CHANGE_NAME));\n\n\tEXPECT_GE(set_name(EMPTY_NAME), 0);\n\tEXPECT_TRUE(check_is_name_correct(EMPTY_NAME));\n\n\tEXPECT_GE(set_name(CHANGE_NAME), 0);\n\tEXPECT_LT(check_null_pointer(CHANGE_NAME), 0);\n}\n\nTEST_HARNESS_MAIN\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

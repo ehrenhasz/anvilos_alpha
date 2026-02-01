@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile.am",
+  "hash_id": "6afcef720ffcd8846191f88d29d48626fd44a49020e9777be8680bb37654bd6c",
+  "original_prompt": "Ingested from zfs-2.2.2/cmd/zstream/Makefile.am",
+  "human_readable_source": "sbin_PROGRAMS   += zstream\nCPPCHECKTARGETS += zstream\n\nzstream_SOURCES = \\\n\t%D%/zstream.c \\\n\t%D%/zstream.h \\\n\t%D%/zstream_decompress.c \\\n\t%D%/zstream_dump.c \\\n\t%D%/zstream_recompress.c \\\n\t%D%/zstream_redup.c \\\n\t%D%/zstream_token.c\n\nzstream_LDADD = \\\n\tlibzfs.la \\\n\tlibzfs_core.la \\\n\tlibzpool.la \\\n\tlibnvpair.la\n\nPHONY += install-exec-hook\ninstall-exec-hook:\n\tcd $(DESTDIR)$(sbindir) && $(LN_S) -f zstream zstreamdump\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

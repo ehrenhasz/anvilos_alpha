@@ -1,0 +1,9 @@
+{
+  "module_name": "base917c.c",
+  "hash_id": "453b48526e109958fa4af6984f32b87eea622eec877aa5fcd19674470154d681",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/dispnv50/base917c.c",
+  "human_readable_source": " \n#include \"base.h\"\n#include \"atom.h\"\n\nstatic const u32\nbase917c_format[] = {\n\tDRM_FORMAT_C8,\n\tDRM_FORMAT_XRGB8888,\n\tDRM_FORMAT_ARGB8888,\n\tDRM_FORMAT_RGB565,\n\tDRM_FORMAT_XRGB1555,\n\tDRM_FORMAT_ARGB1555,\n\tDRM_FORMAT_XBGR2101010,\n\tDRM_FORMAT_ABGR2101010,\n\tDRM_FORMAT_XBGR8888,\n\tDRM_FORMAT_ABGR8888,\n\tDRM_FORMAT_XRGB2101010,\n\tDRM_FORMAT_ARGB2101010,\n\tDRM_FORMAT_XBGR16161616F,\n\tDRM_FORMAT_ABGR16161616F,\n\t0\n};\n\nint\nbase917c_new(struct nouveau_drm *drm, int head, s32 oclass,\n\t     struct nv50_wndw **pwndw)\n{\n\treturn base507c_new_(&base907c, base917c_format, drm, head, oclass,\n\t\t\t     0x00000002 << (head * 4), pwndw);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

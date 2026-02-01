@@ -1,0 +1,9 @@
+{
+  "module_name": "bus.json",
+  "hash_id": "c716bc81e6b383102b0d8bcac799aa524d852431b4e04482043d561475074126",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/pmu-events/arch/arm64/arm/cortex-a53/bus.json",
+  "human_readable_source": "[\n  {\n        \"ArchStdEvent\": \"BUS_ACCESS_RD\"\n  },\n  {\n        \"ArchStdEvent\": \"BUS_ACCESS_WR\"\n  }\n]\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

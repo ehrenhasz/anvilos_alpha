@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "2f268efb9566ee87d6c0cf68834feb22edd0221147c02f40fc6f7595b4818393",
+  "original_prompt": "Ingested from linux-6.6.14/security/landlock/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n\nconfig SECURITY_LANDLOCK\n\tbool \"Landlock support\"\n\tdepends on SECURITY\n\tselect SECURITY_PATH\n\thelp\n\t  Landlock is a sandboxing mechanism that enables processes to restrict\n\t  themselves (and their future children) by gradually enforcing\n\t  tailored access control policies.  A Landlock security policy is a\n\t  set of access rights (e.g. open a file in read-only, make a\n\t  directory, etc.) tied to a file hierarchy.  Such policy can be\n\t  configured and enforced by any processes for themselves using the\n\t  dedicated system calls: landlock_create_ruleset(),\n\t  landlock_add_rule(), and landlock_restrict_self().\n\n\t  See Documentation/userspace-api/landlock.rst for further information.\n\n\t  If you are unsure how to answer this question, answer N.  Otherwise,\n\t  you should also prepend \"landlock,\" to the content of CONFIG_LSM to\n\t  enable Landlock at boot time.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

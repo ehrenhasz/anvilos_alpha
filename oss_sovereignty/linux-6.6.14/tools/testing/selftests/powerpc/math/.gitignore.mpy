@@ -1,0 +1,9 @@
+{
+  "module_name": ".gitignore",
+  "hash_id": "75c6e890b7160bf51baa3081aa20cbae5732791c3265135ec6f62d38837327d2",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/powerpc/math/.gitignore",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nfpu_syscall\nvmx_syscall\nfpu_preempt\nvmx_preempt\nfpu_signal\nvmx_signal\nvsx_preempt\nfpu_denormal\nmma\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

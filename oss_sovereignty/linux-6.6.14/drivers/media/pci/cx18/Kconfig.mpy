@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "8192457d6f7043b012cafee611762eea4ba6c8ce52e032d73ba9d6e5afafb57e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/pci/cx18/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig VIDEO_CX18\n\ttristate \"Conexant cx23418 MPEG encoder support\"\n\tdepends on VIDEO_DEV && DVB_CORE && PCI && I2C\n\tselect I2C_ALGOBIT\n\tselect VIDEOBUF2_VMALLOC\n\tdepends on RC_CORE\n\tselect VIDEO_TUNER\n\tselect VIDEO_TVEEPROM\n\tselect VIDEO_CX2341X\n\tselect VIDEO_CS5345\n\tselect DVB_S5H1409 if MEDIA_SUBDRV_AUTOSELECT\n\tselect MEDIA_TUNER_MXL5005S if MEDIA_SUBDRV_AUTOSELECT\n\tselect DVB_S5H1411 if MEDIA_SUBDRV_AUTOSELECT\n\tselect MEDIA_TUNER_TDA18271 if MEDIA_SUBDRV_AUTOSELECT\n\tselect MEDIA_TUNER_TDA8290 if MEDIA_SUBDRV_AUTOSELECT\n\thelp\n\t  This is a video4linux driver for Conexant cx23418 based\n\t  PCI combo video recorder devices.\n\n\t  This is used in devices such as the Hauppauge HVR-1600\n\t  cards.\n\n\t  To compile this driver as a module, choose M here: the\n\t  module will be called cx18.\n\nconfig VIDEO_CX18_ALSA\n\ttristate \"Conexant 23418 DMA audio support\"\n\tdepends on VIDEO_CX18 && SND\n\tselect SND_PCM\n\thelp\n\t  This is a video4linux driver for direct (DMA) audio on\n\t  Conexant 23418 based TV cards using ALSA.\n\n\t  To compile this driver as a module, choose M here: the\n\t  module will be called cx18-alsa.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

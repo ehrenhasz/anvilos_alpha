@@ -1,0 +1,9 @@
+{
+  "module_name": "sof-pci-dev.h",
+  "hash_id": "13477d674c6e7f3a3ff7c2f7be45277512130532504144314ae9d106760c885c",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/sof/sof-pci-dev.h",
+  "human_readable_source": " \n \n\n#ifndef __SOUND_SOC_SOF_PCI_H\n#define __SOUND_SOC_SOF_PCI_H\n\nextern const struct dev_pm_ops sof_pci_pm;\nint sof_pci_probe(struct pci_dev *pci, const struct pci_device_id *pci_id);\nvoid sof_pci_remove(struct pci_dev *pci);\nvoid sof_pci_shutdown(struct pci_dev *pci);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

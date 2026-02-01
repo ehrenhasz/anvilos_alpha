@@ -1,0 +1,9 @@
+{
+  "module_name": "dlmconstants.h",
+  "hash_id": "396a681fb89b099bcf05a4df3cc3da7100301e8563dbdfa77209e075629ab6cc",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/dlmconstants.h",
+  "human_readable_source": " \n \n\n#ifndef __DLMCONSTANTS_DOT_H__\n#define __DLMCONSTANTS_DOT_H__\n\n \n\n#define DLM_LOCKSPACE_LEN       64\n#define DLM_RESNAME_MAXLEN      64\n\n\n \n\n#define DLM_LOCK_IV\t\t(-1)\t \n#define DLM_LOCK_NL\t\t0\t \n#define DLM_LOCK_CR\t\t1\t \n#define DLM_LOCK_CW\t\t2\t \n#define DLM_LOCK_PR\t\t3\t \n#define DLM_LOCK_PW\t\t4\t \n#define DLM_LOCK_EX\t\t5\t \n\n\n \n\n#define DLM_LKF_NOQUEUE\t\t0x00000001\n#define DLM_LKF_CANCEL\t\t0x00000002\n#define DLM_LKF_CONVERT\t\t0x00000004\n#define DLM_LKF_VALBLK\t\t0x00000008\n#define DLM_LKF_QUECVT\t\t0x00000010\n#define DLM_LKF_IVVALBLK\t0x00000020\n#define DLM_LKF_CONVDEADLK\t0x00000040\n#define DLM_LKF_PERSISTENT\t0x00000080\n#define DLM_LKF_NODLCKWT\t0x00000100\n#define DLM_LKF_NODLCKBLK\t0x00000200\n#define DLM_LKF_EXPEDITE\t0x00000400\n#define DLM_LKF_NOQUEUEBAST\t0x00000800\n#define DLM_LKF_HEADQUE\t\t0x00001000\n#define DLM_LKF_NOORDER\t\t0x00002000\n#define DLM_LKF_ORPHAN\t\t0x00004000\n#define DLM_LKF_ALTPR\t\t0x00008000\n#define DLM_LKF_ALTCW\t\t0x00010000\n#define DLM_LKF_FORCEUNLOCK\t0x00020000\n#define DLM_LKF_TIMEOUT\t\t0x00040000\n\n \n\n#define DLM_ECANCEL\t\t0x10001\n#define DLM_EUNLOCK\t\t0x10002\n\n#endif   \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

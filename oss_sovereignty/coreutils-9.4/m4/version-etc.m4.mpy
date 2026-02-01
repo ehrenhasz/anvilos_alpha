@@ -1,0 +1,9 @@
+{
+  "module_name": "version-etc.m4",
+  "hash_id": "3e25be02761aa0ab5206791378aca7f6599908ed9d77fcfdb43c712600ee7a35",
+  "original_prompt": "Ingested from coreutils-9.4/m4/version-etc.m4",
+  "human_readable_source": "# version-etc.m4 serial 2\n# Copyright (C) 2009-2023 Free Software Foundation, Inc.\n# This file is free software; the Free Software Foundation\n# gives unlimited permission to copy and/or distribute it,\n# with or without modifications, as long as this notice is preserved.\n\ndnl $1 - configure flag and define name\ndnl $2 - human readable description\nm4_define([gl_VERSION_ETC_FLAG],\n[dnl\n  AC_ARG_WITH([$1], [AS_HELP_STRING([[--with-]$1], [$2])],\n    [dnl\n      case $withval in\n        yes|no) ;;\n        *) AC_DEFINE_UNQUOTED(AS_TR_CPP([PACKAGE_$1]), [\"$withval\"], [$2]) ;;\n      esac\n    ])\n])\n\nAC_DEFUN([gl_VERSION_ETC],\n[dnl\n  gl_VERSION_ETC_FLAG([packager],\n                      [String identifying the packager of this software])\n  gl_VERSION_ETC_FLAG([packager-version],\n                      [Packager-specific version information])\n  gl_VERSION_ETC_FLAG([packager-bug-reports],\n                      [Packager info for bug reports (URL/e-mail/...)])\n  if test \"X$with_packager\" = \"X\" && \\\n     test \"X$with_packager_version$with_packager_bug_reports\" != \"X\"\n  then\n    AC_MSG_ERROR([The --with-packager-{bug-reports,version} options require --with-packager])\n  fi\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

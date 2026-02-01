@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "bffc6a7a5da6259cdac66ebf2a4ce3c5f0e591a1796dc1473266c6c9439095bb",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/infiniband/hw/efa/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0 OR BSD-2-Clause\n# Copyright 2018-2019 Amazon.com, Inc. or its affiliates. All rights reserved.\n#\n# Amazon fabric device configuration\n#\n\nconfig INFINIBAND_EFA\n\ttristate \"Amazon Elastic Fabric Adapter (EFA) support\"\n\tdepends on PCI_MSI && 64BIT && !CPU_BIG_ENDIAN\n\tdepends on INFINIBAND_USER_ACCESS\n\thelp\n\t  This driver supports Amazon Elastic Fabric Adapter (EFA).\n\n\t  To compile this driver as a module, choose M here.\n\t  The module will be called efa.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

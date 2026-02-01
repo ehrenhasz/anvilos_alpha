@@ -1,0 +1,9 @@
+{
+  "module_name": "psp.h",
+  "hash_id": "83945d0748fd7147a68d4d6fb8a4b7264a0b9c18fe35c9801103c39dc057c2df",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/psp.h",
+  "human_readable_source": " \n\n#ifndef __PSP_H\n#define __PSP_H\n\n#ifdef CONFIG_X86\n#include <linux/mem_encrypt.h>\n\n#define __psp_pa(x)\t__sme_pa(x)\n#else\n#define __psp_pa(x)\t__pa(x)\n#endif\n\n \n#define PSP_CMDRESP_STS\t\tGENMASK(15, 0)\n#define PSP_CMDRESP_CMD\t\tGENMASK(23, 16)\n#define PSP_CMDRESP_RESERVED\tGENMASK(29, 24)\n#define PSP_CMDRESP_RECOVERY\tBIT(30)\n#define PSP_CMDRESP_RESP\tBIT(31)\n\n#define PSP_DRBL_MSG\t\tPSP_CMDRESP_CMD\n#define PSP_DRBL_RING\t\tBIT(0)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

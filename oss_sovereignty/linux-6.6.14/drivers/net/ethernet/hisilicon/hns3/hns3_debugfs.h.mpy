@@ -1,0 +1,9 @@
+{
+  "module_name": "hns3_debugfs.h",
+  "hash_id": "bd4e07ccbf686606db8e74e67405a556d07e0f87ee74a0aa84ef850b86cbcc45",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/hisilicon/hns3/hns3_debugfs.h",
+  "human_readable_source": " \n \n\n#ifndef __HNS3_DEBUGFS_H\n#define __HNS3_DEBUGFS_H\n\n#include \"hnae3.h\"\n\n#define HNS3_DBG_READ_LEN\t65536\n#define HNS3_DBG_READ_LEN_128KB\t0x20000\n#define HNS3_DBG_READ_LEN_1MB\t0x100000\n#define HNS3_DBG_READ_LEN_4MB\t0x400000\n#define HNS3_DBG_READ_LEN_5MB\t0x500000\n#define HNS3_DBG_WRITE_LEN\t1024\n\n#define HNS3_DBG_DATA_STR_LEN\t32\n#define HNS3_DBG_INFO_LEN\t256\n#define HNS3_DBG_ITEM_NAME_LEN\t32\n#define HNS3_DBG_FILE_NAME_LEN\t16\n\nstruct hns3_dbg_item {\n\tchar name[HNS3_DBG_ITEM_NAME_LEN];\n\tu16 interval;  \n};\n\nstruct hns3_dbg_data {\n\tstruct hnae3_handle *handle;\n\tenum hnae3_dbg_cmd cmd;\n\tu16 qid;\n};\n\nenum hns3_dbg_dentry_type {\n\tHNS3_DBG_DENTRY_TM,\n\tHNS3_DBG_DENTRY_TX_BD,\n\tHNS3_DBG_DENTRY_RX_BD,\n\tHNS3_DBG_DENTRY_MAC,\n\tHNS3_DBG_DENTRY_REG,\n\tHNS3_DBG_DENTRY_QUEUE,\n\tHNS3_DBG_DENTRY_FD,\n\tHNS3_DBG_DENTRY_COMMON,\n};\n\nstruct hns3_dbg_dentry_info {\n\tconst char *name;\n\tstruct dentry *dentry;\n};\n\nstruct hns3_dbg_cmd_info {\n\tconst char *name;\n\tenum hnae3_dbg_cmd cmd;\n\tenum hns3_dbg_dentry_type dentry;\n\tu32 buf_len;\n\tint (*init)(struct hnae3_handle *handle, unsigned int cmd);\n};\n\nstruct hns3_dbg_func {\n\tenum hnae3_dbg_cmd cmd;\n\tint (*dbg_dump)(struct hnae3_handle *handle, char *buf, int len);\n\tint (*dbg_dump_bd)(struct hns3_dbg_data *data, char *buf, int len);\n};\n\nstruct hns3_dbg_cap_info {\n\tconst char *name;\n\tenum HNAE3_DEV_CAP_BITS cap_bit;\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

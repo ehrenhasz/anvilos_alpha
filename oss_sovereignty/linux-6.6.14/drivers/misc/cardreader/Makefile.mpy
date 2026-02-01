@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "6fce4de64b81abc162afb62e32e464678c2405e5d13a02c7573c61d189f46588",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/misc/cardreader/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-$(CONFIG_MISC_ALCOR_PCI)\t+= alcor_pci.o\nobj-$(CONFIG_MISC_RTSX_PCI)\t+= rtsx_pci.o\nrtsx_pci-objs := rtsx_pcr.o rts5209.o rts5229.o rtl8411.o rts5227.o rts5249.o rts5260.o rts5261.o rts5228.o\nobj-$(CONFIG_MISC_RTSX_USB)\t+= rtsx_usb.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

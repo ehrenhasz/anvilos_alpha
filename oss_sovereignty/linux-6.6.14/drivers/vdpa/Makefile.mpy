@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "f2cdb2fba8b7dda26034c658c6b67dbefd12b44645370743aa826dce8aad88e8",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/vdpa/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nobj-$(CONFIG_VDPA) += vdpa.o\nobj-$(CONFIG_VDPA_SIM) += vdpa_sim/\nobj-$(CONFIG_VDPA_USER) += vdpa_user/\nobj-$(CONFIG_IFCVF)    += ifcvf/\nobj-$(CONFIG_MLX5_VDPA) += mlx5/\nobj-$(CONFIG_VP_VDPA)    += virtio_pci/\nobj-$(CONFIG_ALIBABA_ENI_VDPA) += alibaba/\nobj-$(CONFIG_SNET_VDPA) += solidrun/\nobj-$(CONFIG_PDS_VDPA) += pds/\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

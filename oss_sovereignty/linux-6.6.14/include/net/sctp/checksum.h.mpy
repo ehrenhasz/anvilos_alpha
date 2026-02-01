@@ -1,0 +1,9 @@
+{
+  "module_name": "checksum.h",
+  "hash_id": "c47295340c75fc3414910a2bd82305ff1df9345c7a33b0ff2c1b8aef6c2890f6",
+  "original_prompt": "Ingested from linux-6.6.14/include/net/sctp/checksum.h",
+  "human_readable_source": " \n \n\n#ifndef __sctp_checksum_h__\n#define __sctp_checksum_h__\n\n#include <linux/types.h>\n#include <linux/sctp.h>\n#include <linux/crc32c.h>\n#include <linux/crc32.h>\n\nstatic inline __wsum sctp_csum_update(const void *buff, int len, __wsum sum)\n{\n\t \n\treturn (__force __wsum)crc32c((__force __u32)sum, buff, len);\n}\n\nstatic inline __wsum sctp_csum_combine(__wsum csum, __wsum csum2,\n\t\t\t\t       int offset, int len)\n{\n\treturn (__force __wsum)__crc32c_le_combine((__force __u32)csum,\n\t\t\t\t\t\t   (__force __u32)csum2, len);\n}\n\nstatic const struct skb_checksum_ops sctp_csum_ops = {\n\t.update  = sctp_csum_update,\n\t.combine = sctp_csum_combine,\n};\n\nstatic inline __le32 sctp_compute_cksum(const struct sk_buff *skb,\n\t\t\t\t\tunsigned int offset)\n{\n\tstruct sctphdr *sh = (struct sctphdr *)(skb->data + offset);\n\t__le32 old = sh->checksum;\n\t__wsum new;\n\n\tsh->checksum = 0;\n\tnew = ~__skb_checksum(skb, offset, skb->len - offset, ~(__wsum)0,\n\t\t\t      &sctp_csum_ops);\n\tsh->checksum = old;\n\n\treturn cpu_to_le32((__force __u32)new);\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "extable.h",
+  "hash_id": "552fce8c6308c591c50b43dff076a116b7c89079cb5556ff8247bb42e7ca4d2d",
+  "original_prompt": "Ingested from linux-6.6.14/include/asm-generic/extable.h",
+  "human_readable_source": " \n#ifndef __ASM_GENERIC_EXTABLE_H\n#define __ASM_GENERIC_EXTABLE_H\n\n \n\nstruct exception_table_entry\n{\n\tunsigned long insn, fixup;\n};\n\n\nstruct pt_regs;\nextern int fixup_exception(struct pt_regs *regs);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

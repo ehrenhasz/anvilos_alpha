@@ -1,0 +1,9 @@
+{
+  "module_name": "rtw_qos.h",
+  "hash_id": "8c67b66ddaf154e3bfa3068675f2c8490a1a3c21eb694c17c3a41fc008526c0f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/rtl8723bs/include/rtw_qos.h",
+  "human_readable_source": " \n \n\n\n#ifndef _RTW_QOS_H_\n#define _RTW_QOS_H_\n\n\n\nstruct\tqos_priv {\n\tunsigned int\t  qos_option;\t \n};\n\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

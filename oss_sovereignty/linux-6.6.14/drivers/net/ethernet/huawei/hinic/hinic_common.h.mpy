@@ -1,0 +1,9 @@
+{
+  "module_name": "hinic_common.h",
+  "hash_id": "8cf0b78d455c0578ac179b9270474f712aba17294dae8b21a75be06080385f84",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/huawei/hinic/hinic_common.h",
+  "human_readable_source": " \n \n\n#ifndef HINIC_COMMON_H\n#define HINIC_COMMON_H\n\n#include <linux/types.h>\n\n#define UPPER_8_BITS(data)      (((data) >> 8) & 0xFF)\n#define LOWER_8_BITS(data)      ((data) & 0xFF)\n\nstruct hinic_sge {\n\tu32             hi_addr;\n\tu32             lo_addr;\n\tu32             len;\n};\n\nvoid hinic_cpu_to_be32(void *data, int len);\n\nvoid hinic_be32_to_cpu(void *data, int len);\n\nvoid hinic_set_sge(struct hinic_sge *sge, dma_addr_t addr, int len);\n\ndma_addr_t hinic_sge_to_dma(struct hinic_sge *sge);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

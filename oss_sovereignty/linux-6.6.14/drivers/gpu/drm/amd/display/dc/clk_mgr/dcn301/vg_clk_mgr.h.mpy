@@ -1,0 +1,9 @@
+{
+  "module_name": "vg_clk_mgr.h",
+  "hash_id": "b9ddf0812d17909c2570d72d79e2fe19a38dc07dbbbe91eb463ccee0ce930d68",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/dc/clk_mgr/dcn301/vg_clk_mgr.h",
+  "human_readable_source": " \n\n#ifndef __VG_CLK_MGR_H__\n#define __VG_CLK_MGR_H__\n#include \"clk_mgr_internal.h\"\n\nstruct watermarks;\n\nextern struct wm_table ddr4_wm_table;\nextern struct wm_table lpddr5_wm_table;\n\nstruct smu_watermark_set {\n\tstruct watermarks *wm_set;\n\tunion large_integer mc_address;\n};\n\nstruct clk_mgr_vgh {\n\tstruct clk_mgr_internal base;\n\tstruct smu_watermark_set smu_wm_set;\n};\n\nvoid vg_clk_mgr_construct(struct dc_context *ctx,\n\t\tstruct clk_mgr_vgh *clk_mgr,\n\t\tstruct pp_smu_funcs *pp_smu,\n\t\tstruct dccg *dccg);\n\nvoid vg_clk_mgr_destroy(struct clk_mgr_internal *clk_mgr);\n\n#endif \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

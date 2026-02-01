@@ -1,0 +1,9 @@
+{
+  "module_name": "dir.h",
+  "hash_id": "f1b75c4f4e90666c431b51af8f61501d4e149c703ba849f4ce66584966103b01",
+  "original_prompt": "Ingested from linux-6.6.14/fs/ntfs/dir.h",
+  "human_readable_source": " \n \n\n#ifndef _LINUX_NTFS_DIR_H\n#define _LINUX_NTFS_DIR_H\n\n#include \"layout.h\"\n#include \"inode.h\"\n#include \"types.h\"\n\n \ntypedef struct {\n\tMFT_REF mref;\n\tFILE_NAME_TYPE_FLAGS type;\n\tu8 len;\n\tntfschar name[0];\n} __attribute__ ((__packed__)) ntfs_name;\n\n \nextern ntfschar I30[5];\n\nextern MFT_REF ntfs_lookup_inode_by_name(ntfs_inode *dir_ni,\n\t\tconst ntfschar *uname, const int uname_len, ntfs_name **res);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "debugfs_duplicate_context_creation.sh",
+  "hash_id": "cecbecb8f5b7fda83ce12eb968f9ac57120436062391f00981b47dba037ea547",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/damon/debugfs_duplicate_context_creation.sh",
+  "human_readable_source": "#!/bin/bash\n# SPDX-License-Identifier: GPL-2.0\n\nsource _debugfs_common.sh\n\n# Test duplicated context creation\n# ================================\n\nif ! echo foo > \"$DBGFS/mk_contexts\"\nthen\n\techo \"context creation failed\"\n\texit 1\nfi\n\nif echo foo > \"$DBGFS/mk_contexts\"\nthen\n\techo \"duplicate context creation success\"\n\texit 1\nfi\n\nif ! echo foo > \"$DBGFS/rm_contexts\"\nthen\n\techo \"context deletion failed\"\n\texit 1\nfi\n\nexit 0\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

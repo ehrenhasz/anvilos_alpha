@@ -1,0 +1,9 @@
+{
+  "module_name": "atmclip.h",
+  "hash_id": "8acb7cb788c8d050fa8cad74b0da0a04f88138d360715072131f81ca6860a405",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/atmclip.h",
+  "human_readable_source": " \n \n \n \n \n\n#ifndef LINUX_ATMCLIP_H\n#define LINUX_ATMCLIP_H\n\n#include <linux/sockios.h>\n#include <linux/atmioc.h>\n\n\n#define RFC1483LLC_LEN\t8\t\t \n#define RFC1626_MTU\t9180\t\t \n\n#define CLIP_DEFAULT_IDLETIMER 1200\t \n#define CLIP_CHECK_INTERVAL\t 10\t \n\n#define\tSIOCMKCLIP\t_IO('a',ATMIOC_CLIP)\t \n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

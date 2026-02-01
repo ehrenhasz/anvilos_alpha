@@ -1,0 +1,9 @@
+{
+  "module_name": "yam.h",
+  "hash_id": "ed0b2a1cba3a482867134bd4e28909156cc9fec59ce0e26a082e61a8e8bfee96",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/yam.h",
+  "human_readable_source": " \n \n\n \n\n \n\n#define SIOCYAMRESERVED\t(0)\n#define SIOCYAMSCFG \t(1)\t \n#define SIOCYAMGCFG \t(2)\t \n#define SIOCYAMSMCS \t(3)\t \n\n#define YAM_IOBASE   (1 << 0)\n#define YAM_IRQ      (1 << 1)\n#define YAM_BITRATE  (1 << 2)  \n#define YAM_MODE     (1 << 3)  \n#define YAM_HOLDDLY  (1 << 4)  \n#define YAM_TXDELAY  (1 << 5)  \n#define YAM_TXTAIL   (1 << 6)  \n#define YAM_PERSIST  (1 << 7)  \n#define YAM_SLOTTIME (1 << 8)  \n#define YAM_BAUDRATE (1 << 9)  \n\n#define YAM_MAXBITRATE  57600\n#define YAM_MAXBAUDRATE 115200\n#define YAM_MAXMODE     2\n#define YAM_MAXHOLDDLY  99\n#define YAM_MAXTXDELAY  999\n#define YAM_MAXTXTAIL   999\n#define YAM_MAXPERSIST  255\n#define YAM_MAXSLOTTIME 999\n\n#define YAM_FPGA_SIZE\t5302\n\nstruct yamcfg {\n\tunsigned int mask;\t\t \n\tunsigned int iobase;\t \n\tunsigned int irq;\t\t \n\tunsigned int bitrate;\t \n\tunsigned int baudrate;\t \n\tunsigned int txdelay;\t \n\tunsigned int txtail;\t \n\tunsigned int persist;\t \n\tunsigned int slottime;\t \n\tunsigned int mode;\t\t \n\tunsigned int holddly;\t \n};\n\nstruct yamdrv_ioctl_cfg {\n\tint cmd;\n\tstruct yamcfg cfg;\n};\n\nstruct yamdrv_ioctl_mcs {\n\tint cmd;\n\tunsigned int bitrate;\n\tunsigned char bits[YAM_FPGA_SIZE];\n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

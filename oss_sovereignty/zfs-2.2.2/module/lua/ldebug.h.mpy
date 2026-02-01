@@ -1,0 +1,9 @@
+{
+  "module_name": "ldebug.h",
+  "hash_id": "be5c2244871233740642c94defe9697ab1aa917cddfe58c4f48c68b40cda2eb1",
+  "original_prompt": "Ingested from zfs-2.2.2/module/lua/ldebug.h",
+  "human_readable_source": " \n\n#ifndef ldebug_h\n#define ldebug_h\n\n\n#include \"lstate.h\"\n\n\n#define pcRel(pc, p)\t(cast(int, (pc) - (p)->code) - 1)\n\n#define getfuncline(f,pc)\t(((f)->lineinfo) ? (f)->lineinfo[pc] : 0)\n\n#define resethookcount(L)\t(L->hookcount = L->basehookcount)\n\n \n#define ci_func(ci)\t\t(clLvalue((ci)->func))\n\n\nLUAI_FUNC l_noret luaG_typeerror (lua_State *L, const TValue *o,\n                                                const char *opname);\nLUAI_FUNC l_noret luaG_concaterror (lua_State *L, StkId p1, StkId p2);\nLUAI_FUNC l_noret luaG_aritherror (lua_State *L, const TValue *p1,\n                                                 const TValue *p2);\nLUAI_FUNC l_noret luaG_ordererror (lua_State *L, const TValue *p1,\n                                                 const TValue *p2);\nLUAI_FUNC l_noret luaG_runerror (lua_State *L, const char *fmt, ...);\nLUAI_FUNC l_noret luaG_errormsg (lua_State *L);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

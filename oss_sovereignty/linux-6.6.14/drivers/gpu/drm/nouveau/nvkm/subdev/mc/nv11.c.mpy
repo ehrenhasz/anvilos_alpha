@@ -1,0 +1,9 @@
+{
+  "module_name": "nv11.c",
+  "hash_id": "0877eac55c41edd8b8845388962666305a1b7ea9e32fa91e53f3ead50e3ef389",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/subdev/mc/nv11.c",
+  "human_readable_source": " \n#include \"priv.h\"\n\nstatic const struct nvkm_intr_data\nnv11_mc_intrs[] = {\n\t{ NVKM_ENGINE_DISP , 0, 0, 0x03010000, true },\n\t{ NVKM_ENGINE_GR   , 0, 0, 0x00001000, true },\n\t{ NVKM_ENGINE_FIFO , 0, 0, 0x00000100 },\n\t{ NVKM_SUBDEV_BUS  , 0, 0, 0x10000000, true },\n\t{ NVKM_SUBDEV_TIMER, 0, 0, 0x00100000, true },\n\t{}\n};\n\nstatic const struct nvkm_mc_func\nnv11_mc = {\n\t.init = nv04_mc_init,\n\t.intr = &nv04_mc_intr,\n\t.intrs = nv11_mc_intrs,\n\t.device = &nv04_mc_device,\n\t.reset = nv04_mc_reset,\n};\n\nint\nnv11_mc_new(struct nvkm_device *device, enum nvkm_subdev_type type, int inst, struct nvkm_mc **pmc)\n{\n\treturn nvkm_mc_new_(&nv11_mc, device, type, inst, pmc);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

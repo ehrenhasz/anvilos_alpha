@@ -1,0 +1,9 @@
+{
+  "module_name": "qat_algs_send.h",
+  "hash_id": "bdbce30ecb2f8927b5060e4fa4cfde0c6fb78af132a47bd2e5de07fa3fc5c7ca",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/crypto/intel/qat/qat_common/qat_algs_send.h",
+  "human_readable_source": " \n \n#ifndef QAT_ALGS_SEND_H\n#define QAT_ALGS_SEND_H\n\n#include <linux/list.h>\n#include \"adf_transport_internal.h\"\n\nstruct qat_instance_backlog {\n\tstruct list_head list;\n\tspinlock_t lock;  \n};\n\nstruct qat_alg_req {\n\tu32 *fw_req;\n\tstruct adf_etr_ring_data *tx_ring;\n\tstruct crypto_async_request *base;\n\tstruct list_head list;\n\tstruct qat_instance_backlog *backlog;\n};\n\nint qat_alg_send_message(struct qat_alg_req *req);\nvoid qat_alg_send_backlog(struct qat_instance_backlog *backlog);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

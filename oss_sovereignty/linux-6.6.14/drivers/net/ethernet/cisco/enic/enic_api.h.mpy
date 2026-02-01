@@ -1,0 +1,9 @@
+{
+  "module_name": "enic_api.h",
+  "hash_id": "1b31b398a329e5d1b09411b7014ecfc107f1d4bd76383b2a5946f6a5d6444846",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/cisco/enic/enic_api.h",
+  "human_readable_source": " \n \n\n#ifndef __ENIC_API_H__\n#define __ENIC_API_H__\n\n#include <linux/netdevice.h>\n\n#include \"vnic_dev.h\"\n#include \"vnic_devcmd.h\"\n\nint enic_api_devcmd_proxy_by_index(struct net_device *netdev, int vf,\n\tenum vnic_devcmd_cmd cmd, u64 *a0, u64 *a1, int wait);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

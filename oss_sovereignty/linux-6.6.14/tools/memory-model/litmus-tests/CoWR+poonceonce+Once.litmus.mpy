@@ -1,0 +1,9 @@
+{
+  "module_name": "CoWR+poonceonce+Once.litmus",
+  "hash_id": "7d58d2df9a0624fa24b13735097ad6e3e6472b6bfff6deea1ed3fe59967240f7",
+  "original_prompt": "Ingested from linux-6.6.14/tools/memory-model/litmus-tests/CoWR+poonceonce+Once.litmus",
+  "human_readable_source": "C CoWR+poonceonce+Once\n\n(*\n * Result: Never\n *\n * Test of write-read coherence, that is, whether or not a write to a\n * given variable and a later read from that same variable are ordered.\n *)\n\n{}\n\nP0(int *x)\n{\n\tint r0;\n\n\tWRITE_ONCE(*x, 1);\n\tr0 = READ_ONCE(*x);\n}\n\nP1(int *x)\n{\n\tWRITE_ONCE(*x, 2);\n}\n\nexists (x=1 /\\ 0:r0=2)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

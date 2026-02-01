@@ -1,0 +1,9 @@
+{
+  "module_name": "vdec_helpers.h",
+  "hash_id": "48fc20dcd2516348f2e8679e593b7a0fcb6cc80062016f13e44902971adde3f0",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/meson/vdec/vdec_helpers.h",
+  "human_readable_source": " \n \n\n#ifndef __MESON_VDEC_HELPERS_H_\n#define __MESON_VDEC_HELPERS_H_\n\n#include \"vdec.h\"\n\n \nint amvdec_set_canvases(struct amvdec_session *sess,\n\t\t\tu32 reg_base[], u32 reg_num[]);\n\n \nu32 amvdec_read_dos(struct amvdec_core *core, u32 reg);\nvoid amvdec_write_dos(struct amvdec_core *core, u32 reg, u32 val);\nvoid amvdec_write_dos_bits(struct amvdec_core *core, u32 reg, u32 val);\nvoid amvdec_clear_dos_bits(struct amvdec_core *core, u32 reg, u32 val);\nu32 amvdec_read_parser(struct amvdec_core *core, u32 reg);\nvoid amvdec_write_parser(struct amvdec_core *core, u32 reg, u32 val);\n\nu32 amvdec_am21c_body_size(u32 width, u32 height);\nu32 amvdec_am21c_head_size(u32 width, u32 height);\nu32 amvdec_am21c_size(u32 width, u32 height);\n\n \nvoid amvdec_dst_buf_done_idx(struct amvdec_session *sess, u32 buf_idx,\n\t\t\t     u32 offset, u32 field);\nvoid amvdec_dst_buf_done(struct amvdec_session *sess,\n\t\t\t struct vb2_v4l2_buffer *vbuf, u32 field);\nvoid amvdec_dst_buf_done_offset(struct amvdec_session *sess,\n\t\t\t\tstruct vb2_v4l2_buffer *vbuf,\n\t\t\t\tu32 offset, u32 field, bool allow_drop);\n\n \nint amvdec_add_ts(struct amvdec_session *sess, u64 ts,\n\t\t  struct v4l2_timecode tc, u32 offset, u32 flags);\nvoid amvdec_remove_ts(struct amvdec_session *sess, u64 ts);\n\n \nvoid amvdec_set_par_from_dar(struct amvdec_session *sess,\n\t\t\t     u32 dar_num, u32 dar_den);\n\n \nvoid amvdec_src_change(struct amvdec_session *sess, u32 width,\n\t\t       u32 height, u32 dpb_size);\n\n \nvoid amvdec_abort(struct amvdec_session *sess);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

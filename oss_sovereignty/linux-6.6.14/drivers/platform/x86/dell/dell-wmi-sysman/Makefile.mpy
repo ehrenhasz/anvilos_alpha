@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "e2d85c0adbb21cb1752ba73395743e9dbeee99f68aaf601435997e4aaef20a29",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/platform/x86/dell/dell-wmi-sysman/Makefile",
+  "human_readable_source": "obj-$(CONFIG_DELL_WMI_SYSMAN)  += dell-wmi-sysman.o\ndell-wmi-sysman-objs := \tsysman.o\t\t\\\n\t\t\t\tenum-attributes.o\t\\\n\t\t\t\tint-attributes.o\t\\\n\t\t\t\tstring-attributes.o\t\\\n\t\t\t\tpassobj-attributes.o\t\\\n\t\t\t\tbiosattr-interface.o\t\\\n\t\t\t\tpasswordattr-interface.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

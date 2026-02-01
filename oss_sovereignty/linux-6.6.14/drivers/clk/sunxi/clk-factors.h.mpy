@@ -1,0 +1,9 @@
+{
+  "module_name": "clk-factors.h",
+  "hash_id": "76416f31cecf0a21d095ca1a65e41be9f708ecf1ec5f5471d7244fa2de545da0",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/clk/sunxi/clk-factors.h",
+  "human_readable_source": " \n#ifndef __MACH_SUNXI_CLK_FACTORS_H\n#define __MACH_SUNXI_CLK_FACTORS_H\n\n#include <linux/clk-provider.h>\n#include <linux/spinlock.h>\n\n#define SUNXI_FACTORS_NOT_APPLICABLE\t(0)\n\nstruct clk_factors_config {\n\tu8 nshift;\n\tu8 nwidth;\n\tu8 kshift;\n\tu8 kwidth;\n\tu8 mshift;\n\tu8 mwidth;\n\tu8 pshift;\n\tu8 pwidth;\n\tu8 n_start;\n};\n\nstruct factors_request {\n\tunsigned long rate;\n\tunsigned long parent_rate;\n\tu8 parent_index;\n\tu8 n;\n\tu8 k;\n\tu8 m;\n\tu8 p;\n};\n\nstruct factors_data {\n\tint enable;\n\tint mux;\n\tint muxmask;\n\tconst struct clk_factors_config *table;\n\tvoid (*getter)(struct factors_request *req);\n\tvoid (*recalc)(struct factors_request *req);\n\tconst char *name;\n};\n\nstruct clk_factors {\n\tstruct clk_hw hw;\n\tvoid __iomem *reg;\n\tconst struct clk_factors_config *config;\n\tvoid (*get_factors)(struct factors_request *req);\n\tvoid (*recalc)(struct factors_request *req);\n\tspinlock_t *lock;\n\t \n\tstruct clk_mux *mux;\n\tstruct clk_gate *gate;\n};\n\nstruct clk *sunxi_factors_register(struct device_node *node,\n\t\t\t\t   const struct factors_data *data,\n\t\t\t\t   spinlock_t *lock,\n\t\t\t\t   void __iomem *reg);\nstruct clk *sunxi_factors_register_critical(struct device_node *node,\n\t\t\t\t\t    const struct factors_data *data,\n\t\t\t\t\t    spinlock_t *lock,\n\t\t\t\t\t    void __iomem *reg);\n\nvoid sunxi_factors_unregister(struct device_node *node, struct clk *clk);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

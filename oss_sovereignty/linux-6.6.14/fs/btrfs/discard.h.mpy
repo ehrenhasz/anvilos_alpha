@@ -1,0 +1,9 @@
+{
+  "module_name": "discard.h",
+  "hash_id": "4e7e99472e0ce558ed64bc61389b292f0b59232f35d6e516b46eb3be964c6046",
+  "original_prompt": "Ingested from linux-6.6.14/fs/btrfs/discard.h",
+  "human_readable_source": " \n\n#ifndef BTRFS_DISCARD_H\n#define BTRFS_DISCARD_H\n\n#include <linux/sizes.h>\n\nstruct btrfs_fs_info;\nstruct btrfs_discard_ctl;\nstruct btrfs_block_group;\n\n \n#define BTRFS_ASYNC_DISCARD_DEFAULT_MAX_SIZE\t\t(SZ_64M)\n#define BTRFS_ASYNC_DISCARD_MAX_FILTER\t\t\t(SZ_1M)\n#define BTRFS_ASYNC_DISCARD_MIN_FILTER\t\t\t(SZ_32K)\n\n \nvoid btrfs_discard_check_filter(struct btrfs_block_group *block_group, u64 bytes);\n\n \nvoid btrfs_discard_cancel_work(struct btrfs_discard_ctl *discard_ctl,\n\t\t\t       struct btrfs_block_group *block_group);\nvoid btrfs_discard_queue_work(struct btrfs_discard_ctl *discard_ctl,\n\t\t\t      struct btrfs_block_group *block_group);\nvoid btrfs_discard_schedule_work(struct btrfs_discard_ctl *discard_ctl,\n\t\t\t\t bool override);\n\n \nvoid btrfs_discard_calc_delay(struct btrfs_discard_ctl *discard_ctl);\nvoid btrfs_discard_update_discardable(struct btrfs_block_group *block_group);\n\n \nvoid btrfs_discard_punt_unused_bgs_list(struct btrfs_fs_info *fs_info);\nvoid btrfs_discard_resume(struct btrfs_fs_info *fs_info);\nvoid btrfs_discard_stop(struct btrfs_fs_info *fs_info);\nvoid btrfs_discard_init(struct btrfs_fs_info *fs_info);\nvoid btrfs_discard_cleanup(struct btrfs_fs_info *fs_info);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

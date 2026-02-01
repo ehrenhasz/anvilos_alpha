@@ -1,0 +1,9 @@
+{
+  "module_name": "run_netsocktests",
+  "hash_id": "e85aa09b0b3c05a1aa658d705b1a958150330ead5479f8c6089aaaf767b14791",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/net/run_netsocktests",
+  "human_readable_source": "#!/bin/sh\n# SPDX-License-Identifier: GPL-2.0\n\necho \"--------------------\"\necho \"running socket test\"\necho \"--------------------\"\n./socket\nif [ $? -ne 0 ]; then\n\techo \"[FAIL]\"\n\texit 1\nelse\n\techo \"[PASS]\"\nfi\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

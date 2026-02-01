@@ -1,0 +1,9 @@
+{
+  "module_name": "amdgpu_fru_eeprom.h",
+  "hash_id": "751d56bcc97cb61f0ae6edb104595c3692c0bbd56edd5556a3c75ca1959f1191",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/amdgpu/amdgpu_fru_eeprom.h",
+  "human_readable_source": " \n\n#ifndef __AMDGPU_FRU_EEPROM_H__\n#define __AMDGPU_FRU_EEPROM_H__\n\nint amdgpu_fru_get_product_info(struct amdgpu_device *adev);\nint amdgpu_fru_sysfs_init(struct amdgpu_device *adev);\nvoid amdgpu_fru_sysfs_fini(struct amdgpu_device *adev);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

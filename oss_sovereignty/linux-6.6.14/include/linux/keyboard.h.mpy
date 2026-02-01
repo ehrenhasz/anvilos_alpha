@@ -1,0 +1,9 @@
+{
+  "module_name": "keyboard.h",
+  "hash_id": "900871df45392a2c8b444f3390a59014376519327ab65dbedc3fb89599b7f4c0",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/keyboard.h",
+  "human_readable_source": " \n#ifndef __LINUX_KEYBOARD_H\n#define __LINUX_KEYBOARD_H\n\n#include <uapi/linux/keyboard.h>\n\nstruct notifier_block;\nextern unsigned short *key_maps[MAX_NR_KEYMAPS];\nextern unsigned short plain_map[NR_KEYS];\n\nstruct keyboard_notifier_param {\n\tstruct vc_data *vc;\t \n\tint down;\t\t \n\tint shift;\t\t \n\tint ledstate;\t\t \n\tunsigned int value;\t \n};\n\nextern int register_keyboard_notifier(struct notifier_block *nb);\nextern int unregister_keyboard_notifier(struct notifier_block *nb);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

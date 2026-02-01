@@ -1,0 +1,9 @@
+{
+  "module_name": "rc-minix-neo.c",
+  "hash_id": "b794fd9a0f2668d087588959dfbd56583054b44b88b395e9be73b323af6f3eef",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/rc/keymaps/rc-minix-neo.c",
+  "human_readable_source": "\n\n\n\n#include <media/rc-map.h>\n#include <linux/module.h>\n\n\n\n\n\nstatic struct rc_map_table minix_neo[] = {\n\n\t{ 0x118, KEY_POWER },\n\n\t{ 0x146, KEY_UP },\n\t{ 0x116, KEY_DOWN },\n\t{ 0x147, KEY_LEFT },\n\t{ 0x115, KEY_RIGHT },\n\t{ 0x155, KEY_ENTER },\n\n\t{ 0x110, KEY_VOLUMEDOWN },\n\t{ 0x140, KEY_BACK },\n\t{ 0x114, KEY_VOLUMEUP },\n\n\t{ 0x10d, KEY_HOME },\n\t{ 0x104, KEY_MENU },\n\t{ 0x112, KEY_CONFIG },\n\n};\n\nstatic struct rc_map_list minix_neo_map = {\n\t.map = {\n\t\t.scan     = minix_neo,\n\t\t.size     = ARRAY_SIZE(minix_neo),\n\t\t.rc_proto = RC_PROTO_NEC,\n\t\t.name     = RC_MAP_MINIX_NEO,\n\t}\n};\n\nstatic int __init init_rc_map_minix_neo(void)\n{\n\treturn rc_map_register(&minix_neo_map);\n}\n\nstatic void __exit exit_rc_map_minix_neo(void)\n{\n\trc_map_unregister(&minix_neo_map);\n}\n\nmodule_init(init_rc_map_minix_neo)\nmodule_exit(exit_rc_map_minix_neo)\n\nMODULE_LICENSE(\"GPL\");\nMODULE_AUTHOR(\"Christian Hewitt <christianshewitt@gmail.com\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "hmcdrv_cache.h",
+  "hash_id": "12799d1a52abbb5b81d9c12726d133445e7ec0702ba8b768c88360fef5e0cddd",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/s390/char/hmcdrv_cache.h",
+  "human_readable_source": " \n \n\n#ifndef __HMCDRV_CACHE_H__\n#define __HMCDRV_CACHE_H__\n\n#include <linux/mmzone.h>\n#include \"hmcdrv_ftp.h\"\n\n#define HMCDRV_CACHE_SIZE_DFLT\t(MAX_ORDER_NR_PAGES * PAGE_SIZE / 2UL)\n\ntypedef ssize_t (*hmcdrv_cache_ftpfunc)(const struct hmcdrv_ftp_cmdspec *ftp,\n\t\t\t\t\tsize_t *fsize);\n\nssize_t hmcdrv_cache_cmd(const struct hmcdrv_ftp_cmdspec *ftp,\n\t\t\t hmcdrv_cache_ftpfunc func);\nint hmcdrv_cache_startup(size_t cachesize);\nvoid hmcdrv_cache_shutdown(void);\n\n#endif\t  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "75fd2a60e92e738f224fcd8fe259fe81df144b7572cf3f33d7c9fcbdcc6e9639",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/intel/iwlwifi/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n# common\nobj-$(CONFIG_IWLWIFI)\t+= iwlwifi.o\niwlwifi-objs\t\t+= iwl-io.o\niwlwifi-objs\t\t+= iwl-drv.o\niwlwifi-objs\t\t+= iwl-debug.o\niwlwifi-objs\t\t+= iwl-eeprom-read.o iwl-eeprom-parse.o\niwlwifi-objs\t\t+= iwl-phy-db.o iwl-nvm-parse.o\niwlwifi-objs\t\t+= pcie/drv.o pcie/rx.o pcie/tx.o pcie/trans.o\niwlwifi-objs\t\t+= pcie/ctxt-info.o pcie/ctxt-info-gen3.o\niwlwifi-objs\t\t+= pcie/trans-gen2.o pcie/tx-gen2.o\niwlwifi-$(CONFIG_IWLDVM) += cfg/1000.o cfg/2000.o cfg/5000.o cfg/6000.o\niwlwifi-$(CONFIG_IWLMVM) += cfg/7000.o cfg/8000.o cfg/9000.o cfg/22000.o\niwlwifi-$(CONFIG_IWLMVM) += cfg/ax210.o cfg/bz.o cfg/sc.o\niwlwifi-objs\t\t+= iwl-dbg-tlv.o\niwlwifi-objs\t\t+= iwl-trans.o\niwlwifi-objs\t\t+= queue/tx.o\n\niwlwifi-objs\t\t+= fw/img.o fw/notif-wait.o fw/rs.o\niwlwifi-objs\t\t+= fw/dbg.o fw/pnvm.o fw/dump.o\niwlwifi-$(CONFIG_IWLMVM) += fw/paging.o fw/smem.o fw/init.o\niwlwifi-$(CONFIG_ACPI) += fw/acpi.o\niwlwifi-$(CONFIG_EFI)\t+= fw/uefi.o\niwlwifi-$(CONFIG_IWLWIFI_DEBUGFS) += fw/debugfs.o\n\niwlwifi-objs += $(iwlwifi-m)\n\niwlwifi-$(CONFIG_IWLWIFI_DEVICE_TRACING) += iwl-devtrace.o\n\nccflags-y += -I$(src)\n\nobj-$(CONFIG_IWLDVM)\t+= dvm/\nobj-$(CONFIG_IWLMVM)\t+= mvm/\nobj-$(CONFIG_IWLMEI)\t+= mei/\n\nCFLAGS_iwl-devtrace.o := -I$(src)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

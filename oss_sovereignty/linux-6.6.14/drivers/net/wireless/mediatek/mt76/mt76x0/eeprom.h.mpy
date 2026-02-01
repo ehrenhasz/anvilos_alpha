@@ -1,0 +1,9 @@
+{
+  "module_name": "eeprom.h",
+  "hash_id": "1e2ae5cc66eb531ef9a1782f688c3655ff213704ebb6298fa1c7104c1a46bcdf",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/mediatek/mt76/mt76x0/eeprom.h",
+  "human_readable_source": " \n \n\n#ifndef __MT76X0U_EEPROM_H\n#define __MT76X0U_EEPROM_H\n\n#include \"../mt76x02_eeprom.h\"\n\nstruct mt76x02_dev;\n\n#define MT76X0U_EE_MAX_VER\t\t0x0c\n#define MT76X0_EEPROM_SIZE\t\t512\n\nint mt76x0_eeprom_init(struct mt76x02_dev *dev);\nvoid mt76x0_read_rx_gain(struct mt76x02_dev *dev);\nvoid mt76x0_get_tx_power_per_rate(struct mt76x02_dev *dev,\n\t\t\t\t  struct ieee80211_channel *chan,\n\t\t\t\t  struct mt76x02_rate_power *t);\nvoid mt76x0_get_power_info(struct mt76x02_dev *dev,\n\t\t\t   struct ieee80211_channel *chan, s8 *tp);\n\nstatic inline s8 s6_to_s8(u32 val)\n{\n\ts8 ret = val & GENMASK(5, 0);\n\n\tif (ret & BIT(5))\n\t\tret -= BIT(6);\n\treturn ret;\n}\n\nstatic inline bool mt76x0_tssi_enabled(struct mt76x02_dev *dev)\n{\n\treturn (mt76x02_eeprom_get(dev, MT_EE_NIC_CONF_1) &\n\t\tMT_EE_NIC_CONF_1_TX_ALC_EN);\n}\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

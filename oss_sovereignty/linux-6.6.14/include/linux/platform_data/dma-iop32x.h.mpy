@@ -1,0 +1,9 @@
+{
+  "module_name": "dma-iop32x.h",
+  "hash_id": "90423ff34e41ee860e805a4f362564428abcc52dd59596a1c0029f6dafecfd6c",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/platform_data/dma-iop32x.h",
+  "human_readable_source": " \n \n#ifndef IOP_ADMA_H\n#define IOP_ADMA_H\n#include <linux/types.h>\n#include <linux/dmaengine.h>\n#include <linux/interrupt.h>\n\n#define IOP_ADMA_SLOT_SIZE 32\n#define IOP_ADMA_THRESHOLD 4\n#ifdef DEBUG\n#define IOP_PARANOIA 1\n#else\n#define IOP_PARANOIA 0\n#endif\n#define iop_paranoia(x) BUG_ON(IOP_PARANOIA && (x))\n\n#define DMA0_ID 0\n#define DMA1_ID 1\n#define AAU_ID 2\n\n \nstruct iop_adma_device {\n\tstruct platform_device *pdev;\n\tint id;\n\tdma_addr_t dma_desc_pool;\n\tvoid *dma_desc_pool_virt;\n\tstruct dma_device common;\n};\n\n \nstruct iop_adma_chan {\n\tint pending;\n\tspinlock_t lock;  \n\tvoid __iomem *mmr_base;\n\tstruct list_head chain;\n\tstruct iop_adma_device *device;\n\tstruct dma_chan common;\n\tstruct iop_adma_desc_slot *last_used;\n\tstruct list_head all_slots;\n\tint slots_allocated;\n\tstruct tasklet_struct irq_tasklet;\n};\n\n \nstruct iop_adma_desc_slot {\n\tstruct list_head slot_node;\n\tstruct list_head chain_node;\n\tvoid *hw_desc;\n\tstruct iop_adma_desc_slot *group_head;\n\tu16 slot_cnt;\n\tu16 slots_per_op;\n\tu16 idx;\n\tstruct list_head tx_list;\n\tstruct dma_async_tx_descriptor async_tx;\n\tunion {\n\t\tu32 *xor_check_result;\n\t\tu32 *crc32_result;\n\t\tu32 *pq_check_result;\n\t};\n};\n\nstruct iop_adma_platform_data {\n\tint hw_id;\n\tdma_cap_mask_t cap_mask;\n\tsize_t pool_size;\n};\n\n#define to_iop_sw_desc(addr_hw_desc) \\\n\tcontainer_of(addr_hw_desc, struct iop_adma_desc_slot, hw_desc)\n#define iop_hw_desc_slot_idx(hw_desc, idx) \\\n\t( (void *) (((unsigned long) hw_desc) + ((idx) << 5)) )\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

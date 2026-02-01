@@ -1,0 +1,9 @@
+{
+  "module_name": "smsendian.h",
+  "hash_id": "c4950173b6611e8cb191e63e4c6a936c75208aefdafec6328cbf82c69fbc8171",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/common/siano/smsendian.h",
+  "human_readable_source": " \n \n\n#ifndef __SMS_ENDIAN_H__\n#define __SMS_ENDIAN_H__\n\n#include <asm/byteorder.h>\n\nextern void smsendian_handle_tx_message(void *buffer);\nextern void smsendian_handle_rx_message(void *buffer);\nextern void smsendian_handle_message_header(void *msg);\n\n#endif  \n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

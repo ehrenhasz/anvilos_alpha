@@ -1,0 +1,9 @@
+{
+  "module_name": "explicit_bzero.m4",
+  "hash_id": "9ff9872b3aa5e73efaca8c0ef32bdcebb96b53992e246c88c247adfbd69eaf23",
+  "original_prompt": "Ingested from coreutils-9.4/m4/explicit_bzero.m4",
+  "human_readable_source": "dnl Copyright 2017-2023 Free Software Foundation, Inc.\ndnl This file is free software; the Free Software Foundation\ndnl gives unlimited permission to copy and/or distribute it,\ndnl with or without modifications, as long as this notice is preserved.\n\nAC_DEFUN([gl_FUNC_EXPLICIT_BZERO],\n[\n  AC_REQUIRE([gl_STRING_H_DEFAULTS])\n\n  dnl Persuade glibc <string.h> to declare explicit_bzero.\n  AC_REQUIRE([AC_USE_SYSTEM_EXTENSIONS])\n\n  AC_CHECK_FUNCS_ONCE([explicit_bzero])\n  if test $ac_cv_func_explicit_bzero = no; then\n    HAVE_EXPLICIT_BZERO=0\n  fi\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

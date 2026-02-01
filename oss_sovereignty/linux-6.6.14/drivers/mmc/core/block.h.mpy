@@ -1,0 +1,9 @@
+{
+  "module_name": "block.h",
+  "hash_id": "3fa08217c177b29cf02a22c733032ba03ebed0050f1fd4dda9ec7d15aad28e0f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/mmc/core/block.h",
+  "human_readable_source": " \n#ifndef _MMC_CORE_BLOCK_H\n#define _MMC_CORE_BLOCK_H\n\nstruct mmc_queue;\nstruct request;\n\nvoid mmc_blk_cqe_recovery(struct mmc_queue *mq);\n\nenum mmc_issued;\n\nenum mmc_issued mmc_blk_mq_issue_rq(struct mmc_queue *mq, struct request *req);\nvoid mmc_blk_mq_complete(struct request *req);\nvoid mmc_blk_mq_recovery(struct mmc_queue *mq);\n\nstruct work_struct;\n\nvoid mmc_blk_mq_complete_work(struct work_struct *work);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

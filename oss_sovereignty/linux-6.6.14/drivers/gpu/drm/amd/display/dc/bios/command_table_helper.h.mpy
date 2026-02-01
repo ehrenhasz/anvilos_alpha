@@ -1,0 +1,9 @@
+{
+  "module_name": "command_table_helper.h",
+  "hash_id": "e12f836e8686efa80a8430dd715df7847daaa8f07d96b4f70e3ec8b9611a03d0",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/dc/bios/command_table_helper.h",
+  "human_readable_source": " \n\n#ifndef __DAL_COMMAND_TABLE_HELPER_H__\n#define __DAL_COMMAND_TABLE_HELPER_H__\n\n#if defined(CONFIG_DRM_AMD_DC_SI)\n#include \"dce60/command_table_helper_dce60.h\"\n#endif\n#include \"dce80/command_table_helper_dce80.h\"\n#include \"dce110/command_table_helper_dce110.h\"\n#include \"dce112/command_table_helper_dce112.h\"\n#include \"command_table_helper_struct.h\"\n\nbool dal_bios_parser_init_cmd_tbl_helper(const struct command_table_helper **h,\n\tenum dce_version dce);\n\nbool dal_cmd_table_helper_controller_id_to_atom(\n\tenum controller_id id,\n\tuint8_t *atom_id);\n\nuint32_t dal_cmd_table_helper_encoder_mode_bp_to_atom(\n\tenum signal_type s,\n\tbool enable_dp_audio);\n\nvoid dal_cmd_table_helper_assign_control_parameter(\n\tconst struct command_table_helper *h,\n\tstruct bp_encoder_control *control,\nDIG_ENCODER_CONTROL_PARAMETERS_V2 *ctrl_param);\n\nbool dal_cmd_table_helper_clock_source_id_to_ref_clk_src(\n\tenum clock_source_id id,\n\tuint32_t *ref_clk_src_id);\n\nuint8_t dal_cmd_table_helper_transmitter_bp_to_atom(\n\tenum transmitter t);\n\nuint8_t dal_cmd_table_helper_encoder_id_to_atom(\n\tenum encoder_id id);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

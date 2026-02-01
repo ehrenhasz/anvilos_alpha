@@ -1,0 +1,9 @@
+{
+  "module_name": "nitrox_hal.h",
+  "hash_id": "90ea3bd839734d4f5ce24b3613f5b1826aa068692ecf36d707f0e14c8eda53cb",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/crypto/cavium/nitrox/nitrox_hal.h",
+  "human_readable_source": " \n#ifndef __NITROX_HAL_H\n#define __NITROX_HAL_H\n\n#include \"nitrox_dev.h\"\n\nvoid nitrox_config_aqm_rings(struct nitrox_device *ndev);\nvoid nitrox_config_aqm_unit(struct nitrox_device *ndev);\nvoid nitrox_config_emu_unit(struct nitrox_device *ndev);\nvoid nitrox_config_pkt_input_rings(struct nitrox_device *ndev);\nvoid nitrox_config_pkt_solicit_ports(struct nitrox_device *ndev);\nvoid nitrox_config_nps_core_unit(struct nitrox_device *ndev);\nvoid nitrox_config_nps_pkt_unit(struct nitrox_device *ndev);\nvoid nitrox_config_pom_unit(struct nitrox_device *ndev);\nvoid nitrox_config_rand_unit(struct nitrox_device *ndev);\nvoid nitrox_config_efl_unit(struct nitrox_device *ndev);\nvoid nitrox_config_bmi_unit(struct nitrox_device *ndev);\nvoid nitrox_config_bmo_unit(struct nitrox_device *ndev);\nvoid nitrox_config_lbc_unit(struct nitrox_device *ndev);\nvoid invalidate_lbc(struct nitrox_device *ndev);\nvoid enable_aqm_ring(struct nitrox_device *ndev, int qno);\nvoid enable_pkt_input_ring(struct nitrox_device *ndev, int ring);\nvoid enable_pkt_solicit_port(struct nitrox_device *ndev, int port);\nvoid config_nps_core_vfcfg_mode(struct nitrox_device *ndev, enum vf_mode mode);\nvoid nitrox_get_hwinfo(struct nitrox_device *ndev);\nvoid enable_pf2vf_mbox_interrupts(struct nitrox_device *ndev);\nvoid disable_pf2vf_mbox_interrupts(struct nitrox_device *ndev);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

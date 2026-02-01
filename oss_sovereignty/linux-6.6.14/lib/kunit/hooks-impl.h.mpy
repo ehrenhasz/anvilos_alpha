@@ -1,0 +1,9 @@
+{
+  "module_name": "hooks-impl.h",
+  "hash_id": "e9061247df519637b52c3aab86dfc18bc95ca8328177ab7bad0745b78a69f116",
+  "original_prompt": "Ingested from linux-6.6.14/lib/kunit/hooks-impl.h",
+  "human_readable_source": " \n \n\n#ifndef _KUNIT_HOOKS_IMPL_H\n#define _KUNIT_HOOKS_IMPL_H\n\n#include <kunit/test-bug.h>\n\n \nvoid __printf(3, 4) __kunit_fail_current_test_impl(const char *file,\n\t\t\t\t\t\t   int line,\n\t\t\t\t\t\t   const char *fmt, ...);\nvoid *__kunit_get_static_stub_address_impl(struct kunit *test, void *real_fn_addr);\n\n \nstatic inline void kunit_install_hooks(void)\n{\n\t \n\tkunit_hooks.fail_current_test = __kunit_fail_current_test_impl;\n\tkunit_hooks.get_static_stub_address = __kunit_get_static_stub_address_impl;\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

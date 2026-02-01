@@ -1,0 +1,9 @@
+{
+  "module_name": "q6dsp-lpass-clocks.h",
+  "hash_id": "6e1f58833f2291837d820a30cf539d90cd5a61f2a6f0d1502a446f1e0a8f0554",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/qcom/qdsp6/q6dsp-lpass-clocks.h",
+  "human_readable_source": " \n\n#ifndef __Q6DSP_AUDIO_CLOCKS_H__\n#define __Q6DSP_AUDIO_CLOCKS_H__\n\nstruct q6dsp_clk_init {\n\tint clk_id;\n\tint q6dsp_clk_id;\n\tchar *name;\n\tint rate;\n};\n\n#define Q6DSP_VOTE_CLK(id, blkid, n) {\t\t\t\\\n\t\t.clk_id\t= id,\t\t\t\t\\\n\t\t.q6dsp_clk_id = blkid,\t\t\t\\\n\t\t.name = n,\t\t\t\t\\\n\t}\n\nstruct q6dsp_clk_desc {\n\tconst struct q6dsp_clk_init *clks;\n\tsize_t num_clks;\n\tint (*lpass_set_clk)(struct device *dev, int clk_id, int attr,\n\t\t\t      int root_clk, unsigned int freq);\n\tint (*lpass_vote_clk)(struct device *dev, uint32_t hid, const char *n, uint32_t *h);\n\tint (*lpass_unvote_clk)(struct device *dev, uint32_t hid, uint32_t h);\n};\n\nint q6dsp_clock_dev_probe(struct platform_device *pdev);\n\n#endif   \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

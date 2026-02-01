@@ -1,0 +1,9 @@
+{
+  "module_name": "stubs.S",
+  "hash_id": "032686f7526b079debed177b992f18163862134efbee74bb194ff0cd72e892ef",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/powerpc/copyloops/stubs.S",
+  "human_readable_source": "#include <asm/ppc_asm.h>\n\nFUNC_START(enter_vmx_usercopy)\n\tli\tr3,1\n\tblr\n\nFUNC_START(exit_vmx_usercopy)\n\tli\tr3,0\n\tblr\n\nFUNC_START(enter_vmx_ops)\n\tli\tr3,1\n\tblr\n\nFUNC_START(exit_vmx_ops)\n\tblr\n\nFUNC_START(__copy_tofrom_user_base)\n\tblr\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

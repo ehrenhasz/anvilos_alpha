@@ -1,0 +1,9 @@
+{
+  "module_name": "mac.h",
+  "hash_id": "c69d0aa2ac1a22582ef38e43e065a25ece6d24c311f214eed2ff737841c33b48",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/mediatek/mt76/mt76x2/mac.h",
+  "human_readable_source": " \n \n\n#ifndef __MT76x2_MAC_H\n#define __MT76x2_MAC_H\n\n#include \"mt76x2.h\"\n\nstruct mt76x02_dev;\nstruct mt76x2_sta;\nstruct mt76x02_vif;\n\nvoid mt76x2_mac_stop(struct mt76x02_dev *dev, bool force);\n\nstatic inline void mt76x2_mac_resume(struct mt76x02_dev *dev)\n{\n\tmt76_wr(dev, MT_MAC_SYS_CTRL,\n\t\tMT_MAC_SYS_CTRL_ENABLE_TX |\n\t\tMT_MAC_SYS_CTRL_ENABLE_RX);\n}\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

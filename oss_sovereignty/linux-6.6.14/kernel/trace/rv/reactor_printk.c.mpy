@@ -1,0 +1,9 @@
+{
+  "module_name": "reactor_printk.c",
+  "hash_id": "1ce0b5b80bc337e9a1e4d15625f63472bc1a386fc0040a0f7539308181fe3a3b",
+  "original_prompt": "Ingested from linux-6.6.14/kernel/trace/rv/reactor_printk.c",
+  "human_readable_source": "\n \n#include <linux/ftrace.h>\n#include <linux/tracepoint.h>\n#include <linux/kernel.h>\n#include <linux/module.h>\n#include <linux/init.h>\n#include <linux/rv.h>\n\nstatic void rv_printk_reaction(char *msg)\n{\n\tprintk_deferred(msg);\n}\n\nstatic struct rv_reactor rv_printk = {\n\t.name = \"printk\",\n\t.description = \"prints the exception msg to the kernel message log.\",\n\t.react = rv_printk_reaction\n};\n\nstatic int __init register_react_printk(void)\n{\n\trv_register_reactor(&rv_printk);\n\treturn 0;\n}\n\nstatic void __exit unregister_react_printk(void)\n{\n\trv_unregister_reactor(&rv_printk);\n}\n\nmodule_init(register_react_printk);\nmodule_exit(unregister_react_printk);\n\nMODULE_AUTHOR(\"Daniel Bristot de Oliveira\");\nMODULE_DESCRIPTION(\"printk rv reactor: printk if an exception is hit.\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

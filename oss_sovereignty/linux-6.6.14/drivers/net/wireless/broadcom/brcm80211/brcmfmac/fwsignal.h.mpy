@@ -1,0 +1,9 @@
+{
+  "module_name": "fwsignal.h",
+  "hash_id": "c98c473e3c517abd0151728b94b1681a79fc53eb51075ae2b618305270b19d55",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/broadcom/brcm80211/brcmfmac/fwsignal.h",
+  "human_readable_source": "\n \n\n#ifndef FWSIGNAL_H_\n#define FWSIGNAL_H_\n\n \nenum brcmf_fws_fifo {\n\tBRCMF_FWS_FIFO_FIRST,\n\tBRCMF_FWS_FIFO_AC_BK = BRCMF_FWS_FIFO_FIRST,\n\tBRCMF_FWS_FIFO_AC_BE,\n\tBRCMF_FWS_FIFO_AC_VI,\n\tBRCMF_FWS_FIFO_AC_VO,\n\tBRCMF_FWS_FIFO_BCMC,\n\tBRCMF_FWS_FIFO_ATIM,\n\tBRCMF_FWS_FIFO_COUNT\n};\n\nstruct brcmf_fws_info *brcmf_fws_attach(struct brcmf_pub *drvr);\nvoid brcmf_fws_detach(struct brcmf_fws_info *fws);\nvoid brcmf_fws_debugfs_create(struct brcmf_pub *drvr);\nbool brcmf_fws_queue_skbs(struct brcmf_fws_info *fws);\nbool brcmf_fws_fc_active(struct brcmf_fws_info *fws);\nvoid brcmf_fws_hdrpull(struct brcmf_if *ifp, s16 siglen, struct sk_buff *skb);\nint brcmf_fws_process_skb(struct brcmf_if *ifp, struct sk_buff *skb);\n\nvoid brcmf_fws_reset_interface(struct brcmf_if *ifp);\nvoid brcmf_fws_add_interface(struct brcmf_if *ifp);\nvoid brcmf_fws_del_interface(struct brcmf_if *ifp);\nvoid brcmf_fws_bustxcomplete(struct brcmf_fws_info *fws, struct sk_buff *skb,\n\t\t\t     bool success);\nvoid brcmf_fws_bus_blocked(struct brcmf_pub *drvr, bool flow_blocked);\nvoid brcmf_fws_rxreorder(struct brcmf_if *ifp, struct sk_buff *skb);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

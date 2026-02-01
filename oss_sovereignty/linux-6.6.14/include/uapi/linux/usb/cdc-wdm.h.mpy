@@ -1,0 +1,9 @@
+{
+  "module_name": "cdc-wdm.h",
+  "hash_id": "07906cf92b11667169c742123afce85bb7a073888ff2934a9e5f73e1d05db307",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/usb/cdc-wdm.h",
+  "human_readable_source": " \n \n\n#ifndef _UAPI__LINUX_USB_CDC_WDM_H\n#define _UAPI__LINUX_USB_CDC_WDM_H\n\n#include <linux/types.h>\n\n \n#define IOCTL_WDM_MAX_COMMAND _IOR('H', 0xA0, __u16)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

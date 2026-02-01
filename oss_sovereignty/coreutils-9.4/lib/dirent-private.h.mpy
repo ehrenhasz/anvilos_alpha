@@ -1,0 +1,9 @@
+{
+  "module_name": "dirent-private.h",
+  "hash_id": "4b504a6f9a5c72de8f76b98f95a00999ebf14e2247a6b0403f6ff6d9681065b3",
+  "original_prompt": "Ingested from coreutils-9.4/lib/dirent-private.h",
+  "human_readable_source": " \n\n# undef DIR\n\nstruct gl_directory\n{\n   \n  int fd_to_close;\n   \n  DIR *real_dirp;\n};\n\n \n# define DIR struct gl_directory\n\n#else                                    \n\n# define WIN32_LEAN_AND_MEAN\n# include <windows.h>\n\n \n# undef WIN32_FIND_DATA\n# define WIN32_FIND_DATA WIN32_FIND_DATAA\n\nstruct gl_directory\n{\n   \n  int fd_to_close;\n   \n  int status;\n   \n  HANDLE current;\n   \n  WIN32_FIND_DATA entry;\n   \n  char dir_name_mask[1];\n};\n\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

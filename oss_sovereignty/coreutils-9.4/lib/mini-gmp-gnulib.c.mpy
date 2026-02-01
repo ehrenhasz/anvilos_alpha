@@ -1,0 +1,9 @@
+{
+  "module_name": "mini-gmp-gnulib.c",
+  "hash_id": "f78f4d5632e022a892620039fbb1db78719c085381802eddaf1648190909e810",
+  "original_prompt": "Ingested from coreutils-9.4/lib/mini-gmp-gnulib.c",
+  "human_readable_source": " \n#if 4 < __GNUC__ + (6 <= __GNUC_MINOR__)\n# pragma GCC diagnostic ignored \"-Wsuggest-attribute=const\"\n# pragma GCC diagnostic ignored \"-Wsuggest-attribute=pure\"\n#endif\n#if 8 <= __GNUC__\n# pragma GCC diagnostic ignored \"-Wsuggest-attribute=malloc\"\n#endif\n\n \n#if (defined NDEBUG \\\n     && (4 < __GNUC__ + (6 <= __GNUC_MINOR__) || defined __clang__))\n# pragma GCC diagnostic ignored \"-Wunused-variable\"\n#endif\n\n#include \"mini-gmp.c\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

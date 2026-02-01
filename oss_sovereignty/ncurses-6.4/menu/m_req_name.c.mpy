@@ -1,0 +1,9 @@
+{
+  "module_name": "m_req_name.c",
+  "hash_id": "7913d1d883e108f4011c3df00dc75f00a374ea488aa198f191b7ae546e4db1cd",
+  "original_prompt": "Ingested from ncurses-6.4/menu/m_req_name.c",
+  "human_readable_source": " \n\n \n\n \n\n#include \"menu.priv.h\"\n\nMODULE_ID(\"$Id: m_req_name.c,v 1.27 2021/06/17 21:11:08 tom Exp $\")\n\n#define DATA(s) { s }\n\nstatic const char request_names[MAX_MENU_COMMAND - MIN_MENU_COMMAND + 1][14] =\n{\n  DATA(\"LEFT_ITEM\"),\n  DATA(\"RIGHT_ITEM\"),\n  DATA(\"UP_ITEM\"),\n  DATA(\"DOWN_ITEM\"),\n  DATA(\"SCR_ULINE\"),\n  DATA(\"SCR_DLINE\"),\n  DATA(\"SCR_DPAGE\"),\n  DATA(\"SCR_UPAGE\"),\n  DATA(\"FIRST_ITEM\"),\n  DATA(\"LAST_ITEM\"),\n  DATA(\"NEXT_ITEM\"),\n  DATA(\"PREV_ITEM\"),\n  DATA(\"TOGGLE_ITEM\"),\n  DATA(\"CLEAR_PATTERN\"),\n  DATA(\"BACK_PATTERN\"),\n  DATA(\"NEXT_MATCH\"),\n  DATA(\"PREV_MATCH\")\n};\n\n#define A_SIZE (sizeof(request_names)/sizeof(request_names[0]))\n\n \nMENU_EXPORT(const char *)\nmenu_request_name(int request)\n{\n  T((T_CALLED(\"menu_request_name(%d)\"), request));\n  if ((request < MIN_MENU_COMMAND) || (request > MAX_MENU_COMMAND))\n    {\n      SET_ERROR(E_BAD_ARGUMENT);\n      returnCPtr((const char *)0);\n    }\n  else\n    returnCPtr(request_names[request - MIN_MENU_COMMAND]);\n}\n\n \nMENU_EXPORT(int)\nmenu_request_by_name(const char *str)\n{\n   \n  size_t i = 0;\n\n  T((T_CALLED(\"menu_request_by_name(%s)\"), _nc_visbuf(str)));\n\n  if (str != 0 && (i = strlen(str)) != 0)\n    {\n      char buf[16];\n\n      if (i > sizeof(buf) - 2)\n\ti = sizeof(buf) - 2;\n      memcpy(buf, str, i);\n      buf[i] = '\\0';\n\n      for (i = 0; buf[i] != '\\0'; ++i)\n\t{\n\t  buf[i] = (char)toupper(UChar(buf[i]));\n\t}\n\n      for (i = 0; i < A_SIZE; i++)\n\t{\n\t  if (strcmp(request_names[i], buf) == 0)\n\t    returnCode(MIN_MENU_COMMAND + (int)i);\n\t}\n    }\n  RETURN(E_NO_MATCH);\n}\n\n \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

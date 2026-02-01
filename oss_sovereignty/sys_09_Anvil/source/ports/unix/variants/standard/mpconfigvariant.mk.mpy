@@ -1,0 +1,9 @@
+{
+  "module_name": "mpconfigvariant.mk",
+  "hash_id": "ecd2f99b8af7434065ac5d5c914182a9a38ce8292ba88fb4efe3ec6942baf3ef",
+  "original_prompt": "Ingested from sys_09_Anvil/source/ports/unix/variants/standard/mpconfigvariant.mk",
+  "human_readable_source": "# This is the default variant when you `make` the Unix port.\n\nFROZEN_MANIFEST ?= $(VARIANT_DIR)/manifest.py\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

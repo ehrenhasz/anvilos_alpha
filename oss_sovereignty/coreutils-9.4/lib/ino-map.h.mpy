@@ -1,0 +1,9 @@
+{
+  "module_name": "ino-map.h",
+  "hash_id": "e582d1b5e8867e8c2dd4cc6db3018e38258b3c32a40d638a41baedfbef68739d",
+  "original_prompt": "Ingested from coreutils-9.4/lib/ino-map.h",
+  "human_readable_source": " \n\n#ifndef _GL_INO_MAP_H\n# define _GL_INO_MAP_H\n\n \n# if !_GL_CONFIG_H_INCLUDED\n#  error \"Please include config.h first.\"\n# endif\n\n# include <sys/types.h>\n\n# define INO_MAP_INSERT_FAILURE ((size_t) -1)\n\nstruct ino_map;\n\nvoid ino_map_free (struct ino_map *) _GL_ATTRIBUTE_NONNULL ((1));\n\nstruct ino_map *ino_map_alloc (size_t)\n  _GL_ATTRIBUTE_MALLOC _GL_ATTRIBUTE_DEALLOC (ino_map_free, 1);\n\nsize_t ino_map_insert (struct ino_map *, ino_t) _GL_ATTRIBUTE_NONNULL ((1));\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

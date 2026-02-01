@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "63f2019985f34d30d8577db06f1cab3bebdb327ed63d1abe28b78fafebc63bf3",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/breakpoints/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n# Taken from perf makefile\nuname_M := $(shell uname -m 2>/dev/null || echo not)\nARCH ?= $(shell echo $(uname_M) | sed -e s/i.86/x86/ -e s/x86_64/x86/)\n\nTEST_GEN_PROGS := step_after_suspend_test\n\nifeq ($(ARCH),x86)\nTEST_GEN_PROGS += breakpoint_test\nendif\nifneq (,$(filter $(ARCH),aarch64 arm64))\nTEST_GEN_PROGS += breakpoint_test_arm64\nendif\n\ninclude ../lib.mk\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

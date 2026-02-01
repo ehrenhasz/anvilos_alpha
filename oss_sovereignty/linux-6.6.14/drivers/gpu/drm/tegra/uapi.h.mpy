@@ -1,0 +1,9 @@
+{
+  "module_name": "uapi.h",
+  "hash_id": "5044d8269113edc92324d69df6a55ac67ef6e14c0d028d4ea18be6ba81fe2f04",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/tegra/uapi.h",
+  "human_readable_source": " \n \n\n#ifndef _TEGRA_DRM_UAPI_H\n#define _TEGRA_DRM_UAPI_H\n\n#include <linux/dma-mapping.h>\n#include <linux/idr.h>\n#include <linux/kref.h>\n#include <linux/xarray.h>\n\n#include <drm/drm.h>\n\nstruct drm_file;\nstruct drm_device;\n\nstruct tegra_drm_file {\n\t \n\tstruct idr legacy_contexts;\n\tstruct mutex lock;\n\n\t \n\tstruct xarray contexts;\n\tstruct xarray syncpoints;\n};\n\nstruct tegra_drm_mapping {\n\tstruct kref ref;\n\n\tstruct host1x_bo_mapping *map;\n\tstruct host1x_bo *bo;\n\n\tdma_addr_t iova;\n\tdma_addr_t iova_end;\n};\n\nint tegra_drm_ioctl_channel_open(struct drm_device *drm, void *data,\n\t\t\t\t struct drm_file *file);\nint tegra_drm_ioctl_channel_close(struct drm_device *drm, void *data,\n\t\t\t\t  struct drm_file *file);\nint tegra_drm_ioctl_channel_map(struct drm_device *drm, void *data,\n\t\t\t\tstruct drm_file *file);\nint tegra_drm_ioctl_channel_unmap(struct drm_device *drm, void *data,\n\t\t\t\t  struct drm_file *file);\nint tegra_drm_ioctl_channel_submit(struct drm_device *drm, void *data,\n\t\t\t\t   struct drm_file *file);\nint tegra_drm_ioctl_syncpoint_allocate(struct drm_device *drm, void *data,\n\t\t\t\t       struct drm_file *file);\nint tegra_drm_ioctl_syncpoint_free(struct drm_device *drm, void *data,\n\t\t\t\t   struct drm_file *file);\nint tegra_drm_ioctl_syncpoint_wait(struct drm_device *drm, void *data,\n\t\t\t\t   struct drm_file *file);\n\nvoid tegra_drm_uapi_close_file(struct tegra_drm_file *file);\nvoid tegra_drm_mapping_put(struct tegra_drm_mapping *mapping);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

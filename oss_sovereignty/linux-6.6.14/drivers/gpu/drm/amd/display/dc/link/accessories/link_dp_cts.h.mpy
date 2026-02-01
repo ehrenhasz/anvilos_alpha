@@ -1,0 +1,9 @@
+{
+  "module_name": "link_dp_cts.h",
+  "hash_id": "8dec450e5d7cfdf923226f3f5202c0b13ca7d12c697b156c74e15f8881f94c63",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/dc/link/accessories/link_dp_cts.h",
+  "human_readable_source": " \n#ifndef __LINK_DP_CTS_H__\n#define __LINK_DP_CTS_H__\n#include \"link.h\"\nvoid dp_handle_automated_test(struct dc_link *link);\nbool dp_set_test_pattern(\n\t\tstruct dc_link *link,\n\t\tenum dp_test_pattern test_pattern,\n\t\tenum dp_test_pattern_color_space test_pattern_color_space,\n\t\tconst struct link_training_settings *p_link_settings,\n\t\tconst unsigned char *p_custom_pattern,\n\t\tunsigned int cust_pattern_size);\nvoid dp_set_preferred_link_settings(struct dc *dc,\n\t\tstruct dc_link_settings *link_setting,\n\t\tstruct dc_link *link);\nvoid dp_set_preferred_training_settings(struct dc *dc,\n\t\tstruct dc_link_settings *link_setting,\n\t\tstruct dc_link_training_overrides *lt_overrides,\n\t\tstruct dc_link *link,\n\t\tbool skip_immediate_retrain);\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

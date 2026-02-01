@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "1bb51301fdd106a4d70fc924aa4242038649a02afffc9d3b481237788107caf0",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/vc04_services/bcm2835-camera/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nconfig VIDEO_BCM2835\n\ttristate \"BCM2835 Camera\"\n\tdepends on MEDIA_SUPPORT\n\tdepends on VIDEO_DEV && (ARCH_BCM2835 || COMPILE_TEST)\n\tselect BCM2835_VCHIQ if HAS_DMA\n\tselect BCM2835_VCHIQ_MMAL if HAS_DMA\n\tselect VIDEOBUF2_VMALLOC\n\tselect BTREE\n\thelp\n\t  Say Y here to enable camera host interface devices for\n\t  Broadcom BCM2835 SoC. This operates over the VCHIQ interface\n\t  to a service running on VideoCore.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "ccu-sun9i-a80-de.h",
+  "hash_id": "d05dc8be53b7c4ceabea958c5df1adc8950951e496ecc44f3728af98ad8b6c7e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/clk/sunxi-ng/ccu-sun9i-a80-de.h",
+  "human_readable_source": " \n \n\n#ifndef _CCU_SUN9I_A80_DE_H_\n#define _CCU_SUN9I_A80_DE_H_\n\n#include <dt-bindings/clock/sun9i-a80-de.h>\n#include <dt-bindings/reset/sun9i-a80-de.h>\n\n \n#define CLK_FE0_DIV\t31\n#define CLK_FE1_DIV\t32\n#define CLK_FE2_DIV\t33\n#define CLK_BE0_DIV\t34\n#define CLK_BE1_DIV\t35\n#define CLK_BE2_DIV\t36\n\n#define CLK_NUMBER\t(CLK_BE2_DIV + 1)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

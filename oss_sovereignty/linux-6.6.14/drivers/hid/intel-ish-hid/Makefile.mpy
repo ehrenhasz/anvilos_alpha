@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "c69ad6f8e48731975514b98cf3b0a8925e97a084eaecb0e74a8e9ee86925331e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/hid/intel-ish-hid/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile - Intel ISH HID drivers\n# Copyright (c) 2014-2016, Intel Corporation.\n#\n#\nobj-$(CONFIG_INTEL_ISH_HID) += intel-ishtp.o\nintel-ishtp-objs := ishtp/init.o\nintel-ishtp-objs += ishtp/hbm.o\nintel-ishtp-objs += ishtp/client.o\nintel-ishtp-objs += ishtp/bus.o\nintel-ishtp-objs += ishtp/dma-if.o\nintel-ishtp-objs += ishtp/client-buffers.o\n\nobj-$(CONFIG_INTEL_ISH_HID) += intel-ish-ipc.o\nintel-ish-ipc-objs := ipc/ipc.o\nintel-ish-ipc-objs += ipc/pci-ish.o\n\nobj-$(CONFIG_INTEL_ISH_HID) += intel-ishtp-hid.o\nintel-ishtp-hid-objs := ishtp-hid.o\nintel-ishtp-hid-objs += ishtp-hid-client.o\n\nobj-$(CONFIG_INTEL_ISH_FIRMWARE_DOWNLOADER) += intel-ishtp-loader.o\nintel-ishtp-loader-objs += ishtp-fw-loader.o\n\nccflags-y += -I $(srctree)/$(src)/ishtp\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

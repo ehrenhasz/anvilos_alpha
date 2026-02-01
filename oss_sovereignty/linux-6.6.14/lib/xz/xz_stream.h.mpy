@@ -1,0 +1,9 @@
+{
+  "module_name": "xz_stream.h",
+  "hash_id": "582fcec0b3a7e998b10460672f0b3109d3d21d06268da4314382ed3e4a8cde9d",
+  "original_prompt": "Ingested from linux-6.6.14/lib/xz/xz_stream.h",
+  "human_readable_source": " \n\n#ifndef XZ_STREAM_H\n#define XZ_STREAM_H\n\n#if defined(__KERNEL__) && !XZ_INTERNAL_CRC32\n#\tinclude <linux/crc32.h>\n#\tundef crc32\n#\tdefine xz_crc32(buf, size, crc) \\\n\t\t(~crc32_le(~(uint32_t)(crc), buf, size))\n#endif\n\n \n\n#define STREAM_HEADER_SIZE 12\n\n#define HEADER_MAGIC \"\\3757zXZ\"\n#define HEADER_MAGIC_SIZE 6\n\n#define FOOTER_MAGIC \"YZ\"\n#define FOOTER_MAGIC_SIZE 2\n\n \ntypedef uint64_t vli_type;\n\n#define VLI_MAX ((vli_type)-1 / 2)\n#define VLI_UNKNOWN ((vli_type)-1)\n\n \n#define VLI_BYTES_MAX (sizeof(vli_type) * 8 / 7)\n\n \nenum xz_check {\n\tXZ_CHECK_NONE = 0,\n\tXZ_CHECK_CRC32 = 1,\n\tXZ_CHECK_CRC64 = 4,\n\tXZ_CHECK_SHA256 = 10\n};\n\n \n#define XZ_CHECK_MAX 15\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

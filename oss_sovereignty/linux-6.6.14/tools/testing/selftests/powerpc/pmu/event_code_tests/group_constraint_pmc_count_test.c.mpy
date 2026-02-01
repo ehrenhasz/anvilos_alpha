@@ -1,0 +1,9 @@
+{
+  "module_name": "group_constraint_pmc_count_test.c",
+  "hash_id": "217fa327b38d251722d01d1c16d28f735e7bde9e91e744291b0538d9cc1dfc61",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/powerpc/pmu/event_code_tests/group_constraint_pmc_count_test.c",
+  "human_readable_source": "\n \n\n#include <stdio.h>\n#include \"../event.h\"\n#include \"../sampling_tests/misc.h\"\n\n \n\nstatic int group_constraint_pmc_count(void)\n{\n\tstruct event *e, events[5];\n\tint i;\n\n\t \n\tSKIP_IF(platform_check_for_tests());\n\n\t \n\te = &events[0];\n\tevent_init(e, 0x1001a);\n\n\te = &events[1];\n\tevent_init(e, 0x200fc);\n\n\te = &events[2];\n\tevent_init(e, 0x30080);\n\n\te = &events[3];\n\tevent_init(e, 0x40054);\n\n\te = &events[4];\n\tevent_init(e, 0x0002c);\n\n\tFAIL_IF(event_open(&events[0]));\n\n\t \n\tfor (i = 1; i < 5; i++) {\n\t\tif (i == 4)\n\t\t\tFAIL_IF(!event_open_with_group(&events[i], events[0].fd));\n\t\telse\n\t\t\tFAIL_IF(event_open_with_group(&events[i], events[0].fd));\n\t}\n\n\tfor (i = 1; i < 4; i++)\n\t\tevent_close(&events[i]);\n\n\treturn 0;\n}\n\nint main(void)\n{\n\treturn test_harness(group_constraint_pmc_count, \"group_constraint_pmc_count\");\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

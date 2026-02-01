@@ -1,0 +1,9 @@
+{
+  "module_name": "system_call.S",
+  "hash_id": "8b37269f95ca76c57099499c252e75594c192f8da49d9582710082d4e0a7798e",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/entry/vdso/vdso32/system_call.S",
+  "human_readable_source": " \n \n\n#include <linux/linkage.h>\n#include <asm/dwarf2.h>\n#include <asm/cpufeatures.h>\n#include <asm/alternative.h>\n\n\t.text\n\t.globl __kernel_vsyscall\n\t.type __kernel_vsyscall,@function\n\tALIGN\n__kernel_vsyscall:\n\tCFI_STARTPROC\n\t \n\tpushl\t%ecx\n\tCFI_ADJUST_CFA_OFFSET\t4\n\tCFI_REL_OFFSET\t\tecx, 0\n\tpushl\t%edx\n\tCFI_ADJUST_CFA_OFFSET\t4\n\tCFI_REL_OFFSET\t\tedx, 0\n\tpushl\t%ebp\n\tCFI_ADJUST_CFA_OFFSET\t4\n\tCFI_REL_OFFSET\t\tebp, 0\n\n\t#define SYSENTER_SEQUENCE\t\"movl %esp, %ebp; sysenter\"\n\t#define SYSCALL_SEQUENCE\t\"movl %ecx, %ebp; syscall\"\n\n#ifdef CONFIG_X86_64\n\t \n\tALTERNATIVE_2 \"\", SYSENTER_SEQUENCE, X86_FEATURE_SYSENTER32, \\\n\t                  SYSCALL_SEQUENCE,  X86_FEATURE_SYSCALL32\n#else\n\tALTERNATIVE \"\", SYSENTER_SEQUENCE, X86_FEATURE_SEP\n#endif\n\n\t \n\tint\t$0x80\nSYM_INNER_LABEL(int80_landing_pad, SYM_L_GLOBAL)\n\n\t \n\tpopl\t%ebp\n\tCFI_RESTORE\t\tebp\n\tCFI_ADJUST_CFA_OFFSET\t-4\n\tpopl\t%edx\n\tCFI_RESTORE\t\tedx\n\tCFI_ADJUST_CFA_OFFSET\t-4\n\tpopl\t%ecx\n\tCFI_RESTORE\t\tecx\n\tCFI_ADJUST_CFA_OFFSET\t-4\n\tRET\n\tCFI_ENDPROC\n\n\t.size __kernel_vsyscall,.-__kernel_vsyscall\n\t.previous\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

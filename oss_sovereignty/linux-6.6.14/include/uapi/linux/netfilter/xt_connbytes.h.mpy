@@ -1,0 +1,9 @@
+{
+  "module_name": "xt_connbytes.h",
+  "hash_id": "24a5008bc05465d2aadbf104dc6d0fc28a7cbe2e23cdef191d2763f15b3d24c6",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/netfilter/xt_connbytes.h",
+  "human_readable_source": " \n#ifndef _XT_CONNBYTES_H\n#define _XT_CONNBYTES_H\n\n#include <linux/types.h>\n\nenum xt_connbytes_what {\n\tXT_CONNBYTES_PKTS,\n\tXT_CONNBYTES_BYTES,\n\tXT_CONNBYTES_AVGPKT,\n};\n\nenum xt_connbytes_direction {\n\tXT_CONNBYTES_DIR_ORIGINAL,\n\tXT_CONNBYTES_DIR_REPLY,\n\tXT_CONNBYTES_DIR_BOTH,\n};\n\nstruct xt_connbytes_info {\n\tstruct {\n\t\t__aligned_u64 from;\t \n\t\t__aligned_u64 to;\t \n\t} count;\n\t__u8 what;\t\t \n\t__u8 direction;\t \n};\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

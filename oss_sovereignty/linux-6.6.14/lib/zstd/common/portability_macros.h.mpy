@@ -1,0 +1,9 @@
+{
+  "module_name": "portability_macros.h",
+  "hash_id": "e3d5b30e724c7ac96193015611c7fb99ed98e5d8683d59581e951671031f6bb0",
+  "original_prompt": "Ingested from linux-6.6.14/lib/zstd/common/portability_macros.h",
+  "human_readable_source": " \n\n#ifndef ZSTD_PORTABILITY_MACROS_H\n#define ZSTD_PORTABILITY_MACROS_H\n\n \n\n\n \n#ifndef __has_attribute\n  #define __has_attribute(x) 0\n#endif\n\n \n#ifndef __has_builtin\n#  define __has_builtin(x) 0\n#endif\n\n \n#ifndef __has_feature\n#  define __has_feature(x) 0\n#endif\n\n \n\n \n\n \n\n \n#ifdef __ELF__\n# define ZSTD_HIDE_ASM_FUNCTION(func) .hidden func\n#else\n# define ZSTD_HIDE_ASM_FUNCTION(func)\n#endif\n\n \n#ifndef DYNAMIC_BMI2\n  #if ((defined(__clang__) && __has_attribute(__target__)) \\\n      || (defined(__GNUC__) \\\n          && (__GNUC__ >= 5 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 8)))) \\\n      && (defined(__x86_64__) || defined(_M_X64)) \\\n      && !defined(__BMI2__)\n  #  define DYNAMIC_BMI2 1\n  #else\n  #  define DYNAMIC_BMI2 0\n  #endif\n#endif\n\n \n#define ZSTD_ASM_SUPPORTED 1\n\n \n#define ZSTD_ENABLE_ASM_X86_64_BMI2 0\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

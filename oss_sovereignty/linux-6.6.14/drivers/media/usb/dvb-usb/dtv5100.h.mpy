@@ -1,0 +1,9 @@
+{
+  "module_name": "dtv5100.h",
+  "hash_id": "e45941c8a3a665baa8a70b85ab8af945a78b85d56199d3334ff5e93e8ed863ee",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/usb/dvb-usb/dtv5100.h",
+  "human_readable_source": " \n \n\n#ifndef _DVB_USB_DTV5100_H_\n#define _DVB_USB_DTV5100_H_\n\n#define DVB_USB_LOG_PREFIX \"dtv5100\"\n#include \"dvb-usb.h\"\n\n#define DTV5100_USB_TIMEOUT 500\n\n#define DTV5100_DEMOD_ADDR\t0x00\n#define DTV5100_DEMOD_WRITE\t0xc0\n#define DTV5100_DEMOD_READ\t0xc1\n\n#define DTV5100_TUNER_ADDR\t0xc4\n#define DTV5100_TUNER_WRITE\t0xc7\n#define DTV5100_TUNER_READ\t0xc8\n\n#define DRIVER_AUTHOR \"Antoine Jacquet, http://royale.zerezo.com/\"\n#define DRIVER_DESC \"AME DTV-5100 USB2.0 DVB-T\"\n\nstatic struct {\n\tu8 request;\n\tu8 value;\n\tu16 index;\n} dtv5100_init[] = {\n\t{ 0x000000c5, 0x00000000, 0x00000001 },\n\t{ 0x000000c5, 0x00000001, 0x00000001 },\n\t{ }\t\t \n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

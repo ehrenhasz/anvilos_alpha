@@ -1,0 +1,9 @@
+{
+  "module_name": "auth-options.h",
+  "hash_id": "d97d16d86fdae2f62c6f63708e760c72677923c7cc22b0f67df98037bbc68f74",
+  "original_prompt": "Ingested from openssh-9.6p1/auth-options.h",
+  "human_readable_source": " \n\n \n\n#ifndef AUTH_OPTIONS_H\n#define AUTH_OPTIONS_H\n\nstruct passwd;\nstruct sshkey;\n\n \n#define SSH_AUTHOPT_PERMIT_MAX\t4096\n\n \n#define SSH_AUTHOPT_ENV_MAX\t1024\n\n \nstruct sshauthopt {\n\t \n\tint permit_port_forwarding_flag;\n\tint permit_agent_forwarding_flag;\n\tint permit_x11_forwarding_flag;\n\tint permit_pty_flag;\n\tint permit_user_rc;\n\n\t \n\tint restricted;\n\n\t \n\tuint64_t valid_before;\n\n\t \n\tint cert_authority;\n\tchar *cert_principals;\n\n\tint force_tun_device;\n\tchar *force_command;\n\n\t \n\tsize_t nenv;\n\tchar **env;\n\n\t \n\tsize_t npermitopen;\n\tchar **permitopen;\n\n\t \n\tsize_t npermitlisten;\n\tchar **permitlisten;\n\n\t \n\tchar *required_from_host_cert;\n\tchar *required_from_host_keys;\n\n\t \n\tint no_require_user_presence;\n\t \n\tint require_verify;\n};\n\nstruct sshauthopt *sshauthopt_new(void);\nstruct sshauthopt *sshauthopt_new_with_keys_defaults(void);\nvoid sshauthopt_free(struct sshauthopt *opts);\nstruct sshauthopt *sshauthopt_copy(const struct sshauthopt *orig);\nint sshauthopt_serialise(const struct sshauthopt *opts, struct sshbuf *m, int);\nint sshauthopt_deserialise(struct sshbuf *m, struct sshauthopt **opts);\n\n \nstruct sshauthopt *sshauthopt_parse(const char *s, const char **errstr);\n\n \nstruct sshauthopt *sshauthopt_from_cert(struct sshkey *k);\n\n \nstruct sshauthopt *sshauthopt_merge(const struct sshauthopt *primary,\n    const struct sshauthopt *additional, const char **errstrp);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

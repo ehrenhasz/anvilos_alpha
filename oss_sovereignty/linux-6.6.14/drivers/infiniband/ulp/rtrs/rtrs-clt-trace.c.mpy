@@ -1,0 +1,9 @@
+{
+  "module_name": "rtrs-clt-trace.c",
+  "hash_id": "7d1daca0af23154bec64430a57ae7ffdbdee2f3fd3414d9f2fa6cbe72a7219c4",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/infiniband/ulp/rtrs/rtrs-clt-trace.c",
+  "human_readable_source": "\n \n#include \"rtrs.h\"\n#include \"rtrs-clt.h\"\n\n \n#define CREATE_TRACE_POINTS\n#include \"rtrs-clt-trace.h\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

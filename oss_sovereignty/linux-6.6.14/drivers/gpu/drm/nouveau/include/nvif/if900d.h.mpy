@@ -1,0 +1,9 @@
+{
+  "module_name": "if900d.h",
+  "hash_id": "0dd1a369ab8f3c7555b6236a51268b8e1bba9e2d3cffe82b2e57cc0b59fd4e67",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/include/nvif/if900d.h",
+  "human_readable_source": "#ifndef __NVIF_IF900D_H__\n#define __NVIF_IF900D_H__\n#include \"if000c.h\"\n\nstruct gf100_vmm_vn {\n\t \n};\n\nstruct gf100_vmm_map_vn {\n\t \n};\n\nstruct gf100_vmm_map_v0 {\n\t \n\t__u8  version;\n\t__u8  vol;\n\t__u8  ro;\n\t__u8  priv;\n\t__u8  kind;\n};\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

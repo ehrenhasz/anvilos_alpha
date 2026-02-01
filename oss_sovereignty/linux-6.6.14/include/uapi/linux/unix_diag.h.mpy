@@ -1,0 +1,9 @@
+{
+  "module_name": "unix_diag.h",
+  "hash_id": "35db3db0a3cc7281260f5dc4ca502c63811a5afd280a06944990caf4db48c445",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/unix_diag.h",
+  "human_readable_source": " \n#ifndef __UNIX_DIAG_H__\n#define __UNIX_DIAG_H__\n\n#include <linux/types.h>\n\nstruct unix_diag_req {\n\t__u8\tsdiag_family;\n\t__u8\tsdiag_protocol;\n\t__u16\tpad;\n\t__u32\tudiag_states;\n\t__u32\tudiag_ino;\n\t__u32\tudiag_show;\n\t__u32\tudiag_cookie[2];\n};\n\n#define UDIAG_SHOW_NAME\t\t0x00000001\t \n#define UDIAG_SHOW_VFS\t\t0x00000002\t \n#define UDIAG_SHOW_PEER\t\t0x00000004\t \n#define UDIAG_SHOW_ICONS\t0x00000008\t \n#define UDIAG_SHOW_RQLEN\t0x00000010\t \n#define UDIAG_SHOW_MEMINFO\t0x00000020\t \n#define UDIAG_SHOW_UID\t\t0x00000040\t \n\nstruct unix_diag_msg {\n\t__u8\tudiag_family;\n\t__u8\tudiag_type;\n\t__u8\tudiag_state;\n\t__u8\tpad;\n\n\t__u32\tudiag_ino;\n\t__u32\tudiag_cookie[2];\n};\n\nenum {\n\t \n\tUNIX_DIAG_NAME,\n\tUNIX_DIAG_VFS,\n\tUNIX_DIAG_PEER,\n\tUNIX_DIAG_ICONS,\n\tUNIX_DIAG_RQLEN,\n\tUNIX_DIAG_MEMINFO,\n\tUNIX_DIAG_SHUTDOWN,\n\tUNIX_DIAG_UID,\n\n\t__UNIX_DIAG_MAX,\n};\n\n#define UNIX_DIAG_MAX (__UNIX_DIAG_MAX - 1)\n\nstruct unix_diag_vfs {\n\t__u32\tudiag_vfs_ino;\n\t__u32\tudiag_vfs_dev;\n};\n\nstruct unix_diag_rqlen {\n\t__u32\tudiag_rqueue;\n\t__u32\tudiag_wqueue;\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "zfs_chksum.h",
+  "hash_id": "c961dd4b3889a96fc1b81a74db266631cb6188893efaad001282205a83e11288",
+  "original_prompt": "Ingested from zfs-2.2.2/include/sys/zfs_chksum.h",
+  "human_readable_source": " \n\n \n\n#ifndef\t_ZFS_CHKSUM_H\n#define\t_ZFS_CHKSUM_H\n\n#ifdef  _KERNEL\n#include <sys/types.h>\n#else\n#include <stdint.h>\n#include <stdlib.h>\n#endif\n\n#ifdef\t__cplusplus\nextern \"C\" {\n#endif\n\n \nvoid chksum_init(void);\nvoid chksum_fini(void);\n\n#ifdef\t__cplusplus\n}\n#endif\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "dfc945344036077ac2ee74e1f97a9a2dfc6fb72448e0d6668415440c43d8f63d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/host1x/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nhost1x-y = \\\n\tbus.o \\\n\tsyncpt.o \\\n\tdev.o \\\n\tintr.o \\\n\tcdma.o \\\n\tchannel.o \\\n\tjob.o \\\n\tdebug.o \\\n\tmipi.o \\\n\tfence.o \\\n\thw/host1x01.o \\\n\thw/host1x02.o \\\n\thw/host1x04.o \\\n\thw/host1x05.o \\\n\thw/host1x06.o \\\n\thw/host1x07.o \\\n\thw/host1x08.o\n\nhost1x-$(CONFIG_IOMMU_API) += \\\n\tcontext.o\n\nobj-$(CONFIG_TEGRA_HOST1X) += host1x.o\nobj-$(CONFIG_TEGRA_HOST1X_CONTEXT_BUS) += context_bus.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

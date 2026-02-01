@@ -1,0 +1,9 @@
+{
+  "module_name": "fld_link.c",
+  "hash_id": "eb6e91778e9dc9843624ad99efc690dced585f7400c754f25077c9703ac9eccb",
+  "original_prompt": "Ingested from ncurses-6.4/form/fld_link.c",
+  "human_readable_source": " \n\n \n\n#include \"form.priv.h\"\n\nMODULE_ID(\"$Id: fld_link.c,v 1.17 2021/06/17 21:20:30 tom Exp $\")\n\n \nFORM_EXPORT(FIELD *)\nlink_field(FIELD *field, int frow, int fcol)\n{\n  FIELD *New_Field = (FIELD *)0;\n  int err = E_BAD_ARGUMENT;\n\n  T((T_CALLED(\"link_field(%p,%d,%d)\"), (void *)field, frow, fcol));\n  if (field && (frow >= 0) && (fcol >= 0) &&\n      ((err = E_SYSTEM_ERROR) != 0) &&\t \n      (New_Field = typeMalloc(FIELD, 1)))\n    {\n      T((T_CREATE(\"field %p\"), (void *)New_Field));\n      *New_Field = *_nc_Default_Field;\n      New_Field->frow = (short)frow;\n      New_Field->fcol = (short)fcol;\n\n      New_Field->link = field->link;\n      field->link = New_Field;\n\n      New_Field->buf = field->buf;\n      New_Field->rows = field->rows;\n      New_Field->cols = field->cols;\n      New_Field->nrow = field->nrow;\n      New_Field->nbuf = field->nbuf;\n      New_Field->drows = field->drows;\n      New_Field->dcols = field->dcols;\n      New_Field->maxgrow = field->maxgrow;\n      New_Field->just = field->just;\n      New_Field->fore = field->fore;\n      New_Field->back = field->back;\n      New_Field->pad = field->pad;\n      New_Field->opts = field->opts;\n      New_Field->usrptr = field->usrptr;\n\n      if (_nc_Copy_Type(New_Field, field))\n\treturnField(New_Field);\n    }\n\n  if (New_Field)\n    free_field(New_Field);\n\n  SET_ERROR(err);\n  returnField((FIELD *)0);\n}\n\n \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

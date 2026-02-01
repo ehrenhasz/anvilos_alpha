@@ -1,0 +1,9 @@
+{
+  "module_name": "prctl.c",
+  "hash_id": "387a2d2573e2ab19c2c22971b7739b5d0f8e004a87acc80f0b470c770d84ea56",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/um/os-Linux/prctl.c",
+  "human_readable_source": " \n\n#include <sys/ptrace.h>\n#include <asm/ptrace.h>\n\nint os_arch_prctl(int pid, int option, unsigned long *arg2)\n{\n\treturn ptrace(PTRACE_ARCH_PRCTL, pid, (unsigned long) arg2, option);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

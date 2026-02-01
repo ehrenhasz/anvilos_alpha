@@ -1,0 +1,9 @@
+{
+  "module_name": "i915_gem_region.h",
+  "hash_id": "ec4c2e26e6fe6fcf0495d9bc152b6a4edf53adb0ccc6e395c5bc52a204a742d3",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/gem/i915_gem_region.h",
+  "human_readable_source": " \n \n\n#ifndef __I915_GEM_REGION_H__\n#define __I915_GEM_REGION_H__\n\n#include <linux/types.h>\n\nstruct intel_memory_region;\nstruct drm_i915_gem_object;\nstruct sg_table;\n\nstruct i915_gem_apply_to_region;\n\n#define I915_BO_INVALID_OFFSET ((resource_size_t)-1)\n\n \nstruct i915_gem_apply_to_region_ops {\n\t \n\tint (*process_obj)(struct i915_gem_apply_to_region *apply,\n\t\t\t   struct drm_i915_gem_object *obj);\n};\n\n \nstruct i915_gem_apply_to_region {\n\tconst struct i915_gem_apply_to_region_ops *ops;\n\tstruct i915_gem_ww_ctx *ww;\n\tu32 interruptible:1;\n};\n\nvoid i915_gem_object_init_memory_region(struct drm_i915_gem_object *obj,\n\t\t\t\t\tstruct intel_memory_region *mem);\nvoid i915_gem_object_release_memory_region(struct drm_i915_gem_object *obj);\n\nstruct drm_i915_gem_object *\ni915_gem_object_create_region(struct intel_memory_region *mem,\n\t\t\t      resource_size_t size,\n\t\t\t      resource_size_t page_size,\n\t\t\t      unsigned int flags);\nstruct drm_i915_gem_object *\ni915_gem_object_create_region_at(struct intel_memory_region *mem,\n\t\t\t\t resource_size_t offset,\n\t\t\t\t resource_size_t size,\n\t\t\t\t unsigned int flags);\n\nint i915_gem_process_region(struct intel_memory_region *mr,\n\t\t\t    struct i915_gem_apply_to_region *apply);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

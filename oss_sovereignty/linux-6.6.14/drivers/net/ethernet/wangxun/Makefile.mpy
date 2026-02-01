@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "af8f17c1242aaf6c70d84b3cf9982b8f1340408b9b44ab2711dcf2e2922c3a4f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/wangxun/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for the Wangxun network device drivers.\n#\n\nobj-$(CONFIG_LIBWX) += libwx/\nobj-$(CONFIG_TXGBE) += txgbe/\nobj-$(CONFIG_NGBE) += ngbe/\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

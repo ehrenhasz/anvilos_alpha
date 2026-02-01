@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "fd837296132330ff8c57fe9516e1ada9a3308214c9eec67f44eff30b79f5d8c2",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/usb/gadget/udc/aspeed-vhub/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0+\nconfig USB_ASPEED_VHUB\n\ttristate \"Aspeed vHub UDC driver\"\n\tdepends on ARCH_ASPEED || COMPILE_TEST\n\tdepends on USB_LIBCOMPOSITE\n\thelp\n\t  USB peripheral controller for the Aspeed AST2400, AST2500 and\n\t  AST2600 family SoCs supporting the \"vHub\" functionality and USB2.0\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "clk.h",
+  "hash_id": "d7066ed6d5bb861df373b7eae632c8925dc565f776142963dea6cf5237d12b59",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/clk/socfpga/clk.h",
+  "human_readable_source": " \n \n\n#ifndef __SOCFPGA_CLK_H\n#define __SOCFPGA_CLK_H\n\n#include <linux/clk-provider.h>\n\n \n#define CLKMGR_CTRL\t\t0x0\n#define CLKMGR_BYPASS\t\t0x4\n#define CLKMGR_DBCTRL\t\t0x10\n#define CLKMGR_L4SRC\t\t0x70\n#define CLKMGR_PERPLL_SRC\t0xAC\n\n#define SOCFPGA_MAX_PARENTS\t\t5\n\n#define streq(a, b) (strcmp((a), (b)) == 0)\n#define SYSMGR_SDMMC_CTRL_SET(smplsel, drvsel) \\\n\t((((smplsel) & 0x7) << 3) | (((drvsel) & 0x7) << 0))\n\n#define SYSMGR_SDMMC_CTRL_SET_AS10(smplsel, drvsel) \\\n\t((((smplsel) & 0x7) << 4) | (((drvsel) & 0x7) << 0))\n\nextern void __iomem *clk_mgr_base_addr;\nextern void __iomem *clk_mgr_a10_base_addr;\n\nvoid __init socfpga_pll_init(struct device_node *node);\nvoid __init socfpga_periph_init(struct device_node *node);\nvoid __init socfpga_gate_init(struct device_node *node);\nvoid socfpga_a10_pll_init(struct device_node *node);\nvoid socfpga_a10_periph_init(struct device_node *node);\nvoid socfpga_a10_gate_init(struct device_node *node);\n\nstruct socfpga_pll {\n\tstruct clk_gate\thw;\n};\n\nstruct socfpga_gate_clk {\n\tstruct clk_gate hw;\n\tchar *parent_name;\n\tu32 fixed_div;\n\tvoid __iomem *div_reg;\n\tvoid __iomem *bypass_reg;\n\tstruct regmap *sys_mgr_base_addr;\n\tu32 width;\t \n\tu32 shift;\t \n\tu32 bypass_shift;       \n};\n\nstruct socfpga_periph_clk {\n\tstruct clk_gate hw;\n\tchar *parent_name;\n\tu32 fixed_div;\n\tvoid __iomem *div_reg;\n\tvoid __iomem *bypass_reg;\n\tu32 width;       \n\tu32 shift;       \n\tu32 bypass_shift;       \n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

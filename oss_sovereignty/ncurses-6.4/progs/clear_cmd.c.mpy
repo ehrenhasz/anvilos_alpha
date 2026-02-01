@@ -1,0 +1,9 @@
+{
+  "module_name": "clear_cmd.c",
+  "hash_id": "4ff032a532d484c767da8fae212ea21e495da570ed96dd96dd21ca6840a68545",
+  "original_prompt": "Ingested from ncurses-6.4/progs/clear_cmd.c",
+  "human_readable_source": " \n\n \n\n \n\n#define USE_LIBTINFO\n#include <clear_cmd.h>\n\nMODULE_ID(\"$Id: clear_cmd.c,v 1.5 2020/02/02 23:34:34 tom Exp $\")\n\nstatic int\nputch(int c)\n{\n    return putchar(c);\n}\n\nint\nclear_cmd(bool legacy)\n{\n    int retval = tputs(clear_screen, lines > 0 ? lines : 1, putch);\n    if (!legacy) {\n\t \n\tchar *E3 = tigetstr(\"E3\");\n\tif (E3)\n\t    (void) tputs(E3, lines > 0 ? lines : 1, putch);\n    }\n    return retval;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

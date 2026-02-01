@@ -1,0 +1,9 @@
+{
+  "module_name": "mantis_vp3030.h",
+  "hash_id": "72f081ae6642500c1ffabbe281af0033d627015bfcfdd80cf20d2a9eb58abec6",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/pci/mantis/mantis_vp3030.h",
+  "human_readable_source": " \n \n\n#ifndef __MANTIS_VP3030_H\n#define __MANTIS_VP3030_H\n\n#include \"mantis_common.h\"\n\n#define MANTIS_VP_3030_DVB_T\t0x0024\n\nextern struct mantis_hwconfig vp3030_config;\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

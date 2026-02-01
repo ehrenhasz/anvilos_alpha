@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "d9180db41b17e21af70653016e74d449e24abaca7ebd1dbc48f99b937fd70dd0",
+  "original_prompt": "Ingested from linux-6.6.14/fs/reiserfs/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for the linux reiser-filesystem routines.\n#\n\nobj-$(CONFIG_REISERFS_FS) += reiserfs.o\n\nreiserfs-objs := bitmap.o do_balan.o namei.o inode.o file.o dir.o fix_node.o \\\n\t\t super.o prints.o objectid.o lbalance.o ibalance.o stree.o \\\n\t\t hashes.o tail_conversion.o journal.o resize.o \\\n\t\t item_ops.o ioctl.o xattr.o lock.o\n\nifeq ($(CONFIG_REISERFS_PROC_INFO),y)\nreiserfs-objs += procfs.o\nendif\n\nifeq ($(CONFIG_REISERFS_FS_XATTR),y)\nreiserfs-objs += xattr_user.o xattr_trusted.o\nendif\n\nifeq ($(CONFIG_REISERFS_FS_SECURITY),y)\nreiserfs-objs += xattr_security.o\nendif\n\nifeq ($(CONFIG_REISERFS_FS_POSIX_ACL),y)\nreiserfs-objs += xattr_acl.o\nendif\n\nTAGS:\n\tetags *.c\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

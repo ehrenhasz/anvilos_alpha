@@ -1,0 +1,9 @@
+{
+  "module_name": "test_ringbuf_multi.c",
+  "hash_id": "a914c99f6493f0a077bcef62bbb591c19bb0266d93e2fc3cd3b84f531584d8a9",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/test_ringbuf_multi.c",
+  "human_readable_source": "\n\n\n#include <linux/bpf.h>\n#include <bpf/bpf_helpers.h>\n\nchar _license[] SEC(\"license\") = \"GPL\";\n\nstruct sample {\n\tint pid;\n\tint seq;\n\tlong value;\n\tchar comm[16];\n};\n\nstruct ringbuf_map {\n\t__uint(type, BPF_MAP_TYPE_RINGBUF);\n\t \n\t__uint(max_entries, 1000);\n} ringbuf1 SEC(\".maps\"),\n  ringbuf2 SEC(\".maps\");\n\nstruct {\n\t__uint(type, BPF_MAP_TYPE_ARRAY_OF_MAPS);\n\t__uint(max_entries, 4);\n\t__type(key, int);\n\t__array(values, struct ringbuf_map);\n} ringbuf_arr SEC(\".maps\") = {\n\t.values = {\n\t\t[0] = &ringbuf1,\n\t\t[2] = &ringbuf2,\n\t},\n};\n\nstruct {\n\t__uint(type, BPF_MAP_TYPE_HASH_OF_MAPS);\n\t__uint(max_entries, 1);\n\t__type(key, int);\n\t__array(values, struct ringbuf_map);\n} ringbuf_hash SEC(\".maps\") = {\n\t.values = {\n\t\t[0] = &ringbuf1,\n\t},\n};\n\n \nint pid = 0;\nint target_ring = 0;\nlong value = 0;\n\n \nlong total = 0;\nlong dropped = 0;\nlong skipped = 0;\n\nSEC(\"tp/syscalls/sys_enter_getpgid\")\nint test_ringbuf(void *ctx)\n{\n\tint cur_pid = bpf_get_current_pid_tgid() >> 32;\n\tstruct sample *sample;\n\tvoid *rb;\n\n\tif (cur_pid != pid)\n\t\treturn 0;\n\n\trb = bpf_map_lookup_elem(&ringbuf_arr, &target_ring);\n\tif (!rb) {\n\t\tskipped += 1;\n\t\treturn 1;\n\t}\n\n\tsample = bpf_ringbuf_reserve(rb, sizeof(*sample), 0);\n\tif (!sample) {\n\t\tdropped += 1;\n\t\treturn 1;\n\t}\n\n\tsample->pid = pid;\n\tbpf_get_current_comm(sample->comm, sizeof(sample->comm));\n\tsample->value = value;\n\n\tsample->seq = total;\n\ttotal += 1;\n\n\tbpf_ringbuf_submit(sample, 0);\n\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

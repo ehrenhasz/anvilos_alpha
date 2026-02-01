@@ -1,0 +1,9 @@
+{
+  "module_name": "mxgpu_ai.h",
+  "hash_id": "ff2a446eac902b1c54ebfdc512685d41f34aa1fa3e932095a32d740b419f60d7",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/amdgpu/mxgpu_ai.h",
+  "human_readable_source": " \n\n#ifndef __MXGPU_AI_H__\n#define __MXGPU_AI_H__\n\n#define AI_MAILBOX_POLL_ACK_TIMEDOUT\t500\n#define AI_MAILBOX_POLL_MSG_TIMEDOUT\t6000\n#define AI_MAILBOX_POLL_FLR_TIMEDOUT\t10000\n#define AI_MAILBOX_POLL_MSG_REP_MAX\t11\n\nenum idh_request {\n\tIDH_REQ_GPU_INIT_ACCESS = 1,\n\tIDH_REL_GPU_INIT_ACCESS,\n\tIDH_REQ_GPU_FINI_ACCESS,\n\tIDH_REL_GPU_FINI_ACCESS,\n\tIDH_REQ_GPU_RESET_ACCESS,\n\tIDH_REQ_GPU_INIT_DATA,\n\n\tIDH_LOG_VF_ERROR       = 200,\n\tIDH_READY_TO_RESET \t= 201,\n\tIDH_RAS_POISON  = 202,\n};\n\nenum idh_event {\n\tIDH_CLR_MSG_BUF\t= 0,\n\tIDH_READY_TO_ACCESS_GPU,\n\tIDH_FLR_NOTIFICATION,\n\tIDH_FLR_NOTIFICATION_CMPL,\n\tIDH_SUCCESS,\n\tIDH_FAIL,\n\tIDH_QUERY_ALIVE,\n\tIDH_REQ_GPU_INIT_DATA_READY,\n\n\tIDH_TEXT_MESSAGE = 255,\n};\n\nextern const struct amdgpu_virt_ops xgpu_ai_virt_ops;\n\nvoid xgpu_ai_mailbox_set_irq_funcs(struct amdgpu_device *adev);\nint xgpu_ai_mailbox_add_irq_id(struct amdgpu_device *adev);\nint xgpu_ai_mailbox_get_irq(struct amdgpu_device *adev);\nvoid xgpu_ai_mailbox_put_irq(struct amdgpu_device *adev);\n\n#define AI_MAIBOX_CONTROL_TRN_OFFSET_BYTE SOC15_REG_OFFSET(NBIO, 0, mmBIF_BX_PF0_MAILBOX_CONTROL) * 4\n#define AI_MAIBOX_CONTROL_RCV_OFFSET_BYTE SOC15_REG_OFFSET(NBIO, 0, mmBIF_BX_PF0_MAILBOX_CONTROL) * 4 + 1\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

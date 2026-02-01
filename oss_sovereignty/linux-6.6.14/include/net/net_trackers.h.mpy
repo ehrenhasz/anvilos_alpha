@@ -1,0 +1,9 @@
+{
+  "module_name": "net_trackers.h",
+  "hash_id": "3300e1256f5cd87b23bb7fe84c673154ef87436e2060abb6e36b6cd9071b5d5b",
+  "original_prompt": "Ingested from linux-6.6.14/include/net/net_trackers.h",
+  "human_readable_source": " \n#ifndef __NET_NET_TRACKERS_H\n#define __NET_NET_TRACKERS_H\n#include <linux/ref_tracker.h>\n\n#ifdef CONFIG_NET_DEV_REFCNT_TRACKER\ntypedef struct ref_tracker *netdevice_tracker;\n#else\ntypedef struct {} netdevice_tracker;\n#endif\n\n#ifdef CONFIG_NET_NS_REFCNT_TRACKER\ntypedef struct ref_tracker *netns_tracker;\n#else\ntypedef struct {} netns_tracker;\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

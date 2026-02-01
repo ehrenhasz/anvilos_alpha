@@ -1,0 +1,9 @@
+{
+  "module_name": "reference_tracking.c",
+  "hash_id": "0bc9da55827da0fe759c163d9ed5310058df6f75294fec15ea3cfd447c88fa3f",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/prog_tests/reference_tracking.c",
+  "human_readable_source": "\n#include <test_progs.h>\n\nvoid test_reference_tracking(void)\n{\n\tconst char *file = \"test_sk_lookup_kern.bpf.o\";\n\tconst char *obj_name = \"ref_track\";\n\tDECLARE_LIBBPF_OPTS(bpf_object_open_opts, open_opts,\n\t\t.object_name = obj_name,\n\t\t.relaxed_maps = true,\n\t);\n\tstruct bpf_object *obj_iter, *obj = NULL;\n\tstruct bpf_program *prog;\n\t__u32 duration = 0;\n\tint err = 0;\n\n\tobj_iter = bpf_object__open_file(file, &open_opts);\n\tif (!ASSERT_OK_PTR(obj_iter, \"obj_iter_open_file\"))\n\t\treturn;\n\n\tif (CHECK(strcmp(bpf_object__name(obj_iter), obj_name), \"obj_name\",\n\t\t  \"wrong obj name '%s', expected '%s'\\n\",\n\t\t  bpf_object__name(obj_iter), obj_name))\n\t\tgoto cleanup;\n\n\tbpf_object__for_each_program(prog, obj_iter) {\n\t\tstruct bpf_program *p;\n\t\tconst char *name;\n\n\t\tname = bpf_program__name(prog);\n\t\tif (!test__start_subtest(name))\n\t\t\tcontinue;\n\n\t\tobj = bpf_object__open_file(file, &open_opts);\n\t\tif (!ASSERT_OK_PTR(obj, \"obj_open_file\"))\n\t\t\tgoto cleanup;\n\n\t\t \n\t\tp = bpf_object__find_program_by_name(obj, name);\n\t\tbpf_program__set_autoload(p, true);\n\n\t\t \n\t\tif (strncmp(name, \"err_\", sizeof(\"err_\") - 1) == 0) {\n\t\t\tlibbpf_print_fn_t old_print_fn;\n\n\t\t\told_print_fn = libbpf_set_print(NULL);\n\t\t\terr = !bpf_object__load(obj);\n\t\t\tlibbpf_set_print(old_print_fn);\n\t\t} else {\n\t\t\terr = bpf_object__load(obj);\n\t\t}\n\t\tASSERT_OK(err, name);\n\n\t\tbpf_object__close(obj);\n\t\tobj = NULL;\n\t}\n\ncleanup:\n\tbpf_object__close(obj);\n\tbpf_object__close(obj_iter);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

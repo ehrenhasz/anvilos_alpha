@@ -1,0 +1,9 @@
+{
+  "module_name": "collate.h",
+  "hash_id": "0f34d7569a2f6478c9d8dcf2d3dd7026468d4f436f3bed3ad0263789ff3efa1c",
+  "original_prompt": "Ingested from linux-6.6.14/fs/ntfs/collate.h",
+  "human_readable_source": " \n \n\n#ifndef _LINUX_NTFS_COLLATE_H\n#define _LINUX_NTFS_COLLATE_H\n\n#include \"types.h\"\n#include \"volume.h\"\n\nstatic inline bool ntfs_is_collation_rule_supported(COLLATION_RULE cr) {\n\tint i;\n\n\t \n\tif (unlikely(cr != COLLATION_BINARY && cr != COLLATION_NTOFS_ULONG))\n\t\treturn false;\n\ti = le32_to_cpu(cr);\n\tif (likely(((i >= 0) && (i <= 0x02)) ||\n\t\t\t((i >= 0x10) && (i <= 0x13))))\n\t\treturn true;\n\treturn false;\n}\n\nextern int ntfs_collate(ntfs_volume *vol, COLLATION_RULE cr,\n\t\tconst void *data1, const int data1_len,\n\t\tconst void *data2, const int data2_len);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

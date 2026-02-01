@@ -1,0 +1,9 @@
+{
+  "module_name": "ctresource.h",
+  "hash_id": "a0cefe3403ce9c7a80400d550acfae853aec04391e78e194eff69d9d3fe1cb7c",
+  "original_prompt": "Ingested from linux-6.6.14/sound/pci/ctxfi/ctresource.h",
+  "human_readable_source": " \n \n\n#ifndef CTRESOURCE_H\n#define CTRESOURCE_H\n\n#include <linux/types.h>\n\nenum RSCTYP {\n\tSRC,\n\tSRCIMP,\n\tAMIXER,\n\tSUM,\n\tDAIO,\n\tNUM_RSCTYP\t \n};\n\nstruct rsc_ops;\n\nstruct rsc {\n\tu32 idx:12;\t \n\tu32 type:4;\t \n\tu32 conj:12;\t \n\tu32 msr:4;\t \n\tvoid *ctrl_blk;\t \n\tstruct hw *hw;\t \n\tconst struct rsc_ops *ops;\t \n};\n\nstruct rsc_ops {\n\tvoid (*master)(struct rsc *rsc);  \n\tvoid (*next_conj)(struct rsc *rsc);  \n\tint (*index)(const struct rsc *rsc);  \n\t \n\tint (*output_slot)(const struct rsc *rsc);\n};\n\nint\nrsc_init(struct rsc *rsc, u32 idx, enum RSCTYP type, u32 msr, struct hw *hw);\nint rsc_uninit(struct rsc *rsc);\n\nstruct rsc_mgr {\n\tenum RSCTYP type;  \n\tunsigned int amount;  \n\tunsigned int avail;  \n\tunsigned char *rscs;  \n\tvoid *ctrl_blk;  \n\tstruct hw *hw;  \n};\n\n \nint rsc_mgr_init(struct rsc_mgr *mgr, enum RSCTYP type,\n\t\t unsigned int amount, struct hw *hw);\nint rsc_mgr_uninit(struct rsc_mgr *mgr);\nint mgr_get_resource(struct rsc_mgr *mgr, unsigned int n, unsigned int *ridx);\nint mgr_put_resource(struct rsc_mgr *mgr, unsigned int n, unsigned int idx);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

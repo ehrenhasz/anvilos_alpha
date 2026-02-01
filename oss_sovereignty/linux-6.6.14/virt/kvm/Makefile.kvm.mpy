@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile.kvm",
+  "hash_id": "6cfa1783f7a825c3728aea244fba31f2b6d979e3bce11b689ac14b29358cb908",
+  "original_prompt": "Ingested from linux-6.6.14/virt/kvm/Makefile.kvm",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for Kernel-based Virtual Machine module\n#\n\nKVM ?= ../../../virt/kvm\n\nkvm-y := $(KVM)/kvm_main.o $(KVM)/eventfd.o $(KVM)/binary_stats.o\nkvm-$(CONFIG_KVM_VFIO) += $(KVM)/vfio.o\nkvm-$(CONFIG_KVM_MMIO) += $(KVM)/coalesced_mmio.o\nkvm-$(CONFIG_KVM_ASYNC_PF) += $(KVM)/async_pf.o\nkvm-$(CONFIG_HAVE_KVM_IRQ_ROUTING) += $(KVM)/irqchip.o\nkvm-$(CONFIG_HAVE_KVM_DIRTY_RING) += $(KVM)/dirty_ring.o\nkvm-$(CONFIG_HAVE_KVM_PFNCACHE) += $(KVM)/pfncache.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

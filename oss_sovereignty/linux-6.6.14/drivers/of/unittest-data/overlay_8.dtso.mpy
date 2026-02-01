@@ -1,0 +1,9 @@
+{
+  "module_name": "overlay_8.dtso",
+  "hash_id": "9a762eb669d3bd919f8100b87b5295105b28803dc9cebc1b39ca5a01cca10c48",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/of/unittest-data/overlay_8.dtso",
+  "human_readable_source": "// SPDX-License-Identifier: GPL-2.0\n/dts-v1/;\n/plugin/;\n\n/* overlay_8 */\n/* overlays 8, 9, 10, 11 application and removal in bad sequence */\n\n&unittest8 {\n\tstatus = \"okay\";\n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

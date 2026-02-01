@@ -1,0 +1,9 @@
+{
+  "module_name": "init.c",
+  "hash_id": "6184cd2bc326ed0b964c75995df6c1a0d9d3b93313c7893d85b721dd4db448da",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/pci/init.c",
+  "human_readable_source": "\n#include <linux/pci.h>\n#include <linux/init.h>\n#include <asm/pci_x86.h>\n#include <asm/x86_init.h>\n#include <asm/irqdomain.h>\n\n \nstatic __init int pci_arch_init(void)\n{\n\tint type, pcbios = 1;\n\n\ttype = pci_direct_probe();\n\n\tif (!(pci_probe & PCI_PROBE_NOEARLY))\n\t\tpci_mmcfg_early_init();\n\n\tif (x86_init.pci.arch_init)\n\t\tpcbios = x86_init.pci.arch_init();\n\n\t \n\tx86_create_pci_msi_domain();\n\n\tif (!pcbios)\n\t\treturn 0;\n\n\tpci_pcbios_init();\n\n\t \n\tpci_direct_init(type);\n\n\tif (!raw_pci_ops && !raw_pci_ext_ops)\n\t\tprintk(KERN_ERR\n\t\t\"PCI: Fatal: No config space access function found\\n\");\n\n\tdmi_check_pciprobe();\n\n\tdmi_check_skip_isa_align();\n\n\treturn 0;\n}\narch_initcall(pci_arch_init);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

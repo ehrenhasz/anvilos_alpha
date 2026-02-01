@@ -1,0 +1,9 @@
+{
+  "module_name": "ingenic,sysost.h",
+  "hash_id": "f40b57844218a2aac1d229bdabc2fc5c0f4b42174bacfa5a596d633778f1e154",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/clock/ingenic,sysost.h",
+  "human_readable_source": " \n \n\n#ifndef __DT_BINDINGS_CLOCK_INGENIC_OST_H__\n#define __DT_BINDINGS_CLOCK_INGENIC_OST_H__\n\n#define OST_CLK_PERCPU_TIMER\t1\n#define OST_CLK_GLOBAL_TIMER\t0\n#define OST_CLK_PERCPU_TIMER0\t1\n#define OST_CLK_PERCPU_TIMER1\t2\n#define OST_CLK_PERCPU_TIMER2\t3\n#define OST_CLK_PERCPU_TIMER3\t4\n\n#define OST_CLK_EVENT_TIMER\t\t1\n\n#define OST_CLK_EVENT_TIMER0\t0\n#define OST_CLK_EVENT_TIMER1\t1\n#define OST_CLK_EVENT_TIMER2\t2\n#define OST_CLK_EVENT_TIMER3\t3\n#define OST_CLK_EVENT_TIMER4\t4\n#define OST_CLK_EVENT_TIMER5\t5\n#define OST_CLK_EVENT_TIMER6\t6\n#define OST_CLK_EVENT_TIMER7\t7\n#define OST_CLK_EVENT_TIMER8\t8\n#define OST_CLK_EVENT_TIMER9\t9\n#define OST_CLK_EVENT_TIMER10\t10\n#define OST_CLK_EVENT_TIMER11\t11\n#define OST_CLK_EVENT_TIMER12\t12\n#define OST_CLK_EVENT_TIMER13\t13\n#define OST_CLK_EVENT_TIMER14\t14\n#define OST_CLK_EVENT_TIMER15\t15\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

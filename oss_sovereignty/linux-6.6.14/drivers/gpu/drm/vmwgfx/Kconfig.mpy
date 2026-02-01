@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "34bec3eb30ca622b77852f7d12e18b8d15cf1e109da0027baa951780d51a3c6f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/vmwgfx/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nconfig DRM_VMWGFX\n\ttristate \"DRM driver for VMware Virtual GPU\"\n\tdepends on DRM && PCI && MMU\n\tdepends on X86 || ARM64\n\tselect DRM_TTM\n\tselect DRM_TTM_HELPER\n\tselect MAPPING_DIRTY_HELPERS\n\t# Only needed for the transitional use of drm_crtc_init - can be removed\n\t# again once vmwgfx sets up the primary plane itself.\n\tselect DRM_KMS_HELPER\n\thelp\n\t  Choose this option if you would like to run 3D acceleration\n\t  in a VMware virtual machine.\n\t  This is a KMS enabled DRM driver for the VMware SVGA2\n\t  virtual hardware.\n\t  The compiled module will be called \"vmwgfx.ko\".\n\nconfig DRM_VMWGFX_MKSSTATS\n\tbool \"Enable mksGuestStats instrumentation of vmwgfx by default\"\n\tdepends on DRM_VMWGFX\n\tdepends on X86\n\tdefault n\n\thelp\n\t   Choose this option to instrument the kernel driver for mksGuestStats.\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

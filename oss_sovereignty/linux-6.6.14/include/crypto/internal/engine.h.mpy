@@ -1,0 +1,9 @@
+{
+  "module_name": "engine.h",
+  "hash_id": "f97921f360ccac1300c6c3bdb39c71bb41b207a9dfbae2038796ea9a1b2e0577",
+  "original_prompt": "Ingested from linux-6.6.14/include/crypto/internal/engine.h",
+  "human_readable_source": " \n \n#ifndef _CRYPTO_INTERNAL_ENGINE_H\n#define _CRYPTO_INTERNAL_ENGINE_H\n\n#include <crypto/algapi.h>\n#include <crypto/engine.h>\n#include <linux/kthread.h>\n#include <linux/spinlock_types.h>\n#include <linux/types.h>\n\n#define ENGINE_NAME_LEN\t30\n\nstruct device;\n\n \nstruct crypto_engine {\n\tchar\t\t\tname[ENGINE_NAME_LEN];\n\tbool\t\t\tidling;\n\tbool\t\t\tbusy;\n\tbool\t\t\trunning;\n\n\tbool\t\t\tretry_support;\n\n\tstruct list_head\tlist;\n\tspinlock_t\t\tqueue_lock;\n\tstruct crypto_queue\tqueue;\n\tstruct device\t\t*dev;\n\n\tbool\t\t\trt;\n\n\tint (*prepare_crypt_hardware)(struct crypto_engine *engine);\n\tint (*unprepare_crypt_hardware)(struct crypto_engine *engine);\n\tint (*do_batch_requests)(struct crypto_engine *engine);\n\n\n\tstruct kthread_worker           *kworker;\n\tstruct kthread_work             pump_requests;\n\n\tvoid\t\t\t\t*priv_data;\n\tstruct crypto_async_request\t*cur_req;\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

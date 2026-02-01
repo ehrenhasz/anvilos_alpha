@@ -1,0 +1,9 @@
+{
+  "module_name": "ivpu_fw_log.h",
+  "hash_id": "888f67774e9773a16c3da41988efa73626fd69d30700bcd930a0408ffe6f72c5",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/accel/ivpu/ivpu_fw_log.h",
+  "human_readable_source": " \n \n\n#ifndef __IVPU_FW_LOG_H__\n#define __IVPU_FW_LOG_H__\n\n#include <linux/types.h>\n\n#include <drm/drm_print.h>\n\n#include \"ivpu_drv.h\"\n\n#define IVPU_FW_LOG_DEFAULT 0\n#define IVPU_FW_LOG_DEBUG   1\n#define IVPU_FW_LOG_INFO    2\n#define IVPU_FW_LOG_WARN    3\n#define IVPU_FW_LOG_ERROR   4\n#define IVPU_FW_LOG_FATAL   5\n\nextern unsigned int ivpu_log_level;\n\n#define IVPU_FW_VERBOSE_BUFFER_SMALL_SIZE\tSZ_1M\n#define IVPU_FW_VERBOSE_BUFFER_LARGE_SIZE\tSZ_8M\n#define IVPU_FW_CRITICAL_BUFFER_SIZE\t\tSZ_512K\n\nvoid ivpu_fw_log_print(struct ivpu_device *vdev, bool only_new_msgs, struct drm_printer *p);\nvoid ivpu_fw_log_clear(struct ivpu_device *vdev);\n\nstatic inline void ivpu_fw_log_dump(struct ivpu_device *vdev)\n{\n\tstruct drm_printer p = drm_info_printer(vdev->drm.dev);\n\n\tivpu_fw_log_print(vdev, false, &p);\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

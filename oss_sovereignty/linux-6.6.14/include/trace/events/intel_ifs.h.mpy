@@ -1,0 +1,9 @@
+{
+  "module_name": "intel_ifs.h",
+  "hash_id": "c9dec3ccda565d0bceeca39f96786c55d9858e78245c664fe7860999a2aa0758",
+  "original_prompt": "Ingested from linux-6.6.14/include/trace/events/intel_ifs.h",
+  "human_readable_source": " \n#undef TRACE_SYSTEM\n#define TRACE_SYSTEM intel_ifs\n\n#if !defined(_TRACE_IFS_H) || defined(TRACE_HEADER_MULTI_READ)\n#define _TRACE_IFS_H\n\n#include <linux/ktime.h>\n#include <linux/tracepoint.h>\n\nTRACE_EVENT(ifs_status,\n\n\tTP_PROTO(int cpu, union ifs_scan activate, union ifs_status status),\n\n\tTP_ARGS(cpu, activate, status),\n\n\tTP_STRUCT__entry(\n\t\t__field(\tu64,\tstatus\t)\n\t\t__field(\tint,\tcpu\t)\n\t\t__field(\tu8,\tstart\t)\n\t\t__field(\tu8,\tstop\t)\n\t),\n\n\tTP_fast_assign(\n\t\t__entry->cpu\t= cpu;\n\t\t__entry->start\t= activate.start;\n\t\t__entry->stop\t= activate.stop;\n\t\t__entry->status\t= status.data;\n\t),\n\n\tTP_printk(\"cpu: %d, start: %.2x, stop: %.2x, status: %llx\",\n\t\t__entry->cpu,\n\t\t__entry->start,\n\t\t__entry->stop,\n\t\t__entry->status)\n);\n\n#endif  \n\n \n#include <trace/define_trace.h>\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

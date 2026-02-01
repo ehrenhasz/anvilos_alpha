@@ -1,0 +1,9 @@
+{
+  "module_name": "instructions.c",
+  "hash_id": "c17e7a7b39bacc64920fc37ebad878bfdc4cfb4c0fe020b682467bcdacaf2fcd",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/arch/riscv64/annotate/instructions.c",
+  "human_readable_source": "\n\nstatic\nstruct ins_ops *riscv64__associate_ins_ops(struct arch *arch, const char *name)\n{\n\tstruct ins_ops *ops = NULL;\n\n\tif (!strncmp(name, \"jal\", 3) ||\n\t    !strncmp(name, \"jr\", 2) ||\n\t    !strncmp(name, \"call\", 4))\n\t\tops = &call_ops;\n\telse if (!strncmp(name, \"ret\", 3))\n\t\tops = &ret_ops;\n\telse if (name[0] == 'j' || name[0] == 'b')\n\t\tops = &jump_ops;\n\telse\n\t\treturn NULL;\n\n\tarch__associate_ins_ops(arch, name, ops);\n\n\treturn ops;\n}\n\nstatic\nint riscv64__annotate_init(struct arch *arch, char *cpuid __maybe_unused)\n{\n\tif (!arch->initialized) {\n\t\tarch->associate_instruction_ops = riscv64__associate_ins_ops;\n\t\tarch->initialized = true;\n\t\tarch->objdump.comment_char = '#';\n\t}\n\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "drv_scsi_fw_funcs.c",
+  "hash_id": "3a8047a54659f79c2da2d032c46421d3d3a7268f7887f21e3d4b1489fdc1e2bc",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/scsi/qedf/drv_scsi_fw_funcs.c",
+  "human_readable_source": "\n \n#include \"drv_scsi_fw_funcs.h\"\n\n#define SCSI_NUM_SGES_IN_CACHE 0x4\n\nbool scsi_is_slow_sgl(u16 num_sges, bool small_mid_sge)\n{\n\treturn (num_sges > SCSI_NUM_SGES_SLOW_SGL_THR && small_mid_sge);\n}\n\nvoid init_scsi_sgl_context(struct scsi_sgl_params *ctx_sgl_params,\n\t\t\t   struct scsi_cached_sges *ctx_data_desc,\n\t\t\t   struct scsi_sgl_task_params *sgl_task_params)\n{\n\t \n\tu8 num_sges_to_init = sgl_task_params->num_sges >\n\t\t\t      SCSI_NUM_SGES_IN_CACHE ? SCSI_NUM_SGES_IN_CACHE :\n\t\t\t      sgl_task_params->num_sges;\n\tu8 sge_index;\n\tu32 val;\n\n\tval = cpu_to_le32(sgl_task_params->sgl_phys_addr.lo);\n\tctx_sgl_params->sgl_addr.lo = val;\n\tval = cpu_to_le32(sgl_task_params->sgl_phys_addr.hi);\n\tctx_sgl_params->sgl_addr.hi = val;\n\tval = cpu_to_le32(sgl_task_params->total_buffer_size);\n\tctx_sgl_params->sgl_total_length = val;\n\tctx_sgl_params->sgl_num_sges = cpu_to_le16(sgl_task_params->num_sges);\n\n\tfor (sge_index = 0; sge_index < num_sges_to_init; sge_index++) {\n\t\tval = cpu_to_le32(sgl_task_params->sgl[sge_index].sge_addr.lo);\n\t\tctx_data_desc->sge[sge_index].sge_addr.lo = val;\n\t\tval = cpu_to_le32(sgl_task_params->sgl[sge_index].sge_addr.hi);\n\t\tctx_data_desc->sge[sge_index].sge_addr.hi = val;\n\t\tval = cpu_to_le32(sgl_task_params->sgl[sge_index].sge_len);\n\t\tctx_data_desc->sge[sge_index].sge_len = val;\n\t}\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

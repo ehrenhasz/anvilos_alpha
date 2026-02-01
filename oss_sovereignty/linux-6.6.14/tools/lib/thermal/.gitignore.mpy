@@ -1,0 +1,9 @@
+{
+  "module_name": ".gitignore",
+  "hash_id": "abeaba942f1cd17db4b7189627827456788a56ed558deacbe32b8dc74c8d314f",
+  "original_prompt": "Ingested from linux-6.6.14/tools/lib/thermal/.gitignore",
+  "human_readable_source": "libthermal.so*\nlibthermal.pc\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "hid-lcpower.c",
+  "hash_id": "e029a962eca4ba49005e9ce474728105cbbaa13e79d05452e042a233b56d3c74",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/hid/hid-lcpower.c",
+  "human_readable_source": "\n \n\n \n\n#include <linux/device.h>\n#include <linux/hid.h>\n#include <linux/module.h>\n\n#include \"hid-ids.h\"\n\n#define ts_map_key_clear(c)\thid_map_usage_clear(hi, usage, bit, max, \\\n\t\t\t\t\tEV_KEY, (c))\nstatic int ts_input_mapping(struct hid_device *hdev, struct hid_input *hi,\n\t\tstruct hid_field *field, struct hid_usage *usage,\n\t\tunsigned long **bit, int *max)\n{\n\tif ((usage->hid & HID_USAGE_PAGE) != HID_UP_LOGIVENDOR)\n\t\treturn 0;\n\n\tswitch (usage->hid & HID_USAGE) {\n        case 0x046: ts_map_key_clear(KEY_YELLOW);         break;\n        case 0x047: ts_map_key_clear(KEY_GREEN);          break;\n        case 0x049: ts_map_key_clear(KEY_BLUE);           break;\n        case 0x04a: ts_map_key_clear(KEY_RED);\t\t  break;\n        case 0x00d: ts_map_key_clear(KEY_HOME);           break;\n        case 0x025: ts_map_key_clear(KEY_TV);             break;\n        case 0x048: ts_map_key_clear(KEY_VCR);            break;\n        case 0x024: ts_map_key_clear(KEY_MENU);           break;\n        default:\n        return 0;\n\t}\n\n\treturn 1;\n}\n\nstatic const struct hid_device_id ts_devices[] = {\n\t{ HID_USB_DEVICE( USB_VENDOR_ID_LCPOWER, USB_DEVICE_ID_LCPOWER_LC1000) },\n\t{ }\n};\nMODULE_DEVICE_TABLE(hid, ts_devices);\n\nstatic struct hid_driver ts_driver = {\n\t.name = \"LC RC1000MCE\",\n\t.id_table = ts_devices,\n\t.input_mapping = ts_input_mapping,\n};\nmodule_hid_driver(ts_driver);\n\nMODULE_LICENSE(\"GPL\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

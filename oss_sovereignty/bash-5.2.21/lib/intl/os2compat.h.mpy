@@ -1,0 +1,9 @@
+{
+  "module_name": "os2compat.h",
+  "hash_id": "40fba565c15c41ccc89d0223abfdb78877c20759c4eedb6f53416883173648c1",
+  "original_prompt": "Ingested from bash-5.2.21/lib/intl/os2compat.h",
+  "human_readable_source": " \n\n \n\n \n#ifndef OS2_AWARE\n\n#undef LIBDIR\n#define LIBDIR\t\t\t_nlos2_libdir\nextern char *_nlos2_libdir;\n\n#undef LOCALEDIR\n#define LOCALEDIR\t\t_nlos2_localedir\nextern char *_nlos2_localedir;\n\n#undef LOCALE_ALIAS_PATH\n#define LOCALE_ALIAS_PATH\t_nlos2_localealiaspath\nextern char *_nlos2_localealiaspath;\n\n#endif\n\n#undef HAVE_STRCASECMP\n#define HAVE_STRCASECMP 1\n#define strcasecmp stricmp\n#define strncasecmp strnicmp\n\n \n#define getenv _nl_getenv\n\n \n#define LC_MESSAGES_COMPAT (-1)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

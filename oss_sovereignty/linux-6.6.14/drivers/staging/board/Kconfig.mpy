@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "a4080040daf3147454f57d52d9f1828d2057bc1246c192236b55a49f7db6571f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/board/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nconfig STAGING_BOARD\n\tbool \"Staging Board Support\"\n\tdepends on OF_ADDRESS && OF_IRQ && HAVE_CLK\n\thelp\n\t  Staging board base is to support continuous upstream\n\t  in-tree development and integration of platform devices.\n\n\t  Helps developers integrate devices as platform devices for\n\t  device drivers that only provide platform device bindings.\n\t  This in turn allows for incremental development of both\n\t  hardware feature support and DT binding work in parallel.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

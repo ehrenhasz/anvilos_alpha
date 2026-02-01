@@ -1,0 +1,9 @@
+{
+  "module_name": "nop.c",
+  "hash_id": "6ba5bb498f863340477cb010a99a7bec822607886b58ca6985c8e3e120f90844",
+  "original_prompt": "Ingested from linux-6.6.14/io_uring/nop.c",
+  "human_readable_source": "\n#include <linux/kernel.h>\n#include <linux/errno.h>\n#include <linux/fs.h>\n#include <linux/file.h>\n#include <linux/io_uring.h>\n\n#include <uapi/linux/io_uring.h>\n\n#include \"io_uring.h\"\n#include \"nop.h\"\n\nint io_nop_prep(struct io_kiocb *req, const struct io_uring_sqe *sqe)\n{\n\treturn 0;\n}\n\n \nint io_nop(struct io_kiocb *req, unsigned int issue_flags)\n{\n\tio_req_set_res(req, 0, 0);\n\treturn IOU_OK;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "kfd_migrate.h",
+  "hash_id": "0b832e1615d3d9e89ed5338ccaae1855e52c0e5490e2fbf7bb46e333f7a79da3",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/amdkfd/kfd_migrate.h",
+  "human_readable_source": " \n \n\n#ifndef KFD_MIGRATE_H_\n#define KFD_MIGRATE_H_\n\n#if IS_ENABLED(CONFIG_HSA_AMD_SVM)\n\n#include <linux/rwsem.h>\n#include <linux/list.h>\n#include <linux/mutex.h>\n#include <linux/sched/mm.h>\n#include <linux/hmm.h>\n#include \"kfd_priv.h\"\n#include \"kfd_svm.h\"\n\nenum MIGRATION_COPY_DIR {\n\tFROM_RAM_TO_VRAM = 0,\n\tFROM_VRAM_TO_RAM\n};\n\nint svm_migrate_to_vram(struct svm_range *prange,  uint32_t best_loc,\n\t\t\tstruct mm_struct *mm, uint32_t trigger);\nint svm_migrate_vram_to_ram(struct svm_range *prange, struct mm_struct *mm,\n\t\t\t    uint32_t trigger, struct page *fault_page);\nunsigned long\nsvm_migrate_addr_to_pfn(struct amdgpu_device *adev, unsigned long addr);\n\n#endif  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

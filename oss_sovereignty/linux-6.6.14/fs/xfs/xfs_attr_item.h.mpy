@@ -1,0 +1,9 @@
+{
+  "module_name": "xfs_attr_item.h",
+  "hash_id": "8b26af846a60fc2be386d89594c67b5e08affb803433ef9cf85dbe78145f9903",
+  "original_prompt": "Ingested from linux-6.6.14/fs/xfs/xfs_attr_item.h",
+  "human_readable_source": " \n#ifndef\t__XFS_ATTR_ITEM_H__\n#define\t__XFS_ATTR_ITEM_H__\n\n \n\nstruct xfs_mount;\nstruct kmem_zone;\n\nstruct xfs_attri_log_nameval {\n\tstruct xfs_log_iovec\tname;\n\tstruct xfs_log_iovec\tvalue;\n\trefcount_t\t\trefcount;\n\n\t \n};\n\n \nstruct xfs_attri_log_item {\n\tstruct xfs_log_item\t\tattri_item;\n\tatomic_t\t\t\tattri_refcount;\n\tstruct xfs_attri_log_nameval\t*attri_nameval;\n\tstruct xfs_attri_log_format\tattri_format;\n};\n\n \nstruct xfs_attrd_log_item {\n\tstruct xfs_log_item\t\tattrd_item;\n\tstruct xfs_attri_log_item\t*attrd_attrip;\n\tstruct xfs_attrd_log_format\tattrd_format;\n};\n\nextern struct kmem_cache\t*xfs_attri_cache;\nextern struct kmem_cache\t*xfs_attrd_cache;\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

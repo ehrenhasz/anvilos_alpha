@@ -1,0 +1,9 @@
+{
+  "module_name": "un.h",
+  "hash_id": "9afcbac598aae10f64591bdf000543de1bea4b5f6186e507f459fcc188575a49",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/un.h",
+  "human_readable_source": " \n#ifndef _LINUX_UN_H\n#define _LINUX_UN_H\n\n#include <linux/socket.h>\n\n#define UNIX_PATH_MAX\t108\n\nstruct sockaddr_un {\n\t__kernel_sa_family_t sun_family;  \n\tchar sun_path[UNIX_PATH_MAX];\t \n};\n\n#define SIOCUNIXFILE (SIOCPROTOPRIVATE + 0)  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

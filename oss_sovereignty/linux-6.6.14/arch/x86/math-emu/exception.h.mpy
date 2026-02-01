@@ -1,0 +1,9 @@
+{
+  "module_name": "exception.h",
+  "hash_id": "1d8a579a00fa82cbd7fff9e6e0a363785768dcec381d3d499c7d42ca383c9e71",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/math-emu/exception.h",
+  "human_readable_source": " \n \n\n#ifndef _EXCEPTION_H_\n#define _EXCEPTION_H_\n\n#ifdef __ASSEMBLY__\n#define\tConst_(x)\t$##x\n#else\n#define\tConst_(x)\tx\n#endif\n\n#ifndef SW_C1\n#include \"fpu_emu.h\"\n#endif  \n\n#define FPU_BUSY        Const_(0x8000)\t \n#define EX_ErrorSummary Const_(0x0080)\t \n \n#define\tEX_INTERNAL\tConst_(0x8000)\t \n#define EX_StackOver\tConst_(0x0041|SW_C1)\t \n#define EX_StackUnder\tConst_(0x0041)\t \n \n#define EX_Precision\tConst_(0x0020)\t \n#define EX_Underflow\tConst_(0x0010)\t \n#define EX_Overflow\tConst_(0x0008)\t \n#define EX_ZeroDiv\tConst_(0x0004)\t \n#define EX_Denormal\tConst_(0x0002)\t \n#define EX_Invalid\tConst_(0x0001)\t \n\n#define PRECISION_LOST_UP    Const_((EX_Precision | SW_C1))\n#define PRECISION_LOST_DOWN  Const_(EX_Precision)\n\n#ifndef __ASSEMBLY__\n\n#ifdef DEBUG\n#define\tEXCEPTION(x)\t{ printk(\"exception in %s at line %d\\n\", \\\n\t__FILE__, __LINE__); FPU_exception(x); }\n#else\n#define\tEXCEPTION(x)\tFPU_exception(x)\n#endif\n\n#endif  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

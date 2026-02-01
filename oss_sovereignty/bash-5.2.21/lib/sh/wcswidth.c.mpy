@@ -1,0 +1,9 @@
+{
+  "module_name": "wcswidth.c",
+  "hash_id": "ac134095c2c85445ca87ff624a64949155d5420260951e07006c3821aeee5d2f",
+  "original_prompt": "Ingested from bash-5.2.21/lib/sh/wcswidth.c",
+  "human_readable_source": " \n\n \n\n#include <config.h>\n\n#if defined (HANDLE_MULTIBYTE) && !defined (HAVE_WCSWIDTH)\n\n#include <stdc.h>\n#include <wchar.h>\n#include <bashansi.h>\n\nint\nwcswidth(pwcs, n)\n     const wchar_t *pwcs;\n     size_t n;\n{\n  wchar_t wc;\n  int len, l;\n\t\t\t\n  len = 0;\n  while (n-- > 0 && (wc = *pwcs++) != L'\\0')\n    {\n      if ((l = wcwidth(wc)) < 0)\n\treturn (-1);\n      len += l;\n    }\n  return (len);\n}\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

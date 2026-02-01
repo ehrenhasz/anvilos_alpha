@@ -1,0 +1,9 @@
+{
+  "module_name": "port_scale.sh",
+  "hash_id": "ba495fe1705127f082854e0eb8597f3a9a919951fe08628ea06ee03a8900f90c",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/drivers/net/mlxsw/spectrum-2/port_scale.sh",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nsource ../port_scale.sh\n\nport_get_target()\n{\n\tlocal should_fail=$1\n\tlocal target\n\n\ttarget=$(devlink_resource_size_get physical_ports)\n\n\tif ((! should_fail)); then\n\t\techo $target\n\telse\n\t\techo $((target + 1))\n\tfi\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

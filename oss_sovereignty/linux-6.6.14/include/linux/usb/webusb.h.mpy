@@ -1,0 +1,9 @@
+{
+  "module_name": "webusb.h",
+  "hash_id": "e639e514348ef879d015fe15338bff33a31da30ee43895583b2f611f1ad60f74",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/usb/webusb.h",
+  "human_readable_source": " \n \n\n#ifndef\t__LINUX_USB_WEBUSB_H\n#define\t__LINUX_USB_WEBUSB_H\n\n#include \"uapi/linux/usb/ch9.h\"\n\n \n#define WEBUSB_UUID \\\n\tGUID_INIT(0x3408b638, 0x09a9, 0x47a0, 0x8b, 0xfd, 0xa0, 0x76, 0x88, 0x15, 0xb6, 0x65)\n\n \nstruct usb_webusb_cap_data {\n\t__le16 bcdVersion;\n#define WEBUSB_VERSION_1_00\tcpu_to_le16(0x0100)  \n\tu8  bVendorCode;\n\tu8  iLandingPage;\n#define WEBUSB_LANDING_PAGE_NOT_PRESENT\t0\n#define WEBUSB_LANDING_PAGE_PRESENT\t1  \n} __packed;\n\n#define USB_WEBUSB_CAP_DATA_SIZE\t4\n\n \n#define WEBUSB_GET_URL 2\n\n \nstruct webusb_url_descriptor {\n\tu8  bLength;\n#define WEBUSB_URL_DESCRIPTOR_HEADER_LENGTH\t3\n\tu8  bDescriptorType;\n#define WEBUSB_URL_DESCRIPTOR_TYPE\t\t3\n\tu8  bScheme;\n#define WEBUSB_URL_SCHEME_HTTP\t\t\t0\n#define WEBUSB_URL_SCHEME_HTTPS\t\t\t1\n#define WEBUSB_URL_SCHEME_NONE\t\t\t255\n\tu8  URL[U8_MAX - WEBUSB_URL_DESCRIPTOR_HEADER_LENGTH];\n} __packed;\n\n \n#define WEBUSB_URL_RAW_MAX_LENGTH (U8_MAX - WEBUSB_URL_DESCRIPTOR_HEADER_LENGTH + 8)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

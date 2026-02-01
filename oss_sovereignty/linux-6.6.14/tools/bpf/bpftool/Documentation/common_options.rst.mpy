@@ -1,0 +1,9 @@
+{
+  "module_name": "common_options.rst",
+  "hash_id": "da051aea65cb78c5146b7b67f350ecd0aa6ea6773dcc7ebd838adb01b0d173e0",
+  "original_prompt": "Ingested from linux-6.6.14/tools/bpf/bpftool/Documentation/common_options.rst",
+  "human_readable_source": ".. SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)\n\n-h, --help\n\t  Print short help message (similar to **bpftool help**).\n\n-V, --version\n\t  Print bpftool's version number (similar to **bpftool version**), the\n\t  number of the libbpf version in use, and optional features that were\n\t  included when bpftool was compiled. Optional features include linking\n\t  against LLVM or libbfd to provide the disassembler for JIT-ted\n\t  programs (**bpftool prog dump jited**) and usage of BPF skeletons\n\t  (some features like **bpftool prog profile** or showing pids\n\t  associated to BPF objects may rely on it).\n\n-j, --json\n\t  Generate JSON output. For commands that cannot produce JSON, this\n\t  option has no effect.\n\n-p, --pretty\n\t  Generate human-readable JSON output. Implies **-j**.\n\n-d, --debug\n\t  Print all logs available, even debug-level information. This includes\n\t  logs from libbpf as well as from the verifier, when attempting to\n\t  load programs.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

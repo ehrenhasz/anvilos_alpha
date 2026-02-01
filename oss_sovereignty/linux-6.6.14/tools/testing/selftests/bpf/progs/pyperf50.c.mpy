@@ -1,0 +1,9 @@
+{
+  "module_name": "pyperf50.c",
+  "hash_id": "e9411524123ddba17d0a82b06c3559d985e523f5b8c18f843b8f7abf2aa4c161",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/pyperf50.c",
+  "human_readable_source": "\n\n#define STACK_MAX_LEN 50\n#include \"pyperf.h\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

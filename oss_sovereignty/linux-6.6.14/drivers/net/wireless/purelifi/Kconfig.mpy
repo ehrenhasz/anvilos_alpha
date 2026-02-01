@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "58d5598d4175044ebd9cf7850c525cc786ffb0dfe88060026f793db47bbba98a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/purelifi/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig WLAN_VENDOR_PURELIFI\n\tbool \"pureLiFi devices\"\n\tdefault y\n\thelp\n\t  If you have a pureLiFi device, say Y.\n\n\t  Note that the answer to this question doesn't directly affect the\n\t  kernel: saying N will just cause the configurator to skip all the\n\t  questions about these cards. If you say Y, you will be asked for\n\t  your specific card in the following questions.\n\nif WLAN_VENDOR_PURELIFI\n\nsource \"drivers/net/wireless/purelifi/plfxlc/Kconfig\"\n\nendif # WLAN_VENDOR_PURELIFI\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

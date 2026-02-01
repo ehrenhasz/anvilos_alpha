@@ -1,0 +1,9 @@
+{
+  "module_name": "Lindent",
+  "hash_id": "9a7f3c2598955343ad3162403d4f62b7b937f10cbdb3b5e5e7cd2390f158428e",
+  "original_prompt": "Ingested from linux-6.6.14/scripts/Lindent",
+  "human_readable_source": "#!/bin/sh\n# SPDX-License-Identifier: GPL-2.0\n\nPARAM=\"-npro -kr -i8 -ts8 -sob -l80 -ss -ncs -cp1\"\n\nRES=`indent --version | cut -d' ' -f3`\nif [ \"$RES\" = \"\" ]; then\n\texit 1\nfi\nV1=`echo $RES | cut -d'.' -f1`\nV2=`echo $RES | cut -d'.' -f2`\nV3=`echo $RES | cut -d'.' -f3`\n\nif [ $V1 -gt 2 ]; then\n  PARAM=\"$PARAM -il0\"\nelif [ $V1 -eq 2 ]; then\n  if [ $V2 -gt 2 ]; then\n    PARAM=\"$PARAM -il0\"\n  elif [ $V2 -eq 2 ]; then\n    if [ $V3 -ge 10 ]; then\n      PARAM=\"$PARAM -il0\"\n    fi\n  fi\nfi\n\nindent $PARAM \"$@\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

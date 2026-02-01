@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "b78a762e00c2cf1c724f8678ef0db322006267808e5bc857e14e25cbbca42cc8",
+  "original_prompt": "Ingested from linux-6.6.14/kernel/printk/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-y\t= printk.o\nobj-$(CONFIG_PRINTK)\t+= printk_safe.o\nobj-$(CONFIG_A11Y_BRAILLE_CONSOLE)\t+= braille.o\nobj-$(CONFIG_PRINTK_INDEX)\t+= index.o\n\nobj-$(CONFIG_PRINTK)                 += printk_support.o\nprintk_support-y\t             := printk_ringbuffer.o\nprintk_support-$(CONFIG_SYSCTL)\t     += sysctl.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

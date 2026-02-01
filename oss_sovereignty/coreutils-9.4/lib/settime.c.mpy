@@ -1,0 +1,9 @@
+{
+  "module_name": "settime.c",
+  "hash_id": "0cb2cf21c4664850a6590052e27d0108931a095a8dedc7a746e5c2167e2b66a8",
+  "original_prompt": "Ingested from coreutils-9.4/lib/settime.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#include \"timespec.h\"\n\n#include <sys/time.h>\n#include <unistd.h>\n\n#include <errno.h>\n\n \n\nint\nsettime (struct timespec const *ts)\n{\n#if defined CLOCK_REALTIME && HAVE_CLOCK_SETTIME\n  {\n    int r = clock_settime (CLOCK_REALTIME, ts);\n    if (r == 0 || errno == EPERM)\n      return r;\n  }\n#endif\n\n#if HAVE_SETTIMEOFDAY\n  {\n    struct timeval tv = { .tv_sec = ts->tv_sec,\n                          .tv_usec = ts->tv_nsec / 1000 };\n    return settimeofday (&tv, 0);\n  }\n#elif HAVE_STIME\n   \n  return stime (&ts->tv_sec);\n#else\n  errno = ENOSYS;\n  return -1;\n#endif\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

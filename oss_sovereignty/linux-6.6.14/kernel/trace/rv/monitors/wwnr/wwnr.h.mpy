@@ -1,0 +1,9 @@
+{
+  "module_name": "wwnr.h",
+  "hash_id": "bf647b88b383c554815115362d13c195c19270a506e216c5c4145f69b6fe6a7f",
+  "original_prompt": "Ingested from linux-6.6.14/kernel/trace/rv/monitors/wwnr/wwnr.h",
+  "human_readable_source": " \n\nenum states_wwnr {\n\tnot_running_wwnr = 0,\n\trunning_wwnr,\n\tstate_max_wwnr\n};\n\n#define INVALID_STATE state_max_wwnr\n\nenum events_wwnr {\n\tswitch_in_wwnr = 0,\n\tswitch_out_wwnr,\n\twakeup_wwnr,\n\tevent_max_wwnr\n};\n\nstruct automaton_wwnr {\n\tchar *state_names[state_max_wwnr];\n\tchar *event_names[event_max_wwnr];\n\tunsigned char function[state_max_wwnr][event_max_wwnr];\n\tunsigned char initial_state;\n\tbool final_states[state_max_wwnr];\n};\n\nstatic const struct automaton_wwnr automaton_wwnr = {\n\t.state_names = {\n\t\t\"not_running\",\n\t\t\"running\"\n\t},\n\t.event_names = {\n\t\t\"switch_in\",\n\t\t\"switch_out\",\n\t\t\"wakeup\"\n\t},\n\t.function = {\n\t\t{       running_wwnr,      INVALID_STATE,   not_running_wwnr },\n\t\t{      INVALID_STATE,   not_running_wwnr,      INVALID_STATE },\n\t},\n\t.initial_state = not_running_wwnr,\n\t.final_states = { 1, 0 },\n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

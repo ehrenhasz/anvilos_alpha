@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "93201fe8325baf6684f34b45572faec19639284d0acc30af1337d51914c1cf52",
+  "original_prompt": "Ingested from linux-6.6.14/net/ceph/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig CEPH_LIB\n\ttristate \"Ceph core library\"\n\tdepends on INET\n\tselect LIBCRC32C\n\tselect CRYPTO_AES\n\tselect CRYPTO_CBC\n\tselect CRYPTO_GCM\n\tselect CRYPTO_HMAC\n\tselect CRYPTO_SHA256\n\tselect CRYPTO\n\tselect KEYS\n\tdefault n\n\thelp\n\t  Choose Y or M here to include cephlib, which provides the\n\t  common functionality to both the Ceph filesystem and\n\t  to the rados block device (rbd).\n\n\t  More information at https://ceph.io/.\n\n\t  If unsure, say N.\n\nconfig CEPH_LIB_PRETTYDEBUG\n\tbool \"Include file:line in ceph debug output\"\n\tdepends on CEPH_LIB\n\tdefault n\n\thelp\n\t  If you say Y here, debug output will include a filename and\n\t  line to aid debugging.  This increases kernel size and slows\n\t  execution slightly when debug call sites are enabled (e.g.,\n\t  via CONFIG_DYNAMIC_DEBUG).\n\n\t  If unsure, say N.\n\nconfig CEPH_LIB_USE_DNS_RESOLVER\n\tbool \"Use in-kernel support for DNS lookup\"\n\tdepends on CEPH_LIB\n\tselect DNS_RESOLVER\n\tdefault n\n\thelp\n\t  If you say Y here, hostnames (e.g. monitor addresses) will\n\t  be resolved using the CONFIG_DNS_RESOLVER facility.\n\n\t  For information on how to use CONFIG_DNS_RESOLVER consult\n\t  Documentation/networking/dns_resolver.rst\n\n\t  If unsure, say N.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

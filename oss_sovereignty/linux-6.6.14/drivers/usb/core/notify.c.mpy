@@ -1,0 +1,9 @@
+{
+  "module_name": "notify.c",
+  "hash_id": "0f95b7f9343f0ecb6b1aab5aebaf507c25ddd0889912cd818227579b00030e39",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/usb/core/notify.c",
+  "human_readable_source": "\n \n\n\n#include <linux/kernel.h>\n#include <linux/export.h>\n#include <linux/notifier.h>\n#include <linux/usb.h>\n#include <linux/mutex.h>\n#include \"usb.h\"\n\nstatic BLOCKING_NOTIFIER_HEAD(usb_notifier_list);\n\n \nvoid usb_register_notify(struct notifier_block *nb)\n{\n\tblocking_notifier_chain_register(&usb_notifier_list, nb);\n}\nEXPORT_SYMBOL_GPL(usb_register_notify);\n\n \nvoid usb_unregister_notify(struct notifier_block *nb)\n{\n\tblocking_notifier_chain_unregister(&usb_notifier_list, nb);\n}\nEXPORT_SYMBOL_GPL(usb_unregister_notify);\n\n\nvoid usb_notify_add_device(struct usb_device *udev)\n{\n\tblocking_notifier_call_chain(&usb_notifier_list, USB_DEVICE_ADD, udev);\n}\n\nvoid usb_notify_remove_device(struct usb_device *udev)\n{\n\tblocking_notifier_call_chain(&usb_notifier_list,\n\t\t\tUSB_DEVICE_REMOVE, udev);\n}\n\nvoid usb_notify_add_bus(struct usb_bus *ubus)\n{\n\tblocking_notifier_call_chain(&usb_notifier_list, USB_BUS_ADD, ubus);\n}\n\nvoid usb_notify_remove_bus(struct usb_bus *ubus)\n{\n\tblocking_notifier_call_chain(&usb_notifier_list, USB_BUS_REMOVE, ubus);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

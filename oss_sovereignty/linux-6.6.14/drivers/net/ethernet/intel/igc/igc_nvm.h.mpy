@@ -1,0 +1,9 @@
+{
+  "module_name": "igc_nvm.h",
+  "hash_id": "1e66d8937cfe1b3d7202e39058c71402f053b83709bdeed64b992325ffc20c60",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/intel/igc/igc_nvm.h",
+  "human_readable_source": " \n \n\n#ifndef _IGC_NVM_H_\n#define _IGC_NVM_H_\n\ns32 igc_acquire_nvm(struct igc_hw *hw);\nvoid igc_release_nvm(struct igc_hw *hw);\ns32 igc_read_mac_addr(struct igc_hw *hw);\ns32 igc_read_nvm_eerd(struct igc_hw *hw, u16 offset, u16 words, u16 *data);\ns32 igc_validate_nvm_checksum(struct igc_hw *hw);\ns32 igc_update_nvm_checksum(struct igc_hw *hw);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "901f036dc24dc2ebfbf066bc38e5ffc673dda02a3330d9ce8ed379efa5cebe70",
+  "original_prompt": "Ingested from linux-6.6.14/sound/pci/lola/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nsnd-lola-y := lola.o lola_pcm.o lola_clock.o lola_mixer.o\nsnd-lola-$(CONFIG_SND_DEBUG) += lola_proc.o\n\nobj-$(CONFIG_SND_LOLA) += snd-lola.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

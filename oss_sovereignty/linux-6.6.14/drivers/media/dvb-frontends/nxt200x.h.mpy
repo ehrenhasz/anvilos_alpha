@@ -1,0 +1,9 @@
+{
+  "module_name": "nxt200x.h",
+  "hash_id": "8aef02c98fba6052631918ede28b0c22f1296c2769161664aeeef869f1827449",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/dvb-frontends/nxt200x.h",
+  "human_readable_source": " \n \n\n#ifndef NXT200X_H\n#define NXT200X_H\n\n#include <linux/dvb/frontend.h>\n#include <linux/firmware.h>\n\ntypedef enum nxt_chip_t {\n\t\tNXTUNDEFINED,\n\t\tNXT2002,\n\t\tNXT2004\n}nxt_chip_type;\n\nstruct nxt200x_config\n{\n\t \n\tu8 demod_address;\n\n\t \n\tint (*set_ts_params)(struct dvb_frontend* fe, int is_punctured);\n};\n\n#if IS_REACHABLE(CONFIG_DVB_NXT200X)\nextern struct dvb_frontend* nxt200x_attach(const struct nxt200x_config* config,\n\t\t\t\t\t   struct i2c_adapter* i2c);\n#else\nstatic inline struct dvb_frontend* nxt200x_attach(const struct nxt200x_config* config,\n\t\t\t\t\t   struct i2c_adapter* i2c)\n{\n\tprintk(KERN_WARNING \"%s: driver disabled by Kconfig\\n\", __func__);\n\treturn NULL;\n}\n#endif \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

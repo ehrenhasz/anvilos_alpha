@@ -1,0 +1,9 @@
+{
+  "module_name": "ip_set_list.h",
+  "hash_id": "92916f2ecc70c413be165504386f4696928d9915464ed17d5be01419d058bfb0",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/netfilter/ipset/ip_set_list.h",
+  "human_readable_source": " \n#ifndef __IP_SET_LIST_H\n#define __IP_SET_LIST_H\n\n#include <uapi/linux/netfilter/ipset/ip_set_list.h>\n\n\n#define IP_SET_LIST_DEFAULT_SIZE\t8\n#define IP_SET_LIST_MIN_SIZE\t\t4\n#define IP_SET_LIST_MAX_SIZE\t\t65536\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "test-math.c",
+  "hash_id": "f299e165b8d691eaffb3cef99788e377f8816491c0d16a8ccc87d27f80131de2",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-math.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#include <math.h>\n\n#ifndef NAN\n# error NAN should be defined\nchoke me\n#endif\n\n#ifndef HUGE_VALF\n# error HUGE_VALF should be defined\nchoke me\n#endif\n\n#ifndef HUGE_VAL\n# error HUGE_VAL should be defined\nchoke me\n#endif\n\n#ifndef HUGE_VALL\n# error HUGE_VALL should be defined\nchoke me\n#endif\n\n#ifndef FP_ILOGB0\n# error FP_ILOGB0 should be defined\nchoke me\n#endif\n\n#ifndef FP_ILOGBNAN\n# error FP_ILOGBNAN should be defined\nchoke me\n#endif\n\n#if 0\n \nstatic float n = NAN;\n#endif\n\n#include <limits.h>\n\n#include \"macros.h\"\n\n \nstatic int\nnumeric_equalf (float x, float y)\n{\n  return x == y;\n}\nstatic int\nnumeric_equald (double x, double y)\n{\n  return x == y;\n}\nstatic int\nnumeric_equall (long double x, long double y)\n{\n  return x == y;\n}\n\nint\nmain (void)\n{\n  double d = NAN;\n  double zero = 0.0;\n  ASSERT (!numeric_equald (d, d));\n\n  d = HUGE_VAL;\n  ASSERT (numeric_equald (d, 1.0 / zero));\n\n  ASSERT (numeric_equalf (HUGE_VALF, HUGE_VALF + HUGE_VALF));\n\n  ASSERT (numeric_equald (HUGE_VAL, HUGE_VAL + HUGE_VAL));\n\n  ASSERT (numeric_equall (HUGE_VALL, HUGE_VALL + HUGE_VALL));\n\n   \n  ASSERT (FP_ILOGB0 == INT_MIN || FP_ILOGB0 == - INT_MAX);\n\n   \n  ASSERT (FP_ILOGBNAN == INT_MIN || FP_ILOGBNAN == INT_MAX);\n\n  return 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "1e4a8165661da506bfe0ac8479142529d50107d81e2d5b54a20f6fa00b49b67e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/usb/roles/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n\nobj-$(CONFIG_USB_ROLE_SWITCH)\t\t+= roles.o\nroles-y\t\t\t\t\t:= class.o\nobj-$(CONFIG_USB_ROLES_INTEL_XHCI)\t+= intel-xhci-usb-role-switch.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

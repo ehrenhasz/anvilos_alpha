@@ -1,0 +1,9 @@
+{
+  "module_name": "cyan_skillfish_ppt.h",
+  "hash_id": "345c08bce3f5ec42a0809c87608031e039dca62919c701c647ce0a629f657924",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/pm/swsmu/smu11/cyan_skillfish_ppt.h",
+  "human_readable_source": " \n\n#ifndef __CYAN_SKILLFISH_PPT_H__\n#define __CYAN_SKILLFISH_PPT_H__\n\nextern void cyan_skillfish_set_ppt_funcs(struct smu_context *smu);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "@@__py__objtype.c.qstr",
+  "hash_id": "f1f88b0643842a28dc2df4e024eaf4feb4330a5800224b75fb85709eaf4913e1",
+  "original_prompt": "Ingested from sys_09_Anvil/source/mpy-cross/build/genhdr/qstr/@@__py__objtype.c.qstr",
+  "human_readable_source": "Q(__str__)\nQ(__repr__)\nQ(__repr__)\nQ(__new__)\nQ(__init__)\nQ(__bool__)\nQ(__len__)\nQ(__hash__)\nQ(__int__)\nQ(__float__)\nQ(__complex__)\nQ(__eq__)\nQ(__lt__)\nQ(__gt__)\nQ(__eq__)\nQ(__le__)\nQ(__ge__)\nQ(__ne__)\nQ(__contains__)\nQ(__iadd__)\nQ(__isub__)\nQ(__add__)\nQ(__sub__)\nQ(__dict__)\nQ(__getattr__)\nQ(__getattr__)\nQ(__delitem__)\nQ(__getitem__)\nQ(__setitem__)\nQ(__call__)\nQ(__iter__)\nQ(__name__)\nQ(__dict__)\nQ(__bases__)\nQ(type)\nQ(__new__)\nQ(function)\nQ(__init__)\nQ(super)\nQ(staticmethod)\nQ(classmethod)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

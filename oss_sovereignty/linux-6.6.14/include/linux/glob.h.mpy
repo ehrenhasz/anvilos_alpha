@@ -1,0 +1,9 @@
+{
+  "module_name": "glob.h",
+  "hash_id": "8559c38d3d4801b4a3d86005f0c309d5eb7f145fbd108fcbab49c51787aeb1f3",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/glob.h",
+  "human_readable_source": " \n#ifndef _LINUX_GLOB_H\n#define _LINUX_GLOB_H\n\n#include <linux/types.h>\t \n#include <linux/compiler.h>\t \n\nbool __pure glob_match(char const *pat, char const *str);\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

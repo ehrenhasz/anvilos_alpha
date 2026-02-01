@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "743c364d42763039b8a1b0b92a6383bc3ba078166cdf96b7d7ee6ed6f9e6df77",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/phy/ti/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nobj-$(CONFIG_PHY_DA8XX_USB)\t\t+= phy-da8xx-usb.o\nobj-$(CONFIG_PHY_DM816X_USB)\t\t+= phy-dm816x-usb.o\nobj-$(CONFIG_OMAP_CONTROL_PHY)\t\t+= phy-omap-control.o\nobj-$(CONFIG_OMAP_USB2)\t\t\t+= phy-omap-usb2.o\nobj-$(CONFIG_TI_PIPE3)\t\t\t+= phy-ti-pipe3.o\nobj-$(CONFIG_PHY_TUSB1210)\t\t+= phy-tusb1210.o\nobj-$(CONFIG_TWL4030_USB)\t\t+= phy-twl4030-usb.o\nobj-$(CONFIG_PHY_AM654_SERDES)\t\t+= phy-am654-serdes.o\nobj-$(CONFIG_PHY_TI_GMII_SEL)\t\t+= phy-gmii-sel.o\nobj-$(CONFIG_PHY_J721E_WIZ)\t\t+= phy-j721e-wiz.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

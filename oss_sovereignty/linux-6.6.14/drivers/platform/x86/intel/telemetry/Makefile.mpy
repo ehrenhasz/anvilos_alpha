@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "bbf3ee712325f20b9b1779ee5cb155b4f4bf97f37db48c6f96bb1cc22a163824",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/platform/x86/intel/telemetry/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Intel x86 Platform Specific Drivers\n#\n\nintel_telemetry_core-y\t\t\t:= core.o\nobj-$(CONFIG_INTEL_TELEMETRY)\t\t+= intel_telemetry_core.o\nintel_telemetry_pltdrv-y\t\t:= pltdrv.o\nobj-$(CONFIG_INTEL_TELEMETRY)\t\t+= intel_telemetry_pltdrv.o\nintel_telemetry_debugfs-y\t\t:= debugfs.o\nobj-$(CONFIG_INTEL_TELEMETRY)\t\t+= intel_telemetry_debugfs.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

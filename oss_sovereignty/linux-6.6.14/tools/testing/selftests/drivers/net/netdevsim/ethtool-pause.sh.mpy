@@ -1,0 +1,9 @@
+{
+  "module_name": "ethtool-pause.sh",
+  "hash_id": "6012a80be46cf5cfe15ceeb9e9ab20be43a64cbff65de695786ad508e70f0b74",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/drivers/net/netdevsim/ethtool-pause.sh",
+  "human_readable_source": "#!/bin/bash\n# SPDX-License-Identifier: GPL-2.0-only\n\nsource ethtool-common.sh\n\n# Bail if ethtool is too old\nif ! ethtool -h | grep include-stat 2>&1 >/dev/null; then\n    echo \"SKIP: No --include-statistics support in ethtool\"\n    exit 4\nfi\n\nNSIM_NETDEV=$(make_netdev)\n\nset -o pipefail\n\necho n > $NSIM_DEV_DFS/ethtool/pause/report_stats_tx\necho n > $NSIM_DEV_DFS/ethtool/pause/report_stats_rx\n\ns=$(ethtool --json -a $NSIM_NETDEV | jq '.[].statistics')\ncheck $? \"$s\" \"null\"\n\ns=$(ethtool -I --json -a $NSIM_NETDEV | jq '.[].statistics')\ncheck $? \"$s\" \"{}\"\n\necho y > $NSIM_DEV_DFS/ethtool/pause/report_stats_tx\n\ns=$(ethtool -I --json -a $NSIM_NETDEV | jq '.[].statistics | length')\ncheck $? \"$s\" \"1\"\n\ns=$(ethtool -I --json -a $NSIM_NETDEV | jq '.[].statistics.tx_pause_frames')\ncheck $? \"$s\" \"2\"\n\necho y > $NSIM_DEV_DFS/ethtool/pause/report_stats_rx\n\ns=$(ethtool -I --json -a $NSIM_NETDEV | jq '.[].statistics | length')\ncheck $? \"$s\" \"2\"\n\ns=$(ethtool -I --json -a $NSIM_NETDEV | jq '.[].statistics.rx_pause_frames')\ncheck $? \"$s\" \"1\"\ns=$(ethtool -I --json -a $NSIM_NETDEV | jq '.[].statistics.tx_pause_frames')\ncheck $? \"$s\" \"2\"\n\nif [ $num_errors -eq 0 ]; then\n    echo \"PASSED all $((num_passes)) checks\"\n    exit 0\nelse\n    echo \"FAILED $num_errors/$((num_errors+num_passes)) checks\"\n    exit 1\nfi\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

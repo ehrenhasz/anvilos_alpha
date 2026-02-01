@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "00c357ecbcef7a3721d065d8b0447d1de8617ee11c8c3a09ef35800deeb8089a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/cdx/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for CDX\n#\n# Copyright (C) 2022-2023, Advanced Micro Devices, Inc.\n#\n\nobj-$(CONFIG_CDX_BUS) += cdx.o controller/\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

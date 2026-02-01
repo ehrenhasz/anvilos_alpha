@@ -1,0 +1,9 @@
+{
+  "module_name": "max7301.h",
+  "hash_id": "07b3448f1913595b1368c20891bc12b8532b57a61fddcdde211efcf19304cc01",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/spi/max7301.h",
+  "human_readable_source": " \n#ifndef LINUX_SPI_MAX7301_H\n#define LINUX_SPI_MAX7301_H\n\n#include <linux/gpio/driver.h>\n\n \nstruct max7301 {\n\tstruct mutex\tlock;\n\tu8\t\tport_config[8];\t \n\tu32\t\tout_level;\t \n\tu32\t\tinput_pullup_active;\n\tstruct gpio_chip chip;\n\tstruct device *dev;\n\tint (*write)(struct device *dev, unsigned int reg, unsigned int val);\n\tint (*read)(struct device *dev, unsigned int reg);\n};\n\nstruct max7301_platform_data {\n\t \n\tunsigned\tbase;\n\t \n\tu32\t\tinput_pullup_active;\n};\n\nextern void __max730x_remove(struct device *dev);\nextern int __max730x_probe(struct max7301 *ts);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

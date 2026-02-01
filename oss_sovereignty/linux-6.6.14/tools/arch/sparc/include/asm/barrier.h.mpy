@@ -1,0 +1,9 @@
+{
+  "module_name": "barrier.h",
+  "hash_id": "0712c9b6d1eea5c1061ff124ed28ba11c24bd81b43d61b60f1acc1e727a175fe",
+  "original_prompt": "Ingested from linux-6.6.14/tools/arch/sparc/include/asm/barrier.h",
+  "human_readable_source": " \n#ifndef ___TOOLS_LINUX_ASM_SPARC_BARRIER_H\n#define ___TOOLS_LINUX_ASM_SPARC_BARRIER_H\n#if defined(__sparc__) && defined(__arch64__)\n#include \"barrier_64.h\"\n#else\n#include \"barrier_32.h\"\n#endif\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

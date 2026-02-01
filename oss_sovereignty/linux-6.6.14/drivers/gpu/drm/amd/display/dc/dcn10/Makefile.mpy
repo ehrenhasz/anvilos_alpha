@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "37c5ce66540484614c39c6b401780a493ee10ce5745312ec667998fb69fbf8a3",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/dc/dcn10/Makefile",
+  "human_readable_source": "#\n# Copyright 2017 Advanced Micro Devices, Inc.\n#\n# Permission is hereby granted, free of charge, to any person obtaining a\n# copy of this software and associated documentation files (the \"Software\"),\n# to deal in the Software without restriction, including without limitation\n# the rights to use, copy, modify, merge, publish, distribute, sublicense,\n# and/or sell copies of the Software, and to permit persons to whom the\n# Software is furnished to do so, subject to the following conditions:\n#\n# The above copyright notice and this permission notice shall be included in\n# all copies or substantial portions of the Software.\n#\n# THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\n# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\n# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL\n# THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR\n# OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,\n# ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR\n# OTHER DEALINGS IN THE SOFTWARE.\n#\n#\n# Makefile for DCN.\n\nDCN10 = dcn10_init.o dcn10_resource.o dcn10_ipp.o dcn10_hw_sequencer.o \\\n\t\tdcn10_hw_sequencer_debug.o \\\n\t\tdcn10_dpp.o dcn10_opp.o dcn10_optc.o \\\n\t\tdcn10_hubp.o dcn10_mpc.o \\\n\t\tdcn10_dpp_dscl.o dcn10_dpp_cm.o dcn10_cm_common.o \\\n\t\tdcn10_hubbub.o dcn10_stream_encoder.o dcn10_link_encoder.o\n\nAMD_DAL_DCN10 = $(addprefix $(AMDDALPATH)/dc/dcn10/,$(DCN10))\n\nAMD_DISPLAY_FILES += $(AMD_DAL_DCN10)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "test-write.c",
+  "hash_id": "867fdf8eacb0c7275e5f48523f9effd0a978c9bd137ec3a24f2e02f9cff029ed",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-write.c",
+  "human_readable_source": " \n  fd = open (filename, O_CREAT | O_WRONLY, 0600);\n  ASSERT (fd >= 0);\n  ASSERT (write (fd, \"Hello World\", 11) == 11);\n  ASSERT (close (fd) == 0);\n\n   \n  fd = open (filename, O_WRONLY);\n  ASSERT (fd >= 0);\n  ASSERT (lseek (fd, 6, SEEK_SET) == 6);\n  ASSERT (write (fd, \"fascination\", 11) == 11);\n\n   \n  {\n    char buf[64];\n    int rfd = open (filename, O_RDONLY);\n    ASSERT (rfd >= 0);\n    ASSERT (read (rfd, buf, sizeof (buf)) == 17);\n    ASSERT (close (rfd) == 0);\n    ASSERT (memcmp (buf, \"Hello fascination\", 17) == 0);\n  }\n\n  ASSERT (close (fd) == 0);\n\n   \n  {\n    char byte = 'x';\n    errno = 0;\n    ASSERT (write (-1, &byte, 1) == -1);\n    ASSERT (errno == EBADF);\n  }\n  {\n    char byte = 'x';\n    close (99);\n    errno = 0;\n    ASSERT (write (99, &byte, 1) == -1);\n    ASSERT (errno == EBADF);\n  }\n\n   \n  unlink (filename);\n\n  return 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

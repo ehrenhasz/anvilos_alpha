@@ -1,0 +1,9 @@
+{
+  "module_name": "qed_devlink.h",
+  "hash_id": "6cf2fdea5cd048d1e1f2f92072a67ef2409aea5a0e0a524448bdbbe035e8d46f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/qlogic/qed/qed_devlink.h",
+  "human_readable_source": " \n \n#ifndef _QED_DEVLINK_H\n#define _QED_DEVLINK_H\n\n#include <linux/qed/qed_if.h>\n#include <net/devlink.h>\n\nstruct devlink *qed_devlink_register(struct qed_dev *cdev);\nvoid qed_devlink_unregister(struct devlink *devlink);\n\nvoid qed_fw_reporters_create(struct devlink *devlink);\nvoid qed_fw_reporters_destroy(struct devlink *devlink);\n\nint qed_report_fatal_error(struct devlink *dl, enum qed_hw_err_type err_type);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

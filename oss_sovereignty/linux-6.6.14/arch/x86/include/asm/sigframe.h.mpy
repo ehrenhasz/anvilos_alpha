@@ -1,0 +1,9 @@
+{
+  "module_name": "sigframe.h",
+  "hash_id": "5391f89eb13a3eab3b58f25b22962bd3c0982ad29d4eff2e9883def773a32435",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/include/asm/sigframe.h",
+  "human_readable_source": " \n#ifndef _ASM_X86_SIGFRAME_H\n#define _ASM_X86_SIGFRAME_H\n\n#include <uapi/asm/sigcontext.h>\n#include <asm/siginfo.h>\n#include <asm/ucontext.h>\n#include <linux/compat.h>\n\n#ifdef CONFIG_X86_32\n#define sigframe_ia32\t\tsigframe\n#define rt_sigframe_ia32\trt_sigframe\n#define ucontext_ia32\t\tucontext\n#else  \n\n#ifdef CONFIG_IA32_EMULATION\n#include <asm/ia32.h>\n#endif  \n\n#endif  \n\n#if defined(CONFIG_X86_32) || defined(CONFIG_IA32_EMULATION)\nstruct sigframe_ia32 {\n\tu32 pretcode;\n\tint sig;\n\tstruct sigcontext_32 sc;\n\t \n\tstruct _fpstate_32 fpstate_unused;\n\tunsigned int extramask[1];\n\tchar retcode[8];\n\t \n};\n\nstruct rt_sigframe_ia32 {\n\tu32 pretcode;\n\tint sig;\n\tu32 pinfo;\n\tu32 puc;\n#ifdef CONFIG_IA32_EMULATION\n\tcompat_siginfo_t info;\n#else  \n\tstruct siginfo info;\n#endif  \n\tstruct ucontext_ia32 uc;\n\tchar retcode[8];\n\t \n};\n#endif  \n\n#ifdef CONFIG_X86_64\n\nstruct rt_sigframe {\n\tchar __user *pretcode;\n\tstruct ucontext uc;\n\tstruct siginfo info;\n\t \n};\n\n#ifdef CONFIG_X86_X32_ABI\n\nstruct ucontext_x32 {\n\tunsigned int\t  uc_flags;\n\tunsigned int \t  uc_link;\n\tcompat_stack_t\t  uc_stack;\n\tunsigned int\t  uc__pad0;      \n\tstruct sigcontext uc_mcontext;   \n\tcompat_sigset_t\t  uc_sigmask;\t \n};\n\nstruct rt_sigframe_x32 {\n\tu64 pretcode;\n\tstruct ucontext_x32 uc;\n\tcompat_siginfo_t info;\n\t \n};\n\n#endif  \n\n#endif  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

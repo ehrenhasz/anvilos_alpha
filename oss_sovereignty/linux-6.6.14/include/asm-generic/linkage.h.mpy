@@ -1,0 +1,9 @@
+{
+  "module_name": "linkage.h",
+  "hash_id": "76b4e784c5f184e41353d8e0dfdabe9841ab21eb373b1497cb361beebe2c9071",
+  "original_prompt": "Ingested from linux-6.6.14/include/asm-generic/linkage.h",
+  "human_readable_source": "#ifndef __ASM_GENERIC_LINKAGE_H\n#define __ASM_GENERIC_LINKAGE_H\n \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

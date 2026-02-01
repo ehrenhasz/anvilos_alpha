@@ -1,0 +1,9 @@
+{
+  "module_name": "getgroups.c",
+  "hash_id": "7165110dfc0d1a5a94735be50ea74ebdc1338819203cd979fc4779f5dff1fa2f",
+  "original_prompt": "Ingested from coreutils-9.4/lib/getgroups.c",
+  "human_readable_source": " \n\n \n\n#include <config.h>\n\n#include <unistd.h>\n\n#include <errno.h>\n#include <stdlib.h>\n#include <stdint.h>\n\n#if !HAVE_GETGROUPS\n\n \nint\ngetgroups (_GL_UNUSED int n, _GL_UNUSED GETGROUPS_T *groups)\n{\n  errno = ENOSYS;\n  return -1;\n}\n\n#else  \n\n# undef getgroups\n# ifndef GETGROUPS_ZERO_BUG\n#  define GETGROUPS_ZERO_BUG 0\n# endif\n\n \n# ifdef __APPLE__\nint posix_getgroups (int, gid_t []) __asm (\"_getgroups\");\n#  define getgroups posix_getgroups\n# endif\n\n \n\nint\nrpl_getgroups (int n, gid_t *group)\n{\n  int n_groups;\n  GETGROUPS_T *gbuf;\n\n  if (n < 0)\n    {\n      errno = EINVAL;\n      return -1;\n    }\n\n  if (n != 0 || !GETGROUPS_ZERO_BUG)\n    {\n      int result;\n      if (sizeof *group == sizeof *gbuf)\n        return getgroups (n, (GETGROUPS_T *) group);\n\n      if (SIZE_MAX / sizeof *gbuf <= n)\n        {\n          errno = ENOMEM;\n          return -1;\n        }\n      gbuf = malloc (n * sizeof *gbuf);\n      if (!gbuf)\n        return -1;\n      result = getgroups (n, gbuf);\n      if (0 <= result)\n        {\n          n = result;\n          while (n--)\n            group[n] = gbuf[n];\n        }\n      free (gbuf);\n      return result;\n    }\n\n  n = 20;\n  while (1)\n    {\n       \n      gbuf = malloc (n * sizeof *gbuf);\n      if (!gbuf)\n        return -1;\n      n_groups = getgroups (n, gbuf);\n      if (n_groups == -1 ? errno != EINVAL : n_groups < n)\n        break;\n      free (gbuf);\n      n *= 2;\n    }\n\n  free (gbuf);\n  return n_groups;\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

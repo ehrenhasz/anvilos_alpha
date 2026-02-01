@@ -1,0 +1,9 @@
+{
+  "module_name": "edma-pcm.h",
+  "hash_id": "de219010e57f8efb64963aecef236deefa75f41c5404d6e97d90b6ecaf10ca76",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/ti/edma-pcm.h",
+  "human_readable_source": " \n \n\n#ifndef __EDMA_PCM_H__\n#define __EDMA_PCM_H__\n\n#if IS_ENABLED(CONFIG_SND_SOC_TI_EDMA_PCM)\nint edma_pcm_platform_register(struct device *dev);\n#else\nstatic inline int edma_pcm_platform_register(struct device *dev)\n{\n\treturn 0;\n}\n#endif  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

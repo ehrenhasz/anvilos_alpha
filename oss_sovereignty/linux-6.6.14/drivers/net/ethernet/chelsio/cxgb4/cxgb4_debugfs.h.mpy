@@ -1,0 +1,9 @@
+{
+  "module_name": "cxgb4_debugfs.h",
+  "hash_id": "cf9cfda4d1a417b8a1c79dedcb3db20d4deeacfab07fa439d0a63d774544d54c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/chelsio/cxgb4/cxgb4_debugfs.h",
+  "human_readable_source": " \n\n#ifndef __CXGB4_DEBUGFS_H\n#define __CXGB4_DEBUGFS_H\n\n#include <linux/export.h>\n\nstruct t4_debugfs_entry {\n\tconst char *name;\n\tconst struct file_operations *ops;\n\tumode_t mode;\n\tunsigned char data;\n};\n\nstruct seq_tab {\n\tint (*show)(struct seq_file *seq, void *v, int idx);\n\tunsigned int rows;         \n\tunsigned char width;       \n\tunsigned char skip_first;  \n\tchar data[];              \n};\n\nstatic inline unsigned int hex2val(char c)\n{\n\treturn isdigit(c) ? c - '0' : tolower(c) - 'a' + 10;\n}\n\nstruct seq_tab *seq_open_tab(struct file *f, unsigned int rows,\n\t\t\t     unsigned int width, unsigned int have_header,\n\t\t\t     int (*show)(struct seq_file *seq, void *v, int i));\n\nint t4_setup_debugfs(struct adapter *adap);\nvoid add_debugfs_files(struct adapter *adap,\n\t\t       struct t4_debugfs_entry *files,\n\t\t       unsigned int nfiles);\nint mem_open(struct inode *inode, struct file *file);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

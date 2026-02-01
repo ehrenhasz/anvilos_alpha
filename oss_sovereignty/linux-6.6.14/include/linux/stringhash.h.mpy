@@ -1,0 +1,9 @@
+{
+  "module_name": "stringhash.h",
+  "hash_id": "dea15cc9cd9fe76956c8b7d457f9520a9023d12a7c9b9941e1a1cc72b2a283ac",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/stringhash.h",
+  "human_readable_source": " \n#ifndef __LINUX_STRINGHASH_H\n#define __LINUX_STRINGHASH_H\n\n#include <linux/compiler.h>\t \n#include <linux/types.h>\t \n#include <linux/hash.h>\n\n \n\n \n\n \n#define init_name_hash(salt)\t\t(unsigned long)(salt)\n\n \nstatic inline unsigned long\npartial_name_hash(unsigned long c, unsigned long prevhash)\n{\n\treturn (prevhash + (c << 4) + (c >> 4)) * 11;\n}\n\n \nstatic inline unsigned int end_name_hash(unsigned long hash)\n{\n\treturn hash_long(hash, 32);\n}\n\n \nextern unsigned int __pure full_name_hash(const void *salt, const char *, unsigned int);\n\n \n#define hashlen_hash(hashlen) ((u32)(hashlen))\n#define hashlen_len(hashlen)  ((u32)((hashlen) >> 32))\n#define hashlen_create(hash, len) ((u64)(len)<<32 | (u32)(hash))\n\n \nextern u64 __pure hashlen_string(const void *salt, const char *name);\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "irqflags.h",
+  "hash_id": "35983865c558fdcba00328d69a79c59db439924a63760209e02cfcd579a3441a",
+  "original_prompt": "Ingested from linux-6.6.14/include/asm-generic/irqflags.h",
+  "human_readable_source": " \n#ifndef __ASM_GENERIC_IRQFLAGS_H\n#define __ASM_GENERIC_IRQFLAGS_H\n\n \n#ifndef ARCH_IRQ_DISABLED\n#define ARCH_IRQ_DISABLED 0\n#define ARCH_IRQ_ENABLED 1\n#endif\n\n \n#ifndef arch_local_save_flags\nunsigned long arch_local_save_flags(void);\n#endif\n\n \n#ifndef arch_local_irq_restore\nvoid arch_local_irq_restore(unsigned long flags);\n#endif\n\n \n#ifndef arch_local_irq_save\nstatic inline unsigned long arch_local_irq_save(void)\n{\n\tunsigned long flags;\n\tflags = arch_local_save_flags();\n\tarch_local_irq_restore(ARCH_IRQ_DISABLED);\n\treturn flags;\n}\n#endif\n\n \n#ifndef arch_irqs_disabled_flags\nstatic inline int arch_irqs_disabled_flags(unsigned long flags)\n{\n\treturn flags == ARCH_IRQ_DISABLED;\n}\n#endif\n\n \n#ifndef arch_local_irq_enable\nstatic inline void arch_local_irq_enable(void)\n{\n\tarch_local_irq_restore(ARCH_IRQ_ENABLED);\n}\n#endif\n\n \n#ifndef arch_local_irq_disable\nstatic inline void arch_local_irq_disable(void)\n{\n\tarch_local_irq_restore(ARCH_IRQ_DISABLED);\n}\n#endif\n\n \n#ifndef arch_irqs_disabled\nstatic inline int arch_irqs_disabled(void)\n{\n\treturn arch_irqs_disabled_flags(arch_local_save_flags());\n}\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

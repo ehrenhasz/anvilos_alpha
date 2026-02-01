@@ -1,0 +1,9 @@
+{
+  "module_name": "rules",
+  "hash_id": "fb629d659a52a558e35da9e455a0c4381bc5c7c47094f7517089290c56750cf1",
+  "original_prompt": "Ingested from linux-6.6.14/scripts/package/debian/rules",
+  "human_readable_source": "#!/usr/bin/make -f\n# SPDX-License-Identifier: GPL-2.0-only\n\ninclude debian/rules.vars\n\nsrctree ?= .\n\nifneq (,$(filter-out parallel=1,$(filter parallel=%,$(DEB_BUILD_OPTIONS))))\n    NUMJOBS = $(patsubst parallel=%,%,$(filter parallel=%,$(DEB_BUILD_OPTIONS)))\n    MAKEFLAGS += -j$(NUMJOBS)\nendif\n\n.PHONY: binary binary-indep binary-arch\nbinary: binary-arch binary-indep\nbinary-indep: build-indep\nbinary-arch: build-arch\n\t$(MAKE) -f $(srctree)/Makefile ARCH=$(ARCH) \\\n\tKERNELRELEASE=$(KERNELRELEASE) \\\n\trun-command KBUILD_RUN_COMMAND=+$(srctree)/scripts/package/builddeb\n\n.PHONY: build build-indep build-arch\nbuild: build-arch build-indep\nbuild-indep:\nbuild-arch:\n\t$(MAKE) -f $(srctree)/Makefile ARCH=$(ARCH) \\\n\tKERNELRELEASE=$(KERNELRELEASE) \\\n\t$(shell $(srctree)/scripts/package/deb-build-option) \\\n\tolddefconfig all\n\n.PHONY: clean\nclean:\n\trm -rf debian/files debian/linux-*\n\t$(MAKE) -f $(srctree)/Makefile ARCH=$(ARCH) clean\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

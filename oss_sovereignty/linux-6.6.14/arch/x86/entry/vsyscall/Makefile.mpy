@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "0c10301a59656ac752a5986c66671fbc5c7b1e20626df6d39b40bb05effa4832",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/entry/vsyscall/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Makefile for the x86 low level vsyscall code\n#\nobj-$(CONFIG_X86_VSYSCALL_EMULATION)\t+= vsyscall_64.o vsyscall_emu_64.o\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

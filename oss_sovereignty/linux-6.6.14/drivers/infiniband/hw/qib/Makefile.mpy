@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "faa703fed45f1e6938e363573456d72cfc4782d838fdabc6a73dae338e416778",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/infiniband/hw/qib/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nobj-$(CONFIG_INFINIBAND_QIB) += ib_qib.o\n\nib_qib-y := qib_diag.o qib_driver.o qib_eeprom.o \\\n\tqib_file_ops.o qib_fs.o qib_init.o qib_intr.o \\\n\tqib_mad.o qib_pcie.o qib_pio_copy.o \\\n\tqib_qp.o qib_qsfp.o qib_rc.o qib_ruc.o qib_sdma.o \\\n\tqib_sysfs.o qib_twsi.o qib_tx.o qib_uc.o qib_ud.o \\\n\tqib_user_pages.o qib_user_sdma.o qib_iba7220.o \\\n\tqib_sd7220.o qib_iba7322.o qib_verbs.o\n\n# 6120 has no fallback if no MSI interrupts, others can do INTx\nib_qib-$(CONFIG_PCI_MSI) += qib_iba6120.o\n\nib_qib-$(CONFIG_X86_64) += qib_wc_x86_64.o\nib_qib-$(CONFIG_PPC64) += qib_wc_ppc64.o\nib_qib-$(CONFIG_DEBUG_FS) += qib_debugfs.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

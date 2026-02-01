@@ -1,0 +1,9 @@
+{
+  "module_name": "unistd.h",
+  "hash_id": "5bb40727a41f1214a82e7f9058e9792ed905c8dc621f8fff6ac807071255ba73",
+  "original_prompt": "Ingested from linux-6.6.14/tools/include/nolibc/unistd.h",
+  "human_readable_source": " \n \n\n#ifndef _NOLIBC_UNISTD_H\n#define _NOLIBC_UNISTD_H\n\n#include \"std.h\"\n#include \"arch.h\"\n#include \"types.h\"\n#include \"sys.h\"\n\n\n#define STDIN_FILENO  0\n#define STDOUT_FILENO 1\n#define STDERR_FILENO 2\n\n\nstatic __attribute__((unused))\nint msleep(unsigned int msecs)\n{\n\tstruct timeval my_timeval = { msecs / 1000, (msecs % 1000) * 1000 };\n\n\tif (sys_select(0, 0, 0, 0, &my_timeval) < 0)\n\t\treturn (my_timeval.tv_sec * 1000) +\n\t\t\t(my_timeval.tv_usec / 1000) +\n\t\t\t!!(my_timeval.tv_usec % 1000);\n\telse\n\t\treturn 0;\n}\n\nstatic __attribute__((unused))\nunsigned int sleep(unsigned int seconds)\n{\n\tstruct timeval my_timeval = { seconds, 0 };\n\n\tif (sys_select(0, 0, 0, 0, &my_timeval) < 0)\n\t\treturn my_timeval.tv_sec + !!my_timeval.tv_usec;\n\telse\n\t\treturn 0;\n}\n\nstatic __attribute__((unused))\nint usleep(unsigned int usecs)\n{\n\tstruct timeval my_timeval = { usecs / 1000000, usecs % 1000000 };\n\n\treturn sys_select(0, 0, 0, 0, &my_timeval);\n}\n\nstatic __attribute__((unused))\nint tcsetpgrp(int fd, pid_t pid)\n{\n\treturn ioctl(fd, TIOCSPGRP, &pid);\n}\n\n#define __syscall_narg(_0, _1, _2, _3, _4, _5, _6, N, ...) N\n#define _syscall_narg(...) __syscall_narg(__VA_ARGS__, 6, 5, 4, 3, 2, 1, 0)\n#define _syscall(N, ...) __sysret(my_syscall##N(__VA_ARGS__))\n#define _syscall_n(N, ...) _syscall(N, __VA_ARGS__)\n#define syscall(...) _syscall_n(_syscall_narg(__VA_ARGS__), ##__VA_ARGS__)\n\n \n#include \"nolibc.h\"\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

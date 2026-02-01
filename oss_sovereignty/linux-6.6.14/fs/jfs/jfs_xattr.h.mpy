@@ -1,0 +1,9 @@
+{
+  "module_name": "jfs_xattr.h",
+  "hash_id": "294a2adff1698221afa7f8edb1adf92a2c6b72e83df8bc3d23b445202c103b49",
+  "original_prompt": "Ingested from linux-6.6.14/fs/jfs/jfs_xattr.h",
+  "human_readable_source": " \n \n\n#ifndef H_JFS_XATTR\n#define H_JFS_XATTR\n\n#include <linux/xattr.h>\n\n \nstruct jfs_ea {\n\tu8 flag;\t \n\tu8 namelen;\t \n\t__le16 valuelen;\t \n\tchar name[];\t \n};\t\t\t \n\nstruct jfs_ea_list {\n\t__le32 size;\t\t \n\tstruct jfs_ea ea[];\t \n};\n\n \n#define MAXEASIZE\t65535\n#define MAXEALISTSIZE\tMAXEASIZE\n\n \n#define EA_SIZE(ea) \\\n\t(sizeof (struct jfs_ea) + (ea)->namelen + 1 + \\\n\t le16_to_cpu((ea)->valuelen))\n#define\tNEXT_EA(ea) ((struct jfs_ea *) (((char *) (ea)) + (EA_SIZE (ea))))\n#define\tFIRST_EA(ealist) ((ealist)->ea)\n#define\tEALIST_SIZE(ealist) le32_to_cpu((ealist)->size)\n#define\tEND_EALIST(ealist) \\\n\t((struct jfs_ea *) (((char *) (ealist)) + EALIST_SIZE(ealist)))\n\nextern int __jfs_setxattr(tid_t, struct inode *, const char *, const void *,\n\t\t\t  size_t, int);\nextern ssize_t __jfs_getxattr(struct inode *, const char *, void *, size_t);\nextern ssize_t jfs_listxattr(struct dentry *, char *, size_t);\n\nextern const struct xattr_handler *jfs_xattr_handlers[];\n\n#ifdef CONFIG_JFS_SECURITY\nextern int jfs_init_security(tid_t, struct inode *, struct inode *,\n\t\t\t     const struct qstr *);\n#else\nstatic inline int jfs_init_security(tid_t tid, struct inode *inode,\n\t\t\t\t    struct inode *dir, const struct qstr *qstr)\n{\n\treturn 0;\n}\n#endif\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

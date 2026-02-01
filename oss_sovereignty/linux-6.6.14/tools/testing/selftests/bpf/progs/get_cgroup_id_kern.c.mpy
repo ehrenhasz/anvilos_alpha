@@ -1,0 +1,9 @@
+{
+  "module_name": "get_cgroup_id_kern.c",
+  "hash_id": "d1443db60eba78a10592c03285133bab6d959cef289f9f272d874cb658ca5391",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/get_cgroup_id_kern.c",
+  "human_readable_source": "\n\n\n#include <linux/bpf.h>\n#include <bpf/bpf_helpers.h>\n\nstruct {\n\t__uint(type, BPF_MAP_TYPE_ARRAY);\n\t__uint(max_entries, 1);\n\t__type(key, __u32);\n\t__type(value, __u64);\n} cg_ids SEC(\".maps\");\n\nstruct {\n\t__uint(type, BPF_MAP_TYPE_ARRAY);\n\t__uint(max_entries, 1);\n\t__type(key, __u32);\n\t__type(value, __u32);\n} pidmap SEC(\".maps\");\n\nSEC(\"tracepoint/syscalls/sys_enter_nanosleep\")\nint trace(void *ctx)\n{\n\t__u32 pid = bpf_get_current_pid_tgid();\n\t__u32 key = 0, *expected_pid;\n\t__u64 *val;\n\n\texpected_pid = bpf_map_lookup_elem(&pidmap, &key);\n\tif (!expected_pid || *expected_pid != pid)\n\t\treturn 0;\n\n\tval = bpf_map_lookup_elem(&cg_ids, &key);\n\tif (val)\n\t\t*val = bpf_get_current_cgroup_id();\n\n\treturn 0;\n}\n\nchar _license[] SEC(\"license\") = \"GPL\";\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "xss_msr_test.c",
+  "hash_id": "cf700cf075994ca0b62b8556ff69dc8b1abdce426f57510e5d99674fe543cb30",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/kvm/x86_64/xss_msr_test.c",
+  "human_readable_source": "\n \n\n#define _GNU_SOURCE  \n#include <sys/ioctl.h>\n\n#include \"test_util.h\"\n#include \"kvm_util.h\"\n#include \"vmx.h\"\n\n#define MSR_BITS      64\n\nint main(int argc, char *argv[])\n{\n\tbool xss_in_msr_list;\n\tstruct kvm_vm *vm;\n\tstruct kvm_vcpu *vcpu;\n\tuint64_t xss_val;\n\tint i, r;\n\n\t \n\tvm = vm_create_with_one_vcpu(&vcpu, NULL);\n\n\tTEST_REQUIRE(kvm_cpu_has(X86_FEATURE_XSAVES));\n\n\txss_val = vcpu_get_msr(vcpu, MSR_IA32_XSS);\n\tTEST_ASSERT(xss_val == 0,\n\t\t    \"MSR_IA32_XSS should be initialized to zero\\n\");\n\n\tvcpu_set_msr(vcpu, MSR_IA32_XSS, xss_val);\n\n\t \n\txss_in_msr_list = kvm_msr_is_in_save_restore_list(MSR_IA32_XSS);\n\tfor (i = 0; i < MSR_BITS; ++i) {\n\t\tr = _vcpu_set_msr(vcpu, MSR_IA32_XSS, 1ull << i);\n\n\t\t \n\t\tTEST_ASSERT(!r || r == 1, KVM_IOCTL_ERROR(KVM_SET_MSRS, r));\n\t\tTEST_ASSERT(r != 1 || xss_in_msr_list,\n\t\t\t    \"IA32_XSS was able to be set, but was not in save/restore list\");\n\t}\n\n\tkvm_vm_free(vm);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

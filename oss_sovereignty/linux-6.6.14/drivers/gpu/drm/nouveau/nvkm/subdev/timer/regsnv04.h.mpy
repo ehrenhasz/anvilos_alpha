@@ -1,0 +1,9 @@
+{
+  "module_name": "regsnv04.h",
+  "hash_id": "ddd869be877bc31ab1ad89ded451cbe54603530ddfbd574b0b98c2dc6254f330",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/subdev/timer/regsnv04.h",
+  "human_readable_source": " \n#define NV04_PTIMER_INTR_0      0x009100\n#define NV04_PTIMER_INTR_EN_0   0x009140\n#define NV04_PTIMER_NUMERATOR   0x009200\n#define NV04_PTIMER_DENOMINATOR 0x009210\n#define NV04_PTIMER_TIME_0      0x009400\n#define NV04_PTIMER_TIME_1      0x009410\n#define NV04_PTIMER_ALARM_0     0x009420\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

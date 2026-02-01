@@ -1,0 +1,9 @@
+{
+  "module_name": "mtd-nand-pxa3xx.h",
+  "hash_id": "02962bb996214cbeba710529783e4a1298d44d7518f32a67dae9f8ef4d1ef32e",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/platform_data/mtd-nand-pxa3xx.h",
+  "human_readable_source": " \n#ifndef __ASM_ARCH_PXA3XX_NAND_H\n#define __ASM_ARCH_PXA3XX_NAND_H\n\n#include <linux/mtd/mtd.h>\n#include <linux/mtd/partitions.h>\n\n \nstruct pxa3xx_nand_platform_data {\n\t \n\tbool keep_config;\n\t \n\tbool flash_bbt;\n\t \n\tint ecc_strength, ecc_step_size;\n\t \n\tconst struct mtd_partition *parts;\n\tunsigned int nr_parts;\n};\n\nextern void pxa3xx_set_nand_info(struct pxa3xx_nand_platform_data *info);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

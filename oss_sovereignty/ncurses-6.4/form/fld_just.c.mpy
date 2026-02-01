@@ -1,0 +1,9 @@
+{
+  "module_name": "fld_just.c",
+  "hash_id": "9661cc4846d87e1d5a3e38a75f25cc413322be85358d814b08ac147971a61157",
+  "original_prompt": "Ingested from ncurses-6.4/form/fld_just.c",
+  "human_readable_source": " \n\n \n\n#include \"form.priv.h\"\n\nMODULE_ID(\"$Id: fld_just.c,v 1.17 2021/06/17 21:20:30 tom Exp $\")\n\n \nFORM_EXPORT(int)\nset_field_just(FIELD *field, int just)\n{\n  int res = E_BAD_ARGUMENT;\n\n  T((T_CALLED(\"set_field_just(%p,%d)\"), (void *)field, just));\n\n  if ((just == NO_JUSTIFICATION) ||\n      (just == JUSTIFY_LEFT) ||\n      (just == JUSTIFY_CENTER) ||\n      (just == JUSTIFY_RIGHT))\n    {\n      Normalize_Field(field);\n      if (field->just != just)\n\t{\n\t  field->just = (short)just;\n\t  res = _nc_Synchronize_Attributes(field);\n\t}\n      else\n\tres = E_OK;\n    }\n  RETURN(res);\n}\n\n \nFORM_EXPORT(int)\nfield_just(const FIELD *field)\n{\n  T((T_CALLED(\"field_just(%p)\"), (const void *)field));\n  returnCode(Normalize_Field(field)->just);\n}\n\n \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

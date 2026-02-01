@@ -1,0 +1,9 @@
+{
+  "module_name": "test-fpending.sh",
+  "hash_id": "46dcbd187f677b3ab4a0cc16ef9e419e2814ce6e3fab07aaa4c86f337697740e",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-fpending.sh",
+  "human_readable_source": "#!/bin/sh\n\ntmpfile=\ntrap 'rm -fr $tmpfile' HUP INT QUIT TERM\n\ntmpfile=test-fpending.t\n\n${CHECKER} ./test-fpending${EXEEXT} > $tmpfile || exit 1\n\nrm -fr $tmpfile\n\nexit 0\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

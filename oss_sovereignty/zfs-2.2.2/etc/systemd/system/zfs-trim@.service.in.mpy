@@ -1,0 +1,9 @@
+{
+  "module_name": "zfs-trim@.service.in",
+  "hash_id": "90a2c720278400a721cdd018f9e03d50667f1940c0553e1099f4524a35b59595",
+  "original_prompt": "Ingested from zfs-2.2.2/etc/systemd/system/zfs-trim@.service.in",
+  "human_readable_source": "[Unit]\nDescription=zpool trim on %i\nDocumentation=man:zpool-trim(8)\nRequires=zfs.target\nAfter=zfs.target\nConditionACPower=true\nConditionPathIsDirectory=/sys/module/zfs\n\n[Service]\nEnvironmentFile=-@initconfdir@/zfs\nExecStart=/bin/sh -c '\\\nif @sbindir@/zpool status %i | grep -q \"(trimming)\"; then\\\nexec @sbindir@/zpool wait -t trim %i;\\\nelse exec @sbindir@/zpool trim -w %i; fi'\nExecStop=-/bin/sh -c '@sbindir@/zpool trim -s %i 2>/dev/null || true'\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

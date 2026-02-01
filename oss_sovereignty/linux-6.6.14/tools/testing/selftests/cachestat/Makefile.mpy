@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "3568cac332e3e0e89fe95dd1e0de527e621e4fd7037cdf99227954d46035cdc8",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/cachestat/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nTEST_GEN_PROGS := test_cachestat\n\nCFLAGS += $(KHDR_INCLUDES)\nCFLAGS += -Wall\nLDLIBS += -lrt\n\ninclude ../lib.mk\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

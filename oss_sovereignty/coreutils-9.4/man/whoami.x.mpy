@@ -1,0 +1,9 @@
+{
+  "module_name": "whoami.x",
+  "hash_id": "9676a73bcd75dd5c6e71a7b74def38346531a09b59fe3e5b9a31e306abcbe8a8",
+  "original_prompt": "Ingested from coreutils-9.4/man/whoami.x",
+  "human_readable_source": "[NAME]\nwhoami \\- print effective user name\n[DESCRIPTION]\n.\\\" Add any additional description here\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

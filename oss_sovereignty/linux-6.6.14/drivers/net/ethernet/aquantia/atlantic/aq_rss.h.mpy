@@ -1,0 +1,9 @@
+{
+  "module_name": "aq_rss.h",
+  "hash_id": "4face7e6c9a49eab0c6ab1d0f34e15efe8d3926b434d9224e656c0f116aa38fd",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/aquantia/atlantic/aq_rss.h",
+  "human_readable_source": " \n \n\n \n\n#ifndef AQ_RSS_H\n#define AQ_RSS_H\n\n#include \"aq_common.h\"\n#include \"aq_cfg.h\"\n\nstruct aq_rss_parameters {\n\tu16 base_cpu_number;\n\tu16 indirection_table_size;\n\tu16 hash_secret_key_size;\n\tu32 hash_secret_key[AQ_CFG_RSS_HASHKEY_SIZE / sizeof(u32)];\n\tu8 indirection_table[AQ_CFG_RSS_INDIRECTION_TABLE_MAX];\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

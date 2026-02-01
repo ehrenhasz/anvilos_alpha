@@ -1,0 +1,9 @@
+{
+  "module_name": "efct_unsol.h",
+  "hash_id": "150208a41da8e608c9b44275a7fc3136323664fdaa6d6c0842375508bec80e52",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/scsi/elx/efct/efct_unsol.h",
+  "human_readable_source": " \n \n\n#if !defined(__OSC_UNSOL_H__)\n#define __OSC_UNSOL_H__\n\nint\nefct_unsolicited_cb(void *arg, struct efc_hw_sequence *seq);\nint\nefct_dispatch_fcp_cmd(struct efct_node *node, struct efc_hw_sequence *seq);\nint\nefct_node_recv_abts_frame(struct efct_node *node, struct efc_hw_sequence *seq);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "intel_gt_defines.h",
+  "hash_id": "3d82dc9c1ebd2e17f0ef6cd50e530d88a545327d90949902a1db9be1e6c610e7",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/gt/intel_gt_defines.h",
+  "human_readable_source": " \n \n\n#ifndef __INTEL_GT_DEFINES__\n#define __INTEL_GT_DEFINES__\n\n#define I915_MAX_GT 2\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

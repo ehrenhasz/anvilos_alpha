@@ -1,0 +1,9 @@
+{
+  "module_name": "wiznet.h",
+  "hash_id": "747de38421f68624f323168a3eb2bfa4baf1ee7067f7cd45d192a59d047c15fa",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/platform_data/wiznet.h",
+  "human_readable_source": " \n \n\n#ifndef PLATFORM_DATA_WIZNET_H\n#define PLATFORM_DATA_WIZNET_H\n\n#include <linux/if_ether.h>\n\nstruct wiznet_platform_data {\n\tint\tlink_gpio;\n\tu8\tmac_addr[ETH_ALEN];\n};\n\n#ifndef CONFIG_WIZNET_BUS_SHIFT\n#define CONFIG_WIZNET_BUS_SHIFT 0\n#endif\n\n#define W5100_BUS_DIRECT_SIZE\t(0x8000 << CONFIG_WIZNET_BUS_SHIFT)\n#define W5300_BUS_DIRECT_SIZE\t(0x0400 << CONFIG_WIZNET_BUS_SHIFT)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

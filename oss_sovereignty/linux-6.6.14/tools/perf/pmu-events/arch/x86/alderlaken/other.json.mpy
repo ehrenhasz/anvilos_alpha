@@ -1,0 +1,9 @@
+{
+  "module_name": "other.json",
+  "hash_id": "a462692c0230da7d71e322d244974b457a9bec75eae62cab4098eb9661c265fd",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/pmu-events/arch/x86/alderlaken/other.json",
+  "human_readable_source": "[\n    {\n        \"BriefDescription\": \"Counts modified writebacks from L1 cache and L2 cache that have any type of response.\",\n        \"EventCode\": \"0xB7\",\n        \"EventName\": \"OCR.COREWB_M.ANY_RESPONSE\",\n        \"MSRIndex\": \"0x1a6,0x1a7\",\n        \"MSRValue\": \"0x10008\",\n        \"SampleAfterValue\": \"100003\",\n        \"UMask\": \"0x1\"\n    },\n    {\n        \"BriefDescription\": \"Counts demand data reads that have any type of response.\",\n        \"EventCode\": \"0xB7\",\n        \"EventName\": \"OCR.DEMAND_DATA_RD.ANY_RESPONSE\",\n        \"MSRIndex\": \"0x1a6,0x1a7\",\n        \"MSRValue\": \"0x10001\",\n        \"SampleAfterValue\": \"100003\",\n        \"UMask\": \"0x1\"\n    },\n    {\n        \"BriefDescription\": \"Counts demand reads for ownership (RFO) and software prefetches for exclusive ownership (PREFETCHW) that have any type of response.\",\n        \"EventCode\": \"0xB7\",\n        \"EventName\": \"OCR.DEMAND_RFO.ANY_RESPONSE\",\n        \"MSRIndex\": \"0x1a6,0x1a7\",\n        \"MSRValue\": \"0x10002\",\n        \"SampleAfterValue\": \"100003\",\n        \"UMask\": \"0x1\"\n    },\n    {\n        \"BriefDescription\": \"Counts streaming stores that have any type of response.\",\n        \"EventCode\": \"0xB7\",\n        \"EventName\": \"OCR.STREAMING_WR.ANY_RESPONSE\",\n        \"MSRIndex\": \"0x1a6,0x1a7\",\n        \"MSRValue\": \"0x10800\",\n        \"SampleAfterValue\": \"100003\",\n        \"UMask\": \"0x1\"\n    }\n]\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

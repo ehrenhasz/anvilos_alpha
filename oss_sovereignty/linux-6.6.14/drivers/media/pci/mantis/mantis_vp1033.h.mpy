@@ -1,0 +1,9 @@
+{
+  "module_name": "mantis_vp1033.h",
+  "hash_id": "722fc09c12812f4bcc5c7554a8556d9f64dfbc73b6a071ba78dffb589d00bfe3",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/pci/mantis/mantis_vp1033.h",
+  "human_readable_source": " \n \n\n#ifndef __MANTIS_VP1033_H\n#define __MANTIS_VP1033_H\n\n#include \"mantis_common.h\"\n\n#define MANTIS_VP_1033_DVB_S\t0x0016\n\nextern struct mantis_hwconfig vp1033_config;\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

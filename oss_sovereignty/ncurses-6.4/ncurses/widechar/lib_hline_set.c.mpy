@@ -1,0 +1,9 @@
+{
+  "module_name": "lib_hline_set.c",
+  "hash_id": "ad2a4afcf94de5ad3f34af7534484e010a2c63f1dae4a52341c00df56fa11a54",
+  "original_prompt": "Ingested from ncurses-6.4/ncurses/widechar/lib_hline_set.c",
+  "human_readable_source": " \n\n \n\n \n\n#include <curses.priv.h>\n\nMODULE_ID(\"$Id: lib_hline_set.c,v 1.6 2020/02/02 23:34:34 tom Exp $\")\n\nNCURSES_EXPORT(int)\nwhline_set(WINDOW *win, const cchar_t *ch, int n)\n{\n    int code = ERR;\n\n    T((T_CALLED(\"whline_set(%p,%s,%d)\"), (void *) win, _tracecchar_t(ch), n));\n\n    if (win) {\n\tstruct ldat *line = &(win->_line[win->_cury]);\n\tNCURSES_CH_T wch;\n\tint start = win->_curx;\n\tint end = start + n - 1;\n\n\tif (end > win->_maxx)\n\t    end = win->_maxx;\n\n\tCHANGED_RANGE(line, start, end);\n\n\tif (ch == 0)\n\t    wch = *WACS_HLINE;\n\telse\n\t    wch = *ch;\n\twch = _nc_render(win, wch);\n\n\twhile (end >= start) {\n\t    line->text[end] = wch;\n\t    end--;\n\t}\n\n\t_nc_synchook(win);\n\tcode = OK;\n    }\n    returnCode(code);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

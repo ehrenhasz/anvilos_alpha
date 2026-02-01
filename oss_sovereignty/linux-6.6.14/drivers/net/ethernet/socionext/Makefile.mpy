@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "190121d625f80ff0a4d87e81a6bb4d0fa4409f30974c325ace8f27c3bfb6b455",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/socionext/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for all ethernet ip drivers on Socionext platforms\n#\nobj-$(CONFIG_SNI_AVE) += sni_ave.o\nobj-$(CONFIG_SNI_NETSEC) += netsec.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

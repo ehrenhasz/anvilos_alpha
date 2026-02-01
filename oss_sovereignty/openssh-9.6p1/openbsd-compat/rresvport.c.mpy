@@ -1,0 +1,9 @@
+{
+  "module_name": "rresvport.c",
+  "hash_id": "12bce1c1780e270f574bddb7e7ddbd5a147b0732b4b3b062b1672e3cdac902d2",
+  "original_prompt": "Ingested from openssh-9.6p1/openbsd-compat/rresvport.c",
+  "human_readable_source": " \n \n\n \n\n#include \"includes.h\"\n\n#ifndef HAVE_RRESVPORT_AF\n\n#include <sys/types.h>\n#include <sys/socket.h>\n\n#include <netinet/in.h>\n#include <arpa/inet.h>\n\n#include <errno.h>\n#include <stdlib.h>\n#include <string.h>\n#include <unistd.h>\n\n#if 0\nint\nrresvport(int *alport)\n{\n\treturn rresvport_af(alport, AF_INET);\n}\n#endif\n\nint\nrresvport_af(int *alport, sa_family_t af)\n{\n\tstruct sockaddr_storage ss;\n\tstruct sockaddr *sa;\n\tu_int16_t *portp;\n\tint s;\n\tsocklen_t salen;\n\n\tmemset(&ss, '\\0', sizeof ss);\n\tsa = (struct sockaddr *)&ss;\n\n\tswitch (af) {\n\tcase AF_INET:\n\t\tsalen = sizeof(struct sockaddr_in);\n\t\tportp = &((struct sockaddr_in *)sa)->sin_port;\n\t\tbreak;\n\tcase AF_INET6:\n\t\tsalen = sizeof(struct sockaddr_in6);\n\t\tportp = &((struct sockaddr_in6 *)sa)->sin6_port;\n\t\tbreak;\n\tdefault:\n\t\terrno = EPFNOSUPPORT;\n\t\treturn (-1);\n\t}\n\tsa->sa_family = af;\n\t\n\ts = socket(af, SOCK_STREAM, 0);\n\tif (s < 0)\n\t\treturn (-1);\n\n\t*portp = htons(*alport);\n\tif (*alport < IPPORT_RESERVED - 1) {\n\t\tif (bind(s, sa, salen) >= 0)\n\t\t\treturn (s);\n\t\tif (errno != EADDRINUSE) {\n\t\t\t(void)close(s);\n\t\t\treturn (-1);\n\t\t}\n\t}\n\n\t*portp = 0;\n\tsa->sa_family = af;\n\tif (bindresvport_sa(s, sa) == -1) {\n\t\t(void)close(s);\n\t\treturn (-1);\n\t}\n\t*alport = ntohs(*portp);\n\treturn (s);\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "elfcore-compat.h",
+  "hash_id": "69d079a4ba88291a913fe9ce7b2655f2e3a93956663b4f3aa25c7bca466ebf62",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/elfcore-compat.h",
+  "human_readable_source": " \n#ifndef _LINUX_ELFCORE_COMPAT_H\n#define _LINUX_ELFCORE_COMPAT_H\n\n#include <linux/elf.h>\n#include <linux/elfcore.h>\n#include <linux/compat.h>\n\n \n\nstruct compat_elf_siginfo\n{\n\tcompat_int_t\t\t\tsi_signo;\n\tcompat_int_t\t\t\tsi_code;\n\tcompat_int_t\t\t\tsi_errno;\n};\n\nstruct compat_elf_prstatus_common\n{\n\tstruct compat_elf_siginfo\tpr_info;\n\tshort\t\t\t\tpr_cursig;\n\tcompat_ulong_t\t\t\tpr_sigpend;\n\tcompat_ulong_t\t\t\tpr_sighold;\n\tcompat_pid_t\t\t\tpr_pid;\n\tcompat_pid_t\t\t\tpr_ppid;\n\tcompat_pid_t\t\t\tpr_pgrp;\n\tcompat_pid_t\t\t\tpr_sid;\n\tstruct old_timeval32\t\tpr_utime;\n\tstruct old_timeval32\t\tpr_stime;\n\tstruct old_timeval32\t\tpr_cutime;\n\tstruct old_timeval32\t\tpr_cstime;\n};\n\nstruct compat_elf_prpsinfo\n{\n\tchar\t\t\t\tpr_state;\n\tchar\t\t\t\tpr_sname;\n\tchar\t\t\t\tpr_zomb;\n\tchar\t\t\t\tpr_nice;\n\tcompat_ulong_t\t\t\tpr_flag;\n\t__compat_uid_t\t\t\tpr_uid;\n\t__compat_gid_t\t\t\tpr_gid;\n\tcompat_pid_t\t\t\tpr_pid, pr_ppid, pr_pgrp, pr_sid;\n\t \n\tchar\t\t\t\tpr_fname[16];\n\tchar\t\t\t\tpr_psargs[ELF_PRARGSZ];\n};\n\n#ifdef CONFIG_ARCH_HAS_ELFCORE_COMPAT\n#include <asm/elfcore-compat.h>\n#endif\n\nstruct compat_elf_prstatus\n{\n\tstruct compat_elf_prstatus_common\tcommon;\n\tcompat_elf_gregset_t\t\tpr_reg;\n\tcompat_int_t\t\t\tpr_fpvalid;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

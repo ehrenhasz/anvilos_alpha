@@ -1,0 +1,9 @@
+{
+  "module_name": "test-set.h",
+  "hash_id": "714fafb389c35c19d285c3168ac4a28df2a57e1941839faa1a209d4d613e7ac2",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/unistr/test-set.h",
+  "human_readable_source": " \n\nint\nmain ()\n{\n  {\n#define NMAX 7\n    size_t n;\n\n    for (n = 0; n <= NMAX; n++)\n      {\n        UNIT dest[1 + NMAX + 1] =\n          { MAGIC, MAGIC, MAGIC, MAGIC, MAGIC, MAGIC, MAGIC, MAGIC, MAGIC };\n        UNIT *ret;\n        size_t i;\n\n        ret = U_SET (dest + 1, VALUE, n);\n        ASSERT (ret == dest + 1);\n        ASSERT (dest[0] == MAGIC);\n        for (i = 0; i < n; i++)\n          ASSERT (dest[1 + i] == VALUE);\n        ASSERT (dest[1 + n] == MAGIC);\n      }\n#undef NMAX\n  }\n\n  return 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

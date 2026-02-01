@@ -1,0 +1,9 @@
+{
+  "module_name": ".gitignore",
+  "hash_id": "8e5a32660e3d26c3a0728fdbac5de9826fdd9c122bf1234ad80762993461b0b0",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/size/.gitignore",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nget_size\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

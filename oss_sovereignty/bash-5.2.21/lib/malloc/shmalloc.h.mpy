@@ -1,0 +1,9 @@
+{
+  "module_name": "shmalloc.h",
+  "hash_id": "08b37c5b45e37f5335faac86af38a00233f547e4bc052e0b9ce268b4f005488a",
+  "original_prompt": "Ingested from bash-5.2.21/lib/malloc/shmalloc.h",
+  "human_readable_source": " \n \n\n#ifndef _SH_MALLOC_H\n#define _SH_MALLOC_H\n\n#ifndef PARAMS\n#  if defined (__STDC__) || defined (__GNUC__) || defined (__cplusplus)\n#    define PARAMS(protos) protos\n#  else\n#    define PARAMS(protos) ()\n#  endif\n#endif\n\n \n#ifndef PTR_T\n\n#if defined (__STDC__)\n#  define PTR_T void *\n#else\n#  define PTR_T char *\n#endif\n\n#endif  \n\n\nextern PTR_T sh_malloc PARAMS((size_t, const char *, int));\nextern PTR_T sh_realloc PARAMS((PTR_T, size_t, const char *, int));\nextern void sh_free PARAMS((PTR_T, const char *, int));\n\nextern PTR_T sh_memalign PARAMS((size_t, size_t, const char *, int));\n\nextern PTR_T sh_calloc PARAMS((size_t, size_t, const char *, int));\nextern void sh_cfree PARAMS((PTR_T, const char *, int));\n\nextern PTR_T sh_valloc PARAMS((size_t, const char *, int));\n\n \nextern int malloc_set_trace PARAMS((int));\nextern void malloc_set_tracefp ();\t \nextern void malloc_set_tracefn PARAMS((char *, char *));\n\n \nextern void mregister_dump_table PARAMS((void));\nextern void mregister_table_init PARAMS((void));\nextern int malloc_set_register PARAMS((int));\n\n \nextern void print_malloc_stats PARAMS((char *));\nextern void fprint_malloc_stats ();\t \nextern void trace_malloc_stats PARAMS((char *, char *));\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

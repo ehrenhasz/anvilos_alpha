@@ -1,0 +1,9 @@
+{
+  "module_name": "syscall.h",
+  "hash_id": "2a5454f24a6de204f330f98e8dba51f20ec0ff2852ba40566e2df00757a8966f",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/um/asm/syscall.h",
+  "human_readable_source": " \n#ifndef __UM_ASM_SYSCALL_H\n#define __UM_ASM_SYSCALL_H\n\n#include <asm/syscall-generic.h>\n#include <uapi/linux/audit.h>\n\ntypedef asmlinkage long (*sys_call_ptr_t)(unsigned long, unsigned long,\n\t\t\t\t\t  unsigned long, unsigned long,\n\t\t\t\t\t  unsigned long, unsigned long);\n\nstatic inline int syscall_get_arch(struct task_struct *task)\n{\n#ifdef CONFIG_X86_32\n\treturn AUDIT_ARCH_I386;\n#else\n\treturn AUDIT_ARCH_X86_64;\n#endif\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "image-tags.yml",
+  "hash_id": "1ca1db5c4d22e5d90c4e3592c420ab3837bc9175c5f55c2e8ccb053aa78f1c11",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/ci/image-tags.yml",
+  "human_readable_source": "variables:\n   CONTAINER_TAG: \"2023-08-10-mesa-uprev\"\n   DEBIAN_X86_64_BUILD_BASE_IMAGE: \"debian/x86_64_build-base\"\n   DEBIAN_BASE_TAG: \"${CONTAINER_TAG}\"\n\n   DEBIAN_X86_64_BUILD_IMAGE_PATH: \"debian/x86_64_build\"\n   DEBIAN_BUILD_TAG: \"${CONTAINER_TAG}\"\n\n   KERNEL_ROOTFS_TAG: \"${CONTAINER_TAG}\"\n\n   DEBIAN_X86_64_TEST_BASE_IMAGE: \"debian/x86_64_test-base\"\n   DEBIAN_X86_64_TEST_IMAGE_GL_PATH: \"debian/x86_64_test-gl\"\n   DEBIAN_X86_64_TEST_GL_TAG: \"${CONTAINER_TAG}\"\n\n   ALPINE_X86_64_LAVA_SSH_TAG: \"${CONTAINER_TAG}\"",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

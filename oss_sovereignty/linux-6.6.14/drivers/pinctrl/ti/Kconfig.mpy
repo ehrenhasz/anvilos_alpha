@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "9ada5caf8ed23577f221e5adcecca8c11a88bbd9d5857e636a27c4ec98216c7c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/pinctrl/ti/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig PINCTRL_TI_IODELAY\n\ttristate \"TI IODelay Module pinconf driver\"\n\tdepends on OF && (SOC_DRA7XX || COMPILE_TEST)\n\tselect GENERIC_PINCTRL_GROUPS\n\tselect GENERIC_PINMUX_FUNCTIONS\n\tselect GENERIC_PINCONF\n\tselect REGMAP_MMIO\n\thelp\n\t  Say Y here to support Texas Instruments' IO delay pinconf driver.\n\t  IO delay module is used for the DRA7 SoC family.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

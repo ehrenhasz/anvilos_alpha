@@ -1,0 +1,9 @@
+{
+  "module_name": "test_tcpbpf.h",
+  "hash_id": "f68248f014dbc05a2bba5f4d1ec257e150914ec75f42190ae7ad45bd71123385",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/test_tcpbpf.h",
+  "human_readable_source": "\n\n#ifndef _TEST_TCPBPF_H\n#define _TEST_TCPBPF_H\n\nstruct tcpbpf_globals {\n\t__u32 event_map;\n\t__u32 total_retrans;\n\t__u32 data_segs_in;\n\t__u32 data_segs_out;\n\t__u32 bad_cb_test_rv;\n\t__u32 good_cb_test_rv;\n\t__u64 bytes_received;\n\t__u64 bytes_acked;\n\t__u32 num_listen;\n\t__u32 num_close_events;\n\t__u32 tcp_save_syn;\n\t__u32 tcp_saved_syn;\n\t__u32 window_clamp_client;\n\t__u32 window_clamp_server;\n};\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

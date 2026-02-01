@@ -1,0 +1,9 @@
+{
+  "module_name": "percpu.h",
+  "hash_id": "3bcf7f7413036cb0dafb0c64da6de4a5216c2f9bb6431eecf502068e39ebb569",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/radix-tree/linux/percpu.h",
+  "human_readable_source": " \n#define DECLARE_PER_CPU(type, val) extern type val\n#define DEFINE_PER_CPU(type, val) type val\n\n#define __get_cpu_var(var)\tvar\n#define this_cpu_ptr(var)\tvar\n#define this_cpu_read(var)\tvar\n#define this_cpu_xchg(var, val)\t\tuatomic_xchg(&var, val)\n#define this_cpu_cmpxchg(var, old, new)\tuatomic_cmpxchg(&var, old, new)\n#define per_cpu_ptr(ptr, cpu)   ({ (void)(cpu); (ptr); })\n#define per_cpu(var, cpu)\t(*per_cpu_ptr(&(var), cpu))\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

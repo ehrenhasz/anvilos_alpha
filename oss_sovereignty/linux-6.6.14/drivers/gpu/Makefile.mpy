@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "00ea32213aa4252d90ba70cfe6d32e04d02e2bf9a005bd53ff30a8bc5c2e5649",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n# drm/tegra depends on host1x, so if both drivers are built-in care must be\n# taken to initialize them in the correct order. Link order is the only way\n# to ensure this currently.\nobj-y\t\t\t+= host1x/ drm/ vga/\nobj-$(CONFIG_IMX_IPUV3_CORE)\t+= ipu-v3/\nobj-$(CONFIG_TRACE_GPU_MEM)\t\t+= trace/\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

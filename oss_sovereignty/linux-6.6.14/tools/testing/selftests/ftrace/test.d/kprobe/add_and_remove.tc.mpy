@@ -1,0 +1,9 @@
+{
+  "module_name": "add_and_remove.tc",
+  "hash_id": "2e6840f90375cf55c00e5d440076f7da3fefd4f8bf7aea1c7f8cf1e83d6f7427",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/ftrace/test.d/kprobe/add_and_remove.tc",
+  "human_readable_source": "#!/bin/sh\n# SPDX-License-Identifier: GPL-2.0\n# description: Kprobe dynamic event - adding and removing\n# requires: kprobe_events\n\necho p:myevent $FUNCTION_FORK > kprobe_events\ngrep myevent kprobe_events\ntest -d events/kprobes/myevent\necho > kprobe_events\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

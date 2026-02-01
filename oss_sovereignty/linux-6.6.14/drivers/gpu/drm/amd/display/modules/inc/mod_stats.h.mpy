@@ -1,0 +1,9 @@
+{
+  "module_name": "mod_stats.h",
+  "hash_id": "92a242d95609679e740775f829484ecc7b6ff5b94899e7f15ec85d175d439629",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/modules/inc/mod_stats.h",
+  "human_readable_source": " \n\n#ifndef MODULES_INC_MOD_STATS_H_\n#define MODULES_INC_MOD_STATS_H_\n\n#include \"dm_services.h\"\n\nstruct mod_stats {\n\tint dummy;\n};\n\nstruct mod_stats_caps {\n\tbool dummy;\n};\n\nstruct mod_stats_init_params {\n\tunsigned int stats_enable;\n\tunsigned int stats_entries;\n};\n\nstruct mod_stats *mod_stats_create(struct dc *dc,\n\t\tstruct mod_stats_init_params *init_params);\n\nvoid mod_stats_destroy(struct mod_stats *mod_stats);\n\nbool mod_stats_init(struct mod_stats *mod_stats);\n\nvoid mod_stats_dump(struct mod_stats *mod_stats);\n\nvoid mod_stats_reset_data(struct mod_stats *mod_stats);\n\nvoid mod_stats_update_event(struct mod_stats *mod_stats,\n\t\tchar *event_string,\n\t\tunsigned int length);\n\nvoid mod_stats_update_flip(struct mod_stats *mod_stats,\n\t\tunsigned long timestamp_in_ns);\n\nvoid mod_stats_update_vupdate(struct mod_stats *mod_stats,\n\t\tunsigned long timestamp_in_ns);\n\nvoid mod_stats_update_freesync(struct mod_stats *mod_stats,\n\t\tunsigned int v_total_min,\n\t\tunsigned int v_total_max,\n\t\tunsigned int event_triggers,\n\t\tunsigned int window_min,\n\t\tunsigned int window_max,\n\t\tunsigned int lfc_mid_point_in_us,\n\t\tunsigned int inserted_frames,\n\t\tunsigned int inserted_frame_duration_in_us);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

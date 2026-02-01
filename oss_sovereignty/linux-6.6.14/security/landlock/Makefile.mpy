@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "64bc01b8d2c66e4f475175e298882330b62e0703c99a4715088d52fdf3350ecf",
+  "original_prompt": "Ingested from linux-6.6.14/security/landlock/Makefile",
+  "human_readable_source": "obj-$(CONFIG_SECURITY_LANDLOCK) := landlock.o\n\nlandlock-y := setup.o syscalls.o object.o ruleset.o \\\n\tcred.o ptrace.o fs.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

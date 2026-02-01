@@ -1,0 +1,9 @@
+{
+  "module_name": "renesas.h",
+  "hash_id": "861a11f3f33d511c6e6544b8675c17e26607b71d3e088f6cf2400b04aa1c652b",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/clk/renesas.h",
+  "human_readable_source": " \n\n#ifndef __LINUX_CLK_RENESAS_H_\n#define __LINUX_CLK_RENESAS_H_\n\n#include <linux/types.h>\n\nstruct device;\nstruct device_node;\nstruct generic_pm_domain;\n\nvoid cpg_mstp_add_clk_domain(struct device_node *np);\n#ifdef CONFIG_CLK_RENESAS_CPG_MSTP\nint cpg_mstp_attach_dev(struct generic_pm_domain *unused, struct device *dev);\nvoid cpg_mstp_detach_dev(struct generic_pm_domain *unused, struct device *dev);\n#else\n#define cpg_mstp_attach_dev\tNULL\n#define cpg_mstp_detach_dev\tNULL\n#endif\n\n#ifdef CONFIG_CLK_RENESAS_CPG_MSSR\nint cpg_mssr_attach_dev(struct generic_pm_domain *unused, struct device *dev);\nvoid cpg_mssr_detach_dev(struct generic_pm_domain *unused, struct device *dev);\n#else\n#define cpg_mssr_attach_dev\tNULL\n#define cpg_mssr_detach_dev\tNULL\n#endif\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

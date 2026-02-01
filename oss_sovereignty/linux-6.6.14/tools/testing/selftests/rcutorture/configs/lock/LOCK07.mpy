@@ -1,0 +1,9 @@
+{
+  "module_name": "LOCK07",
+  "hash_id": "4baa039f7e067e40f14956d9eafe1fd0172f463f650683e303cd282143186b55",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/rcutorture/configs/lock/LOCK07",
+  "human_readable_source": "CONFIG_SMP=y\nCONFIG_NR_CPUS=4\nCONFIG_HOTPLUG_CPU=y\nCONFIG_PREEMPT_NONE=n\nCONFIG_PREEMPT_VOLUNTARY=n\nCONFIG_PREEMPT=y\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

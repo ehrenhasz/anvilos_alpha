@@ -1,0 +1,9 @@
+{
+  "module_name": "intel_pipe_crc.h",
+  "hash_id": "10834b0e9874976b24834d9c6ffb304f5ad0dc1ca3fe835f790d4012d0686eb7",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/display/intel_pipe_crc.h",
+  "human_readable_source": " \n \n\n#ifndef __INTEL_PIPE_CRC_H__\n#define __INTEL_PIPE_CRC_H__\n\n#include <linux/types.h>\n\nstruct drm_crtc;\nstruct drm_i915_private;\nstruct intel_crtc;\n\n#ifdef CONFIG_DEBUG_FS\nvoid intel_crtc_crc_init(struct intel_crtc *crtc);\nint intel_crtc_set_crc_source(struct drm_crtc *crtc, const char *source_name);\nint intel_crtc_verify_crc_source(struct drm_crtc *crtc,\n\t\t\t\t const char *source_name, size_t *values_cnt);\nconst char *const *intel_crtc_get_crc_sources(struct drm_crtc *crtc,\n\t\t\t\t\t      size_t *count);\nvoid intel_crtc_disable_pipe_crc(struct intel_crtc *crtc);\nvoid intel_crtc_enable_pipe_crc(struct intel_crtc *crtc);\n#else\nstatic inline void intel_crtc_crc_init(struct intel_crtc *crtc) {}\n#define intel_crtc_set_crc_source NULL\n#define intel_crtc_verify_crc_source NULL\n#define intel_crtc_get_crc_sources NULL\nstatic inline void intel_crtc_disable_pipe_crc(struct intel_crtc *crtc)\n{\n}\n\nstatic inline void intel_crtc_enable_pipe_crc(struct intel_crtc *crtc)\n{\n}\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

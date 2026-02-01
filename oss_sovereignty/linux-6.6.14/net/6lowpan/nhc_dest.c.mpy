@@ -1,0 +1,9 @@
+{
+  "module_name": "nhc_dest.c",
+  "hash_id": "109fd62f8cc255a2f5d0940c40e5e9708c324d3d47cc0064de1f5e7f7d1038a4",
+  "original_prompt": "Ingested from linux-6.6.14/net/6lowpan/nhc_dest.c",
+  "human_readable_source": "\n \n\n#include \"nhc.h\"\n\n#define LOWPAN_NHC_DEST_ID_0\t0xe6\n#define LOWPAN_NHC_DEST_MASK_0\t0xfe\n\nLOWPAN_NHC(nhc_dest, \"RFC6282 Destination Options\", NEXTHDR_DEST, 0,\n\t   LOWPAN_NHC_DEST_ID_0, LOWPAN_NHC_DEST_MASK_0,  NULL, NULL);\n\nmodule_lowpan_nhc(nhc_dest);\nMODULE_DESCRIPTION(\"6LoWPAN next header RFC6282 Destination Options compression\");\nMODULE_LICENSE(\"GPL\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

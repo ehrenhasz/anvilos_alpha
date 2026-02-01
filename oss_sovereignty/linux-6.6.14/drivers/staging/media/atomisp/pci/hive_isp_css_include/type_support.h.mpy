@@ -1,0 +1,9 @@
+{
+  "module_name": "type_support.h",
+  "hash_id": "ddbe6337bc17d6b62230d259e0c9aa961e3a6ad56cb1949fb6ad9b6a010ee30f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/hive_isp_css_include/type_support.h",
+  "human_readable_source": " \n \n\n#ifndef __TYPE_SUPPORT_H_INCLUDED__\n#define __TYPE_SUPPORT_H_INCLUDED__\n\n \n\n#define IA_CSS_UINT8_T_BITS\t\t\t\t\t\t8\n#define IA_CSS_UINT16_T_BITS\t\t\t\t\t16\n#define IA_CSS_UINT32_T_BITS\t\t\t\t\t32\n#define IA_CSS_INT32_T_BITS\t\t\t\t\t\t32\n#define IA_CSS_UINT64_T_BITS\t\t\t\t\t64\n\n#define CHAR_BIT (8)\n\n#include <linux/types.h>\n#include <linux/limits.h>\n#include <linux/errno.h>\n#define HOST_ADDRESS(x) (unsigned long)(x)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

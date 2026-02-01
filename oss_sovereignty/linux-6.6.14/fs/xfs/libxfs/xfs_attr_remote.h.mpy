@@ -1,0 +1,9 @@
+{
+  "module_name": "xfs_attr_remote.h",
+  "hash_id": "94617ba8440d875f0f25ff9c59577257542d611f185839e8d74ac965a21b553d",
+  "original_prompt": "Ingested from linux-6.6.14/fs/xfs/libxfs/xfs_attr_remote.h",
+  "human_readable_source": " \n \n#ifndef __XFS_ATTR_REMOTE_H__\n#define\t__XFS_ATTR_REMOTE_H__\n\nint xfs_attr3_rmt_blocks(struct xfs_mount *mp, int attrlen);\n\nint xfs_attr_rmtval_get(struct xfs_da_args *args);\nint xfs_attr_rmtval_stale(struct xfs_inode *ip, struct xfs_bmbt_irec *map,\n\t\txfs_buf_flags_t incore_flags);\nint xfs_attr_rmtval_invalidate(struct xfs_da_args *args);\nint xfs_attr_rmtval_remove(struct xfs_attr_intent *attr);\nint xfs_attr_rmt_find_hole(struct xfs_da_args *args);\nint xfs_attr_rmtval_set_value(struct xfs_da_args *args);\nint xfs_attr_rmtval_set_blk(struct xfs_attr_intent *attr);\nint xfs_attr_rmtval_find_space(struct xfs_attr_intent *attr);\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

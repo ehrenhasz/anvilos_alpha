@@ -1,0 +1,9 @@
+{
+  "module_name": "axg-aoclkc.h",
+  "hash_id": "8d80c4c59db1243357d017db625968cb77d2182883755ea8ac0f39400a88c6f6",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/reset/axg-aoclkc.h",
+  "human_readable_source": " \n \n\n#ifndef DT_BINDINGS_RESET_AMLOGIC_MESON_AXG_AOCLK\n#define DT_BINDINGS_RESET_AMLOGIC_MESON_AXG_AOCLK\n\n#define RESET_AO_REMOTE\t\t0\n#define RESET_AO_I2C_MASTER\t1\n#define RESET_AO_I2C_SLAVE\t2\n#define RESET_AO_UART1\t\t3\n#define RESET_AO_UART2\t\t4\n#define RESET_AO_IR_BLASTER\t5\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

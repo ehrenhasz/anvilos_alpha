@@ -1,0 +1,9 @@
+{
+  "module_name": "string.h",
+  "hash_id": "5403df6ce5978270d293ef8a0e0aa352b7cf36a7142e03c65ad0a9225448015d",
+  "original_prompt": "Ingested from zfs-2.2.2/lib/libspl/include/string.h",
+  "human_readable_source": " \n \n\n#ifndef _LIBSPL_STRING_H\n#define\t_LIBSPL_STRING_H\n\n#include_next <string.h>\n\n#ifndef HAVE_STRLCAT\nextern size_t strlcat(char *dst, const char *src, size_t dstsize);\n#endif\n\n#ifndef HAVE_STRLCPY\nextern size_t strlcpy(char *dst, const char *src, size_t len);\n#endif\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

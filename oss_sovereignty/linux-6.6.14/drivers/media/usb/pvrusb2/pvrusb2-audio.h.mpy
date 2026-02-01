@@ -1,0 +1,9 @@
+{
+  "module_name": "pvrusb2-audio.h",
+  "hash_id": "f70767968cbc192c1966cc436830b5c341c616bed1f8c211d6568298fc64ae21",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/usb/pvrusb2/pvrusb2-audio.h",
+  "human_readable_source": " \n \n\n#ifndef __PVRUSB2_AUDIO_H\n#define __PVRUSB2_AUDIO_H\n\n#include \"pvrusb2-hdw-internal.h\"\nvoid pvr2_msp3400_subdev_update(struct pvr2_hdw *, struct v4l2_subdev *);\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

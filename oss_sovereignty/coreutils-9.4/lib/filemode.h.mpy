@@ -1,0 +1,9 @@
+{
+  "module_name": "filemode.h",
+  "hash_id": "d47734d7d48b15a6dbe6dece1537a3b46a6c7a3b732e65ccc64846b4d96ce2fe",
+  "original_prompt": "Ingested from coreutils-9.4/lib/filemode.h",
+  "human_readable_source": " \n# if !_GL_CONFIG_H_INCLUDED\n#  error \"Please include config.h first.\"\n# endif\n\n# include <sys/types.h>\n# include <sys/stat.h>\n\n \n# if HAVE_DECL_STRMODE\n#  include <string.h>  \n#  include <unistd.h>  \n# endif\n\n# ifdef __cplusplus\nextern \"C\" {\n# endif\n\n# if !HAVE_DECL_STRMODE\nextern void strmode (mode_t mode, char *str);\n# endif\n\nextern void filemodestring (struct stat const *statp, char *str);\n\n# ifdef __cplusplus\n}\n# endif\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

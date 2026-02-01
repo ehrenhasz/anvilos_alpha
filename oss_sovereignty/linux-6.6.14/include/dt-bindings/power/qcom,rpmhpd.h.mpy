@@ -1,0 +1,9 @@
+{
+  "module_name": "qcom,rpmhpd.h",
+  "hash_id": "c6d5ef3394450f037ccc7591f1b29ba50165e125ab4911c7b747f94b644e1447",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/power/qcom,rpmhpd.h",
+  "human_readable_source": " \n \n\n#ifndef _DT_BINDINGS_POWER_QCOM_RPMHPD_H\n#define _DT_BINDINGS_POWER_QCOM_RPMHPD_H\n\n \n#define RPMHPD_CX               0\n#define RPMHPD_CX_AO\t\t1\n#define RPMHPD_EBI\t\t2\n#define RPMHPD_GFX\t\t3\n#define RPMHPD_LCX\t\t4\n#define RPMHPD_LMX\t\t5\n#define RPMHPD_MMCX\t\t6\n#define RPMHPD_MMCX_AO\t\t7\n#define RPMHPD_MX\t\t8\n#define RPMHPD_MX_AO\t\t9\n#define RPMHPD_MXC\t\t10\n#define RPMHPD_MXC_AO\t\t11\n#define RPMHPD_MSS              12\n#define RPMHPD_NSP\t\t13\n#define RPMHPD_NSP0             14\n#define RPMHPD_NSP1             15\n#define RPMHPD_QPHY             16\n#define RPMHPD_DDR              17\n#define RPMHPD_XO               18\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

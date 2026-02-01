@@ -1,0 +1,9 @@
+{
+  "module_name": "mmu_rb.h",
+  "hash_id": "f04290cd39492d0e288e137b491f5c243ea11712065bcd446a6f93167d05cc33",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/infiniband/hw/hfi1/mmu_rb.h",
+  "human_readable_source": " \n \n\n#ifndef _HFI1_MMU_RB_H\n#define _HFI1_MMU_RB_H\n\n#include \"hfi.h\"\n\nstruct mmu_rb_node {\n\tunsigned long addr;\n\tunsigned long len;\n\tunsigned long __last;\n\tstruct rb_node node;\n\tstruct mmu_rb_handler *handler;\n\tstruct list_head list;\n\tstruct kref refcount;\n};\n\n \nstruct mmu_rb_ops {\n\tbool (*filter)(struct mmu_rb_node *node, unsigned long addr,\n\t\t       unsigned long len);\n\tvoid (*remove)(void *ops_arg, struct mmu_rb_node *mnode);\n\tint (*evict)(void *ops_arg, struct mmu_rb_node *mnode,\n\t\t     void *evict_arg, bool *stop);\n};\n\nstruct mmu_rb_handler {\n\t \n\tstruct mmu_notifier mn;\n\tspinlock_t lock;         \n\n\t \n\tstruct rb_root_cached root ____cacheline_aligned_in_smp;\n\tvoid *ops_arg;\n\tstruct mmu_rb_ops *ops;\n\tstruct list_head lru_list;\n\tstruct work_struct del_work;\n\tstruct list_head del_list;\n\tstruct workqueue_struct *wq;\n\tvoid *free_ptr;\n};\n\nint hfi1_mmu_rb_register(void *ops_arg,\n\t\t\t struct mmu_rb_ops *ops,\n\t\t\t struct workqueue_struct *wq,\n\t\t\t struct mmu_rb_handler **handler);\nvoid hfi1_mmu_rb_unregister(struct mmu_rb_handler *handler);\nint hfi1_mmu_rb_insert(struct mmu_rb_handler *handler,\n\t\t       struct mmu_rb_node *mnode);\nvoid hfi1_mmu_rb_release(struct kref *refcount);\n\nvoid hfi1_mmu_rb_evict(struct mmu_rb_handler *handler, void *evict_arg);\nstruct mmu_rb_node *hfi1_mmu_rb_get_first(struct mmu_rb_handler *handler,\n\t\t\t\t\t  unsigned long addr,\n\t\t\t\t\t  unsigned long len);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

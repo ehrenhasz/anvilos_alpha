@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "f91329aee511542ee4654ac55c0092adc6971ef5286ab10278d29ad8a8fe50b6",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/iio/accel/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for industrial I/O accelerometer drivers\n#\n\nobj-$(CONFIG_ADIS16203) += adis16203.o\nobj-$(CONFIG_ADIS16240) += adis16240.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

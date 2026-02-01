@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "ec6d47c643a80c9b6790a7fd8e1b0a6c34a8d54d1c4cf6d20e2e24e22be5faeb",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/powerpc/switch_endian/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nTEST_GEN_PROGS := switch_endian_test\n\nASFLAGS += -O2 -Wall -g -nostdlib -m64\n\nEXTRA_CLEAN = $(OUTPUT)/*.o $(OUTPUT)/check-reversed.S\n\ntop_srcdir = ../../../../..\ninclude ../../lib.mk\n\n$(OUTPUT)/switch_endian_test: ASFLAGS += -I $(OUTPUT)\n$(OUTPUT)/switch_endian_test: $(OUTPUT)/check-reversed.S\n\n$(OUTPUT)/check-reversed.o: $(OUTPUT)/check.o\n\t$(CROSS_COMPILE)objcopy -j .text --reverse-bytes=4 -O binary $< $@\n\n$(OUTPUT)/check-reversed.S: $(OUTPUT)/check-reversed.o\n\thexdump -v -e '/1 \".byte 0x%02X\\n\"' $< > $@\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

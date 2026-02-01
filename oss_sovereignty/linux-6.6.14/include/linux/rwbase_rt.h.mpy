@@ -1,0 +1,9 @@
+{
+  "module_name": "rwbase_rt.h",
+  "hash_id": "aaceebc0ce075b9897a4a3131e4c1c26cd556aede7199e32b44b49e409dba15d",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/rwbase_rt.h",
+  "human_readable_source": "\n#ifndef _LINUX_RWBASE_RT_H\n#define _LINUX_RWBASE_RT_H\n\n#include <linux/rtmutex.h>\n#include <linux/atomic.h>\n\n#define READER_BIAS\t\t(1U << 31)\n#define WRITER_BIAS\t\t(1U << 30)\n\nstruct rwbase_rt {\n\tatomic_t\t\treaders;\n\tstruct rt_mutex_base\trtmutex;\n};\n\n#define __RWBASE_INITIALIZER(name)\t\t\t\t\\\n{\t\t\t\t\t\t\t\t\\\n\t.readers = ATOMIC_INIT(READER_BIAS),\t\t\t\\\n\t.rtmutex = __RT_MUTEX_BASE_INITIALIZER(name.rtmutex),\t\\\n}\n\n#define init_rwbase_rt(rwbase)\t\t\t\t\t\\\n\tdo {\t\t\t\t\t\t\t\\\n\t\trt_mutex_base_init(&(rwbase)->rtmutex);\t\t\\\n\t\tatomic_set(&(rwbase)->readers, READER_BIAS);\t\\\n\t} while (0)\n\n\nstatic __always_inline bool rw_base_is_locked(struct rwbase_rt *rwb)\n{\n\treturn atomic_read(&rwb->readers) != READER_BIAS;\n}\n\nstatic __always_inline bool rw_base_is_contended(struct rwbase_rt *rwb)\n{\n\treturn atomic_read(&rwb->readers) > 0;\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "exit-status.sh",
+  "hash_id": "251c690f840b25fc8cfe85da458f3d30c4a1417c6116f54c1ee7742fc64c25e9",
+  "original_prompt": "Ingested from openssh-9.6p1/regress/exit-status.sh",
+  "human_readable_source": "#\t$OpenBSD: exit-status.sh,v 1.8 2017/04/30 23:34:55 djm Exp $\n#\tPlaced in the Public Domain.\n\ntid=\"remote exit status\"\n\nfor s in 0 1 4 5 44; do\n\ttrace \"status $s\"\n\tverbose \"test $tid: status $s\"\n\t${SSH} -F $OBJ/ssh_proxy otherhost exit $s\n\tr=$?\n\tif [ $r -ne $s ]; then\n\t\tfail \"exit code mismatch for: $r != $s\"\n\tfi\n\n\t# same with early close of stdout/err\n\t${SSH} -F $OBJ/ssh_proxy -n otherhost exec \\\n\t    sh -c \\'\"sleep 2; exec > /dev/null 2>&1; sleep 3; exit $s\"\\'\n\tr=$?\n\tif [ $r -ne $s ]; then\n\t\tfail \"exit code (with sleep) mismatch for: $r != $s\"\n\tfi\ndone\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

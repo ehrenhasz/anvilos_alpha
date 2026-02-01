@@ -1,0 +1,9 @@
+{
+  "module_name": "lp8755.h",
+  "hash_id": "118cd7ff32471f8c93cb5cd901a786efb126711689b14e1f97477d3201c3b970",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/platform_data/lp8755.h",
+  "human_readable_source": " \n \n\n#ifndef _LP8755_H\n#define _LP8755_H\n\n#include <linux/regulator/consumer.h>\n\n#define LP8755_NAME \"lp8755-regulator\"\n \n#define LP8755_EVENT_PWR_FAULT REGULATOR_EVENT_FAIL\n#define LP8755_EVENT_OCP REGULATOR_EVENT_OVER_CURRENT\n#define LP8755_EVENT_OVP 0x10000\n#define LP8755_EVENT_TEMP_WARN 0x2000\n#define LP8755_EVENT_TEMP_SHDN REGULATOR_EVENT_OVER_TEMP\n#define LP8755_EVENT_I_LOAD\t0x40000\n\nenum lp8755_bucks {\n\tLP8755_BUCK0 = 0,\n\tLP8755_BUCK1,\n\tLP8755_BUCK2,\n\tLP8755_BUCK3,\n\tLP8755_BUCK4,\n\tLP8755_BUCK5,\n\tLP8755_BUCK_MAX,\n};\n\n \nenum lp8755_mphase_config {\n\tMPHASE_CONF0,\n\tMPHASE_CONF1,\n\tMPHASE_CONF2,\n\tMPHASE_CONF3,\n\tMPHASE_CONF4,\n\tMPHASE_CONF5,\n\tMPHASE_CONF6,\n\tMPHASE_CONF7,\n\tMPHASE_CONF8,\n\tMPHASE_CONF_MAX\n};\n\n \nstruct lp8755_platform_data {\n\tint mphase;\n\tstruct regulator_init_data *buck_data[LP8755_BUCK_MAX];\n};\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

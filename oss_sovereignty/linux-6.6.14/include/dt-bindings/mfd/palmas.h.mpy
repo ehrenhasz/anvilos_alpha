@@ -1,0 +1,9 @@
+{
+  "module_name": "palmas.h",
+  "hash_id": "e319d66ec37dda8b5500eeadc06b7ef0787e2c8ccba2a0133ea7ad6597107318",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/mfd/palmas.h",
+  "human_readable_source": " \n \n\n#ifndef __DT_BINDINGS_PALMAS_H\n#define __DT_BINDINGS_PALMAS_H\n\n \n#define PALMAS_EXT_CONTROL_PIN_ENABLE1\t1\n#define PALMAS_EXT_CONTROL_PIN_ENABLE2\t2\n#define PALMAS_EXT_CONTROL_PIN_NSLEEP\t3\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

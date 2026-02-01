@@ -1,0 +1,9 @@
+{
+  "module_name": "cmpxchg16b_emu.S",
+  "hash_id": "87d8663384aaf45822b06056237753869959ec633e29d1714f0c1b64f61b5785",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/lib/cmpxchg16b_emu.S",
+  "human_readable_source": " \n#include <linux/linkage.h>\n#include <asm/percpu.h>\n#include <asm/processor-flags.h>\n\n.text\n\n \nSYM_FUNC_START(this_cpu_cmpxchg16b_emu)\n\n\tpushfq\n\tcli\n\n\t \n\tcmpq\tPER_CPU_VAR(0(%rsi)), %rax\n\tjne\t.Lnot_same\n\tcmpq\tPER_CPU_VAR(8(%rsi)), %rdx\n\tjne\t.Lnot_same\n\n\t \n\tmovq\t%rbx, PER_CPU_VAR(0(%rsi))\n\tmovq\t%rcx, PER_CPU_VAR(8(%rsi))\n\n\t \n\torl\t$X86_EFLAGS_ZF, (%rsp)\n\n\tpopfq\n\tRET\n\n.Lnot_same:\n\t \n\n\t \n\tmovq\tPER_CPU_VAR(0(%rsi)), %rax\n\tmovq\tPER_CPU_VAR(8(%rsi)), %rdx\n\n\t \n\tandl\t$(~X86_EFLAGS_ZF), (%rsp)\n\n\tpopfq\n\tRET\n\nSYM_FUNC_END(this_cpu_cmpxchg16b_emu)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

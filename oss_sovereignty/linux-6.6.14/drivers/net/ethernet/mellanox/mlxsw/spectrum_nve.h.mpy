@@ -1,0 +1,9 @@
+{
+  "module_name": "spectrum_nve.h",
+  "hash_id": "de649ab1834febf09b97bb12173d7b746c0d89ce38356ed0a815d5794b9743e3",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/mellanox/mlxsw/spectrum_nve.h",
+  "human_readable_source": " \n \n\n#ifndef _MLXSW_SPECTRUM_NVE_H\n#define _MLXSW_SPECTRUM_NVE_H\n\n#include <linux/netlink.h>\n#include <linux/rhashtable.h>\n\n#include \"spectrum.h\"\n\nstruct mlxsw_sp_nve_config {\n\tenum mlxsw_sp_nve_type type;\n\tu8 ttl;\n\tu8 learning_en:1;\n\t__be16 udp_dport;\n\t__be32 flowlabel;\n\tu32 ul_tb_id;\n\tenum mlxsw_sp_l3proto ul_proto;\n\tunion mlxsw_sp_l3addr ul_sip;\n};\n\nstruct mlxsw_sp_nve {\n\tstruct mlxsw_sp_nve_config config;\n\tstruct rhashtable mc_list_ht;\n\tstruct rhashtable ipv6_ht;\n\tstruct list_head ipv6_addr_list;  \n\tstruct mlxsw_sp *mlxsw_sp;\n\tconst struct mlxsw_sp_nve_ops **nve_ops_arr;\n\tunsigned int num_nve_tunnels;\t \n\tunsigned int num_max_mc_entries[MLXSW_SP_L3_PROTO_MAX];\n\tu32 tunnel_index;\n\tu16 ul_rif_index;\t \n};\n\nstruct mlxsw_sp_nve_ops {\n\tenum mlxsw_sp_nve_type type;\n\tbool (*can_offload)(const struct mlxsw_sp_nve *nve,\n\t\t\t    const struct mlxsw_sp_nve_params *params,\n\t\t\t    struct netlink_ext_ack *extack);\n\tvoid (*nve_config)(const struct mlxsw_sp_nve *nve,\n\t\t\t   const struct mlxsw_sp_nve_params *params,\n\t\t\t   struct mlxsw_sp_nve_config *config);\n\tint (*init)(struct mlxsw_sp_nve *nve,\n\t\t    const struct mlxsw_sp_nve_config *config);\n\tvoid (*fini)(struct mlxsw_sp_nve *nve);\n\tint (*fdb_replay)(const struct net_device *nve_dev, __be32 vni,\n\t\t\t  struct netlink_ext_ack *extack);\n\tvoid (*fdb_clear_offload)(const struct net_device *nve_dev, __be32 vni);\n};\n\nextern const struct mlxsw_sp_nve_ops mlxsw_sp1_nve_vxlan_ops;\nextern const struct mlxsw_sp_nve_ops mlxsw_sp2_nve_vxlan_ops;\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

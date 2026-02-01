@@ -1,0 +1,9 @@
+{
+  "module_name": "igt_gem_utils.h",
+  "hash_id": "eb74ded56702649f9f50151c71ab052db5ea6f58cbd34cea44abe99613d004b6",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/gem/selftests/igt_gem_utils.h",
+  "human_readable_source": " \n\n#ifndef __IGT_GEM_UTILS_H__\n#define __IGT_GEM_UTILS_H__\n\n#include <linux/types.h>\n\n#include \"i915_vma.h\"\n\nstruct i915_request;\nstruct i915_gem_context;\nstruct i915_vma;\n\nstruct intel_context;\nstruct intel_engine_cs;\n\nstruct i915_request *\nigt_request_alloc(struct i915_gem_context *ctx, struct intel_engine_cs *engine);\n\nstruct i915_vma *\nigt_emit_store_dw(struct i915_vma *vma,\n\t\t  u64 offset,\n\t\t  unsigned long count,\n\t\t  u32 val);\n\nint igt_gpu_fill_dw(struct intel_context *ce,\n\t\t    struct i915_vma *vma, u64 offset,\n\t\t    unsigned long count, u32 val);\n\nstatic inline int __must_check\nigt_vma_move_to_active_unlocked(struct i915_vma *vma, struct i915_request *rq,\n\t\t\t\tunsigned int flags)\n{\n\tint err;\n\n\ti915_vma_lock(vma);\n\terr = i915_vma_move_to_active(vma, rq, flags);\n\ti915_vma_unlock(vma);\n\treturn err;\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

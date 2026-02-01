@@ -1,0 +1,9 @@
+{
+  "module_name": "io.h",
+  "hash_id": "123d8c88a724f08027042b9d6c0c63ee12746febe7ea2ed9496369449e6075ba",
+  "original_prompt": "Ingested from linux-6.6.14/fs/ceph/io.h",
+  "human_readable_source": " \n#ifndef _FS_CEPH_IO_H\n#define _FS_CEPH_IO_H\n\nvoid ceph_start_io_read(struct inode *inode);\nvoid ceph_end_io_read(struct inode *inode);\nvoid ceph_start_io_write(struct inode *inode);\nvoid ceph_end_io_write(struct inode *inode);\nvoid ceph_start_io_direct(struct inode *inode);\nvoid ceph_end_io_direct(struct inode *inode);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

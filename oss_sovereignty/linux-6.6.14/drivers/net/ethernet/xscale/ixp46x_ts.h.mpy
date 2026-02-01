@@ -1,0 +1,9 @@
+{
+  "module_name": "ixp46x_ts.h",
+  "hash_id": "240f34b33d0c78b092f5dbd29b006f355ddc58059b16a10cef9b43bf2c749f54",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/xscale/ixp46x_ts.h",
+  "human_readable_source": " \n \n\n#ifndef _IXP46X_TS_H_\n#define _IXP46X_TS_H_\n\n#define DEFAULT_ADDEND 0xF0000029\n#define TICKS_NS_SHIFT 4\n\nstruct ixp46x_channel_ctl {\n\tu32 ch_control;   \n\tu32 ch_event;     \n\tu32 tx_snap_lo;   \n\tu32 tx_snap_hi;   \n\tu32 rx_snap_lo;   \n\tu32 rx_snap_hi;   \n\tu32 src_uuid_lo;  \n\tu32 src_uuid_hi;  \n};\n\nstruct ixp46x_ts_regs {\n\tu32 control;      \n\tu32 event;        \n\tu32 addend;       \n\tu32 accum;        \n\tu32 test;         \n\tu32 unused;       \n\tu32 rsystime_lo;  \n\tu32 rsystime_hi;  \n\tu32 systime_lo;   \n\tu32 systime_hi;   \n\tu32 trgt_lo;      \n\tu32 trgt_hi;      \n\tu32 asms_lo;      \n\tu32 asms_hi;      \n\tu32 amms_lo;      \n\tu32 amms_hi;      \n\n\tstruct ixp46x_channel_ctl channel[3];\n};\n\n \n#define TSCR_AMM (1<<3)\n#define TSCR_ASM (1<<2)\n#define TSCR_TTM (1<<1)\n#define TSCR_RST (1<<0)\n\n \n#define TSER_SNM (1<<3)\n#define TSER_SNS (1<<2)\n#define TTIPEND  (1<<1)\n\n \n#define MASTER_MODE   (1<<0)\n#define TIMESTAMP_ALL (1<<1)\n\n \n#define TX_SNAPSHOT_LOCKED (1<<0)\n#define RX_SNAPSHOT_LOCKED (1<<1)\n\n#if IS_ENABLED(CONFIG_PTP_1588_CLOCK_IXP46X)\nint ixp46x_ptp_find(struct ixp46x_ts_regs *__iomem *regs, int *phc_index);\n#else\nstatic inline int ixp46x_ptp_find(struct ixp46x_ts_regs *__iomem *regs, int *phc_index)\n{\n\t*regs = NULL;\n\t*phc_index = -1;\n\n\treturn -ENODEV;\n}\n#endif\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

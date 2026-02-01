@@ -1,0 +1,9 @@
+{
+  "module_name": "roundf.c",
+  "hash_id": "d3cab3124ba8dea5f99c9326b5ccb817906cba5f0b5b7a78ad534f1c2bbd6411",
+  "original_prompt": "Ingested from sys_09_Anvil/source/lib/libm/roundf.c",
+  "human_readable_source": " \n \n\n \n \n\n#include \"libm.h\"\n\nfloat roundf(float x)\n{\n\tunion {float f; uint32_t i;} u = {x};\n\tint e = u.i >> 23 & 0xff;\n\tfloat_t y;\n\n\tif (e >= 0x7f+23)\n\t\treturn x;\n\tif (u.i >> 31)\n\t\tx = -x;\n\tif (e < 0x7f-1) {\n\t\tFORCE_EVAL(x + 0x1p23f);\n\t\treturn 0*u.f;\n\t}\n\ty = (float)(x + 0x1p23f) - 0x1p23f - x;\n\tif (y > 0.5f)\n\t\ty = y + x - 1;\n\telse if (y <= -0.5f)\n\t\ty = y + x + 1;\n\telse\n\t\ty = y + x;\n\tif (u.i >> 31)\n\t\ty = -y;\n\treturn y;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

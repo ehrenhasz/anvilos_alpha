@@ -1,0 +1,9 @@
+{
+  "module_name": "uncore-interconnect.json",
+  "hash_id": "4ad348cbc014dbb4a836d189c1470797785a4af24f707c692897ffc98eb5f0d0",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/pmu-events/arch/x86/alderlaken/uncore-interconnect.json",
+  "human_readable_source": "[\n    {\n        \"BriefDescription\": \"Number of requests allocated in Coherency Tracker.\",\n        \"EventCode\": \"0x84\",\n        \"EventName\": \"UNC_ARB_COH_TRK_REQUESTS.ALL\",\n        \"PerPkg\": \"1\",\n        \"UMask\": \"0x1\",\n        \"Unit\": \"ARB\"\n    },\n    {\n        \"BriefDescription\": \"Each cycle counts number of all outgoing valid entries in ReqTrk. Such entry is defined as valid from its allocation in ReqTrk till deallocation. Accounts for Coherent and non-coherent traffic.\",\n        \"EventCode\": \"0x80\",\n        \"EventName\": \"UNC_ARB_TRK_OCCUPANCY.ALL\",\n        \"PerPkg\": \"1\",\n        \"UMask\": \"0x1\",\n        \"Unit\": \"ARB\"\n    },\n    {\n        \"BriefDescription\": \"Counts the number of coherent and in-coherent requests initiated by IA cores, processor graphic units, or LLC.\",\n        \"EventCode\": \"0x81\",\n        \"EventName\": \"UNC_ARB_TRK_REQUESTS.ALL\",\n        \"PerPkg\": \"1\",\n        \"UMask\": \"0x1\",\n        \"Unit\": \"ARB\"\n    }\n]\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

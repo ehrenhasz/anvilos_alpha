@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "2676427a9cac4bfd9e2e22c9b0f45677af86b3557c512c3a1dd462d673807450",
+  "original_prompt": "Ingested from linux-6.6.14/net/smc/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig SMC\n\ttristate \"SMC socket protocol family\"\n\tdepends on INET && INFINIBAND\n\tdepends on m || ISM != m\n\thelp\n\t  SMC-R provides a \"sockets over RDMA\" solution making use of\n\t  RDMA over Converged Ethernet (RoCE) technology to upgrade\n\t  AF_INET TCP connections transparently.\n\t  The Linux implementation of the SMC-R solution is designed as\n\t  a separate socket family SMC.\n\n\t  Select this option if you want to run SMC socket applications\n\nconfig SMC_DIAG\n\ttristate \"SMC: socket monitoring interface\"\n\tdepends on SMC\n\thelp\n\t  Support for SMC socket monitoring interface used by tools such as\n\t  smcss.\n\n\t  if unsure, say Y.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

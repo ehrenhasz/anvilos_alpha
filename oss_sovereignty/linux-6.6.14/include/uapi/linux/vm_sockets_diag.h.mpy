@@ -1,0 +1,9 @@
+{
+  "module_name": "vm_sockets_diag.h",
+  "hash_id": "018fdb75f8df47156afb17799beab77c51d9bcbcf97d2c18095b9d8762527e2e",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/vm_sockets_diag.h",
+  "human_readable_source": " \n \n\n#ifndef _UAPI__VM_SOCKETS_DIAG_H__\n#define _UAPI__VM_SOCKETS_DIAG_H__\n\n#include <linux/types.h>\n\n \nstruct vsock_diag_req {\n\t__u8\tsdiag_family;\t \n\t__u8\tsdiag_protocol;\t \n\t__u16\tpad;\t\t \n\t__u32\tvdiag_states;\t \n\t__u32\tvdiag_ino;\t \n\t__u32\tvdiag_show;\t \n\t__u32\tvdiag_cookie[2];\n};\n\n \nstruct vsock_diag_msg {\n\t__u8\tvdiag_family;\t \n\t__u8\tvdiag_type;\t \n\t__u8\tvdiag_state;\t \n\t__u8\tvdiag_shutdown;  \n\t__u32   vdiag_src_cid;\n\t__u32   vdiag_src_port;\n\t__u32   vdiag_dst_cid;\n\t__u32   vdiag_dst_port;\n\t__u32\tvdiag_ino;\n\t__u32\tvdiag_cookie[2];\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

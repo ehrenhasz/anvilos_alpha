@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "67cfb6a58b4f53c5cf3015fa0367973a19f1344ed523ce4284df9dcaeaf3a9b3",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/pci/pcie/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for PCI Express features and port driver\n\npcieportdrv-y\t\t\t:= portdrv.o rcec.o\n\nobj-$(CONFIG_PCIEPORTBUS)\t+= pcieportdrv.o\n\nobj-$(CONFIG_PCIEASPM)\t\t+= aspm.o\nobj-$(CONFIG_PCIEAER)\t\t+= aer.o err.o\nobj-$(CONFIG_PCIEAER_INJECT)\t+= aer_inject.o\nobj-$(CONFIG_PCIE_PME)\t\t+= pme.o\nobj-$(CONFIG_PCIE_DPC)\t\t+= dpc.o\nobj-$(CONFIG_PCIE_PTM)\t\t+= ptm.o\nobj-$(CONFIG_PCIE_EDR)\t\t+= edr.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

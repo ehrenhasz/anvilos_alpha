@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "776fc1d441db331f45eba49297a29d0c973dec21381b1017ac9e6d612c3a7d2f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/scsi/bfa/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nobj-$(CONFIG_SCSI_BFA_FC) := bfa.o\n\nbfa-y := bfad.o bfad_im.o bfad_attr.o bfad_debugfs.o bfad_bsg.o\nbfa-y += bfa_ioc.o bfa_ioc_cb.o bfa_ioc_ct.o bfa_hw_cb.o bfa_hw_ct.o\nbfa-y += bfa_fcs.o bfa_fcs_lport.o bfa_fcs_rport.o bfa_fcs_fcpim.o bfa_fcbuild.o\nbfa-y += bfa_port.o bfa_fcpim.o bfa_core.o bfa_svc.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

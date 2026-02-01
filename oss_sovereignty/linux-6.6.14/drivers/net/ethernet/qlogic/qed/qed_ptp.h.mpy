@@ -1,0 +1,9 @@
+{
+  "module_name": "qed_ptp.h",
+  "hash_id": "8283d128bb29462219fd0e740e1463e143d2b9b009ef18aad920be0ac2553c2a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/qlogic/qed/qed_ptp.h",
+  "human_readable_source": " \n \n\n#ifndef __QED_PTP_H\n#define __QED_PTP_H\n\nextern const struct qed_eth_ptp_ops qed_ptp_ops_pass;\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

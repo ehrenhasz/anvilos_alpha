@@ -1,0 +1,9 @@
+{
+  "module_name": "fclose.c",
+  "hash_id": "8be93493abe8d7b2213045277e99ae2b654779ba35b2e3b3b3861fc14215c7a9",
+  "original_prompt": "Ingested from coreutils-9.4/lib/fclose.c",
+  "human_readable_source": " \n#include <stdio.h>\n\n#include <errno.h>\n#include <unistd.h>\n\n#include \"freading.h\"\n#if HAVE_MSVC_INVALID_PARAMETER_HANDLER\n# include \"msvc-inval.h\"\n#endif\n\n#undef fclose\n\n#if HAVE_MSVC_INVALID_PARAMETER_HANDLER\nstatic int\nfclose_nothrow (FILE *fp)\n{\n  int result;\n\n  TRY_MSVC_INVAL\n    {\n      result = fclose (fp);\n    }\n  CATCH_MSVC_INVAL\n    {\n      result = EOF;\n      errno = EBADF;\n    }\n  DONE_MSVC_INVAL;\n\n  return result;\n}\n#else\n# define fclose_nothrow fclose\n#endif\n\n \n\nint\nrpl_fclose (FILE *fp)\n{\n  int saved_errno = 0;\n  int fd;\n  int result = 0;\n\n   \n  fd = fileno (fp);\n  if (fd < 0)\n    return fclose_nothrow (fp);\n\n   \n  if ((!freading (fp) || lseek (fileno (fp), 0, SEEK_CUR) != -1)\n      && fflush (fp))\n    saved_errno = errno;\n\n   \n#if WINDOWS_SOCKETS\n   \n  if (close (fd) < 0 && saved_errno == 0)\n    saved_errno = errno;\n\n  fclose_nothrow (fp);  \n\n#else  \n   \n\n# if REPLACE_FCHDIR\n   \n  result = fclose_nothrow (fp);\n  if (result == 0)\n    _gl_unregister_fd (fd);\n# else\n   \n  result = fclose_nothrow (fp);\n# endif\n\n#endif  \n\n  if (saved_errno != 0)\n    {\n      errno = saved_errno;\n      result = EOF;\n    }\n\n  return result;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

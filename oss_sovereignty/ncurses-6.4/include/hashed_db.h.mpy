@@ -1,0 +1,9 @@
+{
+  "module_name": "hashed_db.h",
+  "hash_id": "f6704757f7bda5acc923061d7cd8b9b9570322294559f7e2969574d9085f05e9",
+  "original_prompt": "Ingested from ncurses-6.4/include/hashed_db.h",
+  "human_readable_source": " \n\n \n\n \n\n#ifndef HASHED_DB_H\n#define HASHED_DB_H 1\n\n#include <ncurses_cfg.h>\n\n#include <curses.h>\n\n#if USE_HASHED_DB\n\n#define DB_DBM_HSEARCH 0\t \n\n#include <db.h>\n\n#ifndef DBM_SUFFIX\n#define DBM_SUFFIX \".db\"\n#endif\n\n#ifdef DB_VERSION_MAJOR\n#define HASHED_DB_API DB_VERSION_MAJOR\n#else\n#define HASHED_DB_API 1\t\t \n#endif\n\nextern NCURSES_EXPORT(DB *) _nc_db_open(const char *  , bool  );\nextern NCURSES_EXPORT(bool) _nc_db_have_data(DBT *  , DBT *  , char **  , int *  );\nextern NCURSES_EXPORT(bool) _nc_db_have_index(DBT *  , DBT *  , char **  , int *  );\nextern NCURSES_EXPORT(int) _nc_db_close(DB *  );\nextern NCURSES_EXPORT(int) _nc_db_first(DB *  , DBT *  , DBT *  );\nextern NCURSES_EXPORT(int) _nc_db_next(DB *  , DBT *  , DBT *  );\nextern NCURSES_EXPORT(int) _nc_db_get(DB *  , DBT *  , DBT *  );\nextern NCURSES_EXPORT(int) _nc_db_put(DB *  , DBT *  , DBT *  );\n\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "5328e7bd8487e25b50d77c255e1d47db10eab468535d53c47e90396eea7813a1",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/dsa/xrs700x/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-$(CONFIG_NET_DSA_XRS700X) += xrs700x.o\nobj-$(CONFIG_NET_DSA_XRS700X_I2C) += xrs700x_i2c.o\nobj-$(CONFIG_NET_DSA_XRS700X_MDIO) += xrs700x_mdio.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

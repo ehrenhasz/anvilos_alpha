@@ -1,0 +1,9 @@
+{
+  "module_name": "sync-check.sh",
+  "hash_id": "06a776f1da95812c2aa58c5429c8f04705659f3f717e9cd7881e9d6e7486ec31",
+  "original_prompt": "Ingested from linux-6.6.14/tools/objtool/sync-check.sh",
+  "human_readable_source": "#!/bin/sh\n# SPDX-License-Identifier: GPL-2.0\n\nif [ -z \"$SRCARCH\" ]; then\n\techo 'sync-check.sh: error: missing $SRCARCH environment variable' >&2\n\texit 1\nfi\n\nFILES=\"include/linux/objtool_types.h\"\n\nif [ \"$SRCARCH\" = \"x86\" ]; then\nFILES=\"$FILES\narch/x86/include/asm/nops.h\narch/x86/include/asm/inat_types.h\narch/x86/include/asm/orc_types.h\narch/x86/include/asm/emulate_prefix.h\narch/x86/lib/x86-opcode-map.txt\narch/x86/tools/gen-insn-attr-x86.awk\ninclude/linux/static_call_types.h\n\"\n\nSYNC_CHECK_FILES='\narch/x86/include/asm/inat.h\narch/x86/include/asm/insn.h\narch/x86/lib/inat.c\narch/x86/lib/insn.c\n'\nfi\n\ncheck_2 () {\n  file1=$1\n  file2=$2\n\n  shift\n  shift\n\n  cmd=\"diff $* $file1 $file2 > /dev/null\"\n\n  test -f $file2 && {\n    eval $cmd || {\n      echo \"Warning: Kernel ABI header at '$file1' differs from latest version at '$file2'\" >&2\n      echo diff -u $file1 $file2\n    }\n  }\n}\n\ncheck () {\n  file=$1\n\n  shift\n\n  check_2 tools/$file $file $*\n}\n\nif [ ! -d ../../kernel ] || [ ! -d ../../tools ] || [ ! -d ../objtool ]; then\n\texit 0\nfi\n\ncd ../..\n\nwhile read -r file_entry; do\n    if [ -z \"$file_entry\" ]; then\n\tcontinue\n    fi\n\n    check $file_entry\ndone <<EOF\n$FILES\nEOF\n\nif [ \"$SRCARCH\" = \"x86\" ]; then\n\tfor i in $SYNC_CHECK_FILES; do\n\t\tcheck $i '-I \"^.*\\/\\*.*__ignore_sync_check__.*\\*\\/.*$\"'\n\tdone\nfi\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

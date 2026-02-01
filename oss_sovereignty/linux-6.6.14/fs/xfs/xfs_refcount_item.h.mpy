@@ -1,0 +1,9 @@
+{
+  "module_name": "xfs_refcount_item.h",
+  "hash_id": "c276ca1e66f0fe617133b464633074decd164f01451eaaeae463180f795468ea",
+  "original_prompt": "Ingested from linux-6.6.14/fs/xfs/xfs_refcount_item.h",
+  "human_readable_source": "\n \n#ifndef\t__XFS_REFCOUNT_ITEM_H__\n#define\t__XFS_REFCOUNT_ITEM_H__\n\n \n\n \n\nstruct xfs_mount;\nstruct kmem_cache;\n\n \n#define\tXFS_CUI_MAX_FAST_EXTENTS\t16\n\n \nstruct xfs_cui_log_item {\n\tstruct xfs_log_item\t\tcui_item;\n\tatomic_t\t\t\tcui_refcount;\n\tatomic_t\t\t\tcui_next_extent;\n\tstruct xfs_cui_log_format\tcui_format;\n};\n\nstatic inline size_t\nxfs_cui_log_item_sizeof(\n\tunsigned int\t\tnr)\n{\n\treturn offsetof(struct xfs_cui_log_item, cui_format) +\n\t\t\txfs_cui_log_format_sizeof(nr);\n}\n\n \nstruct xfs_cud_log_item {\n\tstruct xfs_log_item\t\tcud_item;\n\tstruct xfs_cui_log_item\t\t*cud_cuip;\n\tstruct xfs_cud_log_format\tcud_format;\n};\n\nextern struct kmem_cache\t*xfs_cui_cache;\nextern struct kmem_cache\t*xfs_cud_cache;\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

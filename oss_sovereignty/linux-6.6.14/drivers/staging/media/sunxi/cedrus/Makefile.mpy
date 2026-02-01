@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "5b74c0d6b96f01e42386a0a7796c800175995f1136f100185f4f075e3545f883",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/sunxi/cedrus/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nobj-$(CONFIG_VIDEO_SUNXI_CEDRUS) += sunxi-cedrus.o\n\nsunxi-cedrus-y = cedrus.o cedrus_video.o cedrus_hw.o cedrus_dec.o \\\n\t\t cedrus_mpeg2.o cedrus_h264.o cedrus_h265.o \\\n\t\t cedrus_vp8.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

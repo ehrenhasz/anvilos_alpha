@@ -1,0 +1,9 @@
+{
+  "module_name": "list.h",
+  "hash_id": "63007bf2e663e6847138efdf978edc0ba66dd0f46571fa286f3b14a837d6707c",
+  "original_prompt": "Ingested from linux-6.6.14/tools/firewire/list.h",
+  "human_readable_source": " \nstruct list {\n\tstruct list *next, *prev;\n};\n\nstatic inline void\nlist_init(struct list *list)\n{\n\tlist->next = list;\n\tlist->prev = list;\n}\n\nstatic inline int\nlist_empty(struct list *list)\n{\n\treturn list->next == list;\n}\n\nstatic inline void\nlist_insert(struct list *link, struct list *new_link)\n{\n\tnew_link->prev\t\t= link->prev;\n\tnew_link->next\t\t= link;\n\tnew_link->prev->next\t= new_link;\n\tnew_link->next->prev\t= new_link;\n}\n\nstatic inline void\nlist_append(struct list *list, struct list *new_link)\n{\n\tlist_insert((struct list *)list, new_link);\n}\n\nstatic inline void\nlist_prepend(struct list *list, struct list *new_link)\n{\n\tlist_insert(list->next, new_link);\n}\n\nstatic inline void\nlist_remove(struct list *link)\n{\n\tlink->prev->next = link->next;\n\tlink->next->prev = link->prev;\n}\n\n#define list_entry(link, type, member) \\\n\t((type *)((char *)(link)-(unsigned long)(&((type *)0)->member)))\n\n#define list_head(list, type, member)\t\t\\\n\tlist_entry((list)->next, type, member)\n\n#define list_tail(list, type, member)\t\t\\\n\tlist_entry((list)->prev, type, member)\n\n#define list_next(elm, member)\t\t\t\t\t\\\n\tlist_entry((elm)->member.next, typeof(*elm), member)\n\n#define list_for_each_entry(pos, list, member)\t\t\t\\\n\tfor (pos = list_head(list, typeof(*pos), member);\t\\\n\t     &pos->member != (list);\t\t\t\t\\\n\t     pos = list_next(pos, member))\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

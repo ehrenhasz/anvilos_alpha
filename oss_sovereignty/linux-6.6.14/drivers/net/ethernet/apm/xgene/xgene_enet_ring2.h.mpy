@@ -1,0 +1,9 @@
+{
+  "module_name": "xgene_enet_ring2.h",
+  "hash_id": "7b044f4ab06b11c292f26d67c3cf9ce79333f3e91645e368d1328471bd0cc665",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/apm/xgene/xgene_enet_ring2.h",
+  "human_readable_source": " \n \n\n#ifndef __XGENE_ENET_RING2_H__\n#define __XGENE_ENET_RING2_H__\n\n#include \"xgene_enet_main.h\"\n\n#define X2_NUM_RING_CONFIG\t6\n\n#define INTR_MBOX_SIZE\t\t1024\n#define CSR_VMID0_INTR_MBOX\t0x0270\n#define INTR_CLEAR\t\tBIT(23)\n\n#define X2_MSG_AM_POS\t\t10\n#define X2_QBASE_AM_POS\t\t11\n#define X2_INTLINE_POS\t\t24\n#define X2_INTLINE_LEN\t\t5\n#define X2_CFGCRID_POS\t\t29\n#define X2_CFGCRID_LEN\t\t3\n#define X2_SELTHRSH_POS\t\t7\n#define X2_SELTHRSH_LEN\t\t3\n#define X2_RINGTYPE_POS\t\t23\n#define X2_RINGTYPE_LEN\t\t2\n#define X2_DEQINTEN_POS\t\t29\n#define X2_RECOMTIMEOUT_POS\t0\n#define X2_RECOMTIMEOUT_LEN\t7\n#define X2_NUMMSGSINQ_POS\t0\n#define X2_NUMMSGSINQ_LEN\t17\n\nextern struct xgene_ring_ops xgene_ring2_ops;\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

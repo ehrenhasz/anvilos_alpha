@@ -1,0 +1,9 @@
+{
+  "module_name": "ngettext.c",
+  "hash_id": "943ca03428ea46b044bd71453c5db633102b1469aab71dcd739e3cc3bce8bc69",
+  "original_prompt": "Ingested from bash-5.2.21/lib/intl/ngettext.c",
+  "human_readable_source": " \n\n \n\n#ifdef HAVE_CONFIG_H\n# include <config.h>\n#endif\n\n#ifdef _LIBC\n# define __need_NULL\n# include <stddef.h>\n#else\n# include <stdlib.h>\t\t \n#endif\n\n#include \"gettextP.h\"\n#ifdef _LIBC\n# include <libintl.h>\n#else\n# include \"libgnuintl.h\"\n#endif\n\n#include <locale.h>\n\n \n\n \n#ifdef _LIBC\n# define NGETTEXT __ngettext\n# define DCNGETTEXT __dcngettext\n#else\n# define NGETTEXT libintl_ngettext\n# define DCNGETTEXT libintl_dcngettext\n#endif\n\n \nchar *\nNGETTEXT (msgid1, msgid2, n)\n     const char *msgid1;\n     const char *msgid2;\n     unsigned long int n;\n{\n  return DCNGETTEXT (NULL, msgid1, msgid2, n, LC_MESSAGES);\n}\n\n#ifdef _LIBC\n \nweak_alias (__ngettext, ngettext);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

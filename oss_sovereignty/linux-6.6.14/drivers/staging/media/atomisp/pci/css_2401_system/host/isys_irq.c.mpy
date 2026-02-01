@@ -1,0 +1,9 @@
+{
+  "module_name": "isys_irq.c",
+  "hash_id": "8d664972fa07985d56f9db23d1435c74aea2d43864016afbffb432e384ee1504",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/css_2401_system/host/isys_irq.c",
+  "human_readable_source": "\n \n\n#include <system_local.h>\n#include \"device_access.h\"\n#include \"assert_support.h\"\n#include \"ia_css_debug.h\"\n#include \"isys_irq.h\"\n\n#ifndef __INLINE_ISYS2401_IRQ__\n \n#include \"isys_irq_private.h\"\n#endif\n\n \nvoid isys_irqc_status_enable(const isys_irq_ID_t\tisys_irqc_id)\n{\n\tassert(isys_irqc_id < N_ISYS_IRQ_ID);\n\n\tia_css_debug_dtrace(IA_CSS_DEBUG_TRACE, \"Setting irq mask for port %u\\n\",\n\t\t\t    isys_irqc_id);\n\tisys_irqc_reg_store(isys_irqc_id, ISYS_IRQ_MASK_REG_IDX,\n\t\t\t    ISYS_IRQ_MASK_REG_VALUE);\n\tisys_irqc_reg_store(isys_irqc_id, ISYS_IRQ_CLEAR_REG_IDX,\n\t\t\t    ISYS_IRQ_CLEAR_REG_VALUE);\n\tisys_irqc_reg_store(isys_irqc_id, ISYS_IRQ_ENABLE_REG_IDX,\n\t\t\t    ISYS_IRQ_ENABLE_REG_VALUE);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

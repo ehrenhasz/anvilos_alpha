@@ -1,0 +1,9 @@
+{
+  "module_name": "ibi.h",
+  "hash_id": "9dfe16caaf52974951e8e71ed88239f25203c9bd1f7c30c6f135f14232ce866e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/i3c/master/mipi-i3c-hci/ibi.h",
+  "human_readable_source": " \n \n\n#ifndef IBI_H\n#define IBI_H\n\n \n#define IBI_STS\t\t\t\tBIT(31)\n#define IBI_ERROR\t\t\tBIT(30)\n#define IBI_STATUS_TYPE\t\t\tBIT(29)\n#define IBI_HW_CONTEXT\t\t\tGENMASK(28, 26)\n#define IBI_TS\t\t\t\tBIT(25)\n#define IBI_LAST_STATUS\t\t\tBIT(24)\n#define IBI_CHUNKS\t\t\tGENMASK(23, 16)\n#define IBI_ID\t\t\t\tGENMASK(15, 8)\n#define IBI_TARGET_ADDR\t\t\tGENMASK(15, 9)\n#define IBI_TARGET_RNW\t\t\tBIT(8)\n#define IBI_DATA_LENGTH\t\t\tGENMASK(7, 0)\n\n \nstatic inline struct i3c_dev_desc *\ni3c_hci_addr_to_dev(struct i3c_hci *hci, unsigned int addr)\n{\n\tstruct i3c_bus *bus = i3c_master_get_bus(&hci->master);\n\tstruct i3c_dev_desc *dev;\n\n\ti3c_bus_for_each_i3cdev(bus, dev) {\n\t\tif (dev->info.dyn_addr == addr)\n\t\t\treturn dev;\n\t}\n\treturn NULL;\n}\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

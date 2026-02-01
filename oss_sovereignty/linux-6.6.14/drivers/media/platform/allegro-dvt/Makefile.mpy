@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "42ce8ae6221dff35f6c1b0d40008d718a8c9663e5e077e7ab60bbb54237767e6",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/platform/allegro-dvt/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n\nallegro-objs := allegro-core.o allegro-mail.o\nallegro-objs += nal-rbsp.o nal-h264.o nal-hevc.o\n\nobj-$(CONFIG_VIDEO_ALLEGRO_DVT) += allegro.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "ivtv-firmware.h",
+  "hash_id": "4793755833a04d45d6dbee1828107f3784988e330533bdeac21b415999e66433",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/pci/ivtv/ivtv-firmware.h",
+  "human_readable_source": " \n \n\n#ifndef IVTV_FIRMWARE_H\n#define IVTV_FIRMWARE_H\n\nint ivtv_firmware_init(struct ivtv *itv);\nvoid ivtv_firmware_versions(struct ivtv *itv);\nvoid ivtv_halt_firmware(struct ivtv *itv);\nvoid ivtv_init_mpeg_decoder(struct ivtv *itv);\nint ivtv_firmware_check(struct ivtv *itv, char *where);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

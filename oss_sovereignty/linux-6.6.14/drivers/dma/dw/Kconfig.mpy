@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "ac982b28b41fc973d074caf1827d04e1da511a2b243a0d6b144ebd94f3d2485c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/dma/dw/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n\n#\n# DMA engine configuration for dw\n#\n\nconfig DW_DMAC_CORE\n\ttristate\n\tselect DMA_ENGINE\n\nconfig DW_DMAC\n\ttristate \"Synopsys DesignWare AHB DMA platform driver\"\n\tdepends on HAS_IOMEM\n\tselect DW_DMAC_CORE\n\thelp\n\t  Support the Synopsys DesignWare AHB DMA controller. This\n\t  can be integrated in chips such as the Intel Cherrytrail.\n\nconfig RZN1_DMAMUX\n\ttristate \"Renesas RZ/N1 DMAMUX driver\"\n\tdepends on DW_DMAC\n\tdepends on ARCH_RZN1 || COMPILE_TEST\n\thelp\n\t  Support the Renesas RZ/N1 DMAMUX which is located in front of\n\t  the Synopsys DesignWare AHB DMA controller located on Renesas\n\t  SoCs.\n\nconfig DW_DMAC_PCI\n\ttristate \"Synopsys DesignWare AHB DMA PCI driver\"\n\tdepends on PCI\n\tdepends on HAS_IOMEM\n\tselect DW_DMAC_CORE\n\thelp\n\t  Support the Synopsys DesignWare AHB DMA controller on the\n\t  platforms that enumerate it as a PCI device. For example,\n\t  Intel Medfield has integrated this GPDMA controller.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

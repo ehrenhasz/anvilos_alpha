@@ -1,0 +1,9 @@
+{
+  "module_name": "msg.c",
+  "hash_id": "dba68cce29aaf7173067f8d7203762b7d95e66c690bd32d79629dff03a46b6a4",
+  "original_prompt": "Ingested from openssh-9.6p1/msg.c",
+  "human_readable_source": " \n \n\n#include \"includes.h\"\n\n#include <sys/types.h>\n#include <sys/uio.h>\n\n#include <errno.h>\n#include <stdio.h>\n#include <string.h>\n#include <unistd.h>\n#include <stdarg.h>\n\n#include \"sshbuf.h\"\n#include \"ssherr.h\"\n#include \"log.h\"\n#include \"atomicio.h\"\n#include \"msg.h\"\n#include \"misc.h\"\n\nint\nssh_msg_send(int fd, u_char type, struct sshbuf *m)\n{\n\tu_char buf[5];\n\tu_int mlen = sshbuf_len(m);\n\n\tdebug3_f(\"type %u\", (unsigned int)type & 0xff);\n\n\tput_u32(buf, mlen + 1);\n\tbuf[4] = type;\t\t \n\tif (atomicio(vwrite, fd, buf, sizeof(buf)) != sizeof(buf)) {\n\t\terror_f(\"write: %s\", strerror(errno));\n\t\treturn (-1);\n\t}\n\tif (atomicio(vwrite, fd, sshbuf_mutable_ptr(m), mlen) != mlen) {\n\t\terror_f(\"write: %s\", strerror(errno));\n\t\treturn (-1);\n\t}\n\treturn (0);\n}\n\nint\nssh_msg_recv(int fd, struct sshbuf *m)\n{\n\tu_char buf[4], *p;\n\tu_int msg_len;\n\tint r;\n\n\tdebug3(\"ssh_msg_recv entering\");\n\n\tif (atomicio(read, fd, buf, sizeof(buf)) != sizeof(buf)) {\n\t\tif (errno != EPIPE)\n\t\t\terror_f(\"read header: %s\", strerror(errno));\n\t\treturn (-1);\n\t}\n\tmsg_len = get_u32(buf);\n\tif (msg_len > sshbuf_max_size(m)) {\n\t\terror_f(\"read: bad msg_len %u\", msg_len);\n\t\treturn (-1);\n\t}\n\tsshbuf_reset(m);\n\tif ((r = sshbuf_reserve(m, msg_len, &p)) != 0) {\n\t\terror_fr(r, \"reserve\");\n\t\treturn -1;\n\t}\n\tif (atomicio(read, fd, p, msg_len) != msg_len) {\n\t\terror_f(\"read: %s\", strerror(errno));\n\t\treturn (-1);\n\t}\n\treturn (0);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

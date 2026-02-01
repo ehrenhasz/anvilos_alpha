@@ -1,0 +1,9 @@
+{
+  "module_name": "mkdirat.c",
+  "hash_id": "aacf1c3dc910b8c2552ee4e95a1a353bfcca642c31a7b3ddf4fd1940f6e1c7f0",
+  "original_prompt": "Ingested from coreutils-9.4/lib/mkdirat.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n \n#include <sys/stat.h>\n\n#include <stdlib.h>\n#include <unistd.h>\n\n \n\n#define AT_FUNC_NAME mkdirat\n#define AT_FUNC_F1 mkdir\n#define AT_FUNC_POST_FILE_PARAM_DECLS , mode_t mode\n#define AT_FUNC_POST_FILE_ARGS        , mode\n#include \"at-func.c\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

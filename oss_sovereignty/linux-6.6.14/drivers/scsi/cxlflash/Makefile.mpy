@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "f13bae8f8b3e4bac6b6bf7983c7d4b9e276b0ccd72a1ab373730a6bedb758e73",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/scsi/cxlflash/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-$(CONFIG_CXLFLASH) += cxlflash.o\ncxlflash-y += main.o superpipe.o lunmgt.o vlun.o\ncxlflash-$(CONFIG_CXL) += cxl_hw.o\ncxlflash-$(CONFIG_OCXL) += ocxl_hw.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

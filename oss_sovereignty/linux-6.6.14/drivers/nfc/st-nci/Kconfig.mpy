@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "81de9973acd69da1836c33e37e77917f86aab63f35f9065329957ccb91ae2316",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/nfc/st-nci/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig NFC_ST_NCI\n\ttristate\n\thelp\n\t  STMicroelectronics NFC NCI chips core driver. It implements the chipset\n\t  NCI logic and hooks into the NFC kernel APIs. Physical layers will\n\t  register against it.\n\nconfig NFC_ST_NCI_I2C\n\ttristate \"STMicroelectronics ST NCI NFC driver (I2C)\"\n\tdepends on NFC_NCI && I2C\n\tselect NFC_ST_NCI\n\thelp\n\t  This module adds support for an I2C interface to the\n\t  STMicroelectronics NFC NCI chips family.\n\t  Select this if your platform is using the i2c bus.\n\n\t  If you choose to build a module, it'll be called st-nci_i2c.\n\t  Say N if unsure.\n\nconfig NFC_ST_NCI_SPI\n\ttristate \"STMicroelectronics ST NCI NFC driver (SPI)\"\n\tdepends on NFC_NCI && SPI\n\tselect NFC_ST_NCI\n\thelp\n\t  This module adds support for an SPI interface to the\n\t  STMicroelectronics NFC NCI chips family.\n\t  Select this if your platform is using the spi bus.\n\n\t  If you choose to build a module, it'll be called st-nci_spi.\n\t  Say N if unsure.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

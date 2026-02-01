@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "60936e6d2451d1523f7e5d428aae2c8006d5ccfb572057627cbfe2624320527f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/accel/habanalabs/common/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n\ninclude $(src)/common/mmu/Makefile\nhabanalabs-y += $(HL_COMMON_MMU_FILES)\n\ninclude $(src)/common/pci/Makefile\nhabanalabs-y += $(HL_COMMON_PCI_FILES)\n\nHL_COMMON_FILES := common/habanalabs_drv.o common/device.o common/context.o \\\n\t\tcommon/asid.o common/habanalabs_ioctl.o \\\n\t\tcommon/command_buffer.o common/hw_queue.o common/irq.o \\\n\t\tcommon/sysfs.o common/hwmon.o common/memory.o \\\n\t\tcommon/command_submission.o common/firmware_if.o \\\n\t\tcommon/security.o common/state_dump.o \\\n\t\tcommon/memory_mgr.o common/decoder.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

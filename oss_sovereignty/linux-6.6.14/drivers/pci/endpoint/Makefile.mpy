@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "c287bfa263172235292aca28e7c9a880235de8ae30084a1cf82199bf7918acf2",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/pci/endpoint/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for PCI Endpoint Support\n#\n\nobj-$(CONFIG_PCI_ENDPOINT_CONFIGFS)\t+= pci-ep-cfs.o\nobj-$(CONFIG_PCI_ENDPOINT)\t\t+= pci-epc-core.o pci-epf-core.o\\\n\t\t\t\t\t   pci-epc-mem.o functions/\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

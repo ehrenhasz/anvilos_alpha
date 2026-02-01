@@ -1,0 +1,9 @@
+{
+  "module_name": "ti-pwmss.c",
+  "hash_id": "53b740564d9e5c9aa448078435bb2cbe0134c91bedd6bd073bb5cd3c51582978",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/bus/ti-pwmss.c",
+  "human_readable_source": "\n \n\n#include <linux/module.h>\n#include <linux/platform_device.h>\n#include <linux/io.h>\n#include <linux/err.h>\n#include <linux/pm_runtime.h>\n#include <linux/of_platform.h>\n\nstatic const struct of_device_id pwmss_of_match[] = {\n\t{ .compatible\t= \"ti,am33xx-pwmss\" },\n\t{},\n};\nMODULE_DEVICE_TABLE(of, pwmss_of_match);\n\nstatic int pwmss_probe(struct platform_device *pdev)\n{\n\tint ret;\n\tstruct device_node *node = pdev->dev.of_node;\n\n\tpm_runtime_enable(&pdev->dev);\n\n\t \n\tret = of_platform_populate(node, NULL, NULL, &pdev->dev);\n\tif (ret)\n\t\tdev_err(&pdev->dev, \"no child node found\\n\");\n\n\treturn ret;\n}\n\nstatic int pwmss_remove(struct platform_device *pdev)\n{\n\tpm_runtime_disable(&pdev->dev);\n\treturn 0;\n}\n\nstatic struct platform_driver pwmss_driver = {\n\t.driver\t= {\n\t\t.name\t= \"pwmss\",\n\t\t.of_match_table\t= pwmss_of_match,\n\t},\n\t.probe\t= pwmss_probe,\n\t.remove\t= pwmss_remove,\n};\n\nmodule_platform_driver(pwmss_driver);\n\nMODULE_DESCRIPTION(\"PWM Subsystem driver\");\nMODULE_AUTHOR(\"Texas Instruments\");\nMODULE_LICENSE(\"GPL\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

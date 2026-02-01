@@ -1,0 +1,9 @@
+{
+  "module_name": "spectrum_cnt.h",
+  "hash_id": "bdcdf9cafe1aa4917b58d551e0be16b3ba5e50bffc91c7e0f7bc6855944d0f0c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/mellanox/mlxsw/spectrum_cnt.h",
+  "human_readable_source": " \n \n\n#ifndef _MLXSW_SPECTRUM_CNT_H\n#define _MLXSW_SPECTRUM_CNT_H\n\n#include \"core.h\"\n#include \"spectrum.h\"\n\nenum mlxsw_sp_counter_sub_pool_id {\n\tMLXSW_SP_COUNTER_SUB_POOL_RIF,\n\tMLXSW_SP_COUNTER_SUB_POOL_FLOW,\n};\n\nint mlxsw_sp_counter_alloc(struct mlxsw_sp *mlxsw_sp,\n\t\t\t   enum mlxsw_sp_counter_sub_pool_id sub_pool_id,\n\t\t\t   unsigned int *p_counter_index);\nvoid mlxsw_sp_counter_free(struct mlxsw_sp *mlxsw_sp,\n\t\t\t   enum mlxsw_sp_counter_sub_pool_id sub_pool_id,\n\t\t\t   unsigned int counter_index);\nint mlxsw_sp_counter_pool_init(struct mlxsw_sp *mlxsw_sp);\nvoid mlxsw_sp_counter_pool_fini(struct mlxsw_sp *mlxsw_sp);\nint mlxsw_sp_counter_resources_register(struct mlxsw_core *mlxsw_core);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

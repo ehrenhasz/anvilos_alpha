@@ -1,0 +1,9 @@
+{
+  "module_name": "sandbox-rlimit.c",
+  "hash_id": "17889aa1ee6e830a95a3ffaf2b078ed91974a5399712b6dbf603b222c18cc769",
+  "original_prompt": "Ingested from openssh-9.6p1/sandbox-rlimit.c",
+  "human_readable_source": " \n \n\n#include \"includes.h\"\n\n#ifdef SANDBOX_RLIMIT\n\n#include <sys/types.h>\n#include <sys/time.h>\n#include <sys/resource.h>\n\n#include <errno.h>\n#include <stdarg.h>\n#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\n#include <unistd.h>\n\n#include \"log.h\"\n#include \"ssh-sandbox.h\"\n#include \"xmalloc.h\"\n\n \n\nstruct ssh_sandbox {\n\tpid_t child_pid;\n};\n\nstruct ssh_sandbox *\nssh_sandbox_init(struct monitor *monitor)\n{\n\tstruct ssh_sandbox *box;\n\n\t \n\tdebug3_f(\"preparing rlimit sandbox\");\n\tbox = xcalloc(1, sizeof(*box));\n\tbox->child_pid = 0;\n\n\treturn box;\n}\n\nvoid\nssh_sandbox_child(struct ssh_sandbox *box)\n{\n\tstruct rlimit rl_zero;\n\n\trl_zero.rlim_cur = rl_zero.rlim_max = 0;\n\n#ifndef SANDBOX_SKIP_RLIMIT_FSIZE\n\tif (setrlimit(RLIMIT_FSIZE, &rl_zero) == -1)\n\t\tfatal_f(\"setrlimit(RLIMIT_FSIZE, { 0, 0 }): %s\",\n\t\t\tstrerror(errno));\n#endif\n#ifndef SANDBOX_SKIP_RLIMIT_NOFILE\n\tif (setrlimit(RLIMIT_NOFILE, &rl_zero) == -1)\n\t\tfatal_f(\"setrlimit(RLIMIT_NOFILE, { 0, 0 }): %s\",\n\t\t\tstrerror(errno));\n#endif\n#ifdef HAVE_RLIMIT_NPROC\n\tif (setrlimit(RLIMIT_NPROC, &rl_zero) == -1)\n\t\tfatal_f(\"setrlimit(RLIMIT_NPROC, { 0, 0 }): %s\",\n\t\t\tstrerror(errno));\n#endif\n}\n\nvoid\nssh_sandbox_parent_finish(struct ssh_sandbox *box)\n{\n\tfree(box);\n\tdebug3_f(\"finished\");\n}\n\nvoid\nssh_sandbox_parent_preauth(struct ssh_sandbox *box, pid_t child_pid)\n{\n\tbox->child_pid = child_pid;\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "bash.pc.in",
+  "hash_id": "6bdc224f21548cea3fbbd243eb6510a3a540b7f9c00ef3ac1f8d98f47363c9f8",
+  "original_prompt": "Ingested from bash-5.2.21/support/bash.pc.in",
+  "human_readable_source": "# bash.pc.in\n\nprefix=@prefix@\nexec_prefix=@exec_prefix@\nincludedir=@includedir@\nlibdir=@libdir@\n\nloadablesdir=@loadablesdir@\nheadersdir=${includedir}/@PACKAGE_NAME@\n\nLOCAL_CFLAGS = @LOCAL_CFLAGS@\nLOCAL_DEFS = @LOCAL_DEFS@\nCCFLAGS = ${LOCAL_DEFS} ${LOCAL_CFLAGS}\n\nCC = @CC@\nSHOBJ_CC = @SHOBJ_CC@\nSHOBJ_CFLAGS = @SHOBJ_CFLAGS@\nSHOBJ_LD = @SHOBJ_LD@\nSHOBJ_LDFLAGS = @SHOBJ_LDFLAGS@\nSHOBJ_XLDFLAGS = @SHOBJ_XLDFLAGS@\nSHOBJ_LIBS = @SHOBJ_LIBS@\n\nName: @PACKAGE_NAME@\nDescription: Bash headers for bash loadable builtins\nVersion: @PACKAGE_VERSION@\nUrl: @PACKAGE_URL@\nLibs: ${SHOBJ_LIBS}\nCflags: ${SHOBJ_CFLAGS} ${CCFLAGS} -I${headersdir} -I${headersdir}/builtins -I${headersdir}/include\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

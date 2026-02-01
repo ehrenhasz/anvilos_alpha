@@ -1,0 +1,9 @@
+{
+  "module_name": "irqsrcs_smuio_9_0.h",
+  "hash_id": "3cc55870fe71da4c3c5dc0aebebf52fc55a965dd3adf952746a4586bac072aaa",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/include/ivsrcid/smuio/irqsrcs_smuio_9_0.h",
+  "human_readable_source": " \n\n#ifndef __IRQSRCS_SMUIO_9_0_H__\n#define __IRQSRCS_SMUIO_9_0_H__\n\n#define SMUIO_9_0__SRCID__SMUIO_GPIO19\t\t\t83\t\t \n\n#endif  \n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

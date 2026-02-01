@@ -1,0 +1,9 @@
+{
+  "module_name": "cxl-base.h",
+  "hash_id": "593b729160fdab85d545b2cd52341c916e06c4cb3541efbc1e153a0f0b934cf3",
+  "original_prompt": "Ingested from linux-6.6.14/include/misc/cxl-base.h",
+  "human_readable_source": " \n \n\n#ifndef _MISC_CXL_BASE_H\n#define _MISC_CXL_BASE_H\n\n#ifdef CONFIG_CXL_BASE\n\n#define CXL_IRQ_RANGES 4\n\nstruct cxl_irq_ranges {\n\tirq_hw_number_t offset[CXL_IRQ_RANGES];\n\tirq_hw_number_t range[CXL_IRQ_RANGES];\n};\n\nextern atomic_t cxl_use_count;\n\nstatic inline bool cxl_ctx_in_use(void)\n{\n       return (atomic_read(&cxl_use_count) != 0);\n}\n\nstatic inline void cxl_ctx_get(void)\n{\n       atomic_inc(&cxl_use_count);\n}\n\nstatic inline void cxl_ctx_put(void)\n{\n       atomic_dec(&cxl_use_count);\n}\n\nstruct cxl_afu *cxl_afu_get(struct cxl_afu *afu);\nvoid cxl_afu_put(struct cxl_afu *afu);\nvoid cxl_slbia(struct mm_struct *mm);\n\n#else  \n\nstatic inline bool cxl_ctx_in_use(void) { return false; }\nstatic inline struct cxl_afu *cxl_afu_get(struct cxl_afu *afu) { return NULL; }\nstatic inline void cxl_afu_put(struct cxl_afu *afu) {}\nstatic inline void cxl_slbia(struct mm_struct *mm) {}\n\n#endif  \n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

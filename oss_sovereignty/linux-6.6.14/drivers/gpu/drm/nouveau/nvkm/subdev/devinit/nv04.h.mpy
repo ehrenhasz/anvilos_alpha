@@ -1,0 +1,9 @@
+{
+  "module_name": "nv04.h",
+  "hash_id": "ffc8fe3807a6a0427e9dac62007333736429e559b1b47103143ac35643b98d78",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/subdev/devinit/nv04.h",
+  "human_readable_source": " \n#ifndef __NV04_DEVINIT_H__\n#define __NV04_DEVINIT_H__\n#define nv04_devinit(p) container_of((p), struct nv04_devinit, base)\n#include \"priv.h\"\nstruct nvkm_pll_vals;\n\nstruct nv04_devinit {\n\tstruct nvkm_devinit base;\n\tint owner;\n};\n\nint nv04_devinit_new_(const struct nvkm_devinit_func *, struct nvkm_device *,\n\t\t      enum nvkm_subdev_type, int, struct nvkm_devinit **);\nvoid *nv04_devinit_dtor(struct nvkm_devinit *);\nvoid nv04_devinit_preinit(struct nvkm_devinit *);\nvoid nv04_devinit_fini(struct nvkm_devinit *);\nint  nv04_devinit_pll_set(struct nvkm_devinit *, u32, u32);\n\nvoid setPLL_single(struct nvkm_devinit *, u32, struct nvkm_pll_vals *);\nvoid setPLL_double_highregs(struct nvkm_devinit *, u32, struct nvkm_pll_vals *);\nvoid setPLL_double_lowregs(struct nvkm_devinit *, u32, struct nvkm_pll_vals *);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

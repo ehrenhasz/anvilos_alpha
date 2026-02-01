@@ -1,0 +1,9 @@
+{
+  "module_name": "S+poonceonces.litmus",
+  "hash_id": "98b18da1ba65d117efd53f025641ed69edea778468da64ce9ac8f80a4d1ae5bb",
+  "original_prompt": "Ingested from linux-6.6.14/tools/memory-model/litmus-tests/S+poonceonces.litmus",
+  "human_readable_source": "C S+poonceonces\n\n(*\n * Result: Sometimes\n *\n * Starting with a two-process release-acquire chain ordering P0()'s\n * first store against P1()'s final load, if the smp_store_release()\n * is replaced by WRITE_ONCE() and the smp_load_acquire() replaced by\n * READ_ONCE(), is ordering preserved?\n *)\n\n{}\n\nP0(int *x, int *y)\n{\n\tWRITE_ONCE(*x, 2);\n\tWRITE_ONCE(*y, 1);\n}\n\nP1(int *x, int *y)\n{\n\tint r0;\n\n\tr0 = READ_ONCE(*y);\n\tWRITE_ONCE(*x, 1);\n}\n\nexists (x=2 /\\ 1:r0=1)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

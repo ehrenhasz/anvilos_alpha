@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "ac6f61cfea82525b61fb6fde3ae12b60b4749cac77cb840dac12f210432da8f2",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/crypto/marvell/cesa/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-$(CONFIG_CRYPTO_DEV_MARVELL_CESA) += marvell-cesa.o\nmarvell-cesa-objs := cesa.o cipher.o hash.o tdma.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

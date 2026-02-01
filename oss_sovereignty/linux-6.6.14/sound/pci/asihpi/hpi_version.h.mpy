@@ -1,0 +1,9 @@
+{
+  "module_name": "hpi_version.h",
+  "hash_id": "3c79c0d756ca55daafb75a01481be19dc58c4e4c013f24252167d00bfd2f9b50",
+  "original_prompt": "Ingested from linux-6.6.14/sound/pci/asihpi/hpi_version.h",
+  "human_readable_source": " \n \n\n#ifndef _HPI_VERSION_H\n#define _HPI_VERSION_H\n\n \n \n \n#define HPI_VER HPI_VERSION_CONSTRUCTOR(4, 14, 3)\n\n \n#define HPI_VER_STRING \"4.14.03\"\n\n \n#define HPI_LIB_VER  HPI_VERSION_CONSTRUCTOR(10, 4, 0)\n\n \n#define HPI_VERSION_CONSTRUCTOR(maj, min, r) ((maj << 16) + (min << 8) + r)\n\n \n#define HPI_VER_MAJOR(v) ((int)(v >> 16))\n \n#define HPI_VER_MINOR(v) ((int)((v >> 8) & 0xFF))\n \n#define HPI_VER_RELEASE(v) ((int)(v & 0xFF))\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

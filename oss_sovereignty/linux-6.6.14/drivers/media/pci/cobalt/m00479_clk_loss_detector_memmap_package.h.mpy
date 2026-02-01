@@ -1,0 +1,9 @@
+{
+  "module_name": "m00479_clk_loss_detector_memmap_package.h",
+  "hash_id": "406074af52d0db9225ff2e1e7dfe4db1f128cc6f08fe8b9db85d8d94808de754",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/pci/cobalt/m00479_clk_loss_detector_memmap_package.h",
+  "human_readable_source": " \n \n\n#ifndef M00479_CLK_LOSS_DETECTOR_MEMMAP_PACKAGE_H\n#define M00479_CLK_LOSS_DETECTOR_MEMMAP_PACKAGE_H\n\n \nstruct m00479_clk_loss_detector_regmap {\n\t \n\tuint32_t ctrl;              \n\tuint32_t status;            \n\t \n\tuint32_t ref_clk_cnt_val;   \n\t \n\tuint32_t test_clk_cnt_val;  \n};\n\n#define M00479_CLK_LOSS_DETECTOR_REG_CTRL_OFST 0\n#define M00479_CLK_LOSS_DETECTOR_REG_STATUS_OFST 4\n#define M00479_CLK_LOSS_DETECTOR_REG_REF_CLK_CNT_VAL_OFST 8\n#define M00479_CLK_LOSS_DETECTOR_REG_TEST_CLK_CNT_VAL_OFST 12\n\n \n \n#define M00479_CTRL_BITMAP_ENABLE_OFST          (0)\n#define M00479_CTRL_BITMAP_ENABLE_MSK           (0x1 << M00479_CTRL_BITMAP_ENABLE_OFST)\n \n#define M00479_STATUS_BITMAP_CLOCK_MISSING_OFST (0)\n#define M00479_STATUS_BITMAP_CLOCK_MISSING_MSK  (0x1 << M00479_STATUS_BITMAP_CLOCK_MISSING_OFST)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

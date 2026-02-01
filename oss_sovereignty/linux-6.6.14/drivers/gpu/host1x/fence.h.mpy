@@ -1,0 +1,9 @@
+{
+  "module_name": "fence.h",
+  "hash_id": "a7dcd4abeedf2ff11100e76efad573f3ec1f1cb76127373e188a522cbb7c8c37",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/host1x/fence.h",
+  "human_readable_source": " \n \n\n#ifndef HOST1X_FENCE_H\n#define HOST1X_FENCE_H\n\nstruct host1x_syncpt_fence {\n\tstruct dma_fence base;\n\n\tatomic_t signaling;\n\n\tstruct host1x_syncpt *sp;\n\tu32 threshold;\n\tbool timeout;\n\n\tstruct delayed_work timeout_work;\n\n\tstruct list_head list;\n};\n\nstruct host1x_fence_list {\n\tspinlock_t lock;\n\tstruct list_head list;\n};\n\nvoid host1x_fence_signal(struct host1x_syncpt_fence *fence);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

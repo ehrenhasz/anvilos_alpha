@@ -1,0 +1,9 @@
+{
+  "module_name": "atmel-maxtouch.h",
+  "hash_id": "7dadecf773e8058fc3f1776d5f6d187a4738333c537627797a9c86068538bd19",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/input/atmel-maxtouch.h",
+  "human_readable_source": " \n\n#ifndef _DT_BINDINGS_ATMEL_MAXTOUCH_H\n#define _DT_BINDINGS_ATMEL_MAXTOUCH_H\n\n#define ATMEL_MXT_WAKEUP_NONE\t\t0\n#define ATMEL_MXT_WAKEUP_I2C_SCL\t1\n#define ATMEL_MXT_WAKEUP_GPIO\t\t2\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

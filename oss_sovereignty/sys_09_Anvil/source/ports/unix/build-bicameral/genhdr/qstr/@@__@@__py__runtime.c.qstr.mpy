@@ -1,0 +1,9 @@
+{
+  "module_name": "@@__@@__py__runtime.c.qstr",
+  "hash_id": "951842f06cf0f6ac294e817ddb9179b06d6e8ea1fafe08356e501241d6c35faf",
+  "original_prompt": "Ingested from sys_09_Anvil/source/ports/unix/build-bicameral/genhdr/qstr/@@__@@__py__runtime.c.qstr",
+  "human_readable_source": "Q(__main__)\nQ(__name__)\nQ(__main__)\nQ(keys)\nQ(__getitem__)\nQ(function)\nQ(__class__)\nQ(__next__)\nQ(__getitem__)\nQ(__next__)\nQ(__next__)\nQ(__next__)\nQ(send)\nQ(close)\nQ(throw)\nQ(__path__)\nQ(__name__)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

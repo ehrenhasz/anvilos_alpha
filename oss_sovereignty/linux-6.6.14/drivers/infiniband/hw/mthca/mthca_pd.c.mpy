@@ -1,0 +1,9 @@
+{
+  "module_name": "mthca_pd.c",
+  "hash_id": "b40e791859a1341998c40252e92c8a54a8d3781145de803a8a7dae059201e449",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/infiniband/hw/mthca/mthca_pd.c",
+  "human_readable_source": " \n\n#include <linux/errno.h>\n\n#include \"mthca_dev.h\"\n\nint mthca_pd_alloc(struct mthca_dev *dev, int privileged, struct mthca_pd *pd)\n{\n\tint err = 0;\n\n\tpd->privileged = privileged;\n\n\tatomic_set(&pd->sqp_count, 0);\n\tpd->pd_num = mthca_alloc(&dev->pd_table.alloc);\n\tif (pd->pd_num == -1)\n\t\treturn -ENOMEM;\n\n\tif (privileged) {\n\t\terr = mthca_mr_alloc_notrans(dev, pd->pd_num,\n\t\t\t\t\t     MTHCA_MPT_FLAG_LOCAL_READ |\n\t\t\t\t\t     MTHCA_MPT_FLAG_LOCAL_WRITE,\n\t\t\t\t\t     &pd->ntmr);\n\t\tif (err)\n\t\t\tmthca_free(&dev->pd_table.alloc, pd->pd_num);\n\t}\n\n\treturn err;\n}\n\nvoid mthca_pd_free(struct mthca_dev *dev, struct mthca_pd *pd)\n{\n\tif (pd->privileged)\n\t\tmthca_free_mr(dev, &pd->ntmr);\n\tmthca_free(&dev->pd_table.alloc, pd->pd_num);\n}\n\nint mthca_init_pd_table(struct mthca_dev *dev)\n{\n\treturn mthca_alloc_init(&dev->pd_table.alloc,\n\t\t\t\tdev->limits.num_pds,\n\t\t\t\t(1 << 24) - 1,\n\t\t\t\tdev->limits.reserved_pds);\n}\n\nvoid mthca_cleanup_pd_table(struct mthca_dev *dev)\n{\n\t \n\tmthca_alloc_cleanup(&dev->pd_table.alloc);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

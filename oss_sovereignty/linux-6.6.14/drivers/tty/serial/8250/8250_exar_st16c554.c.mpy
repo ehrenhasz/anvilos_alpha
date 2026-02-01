@@ -1,0 +1,9 @@
+{
+  "module_name": "8250_exar_st16c554.c",
+  "hash_id": "d185a460ee90cbaff88b39fb7151df35d74297138e0d98bd93225d7d76de0d80",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/tty/serial/8250/8250_exar_st16c554.c",
+  "human_readable_source": "\n \n#include <linux/module.h>\n#include <linux/init.h>\n#include <linux/serial_8250.h>\n\n#include \"8250.h\"\n\nstatic struct plat_serial8250_port exar_data[] = {\n\tSERIAL8250_PORT(0x100, 5),\n\tSERIAL8250_PORT(0x108, 5),\n\tSERIAL8250_PORT(0x110, 5),\n\tSERIAL8250_PORT(0x118, 5),\n\t{ },\n};\n\nstatic struct platform_device exar_device = {\n\t.name\t\t\t= \"serial8250\",\n\t.id\t\t\t= PLAT8250_DEV_EXAR_ST16C554,\n\t.dev\t\t\t= {\n\t\t.platform_data\t= exar_data,\n\t},\n};\n\nstatic int __init exar_init(void)\n{\n\treturn platform_device_register(&exar_device);\n}\n\nmodule_init(exar_init);\n\nMODULE_AUTHOR(\"Paul B Schroeder\");\nMODULE_DESCRIPTION(\"8250 serial probe module for Exar cards\");\nMODULE_LICENSE(\"GPL\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

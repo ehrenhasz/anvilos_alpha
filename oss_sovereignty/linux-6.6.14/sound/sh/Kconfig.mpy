@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "deb4e4ee2276d9ac5aa1f86cff73ead9ff5e04cbd0d18a3f5bce78cb1c54d6a1",
+  "original_prompt": "Ingested from linux-6.6.14/sound/sh/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n# ALSA SH drivers\n\nmenuconfig SND_SUPERH\n\tbool \"SUPERH sound devices\"\n\tdepends on SUPERH\n\tdefault y\n\thelp\n\t  Support for sound devices specific to SUPERH architectures.\n\t  Drivers that are implemented on ASoC can be found in\n\t  \"ALSA for SoC audio support\" section.\n\nif SND_SUPERH\n\nconfig SND_AICA\n\ttristate \"Dreamcast Yamaha AICA sound\"\n\tdepends on SH_DREAMCAST\n\tselect SND_PCM\n\tselect G2_DMA\n\thelp\n\t  ALSA Sound driver for the SEGA Dreamcast console.\n\nconfig SND_SH_DAC_AUDIO\n\ttristate \"SuperH DAC audio support\"\n\tdepends on SND\n\tdepends on CPU_SH3 && HIGH_RES_TIMERS\n\tselect SND_PCM\n\thelp\n\t  Say Y here to include support for the on-chip DAC.\n\nendif\t# SND_SUPERH\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

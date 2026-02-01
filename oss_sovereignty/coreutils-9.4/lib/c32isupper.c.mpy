@@ -1,0 +1,9 @@
+{
+  "module_name": "c32isupper.c",
+  "hash_id": "465c98dc31317e714d84143e6fef27c7f8fb811b8379401ed4897b98c125d772",
+  "original_prompt": "Ingested from coreutils-9.4/lib/c32isupper.c",
+  "human_readable_source": " \n#include <uchar.h>\n\n#define FUNC c32isupper\n#define WCHAR_FUNC iswupper\n#define UCS_FUNC uc_is_upper\n#include \"c32is-impl.h\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

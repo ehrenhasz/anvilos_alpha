@@ -1,0 +1,9 @@
+{
+  "module_name": "nf_conntrack_extend.h",
+  "hash_id": "91ddc25d35fc84fc4b63bd56cbdb99b81fe39c11be3adaea78d6dbea60397a8a",
+  "original_prompt": "Ingested from linux-6.6.14/include/net/netfilter/nf_conntrack_extend.h",
+  "human_readable_source": " \n#ifndef _NF_CONNTRACK_EXTEND_H\n#define _NF_CONNTRACK_EXTEND_H\n\n#include <linux/slab.h>\n\n#include <net/netfilter/nf_conntrack.h>\n\nenum nf_ct_ext_id {\n\tNF_CT_EXT_HELPER,\n#if IS_ENABLED(CONFIG_NF_NAT)\n\tNF_CT_EXT_NAT,\n#endif\n\tNF_CT_EXT_SEQADJ,\n\tNF_CT_EXT_ACCT,\n#ifdef CONFIG_NF_CONNTRACK_EVENTS\n\tNF_CT_EXT_ECACHE,\n#endif\n#ifdef CONFIG_NF_CONNTRACK_TIMESTAMP\n\tNF_CT_EXT_TSTAMP,\n#endif\n#ifdef CONFIG_NF_CONNTRACK_TIMEOUT\n\tNF_CT_EXT_TIMEOUT,\n#endif\n#ifdef CONFIG_NF_CONNTRACK_LABELS\n\tNF_CT_EXT_LABELS,\n#endif\n#if IS_ENABLED(CONFIG_NETFILTER_SYNPROXY)\n\tNF_CT_EXT_SYNPROXY,\n#endif\n#if IS_ENABLED(CONFIG_NET_ACT_CT)\n\tNF_CT_EXT_ACT_CT,\n#endif\n\tNF_CT_EXT_NUM,\n};\n\n \nstruct nf_ct_ext {\n\tu8 offset[NF_CT_EXT_NUM];\n\tu8 len;\n\tunsigned int gen_id;\n\tchar data[] __aligned(8);\n};\n\nstatic inline bool __nf_ct_ext_exist(const struct nf_ct_ext *ext, u8 id)\n{\n\treturn !!ext->offset[id];\n}\n\nstatic inline bool nf_ct_ext_exist(const struct nf_conn *ct, u8 id)\n{\n\treturn (ct->ext && __nf_ct_ext_exist(ct->ext, id));\n}\n\nvoid *__nf_ct_ext_find(const struct nf_ct_ext *ext, u8 id);\n\nstatic inline void *nf_ct_ext_find(const struct nf_conn *ct, u8 id)\n{\n\tstruct nf_ct_ext *ext = ct->ext;\n\n\tif (!ext || !__nf_ct_ext_exist(ext, id))\n\t\treturn NULL;\n\n\tif (unlikely(ext->gen_id))\n\t\treturn __nf_ct_ext_find(ext, id);\n\n\treturn (void *)ct->ext + ct->ext->offset[id];\n}\n\n \nvoid *nf_ct_ext_add(struct nf_conn *ct, enum nf_ct_ext_id id, gfp_t gfp);\n\n \nextern atomic_t nf_conntrack_ext_genid;\nvoid nf_ct_ext_bump_genid(void);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "5984036c96e0ab7547a09be2360f27c4bda275a4b92dc53a839c58e36ec2e989",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/fungible/funcore/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause)\n\nobj-$(CONFIG_FUN_CORE) += funcore.o\n\nfuncore-y := fun_dev.o fun_queue.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

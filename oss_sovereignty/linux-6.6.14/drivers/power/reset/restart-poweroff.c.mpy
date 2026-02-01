@@ -1,0 +1,9 @@
+{
+  "module_name": "restart-poweroff.c",
+  "hash_id": "b73c94cabc1f27c689ccdde51af38085efa2b81333457fbd7b39a4142feb4ea1",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/power/reset/restart-poweroff.c",
+  "human_readable_source": "\n \n#include <linux/kernel.h>\n#include <linux/init.h>\n#include <linux/platform_device.h>\n#include <linux/of_platform.h>\n#include <linux/module.h>\n#include <linux/reboot.h>\n\nstatic void restart_poweroff_do_poweroff(void)\n{\n\treboot_mode = REBOOT_HARD;\n\tmachine_restart(NULL);\n}\n\nstatic int restart_poweroff_probe(struct platform_device *pdev)\n{\n\t \n\tif (pm_power_off != NULL) {\n\t\tdev_err(&pdev->dev,\n\t\t\t\"pm_power_off function already registered\");\n\t\treturn -EBUSY;\n\t}\n\n\tpm_power_off = &restart_poweroff_do_poweroff;\n\treturn 0;\n}\n\nstatic int restart_poweroff_remove(struct platform_device *pdev)\n{\n\tif (pm_power_off == &restart_poweroff_do_poweroff)\n\t\tpm_power_off = NULL;\n\n\treturn 0;\n}\n\nstatic const struct of_device_id of_restart_poweroff_match[] = {\n\t{ .compatible = \"restart-poweroff\", },\n\t{},\n};\nMODULE_DEVICE_TABLE(of, of_restart_poweroff_match);\n\nstatic struct platform_driver restart_poweroff_driver = {\n\t.probe = restart_poweroff_probe,\n\t.remove = restart_poweroff_remove,\n\t.driver = {\n\t\t.name = \"poweroff-restart\",\n\t\t.of_match_table = of_restart_poweroff_match,\n\t},\n};\nmodule_platform_driver(restart_poweroff_driver);\n\nMODULE_AUTHOR(\"Andrew Lunn <andrew@lunn.ch\");\nMODULE_DESCRIPTION(\"restart poweroff driver\");\nMODULE_ALIAS(\"platform:poweroff-restart\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

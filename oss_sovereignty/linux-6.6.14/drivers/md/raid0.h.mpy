@@ -1,0 +1,9 @@
+{
+  "module_name": "raid0.h",
+  "hash_id": "38e87e4c90f5a65f48c431fc2ace04efc617d917c07a7722a9d22540a150dc6f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/md/raid0.h",
+  "human_readable_source": " \n#ifndef _RAID0_H\n#define _RAID0_H\n\nstruct strip_zone {\n\tsector_t zone_end;\t \n\tsector_t dev_start;\t \n\tint\t nb_dev;\t \n\tint\t disk_shift;\t \n};\n\n \n\nenum r0layout {\n\tRAID0_ORIG_LAYOUT = 1,\n\tRAID0_ALT_MULTIZONE_LAYOUT = 2,\n};\nstruct r0conf {\n\tstruct strip_zone\t*strip_zone;\n\tstruct md_rdev\t\t**devlist;  \n\tint\t\t\tnr_strip_zones;\n\tenum r0layout\t\tlayout;\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

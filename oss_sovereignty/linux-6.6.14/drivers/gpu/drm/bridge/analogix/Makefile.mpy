@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "afd67381e0ffa955210cef2509b51e54226488d7adb54a47dcf20eee51dca39e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/bridge/analogix/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nanalogix_dp-objs := analogix_dp_core.o analogix_dp_reg.o analogix-i2c-dptx.o\nobj-$(CONFIG_DRM_ANALOGIX_ANX6345) += analogix-anx6345.o\nobj-$(CONFIG_DRM_ANALOGIX_ANX7625) += anx7625.o\nobj-$(CONFIG_DRM_ANALOGIX_ANX78XX) += analogix-anx78xx.o\nobj-$(CONFIG_DRM_ANALOGIX_DP) += analogix_dp.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

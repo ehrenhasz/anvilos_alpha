@@ -1,0 +1,9 @@
+{
+  "module_name": "crc8.h",
+  "hash_id": "2e2337ef71b98f567820520233921bd7b5273cafa17e7bf456e5a77cfe4d1fd2",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/crc8.h",
+  "human_readable_source": " \n#ifndef __CRC8_H_\n#define __CRC8_H_\n\n#include <linux/types.h>\n\n \n#define CRC8_INIT_VALUE\t\t0xFF\n\n \n#define CRC8_GOOD_VALUE(_table)\t(_table[0xFF])\n\n \n#define CRC8_TABLE_SIZE\t\t\t256\n\n \n#define DECLARE_CRC8_TABLE(_table) \\\n\tstatic u8 _table[CRC8_TABLE_SIZE]\n\n \nvoid crc8_populate_lsb(u8 table[CRC8_TABLE_SIZE], u8 polynomial);\n\n \nvoid crc8_populate_msb(u8 table[CRC8_TABLE_SIZE], u8 polynomial);\n\n \nu8 crc8(const u8 table[CRC8_TABLE_SIZE], const u8 *pdata, size_t nbytes, u8 crc);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

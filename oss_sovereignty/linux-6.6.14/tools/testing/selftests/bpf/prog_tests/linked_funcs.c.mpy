@@ -1,0 +1,9 @@
+{
+  "module_name": "linked_funcs.c",
+  "hash_id": "5fbd4bd142454846d742bcb05dd262c6d2f2b1269a2ce1dfd74293ddebaebd7d",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/prog_tests/linked_funcs.c",
+  "human_readable_source": "\n \n\n#include <test_progs.h>\n#include <sys/syscall.h>\n#include \"linked_funcs.skel.h\"\n\nvoid test_linked_funcs(void)\n{\n\tint err;\n\tstruct linked_funcs *skel;\n\n\tskel = linked_funcs__open();\n\tif (!ASSERT_OK_PTR(skel, \"skel_open\"))\n\t\treturn;\n\n\t \n\tbpf_program__set_autoload(skel->progs.handler1, true);\n\tbpf_program__set_autoload(skel->progs.handler2, true);\n\n\tskel->rodata->my_tid = syscall(SYS_gettid);\n\tskel->bss->syscall_id = SYS_getpgid;\n\n\terr = linked_funcs__load(skel);\n\tif (!ASSERT_OK(err, \"skel_load\"))\n\t\tgoto cleanup;\n\n\terr = linked_funcs__attach(skel);\n\tif (!ASSERT_OK(err, \"skel_attach\"))\n\t\tgoto cleanup;\n\n\t \n\tsyscall(SYS_getpgid);\n\n\tASSERT_EQ(skel->bss->output_val1, 2000 + 2000, \"output_val1\");\n\tASSERT_EQ(skel->bss->output_ctx1, SYS_getpgid, \"output_ctx1\");\n\tASSERT_EQ(skel->bss->output_weak1, 42, \"output_weak1\");\n\n\tASSERT_EQ(skel->bss->output_val2, 2 * 1000 + 2 * (2 * 1000), \"output_val2\");\n\tASSERT_EQ(skel->bss->output_ctx2, SYS_getpgid, \"output_ctx2\");\n\t \n\tASSERT_EQ(skel->bss->output_weak2, 0, \"output_weak2\");\n\ncleanup:\n\tlinked_funcs__destroy(skel);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

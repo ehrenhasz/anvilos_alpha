@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "3bf99e1750ff82d67318f23222de8eff713a8cca205e0a0299696b40d0fd5420",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/infiniband/ulp/opa_vnic/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig INFINIBAND_OPA_VNIC\n\ttristate \"Cornelis OPX VNIC support\"\n\tdepends on X86_64 && INFINIBAND\n\thelp\n\tThis is Omni-Path Express (OPX) Virtual Network Interface Controller (VNIC)\n\tdriver for Ethernet over Omni-Path feature. It implements the HW\n\tindependent VNIC functionality. It interfaces with Linux stack for\n\tdata path and IB MAD for the control path.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "xfrm_hash.c",
+  "hash_id": "ccaa80149a18dec3a559038c57b322540816efea45df399d4e3d489f3e834891",
+  "original_prompt": "Ingested from linux-6.6.14/net/xfrm/xfrm_hash.c",
+  "human_readable_source": "\n \n\n#include <linux/kernel.h>\n#include <linux/mm.h>\n#include <linux/memblock.h>\n#include <linux/vmalloc.h>\n#include <linux/slab.h>\n#include <linux/xfrm.h>\n\n#include \"xfrm_hash.h\"\n\nstruct hlist_head *xfrm_hash_alloc(unsigned int sz)\n{\n\tstruct hlist_head *n;\n\n\tif (sz <= PAGE_SIZE)\n\t\tn = kzalloc(sz, GFP_KERNEL);\n\telse if (hashdist)\n\t\tn = vzalloc(sz);\n\telse\n\t\tn = (struct hlist_head *)\n\t\t\t__get_free_pages(GFP_KERNEL | __GFP_NOWARN | __GFP_ZERO,\n\t\t\t\t\t get_order(sz));\n\n\treturn n;\n}\n\nvoid xfrm_hash_free(struct hlist_head *n, unsigned int sz)\n{\n\tif (sz <= PAGE_SIZE)\n\t\tkfree(n);\n\telse if (hashdist)\n\t\tvfree(n);\n\telse\n\t\tfree_pages((unsigned long)n, get_order(sz));\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

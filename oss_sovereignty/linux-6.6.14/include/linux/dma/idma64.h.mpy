@@ -1,0 +1,9 @@
+{
+  "module_name": "idma64.h",
+  "hash_id": "3941e40bb2026b62240f78266f25a7105294706b388d4162806d213a83d89a04",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/dma/idma64.h",
+  "human_readable_source": " \n \n\n#ifndef __LINUX_DMA_IDMA64_H__\n#define __LINUX_DMA_IDMA64_H__\n\n \n#define LPSS_IDMA64_DRIVER_NAME\t\t\"idma64\"\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

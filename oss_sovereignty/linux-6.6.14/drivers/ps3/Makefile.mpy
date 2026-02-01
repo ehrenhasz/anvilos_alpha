@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "e4dfe5e10ebb8a8228f3b037c0e1bf9789cd4d3618985b3219c3bc98bc90f56d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/ps3/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-$(CONFIG_PS3_VUART) += ps3-vuart.o\nobj-$(CONFIG_PS3_PS3AV) += ps3av_mod.o\nps3av_mod-y\t\t:= ps3av.o ps3av_cmd.o\nobj-$(CONFIG_PPC_PS3) += sys-manager-core.o\nobj-$(CONFIG_PS3_SYS_MANAGER) += ps3-sys-manager.o\nobj-$(CONFIG_PS3_STORAGE) += ps3stor_lib.o\nobj-$(CONFIG_PS3_LPM) += ps3-lpm.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

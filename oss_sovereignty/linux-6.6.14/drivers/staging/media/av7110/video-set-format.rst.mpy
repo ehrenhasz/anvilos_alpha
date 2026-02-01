@@ -1,0 +1,9 @@
+{
+  "module_name": "video-set-format.rst",
+  "hash_id": "ecbcfdc789fcb8cd415826a4639de44a05512644bd53900cd8971d36fb72c98d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/av7110/video-set-format.rst",
+  "human_readable_source": ".. SPDX-License-Identifier: GFDL-1.1-no-invariants-or-later\n.. c:namespace:: DTV.video\n\n.. _VIDEO_SET_FORMAT:\n\n================\nVIDEO_SET_FORMAT\n================\n\nName\n----\n\nVIDEO_SET_FORMAT\n\n.. attention:: This ioctl is deprecated.\n\nSynopsis\n--------\n\n.. c:macro:: VIDEO_SET_FORMAT\n\n``int ioctl(fd, VIDEO_SET_FORMAT, video_format_t format)``\n\nArguments\n---------\n\n.. flat-table::\n    :header-rows:  0\n    :stub-columns: 0\n\n    -  .. row 1\n\n       -  int fd\n\n       -  File descriptor returned by a previous call to open().\n\n    -  .. row 2\n\n       -  int request\n\n       -  Equals VIDEO_SET_FORMAT for this command.\n\n    -  .. row 3\n\n       -  video_format_t format\n\n       -  video format of TV as defined in section ??.\n\nDescription\n-----------\n\nThis ioctl sets the screen format (aspect ratio) of the connected output\ndevice (TV) so that the output of the decoder can be adjusted\naccordingly.\n\n.. c:type:: video_format_t\n\n.. code-block:: c\n\n\ttypedef enum {\n\t\tVIDEO_FORMAT_4_3,     /* Select 4:3 format */\n\t\tVIDEO_FORMAT_16_9,    /* Select 16:9 format. */\n\t\tVIDEO_FORMAT_221_1    /* 2.21:1 */\n\t} video_format_t;\n\nReturn Value\n------------\n\nOn success 0 is returned, on error -1 and the ``errno`` variable is set\nappropriately. The generic error codes are described at the\n:ref:`Generic Error Codes <gen-errors>` chapter.\n\n\n.. flat-table::\n    :header-rows:  0\n    :stub-columns: 0\n\n    -  .. row 1\n\n       -  ``EINVAL``\n\n       -  format is not a valid video format.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

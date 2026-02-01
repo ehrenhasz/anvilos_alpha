@@ -1,0 +1,9 @@
+{
+  "module_name": "asid.c",
+  "hash_id": "903859b14bc3b731aa4c8108890d729ca20b44cd0d70044f9db3add4f6bf05c1",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/accel/habanalabs/common/asid.c",
+  "human_readable_source": "\n\n \n\n#include \"habanalabs.h\"\n\n#include <linux/slab.h>\n\nint hl_asid_init(struct hl_device *hdev)\n{\n\thdev->asid_bitmap = bitmap_zalloc(hdev->asic_prop.max_asid, GFP_KERNEL);\n\tif (!hdev->asid_bitmap)\n\t\treturn -ENOMEM;\n\n\tmutex_init(&hdev->asid_mutex);\n\n\t \n\tset_bit(0, hdev->asid_bitmap);\n\n\treturn 0;\n}\n\nvoid hl_asid_fini(struct hl_device *hdev)\n{\n\tmutex_destroy(&hdev->asid_mutex);\n\tbitmap_free(hdev->asid_bitmap);\n}\n\nunsigned long hl_asid_alloc(struct hl_device *hdev)\n{\n\tunsigned long found;\n\n\tmutex_lock(&hdev->asid_mutex);\n\n\tfound = find_first_zero_bit(hdev->asid_bitmap,\n\t\t\t\t\thdev->asic_prop.max_asid);\n\tif (found == hdev->asic_prop.max_asid)\n\t\tfound = 0;\n\telse\n\t\tset_bit(found, hdev->asid_bitmap);\n\n\tmutex_unlock(&hdev->asid_mutex);\n\n\treturn found;\n}\n\nvoid hl_asid_free(struct hl_device *hdev, unsigned long asid)\n{\n\tif (asid == HL_KERNEL_ASID_ID || asid >= hdev->asic_prop.max_asid) {\n\t\tdev_crit(hdev->dev, \"Invalid ASID %lu\", asid);\n\t\treturn;\n\t}\n\n\tclear_bit(asid, hdev->asid_bitmap);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "sqpoll.h",
+  "hash_id": "4499c07f3d3b3775a83c767c1089b9cfe8b4b168c845ef9bda258709c94aa205",
+  "original_prompt": "Ingested from linux-6.6.14/io_uring/sqpoll.h",
+  "human_readable_source": "\n\nstruct io_sq_data {\n\trefcount_t\t\trefs;\n\tatomic_t\t\tpark_pending;\n\tstruct mutex\t\tlock;\n\n\t \n\tstruct list_head\tctx_list;\n\n\tstruct task_struct\t*thread;\n\tstruct wait_queue_head\twait;\n\n\tunsigned\t\tsq_thread_idle;\n\tint\t\t\tsq_cpu;\n\tpid_t\t\t\ttask_pid;\n\tpid_t\t\t\ttask_tgid;\n\n\tunsigned long\t\tstate;\n\tstruct completion\texited;\n};\n\nint io_sq_offload_create(struct io_ring_ctx *ctx, struct io_uring_params *p);\nvoid io_sq_thread_finish(struct io_ring_ctx *ctx);\nvoid io_sq_thread_stop(struct io_sq_data *sqd);\nvoid io_sq_thread_park(struct io_sq_data *sqd);\nvoid io_sq_thread_unpark(struct io_sq_data *sqd);\nvoid io_put_sq_data(struct io_sq_data *sqd);\nvoid io_sqpoll_wait_sq(struct io_ring_ctx *ctx);\nint io_sqpoll_wq_cpu_affinity(struct io_ring_ctx *ctx, cpumask_var_t mask);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

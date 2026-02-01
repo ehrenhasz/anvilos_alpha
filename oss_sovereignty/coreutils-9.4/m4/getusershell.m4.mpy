@@ -1,0 +1,9 @@
+{
+  "module_name": "getusershell.m4",
+  "hash_id": "4688b1c88d8f79eea9972bec1184e798f5b3e151801bd4708fe04b04f18cff54",
+  "original_prompt": "Ingested from coreutils-9.4/m4/getusershell.m4",
+  "human_readable_source": "# getusershell.m4 serial 7\ndnl Copyright (C) 2002-2003, 2006, 2008-2023 Free Software Foundation, Inc.\ndnl This file is free software; the Free Software Foundation\ndnl gives unlimited permission to copy and/or distribute it,\ndnl with or without modifications, as long as this notice is preserved.\n\nAC_DEFUN([gl_FUNC_GETUSERSHELL],\n[\n  AC_REQUIRE([gl_UNISTD_H_DEFAULTS])\n\n  dnl Persuade glibc <unistd.h> to declare {get,set,end}usershell().\n  AC_REQUIRE([AC_USE_SYSTEM_EXTENSIONS])\n\n  dnl Check whether the getusershell function exists.\n  AC_CHECK_FUNCS_ONCE([getusershell])\n  if test $ac_cv_func_getusershell = yes; then\n    HAVE_GETUSERSHELL=1\n    dnl Check whether getusershell is declared.\n    AC_CHECK_DECLS([getusershell])\n    if test $ac_cv_have_decl_getusershell = no; then\n      HAVE_DECL_GETUSERSHELL=0\n    fi\n  else\n    HAVE_GETUSERSHELL=0\n    dnl Assume that on platforms which declare it, the function exists.\n    HAVE_DECL_GETUSERSHELL=0\n  fi\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "jfs_acl.h",
+  "hash_id": "b4adfd166e3aaccaf10b259a0d1d4f1de2f50095b16716dd35450281b09c22d4",
+  "original_prompt": "Ingested from linux-6.6.14/fs/jfs/jfs_acl.h",
+  "human_readable_source": " \n \n#ifndef _H_JFS_ACL\n#define _H_JFS_ACL\n\n#ifdef CONFIG_JFS_POSIX_ACL\n\nstruct posix_acl *jfs_get_acl(struct inode *inode, int type, bool rcu);\nint jfs_set_acl(struct mnt_idmap *idmap, struct dentry *dentry,\n\t\tstruct posix_acl *acl, int type);\nint jfs_init_acl(tid_t, struct inode *, struct inode *);\n\n#else\n\nstatic inline int jfs_init_acl(tid_t tid, struct inode *inode,\n\t\t\t       struct inode *dir)\n{\n\treturn 0;\n}\n\n#endif\n#endif\t\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "event_fifo_public.h",
+  "hash_id": "151a61fb74285011f557525fcb734710b010ef0c754760f34b561ffe227975ad",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/hive_isp_css_include/host/event_fifo_public.h",
+  "human_readable_source": " \n \n\n#ifndef __EVENT_FIFO_PUBLIC_H\n#define __EVENT_FIFO_PUBLIC_H\n\n#include <type_support.h>\n#include \"system_local.h\"\n\n \nSTORAGE_CLASS_EVENT_H void event_wait_for(\n    const event_ID_t\t\tID);\n\n \nSTORAGE_CLASS_EVENT_H void cnd_event_wait_for(\n    const event_ID_t\t\tID,\n    const bool\t\t\t\tcnd);\n\n \nSTORAGE_CLASS_EVENT_H hrt_data event_receive_token(\n    const event_ID_t\t\tID);\n\n \nSTORAGE_CLASS_EVENT_H void event_send_token(\n    const event_ID_t\t\tID,\n    const hrt_data\t\t\ttoken);\n\n \nSTORAGE_CLASS_EVENT_H bool is_event_pending(\n    const event_ID_t\t\tID);\n\n \nSTORAGE_CLASS_EVENT_H bool can_event_send_token(\n    const event_ID_t\t\tID);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

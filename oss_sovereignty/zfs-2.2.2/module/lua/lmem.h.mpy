@@ -1,0 +1,9 @@
+{
+  "module_name": "lmem.h",
+  "hash_id": "73f39306ed159df239fdb81b728d8e4a15756ac4b6e318908f16d6e020c83c47",
+  "original_prompt": "Ingested from zfs-2.2.2/module/lua/lmem.h",
+  "human_readable_source": " \n\n#ifndef lmem_h\n#define lmem_h\n\n\n#include \"llimits.h\"\n#include <sys/lua/lua.h>\n\n\n \n#define luaM_reallocv(L,b,on,n,e) \\\n  (cast(void, \\\n     (cast(size_t, (n)+1) > MAX_SIZET/(e)) ? (luaM_toobig(L), 0) : 0), \\\n   luaM_realloc_(L, (b), (on)*(e), (n)*(e)))\n\n#define luaM_freemem(L, b, s)\tluaM_realloc_(L, (b), (s), 0)\n#define luaM_free(L, b)\t\tluaM_realloc_(L, (b), sizeof(*(b)), 0)\n#define luaM_freearray(L, b, n)   luaM_reallocv(L, (b), n, 0, sizeof((b)[0]))\n\n#define luaM_malloc(L,s)\tluaM_realloc_(L, NULL, 0, (s))\n#define luaM_new(L,t)\t\tcast(t *, luaM_malloc(L, sizeof(t)))\n#define luaM_newvector(L,n,t) \\\n\t\tcast(t *, luaM_reallocv(L, NULL, 0, n, sizeof(t)))\n\n#define luaM_newobject(L,tag,s)\tluaM_realloc_(L, NULL, tag, (s))\n\n#define luaM_growvector(L,v,nelems,size,t,limit,e) \\\n          if ((nelems)+1 > (size)) \\\n            ((v)=cast(t *, luaM_growaux_(L,v,&(size),sizeof(t),limit,e)))\n\n#define luaM_reallocvector(L, v,oldn,n,t) \\\n   ((v)=cast(t *, luaM_reallocv(L, v, oldn, n, sizeof(t))))\n\nLUAI_FUNC l_noret luaM_toobig (lua_State *L);\n\n \nLUAI_FUNC void *luaM_realloc_ (lua_State *L, void *block, size_t oldsize,\n                                                          size_t size);\nLUAI_FUNC void *luaM_growaux_ (lua_State *L, void *block, int *size,\n                               size_t size_elem, int limit,\n                               const char *what);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

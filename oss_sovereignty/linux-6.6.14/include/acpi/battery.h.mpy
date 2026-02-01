@@ -1,0 +1,9 @@
+{
+  "module_name": "battery.h",
+  "hash_id": "b012b1e386a9935bb05374b3b7fe7c459e3b4e2ff75a0bda0a10ea166ffae2bb",
+  "original_prompt": "Ingested from linux-6.6.14/include/acpi/battery.h",
+  "human_readable_source": " \n#ifndef __ACPI_BATTERY_H\n#define __ACPI_BATTERY_H\n\n#include <linux/power_supply.h>\n\n#define ACPI_BATTERY_CLASS \"battery\"\n\n#define ACPI_BATTERY_NOTIFY_STATUS\t0x80\n#define ACPI_BATTERY_NOTIFY_INFO\t0x81\n#define ACPI_BATTERY_NOTIFY_THRESHOLD   0x82\n\nstruct acpi_battery_hook {\n\tconst char *name;\n\tint (*add_battery)(struct power_supply *battery, struct acpi_battery_hook *hook);\n\tint (*remove_battery)(struct power_supply *battery, struct acpi_battery_hook *hook);\n\tstruct list_head list;\n};\n\nvoid battery_hook_register(struct acpi_battery_hook *hook);\nvoid battery_hook_unregister(struct acpi_battery_hook *hook);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

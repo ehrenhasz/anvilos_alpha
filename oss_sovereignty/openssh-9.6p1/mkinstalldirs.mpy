@@ -1,0 +1,9 @@
+{
+  "module_name": "mkinstalldirs",
+  "hash_id": "bbbcc8b2134c9610372c8b8897ecfbe51af05c6dca9ce42dd34385a1f63155af",
+  "original_prompt": "Ingested from openssh-9.6p1/mkinstalldirs",
+  "human_readable_source": "#! /bin/sh\n# mkinstalldirs --- make directory hierarchy\n# Author: Noah Friedman <friedman@prep.ai.mit.edu>\n# Created: 1993-05-16\n# Public domain\n\nerrstatus=0\n\nfor file\ndo\n   set fnord `echo \":$file\" | sed -ne 's/^:\\//#/;s/^://;s/\\// /g;s/^#/\\//;p'`\n   shift\n\n   pathcomp=\n   for d\n   do\n     pathcomp=\"$pathcomp$d\"\n     case \"$pathcomp\" in\n       -* ) pathcomp=./$pathcomp ;;\n     esac\n\n     if test ! -d \"$pathcomp\"; then\n\techo \"mkdir $pathcomp\"\n\n\tmkdir \"$pathcomp\" || lasterr=$?\n\n\tif test ! -d \"$pathcomp\"; then\n\t  errstatus=$lasterr\n\tfi\n     fi\n\n     pathcomp=\"$pathcomp/\"\n   done\ndone\n\nexit $errstatus\n\n# mkinstalldirs ends here\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

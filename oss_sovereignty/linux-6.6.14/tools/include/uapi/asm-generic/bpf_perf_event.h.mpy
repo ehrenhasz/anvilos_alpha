@@ -1,0 +1,9 @@
+{
+  "module_name": "bpf_perf_event.h",
+  "hash_id": "41f22088d5a1532e31e334c9458c39487e564544f5553bab9d9581e285f0c446",
+  "original_prompt": "Ingested from linux-6.6.14/tools/include/uapi/asm-generic/bpf_perf_event.h",
+  "human_readable_source": "#ifndef _UAPI__ASM_GENERIC_BPF_PERF_EVENT_H__\n#define _UAPI__ASM_GENERIC_BPF_PERF_EVENT_H__\n\n#include <linux/ptrace.h>\n\n \ntypedef struct pt_regs bpf_user_pt_regs_t;\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

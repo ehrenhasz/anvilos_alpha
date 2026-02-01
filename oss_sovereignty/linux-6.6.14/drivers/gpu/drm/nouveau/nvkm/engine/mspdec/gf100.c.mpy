@@ -1,0 +1,9 @@
+{
+  "module_name": "gf100.c",
+  "hash_id": "1a475b1503bcb2819013702f7e6d7e1132f0e8b6a931f80810ee55254cb7115f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/engine/mspdec/gf100.c",
+  "human_readable_source": " \n#include \"priv.h\"\n\n#include <nvif/class.h>\n\nvoid\ngf100_mspdec_init(struct nvkm_falcon *mspdec)\n{\n\tstruct nvkm_device *device = mspdec->engine.subdev.device;\n\tnvkm_wr32(device, 0x085010, 0x0000fff2);\n\tnvkm_wr32(device, 0x08501c, 0x0000fff2);\n}\n\nstatic const struct nvkm_falcon_func\ngf100_mspdec = {\n\t.init = gf100_mspdec_init,\n\t.sclass = {\n\t\t{ -1, -1, GF100_MSPDEC },\n\t\t{}\n\t}\n};\n\nint\ngf100_mspdec_new(struct nvkm_device *device, enum nvkm_subdev_type type, int inst,\n\t\t struct nvkm_engine **pengine)\n{\n\treturn nvkm_mspdec_new_(&gf100_mspdec, device, type, inst, pengine);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

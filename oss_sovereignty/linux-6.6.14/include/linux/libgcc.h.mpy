@@ -1,0 +1,9 @@
+{
+  "module_name": "libgcc.h",
+  "hash_id": "f6d60c6f5a9f95f2a1f0fd25e7feeb68dbd4bf76d4442a38982b61274b9587de",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/libgcc.h",
+  "human_readable_source": " \n \n\n#ifndef __LIB_LIBGCC_H\n#define __LIB_LIBGCC_H\n\n#include <asm/byteorder.h>\n\ntypedef int word_type __attribute__ ((mode (__word__)));\n\n#ifdef __BIG_ENDIAN\nstruct DWstruct {\n\tint high, low;\n};\n#elif defined(__LITTLE_ENDIAN)\nstruct DWstruct {\n\tint low, high;\n};\n#else\n#error I feel sick.\n#endif\n\ntypedef union {\n\tstruct DWstruct s;\n\tlong long ll;\n} DWunion;\n\nlong long notrace __ashldi3(long long u, word_type b);\nlong long notrace __ashrdi3(long long u, word_type b);\nword_type notrace __cmpdi2(long long a, long long b);\nlong long notrace __lshrdi3(long long u, word_type b);\nlong long notrace __muldi3(long long u, long long v);\nword_type notrace __ucmpdi2(unsigned long long a, unsigned long long b);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

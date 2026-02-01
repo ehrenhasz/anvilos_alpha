@@ -1,0 +1,9 @@
+{
+  "module_name": "ramnv40.h",
+  "hash_id": "da2a614d7a68901671de24cf9af677a7b195893a87b9fb118aee71faa172c49a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/subdev/fb/ramnv40.h",
+  "human_readable_source": " \n#ifndef __NV40_FB_RAM_H__\n#define __NV40_FB_RAM_H__\n#define nv40_ram(p) container_of((p), struct nv40_ram, base)\n#include \"ram.h\"\n\nstruct nv40_ram {\n\tstruct nvkm_ram base;\n\tu32 ctrl;\n\tu32 coef;\n};\n\nint nv40_ram_new_(struct nvkm_fb *fb, enum nvkm_ram_type, u64,\n\t\t  struct nvkm_ram **);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

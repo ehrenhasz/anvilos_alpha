@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "240adf6d43ece2c732854d039e2dd215cb35c4363b9b268f3d7dac477c39d102",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/platform/x86/hp/hp-bioscfg/Makefile",
+  "human_readable_source": "obj-$(CONFIG_HP_BIOSCFG) := hp-bioscfg.o\n\nhp-bioscfg-objs := bioscfg.o\t\\\n\tbiosattr-interface.o\t\\\n\tenum-attributes.o\t\\\n\tint-attributes.o\t\\\n\torder-list-attributes.o\t\\\n\tpasswdobj-attributes.o\t\\\n\tspmobj-attributes.o\t\\\n\tstring-attributes.o\t\\\n\tsurestart-attributes.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

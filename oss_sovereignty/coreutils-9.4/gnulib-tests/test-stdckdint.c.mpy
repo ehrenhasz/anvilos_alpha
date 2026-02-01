@@ -1,0 +1,9 @@
+{
+  "module_name": "test-stdckdint.c",
+  "hash_id": "fd912ffc8569bd643db936c80dff5d299c604550e0b9d73c11b839fbb7c09aa4",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-stdckdint.c",
+  "human_readable_source": " \n\n \n\n#define TEST_STDCKDINT 1\n\n#define INT_ADD_WRAPV(a, b, r) ckd_add (r, a, b)\n#define INT_SUBTRACT_WRAPV(a, b, r) ckd_sub (r, a, b)\n#define INT_MULTIPLY_WRAPV(a, b, r) ckd_mul (r, a, b)\n\n \n#define INT_NEGATE_OVERFLOW(a) ((a) < -INT_MAX)\n\n#include \"test-intprops.c\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

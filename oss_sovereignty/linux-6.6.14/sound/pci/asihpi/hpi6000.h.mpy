@@ -1,0 +1,9 @@
+{
+  "module_name": "hpi6000.h",
+  "hash_id": "4ae7c1a7f26af1fb42d75e4838d7bd4c3f743489086888176d36179d51855a83",
+  "original_prompt": "Ingested from linux-6.6.14/sound/pci/asihpi/hpi6000.h",
+  "human_readable_source": " \n \n\n#ifndef _HPI6000_H_\n#define _HPI6000_H_\n\n#define HPI_NMIXER_CONTROLS 200\n\n \nstruct hpi_hif_6000 {\n\tu32 host_cmd;\n\tu32 dsp_ack;\n\tu32 address;\n\tu32 length;\n\tu32 message_buffer_address;\n\tu32 response_buffer_address;\n\tu32 dsp_number;\n\tu32 adapter_info;\n\tu32 control_cache_is_dirty;\n\tu32 control_cache_address;\n\tu32 control_cache_size_in_bytes;\n\tu32 control_cache_count;\n};\n\n#define HPI_HIF_PACK_ADAPTER_INFO(adapter, version_major, version_minor) \\\n\t\t((adapter << 16) | (version_major << 8) | version_minor)\n#define HPI_HIF_ADAPTER_INFO_EXTRACT_ADAPTER(adapterinfo) \\\n\t\t((adapterinfo >> 16) & 0xffff)\n#define HPI_HIF_ADAPTER_INFO_EXTRACT_HWVERSION_MAJOR(adapterinfo) \\\n\t\t((adapterinfo >> 8) & 0xff)\n#define HPI_HIF_ADAPTER_INFO_EXTRACT_HWVERSION_MINOR(adapterinfo) \\\n\t\t(adapterinfo & 0xff)\n\n \n#define HPI_HIF_IDLE            0\n#define HPI_HIF_SEND_MSG        1\n#define HPI_HIF_GET_RESP        2\n#define HPI_HIF_DATA_MASK       0x10\n#define HPI_HIF_SEND_DATA       0x13\n#define HPI_HIF_GET_DATA        0x14\n#define HPI_HIF_SEND_DONE       5\n#define HPI_HIF_RESET           9\n\n#endif\t\t\t\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

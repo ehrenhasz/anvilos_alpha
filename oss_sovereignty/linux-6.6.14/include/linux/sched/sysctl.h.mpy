@@ -1,0 +1,9 @@
+{
+  "module_name": "sysctl.h",
+  "hash_id": "4b28cab09b6e108c370eaf8b6fccf640cd4f0d0da86d315818fad6a83e20e04e",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/sched/sysctl.h",
+  "human_readable_source": " \n#ifndef _LINUX_SCHED_SYSCTL_H\n#define _LINUX_SCHED_SYSCTL_H\n\n#include <linux/types.h>\n\n#ifdef CONFIG_DETECT_HUNG_TASK\n \nextern unsigned long sysctl_hung_task_timeout_secs;\n#else\n \nenum { sysctl_hung_task_timeout_secs = 0 };\n#endif\n\nenum sched_tunable_scaling {\n\tSCHED_TUNABLESCALING_NONE,\n\tSCHED_TUNABLESCALING_LOG,\n\tSCHED_TUNABLESCALING_LINEAR,\n\tSCHED_TUNABLESCALING_END,\n};\n\n#define NUMA_BALANCING_DISABLED\t\t0x0\n#define NUMA_BALANCING_NORMAL\t\t0x1\n#define NUMA_BALANCING_MEMORY_TIERING\t0x2\n\n#ifdef CONFIG_NUMA_BALANCING\nextern int sysctl_numa_balancing_mode;\n#else\n#define sysctl_numa_balancing_mode\t0\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

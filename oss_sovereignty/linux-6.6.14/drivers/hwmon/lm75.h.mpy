@@ -1,0 +1,9 @@
+{
+  "module_name": "lm75.h",
+  "hash_id": "46e02e81015ac30a6984b110b545a7510ab5fc049f0b50e1b12166537d6e91fd",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/hwmon/lm75.h",
+  "human_readable_source": " \n \n\n \n\n#include <linux/minmax.h>\n#include <linux/types.h>\n\n \n#define LM75_TEMP_MIN (-55000)\n#define LM75_TEMP_MAX 125000\n#define LM75_SHUTDOWN 0x01\n\n \nstatic inline u16 LM75_TEMP_TO_REG(long temp)\n{\n\tint ntemp = clamp_val(temp, LM75_TEMP_MIN, LM75_TEMP_MAX);\n\n\tntemp += (ntemp < 0 ? -250 : 250);\n\treturn (u16)((ntemp / 500) << 7);\n}\n\nstatic inline int LM75_TEMP_FROM_REG(u16 reg)\n{\n\t \n\treturn ((s16)reg / 128) * 500;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

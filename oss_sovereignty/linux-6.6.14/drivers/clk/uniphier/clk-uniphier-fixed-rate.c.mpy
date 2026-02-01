@@ -1,0 +1,9 @@
+{
+  "module_name": "clk-uniphier-fixed-rate.c",
+  "hash_id": "d75f19ac7b3e020c5be3a8851bdcb57a57566a177f5a1da1e4dc5500129ea48d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/clk/uniphier/clk-uniphier-fixed-rate.c",
+  "human_readable_source": "\n \n\n#include <linux/clk-provider.h>\n#include <linux/device.h>\n\n#include \"clk-uniphier.h\"\n\nstruct clk_hw *uniphier_clk_register_fixed_rate(struct device *dev,\n\t\t\t\t\t\tconst char *name,\n\t\t\t\tconst struct uniphier_clk_fixed_rate_data *data)\n{\n\tstruct clk_fixed_rate *fixed;\n\tstruct clk_init_data init;\n\tint ret;\n\n\t \n\tfixed = devm_kzalloc(dev, sizeof(*fixed), GFP_KERNEL);\n\tif (!fixed)\n\t\treturn ERR_PTR(-ENOMEM);\n\n\tinit.name = name;\n\tinit.ops = &clk_fixed_rate_ops;\n\tinit.flags = 0;\n\tinit.parent_names = NULL;\n\tinit.num_parents = 0;\n\n\tfixed->fixed_rate = data->fixed_rate;\n\tfixed->hw.init = &init;\n\n\tret = devm_clk_hw_register(dev, &fixed->hw);\n\tif (ret)\n\t\treturn ERR_PTR(ret);\n\n\treturn &fixed->hw;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

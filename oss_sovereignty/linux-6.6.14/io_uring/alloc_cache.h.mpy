@@ -1,0 +1,9 @@
+{
+  "module_name": "alloc_cache.h",
+  "hash_id": "a97d732a0cd6d3d2ead18d685cb83a4e5b8f8a62cc6542fec5cb39fc7221fd75",
+  "original_prompt": "Ingested from linux-6.6.14/io_uring/alloc_cache.h",
+  "human_readable_source": "#ifndef IOU_ALLOC_CACHE_H\n#define IOU_ALLOC_CACHE_H\n\n \n#define IO_ALLOC_CACHE_MAX\t512\n\nstruct io_cache_entry {\n\tstruct io_wq_work_node node;\n};\n\nstatic inline bool io_alloc_cache_put(struct io_alloc_cache *cache,\n\t\t\t\t      struct io_cache_entry *entry)\n{\n\tif (cache->nr_cached < cache->max_cached) {\n\t\tcache->nr_cached++;\n\t\twq_stack_add_head(&entry->node, &cache->list);\n\t\t \n\t\tkasan_slab_free_mempool(entry);\n\t\treturn true;\n\t}\n\treturn false;\n}\n\nstatic inline bool io_alloc_cache_empty(struct io_alloc_cache *cache)\n{\n\treturn !cache->list.next;\n}\n\nstatic inline struct io_cache_entry *io_alloc_cache_get(struct io_alloc_cache *cache)\n{\n\tif (cache->list.next) {\n\t\tstruct io_cache_entry *entry;\n\n\t\tentry = container_of(cache->list.next, struct io_cache_entry, node);\n\t\tkasan_unpoison_range(entry, cache->elem_size);\n\t\tcache->list.next = cache->list.next->next;\n\t\tcache->nr_cached--;\n\t\treturn entry;\n\t}\n\n\treturn NULL;\n}\n\nstatic inline void io_alloc_cache_init(struct io_alloc_cache *cache,\n\t\t\t\t       unsigned max_nr, size_t size)\n{\n\tcache->list.next = NULL;\n\tcache->nr_cached = 0;\n\tcache->max_cached = max_nr;\n\tcache->elem_size = size;\n}\n\nstatic inline void io_alloc_cache_free(struct io_alloc_cache *cache,\n\t\t\t\t\tvoid (*free)(struct io_cache_entry *))\n{\n\twhile (1) {\n\t\tstruct io_cache_entry *entry = io_alloc_cache_get(cache);\n\n\t\tif (!entry)\n\t\t\tbreak;\n\t\tfree(entry);\n\t}\n\tcache->nr_cached = 0;\n}\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

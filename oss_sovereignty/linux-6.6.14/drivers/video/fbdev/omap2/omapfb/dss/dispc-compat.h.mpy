@@ -1,0 +1,9 @@
+{
+  "module_name": "dispc-compat.h",
+  "hash_id": "5119ef91e8d37a3f7d983596f2516c8ab866174ba86a1903f94137a7d8359078",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/video/fbdev/omap2/omapfb/dss/dispc-compat.h",
+  "human_readable_source": " \n \n\n#ifndef __OMAP2_DSS_DISPC_COMPAT_H\n#define __OMAP2_DSS_DISPC_COMPAT_H\n\nvoid dispc_mgr_enable_sync(enum omap_channel channel);\nvoid dispc_mgr_disable_sync(enum omap_channel channel);\n\nint omap_dispc_wait_for_irq_interruptible_timeout(u32 irqmask,\n\t\tunsigned long timeout);\n\nint dss_dispc_initialize_irq(void);\nvoid dss_dispc_uninitialize_irq(void);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

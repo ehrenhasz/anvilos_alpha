@@ -1,0 +1,9 @@
+{
+  "module_name": "hostid.c",
+  "hash_id": "c9b6568267bfe49a4ce30c43ea07b431e1263c1b707b5abe0ff6539907f1ec33",
+  "original_prompt": "Ingested from coreutils-9.4/src/hostid.c",
+  "human_readable_source": " \n\n#include <config.h>\n#include <stdio.h>\n#include <sys/types.h>\n\n#include \"system.h\"\n#include \"long-options.h\"\n#include \"quote.h\"\n\n \n#define PROGRAM_NAME \"hostid\"\n\n#define AUTHORS proper_name (\"Jim Meyering\")\n\nvoid\nusage (int status)\n{\n  if (status != EXIT_SUCCESS)\n    emit_try_help ();\n  else\n    {\n      printf (_(\"\\\nUsage: %s [OPTION]\\n\\\nPrint the numeric identifier (in hexadecimal) for the current host.\\n\\\n\\n\\\n\"), program_name);\n      fputs (HELP_OPTION_DESCRIPTION, stdout);\n      fputs (VERSION_OPTION_DESCRIPTION, stdout);\n      emit_ancillary_info (PROGRAM_NAME);\n    }\n  exit (status);\n}\n\nint\nmain (int argc, char **argv)\n{\n  unsigned int id;\n\n  initialize_main (&argc, &argv);\n  set_program_name (argv[0]);\n  setlocale (LC_ALL, \"\");\n  bindtextdomain (PACKAGE, LOCALEDIR);\n  textdomain (PACKAGE);\n\n  atexit (close_stdout);\n\n  parse_gnu_standard_options_only (argc, argv, PROGRAM_NAME, PACKAGE_NAME,\n                                   Version, true, usage, AUTHORS,\n                                   (char const *) nullptr);\n\n  if (optind < argc)\n    {\n      error (0, 0, _(\"extra operand %s\"), quote (argv[optind]));\n      usage (EXIT_FAILURE);\n    }\n\n  id = gethostid ();\n\n  /* POSIX says gethostid returns a \"32-bit identifier\" but is silent\n     whether it's sign-extended.  Turn off any sign-extension.  This\n     is a no-op unless unsigned int is wider than 32 bits.  */\n  id &= 0xffffffff;\n\n  printf (\"%08x\\n\", id);\n\n  return EXIT_SUCCESS;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

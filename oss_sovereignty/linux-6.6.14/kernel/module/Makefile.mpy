@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "3dba23be35b6312d4cb023708d6c022b0b0382615157561ea4840b58f308bc73",
+  "original_prompt": "Ingested from linux-6.6.14/kernel/module/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Makefile for linux kernel module support\n#\n\n# These are called from save_stack_trace() on slub debug path,\n# and produce insane amounts of uninteresting coverage.\nKCOV_INSTRUMENT_module.o := n\n\nobj-y += main.o\nobj-y += strict_rwx.o\nobj-y += kmod.o\nobj-$(CONFIG_MODULE_DEBUG_AUTOLOAD_DUPS) += dups.o\nobj-$(CONFIG_MODULE_DECOMPRESS) += decompress.o\nobj-$(CONFIG_MODULE_SIG) += signing.o\nobj-$(CONFIG_LIVEPATCH) += livepatch.o\nobj-$(CONFIG_MODULES_TREE_LOOKUP) += tree_lookup.o\nobj-$(CONFIG_DEBUG_KMEMLEAK) += debug_kmemleak.o\nobj-$(CONFIG_KALLSYMS) += kallsyms.o\nobj-$(CONFIG_PROC_FS) += procfs.o\nobj-$(CONFIG_SYSFS) += sysfs.o\nobj-$(CONFIG_KGDB_KDB) += kdb.o\nobj-$(CONFIG_MODVERSIONS) += version.o\nobj-$(CONFIG_MODULE_UNLOAD_TAINT_TRACKING) += tracking.o\nobj-$(CONFIG_MODULE_STATS) += stats.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

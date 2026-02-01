@@ -1,0 +1,9 @@
+{
+  "module_name": "ccu_sdm.h",
+  "hash_id": "44e2948022e97c7c113733aa90f91132d25fc1d98e9efbba97d41bcc2b0b2bcb",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/clk/sunxi-ng/ccu_sdm.h",
+  "human_readable_source": " \n \n\n#ifndef _CCU_SDM_H\n#define _CCU_SDM_H\n\n#include <linux/clk-provider.h>\n\n#include \"ccu_common.h\"\n\nstruct ccu_sdm_setting {\n\tunsigned long\trate;\n\n\t \n\tu32\t\tpattern;\n\n\t \n\tu32\t\tm;\n\tu32\t\tn;\n};\n\nstruct ccu_sdm_internal {\n\tstruct ccu_sdm_setting\t*table;\n\tu32\t\ttable_size;\n\t \n\tu32\t\tenable;\n\t \n\tu32\t\ttuning_enable;\n\tu16\t\ttuning_reg;\n};\n\n#define _SUNXI_CCU_SDM(_table, _enable,\t\t\t\\\n\t\t       _reg, _reg_enable)\t\t\\\n\t{\t\t\t\t\t\t\\\n\t\t.table\t\t= _table,\t\t\\\n\t\t.table_size\t= ARRAY_SIZE(_table),\t\\\n\t\t.enable\t\t= _enable,\t\t\\\n\t\t.tuning_enable\t= _reg_enable,\t\t\\\n\t\t.tuning_reg\t= _reg,\t\t\t\\\n\t}\n\nbool ccu_sdm_helper_is_enabled(struct ccu_common *common,\n\t\t\t       struct ccu_sdm_internal *sdm);\nvoid ccu_sdm_helper_enable(struct ccu_common *common,\n\t\t\t   struct ccu_sdm_internal *sdm,\n\t\t\t   unsigned long rate);\nvoid ccu_sdm_helper_disable(struct ccu_common *common,\n\t\t\t    struct ccu_sdm_internal *sdm);\n\nbool ccu_sdm_helper_has_rate(struct ccu_common *common,\n\t\t\t     struct ccu_sdm_internal *sdm,\n\t\t\t     unsigned long rate);\n\nunsigned long ccu_sdm_helper_read_rate(struct ccu_common *common,\n\t\t\t\t       struct ccu_sdm_internal *sdm,\n\t\t\t\t       u32 m, u32 n);\n\nint ccu_sdm_helper_get_factors(struct ccu_common *common,\n\t\t\t       struct ccu_sdm_internal *sdm,\n\t\t\t       unsigned long rate,\n\t\t\t       unsigned long *m, unsigned long *n);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

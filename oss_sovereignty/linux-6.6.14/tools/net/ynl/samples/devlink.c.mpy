@@ -1,0 +1,9 @@
+{
+  "module_name": "devlink.c",
+  "hash_id": "88b63060d62528d826bbcca843818102919448eb7fc3e309379f87616cfcd9de",
+  "original_prompt": "Ingested from linux-6.6.14/tools/net/ynl/samples/devlink.c",
+  "human_readable_source": "\n#include <stdio.h>\n#include <string.h>\n\n#include <ynl.h>\n\n#include \"devlink-user.h\"\n\nint main(int argc, char **argv)\n{\n\tstruct devlink_get_list *devs;\n\tstruct ynl_sock *ys;\n\n\tys = ynl_sock_create(&ynl_devlink_family, NULL);\n\tif (!ys)\n\t\treturn 1;\n\n\tdevs = devlink_get_dump(ys);\n\tif (!devs)\n\t\tgoto err_close;\n\n\tynl_dump_foreach(devs, d) {\n\t\tstruct devlink_info_get_req *info_req;\n\t\tstruct devlink_info_get_rsp *info_rsp;\n\n\t\tprintf(\"%s/%s:\\n\", d->bus_name, d->dev_name);\n\n\t\tinfo_req = devlink_info_get_req_alloc();\n\t\tdevlink_info_get_req_set_bus_name(info_req, d->bus_name);\n\t\tdevlink_info_get_req_set_dev_name(info_req, d->dev_name);\n\n\t\tinfo_rsp = devlink_info_get(ys, info_req);\n\t\tdevlink_info_get_req_free(info_req);\n\t\tif (!info_rsp)\n\t\t\tgoto err_free_devs;\n\n\t\tif (info_rsp->_present.info_driver_name_len)\n\t\t\tprintf(\"    driver: %s\\n\", info_rsp->info_driver_name);\n\t\tif (info_rsp->n_info_version_running)\n\t\t\tprintf(\"    running fw:\\n\");\n\t\tfor (unsigned i = 0; i < info_rsp->n_info_version_running; i++)\n\t\t\tprintf(\"        %s: %s\\n\",\n\t\t\t       info_rsp->info_version_running[i].info_version_name,\n\t\t\t       info_rsp->info_version_running[i].info_version_value);\n\t\tprintf(\"    ...\\n\");\n\t\tdevlink_info_get_rsp_free(info_rsp);\n\t}\n\tdevlink_get_list_free(devs);\n\n\tynl_sock_destroy(ys);\n\n\treturn 0;\n\nerr_free_devs:\n\tdevlink_get_list_free(devs);\nerr_close:\n\tfprintf(stderr, \"YNL: %s\\n\", ys->err.msg);\n\tynl_sock_destroy(ys);\n\treturn 2;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

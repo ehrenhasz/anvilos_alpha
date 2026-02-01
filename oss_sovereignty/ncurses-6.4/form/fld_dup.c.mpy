@@ -1,0 +1,9 @@
+{
+  "module_name": "fld_dup.c",
+  "hash_id": "47481223b3e93a0f43a674673965edee80592bc20458653ee4b730c30f73f7c4",
+  "original_prompt": "Ingested from ncurses-6.4/form/fld_dup.c",
+  "human_readable_source": " \n\n \n\n#include \"form.priv.h\"\n\nMODULE_ID(\"$Id: fld_dup.c,v 1.18 2020/05/24 01:40:20 anonymous.maarten Exp $\")\n\n \nFORM_EXPORT(FIELD *)\ndup_field(FIELD *field, int frow, int fcol)\n{\n  FIELD *New_Field = (FIELD *)0;\n  int err = E_BAD_ARGUMENT;\n\n  T((T_CALLED(\"dup_field(%p,%d,%d)\"), (void *)field, frow, fcol));\n  if (field && (frow >= 0) && (fcol >= 0) &&\n      ((err = E_SYSTEM_ERROR) != 0) &&\t \n      (New_Field = typeMalloc(FIELD, 1)))\n    {\n      T((T_CREATE(\"field %p\"), (void *)New_Field));\n      *New_Field = *_nc_Default_Field;\n      New_Field->frow = (short)frow;\n      New_Field->fcol = (short)fcol;\n      New_Field->link = New_Field;\n      New_Field->rows = field->rows;\n      New_Field->cols = field->cols;\n      New_Field->nrow = field->nrow;\n      New_Field->drows = field->drows;\n      New_Field->dcols = field->dcols;\n      New_Field->maxgrow = field->maxgrow;\n      New_Field->nbuf = field->nbuf;\n      New_Field->just = field->just;\n      New_Field->fore = field->fore;\n      New_Field->back = field->back;\n      New_Field->pad = field->pad;\n      New_Field->opts = field->opts;\n      New_Field->usrptr = field->usrptr;\n\n      if (_nc_Copy_Type(New_Field, field))\n\t{\n\t  size_t len;\n\n\t  len = Total_Buffer_Size(New_Field);\n\t  if ((New_Field->buf = (FIELD_CELL *)malloc(len * 20)))\n\t    {\n\t      memcpy(New_Field->buf, field->buf, len);\n\t      returnField(New_Field);\n\t    }\n\t}\n    }\n\n  if (New_Field)\n    free_field(New_Field);\n\n  SET_ERROR(err);\n  returnField((FIELD *)0);\n}\n\n \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

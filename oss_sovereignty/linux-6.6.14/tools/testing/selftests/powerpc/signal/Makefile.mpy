@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "5ee12613206dea192d166997f17316243f51400c4381ba2e5c08289ebcb087ea",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/powerpc/signal/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nTEST_GEN_PROGS := signal signal_tm sigfuz sigreturn_vdso sig_sc_double_restart\nTEST_GEN_PROGS += sigreturn_kernel\nTEST_GEN_PROGS += sigreturn_unaligned\n\nCFLAGS += -maltivec\n$(OUTPUT)/signal_tm: CFLAGS += -mhtm\n$(OUTPUT)/sigfuz: CFLAGS += -pthread -m64\n\nTEST_FILES := settings\n\ntop_srcdir = ../../../../..\ninclude ../../lib.mk\n\n$(TEST_GEN_PROGS): ../harness.c ../utils.c signal.S\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

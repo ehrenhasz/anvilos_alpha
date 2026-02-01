@@ -1,0 +1,9 @@
+{
+  "module_name": "mtools.conf.in",
+  "hash_id": "73006a3c2dd6772ec9f1a99f31a8f876851e98109e35bbc6a03436f92f892cc4",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/boot/mtools.conf.in",
+  "human_readable_source": "#\n# mtools configuration file for \"make (b)zdisk\"\n#\n\n# Actual floppy drive\ndrive a:\n  file=\"/dev/fd0\"\n\n# 1.44 MB floppy disk image\ndrive v:\n  file=\"@OBJ@/fdimage\" cylinders=80 heads=2 sectors=18 filter\n\n# 2.88 MB floppy disk image (mostly for virtual uses)\ndrive w:\n  file=\"@OBJ@/fdimage\" cylinders=80 heads=2 sectors=36 filter\n\n# Hard disk (h: for the filesystem, p: for format - old mtools bug?)\ndrive h:\n  file=\"@OBJ@/hdimage\" offset=32768 mformat_only\ndrive p:\n  file=\"@OBJ@/hdimage\" partition=1 mformat_only\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "dct_v1.c",
+  "hash_id": "3d3e8066c6f3ebd3bad2d908cbffaa8c80044900d4c5c7fb57e39ca52abd84fb",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/i3c/master/mipi-i3c-hci/dct_v1.c",
+  "human_readable_source": "\n \n\n#include <linux/device.h>\n#include <linux/bitfield.h>\n#include <linux/i3c/master.h>\n#include <linux/io.h>\n\n#include \"hci.h\"\n#include \"dct.h\"\n\n \n\nvoid i3c_hci_dct_get_val(struct i3c_hci *hci, unsigned int dct_idx,\n\t\t\t u64 *pid, unsigned int *dcr, unsigned int *bcr)\n{\n\tvoid __iomem *reg = hci->DCT_regs + dct_idx * 4 * 4;\n\tu32 dct_entry_data[4];\n\tunsigned int i;\n\n\tfor (i = 0; i < 4; i++) {\n\t\tdct_entry_data[i] = readl(reg);\n\t\treg += 4;\n\t}\n\n\t*pid = ((u64)dct_entry_data[0]) << (47 - 32 + 1) |\n\t       FIELD_GET(W1_MASK(47, 32), dct_entry_data[1]);\n\t*dcr = FIELD_GET(W2_MASK(71, 64), dct_entry_data[2]);\n\t*bcr = FIELD_GET(W2_MASK(79, 72), dct_entry_data[2]);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

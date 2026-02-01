@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "b744c964eb99c4c35467158472ee3515e8014fb27bedcab29cbc2f55134284bc",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/powerpc/security/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0+\n\nTEST_GEN_PROGS := rfi_flush entry_flush uaccess_flush spectre_v2\nTEST_PROGS := mitigation-patching.sh\n\ntop_srcdir = ../../../../..\n\nCFLAGS += $(KHDR_INCLUDES)\n\ninclude ../../lib.mk\n\n$(TEST_GEN_PROGS): ../harness.c ../utils.c\n\n$(OUTPUT)/spectre_v2: CFLAGS += -m64\n$(OUTPUT)/spectre_v2: ../pmu/event.c branch_loops.S\n$(OUTPUT)/rfi_flush: flush_utils.c\n$(OUTPUT)/entry_flush: flush_utils.c\n$(OUTPUT)/uaccess_flush: flush_utils.c\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

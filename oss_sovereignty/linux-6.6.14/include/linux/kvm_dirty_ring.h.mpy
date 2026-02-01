@@ -1,0 +1,9 @@
+{
+  "module_name": "kvm_dirty_ring.h",
+  "hash_id": "138741f06056256f25dc6de8ddec86be463440531af23952bd1a5a16be17a1a4",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/kvm_dirty_ring.h",
+  "human_readable_source": "#ifndef KVM_DIRTY_RING_H\n#define KVM_DIRTY_RING_H\n\n#include <linux/kvm.h>\n\n \nstruct kvm_dirty_ring {\n\tu32 dirty_index;\n\tu32 reset_index;\n\tu32 size;\n\tu32 soft_limit;\n\tstruct kvm_dirty_gfn *dirty_gfns;\n\tint index;\n};\n\n#ifndef CONFIG_HAVE_KVM_DIRTY_RING\n \nstatic inline u32 kvm_dirty_ring_get_rsvd_entries(void)\n{\n\treturn 0;\n}\n\nstatic inline bool kvm_use_dirty_bitmap(struct kvm *kvm)\n{\n\treturn true;\n}\n\nstatic inline int kvm_dirty_ring_alloc(struct kvm_dirty_ring *ring,\n\t\t\t\t       int index, u32 size)\n{\n\treturn 0;\n}\n\nstatic inline int kvm_dirty_ring_reset(struct kvm *kvm,\n\t\t\t\t       struct kvm_dirty_ring *ring)\n{\n\treturn 0;\n}\n\nstatic inline void kvm_dirty_ring_push(struct kvm_vcpu *vcpu,\n\t\t\t\t       u32 slot, u64 offset)\n{\n}\n\nstatic inline struct page *kvm_dirty_ring_get_page(struct kvm_dirty_ring *ring,\n\t\t\t\t\t\t   u32 offset)\n{\n\treturn NULL;\n}\n\nstatic inline void kvm_dirty_ring_free(struct kvm_dirty_ring *ring)\n{\n}\n\n#else  \n\nint kvm_cpu_dirty_log_size(void);\nbool kvm_use_dirty_bitmap(struct kvm *kvm);\nbool kvm_arch_allow_write_without_running_vcpu(struct kvm *kvm);\nu32 kvm_dirty_ring_get_rsvd_entries(void);\nint kvm_dirty_ring_alloc(struct kvm_dirty_ring *ring, int index, u32 size);\n\n \nint kvm_dirty_ring_reset(struct kvm *kvm, struct kvm_dirty_ring *ring);\n\n \nvoid kvm_dirty_ring_push(struct kvm_vcpu *vcpu, u32 slot, u64 offset);\n\nbool kvm_dirty_ring_check_request(struct kvm_vcpu *vcpu);\n\n \nstruct page *kvm_dirty_ring_get_page(struct kvm_dirty_ring *ring, u32 offset);\n\nvoid kvm_dirty_ring_free(struct kvm_dirty_ring *ring);\n\n#endif  \n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

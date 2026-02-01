@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "dd9607b1fb0031f3c8bee7f70c9da8d753ffd60278dbf48bdc24e34221873581",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/vga/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig VGA_SWITCHEROO\n\tbool \"Laptop Hybrid Graphics - GPU switching support\"\n\tdepends on X86\n\tdepends on ACPI\n\tdepends on PCI\n\tdepends on (FRAMEBUFFER_CONSOLE=n || FB=y)\n\tselect VGA_ARB\n\thelp\n\t  Many laptops released in 2008/9/10 have two GPUs with a multiplexer\n\t  to switch between them. This adds support for dynamic switching when\n\t  X isn't running and delayed switching until the next logoff. This\n\t  feature is called hybrid graphics, ATI PowerXpress, and Nvidia\n\t  HybridPower.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

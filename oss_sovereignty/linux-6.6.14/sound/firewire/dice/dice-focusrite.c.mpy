@@ -1,0 +1,9 @@
+{
+  "module_name": "dice-focusrite.c",
+  "hash_id": "8155f980252f625b72fdc72dff1a5d27e00350181f2ea64af89a6854082f2a2b",
+  "original_prompt": "Ingested from linux-6.6.14/sound/firewire/dice/dice-focusrite.c",
+  "human_readable_source": "\n\n\n\n\n#include \"dice.h\"\n\nint snd_dice_detect_focusrite_pro40_tcd3070_formats(struct snd_dice *dice)\n{\n\t\n\t\n\tdice->tx_pcm_chs[0][0] = 20;\n\tdice->tx_midi_ports[0] = 1;\n\tdice->rx_pcm_chs[0][0] = 20;\n\tdice->rx_midi_ports[0] = 1;\n\n\tdice->tx_pcm_chs[0][1] = 16;\n\tdice->tx_midi_ports[1] = 1;\n\tdice->rx_pcm_chs[0][1] = 16;\n\tdice->rx_midi_ports[1] = 1;\n\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

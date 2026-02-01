@@ -1,0 +1,9 @@
+{
+  "module_name": "lbracket.c",
+  "hash_id": "93d427b31c17657e2cdf78919a6e1bec2b6aff1506a7ac9fbf9bfbb6e8eb386d",
+  "original_prompt": "Ingested from coreutils-9.4/src/lbracket.c",
+  "human_readable_source": "#define LBRACKET 1\n#include \"test.c\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

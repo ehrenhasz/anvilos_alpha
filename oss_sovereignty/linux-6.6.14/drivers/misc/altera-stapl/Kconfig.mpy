@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "b26477a22b481a83343c6be01f2425727d174835f0a0660ccc52d79cb0325375",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/misc/altera-stapl/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\ncomment \"Altera FPGA firmware download module (requires I2C)\"\n\tdepends on !I2C\n\nconfig ALTERA_STAPL\n\ttristate \"Altera FPGA firmware download module\"\n\tdepends on I2C\n\thelp\n\t  An Altera FPGA module. Say Y when you want to support this tool.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

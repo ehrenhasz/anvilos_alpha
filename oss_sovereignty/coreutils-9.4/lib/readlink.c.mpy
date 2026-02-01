@@ -1,0 +1,9 @@
+{
+  "module_name": "readlink.c",
+  "hash_id": "0511f1d6578148c1e95c66322a55a48adb0e51d65ff40940ce52a3dbedc537c8",
+  "original_prompt": "Ingested from coreutils-9.4/lib/readlink.c",
+  "human_readable_source": " \n#include <unistd.h>\n\n#include <errno.h>\n#include <string.h>\n#include <sys/stat.h>\n\n#if !HAVE_READLINK\n\n \n\nssize_t\nreadlink (char const *file, _GL_UNUSED char *buf,\n          _GL_UNUSED size_t bufsize)\n{\n  struct stat statbuf;\n\n   \n  if (stat (file, &statbuf) >= 0)\n    errno = EINVAL;\n  return -1;\n}\n\n#else  \n\n# undef readlink\n\n \n\nssize_t\nrpl_readlink (char const *file, char *buf, size_t bufsize)\n{\n# if READLINK_TRAILING_SLASH_BUG\n  size_t file_len = strlen (file);\n  if (file_len && file[file_len - 1] == '/')\n    {\n       \n      struct stat st;\n      if (stat (file, &st) == 0 || errno == EOVERFLOW)\n        errno = EINVAL;\n      return -1;\n    }\n# endif  \n\n  ssize_t r = readlink (file, buf, bufsize);\n\n# if READLINK_TRUNCATE_BUG\n  if (r < 0 && errno == ERANGE)\n    {\n       \n      char stackbuf[4032];\n      r = readlink (file, stackbuf, sizeof stackbuf);\n      if (r < 0)\n        {\n          if (errno == ERANGE)\n            {\n               \n              r = bufsize;\n              memset (buf, 0, r);\n            }\n        }\n      else\n        {\n          if (bufsize < r)\n            r = bufsize;\n          memcpy (buf, stackbuf, r);\n        }\n    }\n# endif\n\n  return r;\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

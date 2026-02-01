@@ -1,0 +1,9 @@
+{
+  "module_name": "@@__@@__py__objstr.c.compress",
+  "hash_id": "6cda75bf4adca9408487081e2cc003c171f3ccbaa45eaf47a77187eaa46af31e",
+  "original_prompt": "Ingested from sys_09_Anvil/source/ports/unix/build-bicameral/genhdr/compress/@@__@@__py__objstr.c.compress",
+  "human_readable_source": "string argument without an encoding\nbytes value out of range\nwrong number of arguments\nonly slices with step=1 (aka None) are supported\njoin expects a list of str/bytes objects consistent with self object\nempty separator\nrsplit(None,n)\nempty separator\nsubstring not found\nstart/end indices\nsingle '}' encountered in format string\nbad conversion specifier\nunmatched '{' in format\nexpected ':' after format specifier\ncan't switch from automatic field numbering to manual field specification\ntuple index out of range\nattributes not supported\ncan't switch from manual field specification to automatic field numbering\ntuple index out of range\ninvalid format specifier\nsign not allowed in string format specifier\nsign not allowed with integer format specifier 'c'\nunknown format code '%c' for object of type '%s'\nunknown format code '%c' for object of type '%s'\n'=' alignment not allowed in string format specifier\nunknown format code '%c' for object of type '%s'\nformat needs a dict\nincomplete format key\nincomplete format\nformat string needs more arguments\n%c needs int or char\ninteger needed\nunsupported format character '%c' (0x%x) at index %d\nformat string didn't convert all arguments\ncan't convert '%q' object to %q implicitly\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

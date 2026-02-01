@@ -1,0 +1,9 @@
+{
+  "module_name": "dirty.h",
+  "hash_id": "5ae7502f5cf4a2a85880668d4f4ba38637207f7df068c6a67d95edf5012fe9b3",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/vfio/pci/pds/dirty.h",
+  "human_readable_source": " \n \n\n#ifndef _DIRTY_H_\n#define _DIRTY_H_\n\nstruct pds_vfio_bmp_info {\n\tunsigned long *bmp;\n\tu32 bmp_bytes;\n\tstruct pds_lm_sg_elem *sgl;\n\tdma_addr_t sgl_addr;\n\tu16 num_sge;\n};\n\nstruct pds_vfio_dirty {\n\tstruct pds_vfio_bmp_info host_seq;\n\tstruct pds_vfio_bmp_info host_ack;\n\tu64 region_size;\n\tu64 region_start;\n\tu64 region_page_size;\n\tbool is_enabled;\n};\n\nstruct pds_vfio_pci_device;\n\nbool pds_vfio_dirty_is_enabled(struct pds_vfio_pci_device *pds_vfio);\nvoid pds_vfio_dirty_set_enabled(struct pds_vfio_pci_device *pds_vfio);\nvoid pds_vfio_dirty_set_disabled(struct pds_vfio_pci_device *pds_vfio);\nvoid pds_vfio_dirty_disable(struct pds_vfio_pci_device *pds_vfio,\n\t\t\t    bool send_cmd);\n\nint pds_vfio_dma_logging_report(struct vfio_device *vdev, unsigned long iova,\n\t\t\t\tunsigned long length,\n\t\t\t\tstruct iova_bitmap *dirty);\nint pds_vfio_dma_logging_start(struct vfio_device *vdev,\n\t\t\t       struct rb_root_cached *ranges, u32 nnodes,\n\t\t\t       u64 *page_size);\nint pds_vfio_dma_logging_stop(struct vfio_device *vdev);\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

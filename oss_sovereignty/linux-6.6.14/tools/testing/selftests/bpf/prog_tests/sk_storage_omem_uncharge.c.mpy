@@ -1,0 +1,9 @@
+{
+  "module_name": "sk_storage_omem_uncharge.c",
+  "hash_id": "393785c827850777c1b746f71a9d88a5d8166fa0923c46b0863cafb233f85fe0",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/prog_tests/sk_storage_omem_uncharge.c",
+  "human_readable_source": "\n \n#include <test_progs.h>\n#include <bpf/libbpf.h>\n#include <sys/types.h>\n#include <sys/socket.h>\n#include \"sk_storage_omem_uncharge.skel.h\"\n\nvoid test_sk_storage_omem_uncharge(void)\n{\n\tstruct sk_storage_omem_uncharge *skel;\n\tint sk_fd = -1, map_fd, err, value;\n\tsocklen_t optlen;\n\n\tskel = sk_storage_omem_uncharge__open_and_load();\n\tif (!ASSERT_OK_PTR(skel, \"skel open_and_load\"))\n\t\treturn;\n\tmap_fd = bpf_map__fd(skel->maps.sk_storage);\n\n\t \n\tsk_fd = socket(AF_INET6, SOCK_STREAM, 0);\n\tif (!ASSERT_GE(sk_fd, 0, \"socket\"))\n\t\tgoto done;\n\n\toptlen = sizeof(skel->bss->cookie);\n\terr = getsockopt(sk_fd, SOL_SOCKET, SO_COOKIE, &skel->bss->cookie, &optlen);\n\tif (!ASSERT_OK(err, \"getsockopt(SO_COOKIE)\"))\n\t\tgoto done;\n\n\tvalue = 0;\n\terr = bpf_map_update_elem(map_fd, &sk_fd, &value, 0);\n\tif (!ASSERT_OK(err, \"bpf_map_update_elem(value=0)\"))\n\t\tgoto done;\n\n\tvalue = 0xdeadbeef;\n\terr = bpf_map_update_elem(map_fd, &sk_fd, &value, 0);\n\tif (!ASSERT_OK(err, \"bpf_map_update_elem(value=0xdeadbeef)\"))\n\t\tgoto done;\n\n\terr = sk_storage_omem_uncharge__attach(skel);\n\tif (!ASSERT_OK(err, \"attach\"))\n\t\tgoto done;\n\n\tclose(sk_fd);\n\tsk_fd = -1;\n\n\tASSERT_EQ(skel->bss->cookie_found, 2, \"cookie_found\");\n\tASSERT_EQ(skel->bss->omem, 0, \"omem\");\n\ndone:\n\tsk_storage_omem_uncharge__destroy(skel);\n\tif (sk_fd != -1)\n\t\tclose(sk_fd);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

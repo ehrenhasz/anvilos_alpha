@@ -1,0 +1,9 @@
+{
+  "module_name": "user_config.h",
+  "hash_id": "5a911fd3398a6d5aeb0249b33b4ab3ce1033a6aea4bce4813e91cd8416c64cff",
+  "original_prompt": "Ingested from linux-6.6.14/fs/smb/server/mgmt/user_config.h",
+  "human_readable_source": " \n \n\n#ifndef __USER_CONFIG_MANAGEMENT_H__\n#define __USER_CONFIG_MANAGEMENT_H__\n\n#include \"../glob.h\"\n\nstruct ksmbd_user {\n\tunsigned short\t\tflags;\n\n\tunsigned int\t\tuid;\n\tunsigned int\t\tgid;\n\n\tchar\t\t\t*name;\n\n\tsize_t\t\t\tpasskey_sz;\n\tchar\t\t\t*passkey;\n};\n\nstatic inline bool user_guest(struct ksmbd_user *user)\n{\n\treturn user->flags & KSMBD_USER_FLAG_GUEST_ACCOUNT;\n}\n\nstatic inline void set_user_flag(struct ksmbd_user *user, int flag)\n{\n\tuser->flags |= flag;\n}\n\nstatic inline int test_user_flag(struct ksmbd_user *user, int flag)\n{\n\treturn user->flags & flag;\n}\n\nstatic inline void set_user_guest(struct ksmbd_user *user)\n{\n}\n\nstatic inline char *user_passkey(struct ksmbd_user *user)\n{\n\treturn user->passkey;\n}\n\nstatic inline char *user_name(struct ksmbd_user *user)\n{\n\treturn user->name;\n}\n\nstatic inline unsigned int user_uid(struct ksmbd_user *user)\n{\n\treturn user->uid;\n}\n\nstatic inline unsigned int user_gid(struct ksmbd_user *user)\n{\n\treturn user->gid;\n}\n\nstruct ksmbd_user *ksmbd_login_user(const char *account);\nstruct ksmbd_user *ksmbd_alloc_user(struct ksmbd_login_response *resp);\nvoid ksmbd_free_user(struct ksmbd_user *user);\nint ksmbd_anonymous_user(struct ksmbd_user *user);\nbool ksmbd_compare_user(struct ksmbd_user *u1, struct ksmbd_user *u2);\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

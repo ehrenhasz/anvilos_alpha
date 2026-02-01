@@ -1,0 +1,9 @@
+{
+  "module_name": ".gitignore",
+  "hash_id": "424a16fddae91f942a8867cf9d98ea2d11fe0df1bb8850a372eac81fab8374d4",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/.gitignore",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nbpftool\nbpf-helpers*\nbpf-syscall*\ntest_verifier\ntest_maps\ntest_lru_map\ntest_lpm_map\ntest_tag\nFEATURE-DUMP.libbpf\nfixdep\ntest_dev_cgroup\n/test_progs\n/test_progs-no_alu32\n/test_progs-bpf_gcc\n/test_progs-cpuv4\ntest_verifier_log\nfeature\ntest_sock\ntest_sock_addr\nurandom_read\ntest_sockmap\ntest_lirc_mode2_user\nget_cgroup_id_user\ntest_skb_cgroup_id_user\ntest_cgroup_storage\ntest_flow_dissector\nflow_dissector_load\ntest_tcpnotify_user\ntest_libbpf\ntest_tcp_check_syncookie_user\ntest_sysctl\nxdping\ntest_cpp\n*.subskel.h\n*.skel.h\n*.lskel.h\n/no_alu32\n/bpf_gcc\n/cpuv4\n/host-tools\n/tools\n/runqslower\n/bench\n/veristat\n/sign-file\n/uprobe_multi\n*.ko\n*.tmp\nxskxceiver\nxdp_redirect_multi\nxdp_synproxy\nxdp_hw_metadata\nxdp_features\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

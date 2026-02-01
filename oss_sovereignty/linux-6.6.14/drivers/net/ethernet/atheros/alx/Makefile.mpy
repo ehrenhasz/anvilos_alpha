@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "e3ef5f336bd380eadcd87f66cd44a28ecc546b8f1266a5f4ab90bd7d3a044978",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/atheros/alx/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-$(CONFIG_ALX) += alx.o\nalx-objs := main.o ethtool.o hw.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "acpi.c",
+  "hash_id": "8472594133c77c0ac105880ffa0890913e38a0d5dfd7ed95edfec6a8a8f92a1d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/xen/acpi.c",
+  "human_readable_source": " \n\n#include <xen/acpi.h>\n#include <xen/interface/platform.h>\n#include <asm/xen/hypercall.h>\n#include <asm/xen/hypervisor.h>\n\nstatic int xen_acpi_notify_hypervisor_state(u8 sleep_state,\n\t\t\t\t\t    u32 val_a, u32 val_b,\n\t\t\t\t\t    bool extended)\n{\n\tunsigned int bits = extended ? 8 : 16;\n\n\tstruct xen_platform_op op = {\n\t\t.cmd = XENPF_enter_acpi_sleep,\n\t\t.interface_version = XENPF_INTERFACE_VERSION,\n\t\t.u.enter_acpi_sleep = {\n\t\t\t.val_a = (u16)val_a,\n\t\t\t.val_b = (u16)val_b,\n\t\t\t.sleep_state = sleep_state,\n\t\t\t.flags = extended ? XENPF_ACPI_SLEEP_EXTENDED : 0,\n\t\t},\n\t};\n\n\tif (WARN((val_a & (~0 << bits)) || (val_b & (~0 << bits)),\n\t\t \"Using more than %u bits of sleep control values %#x/%#x!\"\n\t\t \"Email xen-devel@lists.xen.org - Thank you.\\n\", \\\n\t\t bits, val_a, val_b))\n\t\treturn -1;\n\n\tHYPERVISOR_platform_op(&op);\n\treturn 1;\n}\n\nint xen_acpi_notify_hypervisor_sleep(u8 sleep_state,\n\t\t\t\t     u32 pm1a_cnt, u32 pm1b_cnt)\n{\n\treturn xen_acpi_notify_hypervisor_state(sleep_state, pm1a_cnt,\n\t\t\t\t\t\tpm1b_cnt, false);\n}\n\nint xen_acpi_notify_hypervisor_extended_sleep(u8 sleep_state,\n\t\t\t\t     u32 val_a, u32 val_b)\n{\n\treturn xen_acpi_notify_hypervisor_state(sleep_state, val_a,\n\t\t\t\t\t\tval_b, true);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

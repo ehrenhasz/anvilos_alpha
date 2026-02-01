@@ -1,0 +1,9 @@
+{
+  "module_name": "mem-memset-x86-64-asm.S",
+  "hash_id": "a895ecf8607901b1e9bb23b7bfed551cbd0564b5e328a679a09aa61ba137ac29",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/bench/mem-memset-x86-64-asm.S",
+  "human_readable_source": " \n \n#define SYM_FUNC_START_LOCAL(name)                      \\\n        SYM_START(name, SYM_L_GLOBAL, SYM_A_ALIGN)\n#define memset MEMSET  \n#define altinstr_replacement text\n#define globl p2align 4; .globl\n#include \"../../arch/x86/lib/memset_64.S\"\n\n \n.section .note.GNU-stack,\"\",@progbits\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

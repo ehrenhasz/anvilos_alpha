@@ -1,0 +1,9 @@
+{
+  "module_name": "sparx5_vcap_debugfs.h",
+  "hash_id": "2fea735dd3ebd063fa6b76d1223c674a6bb5a04eeca0bc5d73164a181589b7e8",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/microchip/sparx5/sparx5_vcap_debugfs.h",
+  "human_readable_source": " \n \n\n#ifndef __SPARX5_VCAP_DEBUGFS_H__\n#define __SPARX5_VCAP_DEBUGFS_H__\n\n#include <linux/netdevice.h>\n\n#include <vcap_api.h>\n#include <vcap_api_client.h>\n\n#if defined(CONFIG_DEBUG_FS)\n\n \nint sparx5_port_info(struct net_device *ndev,\n\t\t     struct vcap_admin *admin,\n\t\t     struct vcap_output_print *out);\n\n#else\n\nstatic inline int sparx5_port_info(struct net_device *ndev,\n\t\t\t\t   struct vcap_admin *admin,\n\t\t\t\t   struct vcap_output_print *out)\n{\n\treturn 0;\n}\n\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

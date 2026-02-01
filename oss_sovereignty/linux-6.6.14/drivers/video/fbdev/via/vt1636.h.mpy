@@ -1,0 +1,9 @@
+{
+  "module_name": "vt1636.h",
+  "hash_id": "4c26e78a6d63e9f928fbc211380ba3c615f448eb97a0fc5d86497772bb93e2b1",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/video/fbdev/via/vt1636.h",
+  "human_readable_source": " \n \n\n#ifndef _VT1636_H_\n#define _VT1636_H_\n#include \"chip.h\"\nbool viafb_lvds_identify_vt1636(u8 i2c_adapter);\nvoid viafb_init_lvds_vt1636(struct lvds_setting_information\n\t*plvds_setting_info, struct lvds_chip_information *plvds_chip_info);\nvoid viafb_enable_lvds_vt1636(struct lvds_setting_information\n\t\t\t*plvds_setting_info,\n\t\t\tstruct lvds_chip_information *plvds_chip_info);\nvoid viafb_disable_lvds_vt1636(struct lvds_setting_information\n\t\t\t *plvds_setting_info,\n\t\t\t struct lvds_chip_information *plvds_chip_info);\nvoid viafb_vt1636_patch_skew_on_vt3324(\n\tstruct lvds_setting_information *plvds_setting_info,\n\tstruct lvds_chip_information *plvds_chip_info);\nvoid viafb_vt1636_patch_skew_on_vt3327(\n\tstruct lvds_setting_information *plvds_setting_info,\n\tstruct lvds_chip_information *plvds_chip_info);\nvoid viafb_vt1636_patch_skew_on_vt3364(\n\tstruct lvds_setting_information *plvds_setting_info,\n\tstruct lvds_chip_information *plvds_chip_info);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

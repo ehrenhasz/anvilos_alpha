@@ -1,0 +1,9 @@
+{
+  "module_name": "platform_keyring.c",
+  "hash_id": "5bdee9ae5e10cfa1c1434c54c7c0c56060e38c08ee79c73996b83c49d27c05ae",
+  "original_prompt": "Ingested from linux-6.6.14/security/integrity/platform_certs/platform_keyring.c",
+  "human_readable_source": "\n \n\n#include <linux/export.h>\n#include <linux/kernel.h>\n#include <linux/sched.h>\n#include <linux/cred.h>\n#include <linux/err.h>\n#include <linux/slab.h>\n#include \"../integrity.h\"\n\n \nvoid __init add_to_platform_keyring(const char *source, const void *data,\n\t\t\t\t    size_t len)\n{\n\tkey_perm_t perm;\n\tint rc;\n\n\tperm = (KEY_POS_ALL & ~KEY_POS_SETATTR) | KEY_USR_VIEW;\n\n\trc = integrity_load_cert(INTEGRITY_KEYRING_PLATFORM, source, data, len,\n\t\t\t\t perm);\n\tif (rc)\n\t\tpr_info(\"Error adding keys to platform keyring %s\\n\", source);\n}\n\n \nstatic __init int platform_keyring_init(void)\n{\n\tint rc;\n\n\trc = integrity_init_keyring(INTEGRITY_KEYRING_PLATFORM);\n\tif (rc)\n\t\treturn rc;\n\n\tpr_notice(\"Platform Keyring initialized\\n\");\n\treturn 0;\n}\n\n \ndevice_initcall(platform_keyring_init);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

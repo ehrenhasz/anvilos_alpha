@@ -1,0 +1,9 @@
+{
+  "module_name": "sh_css_stream_format.c",
+  "hash_id": "53eaa914687fce40f1033707a209134374bbe8fdf4b880319d8a8db71a0343da",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/sh_css_stream_format.c",
+  "human_readable_source": "\n \n\n#include \"sh_css_stream_format.h\"\n#include <ia_css_stream_format.h>\n\nunsigned int sh_css_stream_format_2_bits_per_subpixel(\n    enum atomisp_input_format format)\n{\n\tunsigned int rval;\n\n\tswitch (format) {\n\tcase ATOMISP_INPUT_FORMAT_RGB_444:\n\t\trval = 4;\n\t\tbreak;\n\tcase ATOMISP_INPUT_FORMAT_RGB_555:\n\t\trval = 5;\n\t\tbreak;\n\tcase ATOMISP_INPUT_FORMAT_RGB_565:\n\tcase ATOMISP_INPUT_FORMAT_RGB_666:\n\tcase ATOMISP_INPUT_FORMAT_RAW_6:\n\t\trval = 6;\n\t\tbreak;\n\tcase ATOMISP_INPUT_FORMAT_RAW_7:\n\t\trval = 7;\n\t\tbreak;\n\tcase ATOMISP_INPUT_FORMAT_YUV420_8_LEGACY:\n\tcase ATOMISP_INPUT_FORMAT_YUV420_8:\n\tcase ATOMISP_INPUT_FORMAT_YUV422_8:\n\tcase ATOMISP_INPUT_FORMAT_RGB_888:\n\tcase ATOMISP_INPUT_FORMAT_RAW_8:\n\tcase ATOMISP_INPUT_FORMAT_BINARY_8:\n\tcase ATOMISP_INPUT_FORMAT_USER_DEF1:\n\tcase ATOMISP_INPUT_FORMAT_USER_DEF2:\n\tcase ATOMISP_INPUT_FORMAT_USER_DEF3:\n\tcase ATOMISP_INPUT_FORMAT_USER_DEF4:\n\tcase ATOMISP_INPUT_FORMAT_USER_DEF5:\n\tcase ATOMISP_INPUT_FORMAT_USER_DEF6:\n\tcase ATOMISP_INPUT_FORMAT_USER_DEF7:\n\tcase ATOMISP_INPUT_FORMAT_USER_DEF8:\n\t\trval = 8;\n\t\tbreak;\n\tcase ATOMISP_INPUT_FORMAT_YUV420_10:\n\tcase ATOMISP_INPUT_FORMAT_YUV422_10:\n\tcase ATOMISP_INPUT_FORMAT_RAW_10:\n\t\trval = 10;\n\t\tbreak;\n\tcase ATOMISP_INPUT_FORMAT_RAW_12:\n\t\trval = 12;\n\t\tbreak;\n\tcase ATOMISP_INPUT_FORMAT_RAW_14:\n\t\trval = 14;\n\t\tbreak;\n\tcase ATOMISP_INPUT_FORMAT_RAW_16:\n\tcase ATOMISP_INPUT_FORMAT_YUV420_16:\n\tcase ATOMISP_INPUT_FORMAT_YUV422_16:\n\t\trval = 16;\n\t\tbreak;\n\tdefault:\n\t\trval = 0;\n\t\tbreak;\n\t}\n\n\treturn rval;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "gf100.c",
+  "hash_id": "da593e16e286d7592592de6959b67ade107c9c3b15ef85ca7ba691bc2a9de2b6",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/engine/msppp/gf100.c",
+  "human_readable_source": " \n#include \"priv.h\"\n\n#include <nvif/class.h>\n\nstatic void\ngf100_msppp_init(struct nvkm_falcon *msppp)\n{\n\tstruct nvkm_device *device = msppp->engine.subdev.device;\n\tnvkm_wr32(device, 0x086010, 0x0000fff2);\n\tnvkm_wr32(device, 0x08601c, 0x0000fff2);\n}\n\nstatic const struct nvkm_falcon_func\ngf100_msppp = {\n\t.init = gf100_msppp_init,\n\t.sclass = {\n\t\t{ -1, -1, GF100_MSPPP },\n\t\t{}\n\t}\n};\n\nint\ngf100_msppp_new(struct nvkm_device *device, enum nvkm_subdev_type type, int inst,\n\t\tstruct nvkm_engine **pengine)\n{\n\treturn nvkm_msppp_new_(&gf100_msppp, device, type, inst, pengine);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

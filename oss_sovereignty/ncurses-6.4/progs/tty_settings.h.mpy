@@ -1,0 +1,9 @@
+{
+  "module_name": "tty_settings.h",
+  "hash_id": "5e2cd68021f88f9b0dbad3bc12a4e8203b5a4c669b7e7f563ce2873ea8bc0cc1",
+  "original_prompt": "Ingested from ncurses-6.4/progs/tty_settings.h",
+  "human_readable_source": " \n\n \n\n \n#ifndef TTY_SETTINGS_H\n#define TTY_SETTINGS_H 1\n \n\n#include <progs.priv.h>\n\nextern int save_tty_settings(TTY *  , bool   );\nextern void restore_tty_settings(void);\nextern void update_tty_settings(TTY *  , TTY *   );\n\n \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "test_tracepoint.c",
+  "hash_id": "fdc60e80de49b67f8bf9f168ec95fa53cedb11480a0c024646ca091a2ed286de",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/test_tracepoint.c",
+  "human_readable_source": "\n\n\n#include <vmlinux.h>\n#include <bpf/bpf_helpers.h>\n\n \nstruct sched_switch_args {\n\tunsigned long long pad;\n\tchar prev_comm[TASK_COMM_LEN];\n\tint prev_pid;\n\tint prev_prio;\n\tlong long prev_state;\n\tchar next_comm[TASK_COMM_LEN];\n\tint next_pid;\n\tint next_prio;\n};\n\nSEC(\"tracepoint/sched/sched_switch\")\nint oncpu(struct sched_switch_args *ctx)\n{\n\treturn 0;\n}\n\nchar _license[] SEC(\"license\") = \"GPL\";\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "export.c",
+  "hash_id": "482225a10f590e390d1819eb081a98b64e7b780ea853439a1ba4659d75e87fdc",
+  "original_prompt": "Ingested from linux-6.6.14/fs/smb/client/export.c",
+  "human_readable_source": "\n \n\n  \n\n#include <linux/fs.h>\n#include <linux/exportfs.h>\n#include \"cifsglob.h\"\n#include \"cifs_debug.h\"\n#include \"cifsfs.h\"\n\n#ifdef CONFIG_CIFS_NFSD_EXPORT\nstatic struct dentry *cifs_get_parent(struct dentry *dentry)\n{\n\t \n\tcifs_dbg(FYI, \"get parent for %p\\n\", dentry);\n\treturn ERR_PTR(-EACCES);\n}\n\nconst struct export_operations cifs_export_ops = {\n\t.get_parent = cifs_get_parent,\n \n};\n\n#endif  \n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

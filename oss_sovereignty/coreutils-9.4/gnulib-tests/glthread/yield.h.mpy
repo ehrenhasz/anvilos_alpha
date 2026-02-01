@@ -1,0 +1,9 @@
+{
+  "module_name": "yield.h",
+  "hash_id": "9364faa9744f26246412e2a7b7c4322316a34f8b1ab1cd23ada962aa26ba20a1",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/glthread/yield.h",
+  "human_readable_source": " \n\n#ifndef _GLTHREAD_YIELD_H\n#define _GLTHREAD_YIELD_H\n\n#include <errno.h>\n\n \n\n#if USE_ISOC_THREADS || USE_ISOC_AND_POSIX_THREADS\n\n \n\n# include <threads.h>\n\n# ifdef __cplusplus\nextern \"C\" {\n# endif\n\n# define gl_thread_yield() \\\n    thrd_yield ()\n\n# ifdef __cplusplus\n}\n# endif\n\n#endif\n\n \n\n#if USE_POSIX_THREADS\n\n \n\n# include <sched.h>\n\n# ifdef __cplusplus\nextern \"C\" {\n# endif\n\n# define gl_thread_yield() \\\n    sched_yield ()\n\n# ifdef __cplusplus\n}\n# endif\n\n#endif\n\n \n\n#if USE_WINDOWS_THREADS\n\n# define WIN32_LEAN_AND_MEAN   \n# include <windows.h>\n\n# ifdef __cplusplus\nextern \"C\" {\n# endif\n\n# define gl_thread_yield() \\\n    Sleep (0)\n\n# ifdef __cplusplus\n}\n# endif\n\n#endif\n\n \n\n#if !(USE_ISOC_THREADS || USE_POSIX_THREADS || USE_ISOC_AND_POSIX_THREADS || USE_WINDOWS_THREADS)\n\n \n\n# define gl_thread_yield() 0\n\n#endif\n\n \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

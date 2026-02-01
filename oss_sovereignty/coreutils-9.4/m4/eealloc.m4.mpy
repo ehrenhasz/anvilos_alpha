@@ -1,0 +1,9 @@
+{
+  "module_name": "eealloc.m4",
+  "hash_id": "27098c29c8d731cc6944a7bb95ad881b75bd1209156e250437bf725f3f62f26f",
+  "original_prompt": "Ingested from coreutils-9.4/m4/eealloc.m4",
+  "human_readable_source": "# eealloc.m4 serial 3\ndnl Copyright (C) 2003, 2009-2023 Free Software Foundation, Inc.\ndnl This file is free software; the Free Software Foundation\ndnl gives unlimited permission to copy and/or distribute it,\ndnl with or without modifications, as long as this notice is preserved.\n\nAC_DEFUN([gl_EEALLOC],\n[\n  AC_REQUIRE([gl_EEMALLOC])\n  AC_REQUIRE([gl_EEREALLOC])\n])\n\nAC_DEFUN([gl_EEMALLOC],\n[\n  _AC_FUNC_MALLOC_IF(\n    [gl_cv_func_malloc_0_nonnull=1],\n    [gl_cv_func_malloc_0_nonnull=0])\n  AC_DEFINE_UNQUOTED([MALLOC_0_IS_NONNULL], [$gl_cv_func_malloc_0_nonnull],\n    [If malloc(0) is != NULL, define this to 1.  Otherwise define this\n     to 0.])\n])\n\nAC_DEFUN([gl_EEREALLOC],\n[\n  _AC_FUNC_REALLOC_IF(\n    [gl_cv_func_realloc_0_nonnull=1],\n    [gl_cv_func_realloc_0_nonnull=0])\n  AC_DEFINE_UNQUOTED([REALLOC_0_IS_NONNULL], [$gl_cv_func_realloc_0_nonnull],\n    [If realloc(NULL,0) is != NULL, define this to 1.  Otherwise define this\n     to 0.])\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

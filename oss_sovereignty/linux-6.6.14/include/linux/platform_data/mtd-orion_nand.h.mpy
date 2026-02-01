@@ -1,0 +1,9 @@
+{
+  "module_name": "mtd-orion_nand.h",
+  "hash_id": "8a7ed355e2f5873a6444b0426f6319954b895c2f3df4057e8ccb82ebe6e8cb53",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/platform_data/mtd-orion_nand.h",
+  "human_readable_source": " \n\n#ifndef __MTD_ORION_NAND_H\n#define __MTD_ORION_NAND_H\n\n \nstruct orion_nand_data {\n\tstruct mtd_partition *parts;\n\tu32 nr_parts;\n\tu8 ale;\t\t \n\tu8 cle;\t\t \n\tu8 width;\t \n\tu8 chip_delay;\n};\n\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "riscv64.config",
+  "hash_id": "5d930b0ebf967008b1fbe813a205af3ac573fb1372e7fe6e0a2c9d01944891bf",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/wireguard/qemu/arch/riscv64.config",
+  "human_readable_source": "CONFIG_ARCH_RV64I=y\nCONFIG_MMU=y\nCONFIG_FPU=y\nCONFIG_SOC_VIRT=y\nCONFIG_SERIAL_8250=y\nCONFIG_SERIAL_8250_CONSOLE=y\nCONFIG_SERIAL_OF_PLATFORM=y\nCONFIG_VIRTIO_MENU=y\nCONFIG_VIRTIO_MMIO=y\nCONFIG_VIRTIO_CONSOLE=y\nCONFIG_CMDLINE=\"console=ttyS0 wg.success=vport0p1 panic_on_warn=1\"\nCONFIG_CMDLINE_FORCE=y\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

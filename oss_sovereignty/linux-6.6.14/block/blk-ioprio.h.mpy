@@ -1,0 +1,9 @@
+{
+  "module_name": "blk-ioprio.h",
+  "hash_id": "0b42a0da9ce0f944b98020756acd266e9aa6ddb2fcbadd1688ee952581f56718",
+  "original_prompt": "Ingested from linux-6.6.14/block/blk-ioprio.h",
+  "human_readable_source": " \n\n#ifndef _BLK_IOPRIO_H_\n#define _BLK_IOPRIO_H_\n\n#include <linux/kconfig.h>\n\nstruct request_queue;\nstruct bio;\n\n#ifdef CONFIG_BLK_CGROUP_IOPRIO\nint blk_ioprio_init(struct gendisk *disk);\nvoid blk_ioprio_exit(struct gendisk *disk);\nvoid blkcg_set_ioprio(struct bio *bio);\n#else\nstatic inline int blk_ioprio_init(struct gendisk *disk)\n{\n\treturn 0;\n}\nstatic inline void blk_ioprio_exit(struct gendisk *disk)\n{\n}\nstatic inline void blkcg_set_ioprio(struct bio *bio)\n{\n}\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

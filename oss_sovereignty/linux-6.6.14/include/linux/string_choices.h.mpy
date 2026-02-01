@@ -1,0 +1,9 @@
+{
+  "module_name": "string_choices.h",
+  "hash_id": "42ff4d9e7b12b218e1b269a54ba983f61c66217e7f75469073e37e13b564ca7d",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/string_choices.h",
+  "human_readable_source": " \n#ifndef _LINUX_STRING_CHOICES_H_\n#define _LINUX_STRING_CHOICES_H_\n\n#include <linux/types.h>\n\nstatic inline const char *str_enable_disable(bool v)\n{\n\treturn v ? \"enable\" : \"disable\";\n}\n\nstatic inline const char *str_enabled_disabled(bool v)\n{\n\treturn v ? \"enabled\" : \"disabled\";\n}\n\nstatic inline const char *str_hi_lo(bool v)\n{\n\treturn v ? \"hi\" : \"lo\";\n}\n#define str_lo_hi(v)\t\tstr_hi_lo(!(v))\n\nstatic inline const char *str_high_low(bool v)\n{\n\treturn v ? \"high\" : \"low\";\n}\n#define str_low_high(v)\t\tstr_high_low(!(v))\n\nstatic inline const char *str_read_write(bool v)\n{\n\treturn v ? \"read\" : \"write\";\n}\n#define str_write_read(v)\t\tstr_read_write(!(v))\n\nstatic inline const char *str_on_off(bool v)\n{\n\treturn v ? \"on\" : \"off\";\n}\n\nstatic inline const char *str_yes_no(bool v)\n{\n\treturn v ? \"yes\" : \"no\";\n}\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

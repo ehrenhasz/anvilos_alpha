@@ -1,0 +1,9 @@
+{
+  "module_name": "cs42l42.h",
+  "hash_id": "f4afc239c739dc79593399df372ccbb276e00984ec5e9345df8cab3bd66e4be6",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/sound/cs42l42.h",
+  "human_readable_source": " \n \n\n#ifndef __DT_CS42L42_H\n#define __DT_CS42L42_H\n\n \n#define CS42L42_HPOUT_LOAD_1NF\t\t0\n#define CS42L42_HPOUT_LOAD_10NF\t\t1\n\n \n#define CS42L42_HPOUT_CLAMP_EN\t\t0\n#define CS42L42_HPOUT_CLAMP_DIS\t\t1\n\n \n#define CS42L42_TS_INV_DIS\t\t\t0\n#define CS42L42_TS_INV_EN\t\t\t1\n\n \n#define CS42L42_TS_DBNCE_0\t\t\t0\n#define CS42L42_TS_DBNCE_125\t\t\t1\n#define CS42L42_TS_DBNCE_250\t\t\t2\n#define CS42L42_TS_DBNCE_500\t\t\t3\n#define CS42L42_TS_DBNCE_750\t\t\t4\n#define CS42L42_TS_DBNCE_1000\t\t\t5\n#define CS42L42_TS_DBNCE_1250\t\t\t6\n#define CS42L42_TS_DBNCE_1500\t\t\t7\n\n \n#define CS42L42_BTN_DET_INIT_DBNCE_MIN\t\t0\n#define CS42L42_BTN_DET_INIT_DBNCE_DEFAULT\t100\n#define CS42L42_BTN_DET_INIT_DBNCE_MAX\t\t200\n\n#define CS42L42_BTN_DET_EVENT_DBNCE_MIN\t\t0\n#define CS42L42_BTN_DET_EVENT_DBNCE_DEFAULT\t10\n#define CS42L42_BTN_DET_EVENT_DBNCE_MAX\t\t20\n\n \n#define CS42L42_NUM_BIASES\t\t4\n\n#define CS42L42_HS_DET_LEVEL_15\t\t0x0F\n#define CS42L42_HS_DET_LEVEL_8\t\t0x08\n#define CS42L42_HS_DET_LEVEL_4\t\t0x04\n#define CS42L42_HS_DET_LEVEL_1\t\t0x01\n\n#define CS42L42_HS_DET_LEVEL_MIN\t0\n#define CS42L42_HS_DET_LEVEL_MAX\t0x3F\n\n \n\n#define CS42L42_HSBIAS_RAMP_FAST_RISE_SLOW_FALL\t\t0\n#define CS42L42_HSBIAS_RAMP_FAST\t\t\t1\n#define CS42L42_HSBIAS_RAMP_SLOW\t\t\t2\n#define CS42L42_HSBIAS_RAMP_SLOWEST\t\t\t3\n\n#define CS42L42_HSBIAS_RAMP_TIME0\t\t\t10\n#define CS42L42_HSBIAS_RAMP_TIME1\t\t\t40\n#define CS42L42_HSBIAS_RAMP_TIME2\t\t\t90\n#define CS42L42_HSBIAS_RAMP_TIME3\t\t\t170\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

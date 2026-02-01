@@ -1,0 +1,9 @@
+{
+  "module_name": "qib_user_sdma.h",
+  "hash_id": "83fc1ca16a6bf34ace04d680bb7fa0554acbd6341e1ba783c4688262d6a5334d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/infiniband/hw/qib/qib_user_sdma.h",
+  "human_readable_source": " \n#include <linux/device.h>\n\nstruct qib_user_sdma_queue;\n\nstruct qib_user_sdma_queue *\nqib_user_sdma_queue_create(struct device *dev, int unit, int port, int sport);\nvoid qib_user_sdma_queue_destroy(struct qib_user_sdma_queue *pq);\n\nint qib_user_sdma_writev(struct qib_ctxtdata *pd,\n\t\t\t struct qib_user_sdma_queue *pq,\n\t\t\t const struct iovec *iov,\n\t\t\t unsigned long dim);\n\nint qib_user_sdma_make_progress(struct qib_pportdata *ppd,\n\t\t\t\tstruct qib_user_sdma_queue *pq);\n\nvoid qib_user_sdma_queue_drain(struct qib_pportdata *ppd,\n\t\t\t       struct qib_user_sdma_queue *pq);\n\nu32 qib_user_sdma_complete_counter(const struct qib_user_sdma_queue *pq);\nu32 qib_user_sdma_inflight_counter(struct qib_user_sdma_queue *pq);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "user_events.h",
+  "hash_id": "274d1725d44c6326dae6052c7e674c8ac6c184a6334218e1c2ed4a3c5ed7f009",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/user_events.h",
+  "human_readable_source": " \n \n\n#ifndef _LINUX_USER_EVENTS_H\n#define _LINUX_USER_EVENTS_H\n\n#include <linux/list.h>\n#include <linux/refcount.h>\n#include <linux/mm_types.h>\n#include <linux/workqueue.h>\n#include <uapi/linux/user_events.h>\n\n#ifdef CONFIG_USER_EVENTS\nstruct user_event_mm {\n\tstruct list_head\tmms_link;\n\tstruct list_head\tenablers;\n\tstruct mm_struct\t*mm;\n\t \n\tstruct user_event_mm\t*next;\n\trefcount_t\t\trefcnt;\n\trefcount_t\t\ttasks;\n\tstruct rcu_work\t\tput_rwork;\n};\n\nextern void user_event_mm_dup(struct task_struct *t,\n\t\t\t      struct user_event_mm *old_mm);\n\nextern void user_event_mm_remove(struct task_struct *t);\n\nstatic inline void user_events_fork(struct task_struct *t,\n\t\t\t\t    unsigned long clone_flags)\n{\n\tstruct user_event_mm *old_mm;\n\n\tif (!t || !current->user_event_mm)\n\t\treturn;\n\n\told_mm = current->user_event_mm;\n\n\tif (clone_flags & CLONE_VM) {\n\t\tt->user_event_mm = old_mm;\n\t\trefcount_inc(&old_mm->tasks);\n\t\treturn;\n\t}\n\n\tuser_event_mm_dup(t, old_mm);\n}\n\nstatic inline void user_events_execve(struct task_struct *t)\n{\n\tif (!t || !t->user_event_mm)\n\t\treturn;\n\n\tuser_event_mm_remove(t);\n}\n\nstatic inline void user_events_exit(struct task_struct *t)\n{\n\tif (!t || !t->user_event_mm)\n\t\treturn;\n\n\tuser_event_mm_remove(t);\n}\n#else\nstatic inline void user_events_fork(struct task_struct *t,\n\t\t\t\t    unsigned long clone_flags)\n{\n}\n\nstatic inline void user_events_execve(struct task_struct *t)\n{\n}\n\nstatic inline void user_events_exit(struct task_struct *t)\n{\n}\n#endif  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

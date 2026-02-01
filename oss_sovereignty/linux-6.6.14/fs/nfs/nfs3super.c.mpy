@@ -1,0 +1,9 @@
+{
+  "module_name": "nfs3super.c",
+  "hash_id": "e293129861a448a4070d98de07b2672a512fcb27f2e9e20ce65237050379467e",
+  "original_prompt": "Ingested from linux-6.6.14/fs/nfs/nfs3super.c",
+  "human_readable_source": "\n \n#include <linux/module.h>\n#include <linux/nfs_fs.h>\n#include \"internal.h\"\n#include \"nfs3_fs.h\"\n#include \"nfs.h\"\n\nstruct nfs_subversion nfs_v3 = {\n\t.owner = THIS_MODULE,\n\t.nfs_fs   = &nfs_fs_type,\n\t.rpc_vers = &nfs_version3,\n\t.rpc_ops  = &nfs_v3_clientops,\n\t.sops     = &nfs_sops,\n};\n\nstatic int __init init_nfs_v3(void)\n{\n\tregister_nfs_version(&nfs_v3);\n\treturn 0;\n}\n\nstatic void __exit exit_nfs_v3(void)\n{\n\tunregister_nfs_version(&nfs_v3);\n}\n\nMODULE_LICENSE(\"GPL\");\n\nmodule_init(init_nfs_v3);\nmodule_exit(exit_nfs_v3);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "e53dbd186c219bd2c0503c471e618a9603972552c3e323f083c2b36520ee830f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/infiniband/hw/cxgb4/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig INFINIBAND_CXGB4\n\ttristate \"Chelsio T4/T5 RDMA Driver\"\n\tdepends on CHELSIO_T4 && INET\n\tdepends on INFINIBAND_ADDR_TRANS\n\tselect CHELSIO_LIB\n\tselect GENERIC_ALLOCATOR\n\thelp\n\t  This is an iWARP/RDMA driver for the Chelsio T4 and T5\n\t  1GbE, 10GbE adapters and T5 40GbE adapter.\n\n\t  For general information about Chelsio and our products, visit\n\t  our website at <http://www.chelsio.com>.\n\n\t  For customer support, please visit our customer support page at\n\t  <http://www.chelsio.com/support.html>.\n\n\t  Please send feedback to <linux-bugs@chelsio.com>.\n\n\t  To compile this driver as a module, choose M here: the module\n\t  will be called iw_cxgb4.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

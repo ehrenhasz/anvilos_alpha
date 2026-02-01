@@ -1,0 +1,9 @@
+{
+  "module_name": "apple.h",
+  "hash_id": "b9862af56c0cc2cddfc2374026083617287aaeb3f23fa06e2e87ee30de47c77d",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/platform_data/x86/apple.h",
+  "human_readable_source": "#ifndef PLATFORM_DATA_X86_APPLE_H\n#define PLATFORM_DATA_X86_APPLE_H\n\n#ifdef CONFIG_X86\n \nextern bool x86_apple_machine;\n#else\n#define x86_apple_machine false\n#endif\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

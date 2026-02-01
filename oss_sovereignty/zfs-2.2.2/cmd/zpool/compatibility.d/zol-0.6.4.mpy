@@ -1,0 +1,9 @@
+{
+  "module_name": "zol-0.6.4",
+  "hash_id": "abcc4d8b4bad43fe1356e9ad06cc3dc0832315e63b0f8305a8dffa315c5fc0db",
+  "original_prompt": "Ingested from zfs-2.2.2/cmd/zpool/compatibility.d/zol-0.6.4",
+  "human_readable_source": "# Features supported by ZFSonLinux v0.6.4\nasync_destroy\nbookmarks\nembedded_data\nempty_bpobj\nenabled_txg\nextensible_dataset\nhole_birth\nlz4_compress\nspacemap_histogram\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

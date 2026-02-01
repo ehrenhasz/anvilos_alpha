@@ -1,0 +1,9 @@
+{
+  "module_name": "clktck.c",
+  "hash_id": "ca17558ea399d79a61b7b10373eaabd184cd2d40513e0d2a53df8b913f651ca0",
+  "original_prompt": "Ingested from bash-5.2.21/lib/sh/clktck.c",
+  "human_readable_source": " \n\n \n\n#include <config.h>\n\n#include <bashtypes.h>\n#if defined (HAVE_SYS_PARAM_H)\n#  include <sys/param.h>\n#endif\n\n#if defined (HAVE_UNISTD_H)\n#  include <unistd.h>\n#endif\n\n#if defined (HAVE_LIMITS_H)\n#  include <limits.h>\n#endif\n\n#if !defined (HAVE_SYSCONF) || !defined (_SC_CLK_TCK)\n#  if !defined (CLK_TCK)\n#    if defined (HZ)\n#      define CLK_TCK HZ\n#    else\n#      define CLK_TCK 60\n#    endif\n#  endif  \n#endif  \n\nlong\nget_clk_tck ()\n{\n  static long retval = 0;\n\n  if (retval != 0)\n    return (retval);\n\n#if defined (HAVE_SYSCONF) && defined (_SC_CLK_TCK)\n  retval = sysconf (_SC_CLK_TCK);\n#else  \n  retval = CLK_TCK;\n#endif  \n\n  return (retval);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

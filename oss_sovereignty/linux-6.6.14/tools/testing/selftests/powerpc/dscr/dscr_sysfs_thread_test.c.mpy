@@ -1,0 +1,9 @@
+{
+  "module_name": "dscr_sysfs_thread_test.c",
+  "hash_id": "188a261ce9efea431960fa0674846b581c17ed50439911c3195a1d5749d9aa42",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/powerpc/dscr/dscr_sysfs_thread_test.c",
+  "human_readable_source": "\n \n#define _GNU_SOURCE\n#include \"dscr.h\"\n\nstatic int test_thread_dscr(unsigned long val)\n{\n\tunsigned long cur_dscr, cur_dscr_usr;\n\n\tcur_dscr = get_dscr();\n\tcur_dscr_usr = get_dscr_usr();\n\n\tif (val != cur_dscr) {\n\t\tprintf(\"[cpu %d] Kernel DSCR should be %ld but is %ld\\n\",\n\t\t\t\t\tsched_getcpu(), val, cur_dscr);\n\t\treturn 1;\n\t}\n\n\tif (val != cur_dscr_usr) {\n\t\tprintf(\"[cpu %d] User DSCR should be %ld but is %ld\\n\",\n\t\t\t\t\tsched_getcpu(), val, cur_dscr_usr);\n\t\treturn 1;\n\t}\n\treturn 0;\n}\n\nstatic int check_cpu_dscr_thread(unsigned long val)\n{\n\tcpu_set_t mask;\n\tint cpu;\n\n\tfor (cpu = 0; cpu < CPU_SETSIZE; cpu++) {\n\t\tCPU_ZERO(&mask);\n\t\tCPU_SET(cpu, &mask);\n\t\tif (sched_setaffinity(0, sizeof(mask), &mask))\n\t\t\tcontinue;\n\n\t\tif (test_thread_dscr(val))\n\t\t\treturn 1;\n\t}\n\treturn 0;\n\n}\n\nint dscr_sysfs_thread(void)\n{\n\tunsigned long orig_dscr_default;\n\tint i, j;\n\n\tSKIP_IF(!have_hwcap2(PPC_FEATURE2_DSCR));\n\n\torig_dscr_default = get_default_dscr();\n\tfor (i = 0; i < COUNT; i++) {\n\t\tfor (j = 0; j < DSCR_MAX; j++) {\n\t\t\tset_default_dscr(j);\n\t\t\tif (check_cpu_dscr_thread(j))\n\t\t\t\tgoto fail;\n\t\t}\n\t}\n\tset_default_dscr(orig_dscr_default);\n\treturn 0;\nfail:\n\tset_default_dscr(orig_dscr_default);\n\treturn 1;\n}\n\nint main(int argc, char *argv[])\n{\n\treturn test_harness(dscr_sysfs_thread, \"dscr_sysfs_thread_test\");\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

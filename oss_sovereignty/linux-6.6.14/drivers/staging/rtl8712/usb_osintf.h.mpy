@@ -1,0 +1,9 @@
+{
+  "module_name": "usb_osintf.h",
+  "hash_id": "4b95a339e6ae504f5e32c204432840fa5365974cc3ca60e2345880d080ccab0d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/rtl8712/usb_osintf.h",
+  "human_readable_source": " \n \n#ifndef __USB_OSINTF_H\n#define __USB_OSINTF_H\n\n#include \"osdep_service.h\"\n#include \"drv_types.h\"\n\nextern char *r8712_initmac;\n\nunsigned int r8712_usb_inirp_init(struct _adapter *padapter);\nunsigned int r8712_usb_inirp_deinit(struct _adapter *padapter);\nuint rtl871x_hal_init(struct _adapter *padapter);\nuint rtl8712_hal_deinit(struct _adapter *padapter);\n\nvoid rtl871x_intf_stop(struct _adapter *padapter);\nvoid r871x_dev_unload(struct _adapter *padapter);\nvoid r8712_stop_drv_threads(struct _adapter *padapter);\nvoid r8712_stop_drv_timers(struct _adapter *padapter);\nint r8712_init_drv_sw(struct _adapter *padapter);\nvoid r8712_free_drv_sw(struct _adapter *padapter);\nstruct net_device *r8712_init_netdev(void);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

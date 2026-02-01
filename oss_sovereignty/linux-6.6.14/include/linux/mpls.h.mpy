@@ -1,0 +1,9 @@
+{
+  "module_name": "mpls.h",
+  "hash_id": "3c0328859f08cee746e2998ab3075c42b713148366d4372ae3dba56997882624",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/mpls.h",
+  "human_readable_source": " \n#ifndef _LINUX_MPLS_H\n#define _LINUX_MPLS_H\n\n#include <uapi/linux/mpls.h>\n\n#define MPLS_TTL_MASK\t\t(MPLS_LS_TTL_MASK >> MPLS_LS_TTL_SHIFT)\n#define MPLS_BOS_MASK\t\t(MPLS_LS_S_MASK >> MPLS_LS_S_SHIFT)\n#define MPLS_TC_MASK\t\t(MPLS_LS_TC_MASK >> MPLS_LS_TC_SHIFT)\n#define MPLS_LABEL_MASK\t\t(MPLS_LS_LABEL_MASK >> MPLS_LS_LABEL_SHIFT)\n\n#endif   \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

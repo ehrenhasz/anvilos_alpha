@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "2b10bdfd663ffc24d266d8691b01a321d15bf3ae8f05a4a1b55a69c74a576de5",
+  "original_prompt": "Ingested from linux-6.6.14/net/bridge/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for the IEEE 802.1d ethernet bridging layer.\n#\n\nobj-$(CONFIG_BRIDGE) += bridge.o\n\nbridge-y\t:= br.o br_device.o br_fdb.o br_forward.o br_if.o br_input.o \\\n\t\t\tbr_ioctl.o br_stp.o br_stp_bpdu.o \\\n\t\t\tbr_stp_if.o br_stp_timer.o br_netlink.o \\\n\t\t\tbr_netlink_tunnel.o br_arp_nd_proxy.o\n\nbridge-$(CONFIG_SYSFS) += br_sysfs_if.o br_sysfs_br.o\n\nbridge-$(subst m,y,$(CONFIG_BRIDGE_NETFILTER)) += br_nf_core.o\n\nbr_netfilter-y := br_netfilter_hooks.o\nbr_netfilter-$(subst m,y,$(CONFIG_IPV6)) += br_netfilter_ipv6.o\nobj-$(CONFIG_BRIDGE_NETFILTER) += br_netfilter.o\n\nbridge-$(CONFIG_BRIDGE_IGMP_SNOOPING) += br_multicast.o br_mdb.o br_multicast_eht.o\n\nbridge-$(CONFIG_BRIDGE_VLAN_FILTERING) += br_vlan.o br_vlan_tunnel.o br_vlan_options.o br_mst.o\n\nbridge-$(CONFIG_NET_SWITCHDEV) += br_switchdev.o\n\nobj-$(CONFIG_NETFILTER) += netfilter/\n\nbridge-$(CONFIG_BRIDGE_MRP)\t+= br_mrp_switchdev.o br_mrp.o br_mrp_netlink.o\n\nbridge-$(CONFIG_BRIDGE_CFM)\t+= br_cfm.o br_cfm_netlink.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

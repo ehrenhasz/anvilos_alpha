@@ -1,0 +1,9 @@
+{
+  "module_name": "libfdt_env.h",
+  "hash_id": "78f55ec60069b15d559647954bb1e1adf7d6692e440aa5a7b936c87ac51a7ce8",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/libfdt_env.h",
+  "human_readable_source": " \n#ifndef LIBFDT_ENV_H\n#define LIBFDT_ENV_H\n\n#include <linux/limits.h>\t \n#include <linux/string.h>\n\n#include <asm/byteorder.h>\n\n#define INT32_MAX\tS32_MAX\n#define UINT32_MAX\tU32_MAX\n\ntypedef __be16 fdt16_t;\ntypedef __be32 fdt32_t;\ntypedef __be64 fdt64_t;\n\n#define fdt32_to_cpu(x) be32_to_cpu(x)\n#define cpu_to_fdt32(x) cpu_to_be32(x)\n#define fdt64_to_cpu(x) be64_to_cpu(x)\n#define cpu_to_fdt64(x) cpu_to_be64(x)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

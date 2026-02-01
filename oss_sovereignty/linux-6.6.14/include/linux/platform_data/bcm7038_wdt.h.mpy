@@ -1,0 +1,9 @@
+{
+  "module_name": "bcm7038_wdt.h",
+  "hash_id": "d8120e3e121a3a8eb8c4eac95ef1fbe59e0ca6768baee55d880eac4521769cb3",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/platform_data/bcm7038_wdt.h",
+  "human_readable_source": "#ifndef __BCM7038_WDT_PDATA_H\n#define __BCM7038_WDT_PDATA_H\n\nstruct bcm7038_wdt_platform_data {\n\tconst char *clk_name;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "resource.h",
+  "hash_id": "c8fd31eaac566bbb746e0badd01978ad286797fe9a28ee1ff8c22116ad833618",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/resource.h",
+  "human_readable_source": " \n#ifndef _UAPI_LINUX_RESOURCE_H\n#define _UAPI_LINUX_RESOURCE_H\n\n#include <linux/time.h>\n#include <linux/types.h>\n\n \n\n \n#define\tRUSAGE_SELF\t0\n#define\tRUSAGE_CHILDREN\t(-1)\n#define RUSAGE_BOTH\t(-2)\t\t \n#define\tRUSAGE_THREAD\t1\t\t \n\nstruct\trusage {\n\tstruct __kernel_old_timeval ru_utime;\t \n\tstruct __kernel_old_timeval ru_stime;\t \n\t__kernel_long_t\tru_maxrss;\t \n\t__kernel_long_t\tru_ixrss;\t \n\t__kernel_long_t\tru_idrss;\t \n\t__kernel_long_t\tru_isrss;\t \n\t__kernel_long_t\tru_minflt;\t \n\t__kernel_long_t\tru_majflt;\t \n\t__kernel_long_t\tru_nswap;\t \n\t__kernel_long_t\tru_inblock;\t \n\t__kernel_long_t\tru_oublock;\t \n\t__kernel_long_t\tru_msgsnd;\t \n\t__kernel_long_t\tru_msgrcv;\t \n\t__kernel_long_t\tru_nsignals;\t \n\t__kernel_long_t\tru_nvcsw;\t \n\t__kernel_long_t\tru_nivcsw;\t \n};\n\nstruct rlimit {\n\t__kernel_ulong_t\trlim_cur;\n\t__kernel_ulong_t\trlim_max;\n};\n\n#define RLIM64_INFINITY\t\t(~0ULL)\n\nstruct rlimit64 {\n\t__u64 rlim_cur;\n\t__u64 rlim_max;\n};\n\n#define\tPRIO_MIN\t(-20)\n#define\tPRIO_MAX\t20\n\n#define\tPRIO_PROCESS\t0\n#define\tPRIO_PGRP\t1\n#define\tPRIO_USER\t2\n\n \n#define _STK_LIM\t(8*1024*1024)\n\n \n#define MLOCK_LIMIT\t(8*1024*1024)\n\n \n#include <asm/resource.h>\n\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

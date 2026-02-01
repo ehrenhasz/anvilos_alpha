@@ -1,0 +1,9 @@
+{
+  "module_name": "acpi.c",
+  "hash_id": "3e0cb388e59f72489a53362fb9493d9656413df09d5b7a31f81ddfbfd7da9621",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/broadcom/brcm80211/brcmfmac/acpi.c",
+  "human_readable_source": "\n \n\n#include <linux/acpi.h>\n#include \"debug.h\"\n#include \"core.h\"\n#include \"common.h\"\n\nvoid brcmf_acpi_probe(struct device *dev, enum brcmf_bus_type bus_type,\n\t\t      struct brcmf_mp_device *settings)\n{\n\tacpi_status status;\n\tconst union acpi_object *o;\n\tstruct acpi_buffer buf = {ACPI_ALLOCATE_BUFFER, NULL};\n\tstruct acpi_device *adev = ACPI_COMPANION(dev);\n\n\tif (!adev)\n\t\treturn;\n\n\tif (!ACPI_FAILURE(acpi_dev_get_property(adev, \"module-instance\",\n\t\t\t\t\t\tACPI_TYPE_STRING, &o))) {\n\t\tbrcmf_dbg(INFO, \"ACPI module-instance=%s\\n\", o->string.pointer);\n\t\tsettings->board_type = devm_kasprintf(dev, GFP_KERNEL,\n\t\t\t\t\t\t      \"apple,%s\",\n\t\t\t\t\t\t      o->string.pointer);\n\t} else {\n\t\tbrcmf_dbg(INFO, \"No ACPI module-instance\\n\");\n\t\treturn;\n\t}\n\n\tstatus = acpi_evaluate_object(adev->handle, \"RWCV\", NULL, &buf);\n\to = buf.pointer;\n\tif (!ACPI_FAILURE(status) && o && o->type == ACPI_TYPE_BUFFER &&\n\t    o->buffer.length >= 2) {\n\t\tchar *antenna_sku = devm_kzalloc(dev, 3, GFP_KERNEL);\n\n\t\tif (antenna_sku) {\n\t\t\tmemcpy(antenna_sku, o->buffer.pointer, 2);\n\t\t\tbrcmf_dbg(INFO, \"ACPI RWCV data=%*phN antenna-sku=%s\\n\",\n\t\t\t\t  (int)o->buffer.length, o->buffer.pointer,\n\t\t\t\t  antenna_sku);\n\t\t\tsettings->antenna_sku = antenna_sku;\n\t\t}\n\n\t\tkfree(buf.pointer);\n\t} else {\n\t\tbrcmf_dbg(INFO, \"No ACPI antenna-sku\\n\");\n\t}\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

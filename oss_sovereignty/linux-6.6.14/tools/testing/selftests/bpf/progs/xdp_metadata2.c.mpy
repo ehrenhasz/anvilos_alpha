@@ -1,0 +1,9 @@
+{
+  "module_name": "xdp_metadata2.c",
+  "hash_id": "c4bae0954b6be38a912d155124834cb8261df936bcd4a34766b21097c1ec5534",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/xdp_metadata2.c",
+  "human_readable_source": "\n\n#include <vmlinux.h>\n#include \"xdp_metadata.h\"\n#include <bpf/bpf_helpers.h>\n#include <bpf/bpf_endian.h>\n\nextern int bpf_xdp_metadata_rx_hash(const struct xdp_md *ctx, __u32 *hash,\n\t\t\t\t    enum xdp_rss_hash_type *rss_type) __ksym;\n\nint called;\n\nSEC(\"freplace/rx\")\nint freplace_rx(struct xdp_md *ctx)\n{\n\tenum xdp_rss_hash_type type = 0;\n\tu32 hash = 0;\n\t \n\tbpf_xdp_metadata_rx_hash(ctx, &hash, &type);\n\tcalled++;\n\treturn XDP_PASS;\n}\n\nchar _license[] SEC(\"license\") = \"GPL\";\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

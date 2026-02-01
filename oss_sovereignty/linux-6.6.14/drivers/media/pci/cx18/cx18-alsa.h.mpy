@@ -1,0 +1,9 @@
+{
+  "module_name": "cx18-alsa.h",
+  "hash_id": "00724dc104d1ff8efc532fc1963f63516717d5399919b2babc1a5e3dcf31c09c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/pci/cx18/cx18-alsa.h",
+  "human_readable_source": " \n \n\nstruct snd_card;\n\nstruct snd_cx18_card {\n\tstruct v4l2_device *v4l2_dev;\n\tstruct snd_card *sc;\n\tunsigned int capture_transfer_done;\n\tunsigned int hwptr_done_capture;\n\tstruct snd_pcm_substream *capture_pcm_substream;\n\tspinlock_t slock;\n};\n\nextern int cx18_alsa_debug;\n\n \nstatic inline void snd_cx18_lock(struct snd_cx18_card *cxsc)\n{\n\tstruct cx18 *cx = to_cx18(cxsc->v4l2_dev);\n\tmutex_lock(&cx->serialize_lock);\n}\n\nstatic inline void snd_cx18_unlock(struct snd_cx18_card *cxsc)\n{\n\tstruct cx18 *cx = to_cx18(cxsc->v4l2_dev);\n\tmutex_unlock(&cx->serialize_lock);\n}\n\n#define CX18_ALSA_DBGFLG_WARN  (1 << 0)\n#define CX18_ALSA_DBGFLG_INFO  (1 << 1)\n\n#define CX18_ALSA_DEBUG(x, type, fmt, args...) \\\n\tdo { \\\n\t\tif ((x) & cx18_alsa_debug) \\\n\t\t\tprintk(KERN_INFO \"%s-alsa: \" type \": \" fmt, \\\n\t\t\t\tv4l2_dev->name , ## args); \\\n\t} while (0)\n\n#define CX18_ALSA_DEBUG_WARN(fmt, args...) \\\n\tCX18_ALSA_DEBUG(CX18_ALSA_DBGFLG_WARN, \"warning\", fmt , ## args)\n\n#define CX18_ALSA_DEBUG_INFO(fmt, args...) \\\n\tCX18_ALSA_DEBUG(CX18_ALSA_DBGFLG_INFO, \"info\", fmt , ## args)\n\n#define CX18_ALSA_ERR(fmt, args...) \\\n\tprintk(KERN_ERR \"%s-alsa: \" fmt, v4l2_dev->name , ## args)\n\n#define CX18_ALSA_WARN(fmt, args...) \\\n\tprintk(KERN_WARNING \"%s-alsa: \" fmt, v4l2_dev->name , ## args)\n\n#define CX18_ALSA_INFO(fmt, args...) \\\n\tprintk(KERN_INFO \"%s-alsa: \" fmt, v4l2_dev->name , ## args)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

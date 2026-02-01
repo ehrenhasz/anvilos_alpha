@@ -1,0 +1,9 @@
+{
+  "module_name": "leds-ns2.h",
+  "hash_id": "cf34ef9e6b7c38d61065f71e5637e7fcbf5da4a3a2368d1e977141b5bcaac735",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/leds/leds-ns2.h",
+  "human_readable_source": " \n#ifndef _DT_BINDINGS_LEDS_NS2_H\n#define _DT_BINDINGS_LEDS_NS2_H\n\n#define NS_V2_LED_OFF\t0\n#define NS_V2_LED_ON\t1\n#define NS_V2_LED_SATA\t2\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

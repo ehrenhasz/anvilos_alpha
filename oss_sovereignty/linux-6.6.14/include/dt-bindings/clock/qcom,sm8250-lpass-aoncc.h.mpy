@@ -1,0 +1,9 @@
+{
+  "module_name": "qcom,sm8250-lpass-aoncc.h",
+  "hash_id": "28c31df83ddb39b108f0e2e75580c04598d0e29b654bfccd13b14d071d2e1038",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/clock/qcom,sm8250-lpass-aoncc.h",
+  "human_readable_source": " \n\n#ifndef _DT_BINDINGS_CLK_LPASS_AONCC_SM8250_H\n#define _DT_BINDINGS_CLK_LPASS_AONCC_SM8250_H\n\n \n#define LPASS_CDC_VA_MCLK\t\t\t\t0\n#define LPASS_CDC_TX_NPL\t\t\t\t1\n#define LPASS_CDC_TX_MCLK\t\t\t\t2\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

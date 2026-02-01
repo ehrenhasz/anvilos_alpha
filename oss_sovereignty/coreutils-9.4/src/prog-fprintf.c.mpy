@@ -1,0 +1,9 @@
+{
+  "module_name": "prog-fprintf.c",
+  "hash_id": "6743b103217fe4da0f3ec410c42643ecee5cfd5f74261a1ad5861fc65694142d",
+  "original_prompt": "Ingested from coreutils-9.4/src/prog-fprintf.c",
+  "human_readable_source": " \nvoid\nprog_fprintf (FILE *fp, char const *fmt, ...)\n{\n  va_list ap;\n  fputs (program_name, fp);\n  fputs (\": \", fp);\n  va_start (ap, fmt);\n  vfprintf (fp, fmt, ap);\n  va_end (ap);\n  fputc ('\\n', fp);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

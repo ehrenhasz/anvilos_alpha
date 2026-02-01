@@ -1,0 +1,9 @@
+{
+  "module_name": "slot_map.h",
+  "hash_id": "464ebf52ecc74ffe96c61472f24ebdd5b1a04dbd0a696a27a53df1145d0a0462",
+  "original_prompt": "Ingested from linux-6.6.14/fs/ocfs2/slot_map.h",
+  "human_readable_source": " \n \n\n\n#ifndef SLOTMAP_H\n#define SLOTMAP_H\n\nint ocfs2_init_slot_info(struct ocfs2_super *osb);\nvoid ocfs2_free_slot_info(struct ocfs2_super *osb);\n\nint ocfs2_find_slot(struct ocfs2_super *osb);\nvoid ocfs2_put_slot(struct ocfs2_super *osb);\n\nint ocfs2_refresh_slot_info(struct ocfs2_super *osb);\n\nint ocfs2_node_num_to_slot(struct ocfs2_super *osb, unsigned int node_num);\nint ocfs2_slot_to_node_num_locked(struct ocfs2_super *osb, int slot_num,\n\t\t\t\t  unsigned int *node_num);\n\nint ocfs2_clear_slot(struct ocfs2_super *osb, int slot_num);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

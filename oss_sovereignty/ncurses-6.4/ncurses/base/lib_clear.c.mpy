@@ -1,0 +1,9 @@
+{
+  "module_name": "lib_clear.c",
+  "hash_id": "dc8737e5e69349cf96672b818e5aa09c4b91fb9c2e14e3667c51a681b317547c",
+  "original_prompt": "Ingested from ncurses-6.4/ncurses/base/lib_clear.c",
+  "human_readable_source": " \n\n \n\n \n\n#include <curses.priv.h>\n\nMODULE_ID(\"$Id: lib_clear.c,v 1.9 2020/02/02 23:34:34 tom Exp $\")\n\nNCURSES_EXPORT(int)\nwclear(WINDOW *win)\n{\n    int code = ERR;\n\n    T((T_CALLED(\"wclear(%p)\"), (void *) win));\n\n    if ((code = werase(win)) != ERR)\n\twin->_clear = TRUE;\n\n    returnCode(code);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

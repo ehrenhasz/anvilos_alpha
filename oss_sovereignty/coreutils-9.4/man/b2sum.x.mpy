@@ -1,0 +1,9 @@
+{
+  "module_name": "b2sum.x",
+  "hash_id": "75f7be5c39f7a50542ad34df803abfcba3b4903d481395085266f78e98e68810",
+  "original_prompt": "Ingested from coreutils-9.4/man/b2sum.x",
+  "human_readable_source": "[NAME]\nb2sum \\- compute and check BLAKE2 message digest\n[DESCRIPTION]\n.\\\" Add any additional description here\n[SEE ALSO]\ncksum(1)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

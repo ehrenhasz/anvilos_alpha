@@ -1,0 +1,9 @@
+{
+  "module_name": "ethernet-mem.h",
+  "hash_id": "f8f059bce4bd897d98127c20df0b90891bdf07927d6ed3b2a018f26f81e1aed8",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/octeon/ethernet-mem.h",
+  "human_readable_source": " \n \n\nint cvm_oct_mem_fill_fpa(int pool, int size, int elements);\nvoid cvm_oct_mem_empty_fpa(int pool, int size, int elements);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "nlr.c",
+  "hash_id": "403f8d19fff4a2b316b25707c755fc824790c33fa965c2b8943bb04c2be6660f",
+  "original_prompt": "Ingested from sys_09_Anvil/source/py/nlr.c",
+  "human_readable_source": " \n\n#include \"py/mpstate.h\"\n\n#if !MICROPY_NLR_SETJMP\n\n#if MICROPY_NLR_X86 && MICROPY_NLR_OS_WINDOWS\n\nunsigned int nlr_push_tail(nlr_buf_t *nlr) asm (\"nlr_push_tail\");\n#else\n\n__attribute__((used)) unsigned int nlr_push_tail(nlr_buf_t *nlr);\n#endif\n#endif\n\nunsigned int nlr_push_tail(nlr_buf_t *nlr) {\n    nlr_buf_t **top = &MP_STATE_THREAD(nlr_top);\n    nlr->prev = *top;\n    MP_NLR_SAVE_PYSTACK(nlr);\n    *top = nlr;\n    return 0; \n}\n\nvoid nlr_pop(void) {\n    nlr_buf_t **top = &MP_STATE_THREAD(nlr_top);\n    *top = (*top)->prev;\n}\n\nvoid nlr_push_jump_callback(nlr_jump_callback_node_t *node, nlr_jump_callback_fun_t fun) {\n    nlr_jump_callback_node_t **top = &MP_STATE_THREAD(nlr_jump_callback_top);\n    node->prev = *top;\n    node->fun = fun;\n    *top = node;\n}\n\nvoid nlr_pop_jump_callback(bool run_callback) {\n    nlr_jump_callback_node_t **top = &MP_STATE_THREAD(nlr_jump_callback_top);\n    nlr_jump_callback_node_t *cur = *top;\n    *top = (*top)->prev;\n    if (run_callback) {\n        cur->fun(cur);\n    }\n}\n\n\n\n\n\n\n\n\nvoid nlr_call_jump_callbacks(nlr_buf_t *nlr) {\n    nlr_jump_callback_node_t **top = &MP_STATE_THREAD(nlr_jump_callback_top);\n    while (*top != NULL && (void *)*top < (void *)nlr) {\n        nlr_pop_jump_callback(true);\n    }\n}\n\n#if MICROPY_ENABLE_VM_ABORT\nNORETURN void nlr_jump_abort(void) {\n    MP_STATE_THREAD(nlr_top) = MP_STATE_VM(nlr_abort);\n    nlr_jump(NULL);\n}\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

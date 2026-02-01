@@ -1,0 +1,9 @@
+{
+  "module_name": "msgbuf.h",
+  "hash_id": "66098b4154eb30d43d097342cb1d0873b275f54b712ac1589ac19008f1e019cd",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/include/uapi/asm/msgbuf.h",
+  "human_readable_source": " \n#ifndef __ASM_X64_MSGBUF_H\n#define __ASM_X64_MSGBUF_H\n\n#if !defined(__x86_64__) || !defined(__ILP32__)\n#include <asm-generic/msgbuf.h>\n#else\n\n#include <asm/ipcbuf.h>\n\n \n\nstruct msqid64_ds {\n\tstruct ipc64_perm msg_perm;\n\t__kernel_long_t msg_stime;\t \n\t__kernel_long_t msg_rtime;\t \n\t__kernel_long_t msg_ctime;\t \n\t__kernel_ulong_t msg_cbytes;\t \n\t__kernel_ulong_t msg_qnum;\t \n\t__kernel_ulong_t msg_qbytes;\t \n\t__kernel_pid_t msg_lspid;\t \n\t__kernel_pid_t msg_lrpid;\t \n\t__kernel_ulong_t __unused4;\n\t__kernel_ulong_t __unused5;\n};\n\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

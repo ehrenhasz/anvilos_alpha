@@ -1,0 +1,9 @@
+{
+  "module_name": "nested_trust_success.c",
+  "hash_id": "fde7d620400ffcbf1e6b4f494d3f52df2b8df25dba2d30e7935018d1d3e1cbd6",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/nested_trust_success.c",
+  "human_readable_source": "\n \n\n#include <vmlinux.h>\n#include <bpf/bpf_tracing.h>\n#include <bpf/bpf_helpers.h>\n#include \"bpf_misc.h\"\n\n#include \"nested_trust_common.h\"\n\nchar _license[] SEC(\"license\") = \"GPL\";\n\nstruct {\n\t__uint(type, BPF_MAP_TYPE_SK_STORAGE);\n\t__uint(map_flags, BPF_F_NO_PREALLOC);\n\t__type(key, int);\n\t__type(value, u64);\n} sk_storage_map SEC(\".maps\");\n\nSEC(\"tp_btf/task_newtask\")\n__success\nint BPF_PROG(test_read_cpumask, struct task_struct *task, u64 clone_flags)\n{\n\tbpf_cpumask_test_cpu(0, task->cpus_ptr);\n\treturn 0;\n}\n\nSEC(\"tp_btf/tcp_probe\")\n__success\nint BPF_PROG(test_skb_field, struct sock *sk, struct sk_buff *skb)\n{\n\tbpf_sk_storage_get(&sk_storage_map, skb->sk, 0, 0);\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

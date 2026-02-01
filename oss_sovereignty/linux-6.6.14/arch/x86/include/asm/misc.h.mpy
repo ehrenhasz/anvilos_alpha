@@ -1,0 +1,9 @@
+{
+  "module_name": "misc.h",
+  "hash_id": "03b8c9c022427fd8e9fc430cf00d756060e8e18e32e27243dbba1905681add70",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/include/asm/misc.h",
+  "human_readable_source": " \n#ifndef _ASM_X86_MISC_H\n#define _ASM_X86_MISC_H\n\nint num_digits(int val);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

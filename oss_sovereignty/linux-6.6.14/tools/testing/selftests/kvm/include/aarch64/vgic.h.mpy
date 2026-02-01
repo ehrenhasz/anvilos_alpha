@@ -1,0 +1,9 @@
+{
+  "module_name": "vgic.h",
+  "hash_id": "fcbe8a033e86e23508a8e992af7c08d6ee58c83b6e94b935283d8fa1584e4861",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/kvm/include/aarch64/vgic.h",
+  "human_readable_source": " \n \n\n#ifndef SELFTEST_KVM_VGIC_H\n#define SELFTEST_KVM_VGIC_H\n\n#include <linux/kvm.h>\n\n#include \"kvm_util.h\"\n\n#define REDIST_REGION_ATTR_ADDR(count, base, flags, index) \\\n\t(((uint64_t)(count) << 52) | \\\n\t((uint64_t)((base) >> 16) << 16) | \\\n\t((uint64_t)(flags) << 12) | \\\n\tindex)\n\nint vgic_v3_setup(struct kvm_vm *vm, unsigned int nr_vcpus, uint32_t nr_irqs,\n\t\tuint64_t gicd_base_gpa, uint64_t gicr_base_gpa);\n\n#define VGIC_MAX_RESERVED\t1023\n\nvoid kvm_irq_set_level_info(int gic_fd, uint32_t intid, int level);\nint _kvm_irq_set_level_info(int gic_fd, uint32_t intid, int level);\n\nvoid kvm_arm_irq_line(struct kvm_vm *vm, uint32_t intid, int level);\nint _kvm_arm_irq_line(struct kvm_vm *vm, uint32_t intid, int level);\n\n \nvoid kvm_irq_write_ispendr(int gic_fd, uint32_t intid, struct kvm_vcpu *vcpu);\nvoid kvm_irq_write_isactiver(int gic_fd, uint32_t intid, struct kvm_vcpu *vcpu);\n\n#define KVM_IRQCHIP_NUM_PINS\t(1020 - 32)\n\n#endif \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

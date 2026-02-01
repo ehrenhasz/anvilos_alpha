@@ -1,0 +1,9 @@
+{
+  "module_name": "linebuffer.c",
+  "hash_id": "7a9fc2872f17832729ba42c7e9c00d8731e73eecd733b5780611fc731803dc4e",
+  "original_prompt": "Ingested from coreutils-9.4/lib/linebuffer.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\n#include <sys/types.h>\n#include \"linebuffer.h\"\n#include \"xalloc.h\"\n\n#if USE_UNLOCKED_IO\n# include \"unlocked-io.h\"\n#endif\n\n \n\nvoid\ninitbuffer (struct linebuffer *linebuffer)\n{\n  memset (linebuffer, 0, sizeof *linebuffer);\n}\n\nstruct linebuffer *\nreadlinebuffer (struct linebuffer *linebuffer, FILE *stream)\n{\n  return readlinebuffer_delim (linebuffer, stream, '\\n');\n}\n\n \nstruct linebuffer *\nreadlinebuffer_delim (struct linebuffer *linebuffer, FILE *stream,\n                      char delimiter)\n{\n  int c;\n  char *buffer = linebuffer->buffer;\n  char *p = linebuffer->buffer;\n  char *end = buffer + linebuffer->size;  \n\n  if (feof (stream))\n    return NULL;\n\n  do\n    {\n      c = getc (stream);\n      if (c == EOF)\n        {\n          if (p == buffer || ferror (stream))\n            return NULL;\n          if (p[-1] == delimiter)\n            break;\n          c = delimiter;\n        }\n      if (p == end)\n        {\n          idx_t oldsize = linebuffer->size;\n          buffer = xpalloc (buffer, &linebuffer->size, 1, -1, 1);\n          p = buffer + oldsize;\n          linebuffer->buffer = buffer;\n          end = buffer + linebuffer->size;\n        }\n      *p++ = c;\n    }\n  while (c != delimiter);\n\n  linebuffer->length = p - buffer;\n  return linebuffer;\n}\n\n \n\nvoid\nfreebuffer (struct linebuffer *linebuffer)\n{\n  free (linebuffer->buffer);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

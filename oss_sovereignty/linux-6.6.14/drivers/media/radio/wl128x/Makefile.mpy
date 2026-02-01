@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "a3e1a8f80fbcb0e9289fbfb2a4979a0b572d9fd421c520e86c6d82deb579d42c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/radio/wl128x/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Makefile for TI's shared transport driver based wl128x\n# FM radio.\n#\nobj-$(CONFIG_RADIO_WL128X)\t+= fm_drv.o\nfm_drv-objs\t\t:= fmdrv_common.o fmdrv_rx.o fmdrv_tx.o fmdrv_v4l2.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

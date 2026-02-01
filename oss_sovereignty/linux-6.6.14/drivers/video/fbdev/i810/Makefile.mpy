@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "5adafa5cf16e76f6b32a0ca30c111f58f600c551bcfeb9377b3345a4dca246dd",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/video/fbdev/i810/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for the Intel 810/815 framebuffer driver\n#\n\nobj-$(CONFIG_FB_I810)\t\t+= i810fb.o\n\ni810fb-objs                     := i810_main.o i810_accel.o\n\nifdef CONFIG_FB_I810_GTF\ni810fb-objs                     += i810_gtf.o\nelse\ni810fb-objs                     += i810_dvt.o\nendif\n\nifdef CONFIG_FB_I810_I2C\ni810fb-objs += i810-i2c.o\nendif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

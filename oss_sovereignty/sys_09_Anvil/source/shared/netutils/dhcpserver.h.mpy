@@ -1,0 +1,9 @@
+{
+  "module_name": "dhcpserver.h",
+  "hash_id": "5240bc09e2ba4fc10bc2848cf98bc7a80d56282dc7814dee85113401437fd133",
+  "original_prompt": "Ingested from sys_09_Anvil/source/shared/netutils/dhcpserver.h",
+  "human_readable_source": " \n#ifndef MICROPY_INCLUDED_LIB_NETUTILS_DHCPSERVER_H\n#define MICROPY_INCLUDED_LIB_NETUTILS_DHCPSERVER_H\n\n#include \"lwip/ip_addr.h\"\n\n#define DHCPS_BASE_IP (16)\n#define DHCPS_MAX_IP (8)\n\ntypedef struct _dhcp_server_lease_t {\n    uint8_t mac[6];\n    uint16_t expiry;\n} dhcp_server_lease_t;\n\ntypedef struct _dhcp_server_t {\n    ip_addr_t ip;\n    ip_addr_t nm;\n    dhcp_server_lease_t lease[DHCPS_MAX_IP];\n    struct udp_pcb *udp;\n} dhcp_server_t;\n\nvoid dhcp_server_init(dhcp_server_t *d, ip_addr_t *ip, ip_addr_t *nm);\nvoid dhcp_server_deinit(dhcp_server_t *d);\n\n#endif \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

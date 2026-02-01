@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile.am",
+  "hash_id": "699ad3ee7a65f7a20c8bb31b71c5f49d4768cf68d0269f10e5a4d0b1ea040133",
+  "original_prompt": "Ingested from zfs-2.2.2/lib/libnvpair/Makefile.am",
+  "human_readable_source": "libnvpair_la_CFLAGS  = $(AM_CFLAGS) $(KERNEL_CFLAGS) $(LIBRARY_CFLAGS)\nlibnvpair_la_CFLAGS += $(LIBTIRPC_CFLAGS)\nlibnvpair_la_CFLAGS += -fvisibility=hidden\n\n# wchar_t is undefined-signedness, but we compare to >=0; this warns with unsigned wchar_t\n%D%/libnvpair_la-libnvpair_json.$(OBJEXT) : CFLAGS += -Wno-type-limits\n%D%/libnvpair_la-libnvpair_json.l$(OBJEXT): CFLAGS += -Wno-type-limits\n\nlib_LTLIBRARIES += libnvpair.la\nCPPCHECKTARGETS += libnvpair.la\n\ndist_libnvpair_la_SOURCES = \\\n\t%D%/libnvpair.c \\\n\t%D%/libnvpair_json.c \\\n\t%D%/nvpair_alloc_system.c\n\nnodist_libnvpair_la_SOURCES = \\\n\tmodule/nvpair/nvpair_alloc_fixed.c \\\n\tmodule/nvpair/nvpair.c \\\n\tmodule/nvpair/fnvpair.c\n\nlibnvpair_la_LIBADD = \\\n\tlibspl_assert.la\n\nlibnvpair_la_LIBADD += $(LIBTIRPC_LIBS) $(LTLIBINTL)\n\nlibnvpair_la_LDFLAGS =\n\nif !ASAN_ENABLED\nlibnvpair_la_LDFLAGS += -Wl,-z,defs\nendif\n\nlibnvpair_la_LDFLAGS += -version-info 3:0:0\n\ndist_noinst_DATA += %D%/libnvpair.abi %D%/libnvpair.suppr\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

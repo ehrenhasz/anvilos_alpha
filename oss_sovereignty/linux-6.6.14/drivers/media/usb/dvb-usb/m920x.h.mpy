@@ -1,0 +1,9 @@
+{
+  "module_name": "m920x.h",
+  "hash_id": "bc78d28a153e92213885c2cf434e734f230157d439112a20ba9635f1929ca5ba",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/usb/dvb-usb/m920x.h",
+  "human_readable_source": " \n#ifndef _DVB_USB_M920X_H_\n#define _DVB_USB_M920X_H_\n\n#define DVB_USB_LOG_PREFIX \"m920x\"\n#include \"dvb-usb.h\"\n\n#define deb(args...)   dprintk(dvb_usb_m920x_debug,0x01,args)\n\n#define M9206_CORE\t0x22\n#define M9206_RC_STATE\t0xff51\n#define M9206_RC_KEY\t0xff52\n#define M9206_RC_INIT1\t0xff54\n#define M9206_RC_INIT2\t0xff55\n#define M9206_FW_GO\t0xff69\n\n#define M9206_I2C\t0x23\n#define M9206_FILTER\t0x25\n#define M9206_FW\t0x30\n\n#define M9206_MAX_FILTERS 8\n#define M9206_MAX_ADAPTERS 4\n\n \n\nstruct m920x_state {\n\tu16 filters[M9206_MAX_ADAPTERS][M9206_MAX_FILTERS];\n\tint filtering_enabled[M9206_MAX_ADAPTERS];\n\tint rep_count;\n};\n\n \n\nstruct m920x_inits {\n\tu16 address;\n\tu8  data;\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

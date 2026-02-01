@@ -1,0 +1,9 @@
+{
+  "module_name": "bpf_perf_event.h",
+  "hash_id": "476f9f921cfaf3f39d0ad056c0424fd747f6cb467e5c7790a2153c3dcdec908e",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/bpf_perf_event.h",
+  "human_readable_source": " \n \n#ifndef _UAPI__LINUX_BPF_PERF_EVENT_H__\n#define _UAPI__LINUX_BPF_PERF_EVENT_H__\n\n#include <asm/bpf_perf_event.h>\n\nstruct bpf_perf_event_data {\n\tbpf_user_pt_regs_t regs;\n\t__u64 sample_period;\n\t__u64 addr;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

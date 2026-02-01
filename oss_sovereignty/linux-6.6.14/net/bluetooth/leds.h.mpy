@@ -1,0 +1,9 @@
+{
+  "module_name": "leds.h",
+  "hash_id": "a7cbce3e6dc86822853da6d61a217a4b16d139976d4431df2dba30dd8932e0d2",
+  "original_prompt": "Ingested from linux-6.6.14/net/bluetooth/leds.h",
+  "human_readable_source": " \n \n\n#if IS_ENABLED(CONFIG_BT_LEDS)\n\nvoid hci_leds_update_powered(struct hci_dev *hdev, bool enabled);\nvoid hci_leds_init(struct hci_dev *hdev);\n\nvoid bt_leds_init(void);\nvoid bt_leds_cleanup(void);\n\n#else\n\nstatic inline void hci_leds_update_powered(struct hci_dev *hdev,\n\t\t\t\t\t   bool enabled) {}\nstatic inline void hci_leds_init(struct hci_dev *hdev) {}\n\nstatic inline void bt_leds_init(void) {}\nstatic inline void bt_leds_cleanup(void) {}\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

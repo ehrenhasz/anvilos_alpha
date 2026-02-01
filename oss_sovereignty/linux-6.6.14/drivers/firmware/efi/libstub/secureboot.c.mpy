@@ -1,0 +1,9 @@
+{
+  "module_name": "secureboot.c",
+  "hash_id": "7d11c81e99ce1cd176a0c04f81c85b0929915f823848888b288c84511d0611c0",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/firmware/efi/libstub/secureboot.c",
+  "human_readable_source": "\n \n#include <linux/efi.h>\n#include <asm/efi.h>\n\n#include \"efistub.h\"\n\n \nstatic const efi_guid_t shim_guid = EFI_SHIM_LOCK_GUID;\nstatic const efi_char16_t shim_MokSBState_name[] = L\"MokSBStateRT\";\n\nstatic efi_status_t get_var(efi_char16_t *name, efi_guid_t *vendor, u32 *attr,\n\t\t\t    unsigned long *data_size, void *data)\n{\n\treturn get_efi_var(name, vendor, attr, data_size, data);\n}\n\n \nenum efi_secureboot_mode efi_get_secureboot(void)\n{\n\tu32 attr;\n\tunsigned long size;\n\tenum efi_secureboot_mode mode;\n\tefi_status_t status;\n\tu8 moksbstate;\n\n\tmode = efi_get_secureboot_mode(get_var);\n\tif (mode == efi_secureboot_mode_unknown) {\n\t\tefi_err(\"Could not determine UEFI Secure Boot status.\\n\");\n\t\treturn efi_secureboot_mode_unknown;\n\t}\n\tif (mode != efi_secureboot_mode_enabled)\n\t\treturn mode;\n\n\t \n\tsize = sizeof(moksbstate);\n\tstatus = get_efi_var(shim_MokSBState_name, &shim_guid,\n\t\t\t     &attr, &size, &moksbstate);\n\n\t \n\tif (status != EFI_SUCCESS)\n\t\tgoto secure_boot_enabled;\n\tif (!(attr & EFI_VARIABLE_NON_VOLATILE) && moksbstate == 1)\n\t\treturn efi_secureboot_mode_disabled;\n\nsecure_boot_enabled:\n\tefi_info(\"UEFI Secure Boot is enabled.\\n\");\n\treturn efi_secureboot_mode_enabled;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

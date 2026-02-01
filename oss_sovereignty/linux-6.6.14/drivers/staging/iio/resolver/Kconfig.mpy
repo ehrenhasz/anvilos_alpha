@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "ecae16a060c1f3d1d7e42727f5fa31ccc4cc5d5595adb3f039956012758ca17d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/iio/resolver/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Resolver/Synchro drivers\n#\nmenu \"Resolver to digital converters\"\n\nconfig AD2S1210\n\ttristate \"Analog Devices ad2s1210 driver\"\n\tdepends on SPI\n\tdepends on GPIOLIB || COMPILE_TEST\n\thelp\n\t  Say yes here to build support for Analog Devices spi resolver\n\t  to digital converters, ad2s1210, provides direct access via sysfs.\n\n\t  To compile this driver as a module, choose M here: the\n\t  module will be called ad2s1210.\n\nendmenu\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

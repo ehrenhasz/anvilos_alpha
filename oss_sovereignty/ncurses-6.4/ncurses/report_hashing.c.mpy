@@ -1,0 +1,9 @@
+{
+  "module_name": "report_hashing.c",
+  "hash_id": "6cd684ccca6c11a75dd88daf7dbc2f9305b79a79d762abc2146d205a1dc1eb44",
+  "original_prompt": "Ingested from ncurses-6.4/ncurses/report_hashing.c",
+  "human_readable_source": " \n\n \n\n#include <curses.priv.h>\n#include <tic.h>\n\nMODULE_ID(\"$Id: report_hashing.c,v 1.3 2020/02/02 23:34:34 tom Exp $\")\n\nstatic void\ncheck_names(const char *name, NCURSES_CONST char *const *table, int termcap)\n{\n    int errs = 0;\n    int n;\n    struct name_table_entry const *entry_ptr;\n    const HashValue *hash_table = _nc_get_hash_table(termcap);\n\n    printf(\"%s:\\n\", name);\n    for (n = 0; table[n] != NULL; ++n) {\n\tentry_ptr = _nc_find_entry(table[n], hash_table);\n\tif (entry_ptr == 0) {\n\t    printf(\"  %s\\n\", table[n]);\n\t    errs++;\n\t}\n    }\n    if (errs)\n\tprintf(\"%d errors\\n\", errs);\n}\n\nint\nmain(void)\n{\n#define CHECK_TI(name) check_names(#name, name, 0)\n#define CHECK_TC(name) check_names(#name, name, 1)\n\n    CHECK_TI(boolnames);\n    CHECK_TI(numnames);\n    CHECK_TI(strnames);\n\n    CHECK_TC(boolcodes);\n    CHECK_TC(numcodes);\n    CHECK_TC(strcodes);\n\n    return EXIT_SUCCESS;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

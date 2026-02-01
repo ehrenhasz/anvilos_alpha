@@ -1,0 +1,9 @@
+{
+  "module_name": "mt8183-afe-clk.h",
+  "hash_id": "147a83ce64677f02c25ea1cdeaf343e07970891c43661a080efed12c33a0fb7f",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/mediatek/mt8183/mt8183-afe-clk.h",
+  "human_readable_source": " \n \n\n#ifndef _MT8183_AFE_CLK_H_\n#define _MT8183_AFE_CLK_H_\n\n \n#define APLL1_W_NAME \"APLL1\"\n#define APLL2_W_NAME \"APLL2\"\nenum {\n\tMT8183_APLL1 = 0,\n\tMT8183_APLL2,\n};\n\nstruct mtk_base_afe;\n\nint mt8183_init_clock(struct mtk_base_afe *afe);\nint mt8183_afe_enable_clock(struct mtk_base_afe *afe);\nint mt8183_afe_disable_clock(struct mtk_base_afe *afe);\n\nint mt8183_apll1_enable(struct mtk_base_afe *afe);\nvoid mt8183_apll1_disable(struct mtk_base_afe *afe);\n\nint mt8183_apll2_enable(struct mtk_base_afe *afe);\nvoid mt8183_apll2_disable(struct mtk_base_afe *afe);\n\nint mt8183_get_apll_rate(struct mtk_base_afe *afe, int apll);\nint mt8183_get_apll_by_rate(struct mtk_base_afe *afe, int rate);\nint mt8183_get_apll_by_name(struct mtk_base_afe *afe, const char *name);\n\nint mt8183_mck_enable(struct mtk_base_afe *afe, int mck_id, int rate);\nvoid mt8183_mck_disable(struct mtk_base_afe *afe, int mck_id);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

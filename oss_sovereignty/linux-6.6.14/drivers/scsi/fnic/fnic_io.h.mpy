@@ -1,0 +1,9 @@
+{
+  "module_name": "fnic_io.h",
+  "hash_id": "9d9a61962f3ab30089e2655ba8d7c629cf785b61f77bf46a68e203fff23873e8",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/scsi/fnic/fnic_io.h",
+  "human_readable_source": " \n \n#ifndef _FNIC_IO_H_\n#define _FNIC_IO_H_\n\n#include <scsi/fc/fc_fcp.h>\n\n#define FNIC_DFLT_SG_DESC_CNT  32\n#define FNIC_MAX_SG_DESC_CNT        256      \n#define FNIC_SG_DESC_ALIGN          16       \n\nstruct host_sg_desc {\n\t__le64 addr;\n\t__le32 len;\n\tu32 _resvd;\n};\n\nstruct fnic_dflt_sgl_list {\n\tstruct host_sg_desc sg_desc[FNIC_DFLT_SG_DESC_CNT];\n};\n\nstruct fnic_sgl_list {\n\tstruct host_sg_desc sg_desc[FNIC_MAX_SG_DESC_CNT];\n};\n\nenum fnic_sgl_list_type {\n\tFNIC_SGL_CACHE_DFLT = 0,   \n\tFNIC_SGL_CACHE_MAX,        \n\tFNIC_SGL_NUM_CACHES        \n};\n\nenum fnic_ioreq_state {\n\tFNIC_IOREQ_NOT_INITED = 0,\n\tFNIC_IOREQ_CMD_PENDING,\n\tFNIC_IOREQ_ABTS_PENDING,\n\tFNIC_IOREQ_ABTS_COMPLETE,\n\tFNIC_IOREQ_CMD_COMPLETE,\n};\n\nstruct fnic_io_req {\n\tstruct host_sg_desc *sgl_list;  \n\tvoid *sgl_list_alloc;  \n\tdma_addr_t sense_buf_pa;  \n\tdma_addr_t sgl_list_pa;\t \n\tu16 sgl_cnt;\n\tu8 sgl_type;  \n\tu8 io_completed:1;  \n\tu32 port_id;  \n\tunsigned long start_time;  \n\tstruct completion *abts_done;  \n\tstruct completion *dr_done;  \n\tunsigned int tag;\n\tstruct scsi_cmnd *sc;  \n};\n\nenum fnic_port_speeds {\n\tDCEM_PORTSPEED_NONE = 0,\n\tDCEM_PORTSPEED_1G    = 1000,\n\tDCEM_PORTSPEED_10G   = 10000,\n\tDCEM_PORTSPEED_20G   = 20000,\n\tDCEM_PORTSPEED_25G   = 25000,\n\tDCEM_PORTSPEED_40G   = 40000,\n\tDCEM_PORTSPEED_4x10G = 41000,\n\tDCEM_PORTSPEED_100G  = 100000,\n};\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

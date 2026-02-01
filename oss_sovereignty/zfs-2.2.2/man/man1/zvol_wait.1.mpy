@@ -1,0 +1,9 @@
+{
+  "module_name": "zvol_wait.1",
+  "hash_id": "eac6dd304296599323cd203db888f2411ecd4b4ce70bfe471c330065bf505eb1",
+  "original_prompt": "Ingested from zfs-2.2.2/man/man1/zvol_wait.1",
+  "human_readable_source": ".\\\"\n.\\\" This file and its contents are supplied under the terms of the\n.\\\" Common Development and Distribution License (\"CDDL\"), version 1.0.\n.\\\" You may only use this file in accordance with the terms of version\n.\\\" 1.0 of the CDDL.\n.\\\"\n.\\\" A full copy of the text of the CDDL should have accompanied this\n.\\\" source.  A copy of the CDDL is also available via the Internet at\n.\\\" http://www.illumos.org/license/CDDL.\n.\\\"\n.Dd May 27, 2021\n.Dt ZVOL_WAIT 1\n.Os\n.\n.Sh NAME\n.Nm zvol_wait\n.Nd wait for ZFS volume links to appear in /dev\n.Sh SYNOPSIS\n.Nm\n.\n.Sh DESCRIPTION\nWhen a ZFS pool is imported, the volumes within it will appear as block devices.\nAs they're registered,\n.Xr udev 7\nasynchronously creates symlinks under\n.Pa /dev/zvol\nusing the volumes' names.\n.Nm\nwill wait for all those symlinks to be created before exiting.\n.\n.Sh SEE ALSO\n.Xr udev 7\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

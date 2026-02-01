@@ -1,0 +1,9 @@
+{
+  "module_name": "rw-by-pid-report",
+  "hash_id": "087f670ad8331e056b3bdfb6972d4cf73b15f9b11f87568e7487c6578c291152",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/scripts/perl/bin/rw-by-pid-report",
+  "human_readable_source": "#!/bin/bash\n# description: system-wide r/w activity\nperf script $@ -s \"$PERF_EXEC_PATH\"/scripts/perl/rw-by-pid.pl\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

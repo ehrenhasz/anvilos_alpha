@@ -1,0 +1,9 @@
+{
+  "module_name": "qcom,gpucc-sdm660.h",
+  "hash_id": "c83ad5f5756770b131d3d64b2b5a6e1916a3bbc6e0ec745fd3a86bd691446c9a",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/clock/qcom,gpucc-sdm660.h",
+  "human_readable_source": " \n \n\n#ifndef _DT_BINDINGS_CLK_SDM_GPUCC_660_H\n#define _DT_BINDINGS_CLK_SDM_GPUCC_660_H\n\n#define GPUCC_CXO_CLK\t\t\t0\n#define GPU_PLL0_PLL\t\t\t1\n#define GPU_PLL1_PLL\t\t\t2\n#define GFX3D_CLK_SRC\t\t\t3\n#define RBCPR_CLK_SRC\t\t\t4\n#define RBBMTIMER_CLK_SRC\t\t5\n#define GPUCC_RBCPR_CLK\t\t\t6\n#define GPUCC_GFX3D_CLK\t\t\t7\n#define GPUCC_RBBMTIMER_CLK\t\t8\n\n#define GPU_CX_GDSC\t\t\t0\n#define GPU_GX_GDSC\t\t\t1\n\n#define GPU_CX_BCR\t\t\t0\n#define GPU_GX_BCR\t\t\t1\n#define RBCPR_BCR\t\t\t2\n#define SPDM_BCR\t\t\t3\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

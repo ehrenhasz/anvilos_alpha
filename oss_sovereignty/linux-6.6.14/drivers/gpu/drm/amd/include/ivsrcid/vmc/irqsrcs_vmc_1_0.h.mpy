@@ -1,0 +1,9 @@
+{
+  "module_name": "irqsrcs_vmc_1_0.h",
+  "hash_id": "8c313968381ecdb5358c8e92189a6d0dc36d69a02237931f7c9928acc7d62eb4",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/include/ivsrcid/vmc/irqsrcs_vmc_1_0.h",
+  "human_readable_source": " \n\n#ifndef __IRQSRCS_VMC_1_0_H__\n#define __IRQSRCS_VMC_1_0_H__\n\n\n#define VMC_1_0__SRCID__VM_FAULT                            0\n#define VMC_1_0__SRCID__VM_CONTEXT0_ALL                     256\n#define VMC_1_0__SRCID__VM_CONTEXT1_ALL                     257\n\n#define UTCL2_1_0__SRCID__FAULT                             0        \n\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

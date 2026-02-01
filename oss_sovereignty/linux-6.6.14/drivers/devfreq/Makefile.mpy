@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "a4a541563d56da285381ea665478e60012220d26cacad4c8493da4b58312acd9",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/devfreq/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nobj-$(CONFIG_PM_DEVFREQ)\t+= devfreq.o\nobj-$(CONFIG_PM_DEVFREQ_EVENT)\t+= devfreq-event.o\nobj-$(CONFIG_DEVFREQ_GOV_SIMPLE_ONDEMAND)\t+= governor_simpleondemand.o\nobj-$(CONFIG_DEVFREQ_GOV_PERFORMANCE)\t+= governor_performance.o\nobj-$(CONFIG_DEVFREQ_GOV_POWERSAVE)\t+= governor_powersave.o\nobj-$(CONFIG_DEVFREQ_GOV_USERSPACE)\t+= governor_userspace.o\nobj-$(CONFIG_DEVFREQ_GOV_PASSIVE)\t+= governor_passive.o\n\n# DEVFREQ Drivers\nobj-$(CONFIG_ARM_EXYNOS_BUS_DEVFREQ)\t+= exynos-bus.o\nobj-$(CONFIG_ARM_IMX_BUS_DEVFREQ)\t+= imx-bus.o\nobj-$(CONFIG_ARM_IMX8M_DDRC_DEVFREQ)\t+= imx8m-ddrc.o\nobj-$(CONFIG_ARM_MEDIATEK_CCI_DEVFREQ)\t+= mtk-cci-devfreq.o\nobj-$(CONFIG_ARM_RK3399_DMC_DEVFREQ)\t+= rk3399_dmc.o\nobj-$(CONFIG_ARM_SUN8I_A33_MBUS_DEVFREQ)\t+= sun8i-a33-mbus.o\nobj-$(CONFIG_ARM_TEGRA_DEVFREQ)\t\t+= tegra30-devfreq.o\n\n# DEVFREQ Event Drivers\nobj-$(CONFIG_PM_DEVFREQ_EVENT)\t\t+= event/\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

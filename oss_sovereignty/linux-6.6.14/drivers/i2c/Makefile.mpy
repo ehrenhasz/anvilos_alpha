@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "eef8c14393be4328af4b742e42ce7212d69f1bd2bae214e19b35c1e637c768f2",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/i2c/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for the i2c core.\n#\n\nobj-$(CONFIG_I2C_BOARDINFO)\t+= i2c-boardinfo.o\nobj-$(CONFIG_I2C)\t\t+= i2c-core.o\ni2c-core-objs \t\t\t:= i2c-core-base.o i2c-core-smbus.o\ni2c-core-$(CONFIG_ACPI)\t\t+= i2c-core-acpi.o\ni2c-core-$(CONFIG_I2C_SLAVE) \t+= i2c-core-slave.o\ni2c-core-$(CONFIG_OF) \t\t+= i2c-core-of.o\n\nobj-$(CONFIG_I2C_SMBUS)\t\t+= i2c-smbus.o\nobj-$(CONFIG_I2C_CHARDEV)\t+= i2c-dev.o\nobj-$(CONFIG_I2C_MUX)\t\t+= i2c-mux.o\nobj-$(CONFIG_I2C_ATR)\t\t+= i2c-atr.o\nobj-y\t\t\t\t+= algos/ busses/ muxes/\nobj-$(CONFIG_I2C_STUB)\t\t+= i2c-stub.o\nobj-$(CONFIG_I2C_SLAVE_EEPROM)\t+= i2c-slave-eeprom.o\nobj-$(CONFIG_I2C_SLAVE_TESTUNIT)\t+= i2c-slave-testunit.o\n\nccflags-$(CONFIG_I2C_DEBUG_CORE) := -DDEBUG\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "a0971bf7988757537f78e6aaaea9dabcaa455bcb09490dbeaf7befbf94fa9072",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/tee/amdtee/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: MIT\n# AMD-TEE Trusted Execution Environment Configuration\nconfig AMDTEE\n\ttristate \"AMD-TEE\"\n\tdefault m\n\tdepends on CRYPTO_DEV_SP_PSP && CRYPTO_DEV_CCP_DD\n\thelp\n\t  This implements AMD's Trusted Execution Environment (TEE) driver.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

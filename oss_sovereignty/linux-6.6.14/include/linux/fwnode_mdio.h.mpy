@@ -1,0 +1,9 @@
+{
+  "module_name": "fwnode_mdio.h",
+  "hash_id": "3a430990151ee7b1931aa1bdd61c26b339c2b68c345e32447f703bac74e449d0",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/fwnode_mdio.h",
+  "human_readable_source": " \n \n\n#ifndef __LINUX_FWNODE_MDIO_H\n#define __LINUX_FWNODE_MDIO_H\n\n#include <linux/phy.h>\n\n#if IS_ENABLED(CONFIG_FWNODE_MDIO)\nint fwnode_mdiobus_phy_device_register(struct mii_bus *mdio,\n\t\t\t\t       struct phy_device *phy,\n\t\t\t\t       struct fwnode_handle *child, u32 addr);\n\nint fwnode_mdiobus_register_phy(struct mii_bus *bus,\n\t\t\t\tstruct fwnode_handle *child, u32 addr);\n\n#else  \nint fwnode_mdiobus_phy_device_register(struct mii_bus *mdio,\n\t\t\t\t       struct phy_device *phy,\n\t\t\t\t       struct fwnode_handle *child, u32 addr)\n{\n\treturn -EINVAL;\n}\n\nstatic inline int fwnode_mdiobus_register_phy(struct mii_bus *bus,\n\t\t\t\t\t      struct fwnode_handle *child,\n\t\t\t\t\t      u32 addr)\n{\n\treturn -EINVAL;\n}\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

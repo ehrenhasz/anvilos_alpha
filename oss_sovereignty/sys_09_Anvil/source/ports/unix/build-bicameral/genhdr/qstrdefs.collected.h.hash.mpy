@@ -1,0 +1,9 @@
+{
+  "module_name": "qstrdefs.collected.h.hash",
+  "hash_id": "02e4f88fbbdcf40744760be91fedb0eb6665dac9dddfca828c8c8ada0520b847",
+  "original_prompt": "Ingested from sys_09_Anvil/source/ports/unix/build-bicameral/genhdr/qstrdefs.collected.h.hash",
+  "human_readable_source": "07c2083fcc3d5b71fa9368c8c23817f2",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

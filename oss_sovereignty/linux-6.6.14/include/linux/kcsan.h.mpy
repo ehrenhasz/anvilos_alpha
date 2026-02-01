@@ -1,0 +1,9 @@
+{
+  "module_name": "kcsan.h",
+  "hash_id": "a42745f19bcaa465a0c8a8cd5324039b1b469b0309def91b27900926cc7fd137",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/kcsan.h",
+  "human_readable_source": " \n \n\n#ifndef _LINUX_KCSAN_H\n#define _LINUX_KCSAN_H\n\n#include <linux/kcsan-checks.h>\n#include <linux/types.h>\n\n#ifdef CONFIG_KCSAN\n\n \nstruct kcsan_ctx {\n\tint disable_count;  \n\tint disable_scoped;  \n\tint atomic_next;  \n\n\t \n\tint atomic_nest_count;\n\tbool in_flat_atomic;\n\n\t \n\tunsigned long access_mask;\n\n\t \n\tstruct list_head scoped_accesses;\n\n#ifdef CONFIG_KCSAN_WEAK_MEMORY\n\t \n\tstruct kcsan_scoped_access reorder_access;\n#endif\n};\n\n \nvoid kcsan_init(void);\n\n#else  \n\nstatic inline void kcsan_init(void)\t\t\t{ }\n\n#endif  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

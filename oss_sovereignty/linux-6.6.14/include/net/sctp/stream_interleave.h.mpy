@@ -1,0 +1,9 @@
+{
+  "module_name": "stream_interleave.h",
+  "hash_id": "1b3222b8845bb3a3346db3afc8d1a07c3aa354c25fc7d8c498781598aa1fc95c",
+  "original_prompt": "Ingested from linux-6.6.14/include/net/sctp/stream_interleave.h",
+  "human_readable_source": " \n \n\n#ifndef __sctp_stream_interleave_h__\n#define __sctp_stream_interleave_h__\n\nstruct sctp_stream_interleave {\n\t__u16\tdata_chunk_len;\n\t__u16\tftsn_chunk_len;\n\t \n\tstruct sctp_chunk *(*make_datafrag)(const struct sctp_association *asoc,\n\t\t\t\t\t    const struct sctp_sndrcvinfo *sinfo,\n\t\t\t\t\t    int len, __u8 flags, gfp_t gfp);\n\tvoid\t(*assign_number)(struct sctp_chunk *chunk);\n\tbool\t(*validate_data)(struct sctp_chunk *chunk);\n\tint\t(*ulpevent_data)(struct sctp_ulpq *ulpq,\n\t\t\t\t struct sctp_chunk *chunk, gfp_t gfp);\n\tint\t(*enqueue_event)(struct sctp_ulpq *ulpq,\n\t\t\t\t struct sctp_ulpevent *event);\n\tvoid\t(*renege_events)(struct sctp_ulpq *ulpq,\n\t\t\t\t struct sctp_chunk *chunk, gfp_t gfp);\n\tvoid\t(*start_pd)(struct sctp_ulpq *ulpq, gfp_t gfp);\n\tvoid\t(*abort_pd)(struct sctp_ulpq *ulpq, gfp_t gfp);\n\t \n\tvoid\t(*generate_ftsn)(struct sctp_outq *q, __u32 ctsn);\n\tbool\t(*validate_ftsn)(struct sctp_chunk *chunk);\n\tvoid\t(*report_ftsn)(struct sctp_ulpq *ulpq, __u32 ftsn);\n\tvoid\t(*handle_ftsn)(struct sctp_ulpq *ulpq,\n\t\t\t       struct sctp_chunk *chunk);\n};\n\nvoid sctp_stream_interleave_init(struct sctp_stream *stream);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "ni_labpc.h",
+  "hash_id": "084165224dc293026e06fe5fd5fdf9347c6113d8476797c7e9490fc4132f3f57",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/comedi/drivers/ni_labpc.h",
+  "human_readable_source": " \n \n\n#ifndef _NI_LABPC_H\n#define _NI_LABPC_H\n\nenum transfer_type { fifo_not_empty_transfer, fifo_half_full_transfer,\n\tisa_dma_transfer\n};\n\nstruct labpc_boardinfo {\n\tconst char *name;\n\tint ai_speed;\t\t\t \n\tunsigned ai_scan_up:1;\t\t \n\tunsigned has_ao:1;\t\t \n\tunsigned is_labpc1200:1;\t \n};\n\nstruct labpc_private {\n\tstruct comedi_isadma *dma;\n\tstruct comedi_8254 *counter;\n\n\t \n\tunsigned long long count;\n\t \n\tunsigned int cmd1;\n\tunsigned int cmd2;\n\tunsigned int cmd3;\n\tunsigned int cmd4;\n\tunsigned int cmd5;\n\tunsigned int cmd6;\n\t \n\tunsigned int stat1;\n\tunsigned int stat2;\n\n\t \n\tenum transfer_type current_transfer;\n\t \n\tunsigned int (*read_byte)(struct comedi_device *dev, unsigned long reg);\n\tvoid (*write_byte)(struct comedi_device *dev,\n\t\t\t   unsigned int byte, unsigned long reg);\n};\n\nint labpc_common_attach(struct comedi_device *dev,\n\t\t\tunsigned int irq, unsigned long isr_flags);\nvoid labpc_common_detach(struct comedi_device *dev);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

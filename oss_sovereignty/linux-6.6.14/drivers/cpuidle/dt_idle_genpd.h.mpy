@@ -1,0 +1,9 @@
+{
+  "module_name": "dt_idle_genpd.h",
+  "hash_id": "47b3ce07c8a44cbd43d077b1fec7716562b97806c5b28d96a8c483908f1762d5",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/cpuidle/dt_idle_genpd.h",
+  "human_readable_source": " \n#ifndef __DT_IDLE_GENPD\n#define __DT_IDLE_GENPD\n\nstruct device_node;\nstruct generic_pm_domain;\n\n#ifdef CONFIG_DT_IDLE_GENPD\n\nvoid dt_idle_pd_free(struct generic_pm_domain *pd);\n\nstruct generic_pm_domain *dt_idle_pd_alloc(struct device_node *np,\n\t\t\tint (*parse_state)(struct device_node *, u32 *));\n\nint dt_idle_pd_init_topology(struct device_node *np);\n\nint dt_idle_pd_remove_topology(struct device_node *np);\n\nstruct device *dt_idle_attach_cpu(int cpu, const char *name);\n\nvoid dt_idle_detach_cpu(struct device *dev);\n\n#else\n\nstatic inline void dt_idle_pd_free(struct generic_pm_domain *pd)\n{\n}\n\nstatic inline struct generic_pm_domain *dt_idle_pd_alloc(\n\t\t\tstruct device_node *np,\n\t\t\tint (*parse_state)(struct device_node *, u32 *))\n{\n\treturn NULL;\n}\n\nstatic inline int dt_idle_pd_init_topology(struct device_node *np)\n{\n\treturn 0;\n}\n\nstatic inline int dt_idle_pd_remove_topology(struct device_node *np)\n{\n\treturn 0;\n}\n\nstatic inline struct device *dt_idle_attach_cpu(int cpu, const char *name)\n{\n\treturn NULL;\n}\n\nstatic inline void dt_idle_detach_cpu(struct device *dev)\n{\n}\n\n#endif\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

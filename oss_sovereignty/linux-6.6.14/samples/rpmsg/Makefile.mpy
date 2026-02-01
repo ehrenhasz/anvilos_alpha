@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "21800164f5406c4edea82905b502fe152adc2436639b595d28255ae3ecf4df60",
+  "original_prompt": "Ingested from linux-6.6.14/samples/rpmsg/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-$(CONFIG_SAMPLE_RPMSG_CLIENT) += rpmsg_client_sample.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

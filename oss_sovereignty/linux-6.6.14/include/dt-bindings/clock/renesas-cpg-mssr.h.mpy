@@ -1,0 +1,9 @@
+{
+  "module_name": "renesas-cpg-mssr.h",
+  "hash_id": "18fd689bc5dae13c99314471e66458b8f032400be7581f661f2dbb3d5a1a7406",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/clock/renesas-cpg-mssr.h",
+  "human_readable_source": " \n#ifndef __DT_BINDINGS_CLOCK_RENESAS_CPG_MSSR_H__\n#define __DT_BINDINGS_CLOCK_RENESAS_CPG_MSSR_H__\n\n#define CPG_CORE\t\t\t0\t \n#define CPG_MOD\t\t\t\t1\t \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

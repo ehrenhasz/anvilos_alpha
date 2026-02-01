@@ -1,0 +1,9 @@
+{
+  "module_name": "stm32fx-clock.h",
+  "hash_id": "bdb271e506dc9f63aa2f595a8a504050436f23e5dd5f75a175abd553a63e5ddc",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/clock/stm32fx-clock.h",
+  "human_readable_source": " \n \n\n \n\n#ifndef _DT_BINDINGS_CLK_STMFX_H\n#define _DT_BINDINGS_CLK_STMFX_H\n\n#define SYSTICK\t\t\t0\n#define FCLK\t\t\t1\n#define CLK_LSI\t\t\t2\n#define CLK_LSE\t\t\t3\n#define CLK_HSE_RTC\t\t4\n#define CLK_RTC\t\t\t5\n#define PLL_VCO_I2S\t\t6\n#define PLL_VCO_SAI\t\t7\n#define CLK_LCD\t\t\t8\n#define CLK_I2S\t\t\t9\n#define CLK_SAI1\t\t10\n#define CLK_SAI2\t\t11\n#define CLK_I2SQ_PDIV\t\t12\n#define CLK_SAIQ_PDIV\t\t13\n#define CLK_HSI\t\t\t14\n#define CLK_SYSCLK\t\t15\n#define CLK_F469_DSI\t\t16\n\n#define END_PRIMARY_CLK\t\t17\n\n#define CLK_HDMI_CEC\t\t16\n#define CLK_SPDIF\t\t17\n#define CLK_USART1\t\t18\n#define CLK_USART2\t\t19\n#define CLK_USART3\t\t20\n#define CLK_UART4\t\t21\n#define CLK_UART5\t\t22\n#define CLK_USART6\t\t23\n#define CLK_UART7\t\t24\n#define CLK_UART8\t\t25\n#define CLK_I2C1\t\t26\n#define CLK_I2C2\t\t27\n#define CLK_I2C3\t\t28\n#define CLK_I2C4\t\t29\n#define CLK_LPTIMER\t\t30\n#define CLK_PLL_SRC\t\t31\n#define CLK_DFSDM1\t\t32\n#define CLK_ADFSDM1\t\t33\n#define CLK_F769_DSI\t\t34\n#define END_PRIMARY_CLK_F7\t35\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "3f929eff4746ac4eaf19ec5230012cbe0bb981e7617197fca1751d0b61c06493",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/sunxi/sun6i-isp/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nsun6i-isp-y += sun6i_isp.o sun6i_isp_proc.o sun6i_isp_capture.o sun6i_isp_params.o\n\nobj-$(CONFIG_VIDEO_SUN6I_ISP) += sun6i-isp.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

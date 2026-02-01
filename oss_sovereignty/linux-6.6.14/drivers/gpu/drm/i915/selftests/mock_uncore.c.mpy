@@ -1,0 +1,9 @@
+{
+  "module_name": "mock_uncore.c",
+  "hash_id": "e62147177e263c512ed1eb2ce618c79fd6e5d98a43517cc7fbf6b18050e6beaa",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/selftests/mock_uncore.c",
+  "human_readable_source": " \n\n#include \"mock_uncore.h\"\n\n#define __nop_write(x) \\\nstatic void \\\nnop_write##x(struct intel_uncore *uncore, i915_reg_t reg, u##x val, bool trace) { }\n__nop_write(8)\n__nop_write(16)\n__nop_write(32)\n\n#define __nop_read(x) \\\nstatic u##x \\\nnop_read##x(struct intel_uncore *uncore, i915_reg_t reg, bool trace) { return 0; }\n__nop_read(8)\n__nop_read(16)\n__nop_read(32)\n__nop_read(64)\n\nvoid mock_uncore_init(struct intel_uncore *uncore,\n\t\t      struct drm_i915_private *i915)\n{\n\tintel_uncore_init_early(uncore, to_gt(i915));\n\n\tASSIGN_RAW_WRITE_MMIO_VFUNCS(uncore, nop);\n\tASSIGN_RAW_READ_MMIO_VFUNCS(uncore, nop);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

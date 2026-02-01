@@ -1,0 +1,9 @@
+{
+  "module_name": "bios.h",
+  "hash_id": "6c5386b81d90406fb852e971983ac9f3fc0f25d655c821cd9bc4ba41b5cca405",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/include/nvkm/subdev/bios.h",
+  "human_readable_source": " \n#ifndef __NVKM_BIOS_H__\n#define __NVKM_BIOS_H__\n#include <core/subdev.h>\n\nstruct nvkm_bios {\n\tstruct nvkm_subdev subdev;\n\tu32 size;\n\tu8 *data;\n\n\tu32 image0_size;\n\tu32 imaged_addr;\n\n\tu32 bmp_offset;\n\tu32 bit_offset;\n\n\tstruct {\n\t\tu8 major;\n\t\tu8 chip;\n\t\tu8 minor;\n\t\tu8 micro;\n\t\tu8 patch;\n\t} version;\n};\n\nu8  nvbios_checksum(const u8 *data, int size);\nu16 nvbios_findstr(const u8 *data, int size, const char *str, int len);\nint nvbios_memcmp(struct nvkm_bios *, u32 addr, const char *, u32 len);\nu8  nvbios_rd08(struct nvkm_bios *, u32 addr);\nu16 nvbios_rd16(struct nvkm_bios *, u32 addr);\nu32 nvbios_rd32(struct nvkm_bios *, u32 addr);\n\nint nvkm_bios_new(struct nvkm_device *, enum nvkm_subdev_type, int, struct nvkm_bios **);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

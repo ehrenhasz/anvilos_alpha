@@ -1,0 +1,9 @@
+{
+  "module_name": "meson_encoder_hdmi.h",
+  "hash_id": "27179f2f02da6c63ef8222ca5a9a86602cb3b227a2cf54590a0188a2b0ca8f19",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/meson/meson_encoder_hdmi.h",
+  "human_readable_source": " \n \n\n#ifndef __MESON_ENCODER_HDMI_H\n#define __MESON_ENCODER_HDMI_H\n\nint meson_encoder_hdmi_init(struct meson_drm *priv);\nvoid meson_encoder_hdmi_remove(struct meson_drm *priv);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

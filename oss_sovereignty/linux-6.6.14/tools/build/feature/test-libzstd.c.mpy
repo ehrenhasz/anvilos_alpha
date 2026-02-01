@@ -1,0 +1,9 @@
+{
+  "module_name": "test-libzstd.c",
+  "hash_id": "1b8baa564bc2b0a7e42fb903b4b79900b1670c73b9440bab036dc316faaee169",
+  "original_prompt": "Ingested from linux-6.6.14/tools/build/feature/test-libzstd.c",
+  "human_readable_source": "\n#include <zstd.h>\n\nint main(void)\n{\n\tZSTD_CStream\t*cstream;\n\n\tcstream = ZSTD_createCStream();\n\tZSTD_freeCStream(cstream);\n\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

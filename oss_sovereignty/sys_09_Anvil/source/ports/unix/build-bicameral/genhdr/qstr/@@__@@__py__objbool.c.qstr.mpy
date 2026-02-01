@@ -1,0 +1,9 @@
+{
+  "module_name": "@@__@@__py__objbool.c.qstr",
+  "hash_id": "cc62b60e5b3684945975975092c47ef8daaa7055e2267ce5cc41488fa525b265",
+  "original_prompt": "Ingested from sys_09_Anvil/source/ports/unix/build-bicameral/genhdr/qstr/@@__@@__py__objbool.c.qstr",
+  "human_readable_source": "Q(bool)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

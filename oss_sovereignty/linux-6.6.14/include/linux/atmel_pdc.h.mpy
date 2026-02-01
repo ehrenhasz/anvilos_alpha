@@ -1,0 +1,9 @@
+{
+  "module_name": "atmel_pdc.h",
+  "hash_id": "3042dd73f2c2a5cb8a3ac1b2c7891f26e3638c8157be36ad3efe01b48e8bac1c",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/atmel_pdc.h",
+  "human_readable_source": " \n \n\n#ifndef ATMEL_PDC_H\n#define ATMEL_PDC_H\n\n#define ATMEL_PDC_RPR\t\t0x100\t \n#define ATMEL_PDC_RCR\t\t0x104\t \n#define ATMEL_PDC_TPR\t\t0x108\t \n#define ATMEL_PDC_TCR\t\t0x10c\t \n#define ATMEL_PDC_RNPR\t\t0x110\t \n#define ATMEL_PDC_RNCR\t\t0x114\t \n#define ATMEL_PDC_TNPR\t\t0x118\t \n#define ATMEL_PDC_TNCR\t\t0x11c\t \n\n#define ATMEL_PDC_PTCR\t\t0x120\t \n#define\t\tATMEL_PDC_RXTEN\t\t(1 << 0)\t \n#define\t\tATMEL_PDC_RXTDIS\t(1 << 1)\t \n#define\t\tATMEL_PDC_TXTEN\t\t(1 << 8)\t \n#define\t\tATMEL_PDC_TXTDIS\t(1 << 9)\t \n\n#define ATMEL_PDC_PTSR\t\t0x124\t \n\n#define ATMEL_PDC_SCND_BUF_OFF\t0x10\t \n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

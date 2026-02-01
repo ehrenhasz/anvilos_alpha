@@ -1,0 +1,9 @@
+{
+  "module_name": "sdio_ops_linux.h",
+  "hash_id": "3c5bf76e823a71953a46cfffc2e43ea4ae0784837e95e2b455deb47e529a1758",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/rtl8723bs/include/sdio_ops_linux.h",
+  "human_readable_source": " \n \n#ifndef __SDIO_OPS_LINUX_H__\n#define __SDIO_OPS_LINUX_H__\n\n#define SDIO_ERR_VAL8\t0xEA\n#define SDIO_ERR_VAL16\t0xEAEA\n#define SDIO_ERR_VAL32\t0xEAEAEAEA\n\ns32 _sd_cmd52_read(struct intf_hdl *pintfhdl, u32 addr, u32 cnt, u8 *pdata);\ns32 _sd_cmd52_write(struct intf_hdl *pintfhdl, u32 addr, u32 cnt, u8 *pdata);\ns32 sd_cmd52_read(struct intf_hdl *pintfhdl, u32 addr, u32 cnt, u8 *pdata);\ns32 sd_cmd52_write(struct intf_hdl *pintfhdl, u32 addr, u32 cnt, u8 *pdata);\n\nu8 sd_read8(struct intf_hdl *pintfhdl, u32 addr, s32 *err);\nu32 sd_read32(struct intf_hdl *pintfhdl, u32 addr, s32 *err);\ns32 _sd_read(struct intf_hdl *pintfhdl, u32 addr, u32 cnt, void *pdata);\ns32 sd_read(struct intf_hdl *pintfhdl, u32 addr, u32 cnt, void *pdata);\nvoid sd_write8(struct intf_hdl *pintfhdl, u32 addr, u8 v, s32 *err);\nvoid sd_write32(struct intf_hdl *pintfhdl, u32 addr, u32 v, s32 *err);\ns32 _sd_write(struct intf_hdl *pintfhdl, u32 addr, u32 cnt, void *pdata);\ns32 sd_write(struct intf_hdl *pintfhdl, u32 addr, u32 cnt, void *pdata);\n\n\nvoid rtw_sdio_set_irq_thd(struct dvobj_priv *dvobj, void *thd_hdl);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "ccu_phase.h",
+  "hash_id": "b53caf4f779b99aeccff9551091e3af4eb67d54ee6d4f67c7da1127aced0f00e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/clk/sunxi-ng/ccu_phase.h",
+  "human_readable_source": " \n \n\n#ifndef _CCU_PHASE_H_\n#define _CCU_PHASE_H_\n\n#include <linux/clk-provider.h>\n\n#include \"ccu_common.h\"\n\nstruct ccu_phase {\n\tu8\t\t\tshift;\n\tu8\t\t\twidth;\n\n\tstruct ccu_common\tcommon;\n};\n\n#define SUNXI_CCU_PHASE(_struct, _name, _parent, _reg, _shift, _width, _flags) \\\n\tstruct ccu_phase _struct = {\t\t\t\t\t\\\n\t\t.shift\t= _shift,\t\t\t\t\t\\\n\t\t.width\t= _width,\t\t\t\t\t\\\n\t\t.common\t= {\t\t\t\t\t\t\\\n\t\t\t.reg\t\t= _reg,\t\t\t\t\\\n\t\t\t.hw.init\t= CLK_HW_INIT(_name,\t\t\\\n\t\t\t\t\t\t      _parent,\t\t\\\n\t\t\t\t\t\t      &ccu_phase_ops,\t\\\n\t\t\t\t\t\t      _flags),\t\t\\\n\t\t}\t\t\t\t\t\t\t\\\n\t}\n\nstatic inline struct ccu_phase *hw_to_ccu_phase(struct clk_hw *hw)\n{\n\tstruct ccu_common *common = hw_to_ccu_common(hw);\n\n\treturn container_of(common, struct ccu_phase, common);\n}\n\nextern const struct clk_ops ccu_phase_ops;\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

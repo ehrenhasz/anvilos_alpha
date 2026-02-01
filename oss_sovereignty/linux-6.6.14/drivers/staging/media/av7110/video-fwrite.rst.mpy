@@ -1,0 +1,9 @@
+{
+  "module_name": "video-fwrite.rst",
+  "hash_id": "c0e3e669d83885e66387b0f364135d9979b28c15a6ba7c790ac62f94cd7079e5",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/av7110/video-fwrite.rst",
+  "human_readable_source": ".. SPDX-License-Identifier: GFDL-1.1-no-invariants-or-later\n.. c:namespace:: DTV.video\n\n.. _video_fwrite:\n\n=================\ndvb video write()\n=================\n\nName\n----\n\ndvb video write()\n\n.. attention:: This ioctl is deprecated.\n\nSynopsis\n--------\n\n.. c:function:: size_t write(int fd, const void *buf, size_t count)\n\nArguments\n---------\n\n.. flat-table::\n    :header-rows:  0\n    :stub-columns: 0\n\n    -  .. row 1\n\n       -  int fd\n\n       -  File descriptor returned by a previous call to open().\n\n    -  .. row 2\n\n       -  void \\*buf\n\n       -  Pointer to the buffer containing the PES data.\n\n    -  .. row 3\n\n       -  size_t count\n\n       -  Size of buf.\n\nDescription\n-----------\n\nThis system call can only be used if VIDEO_SOURCE_MEMORY is selected\nin the ioctl call VIDEO_SELECT_SOURCE. The data provided shall be in\nPES format, unless the capability allows other formats. If O_NONBLOCK\nis not specified the function will block until buffer space is\navailable. The amount of data to be transferred is implied by count.\n\nReturn Value\n------------\n\n.. flat-table::\n    :header-rows:  0\n    :stub-columns: 0\n\n    -  .. row 1\n\n       -  ``EPERM``\n\n       -  Mode VIDEO_SOURCE_MEMORY not selected.\n\n    -  .. row 2\n\n       -  ``ENOMEM``\n\n       -  Attempted to write more data than the internal buffer can hold.\n\n    -  .. row 3\n\n       -  ``EBADF``\n\n       -  fd is not a valid open file descriptor.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

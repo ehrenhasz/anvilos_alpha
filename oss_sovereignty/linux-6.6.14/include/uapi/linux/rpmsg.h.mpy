@@ -1,0 +1,9 @@
+{
+  "module_name": "rpmsg.h",
+  "hash_id": "daf996e6cae4a0e683305f860fd628c9886ac4ad62b4c5cacf25de6d3ff42b46",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/rpmsg.h",
+  "human_readable_source": " \n \n\n#ifndef _UAPI_RPMSG_H_\n#define _UAPI_RPMSG_H_\n\n#include <linux/ioctl.h>\n#include <linux/types.h>\n\n#define RPMSG_ADDR_ANY\t\t0xFFFFFFFF\n\n \nstruct rpmsg_endpoint_info {\n\tchar name[32];\n\t__u32 src;\n\t__u32 dst;\n};\n\n \n#define RPMSG_CREATE_EPT_IOCTL\t_IOW(0xb5, 0x1, struct rpmsg_endpoint_info)\n\n \n#define RPMSG_DESTROY_EPT_IOCTL\t_IO(0xb5, 0x2)\n\n \n#define RPMSG_CREATE_DEV_IOCTL\t_IOW(0xb5, 0x3, struct rpmsg_endpoint_info)\n\n \n#define RPMSG_RELEASE_DEV_IOCTL\t_IOW(0xb5, 0x4, struct rpmsg_endpoint_info)\n\n \n#define RPMSG_GET_OUTGOING_FLOWCONTROL _IOR(0xb5, 0x5, int)\n\n \n#define RPMSG_SET_INCOMING_FLOWCONTROL _IOR(0xb5, 0x6, int)\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

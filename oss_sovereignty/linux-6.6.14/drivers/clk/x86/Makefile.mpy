@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "bfd5af0ac4cae1b287ae02fff9953e638fbeeff6efa4708eaee5d069af18f7f9",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/clk/x86/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-$(CONFIG_X86_AMD_PLATFORM_DEVICE)\t+= clk-fch.o\nobj-$(CONFIG_X86_INTEL_LPSS)\t+= clk-lpss-atom.o clk-pmc-atom.o\nobj-$(CONFIG_CLK_LGM_CGU)\t+= clk-cgu.o clk-cgu-pll.o clk-lgm.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "perf_regs.h",
+  "hash_id": "1e5aa39dd8de502c2c090449545fcfee958d6f092ac5c12bb8137feb89ce8097",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/arch/csky/include/perf_regs.h",
+  "human_readable_source": " \n\n\n#ifndef ARCH_PERF_REGS_H\n#define ARCH_PERF_REGS_H\n\n#include <stdlib.h>\n#include <linux/types.h>\n#include <asm/perf_regs.h>\n\n#define PERF_REGS_MASK\t((1ULL << PERF_REG_CSKY_MAX) - 1)\n#define PERF_REGS_MAX\tPERF_REG_CSKY_MAX\n#define PERF_SAMPLE_REGS_ABI\tPERF_SAMPLE_REGS_ABI_32\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

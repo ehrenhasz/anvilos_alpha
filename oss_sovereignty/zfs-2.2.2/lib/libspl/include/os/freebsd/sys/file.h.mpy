@@ -1,0 +1,9 @@
+{
+  "module_name": "file.h",
+  "hash_id": "e78ca2d990886c72c765841dc946161f9a105d4551b4235b2c8708fdd8f91d4e",
+  "original_prompt": "Ingested from zfs-2.2.2/lib/libspl/include/os/freebsd/sys/file.h",
+  "human_readable_source": " \n \n\n#ifndef _LIBSPL_SYS_FILE_H\n#define\t_LIBSPL_SYS_FILE_H\n\n#include_next <sys/file.h>\n\n#define\tFIGNORECASE\t0x80000\t \n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

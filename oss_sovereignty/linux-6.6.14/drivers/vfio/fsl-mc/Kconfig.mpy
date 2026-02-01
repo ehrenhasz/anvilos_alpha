@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "8b7f7d906cb6ef4d5be1b921a9b8c58cca2d1dd5bdd4d5b7f5bddb08457560fe",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/vfio/fsl-mc/Kconfig",
+  "human_readable_source": "menu \"VFIO support for FSL_MC bus devices\"\n\tdepends on FSL_MC_BUS\n\nconfig VFIO_FSL_MC\n\ttristate \"VFIO support for QorIQ DPAA2 fsl-mc bus devices\"\n\tselect EVENTFD\n\thelp\n\t  Driver to enable support for the VFIO QorIQ DPAA2 fsl-mc\n\t  (Management Complex) devices. This is required to passthrough\n\t  fsl-mc bus devices using the VFIO framework.\n\n\t  If you don't know what to do here, say N.\n\nendmenu\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

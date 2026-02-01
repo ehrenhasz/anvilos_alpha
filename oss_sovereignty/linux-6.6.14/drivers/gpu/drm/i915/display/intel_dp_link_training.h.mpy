@@ -1,0 +1,9 @@
+{
+  "module_name": "intel_dp_link_training.h",
+  "hash_id": "29ae63ca8bf6d76e1608f12a3eef812ef950526a6aa324e1d900081143f69644",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/display/intel_dp_link_training.h",
+  "human_readable_source": " \n \n\n#ifndef __INTEL_DP_LINK_TRAINING_H__\n#define __INTEL_DP_LINK_TRAINING_H__\n\n#include <drm/display/drm_dp_helper.h>\n\nstruct intel_crtc_state;\nstruct intel_dp;\n\nint intel_dp_init_lttpr_and_dprx_caps(struct intel_dp *intel_dp);\n\nvoid intel_dp_get_adjust_train(struct intel_dp *intel_dp,\n\t\t\t       const struct intel_crtc_state *crtc_state,\n\t\t\t       enum drm_dp_phy dp_phy,\n\t\t\t       const u8 link_status[DP_LINK_STATUS_SIZE]);\nvoid intel_dp_program_link_training_pattern(struct intel_dp *intel_dp,\n\t\t\t\t\t    const struct intel_crtc_state *crtc_state,\n\t\t\t\t\t    enum drm_dp_phy dp_phy,\n\t\t\t\t\t    u8 dp_train_pat);\nvoid intel_dp_set_signal_levels(struct intel_dp *intel_dp,\n\t\t\t\tconst struct intel_crtc_state *crtc_state,\n\t\t\t\tenum drm_dp_phy dp_phy);\nvoid intel_dp_start_link_train(struct intel_dp *intel_dp,\n\t\t\t       const struct intel_crtc_state *crtc_state);\nvoid intel_dp_stop_link_train(struct intel_dp *intel_dp,\n\t\t\t      const struct intel_crtc_state *crtc_state);\n\nvoid\nintel_dp_dump_link_status(struct intel_dp *intel_dp, enum drm_dp_phy dp_phy,\n\t\t\t  const u8 link_status[DP_LINK_STATUS_SIZE]);\n\n \nstatic inline u8 intel_dp_training_pattern_symbol(u8 pattern)\n{\n\treturn pattern & ~DP_LINK_SCRAMBLING_DISABLE;\n}\n\nvoid intel_dp_128b132b_sdp_crc16(struct intel_dp *intel_dp,\n\t\t\t\t const struct intel_crtc_state *crtc_state);\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "kern_levels.h",
+  "hash_id": "488a69615890724c34d24595f9838631cfd3ac47805b6e743dcc20a19f5e0d88",
+  "original_prompt": "Ingested from linux-6.6.14/tools/include/linux/kern_levels.h",
+  "human_readable_source": " \n#ifndef __KERN_LEVELS_H__\n#define __KERN_LEVELS_H__\n\n#define KERN_SOH\t\"\"\t\t \n#define KERN_SOH_ASCII\t''\n\n#define KERN_EMERG\tKERN_SOH \"\"\t \n#define KERN_ALERT\tKERN_SOH \"\"\t \n#define KERN_CRIT\tKERN_SOH \"\"\t \n#define KERN_ERR\tKERN_SOH \"\"\t \n#define KERN_WARNING\tKERN_SOH \"\"\t \n#define KERN_NOTICE\tKERN_SOH \"\"\t \n#define KERN_INFO\tKERN_SOH \"\"\t \n#define KERN_DEBUG\tKERN_SOH \"\"\t \n\n#define KERN_DEFAULT\tKERN_SOH \"\"\t \n\n \n#define KERN_CONT\t\"\"\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

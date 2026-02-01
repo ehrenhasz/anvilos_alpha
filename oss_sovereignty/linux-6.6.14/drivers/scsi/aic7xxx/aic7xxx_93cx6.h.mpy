@@ -1,0 +1,9 @@
+{
+  "module_name": "aic7xxx_93cx6.h",
+  "hash_id": "640388200f792cd2d29692f80fe2c49ce30ee0a8be879f504e212eb2e2c048fd",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/scsi/aic7xxx/aic7xxx_93cx6.h",
+  "human_readable_source": " \n#ifndef _AIC7XXX_93CX6_H_\n#define _AIC7XXX_93CX6_H_\n\ntypedef enum {\n\tC46 = 6,\n\tC56_66 = 8\n} seeprom_chip_t;\n\nstruct seeprom_descriptor {\n\tstruct ahc_softc *sd_ahc;\n\tu_int sd_control_offset;\n\tu_int sd_status_offset;\n\tu_int sd_dataout_offset;\n\tseeprom_chip_t sd_chip;\n\tuint16_t sd_MS;\n\tuint16_t sd_RDY;\n\tuint16_t sd_CS;\n\tuint16_t sd_CK;\n\tuint16_t sd_DO;\n\tuint16_t sd_DI;\n};\n\n \n\n#define\tSEEPROM_INB(sd) \\\n\tahc_inb(sd->sd_ahc, sd->sd_control_offset)\n#define\tSEEPROM_OUTB(sd, value)\t\t\t\t\t\\\ndo {\t\t\t\t\t\t\t\t\\\n\tahc_outb(sd->sd_ahc, sd->sd_control_offset, value);\t\\\n\tahc_flush_device_writes(sd->sd_ahc);\t\t\t\\\n} while(0)\n\n#define\tSEEPROM_STATUS_INB(sd) \\\n\tahc_inb(sd->sd_ahc, sd->sd_status_offset)\n#define\tSEEPROM_DATA_INB(sd) \\\n\tahc_inb(sd->sd_ahc, sd->sd_dataout_offset)\n\nint ahc_read_seeprom(struct seeprom_descriptor *sd, uint16_t *buf,\n\t\t     u_int start_addr, u_int count);\nint ahc_write_seeprom(struct seeprom_descriptor *sd, uint16_t *buf,\n\t\t      u_int start_addr, u_int count);\nint ahc_verify_cksum(struct seeprom_config *sc);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

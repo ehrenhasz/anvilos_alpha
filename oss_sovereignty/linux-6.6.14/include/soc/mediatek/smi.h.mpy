@@ -1,0 +1,9 @@
+{
+  "module_name": "smi.h",
+  "hash_id": "a075dc3b108ebe41ca72b2ed9ac2a16ebb5e586b1217c693229ad7ebbc82accf",
+  "original_prompt": "Ingested from linux-6.6.14/include/soc/mediatek/smi.h",
+  "human_readable_source": " \n \n#ifndef MTK_IOMMU_SMI_H\n#define MTK_IOMMU_SMI_H\n\n#include <linux/bitops.h>\n#include <linux/device.h>\n\n#if IS_ENABLED(CONFIG_MTK_SMI)\n\nenum iommu_atf_cmd {\n\tIOMMU_ATF_CMD_CONFIG_SMI_LARB,\t\t \n\tIOMMU_ATF_CMD_CONFIG_INFRA_IOMMU,\t \n\tIOMMU_ATF_CMD_MAX,\n};\n\n#define MTK_SMI_MMU_EN(port)\tBIT(port)\n\nstruct mtk_smi_larb_iommu {\n\tstruct device *dev;\n\tunsigned int   mmu;\n\tunsigned char  bank[32];\n};\n\n#endif\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

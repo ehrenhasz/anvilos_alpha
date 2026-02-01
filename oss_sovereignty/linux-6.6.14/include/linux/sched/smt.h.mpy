@@ -1,0 +1,9 @@
+{
+  "module_name": "smt.h",
+  "hash_id": "29b884c86b782d99835af33aefab2bf9744068a0e077155752a2975bd6634c88",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/sched/smt.h",
+  "human_readable_source": " \n#ifndef _LINUX_SCHED_SMT_H\n#define _LINUX_SCHED_SMT_H\n\n#include <linux/static_key.h>\n\n#ifdef CONFIG_SCHED_SMT\nextern struct static_key_false sched_smt_present;\n\nstatic __always_inline bool sched_smt_active(void)\n{\n\treturn static_branch_likely(&sched_smt_present);\n}\n#else\nstatic inline bool sched_smt_active(void) { return false; }\n#endif\n\nvoid arch_smt_update(void);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

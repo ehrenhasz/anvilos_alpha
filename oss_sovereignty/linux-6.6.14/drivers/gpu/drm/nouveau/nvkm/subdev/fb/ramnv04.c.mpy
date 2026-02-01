@@ -1,0 +1,9 @@
+{
+  "module_name": "ramnv04.c",
+  "hash_id": "58266d99a6c195aa4f7a7d1b381db58ffca1bc1d1fb23aca222d54295a72fdf0",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/subdev/fb/ramnv04.c",
+  "human_readable_source": " \n#include \"ram.h\"\n#include \"regsnv04.h\"\n\nconst struct nvkm_ram_func\nnv04_ram_func = {\n};\n\nint\nnv04_ram_new(struct nvkm_fb *fb, struct nvkm_ram **pram)\n{\n\tstruct nvkm_device *device = fb->subdev.device;\n\tu32 boot0 = nvkm_rd32(device, NV04_PFB_BOOT_0);\n\tu64 size;\n\tenum nvkm_ram_type type;\n\n\tif (boot0 & 0x00000100) {\n\t\tsize  = ((boot0 >> 12) & 0xf) * 2 + 2;\n\t\tsize *= 1024 * 1024;\n\t} else {\n\t\tswitch (boot0 & NV04_PFB_BOOT_0_RAM_AMOUNT) {\n\t\tcase NV04_PFB_BOOT_0_RAM_AMOUNT_32MB:\n\t\t\tsize = 32 * 1024 * 1024;\n\t\t\tbreak;\n\t\tcase NV04_PFB_BOOT_0_RAM_AMOUNT_16MB:\n\t\t\tsize = 16 * 1024 * 1024;\n\t\t\tbreak;\n\t\tcase NV04_PFB_BOOT_0_RAM_AMOUNT_8MB:\n\t\t\tsize = 8 * 1024 * 1024;\n\t\t\tbreak;\n\t\tcase NV04_PFB_BOOT_0_RAM_AMOUNT_4MB:\n\t\t\tsize = 4 * 1024 * 1024;\n\t\t\tbreak;\n\t\t}\n\t}\n\n\tif ((boot0 & 0x00000038) <= 0x10)\n\t\ttype = NVKM_RAM_TYPE_SGRAM;\n\telse\n\t\ttype = NVKM_RAM_TYPE_SDRAM;\n\n\treturn nvkm_ram_new_(&nv04_ram_func, fb, type, size, pram);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

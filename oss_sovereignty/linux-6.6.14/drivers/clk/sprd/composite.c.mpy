@@ -1,0 +1,9 @@
+{
+  "module_name": "composite.c",
+  "hash_id": "6e50a0cba8a195db6c91ee133570ffc4a2c9ad6328de9788be63513267a29acf",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/clk/sprd/composite.c",
+  "human_readable_source": "\n\n\n\n\n\n\n#include <linux/clk-provider.h>\n\n#include \"composite.h\"\n\nstatic int sprd_comp_determine_rate(struct clk_hw *hw,\n\t\t\t\t    struct clk_rate_request *req)\n{\n\tstruct sprd_comp *cc = hw_to_sprd_comp(hw);\n\n\treturn divider_determine_rate(hw, req, NULL, cc->div.width, 0);\n}\n\nstatic unsigned long sprd_comp_recalc_rate(struct clk_hw *hw,\n\t\t\t\t\t  unsigned long parent_rate)\n{\n\tstruct sprd_comp *cc = hw_to_sprd_comp(hw);\n\n\treturn sprd_div_helper_recalc_rate(&cc->common, &cc->div, parent_rate);\n}\n\nstatic int sprd_comp_set_rate(struct clk_hw *hw, unsigned long rate,\n\t\t\t     unsigned long parent_rate)\n{\n\tstruct sprd_comp *cc = hw_to_sprd_comp(hw);\n\n\treturn sprd_div_helper_set_rate(&cc->common, &cc->div,\n\t\t\t\t       rate, parent_rate);\n}\n\nstatic u8 sprd_comp_get_parent(struct clk_hw *hw)\n{\n\tstruct sprd_comp *cc = hw_to_sprd_comp(hw);\n\n\treturn sprd_mux_helper_get_parent(&cc->common, &cc->mux);\n}\n\nstatic int sprd_comp_set_parent(struct clk_hw *hw, u8 index)\n{\n\tstruct sprd_comp *cc = hw_to_sprd_comp(hw);\n\n\treturn sprd_mux_helper_set_parent(&cc->common, &cc->mux, index);\n}\n\nconst struct clk_ops sprd_comp_ops = {\n\t.get_parent\t= sprd_comp_get_parent,\n\t.set_parent\t= sprd_comp_set_parent,\n\n\t.determine_rate\t= sprd_comp_determine_rate,\n\t.recalc_rate\t= sprd_comp_recalc_rate,\n\t.set_rate\t= sprd_comp_set_rate,\n};\nEXPORT_SYMBOL_GPL(sprd_comp_ops);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

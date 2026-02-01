@@ -1,0 +1,9 @@
+{
+  "module_name": "nfs_fs_i.h",
+  "hash_id": "6afd827116e80f4ec434dceb5fb45369bd33a481715ab1098c045c73456d2d77",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/nfs_fs_i.h",
+  "human_readable_source": " \n#ifndef _NFS_FS_I\n#define _NFS_FS_I\n\nstruct nlm_lockowner;\n\n \nstruct nfs_lock_info {\n\tu32\t\tstate;\n\tstruct nlm_lockowner *owner;\n\tstruct list_head list;\n};\n\nstruct nfs4_lock_state;\nstruct nfs4_lock_info {\n\tstruct nfs4_lock_state *owner;\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

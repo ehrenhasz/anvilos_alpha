@@ -1,0 +1,9 @@
+{
+  "module_name": "rif_counter_scale.sh",
+  "hash_id": "417b97975507b02d5924408c384d4ead8245407a66dde83c653d1fda25ec9853",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/drivers/net/mlxsw/spectrum/rif_counter_scale.sh",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nsource ../rif_counter_scale.sh\n\nrif_counter_get_target()\n{\n\tlocal should_fail=$1; shift\n\tlocal max_cnts\n\tlocal max_rifs\n\tlocal target\n\n\tmax_rifs=$(devlink_resource_size_get rifs)\n\tmax_cnts=$(devlink_resource_size_get counters rif)\n\n\t# Remove already allocated RIFs.\n\t((max_rifs -= $(devlink_resource_occ_get rifs)))\n\n\t# 10 KVD slots per counter, ingress+egress counters per RIF\n\t((max_cnts /= 20))\n\n\t# Pointless to run the overflow test if we don't have enough RIFs to\n\t# host all the counters.\n\tif ((max_cnts > max_rifs && should_fail)); then\n\t\techo 0\n\t\treturn\n\tfi\n\n\ttarget=$((max_rifs < max_cnts ? max_rifs : max_cnts))\n\n\tif ((! should_fail)); then\n\t\techo $target\n\telse\n\t\techo $((target + 1))\n\tfi\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

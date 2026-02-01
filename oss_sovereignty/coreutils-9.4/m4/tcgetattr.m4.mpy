@@ -1,0 +1,9 @@
+{
+  "module_name": "tcgetattr.m4",
+  "hash_id": "682f8ce7789977f5d6eef316933b2932d08da9b1fbf9971e5028709697df01b6",
+  "original_prompt": "Ingested from coreutils-9.4/m4/tcgetattr.m4",
+  "human_readable_source": "# tcgetattr.m4 serial 1\ndnl Copyright (C) 2002-2023 Free Software Foundation, Inc.\ndnl This file is free software; the Free Software Foundation\ndnl gives unlimited permission to copy and/or distribute it,\ndnl with or without modifications, as long as this notice is preserved.\n\nAC_DEFUN([gl_HAVE_TCGETATTR],\n[\n  dnl We can't use AC_CHECK_FUNC here, because tcgetattr() is defined as a\n  dnl static inline function when compiling for Android 4.4 or older.\n  AC_CACHE_CHECK([for tcgetattr], [gl_cv_func_tcgetattr],\n    [AC_LINK_IFELSE(\n       [AC_LANG_PROGRAM(\n          [[#include <termios.h>\n            struct termios x;\n          ]],\n          [[return tcgetattr(0,&x);]])\n       ],\n       [gl_cv_func_tcgetattr=yes],\n       [gl_cv_func_tcgetattr=no])\n    ])\n  if test $gl_cv_func_tcgetattr = yes; then\n    HAVE_TCGETATTR=1\n  else\n    HAVE_TCGETATTR=0\n  fi\n  AC_DEFINE_UNQUOTED([HAVE_TCGETATTR], [$HAVE_TCGETATTR],\n    [Define to 1 if the system has the 'tcgetattr' function.])\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

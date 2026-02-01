@@ -1,0 +1,9 @@
+{
+  "module_name": "uring_cmd.h",
+  "hash_id": "4f571278e5cc9d4ab6b98713dd954f68830a51f6cfe5644bf99f5a4ace42f6d1",
+  "original_prompt": "Ingested from linux-6.6.14/io_uring/uring_cmd.h",
+  "human_readable_source": "\n\nint io_uring_cmd(struct io_kiocb *req, unsigned int issue_flags);\nint io_uring_cmd_prep(struct io_kiocb *req, const struct io_uring_sqe *sqe);\nint io_uring_cmd_prep_async(struct io_kiocb *req);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

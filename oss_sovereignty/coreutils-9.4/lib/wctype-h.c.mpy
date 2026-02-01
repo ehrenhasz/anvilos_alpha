@@ -1,0 +1,9 @@
+{
+  "module_name": "wctype-h.c",
+  "hash_id": "6f946b763bf92ffb64d7a1c5361981eae611155bb2f2c566bc4d9767174fca13",
+  "original_prompt": "Ingested from coreutils-9.4/lib/wctype-h.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#define _GL_WCTYPE_INLINE _GL_EXTERN_INLINE\n#include \"wctype.h\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

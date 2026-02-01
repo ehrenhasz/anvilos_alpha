@@ -1,0 +1,9 @@
+{
+  "module_name": "setjmp_loongarch64.S",
+  "hash_id": "c4e4feb2288112fcbf300106d807e61459dfce7872bbb73901d49ea9a6a1d15e",
+  "original_prompt": "Ingested from zfs-2.2.2/module/lua/setjmp/setjmp_loongarch64.S",
+  "human_readable_source": " \n\n#if __loongarch_lp64\n\n#define ENTRY(symbol) \\\n  .text; \\\n  .globl symbol; \\\n  .align 3; \\\n  .type symbol, @function; \\\n  symbol:\n\n#define END(function) \\\n  .size function, .- function;\n\nENTRY(setjmp)\n\tst.d\t$ra, $a0, 0*8\n\tst.d\t$sp, $a0, 1*8\n\tst.d\t$r21, $a0, 2*8\n\tst.d\t$fp, $a0, 3*8\n\tst.d\t$s0, $a0, 4*8\n\tst.d\t$s1, $a0, 5*8\n\tst.d\t$s2, $a0, 6*8\n\tst.d\t$s3, $a0, 7*8\n\tst.d\t$s4, $a0, 8*8\n\tst.d\t$s5, $a0, 9*8\n\tst.d\t$s6, $a0, 10*8\n\tst.d\t$s7, $a0, 11*8\n\tst.d\t$s8, $a0, 12*8\n\n\tli.w\t$a0, 0\n\tjr\t$ra\nEND(setjmp)\n\nENTRY(longjmp)\n\tld.d\t$ra, $a0, 0*8\n\tld.d\t$sp, $a0, 1*8\n\tld.d\t$r21, $a0, 2*8\n\tld.d\t$fp, $a0, 3*8\n\tld.d\t$s0, $a0, 4*8\n\tld.d\t$s1, $a0, 5*8\n\tld.d\t$s2, $a0, 6*8\n\tld.d\t$s3, $a0, 7*8\n\tld.d\t$s4, $a0, 8*8\n\tld.d\t$s5, $a0, 9*8\n\tld.d\t$s6, $a0, 10*8\n\tld.d\t$s7, $a0, 11*8\n\tld.d\t$s8, $a0, 12*8\n\n\tsltui\t$a0, $a1, 1\n\tadd.d\t$a0, $a0, $a1\t \n\tjr\t$ra\nEND(longjmp)\n\n#ifdef __ELF__\n.section .note.GNU-stack,\"\",%progbits\n#endif\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

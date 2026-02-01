@@ -1,0 +1,9 @@
+{
+  "module_name": "microchip-ksz.h",
+  "hash_id": "3b3dee4a0be3c006d41c1d0095efa9a7b787254fdf5d4e946c5aac78fef351df",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/platform_data/microchip-ksz.h",
+  "human_readable_source": " \n\n#ifndef __MICROCHIP_KSZ_H\n#define __MICROCHIP_KSZ_H\n\n#include <linux/types.h>\n\nstruct ksz_platform_data {\n\tu32 chip_id;\n\tu16 enabled_ports;\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

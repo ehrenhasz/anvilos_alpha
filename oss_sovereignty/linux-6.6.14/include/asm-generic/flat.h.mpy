@@ -1,0 +1,9 @@
+{
+  "module_name": "flat.h",
+  "hash_id": "25ca2891206d043531a798a2964fd0c9e2eb67fb6561381cbbb7e185ec7ed314",
+  "original_prompt": "Ingested from linux-6.6.14/include/asm-generic/flat.h",
+  "human_readable_source": " \n#ifndef _ASM_GENERIC_FLAT_H\n#define _ASM_GENERIC_FLAT_H\n\n#include <linux/uaccess.h>\n\nstatic inline int flat_get_addr_from_rp(u32 __user *rp, u32 relval, u32 flags,\n\t\tu32 *addr)\n{\n#ifndef CONFIG_HAVE_EFFICIENT_UNALIGNED_ACCESS\n\treturn copy_from_user(addr, rp, 4) ? -EFAULT : 0;\n#else\n\treturn get_user(*addr, rp);\n#endif\n}\n\nstatic inline int flat_put_addr_at_rp(u32 __user *rp, u32 addr, u32 rel)\n{\n#ifndef CONFIG_HAVE_EFFICIENT_UNALIGNED_ACCESS\n\treturn copy_to_user(rp, &addr, 4) ? -EFAULT : 0;\n#else\n\treturn put_user(addr, rp);\n#endif\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

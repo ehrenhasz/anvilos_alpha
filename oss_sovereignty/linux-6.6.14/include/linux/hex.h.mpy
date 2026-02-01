@@ -1,0 +1,9 @@
+{
+  "module_name": "hex.h",
+  "hash_id": "b0aea58c4a4a6468fd01285381f41a8169b79e9ddfd1f07da8daf84a10392a97",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/hex.h",
+  "human_readable_source": " \n#ifndef _LINUX_HEX_H\n#define _LINUX_HEX_H\n\n#include <linux/types.h>\n\nextern const char hex_asc[];\n#define hex_asc_lo(x)\thex_asc[((x) & 0x0f)]\n#define hex_asc_hi(x)\thex_asc[((x) & 0xf0) >> 4]\n\nstatic inline char *hex_byte_pack(char *buf, u8 byte)\n{\n\t*buf++ = hex_asc_hi(byte);\n\t*buf++ = hex_asc_lo(byte);\n\treturn buf;\n}\n\nextern const char hex_asc_upper[];\n#define hex_asc_upper_lo(x)\thex_asc_upper[((x) & 0x0f)]\n#define hex_asc_upper_hi(x)\thex_asc_upper[((x) & 0xf0) >> 4]\n\nstatic inline char *hex_byte_pack_upper(char *buf, u8 byte)\n{\n\t*buf++ = hex_asc_upper_hi(byte);\n\t*buf++ = hex_asc_upper_lo(byte);\n\treturn buf;\n}\n\nextern int hex_to_bin(unsigned char ch);\nextern int __must_check hex2bin(u8 *dst, const char *src, size_t count);\nextern char *bin2hex(char *dst, const void *src, size_t count);\n\nbool mac_pton(const char *s, u8 *mac);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

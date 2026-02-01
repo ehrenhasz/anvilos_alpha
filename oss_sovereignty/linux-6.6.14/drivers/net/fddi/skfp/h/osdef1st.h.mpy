@@ -1,0 +1,9 @@
+{
+  "module_name": "osdef1st.h",
+  "hash_id": "56745321f37646c71806fe3410a68d0bb72e2551834968e794f02796feb9639c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/fddi/skfp/h/osdef1st.h",
+  "human_readable_source": " \n \n\n \n\n\n\n\n#include <asm/byteorder.h>\n\n#ifdef __LITTLE_ENDIAN\n#define LITTLE_ENDIAN\n#else\n#define BIG_ENDIAN\n#endif\n\n\n\n\n\n\n#define USE_CAN_ADDR\t\t \n\n#define MB_OUTSIDE_SMC\t\t \n\n\n\n\n\n\n#define SYNC\t       \t\t \n\n\n\t\t\t\t \n\n#define ESS\t\t\t \n\n#define\tSMT_PANIC(smc, nr, msg)\tprintk(KERN_INFO \"SMT PANIC: code: %d, msg: %s\\n\",nr,msg)\n\n\n#ifdef DEBUG\n#define printf(s,args...) printk(KERN_INFO s, ## args)\n#endif\n\n\n\n\n\n\n\n\n\n\n#define NUM_RECEIVE_BUFFERS\t\t10\n\n\n#define NUM_TRANSMIT_BUFFERS\t\t10\n\n\n#define NUM_SMT_BUF\t4\n\n\n#define HWM_ASYNC_TXD_COUNT\t(NUM_TRANSMIT_BUFFERS + NUM_SMT_BUF)\n\n\n#define HWM_SYNC_TXD_COUNT\tHWM_ASYNC_TXD_COUNT\n\n\n\n\n#if (NUM_RECEIVE_BUFFERS > 100)\n#define SMT_R1_RXD_COUNT\t(1 + 100)\n#else\n#define SMT_R1_RXD_COUNT\t(1 + NUM_RECEIVE_BUFFERS)\n#endif\n\n\n#define SMT_R2_RXD_COUNT\t0\t\n\n\n\n\n \n\nstruct s_txd_os {\t\n\tstruct sk_buff *skb;\n\tdma_addr_t dma_addr;\n} ;\n\nstruct s_rxd_os {\t\n\tstruct sk_buff *skb;\n\tdma_addr_t dma_addr;\n} ;\n\n\n \n\n#define AIX_REVERSE(x)\t\t((u32)le32_to_cpu((u32)(x)))\n#define MDR_REVERSE(x)\t\t((u32)le32_to_cpu((u32)(x)))\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

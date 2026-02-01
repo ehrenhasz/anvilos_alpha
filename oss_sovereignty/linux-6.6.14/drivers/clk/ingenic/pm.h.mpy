@@ -1,0 +1,9 @@
+{
+  "module_name": "pm.h",
+  "hash_id": "5606db3b053e02eb57fab59e2e8b7937babda955f171e58466ae6707727fc084",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/clk/ingenic/pm.h",
+  "human_readable_source": " \n \n#ifndef DRIVERS_CLK_INGENIC_PM_H\n#define DRIVERS_CLK_INGENIC_PM_H\n\nstruct ingenic_cgu;\n\nvoid ingenic_cgu_register_syscore_ops(struct ingenic_cgu *cgu);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

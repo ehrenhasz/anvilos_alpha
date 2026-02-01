@@ -1,0 +1,9 @@
+{
+  "module_name": "cgroup.c",
+  "hash_id": "6d554330f9d1594602a95acad7e2aa148270efe0f25eee365c43a05f88bc7e47",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/infiniband/core/cgroup.c",
+  "human_readable_source": "\n \n\n#include \"core_priv.h\"\n\n \nvoid ib_device_register_rdmacg(struct ib_device *device)\n{\n\tdevice->cg_device.name = device->name;\n\trdmacg_register_device(&device->cg_device);\n}\n\n \nvoid ib_device_unregister_rdmacg(struct ib_device *device)\n{\n\trdmacg_unregister_device(&device->cg_device);\n}\n\nint ib_rdmacg_try_charge(struct ib_rdmacg_object *cg_obj,\n\t\t\t struct ib_device *device,\n\t\t\t enum rdmacg_resource_type resource_index)\n{\n\treturn rdmacg_try_charge(&cg_obj->cg, &device->cg_device,\n\t\t\t\t resource_index);\n}\nEXPORT_SYMBOL(ib_rdmacg_try_charge);\n\nvoid ib_rdmacg_uncharge(struct ib_rdmacg_object *cg_obj,\n\t\t\tstruct ib_device *device,\n\t\t\tenum rdmacg_resource_type resource_index)\n{\n\trdmacg_uncharge(cg_obj->cg, &device->cg_device,\n\t\t\tresource_index);\n}\nEXPORT_SYMBOL(ib_rdmacg_uncharge);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

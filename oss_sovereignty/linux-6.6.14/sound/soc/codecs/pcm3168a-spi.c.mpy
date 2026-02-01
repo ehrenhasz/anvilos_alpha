@@ -1,0 +1,9 @@
+{
+  "module_name": "pcm3168a-spi.c",
+  "hash_id": "1a5853bab501bfca97e2267e25fd386b9c090be15f6006cddb376ef85a1b0f97",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/codecs/pcm3168a-spi.c",
+  "human_readable_source": "\n \n\n#include <linux/init.h>\n#include <linux/module.h>\n#include <linux/spi/spi.h>\n\n#include <sound/soc.h>\n\n#include \"pcm3168a.h\"\n\nstatic int pcm3168a_spi_probe(struct spi_device *spi)\n{\n\tstruct regmap *regmap;\n\n\tregmap = devm_regmap_init_spi(spi, &pcm3168a_regmap);\n\tif (IS_ERR(regmap))\n\t\treturn PTR_ERR(regmap);\n\n\treturn pcm3168a_probe(&spi->dev, regmap);\n}\n\nstatic void pcm3168a_spi_remove(struct spi_device *spi)\n{\n\tpcm3168a_remove(&spi->dev);\n}\n\nstatic const struct spi_device_id pcm3168a_spi_id[] = {\n\t{ \"pcm3168a\", },\n\t{ },\n};\nMODULE_DEVICE_TABLE(spi, pcm3168a_spi_id);\n\nstatic const struct of_device_id pcm3168a_of_match[] = {\n\t{ .compatible = \"ti,pcm3168a\", },\n\t{ }\n};\nMODULE_DEVICE_TABLE(of, pcm3168a_of_match);\n\nstatic struct spi_driver pcm3168a_spi_driver = {\n\t.probe\t\t= pcm3168a_spi_probe,\n\t.remove\t\t= pcm3168a_spi_remove,\n\t.id_table\t= pcm3168a_spi_id,\n\t.driver = {\n\t\t.name\t= \"pcm3168a\",\n\t\t.of_match_table = pcm3168a_of_match,\n\t\t.pm\t\t= &pcm3168a_pm_ops,\n\t},\n};\nmodule_spi_driver(pcm3168a_spi_driver);\n\nMODULE_DESCRIPTION(\"PCM3168A SPI codec driver\");\nMODULE_AUTHOR(\"Damien Horsley <Damien.Horsley@imgtec.com>\");\nMODULE_LICENSE(\"GPL v2\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

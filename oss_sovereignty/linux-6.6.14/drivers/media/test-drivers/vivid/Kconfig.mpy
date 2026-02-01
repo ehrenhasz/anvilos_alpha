@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "4b4a110ecb1a76e80c7b99eb7aac446e8eef36a0184726b67092702c0065d41b",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/test-drivers/vivid/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig VIDEO_VIVID\n\ttristate \"Virtual Video Test Driver\"\n\tdepends on VIDEO_DEV && !SPARC32 && !SPARC64 && FB\n\tdepends on HAS_DMA\n\tselect FB_IOMEM_HELPERS\n\tselect FONT_SUPPORT\n\tselect FONT_8x16\n\tselect VIDEOBUF2_VMALLOC\n\tselect VIDEOBUF2_DMA_CONTIG\n\tselect VIDEO_V4L2_TPG\n\tselect MEDIA_CONTROLLER\n\tselect MEDIA_CONTROLLER_REQUEST_API\n\thelp\n\t  Enables a virtual video driver. This driver emulates a webcam,\n\t  TV, S-Video and HDMI capture hardware, including VBI support for\n\t  the SDTV inputs. Also video output, VBI output, radio receivers,\n\t  transmitters and software defined radio capture is emulated.\n\n\t  It is highly configurable and is ideal for testing applications.\n\t  Error injection is supported to test rare errors that are hard\n\t  to reproduce in real hardware.\n\n\t  Say Y here if you want to test video apps or debug V4L devices.\n\t  When in doubt, say N.\n\nconfig VIDEO_VIVID_CEC\n\tbool \"Enable CEC emulation support\"\n\tdepends on VIDEO_VIVID\n\tselect CEC_CORE\n\thelp\n\t  When selected the vivid module will emulate the optional\n\t  HDMI CEC feature.\n\nconfig VIDEO_VIVID_MAX_DEVS\n\tint \"Maximum number of devices\"\n\tdepends on VIDEO_VIVID\n\tdefault \"64\"\n\thelp\n\t  This allows you to specify the maximum number of devices supported\n\t  by the vivid driver.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

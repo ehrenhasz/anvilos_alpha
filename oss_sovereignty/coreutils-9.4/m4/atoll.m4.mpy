@@ -1,0 +1,9 @@
+{
+  "module_name": "atoll.m4",
+  "hash_id": "c15f61247d3f0dde97d98de7a879154ef3c0e2a1dd5010d60b8419757f4ad52e",
+  "original_prompt": "Ingested from coreutils-9.4/m4/atoll.m4",
+  "human_readable_source": "# atoll.m4 serial 3\ndnl Copyright (C) 2008-2023 Free Software Foundation, Inc.\ndnl This file is free software; the Free Software Foundation\ndnl gives unlimited permission to copy and/or distribute it,\ndnl with or without modifications, as long as this notice is preserved.\n\nAC_DEFUN([gl_FUNC_ATOLL],\n[\n  AC_REQUIRE([gl_STDLIB_H_DEFAULTS])\n  AC_CHECK_FUNCS([atoll])\n  if test $ac_cv_func_atoll = no; then\n    HAVE_ATOLL=0\n  fi\n])\n\n# Prerequisites of lib/atoll.c.\nAC_DEFUN([gl_PREREQ_ATOLL], [\n  :\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

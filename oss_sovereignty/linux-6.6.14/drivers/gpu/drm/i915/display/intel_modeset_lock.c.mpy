@@ -1,0 +1,9 @@
+{
+  "module_name": "intel_modeset_lock.c",
+  "hash_id": "f0ff147232c265e3e4074c8e3d0d338d8219339afdb468531b157ae60875a144",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/display/intel_modeset_lock.c",
+  "human_readable_source": "\n \n\n#include <drm/drm_modeset_lock.h>\n\n#include \"intel_display_types.h\"\n#include \"intel_modeset_lock.h\"\n\nvoid _intel_modeset_lock_begin(struct drm_modeset_acquire_ctx *ctx,\n\t\t\t       struct intel_atomic_state *state,\n\t\t\t       unsigned int flags, int *ret)\n{\n\tdrm_modeset_acquire_init(ctx, flags);\n\n\tif (state)\n\t\tstate->base.acquire_ctx = ctx;\n\n\t*ret = -EDEADLK;\n}\n\nbool _intel_modeset_lock_loop(int *ret)\n{\n\tif (*ret == -EDEADLK) {\n\t\t*ret = 0;\n\t\treturn true;\n\t}\n\n\treturn false;\n}\n\nvoid _intel_modeset_lock_end(struct drm_modeset_acquire_ctx *ctx,\n\t\t\t     struct intel_atomic_state *state,\n\t\t\t     int *ret)\n{\n\tif (*ret == -EDEADLK) {\n\t\tif (state)\n\t\t\tdrm_atomic_state_clear(&state->base);\n\n\t\t*ret = drm_modeset_backoff(ctx);\n\t\tif (*ret == 0) {\n\t\t\t*ret = -EDEADLK;\n\t\t\treturn;\n\t\t}\n\t}\n\n\tdrm_modeset_drop_locks(ctx);\n\tdrm_modeset_acquire_fini(ctx);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

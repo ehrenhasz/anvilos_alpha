@@ -1,0 +1,9 @@
+{
+  "module_name": "debug.c",
+  "hash_id": "25c06e985b0a66cd37a70efe0eac528f9e39c1ceb2bcbf4a00d7d18e6a30d641",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/hive_isp_css_common/host/debug.c",
+  "human_readable_source": "\n \n\n#include \"debug.h\"\n\n#include \"hmm.h\"\n\n#ifndef __INLINE_DEBUG__\n#include \"debug_private.h\"\n#endif  \n\n#define __INLINE_SP__\n#include \"sp.h\"\n\n#include \"assert_support.h\"\n\n \nhrt_address\tdebug_buffer_address = (hrt_address) - 1;\nia_css_ptr\tdebug_buffer_ddr_address = (ia_css_ptr)-1;\n \nstatic debug_data_t\t\tdebug_data;\ndebug_data_t\t\t*debug_data_ptr = &debug_data;\n\nvoid debug_buffer_init(const hrt_address addr)\n{\n\tdebug_buffer_address = addr;\n\n\tdebug_data.head = 0;\n\tdebug_data.tail = 0;\n}\n\nvoid debug_buffer_ddr_init(const ia_css_ptr addr)\n{\n\tdebug_buf_mode_t mode = DEBUG_BUFFER_MODE_LINEAR;\n\tu32 enable = 1;\n\tu32 head = 0;\n\tu32 tail = 0;\n\t \n\tdebug_buffer_ddr_address = addr;\n\thmm_store(addr + DEBUG_DATA_BUF_MODE_DDR_ADDR,\n\t\t   &mode, sizeof(debug_buf_mode_t));\n\thmm_store(addr + DEBUG_DATA_HEAD_DDR_ADDR,\n\t\t   &head, sizeof(uint32_t));\n\thmm_store(addr + DEBUG_DATA_TAIL_DDR_ADDR,\n\t\t   &tail, sizeof(uint32_t));\n\thmm_store(addr + DEBUG_DATA_ENABLE_DDR_ADDR,\n\t\t   &enable, sizeof(uint32_t));\n\n\t \n\tdebug_data.head = 0;\n\tdebug_data.tail = 0;\n}\n\nvoid debug_buffer_setmode(const debug_buf_mode_t mode)\n{\n\tassert(debug_buffer_address != ((hrt_address)-1));\n\n\tsp_dmem_store_uint32(SP0_ID,\n\t\t\t     debug_buffer_address + DEBUG_DATA_BUF_MODE_ADDR, mode);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

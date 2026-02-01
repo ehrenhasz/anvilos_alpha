@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "2b5b2d6eb37193b0a0d6369024fe4305f75302da17f8cbf560f57b951eb41e75",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/platform/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for linux/drivers/platform\n#\n\nobj-$(CONFIG_X86)\t\t+= x86/\nobj-$(CONFIG_LOONGARCH)\t\t+= loongarch/\nobj-$(CONFIG_MELLANOX_PLATFORM)\t+= mellanox/\nobj-$(CONFIG_MIPS)\t\t+= mips/\nobj-$(CONFIG_OLPC_EC)\t\t+= olpc/\nobj-$(CONFIG_GOLDFISH)\t\t+= goldfish/\nobj-$(CONFIG_CHROME_PLATFORMS)\t+= chrome/\nobj-$(CONFIG_SURFACE_PLATFORMS)\t+= surface/\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

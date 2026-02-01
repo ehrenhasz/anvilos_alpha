@@ -1,0 +1,9 @@
+{
+  "module_name": "twofish.h",
+  "hash_id": "34568c8691486dfe31f056ea7155d20a478dacca7bee02190ce855f6724bdf8e",
+  "original_prompt": "Ingested from linux-6.6.14/include/crypto/twofish.h",
+  "human_readable_source": " \n#ifndef _CRYPTO_TWOFISH_H\n#define _CRYPTO_TWOFISH_H\n\n#include <linux/types.h>\n\n#define TF_MIN_KEY_SIZE 16\n#define TF_MAX_KEY_SIZE 32\n#define TF_BLOCK_SIZE 16\n\nstruct crypto_tfm;\n\n \nstruct twofish_ctx {\n\tu32 s[4][256], w[8], k[32];\n};\n\nint __twofish_setkey(struct twofish_ctx *ctx, const u8 *key,\n\t\t     unsigned int key_len);\nint twofish_setkey(struct crypto_tfm *tfm, const u8 *key, unsigned int key_len);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

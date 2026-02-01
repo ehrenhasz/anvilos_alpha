@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "552d1ec2bbc0fc0995a778e5653df20d9a9c1c724f995c858d72aad27a6199b3",
+  "original_prompt": "Ingested from linux-6.6.14/fs/zonefs/Kconfig",
+  "human_readable_source": "config ZONEFS_FS\n\ttristate \"zonefs filesystem support\"\n\tdepends on BLOCK\n\tdepends on BLK_DEV_ZONED\n\tselect FS_IOMAP\n\tselect CRC32\n\thelp\n\t  zonefs is a simple file system which exposes zones of a zoned block\n\t  device (e.g. host-managed or host-aware SMR disk drives) as files.\n\n\t  If unsure, say N.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

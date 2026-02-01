@@ -1,0 +1,9 @@
+{
+  "module_name": "vdev_disk.h",
+  "hash_id": "fc616035ef28b7b9249610c0eceac45687f21646fc2ea98d7c94d9a948530ac5",
+  "original_prompt": "Ingested from zfs-2.2.2/include/sys/vdev_disk.h",
+  "human_readable_source": " \n \n\n#ifndef _SYS_VDEV_DISK_H\n#define\t_SYS_VDEV_DISK_H\n\n \n#define\tNEW_START_BLOCK\t\t2048\n#define\tPARTITION_END_ALIGNMENT\t2048\n\n#ifdef _KERNEL\n#include <sys/vdev.h>\n#endif  \n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "apple-aic.h",
+  "hash_id": "fe55745ff4622535d11f664453b3afab25e68b9a5ecad934cdeb0ec2ca9e03df",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/interrupt-controller/apple-aic.h",
+  "human_readable_source": " \n#ifndef _DT_BINDINGS_INTERRUPT_CONTROLLER_APPLE_AIC_H\n#define _DT_BINDINGS_INTERRUPT_CONTROLLER_APPLE_AIC_H\n\n#include <dt-bindings/interrupt-controller/irq.h>\n\n#define AIC_IRQ\t0\n#define AIC_FIQ\t1\n\n#define AIC_TMR_HV_PHYS\t\t0\n#define AIC_TMR_HV_VIRT\t\t1\n#define AIC_TMR_GUEST_PHYS\t2\n#define AIC_TMR_GUEST_VIRT\t3\n#define AIC_CPU_PMU_E\t\t4\n#define AIC_CPU_PMU_P\t\t5\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

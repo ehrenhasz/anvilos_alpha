@@ -1,0 +1,9 @@
+{
+  "module_name": "geode-aes.h",
+  "hash_id": "7a41c995c02b12f7d3ca3c0904a06be65728b8c62b7924abd447d4e80b9ec4ec",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/crypto/geode-aes.h",
+  "human_readable_source": " \n \n\n#ifndef _GEODE_AES_H_\n#define _GEODE_AES_H_\n\n \n#define AES_MODE_ECB 0\n#define AES_MODE_CBC 1\n\n#define AES_DIR_DECRYPT 0\n#define AES_DIR_ENCRYPT 1\n\n#define AES_FLAGS_HIDDENKEY (1 << 0)\n\n \n\n#define AES_CTRLA_REG  0x0000\n\n#define AES_CTRL_START     0x01\n#define AES_CTRL_DECRYPT   0x00\n#define AES_CTRL_ENCRYPT   0x02\n#define AES_CTRL_WRKEY     0x04\n#define AES_CTRL_DCA       0x08\n#define AES_CTRL_SCA       0x10\n#define AES_CTRL_CBC       0x20\n\n#define AES_INTR_REG  0x0008\n\n#define AES_INTRA_PENDING (1 << 16)\n#define AES_INTRB_PENDING (1 << 17)\n\n#define AES_INTR_PENDING  (AES_INTRA_PENDING | AES_INTRB_PENDING)\n#define AES_INTR_MASK     0x07\n\n#define AES_SOURCEA_REG   0x0010\n#define AES_DSTA_REG      0x0014\n#define AES_LENA_REG      0x0018\n#define AES_WRITEKEY0_REG 0x0030\n#define AES_WRITEIV0_REG  0x0040\n\n \n\n#define AES_OP_TIMEOUT    0x50000\n\nstruct geode_aes_tfm_ctx {\n\tu8 key[AES_KEYSIZE_128];\n\tunion {\n\t\tstruct crypto_skcipher *skcipher;\n\t\tstruct crypto_cipher *cip;\n\t} fallback;\n\tu32 keylen;\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "scd30.h",
+  "hash_id": "8ba09e47f9d7843a99c9057080870ae0c88a6a30c4b2d96f27b265ba7ec647b0",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/iio/chemical/scd30.h",
+  "human_readable_source": " \n#ifndef _SCD30_H\n#define _SCD30_H\n\n#include <linux/completion.h>\n#include <linux/device.h>\n#include <linux/mutex.h>\n#include <linux/pm.h>\n#include <linux/regulator/consumer.h>\n#include <linux/types.h>\n\nstruct scd30_state;\n\nenum scd30_cmd {\n\t \n\tCMD_START_MEAS,\n\t \n\tCMD_STOP_MEAS,\n\t \n\tCMD_MEAS_INTERVAL,\n\t \n\tCMD_MEAS_READY,\n\t \n\tCMD_READ_MEAS,\n\t \n\tCMD_ASC,\n\t \n\tCMD_FRC,\n\t \n\tCMD_TEMP_OFFSET,\n\t \n\tCMD_FW_VERSION,\n\t \n\tCMD_RESET,\n\t \n};\n\n#define SCD30_MEAS_COUNT 3\n\ntypedef int (*scd30_command_t)(struct scd30_state *state, enum scd30_cmd cmd, u16 arg,\n\t\t\t       void *response, int size);\n\nstruct scd30_state {\n\t \n\tstruct mutex lock;\n\tstruct device *dev;\n\tstruct regulator *vdd;\n\tstruct completion meas_ready;\n\t \n\tvoid *priv;\n\tint irq;\n\t \n\tu16 pressure_comp;\n\tu16 meas_interval;\n\tint meas[SCD30_MEAS_COUNT];\n\n\tscd30_command_t command;\n};\n\nextern const struct dev_pm_ops scd30_pm_ops;\n\nint scd30_probe(struct device *dev, int irq, const char *name, void *priv, scd30_command_t command);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

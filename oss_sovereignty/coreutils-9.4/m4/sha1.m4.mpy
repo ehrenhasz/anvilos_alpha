@@ -1,0 +1,9 @@
+{
+  "module_name": "sha1.m4",
+  "hash_id": "3fd1d2f5cc8f78d4bf7c817ecde8c370e9d37d89e71bd7231230975a818d2ec4",
+  "original_prompt": "Ingested from coreutils-9.4/m4/sha1.m4",
+  "human_readable_source": "# sha1.m4 serial 12\ndnl Copyright (C) 2002-2006, 2008-2023 Free Software Foundation, Inc.\ndnl This file is free software; the Free Software Foundation\ndnl gives unlimited permission to copy and/or distribute it,\ndnl with or without modifications, as long as this notice is preserved.\n\nAC_DEFUN([gl_SHA1],\n[\n  dnl Prerequisites of lib/sha1.c.\n  AC_REQUIRE([gl_BIGENDIAN])\n\n  dnl Determine HAVE_OPENSSL_SHA1 and LIB_CRYPTO\n  gl_CRYPTO_CHECK([SHA1])\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

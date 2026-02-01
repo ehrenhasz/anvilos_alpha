@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "9a527dce306b7830cd3b66200794600e76bd7c4bae23fc1bb5efb8b6531d61ed",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/pmdomain/renesas/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n# SoC\nobj-$(CONFIG_SYSC_R8A7742)\t+= r8a7742-sysc.o\nobj-$(CONFIG_SYSC_R8A7743)\t+= r8a7743-sysc.o\nobj-$(CONFIG_SYSC_R8A7745)\t+= r8a7745-sysc.o\nobj-$(CONFIG_SYSC_R8A77470)\t+= r8a77470-sysc.o\nobj-$(CONFIG_SYSC_R8A774A1)\t+= r8a774a1-sysc.o\nobj-$(CONFIG_SYSC_R8A774B1)\t+= r8a774b1-sysc.o\nobj-$(CONFIG_SYSC_R8A774C0)\t+= r8a774c0-sysc.o\nobj-$(CONFIG_SYSC_R8A774E1)\t+= r8a774e1-sysc.o\nobj-$(CONFIG_SYSC_R8A7779)\t+= r8a7779-sysc.o\nobj-$(CONFIG_SYSC_R8A7790)\t+= r8a7790-sysc.o\nobj-$(CONFIG_SYSC_R8A7791)\t+= r8a7791-sysc.o\nobj-$(CONFIG_SYSC_R8A7792)\t+= r8a7792-sysc.o\nobj-$(CONFIG_SYSC_R8A7794)\t+= r8a7794-sysc.o\nobj-$(CONFIG_SYSC_R8A7795)\t+= r8a7795-sysc.o\nobj-$(CONFIG_SYSC_R8A77960)\t+= r8a7796-sysc.o\nobj-$(CONFIG_SYSC_R8A77961)\t+= r8a7796-sysc.o\nobj-$(CONFIG_SYSC_R8A77965)\t+= r8a77965-sysc.o\nobj-$(CONFIG_SYSC_R8A77970)\t+= r8a77970-sysc.o\nobj-$(CONFIG_SYSC_R8A77980)\t+= r8a77980-sysc.o\nobj-$(CONFIG_SYSC_R8A77990)\t+= r8a77990-sysc.o\nobj-$(CONFIG_SYSC_R8A77995)\t+= r8a77995-sysc.o\nobj-$(CONFIG_SYSC_R8A779A0)\t+= r8a779a0-sysc.o\nobj-$(CONFIG_SYSC_R8A779F0)\t+= r8a779f0-sysc.o\nobj-$(CONFIG_SYSC_R8A779G0)\t+= r8a779g0-sysc.o\n# Family\nobj-$(CONFIG_SYSC_RCAR)\t\t+= rcar-sysc.o\nobj-$(CONFIG_SYSC_RCAR_GEN4)\t+= rcar-gen4-sysc.o\nobj-$(CONFIG_SYSC_RMOBILE)\t+= rmobile-sysc.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

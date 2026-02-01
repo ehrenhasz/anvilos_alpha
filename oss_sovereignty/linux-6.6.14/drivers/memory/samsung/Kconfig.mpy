@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "787677fc676e707602ebdc361a685cc96214960be6ac7194e94ff9e32fd9e940",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/memory/samsung/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nconfig SAMSUNG_MC\n\tbool \"Samsung Exynos Memory Controller support\" if COMPILE_TEST\n\thelp\n\t  Support for the Memory Controller (MC) devices found on\n\t  Samsung Exynos SoCs.\n\nif SAMSUNG_MC\n\nconfig EXYNOS5422_DMC\n\ttristate \"Exynos5422 Dynamic Memory Controller driver\"\n\tdepends on ARCH_EXYNOS || (COMPILE_TEST && HAS_IOMEM)\n\tselect DDR\n\tdepends on DEVFREQ_GOV_SIMPLE_ONDEMAND\n\tdepends on (PM_DEVFREQ && PM_DEVFREQ_EVENT)\n\thelp\n\t  This adds driver for Samsung Exynos5422 SoC DMC (Dynamic Memory\n\t  Controller).  The driver provides support for Dynamic Voltage and\n\t  Frequency Scaling in DMC and DRAM. It also supports changing timings\n\t  of DRAM running with different frequency. The timings are calculated\n\t  based on DT memory information.\n\t  If unsure, say Y on devices with Samsung Exynos SoCs.\n\nconfig EXYNOS_SROM\n\tbool \"Exynos SROM controller driver\" if COMPILE_TEST\n\tdepends on (ARM && ARCH_EXYNOS) || (COMPILE_TEST && HAS_IOMEM)\n\thelp\n\t  This adds driver for Samsung Exynos SoC SROM controller.  The driver\n\t  in basic operation mode only saves and restores SROM registers\n\t  during suspend.  If however appropriate device tree configuration\n\t  is provided, the driver enables support for external memory\n\t  or external devices.\n\t  If unsure, say Y on devices with Samsung Exynos SoCs.\n\nendif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

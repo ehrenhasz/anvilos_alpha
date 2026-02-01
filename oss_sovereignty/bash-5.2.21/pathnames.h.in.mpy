@@ -1,0 +1,9 @@
+{
+  "module_name": "pathnames.h.in",
+  "hash_id": "6c6f9337e820474de7efdeefb8d73ed4cde1779143bbc095320742c4f728ce54",
+  "original_prompt": "Ingested from bash-5.2.21/pathnames.h.in",
+  "human_readable_source": "/* pathnames.h -- absolute filenames that bash wants for various defaults. */\n\n/* Copyright (C) 1987-2009 Free Software Foundation, Inc.\n\n   This file is part of GNU Bash, the Bourne Again SHell.\n\n   Bash is free software: you can redistribute it and/or modify\n   it under the terms of the GNU General Public License as published by\n   the Free Software Foundation, either version 3 of the License, or\n   (at your option) any later version.\n\n   Bash is distributed in the hope that it will be useful,\n   but WITHOUT ANY WARRANTY; without even the implied warranty of\n   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n   GNU General Public License for more details.\n\n   You should have received a copy of the GNU General Public License\n   along with Bash.  If not, see <http://www.gnu.org/licenses/>.\n*/\n\n#if !defined (_PATHNAMES_H_)\n#define _PATHNAMES_H_\n\n/* The default file for hostname completion. */\n#define DEFAULT_HOSTS_FILE \"/etc/hosts\"\n\n/* The default login shell startup file. */\n#define SYS_PROFILE \"/etc/profile\"\n\n/* The default location of the bash debugger initialization/startup file. */\n#define DEBUGGER_START_FILE\t\"@DEBUGGER_START_FILE@\"\n\n#endif /* _PATHNAMES_H */\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

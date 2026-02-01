@@ -1,0 +1,9 @@
+{
+  "module_name": "cs42l73.h",
+  "hash_id": "7f0f94168e0943fefdceb198a1554fa3f09763fae6d674b8ae056e6adf196cc8",
+  "original_prompt": "Ingested from linux-6.6.14/include/sound/cs42l73.h",
+  "human_readable_source": " \n \n\n#ifndef __CS42L73_H\n#define __CS42L73_H\n\nstruct cs42l73_platform_data {\n\t \n\tunsigned int reset_gpio;\n\tunsigned int chgfreq;\n\tint jack_detection;\n\tunsigned int mclk_freq;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

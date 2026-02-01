@@ -1,0 +1,9 @@
+{
+  "module_name": "pretimeout_panic.c",
+  "hash_id": "e35128bbcf7a14b294756264401ab61def7056364ce43a5c20ffcb3e4cc5530e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/watchdog/pretimeout_panic.c",
+  "human_readable_source": "\n \n\n#include <linux/kernel.h>\n#include <linux/module.h>\n#include <linux/watchdog.h>\n\n#include \"watchdog_pretimeout.h\"\n\n \nstatic void pretimeout_panic(struct watchdog_device *wdd)\n{\n\tpanic(\"watchdog pretimeout event\\n\");\n}\n\nstatic struct watchdog_governor watchdog_gov_panic = {\n\t.name\t\t= \"panic\",\n\t.pretimeout\t= pretimeout_panic,\n};\n\nstatic int __init watchdog_gov_panic_register(void)\n{\n\treturn watchdog_register_governor(&watchdog_gov_panic);\n}\n\nstatic void __exit watchdog_gov_panic_unregister(void)\n{\n\twatchdog_unregister_governor(&watchdog_gov_panic);\n}\nmodule_init(watchdog_gov_panic_register);\nmodule_exit(watchdog_gov_panic_unregister);\n\nMODULE_AUTHOR(\"Vladimir Zapolskiy <vladimir_zapolskiy@mentor.com>\");\nMODULE_DESCRIPTION(\"Panic watchdog pretimeout governor\");\nMODULE_LICENSE(\"GPL\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

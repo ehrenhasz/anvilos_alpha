@@ -1,0 +1,9 @@
+{
+  "module_name": "ofpart_bcm4908.c",
+  "hash_id": "7c503ddef4223e34cc3fabafb38e63b37adf9d219d60f643f60970c90bf08e6a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/mtd/parsers/ofpart_bcm4908.c",
+  "human_readable_source": "\n \n\n#include <linux/module.h>\n#include <linux/init.h>\n#include <linux/of.h>\n#include <linux/mtd/mtd.h>\n#include <linux/slab.h>\n#include <linux/mtd/partitions.h>\n\n#include \"ofpart_bcm4908.h\"\n\n#define BLPARAMS_FW_OFFSET\t\t\"NAND_RFS_OFS\"\n\nstatic long long bcm4908_partitions_fw_offset(void)\n{\n\tstruct device_node *root;\n\tstruct property *prop;\n\tconst char *s;\n\n\troot = of_find_node_by_path(\"/\");\n\tif (!root)\n\t\treturn -ENOENT;\n\n\tof_property_for_each_string(root, \"brcm_blparms\", prop, s) {\n\t\tsize_t len = strlen(BLPARAMS_FW_OFFSET);\n\t\tunsigned long offset;\n\t\tint err;\n\n\t\tif (strncmp(s, BLPARAMS_FW_OFFSET, len) || s[len] != '=')\n\t\t\tcontinue;\n\n\t\terr = kstrtoul(s + len + 1, 0, &offset);\n\t\tif (err) {\n\t\t\tpr_err(\"failed to parse %s\\n\", s + len + 1);\n\t\t\tof_node_put(root);\n\t\t\treturn err;\n\t\t}\n\n\t\tof_node_put(root);\n\t\treturn offset << 10;\n\t}\n\n\tof_node_put(root);\n\treturn -ENOENT;\n}\n\nint bcm4908_partitions_post_parse(struct mtd_info *mtd, struct mtd_partition *parts, int nr_parts)\n{\n\tlong long fw_offset;\n\tint i;\n\n\tfw_offset = bcm4908_partitions_fw_offset();\n\n\tfor (i = 0; i < nr_parts; i++) {\n\t\tif (of_device_is_compatible(parts[i].of_node, \"brcm,bcm4908-firmware\")) {\n\t\t\tif (fw_offset < 0 || parts[i].offset == fw_offset)\n\t\t\t\tparts[i].name = \"firmware\";\n\t\t\telse\n\t\t\t\tparts[i].name = \"backup\";\n\t\t}\n\t}\n\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

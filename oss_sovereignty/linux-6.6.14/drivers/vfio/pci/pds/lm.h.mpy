@@ -1,0 +1,9 @@
+{
+  "module_name": "lm.h",
+  "hash_id": "1ff8f4e50639ccf8b6015207dd1b1fc6cb036749e8a36df15468934aa4e4b4a0",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/vfio/pci/pds/lm.h",
+  "human_readable_source": " \n \n\n#ifndef _LM_H_\n#define _LM_H_\n\n#include <linux/fs.h>\n#include <linux/mutex.h>\n#include <linux/scatterlist.h>\n#include <linux/types.h>\n\n#include <linux/pds/pds_common.h>\n#include <linux/pds/pds_adminq.h>\n\nstruct pds_vfio_lm_file {\n\tstruct file *filep;\n\tstruct mutex lock;\t \n\tu64 size;\t\t \n\tu64 alloc_size;\t\t \n\tvoid *page_mem;\t\t \n\tstruct page **pages;\t \n\tunsigned long long npages;\n\tstruct sg_table sg_table;\t \n\tstruct pds_lm_sg_elem *sgl;\t \n\tdma_addr_t sgl_addr;\n\tu16 num_sge;\n\tstruct scatterlist *last_offset_sg;\t \n\tunsigned int sg_last_entry;\n\tunsigned long last_offset;\n};\n\nstruct pds_vfio_pci_device;\n\nstruct file *\npds_vfio_step_device_state_locked(struct pds_vfio_pci_device *pds_vfio,\n\t\t\t\t  enum vfio_device_mig_state next);\n\nvoid pds_vfio_put_save_file(struct pds_vfio_pci_device *pds_vfio);\nvoid pds_vfio_put_restore_file(struct pds_vfio_pci_device *pds_vfio);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

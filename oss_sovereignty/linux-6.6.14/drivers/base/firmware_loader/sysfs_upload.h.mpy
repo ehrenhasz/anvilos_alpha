@@ -1,0 +1,9 @@
+{
+  "module_name": "sysfs_upload.h",
+  "hash_id": "1fbc239db96153d54f66b86d2ba5e66bd6034dccb9367e73ffc4762fa4d31757",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/base/firmware_loader/sysfs_upload.h",
+  "human_readable_source": " \n#ifndef __SYSFS_UPLOAD_H\n#define __SYSFS_UPLOAD_H\n\n#include <linux/device.h>\n\n#include \"sysfs.h\"\n\n \nenum fw_upload_prog {\n\tFW_UPLOAD_PROG_IDLE,\n\tFW_UPLOAD_PROG_RECEIVING,\n\tFW_UPLOAD_PROG_PREPARING,\n\tFW_UPLOAD_PROG_TRANSFERRING,\n\tFW_UPLOAD_PROG_PROGRAMMING,\n\tFW_UPLOAD_PROG_MAX\n};\n\nstruct fw_upload_priv {\n\tstruct fw_upload *fw_upload;\n\tstruct module *module;\n\tconst char *name;\n\tconst struct fw_upload_ops *ops;\n\tstruct mutex lock;\t\t   \n\tstruct work_struct work;\n\tconst u8 *data;\t\t\t   \n\tu32 remaining_size;\t\t   \n\tenum fw_upload_prog progress;\n\tenum fw_upload_prog err_progress;  \n\tenum fw_upload_err err_code;\t   \n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

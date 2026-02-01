@@ -1,0 +1,9 @@
+{
+  "module_name": "dma-direction.h",
+  "hash_id": "1288442a38d501288049b8ed7df7c75ecbaa5ba64c6aae21d2edb95f741c7db0",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/dma-direction.h",
+  "human_readable_source": " \n#ifndef _LINUX_DMA_DIRECTION_H\n#define _LINUX_DMA_DIRECTION_H\n\nenum dma_data_direction {\n\tDMA_BIDIRECTIONAL = 0,\n\tDMA_TO_DEVICE = 1,\n\tDMA_FROM_DEVICE = 2,\n\tDMA_NONE = 3,\n};\n\nstatic inline int valid_dma_direction(enum dma_data_direction dir)\n{\n\treturn dir == DMA_BIDIRECTIONAL || dir == DMA_TO_DEVICE ||\n\t\tdir == DMA_FROM_DEVICE;\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

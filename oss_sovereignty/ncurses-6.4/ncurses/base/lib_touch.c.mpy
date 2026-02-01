@@ -1,0 +1,9 @@
+{
+  "module_name": "lib_touch.c",
+  "hash_id": "90d36a90047fc3d2875cafd9af5788aa17ed9f5a79e1237730a9961af961c990",
+  "original_prompt": "Ingested from ncurses-6.4/ncurses/base/lib_touch.c",
+  "human_readable_source": " \n\n \n\n \n\n#include <curses.priv.h>\n\nMODULE_ID(\"$Id: lib_touch.c,v 1.16 2020/02/02 23:34:34 tom Exp $\")\n\n#undef is_linetouched\n\nNCURSES_EXPORT(bool)\nis_linetouched(WINDOW *win, int line)\n{\n    T((T_CALLED(\"is_linetouched(%p,%d)\"), (void *) win, line));\n\n     \n    if (!win || (line > win->_maxy) || (line < 0)) {\n\treturnCode(FALSE);\n    }\n\n    returnCode(win->_line[line].firstchar != _NOCHANGE ? TRUE : FALSE);\n}\n\nNCURSES_EXPORT(bool)\nis_wintouched(WINDOW *win)\n{\n    T((T_CALLED(\"is_wintouched(%p)\"), (void *) win));\n\n    if (win) {\n\tint i;\n\n\tfor (i = 0; i <= win->_maxy; i++)\n\t    if (win->_line[i].firstchar != _NOCHANGE)\n\t\treturnCode(TRUE);\n    }\n    returnCode(FALSE);\n}\n\nNCURSES_EXPORT(int)\nwtouchln(WINDOW *win, int y, int n, int changed)\n{\n    int i;\n\n    T((T_CALLED(\"wtouchln(%p,%d,%d,%d)\"), (void *) win, y, n, changed));\n\n    if (!win || (n < 0) || (y < 0) || (y > win->_maxy))\n\treturnCode(ERR);\n\n    for (i = y; i < y + n; i++) {\n\tif (i > win->_maxy)\n\t    break;\n\twin->_line[i].firstchar = (NCURSES_SIZE_T) (changed ? 0 : _NOCHANGE);\n\twin->_line[i].lastchar = (NCURSES_SIZE_T) (changed\n\t\t\t\t\t\t   ? win->_maxx\n\t\t\t\t\t\t   : _NOCHANGE);\n    }\n    returnCode(OK);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "mmu_context.h",
+  "hash_id": "db5dd5a6f242d4500f0a3fc05723d15adaae77049776b1f50608dee69ba85eb9",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/mmu_context.h",
+  "human_readable_source": " \n#ifndef _LINUX_MMU_CONTEXT_H\n#define _LINUX_MMU_CONTEXT_H\n\n#include <asm/mmu_context.h>\n#include <asm/mmu.h>\n\n \n#ifndef switch_mm_irqs_off\n# define switch_mm_irqs_off switch_mm\n#endif\n\n#ifndef leave_mm\nstatic inline void leave_mm(int cpu) { }\n#endif\n\n \n#ifndef task_cpu_possible_mask\n# define task_cpu_possible_mask(p)\tcpu_possible_mask\n# define task_cpu_possible(cpu, p)\ttrue\n#else\n# define task_cpu_possible(cpu, p)\tcpumask_test_cpu((cpu), task_cpu_possible_mask(p))\n#endif\n\n#ifndef mm_untag_mask\nstatic inline unsigned long mm_untag_mask(struct mm_struct *mm)\n{\n\treturn -1UL;\n}\n#endif\n\n#ifndef arch_pgtable_dma_compat\nstatic inline bool arch_pgtable_dma_compat(struct mm_struct *mm)\n{\n\treturn true;\n}\n#endif\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "e22eae9cb3b6ffbcee9097bea444cf0b85a7080597aed33c68a84f7ad691f648",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/hwtracing/intel_th/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nobj-$(CONFIG_INTEL_TH)\t\t+= intel_th.o\nintel_th-y\t\t\t:= core.o\nintel_th-$(CONFIG_INTEL_TH_DEBUG) += debug.o\n\nobj-$(CONFIG_INTEL_TH_PCI)\t+= intel_th_pci.o\nintel_th_pci-y\t\t\t:= pci.o\n\nobj-$(CONFIG_INTEL_TH_ACPI)\t+= intel_th_acpi.o\nintel_th_acpi-y\t\t\t:= acpi.o\n\nobj-$(CONFIG_INTEL_TH_GTH)\t+= intel_th_gth.o\nintel_th_gth-y\t\t\t:= gth.o\n\nobj-$(CONFIG_INTEL_TH_STH)\t+= intel_th_sth.o\nintel_th_sth-y\t\t\t:= sth.o\n\nobj-$(CONFIG_INTEL_TH_MSU)\t+= intel_th_msu.o\nintel_th_msu-y\t\t\t:= msu.o\n\nobj-$(CONFIG_INTEL_TH_PTI)\t+= intel_th_pti.o\nintel_th_pti-y\t\t\t:= pti.o\n\nobj-$(CONFIG_INTEL_TH_MSU)\t+= intel_th_msu_sink.o\nintel_th_msu_sink-y\t\t:= msu-sink.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

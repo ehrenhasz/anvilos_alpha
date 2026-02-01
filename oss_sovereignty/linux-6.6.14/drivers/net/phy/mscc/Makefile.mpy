@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "5ebc2b810c0d650917eabbc6aa57ef163a4ac254670bace906e4f5f589278feb",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/phy/mscc/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for MSCC networking PHY driver\n\nobj-$(CONFIG_MICROSEMI_PHY) := mscc.o\nmscc-objs := mscc_main.o\nmscc-objs += mscc_serdes.o\n\nifdef CONFIG_MACSEC\nmscc-objs += mscc_macsec.o\nendif\n\nifdef CONFIG_NETWORK_PHY_TIMESTAMPING\nmscc-objs += mscc_ptp.o\nendif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

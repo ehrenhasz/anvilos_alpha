@@ -1,0 +1,9 @@
+{
+  "module_name": "aegis-neon.h",
+  "hash_id": "376a997a56eb4f123c1188152bc30e69722e0a9389f1939b9d71b116efad6cb4",
+  "original_prompt": "Ingested from linux-6.6.14/crypto/aegis-neon.h",
+  "human_readable_source": "\n\n#ifndef _AEGIS_NEON_H\n#define _AEGIS_NEON_H\n\nvoid crypto_aegis128_init_neon(void *state, const void *key, const void *iv);\nvoid crypto_aegis128_update_neon(void *state, const void *msg);\nvoid crypto_aegis128_encrypt_chunk_neon(void *state, void *dst, const void *src,\n\t\t\t\t\tunsigned int size);\nvoid crypto_aegis128_decrypt_chunk_neon(void *state, void *dst, const void *src,\n\t\t\t\t\tunsigned int size);\nint crypto_aegis128_final_neon(void *state, void *tag_xor,\n\t\t\t       unsigned int assoclen,\n\t\t\t       unsigned int cryptlen,\n\t\t\t       unsigned int authsize);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

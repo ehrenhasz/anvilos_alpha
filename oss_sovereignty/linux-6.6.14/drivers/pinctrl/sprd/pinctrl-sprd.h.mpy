@@ -1,0 +1,9 @@
+{
+  "module_name": "pinctrl-sprd.h",
+  "hash_id": "286c2ecbdcf8663013ec0b3a63e40d116a0cc64c1a1f6f64454d64dcd150638c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/pinctrl/sprd/pinctrl-sprd.h",
+  "human_readable_source": " \n \n\n#ifndef __PINCTRL_SPRD_H__\n#define __PINCTRL_SPRD_H__\n\nstruct platform_device;\n\n#define NUM_OFFSET\t(20)\n#define TYPE_OFFSET\t(16)\n#define BIT_OFFSET\t(8)\n#define WIDTH_OFFSET\t(4)\n\n#define SPRD_PIN_INFO(num, type, offset, width, reg)\t\\\n\t\t(((num) & 0xFFF) << NUM_OFFSET |\t\\\n\t\t ((type) & 0xF) << TYPE_OFFSET |\t\\\n\t\t ((offset) & 0xFF) << BIT_OFFSET |\t\\\n\t\t ((width) & 0xF) << WIDTH_OFFSET |\t\\\n\t\t ((reg) & 0xF))\n\n#define SPRD_PINCTRL_PIN(pin)\tSPRD_PINCTRL_PIN_DATA(pin, #pin)\n\n#define SPRD_PINCTRL_PIN_DATA(a, b)\t\t\t\t\\\n\t{\t\t\t\t\t\t\t\\\n\t\t.name = b,\t\t\t\t\t\\\n\t\t.num = (((a) >> NUM_OFFSET) & 0xfff),\t\t\\\n\t\t.type = (((a) >> TYPE_OFFSET) & 0xf),\t\t\\\n\t\t.bit_offset = (((a) >> BIT_OFFSET) & 0xff),\t\\\n\t\t.bit_width = ((a) >> WIDTH_OFFSET & 0xf),\t\\\n\t\t.reg = ((a) & 0xf)\t\t\t\t\\\n\t}\n\nenum pin_type {\n\tGLOBAL_CTRL_PIN,\n\tCOMMON_PIN,\n\tMISC_PIN,\n};\n\nstruct sprd_pins_info {\n\tconst char *name;\n\tunsigned int num;\n\tenum pin_type type;\n\n\t \n\tunsigned long bit_offset;\n\tunsigned long bit_width;\n\tunsigned int reg;\n};\n\nint sprd_pinctrl_core_probe(struct platform_device *pdev,\n\t\t\t    struct sprd_pins_info *sprd_soc_pin_info,\n\t\t\t    int pins_cnt);\nint sprd_pinctrl_remove(struct platform_device *pdev);\nvoid sprd_pinctrl_shutdown(struct platform_device *pdev);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

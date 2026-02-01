@@ -1,0 +1,9 @@
+{
+  "module_name": "mlxfw_mfa2_tlv_multi.h",
+  "hash_id": "a2977b1a55c66c21268960b973aca1fae0b9655af30647b6e9ac980cef50ccbe",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/mellanox/mlxfw/mlxfw_mfa2_tlv_multi.h",
+  "human_readable_source": " \n \n\n#ifndef _MLXFW_MFA2_TLV_MULTI_H\n#define _MLXFW_MFA2_TLV_MULTI_H\n\n#include \"mlxfw_mfa2_tlv.h\"\n#include \"mlxfw_mfa2_format.h\"\n#include \"mlxfw_mfa2_file.h\"\n\nconst struct mlxfw_mfa2_tlv *\nmlxfw_mfa2_tlv_multi_child(const struct mlxfw_mfa2_file *mfa2_file,\n\t\t\t   const struct mlxfw_mfa2_tlv_multi *multi);\n\nconst struct mlxfw_mfa2_tlv *\nmlxfw_mfa2_tlv_next(const struct mlxfw_mfa2_file *mfa2_file,\n\t\t    const struct mlxfw_mfa2_tlv *tlv);\n\nconst struct mlxfw_mfa2_tlv *\nmlxfw_mfa2_tlv_advance(const struct mlxfw_mfa2_file *mfa2_file,\n\t\t       const struct mlxfw_mfa2_tlv *from_tlv, u16 count);\n\nconst struct mlxfw_mfa2_tlv *\nmlxfw_mfa2_tlv_multi_child_find(const struct mlxfw_mfa2_file *mfa2_file,\n\t\t\t\tconst struct mlxfw_mfa2_tlv_multi *multi,\n\t\t\t\tenum mlxfw_mfa2_tlv_type type, u16 index);\n\nint mlxfw_mfa2_tlv_multi_child_count(const struct mlxfw_mfa2_file *mfa2_file,\n\t\t\t\t     const struct mlxfw_mfa2_tlv_multi *multi,\n\t\t\t\t     enum mlxfw_mfa2_tlv_type type,\n\t\t\t\t     u16 *p_count);\n\n#define mlxfw_mfa2_tlv_foreach(mfa2_file, tlv, idx, from_tlv, count) \\\n\tfor (idx = 0, tlv = from_tlv; idx < (count); \\\n\t     idx++, tlv = mlxfw_mfa2_tlv_next(mfa2_file, tlv))\n\n#define mlxfw_mfa2_tlv_multi_foreach(mfa2_file, tlv, idx, multi) \\\n\tmlxfw_mfa2_tlv_foreach(mfa2_file, tlv, idx, \\\n\t\t\t       mlxfw_mfa2_tlv_multi_child(mfa2_file, multi), \\\n\t\t\t       be16_to_cpu(multi->num_extensions) + 1)\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

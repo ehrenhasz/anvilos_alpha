@@ -1,0 +1,9 @@
+{
+  "module_name": "nf_conntrack_count.h",
+  "hash_id": "11470d35d4f56fa1152cebb6d9ec2f2db039b5c85911169dcd0757774e4a1c24",
+  "original_prompt": "Ingested from linux-6.6.14/include/net/netfilter/nf_conntrack_count.h",
+  "human_readable_source": "#ifndef _NF_CONNTRACK_COUNT_H\n#define _NF_CONNTRACK_COUNT_H\n\n#include <linux/list.h>\n#include <linux/spinlock.h>\n#include <net/netfilter/nf_conntrack_tuple.h>\n#include <net/netfilter/nf_conntrack_zones.h>\n\nstruct nf_conncount_data;\n\nstruct nf_conncount_list {\n\tspinlock_t list_lock;\n\tu32 last_gc;\t\t \n\tstruct list_head head;\t \n\tunsigned int count;\t \n};\n\nstruct nf_conncount_data *nf_conncount_init(struct net *net, unsigned int family,\n\t\t\t\t\t    unsigned int keylen);\nvoid nf_conncount_destroy(struct net *net, unsigned int family,\n\t\t\t  struct nf_conncount_data *data);\n\nunsigned int nf_conncount_count(struct net *net,\n\t\t\t\tstruct nf_conncount_data *data,\n\t\t\t\tconst u32 *key,\n\t\t\t\tconst struct nf_conntrack_tuple *tuple,\n\t\t\t\tconst struct nf_conntrack_zone *zone);\n\nint nf_conncount_add(struct net *net, struct nf_conncount_list *list,\n\t\t     const struct nf_conntrack_tuple *tuple,\n\t\t     const struct nf_conntrack_zone *zone);\n\nvoid nf_conncount_list_init(struct nf_conncount_list *list);\n\nbool nf_conncount_gc_list(struct net *net,\n\t\t\t  struct nf_conncount_list *list);\n\nvoid nf_conncount_cache_free(struct nf_conncount_list *list);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "root-dev-ino.h",
+  "hash_id": "e4c09d1b1cfbadaac51ba75c050777d159a2b6afc6d7c7a007203abc14817310",
+  "original_prompt": "Ingested from coreutils-9.4/lib/root-dev-ino.h",
+  "human_readable_source": " \n\n# define ROOT_DEV_INO_CHECK(Root_dev_ino, Dir_statbuf) \\\n    (Root_dev_ino && SAME_INODE (*Dir_statbuf, *Root_dev_ino))\n\n# define ROOT_DEV_INO_WARN(Dirname)\t\t\t\t\t\\\n  do\t\t\t\t\t\t\t\t\t\\\n    {\t\t\t\t\t\t\t\t\t\\\n      if (STREQ (Dirname, \"/\"))\t\t\t\t\t\t\\\n        error (0, 0, _(\"it is dangerous to operate recursively on %s\"),\t\\\n               quoteaf (Dirname));\t\t\t\t\t\\\n      else\t\t\t\t\t\t\t\t\\\n        error (0, 0,\t\t\t\t\t\t\t\\\n               _(\"it is dangerous to operate recursively on %s (same as %s)\"), \\\n               quoteaf_n (0, Dirname), quoteaf_n (1, \"/\"));\t\t\\\n      error (0, 0, _(\"use --no-preserve-root to override this failsafe\")); \\\n    }\t\t\t\t\t\t\t\t\t\\\n  while (0)\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "exynos-pmu.h",
+  "hash_id": "026656f0c69b06762a3f6965b86a692fe0657a05eb2e97d1a378c4f80b0856fc",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/soc/samsung/exynos-pmu.h",
+  "human_readable_source": " \n \n\n#ifndef __LINUX_SOC_EXYNOS_PMU_H\n#define __LINUX_SOC_EXYNOS_PMU_H\n\nstruct regmap;\n\nenum sys_powerdown {\n\tSYS_AFTR,\n\tSYS_LPA,\n\tSYS_SLEEP,\n\tNUM_SYS_POWERDOWN,\n};\n\nextern void exynos_sys_powerdown_conf(enum sys_powerdown mode);\n#ifdef CONFIG_EXYNOS_PMU\nextern struct regmap *exynos_get_pmu_regmap(void);\n#else\nstatic inline struct regmap *exynos_get_pmu_regmap(void)\n{\n\treturn ERR_PTR(-ENODEV);\n}\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

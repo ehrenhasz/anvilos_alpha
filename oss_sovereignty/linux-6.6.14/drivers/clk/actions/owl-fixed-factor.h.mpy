@@ -1,0 +1,9 @@
+{
+  "module_name": "owl-fixed-factor.h",
+  "hash_id": "a47fe48826a0ab943018651ffa9f89f37bf6bd88c0093d3fb9cef0a4b164aad7",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/clk/actions/owl-fixed-factor.h",
+  "human_readable_source": " \n\n\n\n\n\n\n\n\n\n#ifndef _OWL_FIXED_FACTOR_H_\n#define _OWL_FIXED_FACTOR_H_\n\n#include \"owl-common.h\"\n\n#define OWL_FIX_FACT(_struct, _name, _parent, _mul, _div, _flags)\t\\\n\tstruct clk_fixed_factor _struct = {\t\t\t\t\\\n\t\t.mult\t\t= _mul,\t\t\t\t\t\\\n\t\t.div\t\t= _div,\t\t\t\t\t\\\n\t\t.hw.init\t= CLK_HW_INIT(_name,\t\t\t\\\n\t\t\t\t\t      _parent,\t\t\t\\\n\t\t\t\t\t      &clk_fixed_factor_ops,\t\\\n\t\t\t\t\t      _flags),\t\t\t\\\n\t}\n\nextern const struct clk_ops clk_fixed_factor_ops;\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "ni_labpc_isadma.h",
+  "hash_id": "872ca2748c8c83d6c3a622657dcd227d129bc9855903b8435801cde4ae440132",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/comedi/drivers/ni_labpc_isadma.h",
+  "human_readable_source": " \n \n\n#ifndef _NI_LABPC_ISADMA_H\n#define _NI_LABPC_ISADMA_H\n\n#if IS_ENABLED(CONFIG_COMEDI_NI_LABPC_ISADMA)\n\nvoid labpc_init_dma_chan(struct comedi_device *dev, unsigned int dma_chan);\nvoid labpc_free_dma_chan(struct comedi_device *dev);\nvoid labpc_setup_dma(struct comedi_device *dev, struct comedi_subdevice *s);\nvoid labpc_drain_dma(struct comedi_device *dev);\nvoid labpc_handle_dma_status(struct comedi_device *dev);\n\n#else\n\nstatic inline void labpc_init_dma_chan(struct comedi_device *dev,\n\t\t\t\t       unsigned int dma_chan)\n{\n}\n\nstatic inline void labpc_free_dma_chan(struct comedi_device *dev)\n{\n}\n\nstatic inline void labpc_setup_dma(struct comedi_device *dev,\n\t\t\t\t   struct comedi_subdevice *s)\n{\n}\n\nstatic inline void labpc_drain_dma(struct comedi_device *dev)\n{\n}\n\nstatic inline void labpc_handle_dma_status(struct comedi_device *dev)\n{\n}\n\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

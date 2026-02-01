@@ -1,0 +1,9 @@
+{
+  "module_name": "fs_ft_pool.h",
+  "hash_id": "229d5ccce9380fec6cec159c893b1beb5cdb76e72dbd56d7b3d7db91cc8ce597",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/mellanox/mlx5/core/fs_ft_pool.h",
+  "human_readable_source": " \n \n\n#ifndef __MLX5_FS_FT_POOL_H__\n#define __MLX5_FS_FT_POOL_H__\n\n#include <linux/mlx5/driver.h>\n#include \"fs_core.h\"\n\n#define POOL_NEXT_SIZE 0\n\nint mlx5_ft_pool_init(struct mlx5_core_dev *dev);\nvoid mlx5_ft_pool_destroy(struct mlx5_core_dev *dev);\n\nint\nmlx5_ft_pool_get_avail_sz(struct mlx5_core_dev *dev, enum fs_flow_table_type table_type,\n\t\t\t  int desired_size);\nvoid\nmlx5_ft_pool_put_sz(struct mlx5_core_dev *dev, int sz);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

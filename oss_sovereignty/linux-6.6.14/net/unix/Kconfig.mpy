@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "8baf4c1b689e58ef24111875e9bbff444f9eadb415b059f082d401ffdc929925",
+  "original_prompt": "Ingested from linux-6.6.14/net/unix/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Unix Domain Sockets\n#\n\nconfig UNIX\n\tbool \"Unix domain sockets\"\n\thelp\n\t  If you say Y here, you will include support for Unix domain sockets;\n\t  sockets are the standard Unix mechanism for establishing and\n\t  accessing network connections.  Many commonly used programs such as\n\t  the X Window system and syslog use these sockets even if your\n\t  machine is not connected to any network.  Unless you are working on\n\t  an embedded system or something similar, you therefore definitely\n\t  want to say Y here.\n\n\t  Say Y unless you know what you are doing.\n\nconfig UNIX_SCM\n\tbool\n\tdepends on UNIX\n\tdefault y\n\nconfig\tAF_UNIX_OOB\n\tbool\n\tdepends on UNIX\n\tdefault y\n\nconfig UNIX_DIAG\n\ttristate \"UNIX: socket monitoring interface\"\n\tdepends on UNIX\n\tdefault n\n\thelp\n\t  Support for UNIX socket monitoring interface used by the ss tool.\n\t  If unsure, say Y.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

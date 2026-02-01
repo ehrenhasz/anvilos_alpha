@@ -1,0 +1,9 @@
+{
+  "module_name": "test_global_func17.c",
+  "hash_id": "29ab93121ae3b94d510b9f1ae74a776f56dd6cdfc3fbd0537f361d9ea77530b1",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/test_global_func17.c",
+  "human_readable_source": "\n#include <vmlinux.h>\n#include <bpf/bpf_helpers.h>\n#include \"bpf_misc.h\"\n\n__noinline int foo(int *p)\n{\n\treturn p ? (*p = 42) : 0;\n}\n\nconst volatile int i;\n\nSEC(\"tc\")\n__failure __msg(\"Caller passes invalid args into func#1\")\nint global_func17(struct __sk_buff *skb)\n{\n\treturn foo((int *)&i);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

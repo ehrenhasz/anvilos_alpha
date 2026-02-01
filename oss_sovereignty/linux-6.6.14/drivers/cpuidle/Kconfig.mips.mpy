@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig.mips",
+  "hash_id": "cf63c77402321f213bed0d1924cc2e84acd3f327f82304daa757312edecc612d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/cpuidle/Kconfig.mips",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# MIPS CPU Idle Drivers\n#\nconfig MIPS_CPS_CPUIDLE\n\tbool \"CPU Idle driver for MIPS CPS platforms\"\n\tdepends on CPU_IDLE && MIPS_CPS\n\tdepends on SYS_SUPPORTS_MIPS_CPS\n\tselect ARCH_NEEDS_CPU_IDLE_COUPLED if MIPS_MT || CPU_MIPSR6\n\tselect GENERIC_CLOCKEVENTS_BROADCAST if SMP\n\tselect MIPS_CPS_PM\n\tdefault y\n\thelp\n\t  Select this option to enable processor idle state management\n\t  through cpuidle for systems built around the MIPS Coherent\n\t  Processing System (CPS) architecture. In order to make use of\n\t  the deepest idle states you will need to ensure that you are\n\t  also using the CONFIG_MIPS_CPS SMP implementation.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

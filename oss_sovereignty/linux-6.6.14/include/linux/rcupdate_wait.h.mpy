@@ -1,0 +1,9 @@
+{
+  "module_name": "rcupdate_wait.h",
+  "hash_id": "d878b8c9a31b8a6d47d25ad781b657b64146e37335786157c5ad6c4f33c3abe4",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/rcupdate_wait.h",
+  "human_readable_source": " \n#ifndef _LINUX_SCHED_RCUPDATE_WAIT_H\n#define _LINUX_SCHED_RCUPDATE_WAIT_H\n\n \n\n#include <linux/rcupdate.h>\n#include <linux/completion.h>\n\n \nstruct rcu_synchronize {\n\tstruct rcu_head head;\n\tstruct completion completion;\n};\nvoid wakeme_after_rcu(struct rcu_head *head);\n\nvoid __wait_rcu_gp(bool checktiny, int n, call_rcu_func_t *crcu_array,\n\t\t   struct rcu_synchronize *rs_array);\n\n#define _wait_rcu_gp(checktiny, ...) \\\ndo {\t\t\t\t\t\t\t\t\t\\\n\tcall_rcu_func_t __crcu_array[] = { __VA_ARGS__ };\t\t\\\n\tstruct rcu_synchronize __rs_array[ARRAY_SIZE(__crcu_array)];\t\\\n\t__wait_rcu_gp(checktiny, ARRAY_SIZE(__crcu_array),\t\t\\\n\t\t\t__crcu_array, __rs_array);\t\t\t\\\n} while (0)\n\n#define wait_rcu_gp(...) _wait_rcu_gp(false, __VA_ARGS__)\n\n \n#define synchronize_rcu_mult(...) \\\n\t_wait_rcu_gp(IS_ENABLED(CONFIG_TINY_RCU), __VA_ARGS__)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

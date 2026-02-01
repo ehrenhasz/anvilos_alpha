@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "61001e3d35b89b335bf9447420fe6835f8bd02e30344901ccf048dba634314ca",
+  "original_prompt": "Ingested from linux-6.6.14/fs/smb/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n\nobj-$(CONFIG_SMBFS)\t\t+= common/\nobj-$(CONFIG_CIFS)\t\t+= client/\nobj-$(CONFIG_SMB_SERVER)\t+= server/\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

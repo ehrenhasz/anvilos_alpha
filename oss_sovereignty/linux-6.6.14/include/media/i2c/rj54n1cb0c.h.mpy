@@ -1,0 +1,9 @@
+{
+  "module_name": "rj54n1cb0c.h",
+  "hash_id": "9d2b4ab9fa4e1f3f9316b35b932bad0f6c7bf0795c554673d87808cfc931243d",
+  "original_prompt": "Ingested from linux-6.6.14/include/media/i2c/rj54n1cb0c.h",
+  "human_readable_source": " \n \n\n#ifndef __RJ54N1CB0C_H__\n#define __RJ54N1CB0C_H__\n\nstruct rj54n1_pdata {\n\tunsigned int\tmclk_freq;\n\tbool\t\tioctl_high;\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

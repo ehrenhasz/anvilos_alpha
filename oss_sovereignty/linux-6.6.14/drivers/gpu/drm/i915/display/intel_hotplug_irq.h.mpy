@@ -1,0 +1,9 @@
+{
+  "module_name": "intel_hotplug_irq.h",
+  "hash_id": "55a5d7fb6d0c43a77e4e3844fba73fd02e1c4c88c8649267516211513e2a71e7",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/display/intel_hotplug_irq.h",
+  "human_readable_source": " \n \n\n#ifndef __INTEL_HOTPLUG_IRQ_H__\n#define __INTEL_HOTPLUG_IRQ_H__\n\n#include <linux/types.h>\n\nstruct drm_i915_private;\nstruct intel_encoder;\n\nu32 i9xx_hpd_irq_ack(struct drm_i915_private *i915);\n\nvoid i9xx_hpd_irq_handler(struct drm_i915_private *i915, u32 hotplug_status);\nvoid ibx_hpd_irq_handler(struct drm_i915_private *i915, u32 hotplug_trigger);\nvoid ilk_hpd_irq_handler(struct drm_i915_private *i915, u32 hotplug_trigger);\nvoid gen11_hpd_irq_handler(struct drm_i915_private *i915, u32 iir);\nvoid bxt_hpd_irq_handler(struct drm_i915_private *i915, u32 hotplug_trigger);\nvoid xelpdp_pica_irq_handler(struct drm_i915_private *i915, u32 iir);\nvoid icp_irq_handler(struct drm_i915_private *i915, u32 pch_iir);\nvoid spt_irq_handler(struct drm_i915_private *i915, u32 pch_iir);\n\nvoid i915_hotplug_interrupt_update_locked(struct drm_i915_private *i915,\n\t\t\t\t\t  u32 mask, u32 bits);\nvoid i915_hotplug_interrupt_update(struct drm_i915_private *i915,\n\t\t\t\t   u32 mask, u32 bits);\n\nvoid intel_hpd_enable_detection(struct intel_encoder *encoder);\nvoid intel_hpd_irq_setup(struct drm_i915_private *i915);\n\nvoid intel_hotplug_irq_init(struct drm_i915_private *i915);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

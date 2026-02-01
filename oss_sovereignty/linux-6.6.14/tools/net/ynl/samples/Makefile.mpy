@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "f7eacec51b604d43946e7a4fd8c4d3fd1721160c165ec43db65d28409596a30c",
+  "original_prompt": "Ingested from linux-6.6.14/tools/net/ynl/samples/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n\ninclude ../Makefile.deps\n\nCC=gcc\nCFLAGS=-std=gnu11 -O2 -W -Wall -Wextra -Wno-unused-parameter -Wshadow \\\n\t-I../lib/ -I../generated/ -idirafter $(UAPI_PATH)\nifeq (\"$(DEBUG)\",\"1\")\n  CFLAGS += -g -fsanitize=address -fsanitize=leak -static-libasan\nendif\n\nLDLIBS=-lmnl ../lib/ynl.a ../generated/protos.a\n\nSRCS=$(wildcard *.c)\nBINS=$(patsubst %.c,%,${SRCS})\n\ninclude $(wildcard *.d)\n\nall: $(BINS)\n\n$(BINS): ../lib/ynl.a ../generated/protos.a\n\nclean:\n\trm -f *.o *.d *~\n\nhardclean: clean\n\trm -f $(BINS)\n\n.PHONY: all clean\n.DEFAULT_GOAL=all\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

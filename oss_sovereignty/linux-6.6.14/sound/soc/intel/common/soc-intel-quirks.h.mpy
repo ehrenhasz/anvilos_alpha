@@ -1,0 +1,9 @@
+{
+  "module_name": "soc-intel-quirks.h",
+  "hash_id": "084daa1d2a21efc8d31e83432f6d381e9471484d3ea4e1964d877577611a3b45",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/intel/common/soc-intel-quirks.h",
+  "human_readable_source": " \n \n\n#ifndef _SND_SOC_INTEL_QUIRKS_H\n#define _SND_SOC_INTEL_QUIRKS_H\n\n#include <linux/platform_data/x86/soc.h>\n\n#if IS_ENABLED(CONFIG_X86)\n\n#include <linux/dmi.h>\n#include <asm/iosf_mbi.h>\n\nstatic inline bool soc_intel_is_byt_cr(struct platform_device *pdev)\n{\n\t \n\tstatic const struct dmi_system_id force_bytcr_table[] = {\n\t\t{\t \n\t\t\t.matches = {\n\t\t\t\tDMI_MATCH(DMI_SYS_VENDOR, \"LENOVO\"),\n\t\t\t\tDMI_MATCH(DMI_PRODUCT_FAMILY, \"YOGATablet2\"),\n\t\t\t},\n\t\t},\n\t\t{}\n\t};\n\tstruct device *dev = &pdev->dev;\n\tint status = 0;\n\n\tif (!soc_intel_is_byt())\n\t\treturn false;\n\n\tif (dmi_check_system(force_bytcr_table))\n\t\treturn true;\n\n\tif (iosf_mbi_available()) {\n\t\tu32 bios_status;\n\n\t\tstatus = iosf_mbi_read(BT_MBI_UNIT_PMC,  \n\t\t\t\t       MBI_REG_READ,  \n\t\t\t\t       0x006,  \n\t\t\t\t       &bios_status);\n\n\t\tif (status) {\n\t\t\tdev_err(dev, \"could not read PUNIT BIOS_CONFIG\\n\");\n\t\t} else {\n\t\t\t \n\t\t\tbios_status = (bios_status >> 26) & 3;\n\n\t\t\tif (bios_status == 1 || bios_status == 3) {\n\t\t\t\tdev_info(dev, \"Detected Baytrail-CR platform\\n\");\n\t\t\t\treturn true;\n\t\t\t}\n\n\t\t\tdev_info(dev, \"BYT-CR not detected\\n\");\n\t\t}\n\t} else {\n\t\tdev_info(dev, \"IOSF_MBI not available, no BYT-CR detection\\n\");\n\t}\n\n\tif (!platform_get_resource(pdev, IORESOURCE_IRQ, 5)) {\n\t\t \n\t\tdev_info(dev, \"Falling back to Baytrail-CR platform\\n\");\n\t\treturn true;\n\t}\n\n\treturn false;\n}\n\n#else\n\nstatic inline bool soc_intel_is_byt_cr(struct platform_device *pdev)\n{\n\treturn false;\n}\n\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

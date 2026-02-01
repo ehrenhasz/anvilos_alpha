@@ -1,0 +1,9 @@
+{
+  "module_name": "da9121.h",
+  "hash_id": "35eec25df15ad1af0ab379fd6fe5acb06e4e7ef1f30ecede697eb6e67bee8063",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/regulator/da9121.h",
+  "human_readable_source": " \n \n\n#ifndef __LINUX_REGULATOR_DA9121_H\n#define __LINUX_REGULATOR_DA9121_H\n\n#include <linux/regulator/machine.h>\n\nstruct gpio_desc;\n\nenum {\n\tDA9121_IDX_BUCK1,\n\tDA9121_IDX_BUCK2,\n\tDA9121_IDX_MAX\n};\n\nstruct da9121_pdata {\n\tint num_buck;\n\tstruct gpio_desc *gpiod_ren[DA9121_IDX_MAX];\n\tstruct device_node *reg_node[DA9121_IDX_MAX];\n\tstruct regulator_init_data *init_data[DA9121_IDX_MAX];\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

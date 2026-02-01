@@ -1,0 +1,9 @@
+{
+  "module_name": "armada_plane.h",
+  "hash_id": "9ddf356996495c4ba825254ce9b3e55248d1f0a698a5b7ee0df6446d23dab4ed",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/armada/armada_plane.h",
+  "human_readable_source": "#ifndef ARMADA_PLANE_H\n#define ARMADA_PLANE_H\n\nstruct armada_plane_state {\n\tstruct drm_plane_state base;\n\tu32 src_hw;\n\tu32 dst_yx;\n\tu32 dst_hw;\n\tu32 addrs[2][3];\n\tu16 pitches[3];\n\tbool interlace;\n};\n\n#define to_armada_plane_state(st) \\\n\tcontainer_of(st, struct armada_plane_state, base)\n#define armada_src_hw(state) to_armada_plane_state(state)->src_hw\n#define armada_dst_yx(state) to_armada_plane_state(state)->dst_yx\n#define armada_dst_hw(state) to_armada_plane_state(state)->dst_hw\n#define armada_addr(state, f, p) to_armada_plane_state(state)->addrs[f][p]\n#define armada_pitch(state, n) to_armada_plane_state(state)->pitches[n]\n\nvoid armada_drm_plane_calc(struct drm_plane_state *state, u32 addrs[2][3],\n\tu16 pitches[3], bool interlaced);\nvoid armada_drm_plane_cleanup_fb(struct drm_plane *plane,\n\tstruct drm_plane_state *old_state);\nint armada_drm_plane_atomic_check(struct drm_plane *plane,\n\tstruct drm_atomic_state *state);\nvoid armada_plane_reset(struct drm_plane *plane);\nstruct drm_plane_state *armada_plane_duplicate_state(struct drm_plane *plane);\nvoid armada_plane_destroy_state(struct drm_plane *plane,\n\t\t\t\tstruct drm_plane_state *state);\n\nint armada_drm_primary_plane_init(struct drm_device *drm,\n\tstruct drm_plane *primary);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

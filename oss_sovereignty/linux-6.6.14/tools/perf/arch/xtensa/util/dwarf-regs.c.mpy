@@ -1,0 +1,9 @@
+{
+  "module_name": "dwarf-regs.c",
+  "hash_id": "b6b3458207d101bb8ac5eebd2a023a72384c3243eb659e3c3bd10adef9de2c29",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/arch/xtensa/util/dwarf-regs.c",
+  "human_readable_source": "\n \n\n#include <stddef.h>\n#include <dwarf-regs.h>\n\n#define XTENSA_MAX_REGS 16\n\nconst char *xtensa_regs_table[XTENSA_MAX_REGS] = {\n\t\"a0\", \"a1\", \"a2\", \"a3\", \"a4\", \"a5\", \"a6\", \"a7\",\n\t\"a8\", \"a9\", \"a10\", \"a11\", \"a12\", \"a13\", \"a14\", \"a15\",\n};\n\nconst char *get_arch_regstr(unsigned int n)\n{\n\treturn n < XTENSA_MAX_REGS ? xtensa_regs_table[n] : NULL;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

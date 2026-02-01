@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "91a054d5d413e3557a3d14da516b9bce6cd612f95e9f29ec239f440650973f30",
+  "original_prompt": "Ingested from linux-6.6.14/fs/efs/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Makefile for the linux efs-filesystem routines.\n#\n\nobj-$(CONFIG_EFS_FS) += efs.o\n\nefs-objs := super.o inode.o namei.o dir.o file.o symlink.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

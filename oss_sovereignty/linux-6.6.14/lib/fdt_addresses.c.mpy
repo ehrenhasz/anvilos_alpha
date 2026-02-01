@@ -1,0 +1,9 @@
+{
+  "module_name": "fdt_addresses.c",
+  "hash_id": "8305c644ec49a01146b5141d67c9d2de6775ab718b2db18dbb4603ca680bd4a3",
+  "original_prompt": "Ingested from linux-6.6.14/lib/fdt_addresses.c",
+  "human_readable_source": "#include <linux/libfdt_env.h>\n#include \"../scripts/dtc/libfdt/fdt_addresses.c\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

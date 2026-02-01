@@ -1,0 +1,9 @@
+{
+  "module_name": "sclp_sdias.h",
+  "hash_id": "4944397b28e3e64bb1a6d28ce4ec44059dbc64716b1c8a4a8f0029c434ff528d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/s390/char/sclp_sdias.h",
+  "human_readable_source": " \n \n\n#ifndef SCLP_SDIAS_H\n#define SCLP_SDIAS_H\n\n#include \"sclp.h\"\n\n#define SDIAS_EQ_STORE_DATA\t\t0x0\n#define SDIAS_EQ_SIZE\t\t\t0x1\n#define SDIAS_DI_FCP_DUMP\t\t0x0\n#define SDIAS_ASA_SIZE_32\t\t0x0\n#define SDIAS_ASA_SIZE_64\t\t0x1\n#define SDIAS_EVSTATE_ALL_STORED\t0x0\n#define SDIAS_EVSTATE_NO_DATA\t\t0x3\n#define SDIAS_EVSTATE_PART_STORED\t0x10\n\nstruct sdias_evbuf {\n\tstruct\tevbuf_header hdr;\n\tu8\tevent_qual;\n\tu8\tdata_id;\n\tu64\treserved2;\n\tu32\tevent_id;\n\tu16\treserved3;\n\tu8\tasa_size;\n\tu8\tevent_status;\n\tu32\treserved4;\n\tu32\tblk_cnt;\n\tu64\tasa;\n\tu32\treserved5;\n\tu32\tfbn;\n\tu32\treserved6;\n\tu32\tlbn;\n\tu16\treserved7;\n\tu16\tdbs;\n} __packed;\n\nstruct sdias_sccb {\n\tstruct sccb_header\thdr;\n\tstruct sdias_evbuf\tevbuf;\n} __packed;\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

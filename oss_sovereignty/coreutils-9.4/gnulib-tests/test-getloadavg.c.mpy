@@ -1,0 +1,9 @@
+{
+  "module_name": "test-getloadavg.c",
+  "hash_id": "44d1150d86ec02548164e79d7bdefc82a7c525d8b35f5a0e3b0bf69972d0ee11",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-getloadavg.c",
+  "human_readable_source": " \n      if (avg < 0.01)\n        printf (\"suspiciously low %d-minute average: %f\\n\", minutes, avg);\n      if (avg > 1000000)\n        printf (\"suspiciously high %d-minute average: %f\\n\", minutes, avg);\n    }\n  if (avg < 0 || avg != avg)\n    exit (minutes);\n}\n\n \nint\nmain (int argc, char **argv)\n{\n  int naptime = 0;\n\n  if (argc > 1)\n    naptime = atoi (argv[1]);\n\n  while (1)\n    {\n      double avg[3];\n      int loads = getloadavg (avg, 3);\n      if (loads == -1)\n        {\n          if (! (errno == ENOSYS || errno == ENOTSUP || errno == ENOENT))\n            return 1;\n          perror (\"Skipping test; load average not supported\");\n          return 77;\n        }\n      if (loads > 0)\n        check_avg (1, avg[0], argc > 1);\n      if (loads > 1)\n        check_avg (5, avg[1], argc > 1);\n      if (loads > 2)\n        check_avg (15, avg[2], argc > 1);\n      if (loads > 0 && argc > 1)\n        putchar ('\\n');\n\n      if (naptime == 0)\n        break;\n      sleep (naptime);\n    }\n\n  return 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

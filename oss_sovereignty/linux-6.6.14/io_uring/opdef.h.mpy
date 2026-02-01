@@ -1,0 +1,9 @@
+{
+  "module_name": "opdef.h",
+  "hash_id": "ad00da0b78508300f3a51b9fbbf787c533d76ee2e22b853babcc2f223fae8dda",
+  "original_prompt": "Ingested from linux-6.6.14/io_uring/opdef.h",
+  "human_readable_source": "\n#ifndef IOU_OP_DEF_H\n#define IOU_OP_DEF_H\n\nstruct io_issue_def {\n\t \n\tunsigned\t\tneeds_file : 1;\n\t \n\tunsigned\t\tplug : 1;\n\t \n\tunsigned\t\thash_reg_file : 1;\n\t \n\tunsigned\t\tunbound_nonreg_file : 1;\n\t \n\tunsigned\t\tpollin : 1;\n\tunsigned\t\tpollout : 1;\n\tunsigned\t\tpoll_exclusive : 1;\n\t \n\tunsigned\t\tbuffer_select : 1;\n\t \n\tunsigned\t\tnot_supported : 1;\n\t \n\tunsigned\t\taudit_skip : 1;\n\t \n\tunsigned\t\tioprio : 1;\n\t \n\tunsigned\t\tiopoll : 1;\n\t \n\tunsigned\t\tiopoll_queue : 1;\n\t \n\tunsigned\t\tmanual_alloc : 1;\n\n\tint (*issue)(struct io_kiocb *, unsigned int);\n\tint (*prep)(struct io_kiocb *, const struct io_uring_sqe *);\n};\n\nstruct io_cold_def {\n\t \n\tunsigned short\t\tasync_size;\n\n\tconst char\t\t*name;\n\n\tint (*prep_async)(struct io_kiocb *);\n\tvoid (*cleanup)(struct io_kiocb *);\n\tvoid (*fail)(struct io_kiocb *);\n};\n\nextern const struct io_issue_def io_issue_defs[];\nextern const struct io_cold_def io_cold_defs[];\n\nvoid io_uring_optable_init(void);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

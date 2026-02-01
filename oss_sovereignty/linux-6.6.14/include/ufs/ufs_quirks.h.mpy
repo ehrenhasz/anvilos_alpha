@@ -1,0 +1,9 @@
+{
+  "module_name": "ufs_quirks.h",
+  "hash_id": "59a59fa337ae06544dcf8dd5c1f7e57f88a182b4d07bc404d55c2199f1cff565",
+  "original_prompt": "Ingested from linux-6.6.14/include/ufs/ufs_quirks.h",
+  "human_readable_source": " \n \n\n#ifndef _UFS_QUIRKS_H_\n#define _UFS_QUIRKS_H_\n\n \n#define STR_PRFX_EQUAL(s1, s2) !strncmp(s1, s2, strlen(s1))\n\n#define UFS_ANY_VENDOR 0xFFFF\n#define UFS_ANY_MODEL  \"ANY_MODEL\"\n\n#define UFS_VENDOR_MICRON      0x12C\n#define UFS_VENDOR_SAMSUNG     0x1CE\n#define UFS_VENDOR_SKHYNIX     0x1AD\n#define UFS_VENDOR_TOSHIBA     0x198\n#define UFS_VENDOR_WDC         0x145\n\n \nstruct ufs_dev_quirk {\n\tu16 wmanufacturerid;\n\tconst u8 *model;\n\tunsigned int quirk;\n};\n\n \n#define UFS_DEVICE_QUIRK_RECOVERY_FROM_DL_NAC_ERRORS (1 << 2)\n\n \n#define UFS_DEVICE_QUIRK_PA_TACTIVATE\t(1 << 4)\n\n \n#define UFS_DEVICE_QUIRK_DELAY_BEFORE_LPM\t(1 << 6)\n\n \n#define UFS_DEVICE_QUIRK_HOST_PA_TACTIVATE\t(1 << 7)\n\n \n#define UFS_DEVICE_QUIRK_HOST_PA_SAVECONFIGTIME\t(1 << 8)\n\n \n#define UFS_DEVICE_QUIRK_HOST_VS_DEBUGSAVECONFIGTIME\t(1 << 9)\n\n \n#define UFS_DEVICE_QUIRK_SUPPORT_EXTENDED_FEATURES (1 << 10)\n\n \n#define UFS_DEVICE_QUIRK_DELAY_AFTER_LPM        (1 << 11)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

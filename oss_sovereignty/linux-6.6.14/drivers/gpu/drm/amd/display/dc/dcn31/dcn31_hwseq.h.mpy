@@ -1,0 +1,9 @@
+{
+  "module_name": "dcn31_hwseq.h",
+  "hash_id": "45e8225b94f41f950bc162770df42b89d98c511ece054d40d6f4ec6a837f6dde",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/dc/dcn31/dcn31_hwseq.h",
+  "human_readable_source": " \n\n#ifndef __DC_HWSS_DCN31_H__\n#define __DC_HWSS_DCN31_H__\n\n#include \"hw_sequencer_private.h\"\n\nstruct dc;\n\nvoid dcn31_init_hw(struct dc *dc);\n\nvoid dcn31_dsc_pg_control(\n\t\tstruct dce_hwseq *hws,\n\t\tunsigned int dsc_inst,\n\t\tbool power_on);\n\nvoid dcn31_enable_power_gating_plane(\n\tstruct dce_hwseq *hws,\n\tbool enable);\n\nvoid dcn31_update_info_frame(struct pipe_ctx *pipe_ctx);\n\nvoid dcn31_z10_restore(const struct dc *dc);\nvoid dcn31_z10_save_init(struct dc *dc);\n\nvoid dcn31_hubp_pg_control(struct dce_hwseq *hws, unsigned int hubp_inst, bool power_on);\nint dcn31_init_sys_ctx(struct dce_hwseq *hws, struct dc *dc, struct dc_phy_addr_space_config *pa_config);\nvoid dcn31_reset_hw_ctx_wrap(\n\t\tstruct dc *dc,\n\t\tstruct dc_state *context);\nbool dcn31_is_abm_supported(struct dc *dc,\n\t\tstruct dc_state *context, struct dc_stream_state *stream);\nvoid dcn31_init_pipes(struct dc *dc, struct dc_state *context);\nvoid dcn31_setup_hpo_hw_control(const struct dce_hwseq *hws, bool enable);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

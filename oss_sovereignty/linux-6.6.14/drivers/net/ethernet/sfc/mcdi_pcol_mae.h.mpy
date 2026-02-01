@@ -1,0 +1,9 @@
+{
+  "module_name": "mcdi_pcol_mae.h",
+  "hash_id": "bd5f06b7006008d0e6967c2c1a3d4a3c7a2f52ed2eef4377be8e3bf8efcb8826",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/sfc/mcdi_pcol_mae.h",
+  "human_readable_source": " \n \n\n#ifndef MCDI_PCOL_MAE_H\n#define MCDI_PCOL_MAE_H\n \n\n \n \n#define          MC_CMD_MAE_COUNTER_LIST_ALLOC_OUT_COUNTER_LIST_ID_NULL 0xffffffff\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

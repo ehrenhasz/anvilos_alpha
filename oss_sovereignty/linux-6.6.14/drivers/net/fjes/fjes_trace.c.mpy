@@ -1,0 +1,9 @@
+{
+  "module_name": "fjes_trace.c",
+  "hash_id": "5a54e2c126a4097e67f9fcdbdb4dff6e22b69e336b5ccf58094e2195cbc75fd1",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/fjes/fjes_trace.c",
+  "human_readable_source": "\n \n\n#include <linux/module.h>\n\n#ifndef __CHECKER__\n#include \"fjes_hw.h\"\n\n#define CREATE_TRACE_POINTS\n#include \"fjes_trace.h\"\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

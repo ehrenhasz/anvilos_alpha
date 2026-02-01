@@ -1,0 +1,9 @@
+{
+  "module_name": "msgqueue.h",
+  "hash_id": "8ebe2cbdf3123a71a2333de50e8ace9d241e2951bbfae030e7fd8d27f2b39986",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/scsi/arm/msgqueue.h",
+  "human_readable_source": " \n \n#ifndef MSGQUEUE_H\n#define MSGQUEUE_H\n\nstruct message {\n    char msg[8];\n    int length;\n    int fifo;\n};\n\nstruct msgqueue_entry {\n    struct message msg;\n    struct msgqueue_entry *next;\n};\n\n#define NR_MESSAGES 4\n\ntypedef struct {\n    struct msgqueue_entry *qe;\n    struct msgqueue_entry *free;\n    struct msgqueue_entry entries[NR_MESSAGES];\n} MsgQueue_t;\n\n \nextern void msgqueue_initialise(MsgQueue_t *msgq);\n\n \nextern void msgqueue_free(MsgQueue_t *msgq);\n\n \nextern int msgqueue_msglength(MsgQueue_t *msgq);\n\n \nextern struct message *msgqueue_getmsg(MsgQueue_t *msgq, int msgno);\n\n \nextern int msgqueue_addmsg(MsgQueue_t *msgq, int length, ...);\n\n \nextern void msgqueue_flush(MsgQueue_t *msgq);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

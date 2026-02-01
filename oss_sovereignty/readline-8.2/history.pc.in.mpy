@@ -1,0 +1,9 @@
+{
+  "module_name": "history.pc.in",
+  "hash_id": "1d9d95e6ccdd38c51cad62991e115c7b310ceb873f5fe4b01042398eacabde0b",
+  "original_prompt": "Ingested from readline-8.2/history.pc.in",
+  "human_readable_source": "prefix=@prefix@\nexec_prefix=@exec_prefix@\nlibdir=@libdir@\nincludedir=@includedir@\n\nName: History\nDescription: Gnu History library for managing previously-entered lines\nURL: http://tiswww.cwru.edu/php/chet/readline/rltop.html\nVersion: @LIBVERSION@\nLibs: -L${libdir} -lhistory\nCflags: -I${includedir}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "alias.h",
+  "hash_id": "26598d0438a387e762d44330a1ad1af48682022400165fbba386959694e9992e",
+  "original_prompt": "Ingested from bash-5.2.21/alias.h",
+  "human_readable_source": " \n\n \n\n#if !defined (_ALIAS_H_)\n#define _ALIAS_H_\n\n#include \"stdc.h\"\n\n#include \"hashlib.h\"\n\ntypedef struct alias {\n  char *name;\n  char *value;\n  char flags;\n} alias_t;\n\n \n#define AL_EXPANDNEXT\t\t0x1\n#define AL_BEINGEXPANDED\t0x2\n\n \nextern HASH_TABLE *aliases;\n\nextern void initialize_aliases PARAMS((void));\n\n \nextern alias_t *find_alias PARAMS((char *));\n\n \nextern char *get_alias_value PARAMS((char *));\n\n \nextern void add_alias PARAMS((char *, char *));\n\n \nextern int remove_alias PARAMS((char *));\n\n \nextern void delete_all_aliases PARAMS((void));\n\n \nextern alias_t **all_aliases PARAMS((void));\n\n \nextern char *alias_expand_word PARAMS((char *));\n\n \nextern char *alias_expand PARAMS((char *));\n\n \nextern void clear_string_list_expander PARAMS((alias_t *));\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

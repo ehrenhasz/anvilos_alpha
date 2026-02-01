@@ -1,0 +1,9 @@
+{
+  "module_name": "mcs_spinlock.h",
+  "hash_id": "fe82e82c84a38f3ba369307c215c5fde785ee8cf4785e87a9d2eaa3c4af3aabd",
+  "original_prompt": "Ingested from linux-6.6.14/include/asm-generic/mcs_spinlock.h",
+  "human_readable_source": "#ifndef __ASM_MCS_SPINLOCK_H\n#define __ASM_MCS_SPINLOCK_H\n\n \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

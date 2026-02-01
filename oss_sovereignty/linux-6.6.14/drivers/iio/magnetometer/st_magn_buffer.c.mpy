@@ -1,0 +1,9 @@
+{
+  "module_name": "st_magn_buffer.c",
+  "hash_id": "2dac8e1b609f27dae890778f4e36a94256c464b98eeb5b1fe1562daa6e319496",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/iio/magnetometer/st_magn_buffer.c",
+  "human_readable_source": "\n \n\n#include <linux/kernel.h>\n#include <linux/iio/iio.h>\n#include <linux/iio/buffer.h>\n#include <linux/iio/trigger.h>\n#include <linux/iio/triggered_buffer.h>\n\n#include <linux/iio/common/st_sensors.h>\n#include \"st_magn.h\"\n\nint st_magn_trig_set_state(struct iio_trigger *trig, bool state)\n{\n\tstruct iio_dev *indio_dev = iio_trigger_get_drvdata(trig);\n\n\treturn st_sensors_set_dataready_irq(indio_dev, state);\n}\n\nstatic int st_magn_buffer_postenable(struct iio_dev *indio_dev)\n{\n\treturn st_sensors_set_enable(indio_dev, true);\n}\n\nstatic int st_magn_buffer_predisable(struct iio_dev *indio_dev)\n{\n\treturn st_sensors_set_enable(indio_dev, false);\n}\n\nstatic const struct iio_buffer_setup_ops st_magn_buffer_setup_ops = {\n\t.postenable = &st_magn_buffer_postenable,\n\t.predisable = &st_magn_buffer_predisable,\n};\n\nint st_magn_allocate_ring(struct iio_dev *indio_dev)\n{\n\treturn devm_iio_triggered_buffer_setup(indio_dev->dev.parent, indio_dev,\n\t\tNULL, &st_sensors_trigger_handler, &st_magn_buffer_setup_ops);\n}\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

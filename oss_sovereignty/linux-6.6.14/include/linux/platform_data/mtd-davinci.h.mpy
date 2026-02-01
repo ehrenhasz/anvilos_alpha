@@ -1,0 +1,9 @@
+{
+  "module_name": "mtd-davinci.h",
+  "hash_id": "1dc81bce2cc7679a8724e6c3ceae33ab123f777986268c97a9444dc8caf5ba86",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/platform_data/mtd-davinci.h",
+  "human_readable_source": " \n \n\n#ifndef __ARCH_ARM_DAVINCI_NAND_H\n#define __ARCH_ARM_DAVINCI_NAND_H\n\n#include <linux/mtd/rawnand.h>\n\n#define NANDFCR_OFFSET\t\t0x60\n#define NANDFSR_OFFSET\t\t0x64\n#define NANDF1ECC_OFFSET\t0x70\n\n \n#define NAND_4BIT_ECC_LOAD_OFFSET\t0xbc\n#define NAND_4BIT_ECC1_OFFSET\t\t0xc0\n#define NAND_4BIT_ECC2_OFFSET\t\t0xc4\n#define NAND_4BIT_ECC3_OFFSET\t\t0xc8\n#define NAND_4BIT_ECC4_OFFSET\t\t0xcc\n#define NAND_ERR_ADD1_OFFSET\t\t0xd0\n#define NAND_ERR_ADD2_OFFSET\t\t0xd4\n#define NAND_ERR_ERRVAL1_OFFSET\t\t0xd8\n#define NAND_ERR_ERRVAL2_OFFSET\t\t0xdc\n\n \n#define\tMASK_ALE\t\t0x08\n#define\tMASK_CLE\t\t0x10\n\nstruct davinci_nand_pdata {\t\t \n\tuint32_t\t\tmask_ale;\n\tuint32_t\t\tmask_cle;\n\n\t \n\tuint32_t\t\tcore_chipsel;\n\n\t \n\tuint32_t\t\tmask_chipsel;\n\n\t \n\tstruct mtd_partition\t*parts;\n\tunsigned\t\tnr_parts;\n\n\t \n\tenum nand_ecc_engine_type engine_type;\n\tenum nand_ecc_placement ecc_placement;\n\tu8\t\t\tecc_bits;\n\n\t \n\tunsigned\t\toptions;\n\t \n\tunsigned\t\tbbt_options;\n\n\t \n\tstruct nand_bbt_descr\t*bbt_td;\n\tstruct nand_bbt_descr\t*bbt_md;\n\n\t \n\tstruct davinci_aemif_timing\t*timing;\n};\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "pkt_access.c",
+  "hash_id": "13010006c0e32ab3ee2222163435e92bdb047ede43f0c99f26bc195bd6c410a8",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/prog_tests/pkt_access.c",
+  "human_readable_source": "\n#include <test_progs.h>\n#include <network_helpers.h>\n\nvoid test_pkt_access(void)\n{\n\tconst char *file = \"./test_pkt_access.bpf.o\";\n\tstruct bpf_object *obj;\n\tint err, prog_fd;\n\tLIBBPF_OPTS(bpf_test_run_opts, topts,\n\t\t.data_in = &pkt_v4,\n\t\t.data_size_in = sizeof(pkt_v4),\n\t\t.repeat = 100000,\n\t);\n\n\terr = bpf_prog_test_load(file, BPF_PROG_TYPE_SCHED_CLS, &obj, &prog_fd);\n\tif (CHECK_FAIL(err))\n\t\treturn;\n\n\terr = bpf_prog_test_run_opts(prog_fd, &topts);\n\tASSERT_OK(err, \"ipv4 test_run_opts err\");\n\tASSERT_OK(topts.retval, \"ipv4 test_run_opts retval\");\n\n\ttopts.data_in = &pkt_v6;\n\ttopts.data_size_in = sizeof(pkt_v6);\n\ttopts.data_size_out = 0;  \n\terr = bpf_prog_test_run_opts(prog_fd, &topts);\n\tASSERT_OK(err, \"ipv6 test_run_opts err\");\n\tASSERT_OK(topts.retval, \"ipv6 test_run_opts retval\");\n\n\tbpf_object__close(obj);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

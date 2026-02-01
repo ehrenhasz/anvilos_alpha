@@ -1,0 +1,9 @@
+{
+  "module_name": "smemc.h",
+  "hash_id": "888a762bfb36038bfbbf678c9bb7ff0632f1ef1c20e8c8050657e9145a396f75",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/soc/pxa/smemc.h",
+  "human_readable_source": " \n#ifndef __PXA_REGS_H\n#define __PXA_REGS_H\n\n#include <linux/types.h>\n\nvoid pxa_smemc_set_pcmcia_timing(int sock, u32 mcmem, u32 mcatt, u32 mcio);\nvoid pxa_smemc_set_pcmcia_socket(int nr);\nint pxa2xx_smemc_get_sdram_rows(void);\nunsigned int pxa3xx_smemc_get_memclkdiv(void);\nvoid __iomem *pxa_smemc_get_mdrefr(void);\n\n \n#ifdef CONFIG_PXA25x\nextern unsigned pxa25x_get_clk_frequency_khz(int);\n#else\n#define pxa25x_get_clk_frequency_khz(x)\t\t(0)\n#endif\n\n#ifdef CONFIG_PXA27x\nextern unsigned pxa27x_get_clk_frequency_khz(int);\n#else\n#define pxa27x_get_clk_frequency_khz(x)\t\t(0)\n#endif\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

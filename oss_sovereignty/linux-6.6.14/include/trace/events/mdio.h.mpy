@@ -1,0 +1,9 @@
+{
+  "module_name": "mdio.h",
+  "hash_id": "ec46add17685192965b5648b5e4a50f25e4fd85ebc7ec9e1062c17087f898aa8",
+  "original_prompt": "Ingested from linux-6.6.14/include/trace/events/mdio.h",
+  "human_readable_source": " \n#undef TRACE_SYSTEM\n#define TRACE_SYSTEM mdio\n\n#if !defined(_TRACE_MDIO_H) || defined(TRACE_HEADER_MULTI_READ)\n#define _TRACE_MDIO_H\n\n#include <linux/tracepoint.h>\n\nTRACE_EVENT_CONDITION(mdio_access,\n\n\tTP_PROTO(struct mii_bus *bus, char read,\n\t\t u8 addr, unsigned regnum, u16 val, int err),\n\n\tTP_ARGS(bus, read, addr, regnum, val, err),\n\n\tTP_CONDITION(err >= 0),\n\n\tTP_STRUCT__entry(\n\t\t__array(char, busid, MII_BUS_ID_SIZE)\n\t\t__field(char, read)\n\t\t__field(u8, addr)\n\t\t__field(u16, val)\n\t\t__field(unsigned, regnum)\n\t),\n\n\tTP_fast_assign(\n\t\tstrncpy(__entry->busid, bus->id, MII_BUS_ID_SIZE);\n\t\t__entry->read = read;\n\t\t__entry->addr = addr;\n\t\t__entry->regnum = regnum;\n\t\t__entry->val = val;\n\t),\n\n\tTP_printk(\"%s %-5s phy:0x%02hhx reg:0x%02x val:0x%04hx\",\n\t\t  __entry->busid, __entry->read ? \"read\" : \"write\",\n\t\t  __entry->addr, __entry->regnum, __entry->val)\n);\n\n#endif  \n\n \n#include <trace/define_trace.h>\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "pinctrl-s32.h",
+  "hash_id": "4698ac0a032e63f95e568d77cd2216beb76150271e4def2da401ebe2d387edd2",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/pinctrl/nxp/pinctrl-s32.h",
+  "human_readable_source": " \n\n#ifndef __DRIVERS_PINCTRL_S32_H\n#define __DRIVERS_PINCTRL_S32_H\n\nstruct platform_device;\n\n \nstruct s32_pin_group {\n\tstruct pingroup data;\n\tunsigned int *pin_sss;\n};\n\n \nstruct s32_pin_range {\n\tunsigned int start;\n\tunsigned int end;\n};\n\nstruct s32_pinctrl_soc_data {\n\tconst struct pinctrl_pin_desc *pins;\n\tunsigned int npins;\n\tconst struct s32_pin_range *mem_pin_ranges;\n\tunsigned int mem_regions;\n};\n\nstruct s32_pinctrl_soc_info {\n\tstruct device *dev;\n\tconst struct s32_pinctrl_soc_data *soc_data;\n\tstruct s32_pin_group *groups;\n\tunsigned int ngroups;\n\tstruct pinfunction *functions;\n\tunsigned int nfunctions;\n\tunsigned int grp_index;\n};\n\n#define S32_PINCTRL_PIN(pin)\tPINCTRL_PIN(pin, #pin)\n#define S32_PIN_RANGE(_start, _end) { .start = _start, .end = _end }\n\nint s32_pinctrl_probe(struct platform_device *pdev,\n\t\t      const struct s32_pinctrl_soc_data *soc_data);\nint s32_pinctrl_resume(struct device *dev);\nint s32_pinctrl_suspend(struct device *dev);\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

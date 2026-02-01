@@ -1,0 +1,9 @@
+{
+  "module_name": "memtype.h",
+  "hash_id": "c14eb3b7219c6f89b122a9da0e380e4529b3506b976c453dab469428f36f0b59",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/mm/pat/memtype.h",
+  "human_readable_source": " \n#ifndef __MEMTYPE_H_\n#define __MEMTYPE_H_\n\nextern int pat_debug_enable;\n\n#define dprintk(fmt, arg...) \\\n\tdo { if (pat_debug_enable) pr_info(\"x86/PAT: \" fmt, ##arg); } while (0)\n\nstruct memtype {\n\tu64\t\t\tstart;\n\tu64\t\t\tend;\n\tu64\t\t\tsubtree_max_end;\n\tenum page_cache_mode\ttype;\n\tstruct rb_node\t\trb;\n};\n\nstatic inline char *cattr_name(enum page_cache_mode pcm)\n{\n\tswitch (pcm) {\n\tcase _PAGE_CACHE_MODE_UC:\t\treturn \"uncached\";\n\tcase _PAGE_CACHE_MODE_UC_MINUS:\t\treturn \"uncached-minus\";\n\tcase _PAGE_CACHE_MODE_WB:\t\treturn \"write-back\";\n\tcase _PAGE_CACHE_MODE_WC:\t\treturn \"write-combining\";\n\tcase _PAGE_CACHE_MODE_WT:\t\treturn \"write-through\";\n\tcase _PAGE_CACHE_MODE_WP:\t\treturn \"write-protected\";\n\tdefault:\t\t\t\treturn \"broken\";\n\t}\n}\n\n#ifdef CONFIG_X86_PAT\nextern int memtype_check_insert(struct memtype *entry_new,\n\t\t\t\tenum page_cache_mode *new_type);\nextern struct memtype *memtype_erase(u64 start, u64 end);\nextern struct memtype *memtype_lookup(u64 addr);\nextern int memtype_copy_nth_element(struct memtype *entry_out, loff_t pos);\n#else\nstatic inline int memtype_check_insert(struct memtype *entry_new,\n\t\t\t\t       enum page_cache_mode *new_type)\n{ return 0; }\nstatic inline struct memtype *memtype_erase(u64 start, u64 end)\n{ return NULL; }\nstatic inline struct memtype *memtype_lookup(u64 addr)\n{ return NULL; }\nstatic inline int memtype_copy_nth_element(struct memtype *out, loff_t pos)\n{ return 0; }\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

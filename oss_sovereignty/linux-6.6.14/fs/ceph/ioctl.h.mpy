@@ -1,0 +1,9 @@
+{
+  "module_name": "ioctl.h",
+  "hash_id": "6d1c824627a4ecf0a66671ac5d016a9c1442812824e5b2ddb85baafc4133c1ed",
+  "original_prompt": "Ingested from linux-6.6.14/fs/ceph/ioctl.h",
+  "human_readable_source": " \n#ifndef FS_CEPH_IOCTL_H\n#define FS_CEPH_IOCTL_H\n\n#include <linux/ioctl.h>\n#include <linux/types.h>\n\n#define CEPH_IOCTL_MAGIC 0x97\n\n \n\n \nstruct ceph_ioctl_layout {\n\t__u64 stripe_unit, stripe_count, object_size;\n\t__u64 data_pool;\n\n\t \n\t__s64 preferred_osd;\n};\n\n#define CEPH_IOC_GET_LAYOUT _IOR(CEPH_IOCTL_MAGIC, 1,\t\t\\\n\t\t\t\t   struct ceph_ioctl_layout)\n#define CEPH_IOC_SET_LAYOUT _IOW(CEPH_IOCTL_MAGIC, 2,\t\t\\\n\t\t\t\t   struct ceph_ioctl_layout)\n#define CEPH_IOC_SET_LAYOUT_POLICY _IOW(CEPH_IOCTL_MAGIC, 5,\t\\\n\t\t\t\t   struct ceph_ioctl_layout)\n\n \nstruct ceph_ioctl_dataloc {\n\t__u64 file_offset;            \n\t__u64 object_offset;          \n\t__u64 object_no;              \n\t__u64 object_size;            \n\tchar object_name[64];         \n\t__u64 block_offset;           \n\t__u64 block_size;             \n\t__s64 osd;                    \n\tstruct sockaddr_storage osd_addr;  \n};\n\n#define CEPH_IOC_GET_DATALOC _IOWR(CEPH_IOCTL_MAGIC, 3,\t\\\n\t\t\t\t   struct ceph_ioctl_dataloc)\n\n \n#define CEPH_IOC_LAZYIO _IO(CEPH_IOCTL_MAGIC, 4)\n\n \n#define CEPH_IOC_SYNCIO _IO(CEPH_IOCTL_MAGIC, 5)\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

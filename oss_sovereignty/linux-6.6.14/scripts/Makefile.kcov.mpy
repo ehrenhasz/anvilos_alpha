@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile.kcov",
+  "hash_id": "752ebd3a1cc8de39130ce591534eef75d2597015163567caeaf60528f65aa832",
+  "original_prompt": "Ingested from linux-6.6.14/scripts/Makefile.kcov",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nkcov-flags-$(CONFIG_CC_HAS_SANCOV_TRACE_PC)\t+= -fsanitize-coverage=trace-pc\nkcov-flags-$(CONFIG_KCOV_ENABLE_COMPARISONS)\t+= -fsanitize-coverage=trace-cmp\nkcov-flags-$(CONFIG_GCC_PLUGIN_SANCOV)\t\t+= -fplugin=$(objtree)/scripts/gcc-plugins/sancov_plugin.so\n\nexport CFLAGS_KCOV := $(kcov-flags-y)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "swiotlb-xen.h",
+  "hash_id": "d72aa54695ec6dc3ff8b2b93377390d0ed420ca55c6bc9916e11171e9079b60b",
+  "original_prompt": "Ingested from linux-6.6.14/include/xen/arm/swiotlb-xen.h",
+  "human_readable_source": " \n#ifndef _ASM_ARM_SWIOTLB_XEN_H\n#define _ASM_ARM_SWIOTLB_XEN_H\n\n#include <xen/features.h>\n#include <xen/xen.h>\n\nstatic inline int xen_swiotlb_detect(void)\n{\n\tif (!xen_domain())\n\t\treturn 0;\n\tif (xen_feature(XENFEAT_direct_mapped))\n\t\treturn 1;\n\t \n\tif (!xen_feature(XENFEAT_not_direct_mapped) && xen_initial_domain())\n\t\treturn 1;\n\treturn 0;\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "syscall_32.c",
+  "hash_id": "e8dc9ad5766da0d97e3b8c2452fffc908f94334cd1b8f89bc55328adb04a195c",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/entry/syscall_32.c",
+  "human_readable_source": "\n \n\n#include <linux/linkage.h>\n#include <linux/sys.h>\n#include <linux/cache.h>\n#include <linux/syscalls.h>\n#include <asm/syscall.h>\n\n#ifdef CONFIG_IA32_EMULATION\n#define __SYSCALL_WITH_COMPAT(nr, native, compat)\t__SYSCALL(nr, compat)\n#else\n#define __SYSCALL_WITH_COMPAT(nr, native, compat)\t__SYSCALL(nr, native)\n#endif\n\n#define __SYSCALL(nr, sym) extern long __ia32_##sym(const struct pt_regs *);\n\n#include <asm/syscalls_32.h>\n#undef __SYSCALL\n\n#define __SYSCALL(nr, sym) __ia32_##sym,\n\n__visible const sys_call_ptr_t ia32_sys_call_table[] = {\n#include <asm/syscalls_32.h>\n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

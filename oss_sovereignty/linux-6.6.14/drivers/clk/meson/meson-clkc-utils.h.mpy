@@ -1,0 +1,9 @@
+{
+  "module_name": "meson-clkc-utils.h",
+  "hash_id": "5a2d2c0b51b009d33eefef7729dff05f6f00809d3ce02e24f446ace30e8cb3c9",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/clk/meson/meson-clkc-utils.h",
+  "human_readable_source": " \n \n\n#ifndef __MESON_CLKC_UTILS_H__\n#define __MESON_CLKC_UTILS_H__\n\n#include <linux/of_device.h>\n#include <linux/clk-provider.h>\n\nstruct meson_clk_hw_data {\n\tstruct clk_hw\t**hws;\n\tunsigned int\tnum;\n};\n\nstruct clk_hw *meson_clk_hw_get(struct of_phandle_args *clkspec, void *clk_hw_data);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

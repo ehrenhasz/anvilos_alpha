@@ -1,0 +1,9 @@
+{
+  "module_name": "btf__core_reloc_bitfields___err_too_big_bitfield.c",
+  "hash_id": "3a4968e741620731c210f5dd363502d4bc53ae7fc41bccc1fb88695f1500dc60",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/btf__core_reloc_bitfields___err_too_big_bitfield.c",
+  "human_readable_source": "#include \"core_reloc_types.h\"\n\nvoid f(struct core_reloc_bitfields___err_too_big_bitfield x) {}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

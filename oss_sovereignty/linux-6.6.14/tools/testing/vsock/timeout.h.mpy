@@ -1,0 +1,9 @@
+{
+  "module_name": "timeout.h",
+  "hash_id": "8d921726d98a56e560bb84a8edef3f2106e5cf719fd240cde7c28a0cd447e88e",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/vsock/timeout.h",
+  "human_readable_source": " \n#ifndef TIMEOUT_H\n#define TIMEOUT_H\n\nenum {\n\t \n\tTIMEOUT = 10  \n};\n\nvoid sigalrm(int signo);\nvoid timeout_begin(unsigned int seconds);\nvoid timeout_check(const char *operation);\nvoid timeout_end(void);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

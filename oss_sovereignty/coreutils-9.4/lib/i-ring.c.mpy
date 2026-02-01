@@ -1,0 +1,9 @@
+{
+  "module_name": "i-ring.c",
+  "hash_id": "c605771785e0dbb40c6926d6bdf7820f6749a144e643fbfb6826f4c365e4753e",
+  "original_prompt": "Ingested from coreutils-9.4/lib/i-ring.c",
+  "human_readable_source": " \n\n#include <config.h>\n#include \"i-ring.h\"\n\n#include <stdlib.h>\n\nvoid\ni_ring_init (I_ring *ir, int default_val)\n{\n  int i;\n  ir->ir_empty = true;\n  ir->ir_front = 0;\n  ir->ir_back = 0;\n  for (i = 0; i < I_RING_SIZE; i++)\n    ir->ir_data[i] = default_val;\n  ir->ir_default_val = default_val;\n}\n\nbool\ni_ring_empty (I_ring const *ir)\n{\n  return ir->ir_empty;\n}\n\nint\ni_ring_push (I_ring *ir, int val)\n{\n  unsigned int dest_idx = (ir->ir_front + !ir->ir_empty) % I_RING_SIZE;\n  int old_val = ir->ir_data[dest_idx];\n  ir->ir_data[dest_idx] = val;\n  ir->ir_front = dest_idx;\n  if (dest_idx == ir->ir_back)\n    ir->ir_back = (ir->ir_back + !ir->ir_empty) % I_RING_SIZE;\n  ir->ir_empty = false;\n  return old_val;\n}\n\nint\ni_ring_pop (I_ring *ir)\n{\n  int top_val;\n  if (i_ring_empty (ir))\n    abort ();\n  top_val = ir->ir_data[ir->ir_front];\n  ir->ir_data[ir->ir_front] = ir->ir_default_val;\n  if (ir->ir_front == ir->ir_back)\n    ir->ir_empty = true;\n  else\n    ir->ir_front = ((ir->ir_front + I_RING_SIZE - 1) % I_RING_SIZE);\n  return top_val;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

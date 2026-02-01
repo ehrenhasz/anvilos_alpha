@@ -1,0 +1,9 @@
+{
+  "module_name": "kernel-in-compat-syscall.m4",
+  "hash_id": "bbf77cc83df259054696ea8698981eabafa11852e841e9dbe71704d88b509acc",
+  "original_prompt": "Ingested from zfs-2.2.2/config/kernel-in-compat-syscall.m4",
+  "human_readable_source": "dnl #\ndnl # 4.5 API change\ndnl # Added in_compat_syscall() which can be overridden on a per-\ndnl # architecture basis.  Prior to this is_compat_task() was the\ndnl # provided interface.\ndnl #\nAC_DEFUN([ZFS_AC_KERNEL_SRC_IN_COMPAT_SYSCALL], [\n\tZFS_LINUX_TEST_SRC([in_compat_syscall], [\n\t\t#include <linux/compat.h>\n\t],[\n\t\tin_compat_syscall();\n\t])\n])\n\nAC_DEFUN([ZFS_AC_KERNEL_IN_COMPAT_SYSCALL], [\n\tAC_MSG_CHECKING([whether in_compat_syscall() is available])\n\tZFS_LINUX_TEST_RESULT([in_compat_syscall], [\n\t\tAC_MSG_RESULT(yes)\n\t\tAC_DEFINE(HAVE_IN_COMPAT_SYSCALL, 1,\n\t\t    [in_compat_syscall() is available])\n\t],[\n\t\tAC_MSG_RESULT(no)\n\t])\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

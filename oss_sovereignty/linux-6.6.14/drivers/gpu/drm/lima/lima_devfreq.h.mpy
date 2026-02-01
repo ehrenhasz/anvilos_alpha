@@ -1,0 +1,9 @@
+{
+  "module_name": "lima_devfreq.h",
+  "hash_id": "fea472d3440c5c75c04f0d3604ef8cee9967eaa94b3a3e3abffb79342f615dff",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/lima/lima_devfreq.h",
+  "human_readable_source": " \n \n\n#ifndef __LIMA_DEVFREQ_H__\n#define __LIMA_DEVFREQ_H__\n\n#include <linux/devfreq.h>\n#include <linux/spinlock.h>\n#include <linux/ktime.h>\n\nstruct devfreq;\nstruct thermal_cooling_device;\n\nstruct lima_device;\n\nstruct lima_devfreq {\n\tstruct devfreq *devfreq;\n\tstruct thermal_cooling_device *cooling;\n\tstruct devfreq_simple_ondemand_data gov_data;\n\n\tktime_t busy_time;\n\tktime_t idle_time;\n\tktime_t time_last_update;\n\tint busy_count;\n\t \n\tspinlock_t lock;\n};\n\nint lima_devfreq_init(struct lima_device *ldev);\nvoid lima_devfreq_fini(struct lima_device *ldev);\n\nvoid lima_devfreq_record_busy(struct lima_devfreq *devfreq);\nvoid lima_devfreq_record_idle(struct lima_devfreq *devfreq);\n\nint lima_devfreq_resume(struct lima_devfreq *devfreq);\nint lima_devfreq_suspend(struct lima_devfreq *devfreq);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

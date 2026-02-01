@@ -1,0 +1,9 @@
+{
+  "module_name": "defrag.h",
+  "hash_id": "e319b60dd98b1440f49f76e7b9a6de444ad09ab18385ebc47a079acb7ed623aa",
+  "original_prompt": "Ingested from linux-6.6.14/fs/btrfs/defrag.h",
+  "human_readable_source": " \n\n#ifndef BTRFS_DEFRAG_H\n#define BTRFS_DEFRAG_H\n\nint btrfs_defrag_file(struct inode *inode, struct file_ra_state *ra,\n\t\t      struct btrfs_ioctl_defrag_range_args *range,\n\t\t      u64 newer_than, unsigned long max_to_defrag);\nint __init btrfs_auto_defrag_init(void);\nvoid __cold btrfs_auto_defrag_exit(void);\nint btrfs_add_inode_defrag(struct btrfs_trans_handle *trans,\n\t\t\t   struct btrfs_inode *inode, u32 extent_thresh);\nint btrfs_run_defrag_inodes(struct btrfs_fs_info *fs_info);\nvoid btrfs_cleanup_defrag_inodes(struct btrfs_fs_info *fs_info);\nint btrfs_defrag_leaves(struct btrfs_trans_handle *trans, struct btrfs_root *root);\n\nstatic inline int btrfs_defrag_cancelled(struct btrfs_fs_info *fs_info)\n{\n\treturn signal_pending(current);\n}\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

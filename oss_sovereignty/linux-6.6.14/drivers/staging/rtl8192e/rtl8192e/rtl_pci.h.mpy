@@ -1,0 +1,9 @@
+{
+  "module_name": "rtl_pci.h",
+  "hash_id": "f391a69ef60339b2a90198cecc12de813f0494cb70b066cf4c91752ae92645c7",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/rtl8192e/rtl8192e/rtl_pci.h",
+  "human_readable_source": " \n \n#ifndef _RTL_PCI_H\n#define _RTL_PCI_H\n\n#include <linux/types.h>\n#include <linux/pci.h>\n\nstruct net_device;\nbool rtl92e_check_adapter(struct pci_dev *pdev, struct net_device *dev);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

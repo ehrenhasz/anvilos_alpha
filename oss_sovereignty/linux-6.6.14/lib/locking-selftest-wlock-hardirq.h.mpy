@@ -1,0 +1,9 @@
+{
+  "module_name": "locking-selftest-wlock-hardirq.h",
+  "hash_id": "6d46f6ff674438dd16fda86c449824bcc3aaaa2db5c889f40b6e11c4d969e8db",
+  "original_prompt": "Ingested from linux-6.6.14/lib/locking-selftest-wlock-hardirq.h",
+  "human_readable_source": "#include \"locking-selftest-wlock.h\"\n#include \"locking-selftest-hardirq.h\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

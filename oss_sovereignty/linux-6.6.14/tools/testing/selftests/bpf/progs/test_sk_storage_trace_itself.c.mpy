@@ -1,0 +1,9 @@
+{
+  "module_name": "test_sk_storage_trace_itself.c",
+  "hash_id": "c1d7636ec1aa4b256c493528e45436eede797130d4fc6a9ee1fffad48eb3e006",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/test_sk_storage_trace_itself.c",
+  "human_readable_source": "\n \n\n#include <vmlinux.h>\n#include <bpf/bpf_tracing.h>\n#include <bpf/bpf_helpers.h>\n\nstruct {\n\t__uint(type, BPF_MAP_TYPE_SK_STORAGE);\n\t__uint(map_flags, BPF_F_NO_PREALLOC);\n\t__type(key, int);\n\t__type(value, int);\n} sk_stg_map SEC(\".maps\");\n\nSEC(\"fentry/bpf_sk_storage_free\")\nint BPF_PROG(trace_bpf_sk_storage_free, struct sock *sk)\n{\n\tint *value;\n\n\tvalue = bpf_sk_storage_get(&sk_stg_map, sk, 0,\n\t\t\t\t   BPF_SK_STORAGE_GET_F_CREATE);\n\n\tif (value)\n\t\t*value = 1;\n\n\treturn 0;\n}\n\nchar _license[] SEC(\"license\") = \"GPL\";\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

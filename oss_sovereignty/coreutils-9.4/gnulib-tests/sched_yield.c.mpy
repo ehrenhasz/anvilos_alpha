@@ -1,0 +1,9 @@
+{
+  "module_name": "sched_yield.c",
+  "hash_id": "a5c8d1f272a6e43f84e83bbd6a936596abde6440b346098ae047ba64bb911184",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/sched_yield.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n \n#include <sched.h>\n\n#if (defined _WIN32 && ! defined __CYGWIN__) && USE_WINDOWS_THREADS\n \n\n# define WIN32_LEAN_AND_MEAN   \n# include <windows.h>\n\nint\nsched_yield (void)\n{\n  Sleep (0);\n  return 0;\n}\n\n#elif defined __KLIBC__\n \n\n# define INCL_DOS\n# include <os2.h>\n\nint\nsched_yield (void)\n{\n  DosSleep (0);\n  return 0;\n}\n\n#else\n \n\nint\nsched_yield (void)\n{\n  return 0;\n}\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

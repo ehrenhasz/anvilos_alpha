@@ -1,0 +1,9 @@
+{
+  "module_name": "df_3_6_default.h",
+  "hash_id": "909163c2386d9ee246a227a01a3f19a8e06959169728f8847e02227d037d3696",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/include/asic_reg/df/df_3_6_default.h",
+  "human_readable_source": " \n#ifndef _df_3_6_DEFAULT_HEADER\n#define _df_3_6_DEFAULT_HEADER\n\n#define mmFabricConfigAccessControl_DEFAULT\t\t\t\t\t\t0x00000000\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

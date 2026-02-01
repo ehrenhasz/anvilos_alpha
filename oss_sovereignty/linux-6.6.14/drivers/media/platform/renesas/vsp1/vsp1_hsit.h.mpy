@@ -1,0 +1,9 @@
+{
+  "module_name": "vsp1_hsit.h",
+  "hash_id": "dc43e7b0b9c42b2418394b03448298223a8b49c3fe188d548399a04843d9a787",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/platform/renesas/vsp1/vsp1_hsit.h",
+  "human_readable_source": " \n \n#ifndef __VSP1_HSIT_H__\n#define __VSP1_HSIT_H__\n\n#include <media/media-entity.h>\n#include <media/v4l2-subdev.h>\n\n#include \"vsp1_entity.h\"\n\nstruct vsp1_device;\n\n#define HSIT_PAD_SINK\t\t\t\t0\n#define HSIT_PAD_SOURCE\t\t\t\t1\n\nstruct vsp1_hsit {\n\tstruct vsp1_entity entity;\n\tbool inverse;\n};\n\nstatic inline struct vsp1_hsit *to_hsit(struct v4l2_subdev *subdev)\n{\n\treturn container_of(subdev, struct vsp1_hsit, entity.subdev);\n}\n\nstruct vsp1_hsit *vsp1_hsit_create(struct vsp1_device *vsp1, bool inverse);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

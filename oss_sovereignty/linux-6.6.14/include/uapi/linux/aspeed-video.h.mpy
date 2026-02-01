@@ -1,0 +1,9 @@
+{
+  "module_name": "aspeed-video.h",
+  "hash_id": "f37d690bede5f55fc1a93ef58272a5021a2577bf0591f2fc27c1d0133e12be0c",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/aspeed-video.h",
+  "human_readable_source": " \n \n\n#ifndef _UAPI_LINUX_ASPEED_VIDEO_H\n#define _UAPI_LINUX_ASPEED_VIDEO_H\n\n#include <linux/v4l2-controls.h>\n\n#define V4L2_CID_ASPEED_HQ_MODE\t\t\t(V4L2_CID_USER_ASPEED_BASE  + 1)\n#define V4L2_CID_ASPEED_HQ_JPEG_QUALITY\t\t(V4L2_CID_USER_ASPEED_BASE  + 2)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

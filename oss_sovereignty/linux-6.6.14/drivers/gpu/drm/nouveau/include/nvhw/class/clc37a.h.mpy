@@ -1,0 +1,9 @@
+{
+  "module_name": "clc37a.h",
+  "hash_id": "2530f79fab95ed91d184ee636d2146660edcbd5d36a085b2fa8807467d94a53c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/include/nvhw/class/clc37a.h",
+  "human_readable_source": " \n\n\n#ifndef _clc37a__h_\n#define _clc37a__h_\n\n#define NVC37A_UPDATE                                                           (0x00000200)\n#define NVC37A_SET_CURSOR_HOT_SPOT_POINT_OUT(b)                                 (0x00000208 + (b)*0x00000004)\n#define NVC37A_SET_CURSOR_HOT_SPOT_POINT_OUT_X                                  15:0\n#define NVC37A_SET_CURSOR_HOT_SPOT_POINT_OUT_Y                                  31:16\n#endif \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

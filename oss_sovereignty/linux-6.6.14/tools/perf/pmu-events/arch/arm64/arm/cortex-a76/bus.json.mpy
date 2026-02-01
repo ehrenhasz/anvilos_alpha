@@ -1,0 +1,9 @@
+{
+  "module_name": "bus.json",
+  "hash_id": "b7161c04f56d5c9d9cb3ab30c41b5b1a92d0cf1ec9c36a6d8a22756d68aa4baa",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/pmu-events/arch/arm64/arm/cortex-a76/bus.json",
+  "human_readable_source": "[\n    {\n        \"PublicDescription\": \"The number of core clock cycles\",\n        \"ArchStdEvent\": \"CPU_CYCLES\",\n        \"BriefDescription\": \"The number of core clock cycles.\"\n    },\n    {\n        \"PublicDescription\": \"This event counts for every beat of data transferred over the data channels between the core and the SCU. If both read and write data beats are transferred on a given cycle, this event is counted twice on that cycle. This event counts the sum of BUS_ACCESS_RD and BUS_ACCESS_WR.\",\n        \"ArchStdEvent\": \"BUS_ACCESS\"\n    },\n    {\n        \"PublicDescription\": \"This event duplicates CPU_CYCLES.\",\n        \"ArchStdEvent\": \"BUS_CYCLES\"\n    },\n    {\n        \"ArchStdEvent\":  \"BUS_ACCESS_RD\"\n    },\n    {\n        \"ArchStdEvent\":  \"BUS_ACCESS_WR\"\n    }\n]\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

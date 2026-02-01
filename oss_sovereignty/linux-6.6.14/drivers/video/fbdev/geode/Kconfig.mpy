@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "c8665b0a1a256828701ce16f95785ac953139c842901caa46a31eaa175f4f012",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/video/fbdev/geode/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Geode family framebuffer configuration\n#\nconfig FB_GEODE\n\tbool \"AMD Geode family framebuffer support\"\n\tdepends on FB && PCI && (X86_32 || (X86 && COMPILE_TEST))\n\tdepends on !UML\n\thelp\n\t  Say 'Y' here to allow you to select framebuffer drivers for\n\t  the AMD Geode family of processors.\n\nconfig FB_GEODE_LX\n\ttristate \"AMD Geode LX framebuffer support\"\n\tdepends on FB && FB_GEODE\n\tselect FB_IOMEM_HELPERS\n\tselect VIDEO_NOMODESET\n\thelp\n\t  Framebuffer driver for the display controller integrated into the\n\t  AMD Geode LX processors.\n\n\t  To compile this driver as a module, choose M here: the module will\n\t  be called lxfb.\n\n\t  If unsure, say N.\n\nconfig FB_GEODE_GX\n\ttristate \"AMD Geode GX framebuffer support\"\n\tdepends on FB && FB_GEODE\n\tselect FB_IOMEM_HELPERS\n\tselect VIDEO_NOMODESET\n\thelp\n\t  Framebuffer driver for the display controller integrated into the\n\t  AMD Geode GX processors.\n\n\t  To compile this driver as a module, choose M here: the module will be\n\t  called gxfb.\n\n\t  If unsure, say N.\n\nconfig FB_GEODE_GX1\n\ttristate \"AMD Geode GX1 framebuffer support\"\n\tdepends on FB && FB_GEODE\n\tselect FB_IOMEM_HELPERS\n\tselect VIDEO_NOMODESET\n\thelp\n\t  Framebuffer driver for the display controller integrated into the\n\t  AMD Geode GX1 processor.\n\n\t  To compile this driver as a module, choose M here: the module will be\n\t  called gx1fb.\n\n\t  If unsure, say N.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

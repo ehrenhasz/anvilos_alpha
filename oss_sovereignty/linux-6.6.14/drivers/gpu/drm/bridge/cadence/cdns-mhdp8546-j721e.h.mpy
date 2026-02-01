@@ -1,0 +1,9 @@
+{
+  "module_name": "cdns-mhdp8546-j721e.h",
+  "hash_id": "5eab445b866a858e2aee00d77e3f8317ac9bf5af50b24a1e57a96a331fbcdb29",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/bridge/cadence/cdns-mhdp8546-j721e.h",
+  "human_readable_source": " \n \n\n#ifndef CDNS_MHDP8546_J721E_H\n#define CDNS_MHDP8546_J721E_H\n\n#include \"cdns-mhdp8546-core.h\"\n\nstruct mhdp_platform_ops;\n\nextern const struct mhdp_platform_ops mhdp_ti_j721e_ops;\nextern const u32 mhdp_ti_j721e_bridge_input_bus_flags;\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "164c61e9e15a96a8f43ba0d8db5f94cb6993a6c190dab703c6d116d0b61a356f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/iio/common/st_sensors/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# STMicroelectronics sensors common library\n#\n\nconfig IIO_ST_SENSORS_I2C\n\ttristate\n\tselect REGMAP_I2C\n\nconfig IIO_ST_SENSORS_SPI\n\ttristate\n\tselect REGMAP_SPI\n\nconfig IIO_ST_SENSORS_CORE\n\ttristate\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

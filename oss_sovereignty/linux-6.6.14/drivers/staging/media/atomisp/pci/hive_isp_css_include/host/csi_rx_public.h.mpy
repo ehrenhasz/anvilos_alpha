@@ -1,0 +1,9 @@
+{
+  "module_name": "csi_rx_public.h",
+  "hash_id": "a28b099efe7c4ad6b1ea6d60a0da165e2d53d7b7645fb85c801fc756e0461f31",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/hive_isp_css_include/host/csi_rx_public.h",
+  "human_readable_source": " \n \n\n#ifndef __CSI_RX_PUBLIC_H_INCLUDED__\n#define __CSI_RX_PUBLIC_H_INCLUDED__\n\n#ifdef ISP2401\n \n \nvoid csi_rx_fe_ctrl_get_state(\n    const csi_rx_frontend_ID_t ID,\n    csi_rx_fe_ctrl_state_t *state);\n \nvoid csi_rx_fe_ctrl_dump_state(\n    const csi_rx_frontend_ID_t ID,\n    csi_rx_fe_ctrl_state_t *state);\n \nvoid csi_rx_fe_ctrl_get_dlane_state(\n    const csi_rx_frontend_ID_t ID,\n    const u32 lane,\n    csi_rx_fe_ctrl_lane_t *dlane_state);\n \nvoid csi_rx_be_ctrl_get_state(\n    const csi_rx_backend_ID_t ID,\n    csi_rx_be_ctrl_state_t *state);\n \nvoid csi_rx_be_ctrl_dump_state(\n    const csi_rx_backend_ID_t ID,\n    csi_rx_be_ctrl_state_t *state);\n \n\n \n \nhrt_data csi_rx_fe_ctrl_reg_load(\n    const csi_rx_frontend_ID_t ID,\n    const hrt_address reg);\n \nvoid csi_rx_fe_ctrl_reg_store(\n    const csi_rx_frontend_ID_t ID,\n    const hrt_address reg,\n    const hrt_data value);\n \nhrt_data csi_rx_be_ctrl_reg_load(\n    const csi_rx_backend_ID_t ID,\n    const hrt_address reg);\n \nvoid csi_rx_be_ctrl_reg_store(\n    const csi_rx_backend_ID_t ID,\n    const hrt_address reg,\n    const hrt_data value);\n \n#endif  \n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

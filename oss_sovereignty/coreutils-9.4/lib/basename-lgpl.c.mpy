@@ -1,0 +1,9 @@
+{
+  "module_name": "basename-lgpl.c",
+  "hash_id": "02c39778ccf813de5e2dd3ede613c2940a68818ad94f8d7447c32b2c1bdaaf45",
+  "original_prompt": "Ingested from coreutils-9.4/lib/basename-lgpl.c",
+  "human_readable_source": " \n#include \"basename-lgpl.h\"\n\n#include <string.h>\n\n#include \"filename.h\"\n\nchar *\nlast_component (char const *name)\n{\n  char const *base = name + FILE_SYSTEM_PREFIX_LEN (name);\n  char const *p;\n  bool last_was_slash = false;\n\n  while (ISSLASH (*base))\n    base++;\n\n  for (p = base; *p; p++)\n    {\n      if (ISSLASH (*p))\n        last_was_slash = true;\n      else if (last_was_slash)\n        {\n          base = p;\n          last_was_slash = false;\n        }\n    }\n\n  return (char *) base;\n}\n\nsize_t\nbase_len (char const *name)\n{\n  size_t len;\n  size_t prefix_len = FILE_SYSTEM_PREFIX_LEN (name);\n\n  for (len = strlen (name);  1 < len && ISSLASH (name[len - 1]);  len--)\n    continue;\n\n  if (DOUBLE_SLASH_IS_DISTINCT_ROOT && len == 1\n      && ISSLASH (name[0]) && ISSLASH (name[1]) && ! name[2])\n    return 2;\n\n  if (FILE_SYSTEM_DRIVE_PREFIX_CAN_BE_RELATIVE && prefix_len\n      && len == prefix_len && ISSLASH (name[prefix_len]))\n    return prefix_len + 1;\n\n  return len;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

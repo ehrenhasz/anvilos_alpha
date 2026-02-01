@@ -1,0 +1,9 @@
+{
+  "module_name": "lib_erase.c",
+  "hash_id": "0a63ef4bbaea50ab7fc65ff2e09c80f61972c65d50421b40f9a9dbd897684a8d",
+  "original_prompt": "Ingested from ncurses-6.4/ncurses/base/lib_erase.c",
+  "human_readable_source": " \n\n \n\n \n\n#include <curses.priv.h>\n\nMODULE_ID(\"$Id: lib_erase.c,v 1.20 2022/09/03 21:40:27 tom Exp $\")\n\nNCURSES_EXPORT(int)\nwerase(WINDOW *win)\n{\n    int code = ERR;\n    NCURSES_CH_T *start;\n\n    T((T_CALLED(\"werase(%p)\"), (void *) win));\n\n    if (win) {\n\tNCURSES_CH_T blank;\n\tNCURSES_CH_T *sp;\n\tint y;\n\n\tblank = win->_nc_bkgd;\n\tfor (y = 0; y <= win->_maxy; y++) {\n\t    NCURSES_CH_T *end;\n\n\t    start = win->_line[y].text;\n\t    end = &start[win->_maxx];\n\n\t     \n\t    if_WIDEC({\n\t\tif (isWidecExt(start[0])) {\n\t\t    int x = (win->_parent != 0) ? (win->_begx) : 0;\n\t\t    while (x-- > 0) {\n\t\t\tif (isWidecBase(start[-1])) {\n\t\t\t    --start;\n\t\t\t    break;\n\t\t\t}\n\t\t\t--start;\n\t\t    }\n\t\t}\n\t    });\n\n\t    for (sp = start; sp <= end; sp++)\n\t\t*sp = blank;\n\n\t    win->_line[y].firstchar = 0;\n\t    win->_line[y].lastchar = win->_maxx;\n\t}\n\twin->_curx = win->_cury = 0;\n\twin->_flags &= ~_WRAPPED;\n\t_nc_synchook(win);\n\tcode = OK;\n    }\n    returnCode(code);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

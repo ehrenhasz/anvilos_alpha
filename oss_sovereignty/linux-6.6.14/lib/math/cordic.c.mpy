@@ -1,0 +1,9 @@
+{
+  "module_name": "cordic.c",
+  "hash_id": "1c99f726e3eec08c2def2b52ba46ec7fc8cf7ebe40f033b08e7dac531d5f080f",
+  "original_prompt": "Ingested from linux-6.6.14/lib/math/cordic.c",
+  "human_readable_source": " \n#include <linux/module.h>\n#include <linux/cordic.h>\n\nstatic const s32 arctan_table[] = {\n\t2949120,\n\t1740967,\n\t919879,\n\t466945,\n\t234379,\n\t117304,\n\t58666,\n\t29335,\n\t14668,\n\t7334,\n\t3667,\n\t1833,\n\t917,\n\t458,\n\t229,\n\t115,\n\t57,\n\t29\n};\n\n \nstruct cordic_iq cordic_calc_iq(s32 theta)\n{\n\tstruct cordic_iq coord;\n\ts32 angle, valtmp;\n\tunsigned iter;\n\tint signx = 1;\n\tint signtheta;\n\n\tcoord.i = CORDIC_ANGLE_GEN;\n\tcoord.q = 0;\n\tangle = 0;\n\n\ttheta = CORDIC_FIXED(theta);\n\tsigntheta = (theta < 0) ? -1 : 1;\n\ttheta = ((theta + CORDIC_FIXED(180) * signtheta) % CORDIC_FIXED(360)) -\n\t\tCORDIC_FIXED(180) * signtheta;\n\n\tif (CORDIC_FLOAT(theta) > 90) {\n\t\ttheta -= CORDIC_FIXED(180);\n\t\tsignx = -1;\n\t} else if (CORDIC_FLOAT(theta) < -90) {\n\t\ttheta += CORDIC_FIXED(180);\n\t\tsignx = -1;\n\t}\n\n\tfor (iter = 0; iter < CORDIC_NUM_ITER; iter++) {\n\t\tif (theta > angle) {\n\t\t\tvaltmp = coord.i - (coord.q >> iter);\n\t\t\tcoord.q += (coord.i >> iter);\n\t\t\tangle += arctan_table[iter];\n\t\t} else {\n\t\t\tvaltmp = coord.i + (coord.q >> iter);\n\t\t\tcoord.q -= (coord.i >> iter);\n\t\t\tangle -= arctan_table[iter];\n\t\t}\n\t\tcoord.i = valtmp;\n\t}\n\n\tcoord.i *= signx;\n\tcoord.q *= signx;\n\treturn coord;\n}\nEXPORT_SYMBOL(cordic_calc_iq);\n\nMODULE_DESCRIPTION(\"CORDIC algorithm\");\nMODULE_AUTHOR(\"Broadcom Corporation\");\nMODULE_LICENSE(\"Dual BSD/GPL\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

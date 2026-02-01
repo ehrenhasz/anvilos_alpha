@@ -1,0 +1,9 @@
+{
+  "module_name": "strobemeta_nounroll1.c",
+  "hash_id": "add8bd015e88c610ee8eccaaaf1ee72e0ef8f909952f067deddcb814e93325ff",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/strobemeta_nounroll1.c",
+  "human_readable_source": "\n\n\n#define STROBE_MAX_INTS 2\n#define STROBE_MAX_STRS 25\n#define STROBE_MAX_MAPS 13\n#define STROBE_MAX_MAP_ENTRIES 20\n#define NO_UNROLL\n#include \"strobemeta.h\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

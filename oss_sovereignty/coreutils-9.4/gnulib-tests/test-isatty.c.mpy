@@ -1,0 +1,9 @@
+{
+  "module_name": "test-isatty.c",
+  "hash_id": "c216c26ea0aa0d1a87ed0c5a13debb747586fc3b2be97962d6a351a39a17fdfc",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-isatty.c",
+  "human_readable_source": " \n#if defined _WIN32 && ! defined __CYGWIN__\n \n# define DEV_NULL \"NUL\"\n#else\n \n# define DEV_NULL \"/dev/null\"\n#endif\n\nint\nmain (void)\n{\n  const char *file = \"test-isatty.txt\";\n\n   \n  {\n    errno = 0;\n    ASSERT (isatty (-1) == 0);\n    ASSERT (errno == EBADF\n            || errno == 0  \n           );\n  }\n  {\n    close (99);\n    errno = 0;\n    ASSERT (isatty (99) == 0);\n    ASSERT (errno == EBADF\n            || errno == 0  \n           );\n  }\n\n   \n  {\n    int fd;\n\n    fd = open (file, O_WRONLY|O_CREAT|O_TRUNC, 0644);\n    ASSERT (0 <= fd);\n    ASSERT (write (fd, \"hello\", 5) == 5);\n    ASSERT (close (fd) == 0);\n\n    fd = open (file, O_RDONLY);\n    ASSERT (0 <= fd);\n    ASSERT (! isatty (fd));\n    ASSERT (close (fd) == 0);\n  }\n\n   \n  {\n    int fd[2];\n\n    ASSERT (pipe (fd) == 0);\n    ASSERT (! isatty (fd[0]));\n    ASSERT (! isatty (fd[1]));\n    ASSERT (close (fd[0]) == 0);\n    ASSERT (close (fd[1]) == 0);\n  }\n\n   \n  {\n    int fd;\n\n    fd = open (DEV_NULL, O_RDONLY);\n    ASSERT (0 <= fd);\n    ASSERT (! isatty (fd));\n    ASSERT (close (fd) == 0);\n  }\n\n  ASSERT (unlink (file) == 0);\n\n  return 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

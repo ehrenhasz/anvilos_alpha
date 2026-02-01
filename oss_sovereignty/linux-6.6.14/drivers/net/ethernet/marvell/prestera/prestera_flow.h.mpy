@@ -1,0 +1,9 @@
+{
+  "module_name": "prestera_flow.h",
+  "hash_id": "308ad8ad3ea4347beaca7bdf7dad8566524e55f32086f11ec083bed9cd62fc07",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/marvell/prestera/prestera_flow.h",
+  "human_readable_source": " \n \n\n#ifndef _PRESTERA_FLOW_H_\n#define _PRESTERA_FLOW_H_\n\n#include <net/flow_offload.h>\n\nstruct prestera_port;\nstruct prestera_switch;\n\nstruct prestera_flow_block_binding {\n\tstruct list_head list;\n\tstruct prestera_port *port;\n\tint span_id;\n};\n\nstruct prestera_flow_block {\n\tstruct list_head binding_list;\n\tstruct prestera_switch *sw;\n\tstruct net *net;\n\tstruct prestera_acl_ruleset *ruleset_zero;\n\tstruct flow_block_cb *block_cb;\n\tstruct list_head template_list;\n\tstruct {\n\t\tu32 prio_min;\n\t\tu32 prio_max;\n\t\tbool bound;\n\t} mall;\n\tunsigned int rule_count;\n\tbool ingress;\n};\n\nint prestera_flow_block_setup(struct prestera_port *port,\n\t\t\t      struct flow_block_offload *f);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

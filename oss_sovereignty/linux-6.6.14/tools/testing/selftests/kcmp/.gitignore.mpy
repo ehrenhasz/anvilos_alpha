@@ -1,0 +1,9 @@
+{
+  "module_name": ".gitignore",
+  "hash_id": "60d226eaf25a153229cf7cfe7504bcfdd65c3f74c511054248cdcd80a6e9868a",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/kcmp/.gitignore",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nkcmp_test\nkcmp-test-file\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

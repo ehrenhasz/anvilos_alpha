@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "67fbd41711521498f217e583f5b10a2f48484f3358ef7687ada5dcf3b23ba24a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/hisilicon/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for the HISILICON network device drivers.\n#\n\nobj-$(CONFIG_HIX5HD2_GMAC) += hix5hd2_gmac.o\nobj-$(CONFIG_HIP04_ETH) += hip04_eth.o\nobj-$(CONFIG_HNS_MDIO) += hns_mdio.o\nobj-$(CONFIG_HNS) += hns/\nobj-$(CONFIG_HNS3) += hns3/\nobj-$(CONFIG_HISI_FEMAC) += hisi_femac.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "overlay_bad_symbol.dtso",
+  "hash_id": "e141c940d5da6f59f677e9936b720bb53bdcd504c96191590a0ddd2eb7a80c17",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/of/unittest-data/overlay_bad_symbol.dtso",
+  "human_readable_source": "// SPDX-License-Identifier: GPL-2.0\n/dts-v1/;\n/plugin/;\n\n&electric_1 {\n\t// This label should cause an error when the overlay\n\t// is applied.  There is already a symbol hvac_1\n\t// in the base tree\n\thvac_1: hvac-medium-2 {\n\t\tcompatible = \"ot,hvac-medium\";\n\t\theat-range = <50 75>;\n\t\tcool-range = <60 80>;\n\t};\n\n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "iso-resources.h",
+  "hash_id": "77dd230c4bb0268138289e5ba270c47831e5f50d4a3b53aac013fa597afeb574",
+  "original_prompt": "Ingested from linux-6.6.14/sound/firewire/iso-resources.h",
+  "human_readable_source": " \n#ifndef SOUND_FIREWIRE_ISO_RESOURCES_H_INCLUDED\n#define SOUND_FIREWIRE_ISO_RESOURCES_H_INCLUDED\n\n#include <linux/mutex.h>\n#include <linux/types.h>\n\nstruct fw_unit;\n\n \nstruct fw_iso_resources {\n\tu64 channels_mask;\n\t \n\tstruct fw_unit *unit;\n\tstruct mutex mutex;\n\tunsigned int channel;\n\tunsigned int bandwidth;  \n\tunsigned int bandwidth_overhead;\n\tint generation;  \n\tbool allocated;\n};\n\nint fw_iso_resources_init(struct fw_iso_resources *r,\n\t\t\t  struct fw_unit *unit);\nvoid fw_iso_resources_destroy(struct fw_iso_resources *r);\n\nint fw_iso_resources_allocate(struct fw_iso_resources *r,\n\t\t\t      unsigned int max_payload_bytes, int speed);\nint fw_iso_resources_update(struct fw_iso_resources *r);\nvoid fw_iso_resources_free(struct fw_iso_resources *r);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

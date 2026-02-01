@@ -1,0 +1,9 @@
+{
+  "module_name": "table.h",
+  "hash_id": "987cb859ecf851ce1d5b0143ec36f253e17f7cda406eccb84e03c75f244b2163",
+  "original_prompt": "Ingested from bash-5.2.21/lib/malloc/table.h",
+  "human_readable_source": " \n\n \n\n#ifndef _MTABLE_H\n#define _MTABLE_H\n\n#include \"imalloc.h\"\n\n#ifdef MALLOC_REGISTER\n\n \n#define MT_ALLOC\t0x01\n#define MT_FREE\t\t0x02\n\n \ntypedef struct mr_table {\n\tPTR_T mem;\n\tsize_t size;\n\tchar flags;\n\tconst char *func;\n\tconst char *file;\n\tint line;\n\tint nalloc, nfree;\n} mr_table_t;\n\n#define REG_TABLE_SIZE\t8192\n\nextern mr_table_t *mr_table_entry PARAMS((PTR_T));\nextern void mregister_alloc PARAMS((const char *, PTR_T, size_t, const char *, int));\nextern void mregister_free PARAMS((PTR_T, int, const char *, int));\nextern void mregister_describe_mem ();\nextern void mregister_dump_table PARAMS((void));\nextern void mregister_table_init PARAMS((void));\n\ntypedef struct ma_table {\n\tconst char *file;\n\tint line;\n\tint nalloc;\n} ma_table_t;\n\nextern void mlocation_register_alloc PARAMS((const char *, int));\nextern void mlocation_table_init PARAMS((void));\nextern void mlocation_dump_table PARAMS((void));\nextern void mlocation_write_table PARAMS((void));\n\n \n\n \n#define HASH_MIX(a, b, c) \\\n do { \\\n   a -= b; a -= c; a ^= (c >> 13); \\\n   b -= c; b -= a; b ^= (a << 8); \\\n   c -= a; c -= b; c ^= (b >> 13); \\\n   a -= b; a -= c; a ^= (c >> 12); \\\n   b -= c; b -= a; b ^= (a << 16); \\\n   c -= a; c -= b; c ^= (b >> 5); \\\n   a -= b; a -= c; a ^= (c >> 3); \\\n   b -= c; b -= a; b ^= (a << 10); \\\n   c -= a; c -= b; c ^= (b >> 15); \\\n } while(0)\n\n#endif  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

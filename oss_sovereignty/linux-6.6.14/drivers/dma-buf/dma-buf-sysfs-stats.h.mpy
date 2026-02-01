@@ -1,0 +1,9 @@
+{
+  "module_name": "dma-buf-sysfs-stats.h",
+  "hash_id": "39047ce590dc9727b7fdecb86e0bf6380e11c5ecd85862f30ba925a0a921e0c5",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/dma-buf/dma-buf-sysfs-stats.h",
+  "human_readable_source": " \n \n\n#ifndef _DMA_BUF_SYSFS_STATS_H\n#define _DMA_BUF_SYSFS_STATS_H\n\n#ifdef CONFIG_DMABUF_SYSFS_STATS\n\nint dma_buf_init_sysfs_statistics(void);\nvoid dma_buf_uninit_sysfs_statistics(void);\n\nint dma_buf_stats_setup(struct dma_buf *dmabuf, struct file *file);\n\nvoid dma_buf_stats_teardown(struct dma_buf *dmabuf);\n#else\n\nstatic inline int dma_buf_init_sysfs_statistics(void)\n{\n\treturn 0;\n}\n\nstatic inline void dma_buf_uninit_sysfs_statistics(void) {}\n\nstatic inline int dma_buf_stats_setup(struct dma_buf *dmabuf, struct file *file)\n{\n\treturn 0;\n}\n\nstatic inline void dma_buf_stats_teardown(struct dma_buf *dmabuf) {}\n#endif\n#endif \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

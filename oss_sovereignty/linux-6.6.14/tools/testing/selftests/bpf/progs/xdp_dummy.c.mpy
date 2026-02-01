@@ -1,0 +1,9 @@
+{
+  "module_name": "xdp_dummy.c",
+  "hash_id": "f4df21beb07aa87610a84d9bf098a78f0e17d4ab4ee33b17f625caa936de954c",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/xdp_dummy.c",
+  "human_readable_source": "\n\n#define KBUILD_MODNAME \"xdp_dummy\"\n#include <linux/bpf.h>\n#include <bpf/bpf_helpers.h>\n\nSEC(\"xdp\")\nint xdp_dummy_prog(struct xdp_md *ctx)\n{\n\treturn XDP_PASS;\n}\n\nchar _license[] SEC(\"license\") = \"GPL\";\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

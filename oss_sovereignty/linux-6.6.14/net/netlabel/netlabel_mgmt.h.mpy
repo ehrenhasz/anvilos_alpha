@@ -1,0 +1,9 @@
+{
+  "module_name": "netlabel_mgmt.h",
+  "hash_id": "c109c519d2cf98398795a964ba51553b72ae7ec03e81ba21583ceebad7967cf3",
+  "original_prompt": "Ingested from linux-6.6.14/net/netlabel/netlabel_mgmt.h",
+  "human_readable_source": " \n \n\n \n\n#ifndef _NETLABEL_MGMT_H\n#define _NETLABEL_MGMT_H\n\n#include <net/netlabel.h>\n#include <linux/atomic.h>\n\n \n\n \nenum {\n\tNLBL_MGMT_C_UNSPEC,\n\tNLBL_MGMT_C_ADD,\n\tNLBL_MGMT_C_REMOVE,\n\tNLBL_MGMT_C_LISTALL,\n\tNLBL_MGMT_C_ADDDEF,\n\tNLBL_MGMT_C_REMOVEDEF,\n\tNLBL_MGMT_C_LISTDEF,\n\tNLBL_MGMT_C_PROTOCOLS,\n\tNLBL_MGMT_C_VERSION,\n\t__NLBL_MGMT_C_MAX,\n};\n\n \nenum {\n\tNLBL_MGMT_A_UNSPEC,\n\tNLBL_MGMT_A_DOMAIN,\n\t \n\tNLBL_MGMT_A_PROTOCOL,\n\t \n\tNLBL_MGMT_A_VERSION,\n\t \n\tNLBL_MGMT_A_CV4DOI,\n\t \n\tNLBL_MGMT_A_IPV6ADDR,\n\t \n\tNLBL_MGMT_A_IPV6MASK,\n\t \n\tNLBL_MGMT_A_IPV4ADDR,\n\t \n\tNLBL_MGMT_A_IPV4MASK,\n\t \n\tNLBL_MGMT_A_ADDRSELECTOR,\n\t \n\tNLBL_MGMT_A_SELECTORLIST,\n\t \n\tNLBL_MGMT_A_FAMILY,\n\t \n\tNLBL_MGMT_A_CLPDOI,\n\t \n\t__NLBL_MGMT_A_MAX,\n};\n#define NLBL_MGMT_A_MAX (__NLBL_MGMT_A_MAX - 1)\n\n \nint netlbl_mgmt_genl_init(void);\n\n \nextern atomic_t netlabel_mgmt_protocount;\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

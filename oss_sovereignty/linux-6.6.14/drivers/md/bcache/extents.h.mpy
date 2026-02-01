@@ -1,0 +1,9 @@
+{
+  "module_name": "extents.h",
+  "hash_id": "f06ef8fd92a60747575dafbfb6930251c35f73dee2342830b78f074aafff8f1d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/md/bcache/extents.h",
+  "human_readable_source": " \n#ifndef _BCACHE_EXTENTS_H\n#define _BCACHE_EXTENTS_H\n\nextern const struct btree_keys_ops bch_btree_keys_ops;\nextern const struct btree_keys_ops bch_extent_keys_ops;\n\nstruct bkey;\nstruct cache_set;\n\nvoid bch_extent_to_text(char *buf, size_t size, const struct bkey *k);\nbool __bch_btree_ptr_invalid(struct cache_set *c, const struct bkey *k);\nbool __bch_extent_invalid(struct cache_set *c, const struct bkey *k);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

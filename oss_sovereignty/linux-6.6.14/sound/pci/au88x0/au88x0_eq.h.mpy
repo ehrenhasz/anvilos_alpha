@@ -1,0 +1,9 @@
+{
+  "module_name": "au88x0_eq.h",
+  "hash_id": "3a77b9d9fc68bb60760811e89500f6306fd4029f89db285d47ec2235245ff075",
+  "original_prompt": "Ingested from linux-6.6.14/sound/pci/au88x0/au88x0_eq.h",
+  "human_readable_source": " \n#ifndef AU88X0_EQ_H\n#define AU88X0_EQ_H\n\n \n\ntypedef struct {\n\tu16 LeftCoefs[50];\t\n\tu16 RightCoefs[50];\t\n\tu16 LeftGains[10];\t\n\tu16 RightGains[10];\t\n} auxxEqCoeffSet_t;\n\ntypedef struct {\n\ts32 this04;\t\t \n\ts32 this08;\t\t \n} eqhw_t;\n\ntypedef struct {\n\teqhw_t this04;\t\t \n\tu16 this08;\t\t \n\tu16 this0a;\n\tu16 this0c;\t\t \n\tu16 this0e;\n\n\ts32 this10;\t\t \n\tu16 this14_array[10];\t \n\ts32 this28;\t\t \n\ts32 this54;\t\t \n\ts32 this58;\n\ts32 this5c;\n\t  auxxEqCoeffSet_t coefset;\n\t \n\tu16 this130[20];\t \n} eqlzr_t;\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

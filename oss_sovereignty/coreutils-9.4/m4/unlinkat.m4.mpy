@@ -1,0 +1,9 @@
+{
+  "module_name": "unlinkat.m4",
+  "hash_id": "78fdb7214ddb041baedd32082d04206768683e7d6239539c89452b05e0f8aa07",
+  "original_prompt": "Ingested from coreutils-9.4/m4/unlinkat.m4",
+  "human_readable_source": "# unlinkat.m4 serial 2\ndnl Copyright (C) 2004-2023 Free Software Foundation, Inc.\ndnl This file is free software; the Free Software Foundation\ndnl gives unlimited permission to copy and/or distribute it,\ndnl with or without modifications, as long as this notice is preserved.\n\n# Written by Jim Meyering.\n\nAC_DEFUN([gl_FUNC_UNLINKAT],\n[\n  AC_REQUIRE([gl_UNISTD_H_DEFAULTS])\n  AC_REQUIRE([gl_USE_SYSTEM_EXTENSIONS])\n  AC_CHECK_FUNCS_ONCE([unlinkat])\n  AC_REQUIRE([gl_FUNC_UNLINK])\n  AC_REQUIRE([gl_FUNC_LSTAT_FOLLOWS_SLASHED_SYMLINK])\n  if test $ac_cv_func_unlinkat = no; then\n    HAVE_UNLINKAT=0\n  else\n    case \"$gl_cv_func_lstat_dereferences_slashed_symlink\" in\n      *no)\n        # Solaris 9 has *at functions, but uniformly mishandles trailing\n        # slash in all of them.\n        REPLACE_UNLINKAT=1\n        ;;\n      *)\n        # GNU/Hurd has unlinkat, but it has the same bug as unlink.\n        # Darwin has unlinkat, but it has the same UNLINK_PARENT_BUG.\n        if test $REPLACE_UNLINK = 1; then\n          REPLACE_UNLINKAT=1\n        fi\n        ;;\n    esac\n  fi\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

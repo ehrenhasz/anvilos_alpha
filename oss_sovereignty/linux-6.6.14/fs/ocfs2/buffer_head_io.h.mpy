@@ -1,0 +1,9 @@
+{
+  "module_name": "buffer_head_io.h",
+  "hash_id": "b1f8d2f896daa7fa6f2010b48c3bb45ce154d2f9032978748e1ac9ba9c390e8c",
+  "original_prompt": "Ingested from linux-6.6.14/fs/ocfs2/buffer_head_io.h",
+  "human_readable_source": " \n \n\n#ifndef OCFS2_BUFFER_HEAD_IO_H\n#define OCFS2_BUFFER_HEAD_IO_H\n\n#include <linux/buffer_head.h>\n\nint ocfs2_write_block(struct ocfs2_super          *osb,\n\t\t      struct buffer_head  *bh,\n\t\t      struct ocfs2_caching_info   *ci);\nint ocfs2_read_blocks_sync(struct ocfs2_super *osb, u64 block,\n\t\t\t   unsigned int nr, struct buffer_head *bhs[]);\n\n \nint ocfs2_read_blocks(struct ocfs2_caching_info *ci, u64 block, int nr,\n\t\t      struct buffer_head *bhs[], int flags,\n\t\t      int (*validate)(struct super_block *sb,\n\t\t\t\t      struct buffer_head *bh));\n\nint ocfs2_write_super_or_backup(struct ocfs2_super *osb,\n\t\t\t\tstruct buffer_head *bh);\n\n#define OCFS2_BH_IGNORE_CACHE      1\n#define OCFS2_BH_READAHEAD         8\n\nstatic inline int ocfs2_read_block(struct ocfs2_caching_info *ci, u64 off,\n\t\t\t\t   struct buffer_head **bh,\n\t\t\t\t   int (*validate)(struct super_block *sb,\n\t\t\t\t\t\t   struct buffer_head *bh))\n{\n\tint status = 0;\n\n\tif (bh == NULL) {\n\t\tprintk(\"ocfs2: bh == NULL\\n\");\n\t\tstatus = -EINVAL;\n\t\tgoto bail;\n\t}\n\n\tstatus = ocfs2_read_blocks(ci, off, 1, bh, 0, validate);\n\nbail:\n\treturn status;\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

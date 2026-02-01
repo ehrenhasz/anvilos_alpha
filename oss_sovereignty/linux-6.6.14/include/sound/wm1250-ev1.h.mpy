@@ -1,0 +1,9 @@
+{
+  "module_name": "wm1250-ev1.h",
+  "hash_id": "69bced820fb59e8a9f732d178370ce135c09f5bace07d9369796841ffc7ae55a",
+  "original_prompt": "Ingested from linux-6.6.14/include/sound/wm1250-ev1.h",
+  "human_readable_source": " \n \n\n#ifndef __LINUX_SND_WM1250_EV1_H\n#define __LINUX_SND_WM1250_EV1_H\n\n#define WM1250_EV1_NUM_GPIOS 5\n\n#define WM1250_EV1_GPIO_CLK_ENA  0\n#define WM1250_EV1_GPIO_CLK_SEL0 1\n#define WM1250_EV1_GPIO_CLK_SEL1 2\n#define WM1250_EV1_GPIO_OSR      3\n#define WM1250_EV1_GPIO_MASTER   4\n\n\nstruct wm1250_ev1_pdata {\n\tint gpios[WM1250_EV1_NUM_GPIOS];\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "chdir-long.h",
+  "hash_id": "f69eacec4a81e97be5701640e63ee20cc11e354f8363545ece6f76252c284a38",
+  "original_prompt": "Ingested from coreutils-9.4/lib/chdir-long.h",
+  "human_readable_source": " \n\n#include <unistd.h>\n#include <limits.h>\n\n#include \"pathmax.h\"\n\n \n#ifndef PATH_MAX\n# define chdir_long(Dir) chdir (Dir)\n#else\nint chdir_long (char *dir);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

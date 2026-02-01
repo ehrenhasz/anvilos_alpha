@@ -1,0 +1,9 @@
+{
+  "module_name": "xt_owner.h",
+  "hash_id": "c59ea085b20bdd5f0b00b22c9022089578665d6ae28b636fab61eec99599271f",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/netfilter/xt_owner.h",
+  "human_readable_source": " \n#ifndef _XT_OWNER_MATCH_H\n#define _XT_OWNER_MATCH_H\n\n#include <linux/types.h>\n\nenum {\n\tXT_OWNER_UID          = 1 << 0,\n\tXT_OWNER_GID          = 1 << 1,\n\tXT_OWNER_SOCKET       = 1 << 2,\n\tXT_OWNER_SUPPL_GROUPS = 1 << 3,\n};\n\n#define XT_OWNER_MASK\t(XT_OWNER_UID | \t\\\n\t\t\t XT_OWNER_GID | \t\\\n\t\t\t XT_OWNER_SOCKET |\t\\\n\t\t\t XT_OWNER_SUPPL_GROUPS)\n\nstruct xt_owner_match_info {\n\t__u32 uid_min, uid_max;\n\t__u32 gid_min, gid_max;\n\t__u8 match, invert;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

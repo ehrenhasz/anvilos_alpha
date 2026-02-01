@@ -1,0 +1,9 @@
+{
+  "module_name": "assoc.h",
+  "hash_id": "3c3a8ca73f06c5318065f5829afadb4f14b4c8236c6c479e930c65b55337d02c",
+  "original_prompt": "Ingested from bash-5.2.21/assoc.h",
+  "human_readable_source": " \n\n \n\n#ifndef _ASSOC_H_\n#define _ASSOC_H_\n\n#include \"stdc.h\"\n#include \"hashlib.h\"\n\n#define ASSOC_HASH_BUCKETS\t1024\n\n#define assoc_empty(h)\t\t((h)->nentries == 0)\n#define assoc_num_elements(h)\t((h)->nentries)\n\n#define assoc_create(n)\t\t(hash_create((n)))\n\n#define assoc_copy(h)\t\t(hash_copy((h), 0))\n\n#define assoc_walk(h, f)\t(hash_walk((h), (f))\n\nextern void assoc_dispose PARAMS((HASH_TABLE *));\nextern void assoc_flush PARAMS((HASH_TABLE *));\n\nextern int assoc_insert PARAMS((HASH_TABLE *, char *, char *));\nextern PTR_T assoc_replace PARAMS((HASH_TABLE *, char *, char *));\nextern void assoc_remove PARAMS((HASH_TABLE *, char *));\n\nextern char *assoc_reference PARAMS((HASH_TABLE *, char *));\n\nextern char *assoc_subrange PARAMS((HASH_TABLE *, arrayind_t, arrayind_t, int, int, int));\nextern char *assoc_patsub PARAMS((HASH_TABLE *, char *, char *, int));\nextern char *assoc_modcase PARAMS((HASH_TABLE *, char *, int, int));\n\nextern HASH_TABLE *assoc_quote PARAMS((HASH_TABLE *));\nextern HASH_TABLE *assoc_quote_escapes PARAMS((HASH_TABLE *));\nextern HASH_TABLE *assoc_dequote PARAMS((HASH_TABLE *));\nextern HASH_TABLE *assoc_dequote_escapes PARAMS((HASH_TABLE *));\nextern HASH_TABLE *assoc_remove_quoted_nulls PARAMS((HASH_TABLE *));\n\nextern char *assoc_to_kvpair PARAMS((HASH_TABLE *, int));\nextern char *assoc_to_assign PARAMS((HASH_TABLE *, int));\n\nextern WORD_LIST *assoc_to_word_list PARAMS((HASH_TABLE *));\nextern WORD_LIST *assoc_keys_to_word_list PARAMS((HASH_TABLE *));\nextern WORD_LIST *assoc_to_kvpair_list PARAMS((HASH_TABLE *));\n\nextern char *assoc_to_string PARAMS((HASH_TABLE *, char *, int));\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

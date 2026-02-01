@@ -1,0 +1,9 @@
+{
+  "module_name": "forwarding.config.sample",
+  "hash_id": "1884f82fd982d289ba81944ec4e5d96bed9bb27b737b10de0819d42f15e0f667",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/net/forwarding/forwarding.config.sample",
+  "human_readable_source": "#!/bin/bash\n# SPDX-License-Identifier: GPL-2.0\n\n##############################################################################\n# Topology description. p1 looped back to p2, p3 to p4 and so on.\ndeclare -A NETIFS\n\nNETIFS[p1]=veth0\nNETIFS[p2]=veth1\nNETIFS[p3]=veth2\nNETIFS[p4]=veth3\nNETIFS[p5]=veth4\nNETIFS[p6]=veth5\nNETIFS[p7]=veth6\nNETIFS[p8]=veth7\nNETIFS[p9]=veth8\nNETIFS[p10]=veth9\n\n# Port that does not have a cable connected.\nNETIF_NO_CABLE=eth8\n\n##############################################################################\n# Defines\n\n# IPv4 ping utility name\nPING=ping\n# IPv6 ping utility name. Some distributions use 'ping' for IPv6.\nPING6=ping6\n# Packet generator. Some distributions use 'mz'.\nMZ=mausezahn\n# Time to wait after interfaces participating in the test are all UP\nWAIT_TIME=5\n# Whether to pause on failure or not.\nPAUSE_ON_FAIL=no\n# Whether to pause on cleanup or not.\nPAUSE_ON_CLEANUP=no\n# Type of network interface to create\nNETIF_TYPE=veth\n# Whether to create virtual interfaces (veth) or not\nNETIF_CREATE=yes\n# Timeout (in seconds) before ping exits regardless of how many packets have\n# been sent or received\nPING_TIMEOUT=5\n# Minimum ageing_time (in centiseconds) supported by hardware\nLOW_AGEING_TIME=1000\n# Flag for tc match, supposed to be skip_sw/skip_hw which means do not process\n# filter by software/hardware\nTC_FLAG=skip_hw\n# IPv6 traceroute utility name.\nTROUTE6=traceroute6\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

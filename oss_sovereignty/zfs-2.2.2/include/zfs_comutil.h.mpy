@@ -1,0 +1,9 @@
+{
+  "module_name": "zfs_comutil.h",
+  "hash_id": "b5a7a8dff750ae59a63eb466b8dd02581923e7081fb283fb09936963fdcc251f",
+  "original_prompt": "Ingested from zfs-2.2.2/include/zfs_comutil.h",
+  "human_readable_source": " \n \n\n#ifndef\t_ZFS_COMUTIL_H\n#define\t_ZFS_COMUTIL_H extern __attribute__((visibility(\"default\")))\n\n#include <sys/fs/zfs.h>\n#include <sys/types.h>\n\n#ifdef\t__cplusplus\nextern \"C\" {\n#endif\n\n_ZFS_COMUTIL_H boolean_t zfs_allocatable_devs(nvlist_t *);\n_ZFS_COMUTIL_H boolean_t zfs_special_devs(nvlist_t *, const char *);\n_ZFS_COMUTIL_H void zpool_get_load_policy(nvlist_t *, zpool_load_policy_t *);\n\n_ZFS_COMUTIL_H int zfs_zpl_version_map(int spa_version);\n_ZFS_COMUTIL_H int zfs_spa_version_map(int zpl_version);\n\n_ZFS_COMUTIL_H boolean_t zfs_dataset_name_hidden(const char *);\n\n#define\tZFS_NUM_LEGACY_HISTORY_EVENTS 41\n_ZFS_COMUTIL_H const char *const\n    zfs_history_event_names[ZFS_NUM_LEGACY_HISTORY_EVENTS];\n\n#ifdef\t__cplusplus\n}\n#endif\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

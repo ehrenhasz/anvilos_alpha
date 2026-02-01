@@ -1,0 +1,9 @@
+{
+  "module_name": "init.h",
+  "hash_id": "639636a6f7254634b1f62978502ddf197e7d25f3085492fc0fc2371905ca9f73",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/ti/wlcore/init.h",
+  "human_readable_source": " \n \n\n#ifndef __INIT_H__\n#define __INIT_H__\n\n#include \"wlcore.h\"\n\nint wl1271_hw_init_power_auth(struct wl1271 *wl);\nint wl1271_init_templates_config(struct wl1271 *wl);\nint wl1271_init_pta(struct wl1271 *wl);\nint wl1271_init_energy_detection(struct wl1271 *wl);\nint wl1271_chip_specific_init(struct wl1271 *wl);\nint wl1271_hw_init(struct wl1271 *wl);\nint wl1271_init_vif_specific(struct wl1271 *wl, struct ieee80211_vif *vif);\nint wl1271_init_ap_rates(struct wl1271 *wl, struct wl12xx_vif *wlvif);\nint wl1271_ap_init_templates(struct wl1271 *wl, struct ieee80211_vif *vif);\nint wl1271_sta_hw_init(struct wl1271 *wl, struct wl12xx_vif *wlvif);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

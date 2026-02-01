@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "9cde0b0550b96936e6a7285dca2b23400c98616118f4b0947e7024e22d5507c2",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/ia32/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Makefile for the ia32 kernel emulation subsystem.\n#\n\naudit-class-$(CONFIG_AUDIT) := audit.o\nobj-$(CONFIG_IA32_EMULATION) += $(audit-class-y)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

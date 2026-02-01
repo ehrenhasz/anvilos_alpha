@@ -1,0 +1,9 @@
+{
+  "module_name": "u_serial.h",
+  "hash_id": "d08849e7562acc94ef469a2e4e1efe4d756223751dd9c20414e3e1e0653df54c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/usb/gadget/function/u_serial.h",
+  "human_readable_source": " \n \n\n#ifndef __U_SERIAL_H\n#define __U_SERIAL_H\n\n#include <linux/usb/composite.h>\n#include <linux/usb/cdc.h>\n\n#define MAX_U_SERIAL_PORTS\t8\n\nstruct f_serial_opts {\n\tstruct usb_function_instance func_inst;\n\tu8 port_num;\n};\n\n \nstruct gserial {\n\tstruct usb_function\t\tfunc;\n\n\t \n\tstruct gs_port\t\t\t*ioport;\n\n\tstruct usb_ep\t\t\t*in;\n\tstruct usb_ep\t\t\t*out;\n\n\t \n\tstruct usb_cdc_line_coding port_line_coding;\t \n\n\t \n\tvoid (*connect)(struct gserial *p);\n\tvoid (*disconnect)(struct gserial *p);\n\tint (*send_break)(struct gserial *p, int duration);\n};\n\n \nstruct usb_request *gs_alloc_req(struct usb_ep *ep, unsigned len, gfp_t flags);\nvoid gs_free_req(struct usb_ep *, struct usb_request *req);\n\n \nint gserial_alloc_line_no_console(unsigned char *port_line);\nint gserial_alloc_line(unsigned char *port_line);\nvoid gserial_free_line(unsigned char port_line);\n\n#ifdef CONFIG_U_SERIAL_CONSOLE\n\nssize_t gserial_set_console(unsigned char port_num, const char *page, size_t count);\nssize_t gserial_get_console(unsigned char port_num, char *page);\n\n#endif  \n\n \nint gserial_connect(struct gserial *, u8 port_num);\nvoid gserial_disconnect(struct gserial *);\nvoid gserial_suspend(struct gserial *p);\nvoid gserial_resume(struct gserial *p);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

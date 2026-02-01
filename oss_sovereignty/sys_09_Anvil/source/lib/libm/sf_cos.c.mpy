@@ -1,0 +1,9 @@
+{
+  "module_name": "sf_cos.c",
+  "hash_id": "87820cd6e7fc9a0e89b90d83c8d1054a9fbc83c4feb100282fdf56164895ce5b",
+  "original_prompt": "Ingested from sys_09_Anvil/source/lib/libm/sf_cos.c",
+  "human_readable_source": " \n\n \n\n \n\n#include \"fdlibm.h\"\n\n#ifdef __STDC__\n\tfloat cosf(float x)\n#else\n\tfloat cosf(x)\n\tfloat x;\n#endif\n{\n\tfloat y[2],z=0.0;\n\t__int32_t n,ix;\n\n\tGET_FLOAT_WORD(ix,x);\n\n     \n\tix &= 0x7fffffff;\n\tif(ix <= 0x3f490fd8) return __kernel_cosf(x,z);\n\n     \n\telse if (!FLT_UWORD_IS_FINITE(ix)) return x-x;\n\n     \n\telse {\n\t    n = __ieee754_rem_pio2f(x,y);\n\t    switch(n&3) {\n\t\tcase 0: return  __kernel_cosf(y[0],y[1]);\n\t\tcase 1: return -__kernel_sinf(y[0],y[1],1);\n\t\tcase 2: return -__kernel_cosf(y[0],y[1]);\n\t\tdefault:\n\t\t        return  __kernel_sinf(y[0],y[1],1);\n\t    }\n\t}\n}\n\n#ifdef _DOUBLE_IS_32BITS\n\n#ifdef __STDC__\n\tdouble cos(double x)\n#else\n\tdouble cos(x)\n\tdouble x;\n#endif\n{\n\treturn (double) cosf((float) x);\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

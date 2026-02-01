@@ -1,0 +1,9 @@
+{
+  "module_name": "cpufreq_performance.c",
+  "hash_id": "68a8f138acf2efb5c2c76902d095b1725de315e3ff3fadf939b069ea77c7f35e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/cpufreq/cpufreq_performance.c",
+  "human_readable_source": "\n \n\n#define pr_fmt(fmt) KBUILD_MODNAME \": \" fmt\n\n#include <linux/cpufreq.h>\n#include <linux/init.h>\n#include <linux/module.h>\n\nstatic void cpufreq_gov_performance_limits(struct cpufreq_policy *policy)\n{\n\tpr_debug(\"setting to %u kHz\\n\", policy->max);\n\t__cpufreq_driver_target(policy, policy->max, CPUFREQ_RELATION_H);\n}\n\nstatic struct cpufreq_governor cpufreq_gov_performance = {\n\t.name\t\t= \"performance\",\n\t.owner\t\t= THIS_MODULE,\n\t.flags\t\t= CPUFREQ_GOV_STRICT_TARGET,\n\t.limits\t\t= cpufreq_gov_performance_limits,\n};\n\n#ifdef CONFIG_CPU_FREQ_DEFAULT_GOV_PERFORMANCE\nstruct cpufreq_governor *cpufreq_default_governor(void)\n{\n\treturn &cpufreq_gov_performance;\n}\n#endif\n#ifndef CONFIG_CPU_FREQ_GOV_PERFORMANCE_MODULE\nstruct cpufreq_governor *cpufreq_fallback_governor(void)\n{\n\treturn &cpufreq_gov_performance;\n}\n#endif\n\nMODULE_AUTHOR(\"Dominik Brodowski <linux@brodo.de>\");\nMODULE_DESCRIPTION(\"CPUfreq policy governor 'performance'\");\nMODULE_LICENSE(\"GPL\");\n\ncpufreq_governor_init(cpufreq_gov_performance);\ncpufreq_governor_exit(cpufreq_gov_performance);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "option.h",
+  "hash_id": "d3176673d77a6108d54cd1e562cbe414aff67bf1acb1477b14f4758eedea533e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/include/nvkm/core/option.h",
+  "human_readable_source": " \n#ifndef __NVKM_OPTION_H__\n#define __NVKM_OPTION_H__\n#include <core/os.h>\n\nconst char *nvkm_stropt(const char *optstr, const char *opt, int *len);\nbool nvkm_boolopt(const char *optstr, const char *opt, bool value);\nlong nvkm_longopt(const char *optstr, const char *opt, long value);\nint  nvkm_dbgopt(const char *optstr, const char *sub);\n\n \nstatic inline int\nstrncasecmpz(const char *str, const char *cmp, size_t len)\n{\n\tif (strlen(cmp) != len)\n\t\treturn len;\n\treturn strncasecmp(str, cmp, len);\n}\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

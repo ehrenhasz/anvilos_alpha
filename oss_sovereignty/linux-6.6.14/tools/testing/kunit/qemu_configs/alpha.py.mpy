@@ -1,0 +1,9 @@
+{
+  "module_name": "alpha.py",
+  "hash_id": "d329d3704c469a343126a23cfb49ddd4cc8d7b08b31aa9dd6b2140db19f61d78",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/kunit/qemu_configs/alpha.py",
+  "human_readable_source": "from ..qemu_config import QemuArchParams\n\nQEMU_ARCH = QemuArchParams(linux_arch='alpha',\n\t\t\t   kconfig='''\nCONFIG_SERIAL_8250=y\nCONFIG_SERIAL_8250_CONSOLE=y''',\n\t\t\t   qemu_arch='alpha',\n\t\t\t   kernel_path='arch/alpha/boot/vmlinux',\n\t\t\t   kernel_command_line='console=ttyS0',\n\t\t\t   extra_qemu_params=[])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

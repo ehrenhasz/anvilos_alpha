@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "fb6a16dc7bb344ba6f9b00ffcbe2d0c4c88c62caa3d819a4e505fbec3bcdc1da",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/video/fbdev/mmp/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-$(CONFIG_MMP_DISP) += mmp_disp.o hw/ panel/ fb/\n\nmmp_disp-y\t\t+= core.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

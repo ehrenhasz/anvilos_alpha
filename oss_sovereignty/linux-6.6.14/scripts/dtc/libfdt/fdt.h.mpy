@@ -1,0 +1,9 @@
+{
+  "module_name": "fdt.h",
+  "hash_id": "c65c57ed93016b2cd392b533abb8899c9c57e01d957c57452e7f6c6f5dc1c46e",
+  "original_prompt": "Ingested from linux-6.6.14/scripts/dtc/libfdt/fdt.h",
+  "human_readable_source": " \n#ifndef FDT_H\n#define FDT_H\n \n\n#ifndef __ASSEMBLY__\n\nstruct fdt_header {\n\tfdt32_t magic;\t\t\t  \n\tfdt32_t totalsize;\t\t  \n\tfdt32_t off_dt_struct;\t\t  \n\tfdt32_t off_dt_strings;\t\t  \n\tfdt32_t off_mem_rsvmap;\t\t  \n\tfdt32_t version;\t\t  \n\tfdt32_t last_comp_version;\t  \n\n\t \n\tfdt32_t boot_cpuid_phys;\t  \n\t \n\tfdt32_t size_dt_strings;\t  \n\n\t \n\tfdt32_t size_dt_struct;\t\t  \n};\n\nstruct fdt_reserve_entry {\n\tfdt64_t address;\n\tfdt64_t size;\n};\n\nstruct fdt_node_header {\n\tfdt32_t tag;\n\tchar name[];\n};\n\nstruct fdt_property {\n\tfdt32_t tag;\n\tfdt32_t len;\n\tfdt32_t nameoff;\n\tchar data[];\n};\n\n#endif  \n\n#define FDT_MAGIC\t0xd00dfeed\t \n#define FDT_TAGSIZE\tsizeof(fdt32_t)\n\n#define FDT_BEGIN_NODE\t0x1\t\t \n#define FDT_END_NODE\t0x2\t\t \n#define FDT_PROP\t0x3\t\t \n#define FDT_NOP\t\t0x4\t\t \n#define FDT_END\t\t0x9\n\n#define FDT_V1_SIZE\t(7*sizeof(fdt32_t))\n#define FDT_V2_SIZE\t(FDT_V1_SIZE + sizeof(fdt32_t))\n#define FDT_V3_SIZE\t(FDT_V2_SIZE + sizeof(fdt32_t))\n#define FDT_V16_SIZE\tFDT_V3_SIZE\n#define FDT_V17_SIZE\t(FDT_V16_SIZE + sizeof(fdt32_t))\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

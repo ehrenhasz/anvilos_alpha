@@ -1,0 +1,9 @@
+{
+  "module_name": "CFcommon",
+  "hash_id": "068ea54de21f2f343a2abf705ca735f725c80575edc34f822170ab10b7f56dc9",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/rcutorture/configs/rcuscale/CFcommon",
+  "human_readable_source": "CONFIG_RCU_SCALE_TEST=y\nCONFIG_PRINTK_TIME=y\nCONFIG_FORCE_TASKS_RCU=y\n#CHECK#CONFIG_TASKS_RCU=y\nCONFIG_FORCE_TASKS_RUDE_RCU=y\n#CHECK#CONFIG_TASKS_RUDE_RCU=y\nCONFIG_FORCE_TASKS_TRACE_RCU=y\n#CHECK#CONFIG_TASKS_TRACE_RCU=y\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

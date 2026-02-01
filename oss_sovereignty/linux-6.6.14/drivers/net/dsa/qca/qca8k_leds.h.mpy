@@ -1,0 +1,9 @@
+{
+  "module_name": "qca8k_leds.h",
+  "hash_id": "4751b258a7b8d97df3d6d0fade5488359839c0d70df013d0aaa9567a980b677e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/dsa/qca/qca8k_leds.h",
+  "human_readable_source": " \n\n#ifndef __QCA8K_LEDS_H\n#define __QCA8K_LEDS_H\n\n \n#ifdef CONFIG_NET_DSA_QCA8K_LEDS_SUPPORT\nint qca8k_setup_led_ctrl(struct qca8k_priv *priv);\n#else\nstatic inline int qca8k_setup_led_ctrl(struct qca8k_priv *priv)\n{\n\treturn 0;\n}\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

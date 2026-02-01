@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "78129c59ca7ca2a63c9ad07649d980289ce5e6ef5efc53416b2dd3a1663701bd",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/scatterlist/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nCFLAGS += -I. -I../../include -g -O2 -Wall -fsanitize=address\nLDFLAGS += -fsanitize=address -fsanitize=undefined\nTARGETS = main\nOFILES = main.o scatterlist.o\n\nifeq ($(BUILD), 32)\n        CFLAGS += -m32\n        LDFLAGS += -m32\nendif\n\ntargets: include $(TARGETS)\n\nmain: $(OFILES)\n\nclean:\n\t$(RM) $(TARGETS) $(OFILES) scatterlist.c linux/scatterlist.h linux/highmem.h linux/kmemleak.h linux/slab.h asm/io.h\n\t@rmdir asm\n\nscatterlist.c: ../../../lib/scatterlist.c\n\t@sed -e 's/^static //' -e 's/__always_inline //' -e 's/inline //' < $< > $@\n\n.PHONY: include\n\ninclude: ../../../include/linux/scatterlist.h\n\t@mkdir -p linux\n\t@mkdir -p asm\n\t@touch asm/io.h\n\t@touch linux/highmem.h\n\t@touch linux/kmemleak.h\n\t@touch linux/slab.h\n\t@cp $< linux/scatterlist.h\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

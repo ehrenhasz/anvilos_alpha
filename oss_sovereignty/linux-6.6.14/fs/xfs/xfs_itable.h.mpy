@@ -1,0 +1,9 @@
+{
+  "module_name": "xfs_itable.h",
+  "hash_id": "d1b9620cb1d0cc645cd4052080b43103f8f30eb69de312a25b72459bd39c3485",
+  "original_prompt": "Ingested from linux-6.6.14/fs/xfs/xfs_itable.h",
+  "human_readable_source": "\n \n#ifndef __XFS_ITABLE_H__\n#define\t__XFS_ITABLE_H__\n\n \nstruct xfs_ibulk {\n\tstruct xfs_mount\t*mp;\n\tstruct mnt_idmap\t*idmap;\n\tvoid __user\t\t*ubuffer;  \n\txfs_ino_t\t\tstartino;  \n\tunsigned int\t\ticount;    \n\tunsigned int\t\tocount;    \n\tunsigned int\t\tflags;     \n};\n\n \n#define XFS_IBULK_SAME_AG\t(1U << 0)\n\n \n#define XFS_IBULK_NREXT64\t(1U << 1)\n\n \nstatic inline int\nxfs_ibulk_advance(\n\tstruct xfs_ibulk\t*breq,\n\tsize_t\t\t\tbytes)\n{\n\tchar __user\t\t*b = breq->ubuffer;\n\n\tbreq->ubuffer = b + bytes;\n\tbreq->ocount++;\n\treturn breq->ocount == breq->icount ? -ECANCELED : 0;\n}\n\n \n\n \n\ntypedef int (*bulkstat_one_fmt_pf)(struct xfs_ibulk *breq,\n\t\tconst struct xfs_bulkstat *bstat);\n\nint xfs_bulkstat_one(struct xfs_ibulk *breq, bulkstat_one_fmt_pf formatter);\nint xfs_bulkstat(struct xfs_ibulk *breq, bulkstat_one_fmt_pf formatter);\nvoid xfs_bulkstat_to_bstat(struct xfs_mount *mp, struct xfs_bstat *bs1,\n\t\tconst struct xfs_bulkstat *bstat);\n\ntypedef int (*inumbers_fmt_pf)(struct xfs_ibulk *breq,\n\t\tconst struct xfs_inumbers *igrp);\n\nint xfs_inumbers(struct xfs_ibulk *breq, inumbers_fmt_pf formatter);\nvoid xfs_inumbers_to_inogrp(struct xfs_inogrp *ig1,\n\t\tconst struct xfs_inumbers *ig);\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

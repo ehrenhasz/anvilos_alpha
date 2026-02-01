@@ -1,0 +1,9 @@
+{
+  "module_name": "errno.h",
+  "hash_id": "765b08b11c2c662aa056ec2e83a3dab86ff64d8b0f9b5fdca88ae8dda0fbc850",
+  "original_prompt": "Ingested from linux-6.6.14/tools/include/nolibc/errno.h",
+  "human_readable_source": " \n \n\n#ifndef _NOLIBC_ERRNO_H\n#define _NOLIBC_ERRNO_H\n\n#include <asm/errno.h>\n\n#ifndef NOLIBC_IGNORE_ERRNO\n#define SET_ERRNO(v) do { errno = (v); } while (0)\nint errno __attribute__((weak));\n#else\n#define SET_ERRNO(v) do { } while (0)\n#endif\n\n\n \n#define MAX_ERRNO 4095\n\n \n#include \"nolibc.h\"\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

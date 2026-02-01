@@ -1,0 +1,9 @@
+{
+  "module_name": "psp-platform-access.h",
+  "hash_id": "7862f216062a18f9e48649256941129f41e58acc5dd4b350390a212671b9ff7c",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/psp-platform-access.h",
+  "human_readable_source": " \n\n#ifndef __PSP_PLATFORM_ACCESS_H\n#define __PSP_PLATFORM_ACCESS_H\n\n#include <linux/psp.h>\n\nenum psp_platform_access_msg {\n\tPSP_CMD_NONE = 0x0,\n\tPSP_I2C_REQ_BUS_CMD = 0x64,\n\tPSP_DYNAMIC_BOOST_GET_NONCE,\n\tPSP_DYNAMIC_BOOST_SET_UID,\n\tPSP_DYNAMIC_BOOST_GET_PARAMETER,\n\tPSP_DYNAMIC_BOOST_SET_PARAMETER,\n};\n\nstruct psp_req_buffer_hdr {\n\tu32 payload_size;\n\tu32 status;\n} __packed;\n\nstruct psp_request {\n\tstruct psp_req_buffer_hdr header;\n\tvoid *buf;\n} __packed;\n\n \nint psp_send_platform_access_msg(enum psp_platform_access_msg, struct psp_request *req);\n\n \nint psp_ring_platform_doorbell(int msg, u32 *result);\n\n \nint psp_check_platform_access_status(void);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

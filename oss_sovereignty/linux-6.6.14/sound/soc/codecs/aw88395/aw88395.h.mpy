@@ -1,0 +1,9 @@
+{
+  "module_name": "aw88395.h",
+  "hash_id": "8095445a793e59685da5b343e2e2d0771f5fa7d5b231a91fb7ce27a7eb255a82",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/codecs/aw88395/aw88395.h",
+  "human_readable_source": "\n\n\n\n\n\n\n\n\n#ifndef __AW88395_H__\n#define __AW88395_H__\n\n#define AW88395_CHIP_ID_REG\t\t\t(0x00)\n#define AW88395_START_RETRIES\t\t\t(5)\n#define AW88395_START_WORK_DELAY_MS\t\t(0)\n\n#define AW88395_DSP_16_DATA_MASK\t\t(0x0000ffff)\n\n#define AW88395_I2C_NAME\t\t\t\"aw88395_smartpa\"\n\n#define AW88395_RATES (SNDRV_PCM_RATE_8000_48000 | \\\n\t\t\tSNDRV_PCM_RATE_96000)\n#define AW88395_FORMATS (SNDRV_PCM_FMTBIT_S16_LE | \\\n\t\t\tSNDRV_PCM_FMTBIT_S24_LE | \\\n\t\t\tSNDRV_PCM_FMTBIT_S32_LE)\n\n#define FADE_TIME_MAX\t\t\t100000\n#define FADE_TIME_MIN\t\t\t0\n\n#define AW88395_PROFILE_EXT(xname, profile_info, profile_get, profile_set) \\\n{ \\\n\t.iface = SNDRV_CTL_ELEM_IFACE_MIXER, \\\n\t.name = xname, \\\n\t.info = profile_info, \\\n\t.get = profile_get, \\\n\t.put = profile_set, \\\n}\n\nenum {\n\tAW88395_SYNC_START = 0,\n\tAW88395_ASYNC_START,\n};\n\nenum {\n\tAW88395_STREAM_CLOSE = 0,\n\tAW88395_STREAM_OPEN,\n};\n\nstruct aw88395 {\n\tstruct aw_device *aw_pa;\n\tstruct mutex lock;\n\tstruct gpio_desc *reset_gpio;\n\tstruct delayed_work start_work;\n\tstruct regmap *regmap;\n\tstruct aw_container *aw_cfg;\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

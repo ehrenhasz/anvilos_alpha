@@ -1,0 +1,9 @@
+{
+  "module_name": "nlm.h",
+  "hash_id": "7e884c50096ecd0cad5a8cb731956e902739d9419e1b7ced5ac79a02a2786f6e",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/lockd/nlm.h",
+  "human_readable_source": " \n \n\n#ifndef LINUX_LOCKD_NLM_H\n#define LINUX_LOCKD_NLM_H\n\n\n \n# define NLM_OFFSET_MAX\t\t((s32) 0x7fffffff)\n# define NLM4_OFFSET_MAX\t((s64) ((~(u64)0) >> 1))\n\n \nenum {\n\tNLM_LCK_GRANTED\t\t\t= 0,\n\tNLM_LCK_DENIED\t\t\t= 1,\n\tNLM_LCK_DENIED_NOLOCKS\t\t= 2,\n\tNLM_LCK_BLOCKED\t\t\t= 3,\n\tNLM_LCK_DENIED_GRACE_PERIOD\t= 4,\n#ifdef CONFIG_LOCKD_V4\n\tNLM_DEADLCK\t\t\t= 5,\n\tNLM_ROFS\t\t\t= 6,\n\tNLM_STALE_FH\t\t\t= 7,\n\tNLM_FBIG\t\t\t= 8,\n\tNLM_FAILED\t\t\t= 9,\n#endif\n};\n\n#define NLM_PROGRAM\t\t100021\n\n#define NLMPROC_NULL\t\t0\n#define NLMPROC_TEST\t\t1\n#define NLMPROC_LOCK\t\t2\n#define NLMPROC_CANCEL\t\t3\n#define NLMPROC_UNLOCK\t\t4\n#define NLMPROC_GRANTED\t\t5\n#define NLMPROC_TEST_MSG\t6\n#define NLMPROC_LOCK_MSG\t7\n#define NLMPROC_CANCEL_MSG\t8\n#define NLMPROC_UNLOCK_MSG\t9\n#define NLMPROC_GRANTED_MSG\t10\n#define NLMPROC_TEST_RES\t11\n#define NLMPROC_LOCK_RES\t12\n#define NLMPROC_CANCEL_RES\t13\n#define NLMPROC_UNLOCK_RES\t14\n#define NLMPROC_GRANTED_RES\t15\n#define NLMPROC_NSM_NOTIFY\t16\t\t \n#define NLMPROC_SHARE\t\t20\n#define NLMPROC_UNSHARE\t\t21\n#define NLMPROC_NM_LOCK\t\t22\n#define NLMPROC_FREE_ALL\t23\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

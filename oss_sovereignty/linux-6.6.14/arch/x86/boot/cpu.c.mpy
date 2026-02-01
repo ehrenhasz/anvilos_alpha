@@ -1,0 +1,9 @@
+{
+  "module_name": "cpu.c",
+  "hash_id": "4a067c784b842fc96d0f07d585f3c1b21043f1fb901bf1fb3b96ab18dd4a8bdc",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/boot/cpu.c",
+  "human_readable_source": "\n \n\n \n\n#include \"boot.h\"\n#include \"cpustr.h\"\n\nstatic char *cpu_name(int level)\n{\n\tstatic char buf[6];\n\n\tif (level == 64) {\n\t\treturn \"x86-64\";\n\t} else {\n\t\tif (level == 15)\n\t\t\tlevel = 6;\n\t\tsprintf(buf, \"i%d86\", level);\n\t\treturn buf;\n\t}\n}\n\nstatic void show_cap_strs(u32 *err_flags)\n{\n\tint i, j;\n\tconst unsigned char *msg_strs = (const unsigned char *)x86_cap_strs;\n\tfor (i = 0; i < NCAPINTS; i++) {\n\t\tu32 e = err_flags[i];\n\t\tfor (j = 0; j < 32; j++) {\n\t\t\tif (msg_strs[0] < i ||\n\t\t\t    (msg_strs[0] == i && msg_strs[1] < j)) {\n\t\t\t\t \n\t\t\t\tmsg_strs += 2;\n\t\t\t\twhile (*msg_strs++)\n\t\t\t\t\t;\n\t\t\t}\n\t\t\tif (e & 1) {\n\t\t\t\tif (msg_strs[0] == i &&\n\t\t\t\t    msg_strs[1] == j &&\n\t\t\t\t    msg_strs[2])\n\t\t\t\t\tprintf(\"%s \", msg_strs+2);\n\t\t\t\telse\n\t\t\t\t\tprintf(\"%d:%d \", i, j);\n\t\t\t}\n\t\t\te >>= 1;\n\t\t}\n\t}\n}\n\nint validate_cpu(void)\n{\n\tu32 *err_flags;\n\tint cpu_level, req_level;\n\n\tcheck_cpu(&cpu_level, &req_level, &err_flags);\n\n\tif (cpu_level < req_level) {\n\t\tprintf(\"This kernel requires an %s CPU, \",\n\t\t       cpu_name(req_level));\n\t\tprintf(\"but only detected an %s CPU.\\n\",\n\t\t       cpu_name(cpu_level));\n\t\treturn -1;\n\t}\n\n\tif (err_flags) {\n\t\tputs(\"This kernel requires the following features \"\n\t\t     \"not present on the CPU:\\n\");\n\t\tshow_cap_strs(err_flags);\n\t\tputchar('\\n');\n\t\treturn -1;\n\t} else if (check_knl_erratum()) {\n\t\treturn -1;\n\t} else {\n\t\treturn 0;\n\t}\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

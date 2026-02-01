@@ -1,0 +1,9 @@
+{
+  "module_name": "bitmap.h",
+  "hash_id": "026a3b1b59a9987ad6eff3d3af3f2f589e83c6b341b9a8bd65dcfe45326fb456",
+  "original_prompt": "Ingested from coreutils-9.4/lib/unictype/bitmap.h",
+  "human_readable_source": " \n#define header_0 16\n#define header_2 9\n#define header_3 127\n#define header_4 15\n\nstatic inline int\nbitmap_lookup (const void *table, ucs4_t uc)\n{\n  unsigned int index1 = uc >> header_0;\n  if (index1 < ((const int *) table)[0])\n    {\n      int lookup1 = ((const int *) table)[1 + index1];\n      if (lookup1 >= 0)\n        {\n          unsigned int index2 = (uc >> header_2) & header_3;\n          int lookup2 = ((const short *) table)[lookup1 + index2];\n          if (lookup2 >= 0)\n            {\n              unsigned int index3 = (uc >> 5) & header_4;\n              unsigned int lookup3 = ((const unsigned int *) table)[lookup2 + index3];\n\n              return (lookup3 >> (uc & 0x1f)) & 1;\n            }\n        }\n    }\n  return 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

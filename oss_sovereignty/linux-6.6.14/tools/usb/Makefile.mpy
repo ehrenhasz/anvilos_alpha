@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "35716756000400fca1b6aec1a12906eef663d5959ba700fba4060edfd5f64b26",
+  "original_prompt": "Ingested from linux-6.6.14/tools/usb/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n# Makefile for USB tools\ninclude ../scripts/Makefile.include\n\nbindir ?= /usr/bin\n\nifeq ($(srctree),)\nsrctree := $(patsubst %/,%,$(dir $(CURDIR)))\nsrctree := $(patsubst %/,%,$(dir $(srctree)))\nendif\n\n# Do not use make's built-in rules\n# (this improves performance and avoids hard-to-debug behaviour);\nMAKEFLAGS += -r\n\noverride CFLAGS += -O2 -Wall -Wextra -g -D_GNU_SOURCE -I$(OUTPUT)include -I$(srctree)/tools/include\noverride LDFLAGS += -lpthread\n\nALL_TARGETS := testusb ffs-test\nALL_PROGRAMS := $(patsubst %,$(OUTPUT)%,$(ALL_TARGETS))\n\nall: $(ALL_PROGRAMS)\n\nexport srctree OUTPUT CC LD CFLAGS\ninclude $(srctree)/tools/build/Makefile.include\n\nTESTUSB_IN := $(OUTPUT)testusb-in.o\n$(TESTUSB_IN): FORCE\n\t$(Q)$(MAKE) $(build)=testusb\n$(OUTPUT)testusb: $(TESTUSB_IN)\n\t$(QUIET_LINK)$(CC) $(CFLAGS) $< -o $@ $(LDFLAGS)\n\nFFS_TEST_IN := $(OUTPUT)ffs-test-in.o\n$(FFS_TEST_IN): FORCE\n\t$(Q)$(MAKE) $(build)=ffs-test\n$(OUTPUT)ffs-test: $(FFS_TEST_IN)\n\t$(QUIET_LINK)$(CC) $(CFLAGS) $< -o $@ $(LDFLAGS)\n\nclean:\n\trm -f $(ALL_PROGRAMS)\n\tfind $(or $(OUTPUT),.) -name '*.o' -delete -o -name '\\.*.d' -delete -o -name '\\.*.o.cmd' -delete\n\ninstall: $(ALL_PROGRAMS)\n\tinstall -d -m 755 $(DESTDIR)$(bindir);\t\t\\\n\tfor program in $(ALL_PROGRAMS); do\t\t\\\n\t\tinstall $$program $(DESTDIR)$(bindir);\t\\\n\tdone\n\nFORCE:\n\n.PHONY: all install clean FORCE prepare\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

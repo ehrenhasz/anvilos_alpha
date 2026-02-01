@@ -1,0 +1,9 @@
+{
+  "module_name": "kmap_size.h",
+  "hash_id": "414c6aebdce75fa5be80cd93adfdd924dcc30fd657018fe8eaeaf0c958bd7004",
+  "original_prompt": "Ingested from linux-6.6.14/include/asm-generic/kmap_size.h",
+  "human_readable_source": " \n#ifndef _ASM_GENERIC_KMAP_SIZE_H\n#define _ASM_GENERIC_KMAP_SIZE_H\n\n \n#ifdef CONFIG_DEBUG_KMAP_LOCAL\n# define KM_MAX_IDX\t33\n#else\n# define KM_MAX_IDX\t16\n#endif\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

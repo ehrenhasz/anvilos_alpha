@@ -1,0 +1,9 @@
+{
+  "module_name": "sh_dma.h",
+  "hash_id": "7663e64c0fe481d0b4dd57b3c97c3482c9fd622744042b61fb2fb8b67e8cd373",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/sh_dma.h",
+  "human_readable_source": " \n \n#ifndef SH_DMA_H\n#define SH_DMA_H\n\n#include <linux/dmaengine.h>\n#include <linux/list.h>\n#include <linux/shdma-base.h>\n#include <linux/types.h>\n\nstruct device;\n\n \nstruct sh_dmae_slave {\n\tstruct shdma_slave\t\tshdma_slave;\t \n};\n\n \nstruct sh_dmae_slave_config {\n\tint\t\tslave_id;\n\tdma_addr_t\taddr;\n\tu32\t\tchcr;\n\tchar\t\tmid_rid;\n};\n\n \nstruct sh_dmae_channel {\n\tunsigned int\toffset;\n\tunsigned int\tdmars;\n\tunsigned int\tchclr_offset;\n\tunsigned char\tdmars_bit;\n\tunsigned char\tchclr_bit;\n};\n\n \nstruct sh_dmae_pdata {\n\tconst struct sh_dmae_slave_config *slave;\n\tint slave_num;\n\tconst struct sh_dmae_channel *channel;\n\tint channel_num;\n\tunsigned int ts_low_shift;\n\tunsigned int ts_low_mask;\n\tunsigned int ts_high_shift;\n\tunsigned int ts_high_mask;\n\tconst unsigned int *ts_shift;\n\tint ts_shift_num;\n\tu16 dmaor_init;\n\tunsigned int chcr_offset;\n\tu32 chcr_ie_bit;\n\n\tunsigned int dmaor_is_32bit:1;\n\tunsigned int needs_tend_set:1;\n\tunsigned int no_dmars:1;\n\tunsigned int chclr_present:1;\n\tunsigned int chclr_bitwise:1;\n\tunsigned int slave_only:1;\n};\n\n \n#define DMAOR_AE\t0x00000004\t \n#define DMAOR_NMIF\t0x00000002\n#define DMAOR_DME\t0x00000001\t \n\n \n#define DM_INC\t0x00004000\t \n#define DM_DEC\t0x00008000\t \n#define DM_FIX\t0x0000c000\t \n#define SM_INC\t0x00001000\t \n#define SM_DEC\t0x00002000\t \n#define SM_FIX\t0x00003000\t \n#define RS_AUTO\t0x00000400\t \n#define RS_ERS\t0x00000800\t \n#define CHCR_DE\t0x00000001\t \n#define CHCR_TE\t0x00000002\t \n#define CHCR_IE\t0x00000004\t \n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

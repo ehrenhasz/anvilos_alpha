@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "5058e293af8f4c8cb1dde0fa528e1263e063314c0f8a2affb15400fcacfa7b42",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/misc/cxl/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# IBM Coherent Accelerator (CXL) compatible devices\n#\n\nconfig CXL_BASE\n\tbool\n\tselect PPC_COPRO_BASE\n\tselect PPC_64S_HASH_MMU\n\nconfig CXL\n\ttristate \"Support for IBM Coherent Accelerators (CXL)\"\n\tdepends on PPC_POWERNV && PCI_MSI && EEH\n\tselect CXL_BASE\n\tdefault m\n\thelp\n\t  Select this option to enable driver support for IBM Coherent\n\t  Accelerators (CXL).  CXL is otherwise known as Coherent Accelerator\n\t  Processor Interface (CAPI).  CAPI allows accelerators in FPGAs to be\n\t  coherently attached to a CPU via an MMU.  This driver enables\n\t  userspace programs to access these accelerators via /dev/cxl/afuM.N\n\t  devices.\n\n\t  CAPI adapters are found in POWER8 based systems.\n\n\t  If unsure, say N.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

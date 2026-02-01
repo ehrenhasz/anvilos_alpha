@@ -1,0 +1,9 @@
+{
+  "module_name": "mipi-csi2.h",
+  "hash_id": "c721a10885428299c4fdccd0032356f1d0b9cc3fc9bf42c299bbfd542a058d68",
+  "original_prompt": "Ingested from linux-6.6.14/include/media/mipi-csi2.h",
+  "human_readable_source": " \n \n\n#ifndef _MEDIA_MIPI_CSI2_H\n#define _MEDIA_MIPI_CSI2_H\n\n \n#define MIPI_CSI2_DT_FS\t\t\t0x00\n#define MIPI_CSI2_DT_FE\t\t\t0x01\n#define MIPI_CSI2_DT_LS\t\t\t0x02\n#define MIPI_CSI2_DT_LE\t\t\t0x03\n#define MIPI_CSI2_DT_GENERIC_SHORT(n)\t(0x08 + (n))\t \n\n \n#define MIPI_CSI2_DT_NULL\t\t0x10\n#define MIPI_CSI2_DT_BLANKING\t\t0x11\n#define MIPI_CSI2_DT_EMBEDDED_8B\t0x12\n#define MIPI_CSI2_DT_YUV420_8B\t\t0x18\n#define MIPI_CSI2_DT_YUV420_10B\t\t0x19\n#define MIPI_CSI2_DT_YUV420_8B_LEGACY\t0x1a\n#define MIPI_CSI2_DT_YUV420_8B_CS\t0x1c\n#define MIPI_CSI2_DT_YUV420_10B_CS\t0x1d\n#define MIPI_CSI2_DT_YUV422_8B\t\t0x1e\n#define MIPI_CSI2_DT_YUV422_10B\t\t0x1f\n#define MIPI_CSI2_DT_RGB444\t\t0x20\n#define MIPI_CSI2_DT_RGB555\t\t0x21\n#define MIPI_CSI2_DT_RGB565\t\t0x22\n#define MIPI_CSI2_DT_RGB666\t\t0x23\n#define MIPI_CSI2_DT_RGB888\t\t0x24\n#define MIPI_CSI2_DT_RAW28\t\t0x26\n#define MIPI_CSI2_DT_RAW24\t\t0x27\n#define MIPI_CSI2_DT_RAW6\t\t0x28\n#define MIPI_CSI2_DT_RAW7\t\t0x29\n#define MIPI_CSI2_DT_RAW8\t\t0x2a\n#define MIPI_CSI2_DT_RAW10\t\t0x2b\n#define MIPI_CSI2_DT_RAW12\t\t0x2c\n#define MIPI_CSI2_DT_RAW14\t\t0x2d\n#define MIPI_CSI2_DT_RAW16\t\t0x2e\n#define MIPI_CSI2_DT_RAW20\t\t0x2f\n#define MIPI_CSI2_DT_USER_DEFINED(n)\t(0x30 + (n))\t \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "ramgp102.c",
+  "hash_id": "1fbaffde71424a1e963d692d2585b2aa0225ebf7981f78e1af308850938ba25e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/subdev/fb/ramgp102.c",
+  "human_readable_source": "\n#include \"ram.h\"\n\n#include <subdev/bios.h>\n\nstatic const struct nvkm_ram_func\ngp102_ram = {\n};\n\nint\ngp102_ram_new(struct nvkm_fb *fb, struct nvkm_ram **pram)\n{\n\tenum nvkm_ram_type type = nvkm_fb_bios_memtype(fb->subdev.device->bios);\n\tconst u32 rsvd_head = ( 256 * 1024);  \n\tconst u32 rsvd_tail = (1024 * 1024);  \n\tu64 size = fb->func->vidmem.size(fb);\n\tint ret;\n\n\tret = nvkm_ram_new_(&gp102_ram, fb, type, size, pram);\n\tif (ret)\n\t\treturn ret;\n\n\tnvkm_mm_fini(&(*pram)->vram);\n\n\treturn nvkm_mm_init(&(*pram)->vram, NVKM_RAM_MM_NORMAL,\n\t\t\t    rsvd_head >> NVKM_RAM_MM_SHIFT,\n\t\t\t    (size - rsvd_head - rsvd_tail) >> NVKM_RAM_MM_SHIFT,\n\t\t\t    1);\n\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

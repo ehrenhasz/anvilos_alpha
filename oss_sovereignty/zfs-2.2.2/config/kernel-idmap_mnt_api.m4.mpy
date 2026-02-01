@@ -1,0 +1,9 @@
+{
+  "module_name": "kernel-idmap_mnt_api.m4",
+  "hash_id": "02ce88906700c5857bb2eca327f41b76b163029e7287edd260c1fb7b5564efaa",
+  "original_prompt": "Ingested from zfs-2.2.2/config/kernel-idmap_mnt_api.m4",
+  "human_readable_source": "dnl #\ndnl # 5.12 API\ndnl #\ndnl # Check if APIs for idmapped mount are available\ndnl #\nAC_DEFUN([ZFS_AC_KERNEL_SRC_IDMAP_MNT_API], [\n        ZFS_LINUX_TEST_SRC([idmap_mnt_api], [\n                #include <linux/fs.h>\n        ],[\n\t\tint fs_flags = 0;\n\t\tfs_flags |= FS_ALLOW_IDMAP;\n        ])\n])\n\nAC_DEFUN([ZFS_AC_KERNEL_IDMAP_MNT_API], [\n        AC_MSG_CHECKING([whether APIs for idmapped mount are present])\n        ZFS_LINUX_TEST_RESULT([idmap_mnt_api], [\n                AC_MSG_RESULT([yes])\n                AC_DEFINE(HAVE_IDMAP_MNT_API, 1,\n                    [APIs for idmapped mount are present])\n        ],[\n                AC_MSG_RESULT([no])\n        ])\n])\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

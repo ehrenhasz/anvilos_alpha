@@ -1,0 +1,9 @@
+{
+  "module_name": "ipoctal.h",
+  "hash_id": "71ad9454d0ee08e5334a464b883ac977c038885e496e95e07618574b92a1e5e9",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/ipack/devices/ipoctal.h",
+  "human_readable_source": " \n \n\n#ifndef _IPOCTAL_H_\n#define _IPOCTAL_H_\n\n#define NR_CHANNELS\t\t8\n#define IPOCTAL_MAX_BOARDS\t16\n#define MAX_DEVICES\t\t(NR_CHANNELS * IPOCTAL_MAX_BOARDS)\n\n \nstruct ipoctal_stats {\n\tunsigned long tx;\n\tunsigned long rx;\n\tunsigned long overrun_err;\n\tunsigned long parity_err;\n\tunsigned long framing_err;\n\tunsigned long rcv_break;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

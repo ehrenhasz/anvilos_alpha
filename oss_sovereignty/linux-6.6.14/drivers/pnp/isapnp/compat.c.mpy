@@ -1,0 +1,9 @@
+{
+  "module_name": "compat.c",
+  "hash_id": "97f6f916dc604b8255a8b3dd41249fd8ba7ea6d2ae12455b6f5384f8c626558f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/pnp/isapnp/compat.c",
+  "human_readable_source": "\n \n\n#include <linux/module.h>\n#include <linux/isapnp.h>\n#include <linux/string.h>\n\nstatic void pnp_convert_id(char *buf, unsigned short vendor,\n\t\t\t   unsigned short device)\n{\n\tsprintf(buf, \"%c%c%c%x%x%x%x\",\n\t\t'A' + ((vendor >> 2) & 0x3f) - 1,\n\t\t'A' + (((vendor & 3) << 3) | ((vendor >> 13) & 7)) - 1,\n\t\t'A' + ((vendor >> 8) & 0x1f) - 1,\n\t\t(device >> 4) & 0x0f, device & 0x0f,\n\t\t(device >> 12) & 0x0f, (device >> 8) & 0x0f);\n}\n\nstruct pnp_dev *pnp_find_dev(struct pnp_card *card, unsigned short vendor,\n\t\t\t     unsigned short function, struct pnp_dev *from)\n{\n\tchar id[8];\n\tchar any[8];\n\n\tpnp_convert_id(id, vendor, function);\n\tpnp_convert_id(any, ISAPNP_ANY_ID, ISAPNP_ANY_ID);\n\tif (card == NULL) {\t \n\t\tstruct list_head *list;\n\n\t\tlist = pnp_global.next;\n\t\tif (from)\n\t\t\tlist = from->global_list.next;\n\n\t\twhile (list != &pnp_global) {\n\t\t\tstruct pnp_dev *dev = global_to_pnp_dev(list);\n\n\t\t\tif (compare_pnp_id(dev->id, id) ||\n\t\t\t    (memcmp(id, any, 7) == 0))\n\t\t\t\treturn dev;\n\t\t\tlist = list->next;\n\t\t}\n\t} else {\n\t\tstruct list_head *list;\n\n\t\tlist = card->devices.next;\n\t\tif (from) {\n\t\t\tlist = from->card_list.next;\n\t\t\tif (from->card != card)\t \n\t\t\t\treturn NULL;\n\t\t}\n\t\twhile (list != &card->devices) {\n\t\t\tstruct pnp_dev *dev = card_to_pnp_dev(list);\n\n\t\t\tif (compare_pnp_id(dev->id, id))\n\t\t\t\treturn dev;\n\t\t\tlist = list->next;\n\t\t}\n\t}\n\treturn NULL;\n}\nEXPORT_SYMBOL(pnp_find_dev);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

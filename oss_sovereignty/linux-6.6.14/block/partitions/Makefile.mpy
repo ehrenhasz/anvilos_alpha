@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "39385a0bc072b095fce1d7ceb81ba4c727bca08bca20b71fdb13642af122a7d4",
+  "original_prompt": "Ingested from linux-6.6.14/block/partitions/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for the linux kernel.\n#\n\nobj-$(CONFIG_BLOCK) += core.o\nobj-$(CONFIG_ACORN_PARTITION) += acorn.o\nobj-$(CONFIG_AMIGA_PARTITION) += amiga.o\nobj-$(CONFIG_ATARI_PARTITION) += atari.o\nobj-$(CONFIG_AIX_PARTITION) += aix.o\nobj-$(CONFIG_CMDLINE_PARTITION) += cmdline.o\nobj-$(CONFIG_MAC_PARTITION) += mac.o\nobj-$(CONFIG_LDM_PARTITION) += ldm.o\nobj-$(CONFIG_MSDOS_PARTITION) += msdos.o\nobj-$(CONFIG_OSF_PARTITION) += osf.o\nobj-$(CONFIG_SGI_PARTITION) += sgi.o\nobj-$(CONFIG_SUN_PARTITION) += sun.o\nobj-$(CONFIG_ULTRIX_PARTITION) += ultrix.o\nobj-$(CONFIG_IBM_PARTITION) += ibm.o\nobj-$(CONFIG_EFI_PARTITION) += efi.o\nobj-$(CONFIG_KARMA_PARTITION) += karma.o\nobj-$(CONFIG_SYSV68_PARTITION) += sysv68.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

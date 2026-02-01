@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "63c0825999537621c45c9cc9bba2705d0786a2eccac862be13516ca9b17ab08e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/chelsio/inline_crypto/ch_ipsec/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nccflags-y := -I $(srctree)/drivers/net/ethernet/chelsio/cxgb4 \\\n             -I $(srctree)/drivers/crypto/chelsio\n\nobj-$(CONFIG_CHELSIO_IPSEC_INLINE) += ch_ipsec.o\nch_ipsec-objs := chcr_ipsec.o\n\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

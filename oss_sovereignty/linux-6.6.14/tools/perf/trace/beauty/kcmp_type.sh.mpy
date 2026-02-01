@@ -1,0 +1,9 @@
+{
+  "module_name": "kcmp_type.sh",
+  "hash_id": "896cd7673dabcb1eb9f521508658ea2f7db8c232638be4e7586334221ac05481",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/trace/beauty/kcmp_type.sh",
+  "human_readable_source": "#!/bin/sh\n# SPDX-License-Identifier: LGPL-2.1\n\n[ $# -eq 1 ] && header_dir=$1 || header_dir=tools/include/uapi/linux/\n\nprintf \"static const char *kcmp_types[] = {\\n\"\nregex='^[[:space:]]+(KCMP_(\\w+)),'\ngrep -E $regex ${header_dir}/kcmp.h | grep -v KCMP_TYPES, | \\\n\tsed -r \"s/$regex/\\1 \\2/g\" | \\\n\txargs printf \"\\t[%s]\\t= \\\"%s\\\",\\n\"\nprintf \"};\\n\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

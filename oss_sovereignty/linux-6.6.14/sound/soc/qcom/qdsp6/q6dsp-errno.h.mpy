@@ -1,0 +1,9 @@
+{
+  "module_name": "q6dsp-errno.h",
+  "hash_id": "abbaa3b2494a91e87c8ed3d1e00a25f4a62b34dfdf1087eb0bdecb41c5d06677",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/qcom/qdsp6/q6dsp-errno.h",
+  "human_readable_source": " \n\n#ifndef __Q6DSP_ERR_NO_H__\n#define __Q6DSP_ERR_NO_H__\n#include <linux/kernel.h>\n\n \n#define ADSP_EOK          0x00000000\n \n#define ADSP_EFAILED      0x00000001\n \n#define ADSP_EBADPARAM    0x00000002\n \n#define ADSP_EUNSUPPORTED 0x00000003\n \n#define ADSP_EVERSION     0x00000004\n \n#define ADSP_EUNEXPECTED  0x00000005\n \n#define ADSP_EPANIC       0x00000006\n \n#define ADSP_ENORESOURCE  0x00000007\n \n#define ADSP_EHANDLE      0x00000008\n \n#define ADSP_EALREADY     0x00000009\n \n#define ADSP_ENOTREADY    0x0000000A\n \n#define ADSP_EPENDING     0x0000000B\n \n#define ADSP_EBUSY        0x0000000C\n \n#define ADSP_EABORTED     0x0000000D\n \n#define ADSP_EPREEMPTED   0x0000000E\n \n#define ADSP_ECONTINUE    0x0000000F\n \n#define ADSP_EIMMEDIATE   0x00000010\n \n#define ADSP_ENOTIMPL     0x00000011\n \n#define ADSP_ENEEDMORE    0x00000012\n \n#define ADSP_ENOMEMORY    0x00000014\n \n#define ADSP_ENOTEXIST    0x00000015\n \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "vdec_drv_if.h",
+  "hash_id": "ae56b1dd5251e50102935d369561e1e07c2eceb06fb9f624fd208df63ce61178",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/platform/mediatek/vcodec/decoder/vdec_drv_if.h",
+  "human_readable_source": " \n \n\n#ifndef _VDEC_DRV_IF_H_\n#define _VDEC_DRV_IF_H_\n\n#include \"mtk_vcodec_dec.h\"\n\n\n \nenum vdec_fb_status {\n\tFB_ST_NORMAL\t\t= 0,\n\tFB_ST_DISPLAY\t\t= (1 << 0),\n\tFB_ST_FREE\t\t= (1 << 1)\n};\n\n \nenum vdec_get_param_type {\n\tGET_PARAM_DISP_FRAME_BUFFER,\n\tGET_PARAM_FREE_FRAME_BUFFER,\n\tGET_PARAM_PIC_INFO,\n\tGET_PARAM_CROP_INFO,\n\tGET_PARAM_DPB_SIZE\n};\n\n \nstruct vdec_fb_node {\n\tstruct list_head list;\n\tstruct vdec_fb *fb;\n};\n\nextern const struct vdec_common_if vdec_h264_if;\nextern const struct vdec_common_if vdec_h264_slice_if;\nextern const struct vdec_common_if vdec_h264_slice_multi_if;\nextern const struct vdec_common_if vdec_vp8_if;\nextern const struct vdec_common_if vdec_vp8_slice_if;\nextern const struct vdec_common_if vdec_vp9_if;\nextern const struct vdec_common_if vdec_vp9_slice_lat_if;\nextern const struct vdec_common_if vdec_hevc_slice_multi_if;\nextern const struct vdec_common_if vdec_av1_slice_lat_if;\n\n \nint vdec_if_init(struct mtk_vcodec_dec_ctx *ctx, unsigned int fourcc);\n\n \nvoid vdec_if_deinit(struct mtk_vcodec_dec_ctx *ctx);\n\n \nint vdec_if_decode(struct mtk_vcodec_dec_ctx *ctx, struct mtk_vcodec_mem *bs,\n\t\t   struct vdec_fb *fb, bool *res_chg);\n\n \nint vdec_if_get_param(struct mtk_vcodec_dec_ctx *ctx, enum vdec_get_param_type type,\n\t\t      void *out);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

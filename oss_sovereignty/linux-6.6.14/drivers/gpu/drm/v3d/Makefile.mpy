@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "d515ac4138df53da50f42847d8431726cf0f6e380d357bf99fb84831c33fa872",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/v3d/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n# Please keep these build lists sorted!\n\n# core driver code\nv3d-y := \\\n\tv3d_bo.o \\\n\tv3d_drv.o \\\n\tv3d_fence.o \\\n\tv3d_gem.o \\\n\tv3d_irq.o \\\n\tv3d_mmu.o \\\n\tv3d_perfmon.o \\\n\tv3d_trace_points.o \\\n\tv3d_sched.o\n\nv3d-$(CONFIG_DEBUG_FS) += v3d_debugfs.o\n\nobj-$(CONFIG_DRM_V3D)  += v3d.o\n\nCFLAGS_v3d_trace_points.o := -I$(src)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "module.h",
+  "hash_id": "924e34e1f2049db5c0f5c70f2f5d05532f87142ec3729eacd6e01dc42bbd077c",
+  "original_prompt": "Ingested from linux-6.6.14/tools/virtio/linux/module.h",
+  "human_readable_source": " \n#include <linux/export.h>\n\n#define MODULE_LICENSE(__MODULE_LICENSE_value) \\\n\tstatic __attribute__((unused)) const char *__MODULE_LICENSE_name = \\\n\t\t__MODULE_LICENSE_value\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

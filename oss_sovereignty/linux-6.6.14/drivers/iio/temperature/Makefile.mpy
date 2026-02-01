@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "74e7ed4dd5fffecb2c97b9df360baa12d4b4bfabafc96eb6b32767b9f325885c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/iio/temperature/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for industrial I/O temperature drivers\n#\n\nobj-$(CONFIG_IQS620AT_TEMP) += iqs620at-temp.o\nobj-$(CONFIG_LTC2983) += ltc2983.o\nobj-$(CONFIG_HID_SENSOR_TEMP) += hid-sensor-temperature.o\nobj-$(CONFIG_MAXIM_THERMOCOUPLE) += maxim_thermocouple.o\nobj-$(CONFIG_MAX30208) += max30208.o\nobj-$(CONFIG_MAX31856) += max31856.o\nobj-$(CONFIG_MAX31865) += max31865.o\nobj-$(CONFIG_MLX90614) += mlx90614.o\nobj-$(CONFIG_MLX90632) += mlx90632.o\nobj-$(CONFIG_TMP006) += tmp006.o\nobj-$(CONFIG_TMP007) += tmp007.o\nobj-$(CONFIG_TMP117) += tmp117.o\nobj-$(CONFIG_TSYS01) += tsys01.o\nobj-$(CONFIG_TSYS02D) += tsys02d.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "sdma_v5_0.h",
+  "hash_id": "3810833550d1ba0f28fc832c610ce3463cd8fde4b40d85c5bf13ae1c23a89b77",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/amdgpu/sdma_v5_0.h",
+  "human_readable_source": " \n\n#ifndef __SDMA_V5_0_H__\n#define __SDMA_V5_0_H__\n\nextern const struct amd_ip_funcs sdma_v5_0_ip_funcs;\nextern const struct amdgpu_ip_block_version sdma_v5_0_ip_block;\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

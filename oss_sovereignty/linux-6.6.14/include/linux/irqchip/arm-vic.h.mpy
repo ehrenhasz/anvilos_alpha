@@ -1,0 +1,9 @@
+{
+  "module_name": "arm-vic.h",
+  "hash_id": "b2d289ce66f7f0755e18820cf74bd43215e2828b2a0461ec30f3eec3413fd590",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/irqchip/arm-vic.h",
+  "human_readable_source": " \n \n#ifndef __ASM_ARM_HARDWARE_VIC_H\n#define __ASM_ARM_HARDWARE_VIC_H\n\n#include <linux/types.h>\n\nvoid vic_init(void __iomem *base, unsigned int irq_start, u32 vic_sources, u32 resume_sources);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

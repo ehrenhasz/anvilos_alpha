@@ -1,0 +1,9 @@
+{
+  "module_name": "anon_inodes.h",
+  "hash_id": "9522be917daf2cb95c330f9a3f6defc0544f40c0b71dca9e95f54010e6937338",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/anon_inodes.h",
+  "human_readable_source": " \n \n\n#ifndef _LINUX_ANON_INODES_H\n#define _LINUX_ANON_INODES_H\n\nstruct file_operations;\nstruct inode;\n\nstruct file *anon_inode_getfile(const char *name,\n\t\t\t\tconst struct file_operations *fops,\n\t\t\t\tvoid *priv, int flags);\nstruct file *anon_inode_getfile_secure(const char *name,\n\t\t\t\t       const struct file_operations *fops,\n\t\t\t\t       void *priv, int flags,\n\t\t\t\t       const struct inode *context_inode);\nint anon_inode_getfd(const char *name, const struct file_operations *fops,\n\t\t     void *priv, int flags);\nint anon_inode_getfd_secure(const char *name,\n\t\t\t    const struct file_operations *fops,\n\t\t\t    void *priv, int flags,\n\t\t\t    const struct inode *context_inode);\n\n#endif  \n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "mcs_spinlock.h",
+  "hash_id": "9663088d4d52e39abd42a51a8d907a264e7ddaded180de0ca32e8e317433d426",
+  "original_prompt": "Ingested from linux-6.6.14/kernel/locking/mcs_spinlock.h",
+  "human_readable_source": " \n \n#ifndef __LINUX_MCS_SPINLOCK_H\n#define __LINUX_MCS_SPINLOCK_H\n\n#include <asm/mcs_spinlock.h>\n\nstruct mcs_spinlock {\n\tstruct mcs_spinlock *next;\n\tint locked;  \n\tint count;   \n};\n\n#ifndef arch_mcs_spin_lock_contended\n \n#define arch_mcs_spin_lock_contended(l)\t\t\t\t\t\\\ndo {\t\t\t\t\t\t\t\t\t\\\n\tsmp_cond_load_acquire(l, VAL);\t\t\t\t\t\\\n} while (0)\n#endif\n\n#ifndef arch_mcs_spin_unlock_contended\n \n#define arch_mcs_spin_unlock_contended(l)\t\t\t\t\\\n\tsmp_store_release((l), 1)\n#endif\n\n \n\n \nstatic inline\nvoid mcs_spin_lock(struct mcs_spinlock **lock, struct mcs_spinlock *node)\n{\n\tstruct mcs_spinlock *prev;\n\n\t \n\tnode->locked = 0;\n\tnode->next   = NULL;\n\n\t \n\tprev = xchg(lock, node);\n\tif (likely(prev == NULL)) {\n\t\t \n\t\treturn;\n\t}\n\tWRITE_ONCE(prev->next, node);\n\n\t \n\tarch_mcs_spin_lock_contended(&node->locked);\n}\n\n \nstatic inline\nvoid mcs_spin_unlock(struct mcs_spinlock **lock, struct mcs_spinlock *node)\n{\n\tstruct mcs_spinlock *next = READ_ONCE(node->next);\n\n\tif (likely(!next)) {\n\t\t \n\t\tif (likely(cmpxchg_release(lock, node, NULL) == node))\n\t\t\treturn;\n\t\t \n\t\twhile (!(next = READ_ONCE(node->next)))\n\t\t\tcpu_relax();\n\t}\n\n\t \n\tarch_mcs_spin_unlock_contended(&next->locked);\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "cyttsp_i2c.c",
+  "hash_id": "8306d83172b7b5e9e43464bab984bba58af529c8a00946a9427274bc0cef6a6e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/input/touchscreen/cyttsp_i2c.c",
+  "human_readable_source": "\n \n\n#include \"cyttsp_core.h\"\n\n#include <linux/i2c.h>\n#include <linux/input.h>\n\n#define CY_I2C_NAME\t\t\"cyttsp-i2c\"\n\n#define CY_I2C_DATA_SIZE\t128\n\nstatic const struct cyttsp_bus_ops cyttsp_i2c_bus_ops = {\n\t.bustype\t= BUS_I2C,\n\t.write\t\t= cyttsp_i2c_write_block_data,\n\t.read           = cyttsp_i2c_read_block_data,\n};\n\nstatic int cyttsp_i2c_probe(struct i2c_client *client)\n{\n\tstruct cyttsp *ts;\n\n\tif (!i2c_check_functionality(client->adapter, I2C_FUNC_I2C)) {\n\t\tdev_err(&client->dev, \"I2C functionality not Supported\\n\");\n\t\treturn -EIO;\n\t}\n\n\tts = cyttsp_probe(&cyttsp_i2c_bus_ops, &client->dev, client->irq,\n\t\t\t  CY_I2C_DATA_SIZE);\n\n\tif (IS_ERR(ts))\n\t\treturn PTR_ERR(ts);\n\n\ti2c_set_clientdata(client, ts);\n\treturn 0;\n}\n\nstatic const struct i2c_device_id cyttsp_i2c_id[] = {\n\t{ CY_I2C_NAME, 0 },\n\t{ }\n};\nMODULE_DEVICE_TABLE(i2c, cyttsp_i2c_id);\n\nstatic const struct of_device_id cyttsp_of_i2c_match[] = {\n\t{ .compatible = \"cypress,cy8ctma340\", },\n\t{ .compatible = \"cypress,cy8ctst341\", },\n\t{   }\n};\nMODULE_DEVICE_TABLE(of, cyttsp_of_i2c_match);\n\nstatic struct i2c_driver cyttsp_i2c_driver = {\n\t.driver = {\n\t\t.name\t= CY_I2C_NAME,\n\t\t.pm\t= pm_sleep_ptr(&cyttsp_pm_ops),\n\t\t.of_match_table = cyttsp_of_i2c_match,\n\t},\n\t.probe\t\t= cyttsp_i2c_probe,\n\t.id_table\t= cyttsp_i2c_id,\n};\n\nmodule_i2c_driver(cyttsp_i2c_driver);\n\nMODULE_LICENSE(\"GPL\");\nMODULE_DESCRIPTION(\"Cypress TrueTouch(R) Standard Product (TTSP) I2C driver\");\nMODULE_AUTHOR(\"Cypress\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

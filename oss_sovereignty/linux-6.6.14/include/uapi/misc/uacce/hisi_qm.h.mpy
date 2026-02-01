@@ -1,0 +1,9 @@
+{
+  "module_name": "hisi_qm.h",
+  "hash_id": "dbdefab43ca7128e2b24b31e7c743ac2c2ece64421afbaab05d8d552e0e77aef",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/misc/uacce/hisi_qm.h",
+  "human_readable_source": " \n#ifndef _UAPI_HISI_QM_H\n#define _UAPI_HISI_QM_H\n\n#include <linux/types.h>\n\n \nstruct hisi_qp_ctx {\n\t__u16 id;\n\t__u16 qc_type;\n};\n\n \nstruct hisi_qp_info {\n\t__u32 sqe_size;\n\t__u16 sq_depth;\n\t__u16 cq_depth;\n\t__u64 reserved;\n};\n\n#define HISI_QM_API_VER_BASE \"hisi_qm_v1\"\n#define HISI_QM_API_VER2_BASE \"hisi_qm_v2\"\n#define HISI_QM_API_VER3_BASE \"hisi_qm_v3\"\n\n \n#define UACCE_CMD_QM_SET_QP_CTX\t_IOWR('H', 10, struct hisi_qp_ctx)\n \n#define UACCE_CMD_QM_SET_QP_INFO _IOWR('H', 11, struct hisi_qp_info)\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

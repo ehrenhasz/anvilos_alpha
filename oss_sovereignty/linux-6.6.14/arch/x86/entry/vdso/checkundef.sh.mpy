@@ -1,0 +1,9 @@
+{
+  "module_name": "checkundef.sh",
+  "hash_id": "2116d3689e9743418f8d617c065716834e9268317864db2767a9a129a10316b3",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/entry/vdso/checkundef.sh",
+  "human_readable_source": "#!/bin/sh\nnm=\"$1\"\nfile=\"$2\"\n$nm \"$file\" | grep '^ *U' > /dev/null 2>&1\nif [ $? -eq 1 ]; then\n    exit 0\nelse\n    echo \"$file: undefined symbols found\" >&2\n    exit 1\nfi\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

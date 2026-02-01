@@ -1,0 +1,9 @@
+{
+  "module_name": "core_retro.c",
+  "hash_id": "f7b568c212d4273fc28e4344ff85604ce7fdeae74717cad5b5693db0fbf6f799",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/prog_tests/core_retro.c",
+  "human_readable_source": "\n\n#define _GNU_SOURCE\n#include <test_progs.h>\n#include \"test_core_retro.skel.h\"\n\nvoid test_core_retro(void)\n{\n\tint err, zero = 0, res, my_pid = getpid();\n\tstruct test_core_retro *skel;\n\n\t \n\tskel = test_core_retro__open_and_load();\n\tif (!ASSERT_OK_PTR(skel, \"skel_load\"))\n\t\tgoto out_close;\n\n\terr = bpf_map__update_elem(skel->maps.exp_tgid_map, &zero, sizeof(zero),\n\t\t\t\t   &my_pid, sizeof(my_pid), 0);\n\tif (!ASSERT_OK(err, \"map_update\"))\n\t\tgoto out_close;\n\n\t \n\terr = test_core_retro__attach(skel);\n\tif (!ASSERT_OK(err, \"attach_kprobe\"))\n\t\tgoto out_close;\n\n\t \n\tusleep(1);\n\n\terr = bpf_map__lookup_elem(skel->maps.results, &zero, sizeof(zero), &res, sizeof(res), 0);\n\tif (!ASSERT_OK(err, \"map_lookup\"))\n\t\tgoto out_close;\n\n\tASSERT_EQ(res, my_pid, \"pid_check\");\n\nout_close:\n\ttest_core_retro__destroy(skel);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

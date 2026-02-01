@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "2efd236d25b24458f8a3ef4adfba9413989eae8031ac373faa353777b374e08b",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/clk/xilinx/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nobj-$(CONFIG_XILINX_VCU)\t+= xlnx_vcu.o\nobj-$(CONFIG_COMMON_CLK_XLNX_CLKWZRD)\t+= clk-xlnx-clock-wizard.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

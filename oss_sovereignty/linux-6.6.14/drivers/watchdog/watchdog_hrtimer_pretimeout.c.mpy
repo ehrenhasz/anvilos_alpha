@@ -1,0 +1,9 @@
+{
+  "module_name": "watchdog_hrtimer_pretimeout.c",
+  "hash_id": "b7f813850fcd3aeb3db4683d666afe9aec9018fa2d46a2cc668aa807e31e96dd",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/watchdog/watchdog_hrtimer_pretimeout.c",
+  "human_readable_source": "\n \n\n#include <linux/hrtimer.h>\n#include <linux/watchdog.h>\n\n#include \"watchdog_core.h\"\n#include \"watchdog_pretimeout.h\"\n\nstatic enum hrtimer_restart watchdog_hrtimer_pretimeout(struct hrtimer *timer)\n{\n\tstruct watchdog_core_data *wd_data;\n\n\twd_data = container_of(timer, struct watchdog_core_data, pretimeout_timer);\n\n\twatchdog_notify_pretimeout(wd_data->wdd);\n\treturn HRTIMER_NORESTART;\n}\n\nvoid watchdog_hrtimer_pretimeout_init(struct watchdog_device *wdd)\n{\n\tstruct watchdog_core_data *wd_data = wdd->wd_data;\n\n\thrtimer_init(&wd_data->pretimeout_timer, CLOCK_MONOTONIC, HRTIMER_MODE_REL);\n\twd_data->pretimeout_timer.function = watchdog_hrtimer_pretimeout;\n}\n\nvoid watchdog_hrtimer_pretimeout_start(struct watchdog_device *wdd)\n{\n\tif (!(wdd->info->options & WDIOF_PRETIMEOUT) &&\n\t    !watchdog_pretimeout_invalid(wdd, wdd->pretimeout))\n\t\thrtimer_start(&wdd->wd_data->pretimeout_timer,\n\t\t\t      ktime_set(wdd->timeout - wdd->pretimeout, 0),\n\t\t\t      HRTIMER_MODE_REL);\n\telse\n\t\thrtimer_cancel(&wdd->wd_data->pretimeout_timer);\n}\n\nvoid watchdog_hrtimer_pretimeout_stop(struct watchdog_device *wdd)\n{\n\thrtimer_cancel(&wdd->wd_data->pretimeout_timer);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

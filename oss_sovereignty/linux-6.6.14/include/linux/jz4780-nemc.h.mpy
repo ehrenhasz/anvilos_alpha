@@ -1,0 +1,9 @@
+{
+  "module_name": "jz4780-nemc.h",
+  "hash_id": "6d7e5725e1b7fd5794efa4e402b26f324f29bd8593ab9c275a1f18624de6241d",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/jz4780-nemc.h",
+  "human_readable_source": " \n \n\n#ifndef __LINUX_JZ4780_NEMC_H__\n#define __LINUX_JZ4780_NEMC_H__\n\n#include <linux/types.h>\n\nstruct device;\n\n \n#define JZ4780_NEMC_NUM_BANKS\t7\n\n \nenum jz4780_nemc_bank_type {\n\tJZ4780_NEMC_BANK_SRAM,\n\tJZ4780_NEMC_BANK_NAND,\n};\n\nextern unsigned int jz4780_nemc_num_banks(struct device *dev);\n\nextern void jz4780_nemc_set_type(struct device *dev, unsigned int bank,\n\t\t\t\t enum jz4780_nemc_bank_type type);\nextern void jz4780_nemc_assert(struct device *dev, unsigned int bank,\n\t\t\t       bool assert);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

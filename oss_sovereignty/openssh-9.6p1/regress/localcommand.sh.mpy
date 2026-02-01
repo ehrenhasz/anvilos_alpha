@@ -1,0 +1,9 @@
+{
+  "module_name": "localcommand.sh",
+  "hash_id": "91cad74ede143379ae3c9b8f46748c165f882a62613f98e5fc7b5780f178074d",
+  "original_prompt": "Ingested from openssh-9.6p1/regress/localcommand.sh",
+  "human_readable_source": "#\t$OpenBSD: localcommand.sh,v 1.4 2017/04/30 23:34:55 djm Exp $\n#\tPlaced in the Public Domain.\n\ntid=\"localcommand\"\n\necho 'PermitLocalCommand yes' >> $OBJ/ssh_proxy\necho 'LocalCommand echo foo' >> $OBJ/ssh_proxy\n\nverbose \"test $tid: proto $p localcommand\"\na=`${SSH} -F $OBJ/ssh_proxy somehost true`\nif [ \"$a\" != \"foo\" ] ; then\n\tfail \"$tid proto $p\"\nfi\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

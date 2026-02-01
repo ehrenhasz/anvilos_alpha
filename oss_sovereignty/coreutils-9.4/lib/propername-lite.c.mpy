@@ -1,0 +1,9 @@
+{
+  "module_name": "propername-lite.c",
+  "hash_id": "a183f79a7256815679660c7c3afa2d794f2a80e1678c8d63f3616ee96097c98b",
+  "original_prompt": "Ingested from coreutils-9.4/lib/propername-lite.c",
+  "human_readable_source": " \n#include \"propername.h\"\n\n#include \"c-strcase.h\"\n#include \"gettext.h\"\n#include \"localcharset.h\"\n\n \n\nchar const *\nproper_name_lite (char const *name_ascii, char const *name_utf8)\n{\n  char const *translation = gettext (name_ascii);\n  return (translation != name_ascii ? translation\n          : c_strcasecmp (locale_charset (), \"UTF-8\") == 0 ? name_utf8\n          : name_ascii);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

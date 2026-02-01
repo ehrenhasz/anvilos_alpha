@@ -1,0 +1,9 @@
+{
+  "module_name": "gf100.h",
+  "hash_id": "d00c6052e11ea8b0e875a47408aca6ecdba5d7638d19b5297234ea5601d76482",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/subdev/therm/gf100.h",
+  "human_readable_source": " \n\n#ifndef __GF100_THERM_H__\n#define __GF100_THERM_H__\n\n#include <core/device.h>\n\nstruct gf100_idle_filter {\n\tu32 fecs;\n\tu32 hubmmu;\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

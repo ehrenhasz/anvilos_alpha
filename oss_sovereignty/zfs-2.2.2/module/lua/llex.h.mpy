@@ -1,0 +1,9 @@
+{
+  "module_name": "llex.h",
+  "hash_id": "873e0579d77653a3f1d3bf9b458a3c6d8d60c8f72725753b4418a9c69969674a",
+  "original_prompt": "Ingested from zfs-2.2.2/module/lua/llex.h",
+  "human_readable_source": " \n\n#ifndef llex_h\n#define llex_h\n\n#include \"lobject.h\"\n#include \"lzio.h\"\n\n\n#define FIRST_RESERVED\t257\n\n\n\n \nenum RESERVED {\n   \n  TK_AND = FIRST_RESERVED, TK_BREAK,\n  TK_DO, TK_ELSE, TK_ELSEIF, TK_END, TK_FALSE, TK_FOR, TK_FUNCTION,\n  TK_GOTO, TK_IF, TK_IN, TK_LOCAL, TK_NIL, TK_NOT, TK_OR, TK_REPEAT,\n  TK_RETURN, TK_THEN, TK_TRUE, TK_UNTIL, TK_WHILE,\n   \n  TK_CONCAT, TK_DOTS, TK_EQ, TK_GE, TK_LE, TK_NE, TK_DBCOLON, TK_EOS,\n  TK_NUMBER, TK_NAME, TK_STRING\n};\n\n \n#define NUM_RESERVED\t(cast(int, TK_WHILE-FIRST_RESERVED+1))\n\n\ntypedef union {\n  lua_Number r;\n  TString *ts;\n} SemInfo;   \n\n\ntypedef struct Token {\n  int token;\n  SemInfo seminfo;\n} Token;\n\n#ifdef current\n#undef current\n#endif\n\n \ntypedef struct LexState {\n  int current;   \n  int linenumber;   \n  int lastline;   \n  Token t;   \n  Token lookahead;   \n  struct FuncState *fs;   \n  struct lua_State *L;\n  ZIO *z;   \n  Mbuffer *buff;   \n  struct Dyndata *dyd;   \n  TString *source;   \n  TString *envn;   \n  char decpoint;   \n} LexState;\n\n\nLUAI_FUNC void luaX_init (lua_State *L);\nLUAI_FUNC void luaX_setinput (lua_State *L, LexState *ls, ZIO *z,\n                              TString *source, int firstchar);\nLUAI_FUNC TString *luaX_newstring (LexState *ls, const char *str, size_t l);\nLUAI_FUNC void luaX_next (LexState *ls);\nLUAI_FUNC int luaX_lookahead (LexState *ls);\nLUAI_FUNC l_noret luaX_syntaxerror (LexState *ls, const char *s);\nLUAI_FUNC const char *luaX_token2str (LexState *ls, int token);\n\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

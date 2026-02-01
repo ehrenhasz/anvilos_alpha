@@ -1,0 +1,9 @@
+{
+  "module_name": "failover.h",
+  "hash_id": "011a758aaae1615377e41d0801aca13e2a0b608e075103c6221a490429b5e58b",
+  "original_prompt": "Ingested from linux-6.6.14/include/net/failover.h",
+  "human_readable_source": " \n \n\n#ifndef _FAILOVER_H\n#define _FAILOVER_H\n\n#include <linux/netdevice.h>\n\nstruct failover_ops {\n\tint (*slave_pre_register)(struct net_device *slave_dev,\n\t\t\t\t  struct net_device *failover_dev);\n\tint (*slave_register)(struct net_device *slave_dev,\n\t\t\t      struct net_device *failover_dev);\n\tint (*slave_pre_unregister)(struct net_device *slave_dev,\n\t\t\t\t    struct net_device *failover_dev);\n\tint (*slave_unregister)(struct net_device *slave_dev,\n\t\t\t\tstruct net_device *failover_dev);\n\tint (*slave_link_change)(struct net_device *slave_dev,\n\t\t\t\t struct net_device *failover_dev);\n\tint (*slave_name_change)(struct net_device *slave_dev,\n\t\t\t\t struct net_device *failover_dev);\n\trx_handler_result_t (*slave_handle_frame)(struct sk_buff **pskb);\n};\n\nstruct failover {\n\tstruct list_head list;\n\tstruct net_device __rcu *failover_dev;\n\tnetdevice_tracker\tdev_tracker;\n\tstruct failover_ops __rcu *ops;\n};\n\nstruct failover *failover_register(struct net_device *dev,\n\t\t\t\t   struct failover_ops *ops);\nvoid failover_unregister(struct failover *failover);\nint failover_slave_unregister(struct net_device *slave_dev);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "test_probe_read_user_str.c",
+  "hash_id": "40ccffceb21be05c7d3b244a007014866a0cd0c98070f6196d70eaf75f678d41",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/test_probe_read_user_str.c",
+  "human_readable_source": "\n\n#include <linux/bpf.h>\n#include <bpf/bpf_helpers.h>\n#include <bpf/bpf_tracing.h>\n\n#include <sys/types.h>\n\npid_t pid = 0;\nlong ret = 0;\nvoid *user_ptr = 0;\nchar buf[256] = {};\n\nSEC(\"tracepoint/syscalls/sys_enter_nanosleep\")\nint on_write(void *ctx)\n{\n\tif (pid != (bpf_get_current_pid_tgid() >> 32))\n\t\treturn 0;\n\n\tret = bpf_probe_read_user_str(buf, sizeof(buf), user_ptr);\n\n\treturn 0;\n}\n\nchar _license[] SEC(\"license\") = \"GPL\";\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "xt_devgroup.h",
+  "hash_id": "6cd5e138bc3b8d479483c94703959adabf84e6bd71f989949951579d7cc0cd37",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/netfilter/xt_devgroup.h",
+  "human_readable_source": " \n#ifndef _XT_DEVGROUP_H\n#define _XT_DEVGROUP_H\n\n#include <linux/types.h>\n\nenum xt_devgroup_flags {\n\tXT_DEVGROUP_MATCH_SRC\t= 0x1,\n\tXT_DEVGROUP_INVERT_SRC\t= 0x2,\n\tXT_DEVGROUP_MATCH_DST\t= 0x4,\n\tXT_DEVGROUP_INVERT_DST\t= 0x8,\n};\n\nstruct xt_devgroup_info {\n\t__u32\tflags;\n\t__u32\tsrc_group;\n\t__u32\tsrc_mask;\n\t__u32\tdst_group;\n\t__u32\tdst_mask;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

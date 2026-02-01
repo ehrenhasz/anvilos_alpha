@@ -1,0 +1,9 @@
+{
+  "module_name": "testmode.h",
+  "hash_id": "8851a8a699a91be674a52b83effe8ce0b913ea61754162c27be4acdcbf783e57",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/ath/ath6kl/testmode.h",
+  "human_readable_source": " \n\n#include \"core.h\"\n\n#ifdef CONFIG_NL80211_TESTMODE\n\nvoid ath6kl_tm_rx_event(struct ath6kl *ar, void *buf, size_t buf_len);\nint ath6kl_tm_cmd(struct wiphy *wiphy, struct wireless_dev *wdev,\n\t\t  void *data, int len);\n\n#else\n\nstatic inline void ath6kl_tm_rx_event(struct ath6kl *ar, void *buf,\n\t\t\t\t      size_t buf_len)\n{\n}\n\nstatic inline int ath6kl_tm_cmd(struct wiphy *wiphy,\n\t\t\t\tstruct wireless_dev *wdev,\n\t\t\t\tvoid *data, int len)\n{\n\treturn 0;\n}\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

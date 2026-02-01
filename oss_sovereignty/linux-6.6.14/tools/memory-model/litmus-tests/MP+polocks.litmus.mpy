@@ -1,0 +1,9 @@
+{
+  "module_name": "MP+polocks.litmus",
+  "hash_id": "8781d4da4ede2468813317b76f9cac11b79c42d20545ab6f4d0fcadd2daaea42",
+  "original_prompt": "Ingested from linux-6.6.14/tools/memory-model/litmus-tests/MP+polocks.litmus",
+  "human_readable_source": "C MP+polocks\n\n(*\n * Result: Never\n *\n * This litmus test demonstrates how lock acquisitions and releases can\n * stand in for smp_load_acquire() and smp_store_release(), respectively.\n * In other words, when holding a given lock (or indeed after releasing a\n * given lock), a CPU is not only guaranteed to see the accesses that other\n * CPUs made while previously holding that lock, it is also guaranteed\n * to see all prior accesses by those other CPUs.\n *)\n\n{}\n\nP0(int *buf, int *flag, spinlock_t *mylock) // Producer\n{\n\tWRITE_ONCE(*buf, 1);\n\tspin_lock(mylock);\n\tWRITE_ONCE(*flag, 1);\n\tspin_unlock(mylock);\n}\n\nP1(int *buf, int *flag, spinlock_t *mylock) // Consumer\n{\n\tint r0;\n\tint r1;\n\n\tspin_lock(mylock);\n\tr0 = READ_ONCE(*flag);\n\tspin_unlock(mylock);\n\tr1 = READ_ONCE(*buf);\n}\n\nexists (1:r0=1 /\\ 1:r1=0) (* Bad outcome. *)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

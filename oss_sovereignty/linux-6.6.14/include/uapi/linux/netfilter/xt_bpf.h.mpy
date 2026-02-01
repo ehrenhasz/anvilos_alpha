@@ -1,0 +1,9 @@
+{
+  "module_name": "xt_bpf.h",
+  "hash_id": "60232a8b6c851eb2e8b6a67e77b816e7fe70f93f5737f88f668bec74c3b09996",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/netfilter/xt_bpf.h",
+  "human_readable_source": " \n#ifndef _XT_BPF_H\n#define _XT_BPF_H\n\n#include <linux/filter.h>\n#include <linux/limits.h>\n#include <linux/types.h>\n\n#define XT_BPF_MAX_NUM_INSTR\t64\n#define XT_BPF_PATH_MAX\t\t(XT_BPF_MAX_NUM_INSTR * sizeof(struct sock_filter))\n\nstruct bpf_prog;\n\nstruct xt_bpf_info {\n\t__u16 bpf_program_num_elem;\n\tstruct sock_filter bpf_program[XT_BPF_MAX_NUM_INSTR];\n\n\t \n\tstruct bpf_prog *filter __attribute__((aligned(8)));\n};\n\nenum xt_bpf_modes {\n\tXT_BPF_MODE_BYTECODE,\n\tXT_BPF_MODE_FD_PINNED,\n\tXT_BPF_MODE_FD_ELF,\n};\n#define XT_BPF_MODE_PATH_PINNED XT_BPF_MODE_FD_PINNED\n\nstruct xt_bpf_info_v1 {\n\t__u16 mode;\n\t__u16 bpf_program_num_elem;\n\t__s32 fd;\n\tunion {\n\t\tstruct sock_filter bpf_program[XT_BPF_MAX_NUM_INSTR];\n\t\tchar path[XT_BPF_PATH_MAX];\n\t};\n\n\t \n\tstruct bpf_prog *filter __attribute__((aligned(8)));\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

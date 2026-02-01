@@ -1,0 +1,9 @@
+{
+  "module_name": "ldexp.c",
+  "hash_id": "702b608d3a5cf9c5d26c26ef2c528a3003555ee48ececec3b817c817d297bfe8",
+  "original_prompt": "Ingested from sys_09_Anvil/source/lib/libm_dbl/ldexp.c",
+  "human_readable_source": "#include <math.h>\n\ndouble ldexp(double x, int n)\n{\n\treturn scalbn(x, n);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

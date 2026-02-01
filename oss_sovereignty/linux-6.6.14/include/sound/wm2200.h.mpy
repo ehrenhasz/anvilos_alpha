@@ -1,0 +1,9 @@
+{
+  "module_name": "wm2200.h",
+  "hash_id": "e76c981df08e50d7427dbb2d02393c59c12ac053ee2c9cba167e65513adb5966",
+  "original_prompt": "Ingested from linux-6.6.14/include/sound/wm2200.h",
+  "human_readable_source": " \n \n\n#ifndef __LINUX_SND_WM2200_H\n#define __LINUX_SND_WM2200_H\n\n#define WM2200_GPIO_SET 0x10000\n#define WM2200_MAX_MICBIAS 2\n\nenum wm2200_in_mode {\n\tWM2200_IN_SE = 0,\n\tWM2200_IN_DIFF = 1,\n\tWM2200_IN_DMIC = 2,\n};\n\nenum wm2200_dmic_sup {\n\tWM2200_DMIC_SUP_MICVDD = 0,\n\tWM2200_DMIC_SUP_MICBIAS1 = 1,\n\tWM2200_DMIC_SUP_MICBIAS2 = 2,\n};\n\nenum wm2200_mbias_lvl {\n\tWM2200_MBIAS_LVL_1V5 = 1,\n\tWM2200_MBIAS_LVL_1V8 = 2,\n\tWM2200_MBIAS_LVL_1V9 = 3,\n\tWM2200_MBIAS_LVL_2V0 = 4,\n\tWM2200_MBIAS_LVL_2V2 = 5,\n\tWM2200_MBIAS_LVL_2V4 = 6,\n\tWM2200_MBIAS_LVL_2V5 = 7,\n\tWM2200_MBIAS_LVL_2V6 = 8,\n};\n\nstruct wm2200_micbias {\n\tenum wm2200_mbias_lvl mb_lvl;       \n\tunsigned int discharge:1;           \n\tunsigned int fast_start:1;          \n\tunsigned int bypass:1;              \n};\n\nstruct wm2200_pdata {\n\tint reset;       \n\tint ldo_ena;     \n\tint irq_flags;\n\n\tint gpio_defaults[4];\n\n\tenum wm2200_in_mode in_mode[3];\n\tenum wm2200_dmic_sup dmic_sup[3];\n\n\t \n\tstruct wm2200_micbias micbias[WM2200_MAX_MICBIAS];\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

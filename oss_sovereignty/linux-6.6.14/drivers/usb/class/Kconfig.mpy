@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "c226111a31264e16d8fa7268304fc3a36b655e4c2c23904b7b179f84843e7439",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/usb/class/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# USB Class driver configuration\n#\ncomment \"USB Device Class drivers\"\n\nconfig USB_ACM\n\ttristate \"USB Modem (CDC ACM) support\"\n\tdepends on TTY\n\thelp\n\t  This driver supports USB modems and ISDN adapters which support the\n\t  Communication Device Class Abstract Control Model interface.\n\t  Please read <file:Documentation/usb/acm.rst> for details.\n\n\t  If your modem only reports \"Cls=ff(vend.)\" in the descriptors in\n\t  /sys/kernel/debug/usb/devices, then your modem will not work with this\n\t  driver.\n\n\t  To compile this driver as a module, choose M here: the\n\t  module will be called cdc-acm.\n\nconfig USB_PRINTER\n\ttristate \"USB Printer support\"\n\thelp\n\t  Say Y here if you want to connect a USB printer to your computer's\n\t  USB port.\n\n\t  To compile this driver as a module, choose M here: the\n\t  module will be called usblp.\n\nconfig USB_WDM\n\ttristate \"USB Wireless Device Management support\"\n\thelp\n\t  This driver supports the WMC Device Management functionality\n\t  of cell phones compliant to the CDC WMC specification. You can use\n\t  AT commands over this device.\n\n\t  To compile this driver as a module, choose M here: the\n\t  module will be called cdc-wdm.\n\nconfig USB_TMC\n\ttristate \"USB Test and Measurement Class support\"\n\thelp\n\t  Say Y here if you want to connect a USB device that follows\n\t  the USB.org specification for USB Test and Measurement devices\n\t  to your computer's USB port.\n\n\t  To compile this driver as a module, choose M here: the\n\t  module will be called usbtmc.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "mmap_prot.sh",
+  "hash_id": "754166ecd5bb5838cc203f74f5f5f23f450ab6c485fd6c826ccdfc685927614a",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/trace/beauty/mmap_prot.sh",
+  "human_readable_source": "#!/bin/sh\n# SPDX-License-Identifier: LGPL-2.1\n\nif [ $# -ne 2 ] ; then\n\t[ $# -eq 1 ] && hostarch=$1 || hostarch=`uname -m | sed -e s/i.86/x86/ -e s/x86_64/x86/`\n\tasm_header_dir=tools/include/uapi/asm-generic\n\tarch_header_dir=tools/arch/${hostarch}/include/uapi/asm\nelse\n\tasm_header_dir=$1\n\tarch_header_dir=$2\nfi\n\ncommon_mman=${asm_header_dir}/mman-common.h\narch_mman=${arch_header_dir}/mman.h\n\nprefix=\"PROT\"\n\nprintf \"static const char *mmap_prot[] = {\\n\"\nregex=`printf '^[[:space:]]*#[[:space:]]*define[[:space:]]+%s_([[:alnum:]_]+)[[:space:]]+(0x[[:xdigit:]]+)[[:space:]]*.*' ${prefix}`\n( ! test -f ${arch_mman} \\\n|| grep -E -q '#[[:space:]]*include[[:space:]]+.*uapi/asm-generic/mman.*' ${arch_mman}) &&\n(grep -E $regex ${common_mman} | \\\n\tgrep -E -vw PROT_NONE | \\\n\tsed -r \"s/$regex/\\2 \\1 \\1 \\1 \\2/g\"\t| \\\n\txargs printf \"\\t[ilog2(%s) + 1] = \\\"%s\\\",\\n#ifndef ${prefix}_%s\\n#define ${prefix}_%s %s\\n#endif\\n\")\ntest -f ${arch_mman} && grep -E -q $regex ${arch_mman} &&\n(grep -E $regex ${arch_mman} | \\\n\tgrep -E -vw PROT_NONE | \\\n\tsed -r \"s/$regex/\\2 \\1 \\1 \\1 \\2/g\"\t| \\\n\txargs printf \"\\t[ilog2(%s) + 1] = \\\"%s\\\",\\n#ifndef ${prefix}_%s\\n#define ${prefix}_%s %s\\n#endif\\n\")\nprintf \"};\\n\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

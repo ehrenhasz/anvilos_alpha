@@ -1,0 +1,9 @@
+{
+  "module_name": "rk3366-power.h",
+  "hash_id": "c7341813d248aedede8263af1943ad60a49023d946c6db7153e5073f02070461",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/power/rk3366-power.h",
+  "human_readable_source": "#ifndef __DT_BINDINGS_POWER_RK3366_POWER_H__\n#define __DT_BINDINGS_POWER_RK3366_POWER_H__\n\n \n#define RK3366_PD_A53_0\t\t0\n#define RK3366_PD_A53_1\t\t1\n#define RK3366_PD_A53_2\t\t2\n#define RK3366_PD_A53_3\t\t3\n\n \n#define RK3366_PD_BUS\t\t4\n#define RK3366_PD_PERI\t\t5\n#define RK3366_PD_VIO\t\t6\n#define RK3366_PD_VIDEO\t\t7\n#define RK3366_PD_RKVDEC\t8\n#define RK3366_PD_WIFIBT\t9\n#define RK3366_PD_VPU\t\t10\n#define RK3366_PD_GPU\t\t11\n#define RK3366_PD_ALIVE\t\t12\n\n \n#define RK3366_PD_PMU\t\t13\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "kprobe_multiprobe.tc",
+  "hash_id": "33f019d80f7b964c5206c03526c11ded57c2a6ba38070135ba51383b8b8a8ee4",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/ftrace/test.d/kprobe/kprobe_multiprobe.tc",
+  "human_readable_source": "#!/bin/sh\n# SPDX-License-Identifier: GPL-2.0\n# description: Create/delete multiprobe on kprobe event\n# requires: kprobe_events \"Create/append/\":README\n\n# Choose 2 symbols for target\nSYM1=$FUNCTION_FORK\nSYM2=do_exit\nEVENT_NAME=kprobes/testevent\n\nDEF1=\"p:$EVENT_NAME $SYM1\"\nDEF2=\"p:$EVENT_NAME $SYM2\"\n\n:;: \"Define an event which has 2 probes\" ;:\necho $DEF1 >> kprobe_events\necho $DEF2 >> kprobe_events\ncat kprobe_events | grep \"$DEF1\"\ncat kprobe_events | grep \"$DEF2\"\n\n:;: \"Remove the event by name (should remove both)\" ;:\necho \"-:$EVENT_NAME\" >> kprobe_events\ntest `cat kprobe_events | wc -l` -eq 0\n\n:;: \"Remove just 1 event\" ;:\necho $DEF1 >> kprobe_events\necho $DEF2 >> kprobe_events\necho \"-:$EVENT_NAME $SYM1\" >> kprobe_events\n! cat kprobe_events | grep \"$DEF1\"\ncat kprobe_events | grep \"$DEF2\"\n\n:;: \"Appending different type must fail\" ;:\n! echo \"$DEF1 \\$stack\" >> kprobe_events\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

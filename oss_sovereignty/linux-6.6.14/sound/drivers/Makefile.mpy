@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "194d6e9c7b52bea7aafd4c0f5e0be4b46e95fe8ff70886d80c34179cdeb96148",
+  "original_prompt": "Ingested from linux-6.6.14/sound/drivers/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for ALSA\n# Copyright (c) 2001 by Jaroslav Kysela <perex@perex.cz>\n#\n\nsnd-dummy-objs := dummy.o\nsnd-aloop-objs := aloop.o\nsnd-mtpav-objs := mtpav.o\nsnd-mts64-objs := mts64.o\nsnd-pcmtest-objs := pcmtest.o\nsnd-portman2x4-objs := portman2x4.o\nsnd-serial-u16550-objs := serial-u16550.o\nsnd-serial-generic-objs := serial-generic.o\nsnd-virmidi-objs := virmidi.o\n\n# Toplevel Module Dependency\nobj-$(CONFIG_SND_DUMMY) += snd-dummy.o\nobj-$(CONFIG_SND_ALOOP) += snd-aloop.o\nobj-$(CONFIG_SND_VIRMIDI) += snd-virmidi.o\nobj-$(CONFIG_SND_PCMTEST) += snd-pcmtest.o\nobj-$(CONFIG_SND_SERIAL_U16550) += snd-serial-u16550.o\nobj-$(CONFIG_SND_SERIAL_GENERIC) += snd-serial-generic.o\nobj-$(CONFIG_SND_MTPAV) += snd-mtpav.o\nobj-$(CONFIG_SND_MTS64) += snd-mts64.o\nobj-$(CONFIG_SND_PORTMAN2X4) += snd-portman2x4.o\n\nobj-$(CONFIG_SND) += opl3/ opl4/ mpu401/ vx/ pcsp/\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

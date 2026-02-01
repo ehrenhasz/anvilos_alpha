@@ -1,0 +1,9 @@
+{
+  "module_name": "panfrost_mmu.h",
+  "hash_id": "fa36d772c7c09561cb1d9558fb3e0b3ea055b831594758fa34605eddceb814bc",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/panfrost/panfrost_mmu.h",
+  "human_readable_source": " \n \n\n#ifndef __PANFROST_MMU_H__\n#define __PANFROST_MMU_H__\n\nstruct panfrost_gem_mapping;\nstruct panfrost_file_priv;\nstruct panfrost_mmu;\n\nint panfrost_mmu_map(struct panfrost_gem_mapping *mapping);\nvoid panfrost_mmu_unmap(struct panfrost_gem_mapping *mapping);\n\nint panfrost_mmu_init(struct panfrost_device *pfdev);\nvoid panfrost_mmu_fini(struct panfrost_device *pfdev);\nvoid panfrost_mmu_reset(struct panfrost_device *pfdev);\n\nu32 panfrost_mmu_as_get(struct panfrost_device *pfdev, struct panfrost_mmu *mmu);\nvoid panfrost_mmu_as_put(struct panfrost_device *pfdev, struct panfrost_mmu *mmu);\n\nstruct panfrost_mmu *panfrost_mmu_ctx_get(struct panfrost_mmu *mmu);\nvoid panfrost_mmu_ctx_put(struct panfrost_mmu *mmu);\nstruct panfrost_mmu *panfrost_mmu_ctx_create(struct panfrost_device *pfdev);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

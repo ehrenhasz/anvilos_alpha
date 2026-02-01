@@ -1,0 +1,9 @@
+{
+  "module_name": "vidtv_bridge.h",
+  "hash_id": "b38f6578fc6023356a7943a7270a9c0f9a4a03950b88c090880490de950378cf",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/test-drivers/vidtv/vidtv_bridge.h",
+  "human_readable_source": " \n \n\n#ifndef VIDTV_BRIDGE_H\n#define VIDTV_BRIDGE_H\n\n \n#define NUM_FE 1\n#define VIDTV_PDEV_NAME \"vidtv\"\n\n#include <linux/i2c.h>\n#include <linux/platform_device.h>\n#include <linux/types.h>\n\n#include <media/dmxdev.h>\n#include <media/dvb_demux.h>\n#include <media/dvb_frontend.h>\n#include <media/media-device.h>\n\n#include \"vidtv_mux.h\"\n\n \nstruct vidtv_dvb {\n\tstruct platform_device *pdev;\n\tstruct dvb_frontend *fe[NUM_FE];\n\tstruct dvb_adapter adapter;\n\tstruct dvb_demux demux;\n\tstruct dmxdev dmx_dev;\n\tstruct dmx_frontend dmx_fe[NUM_FE];\n\tstruct i2c_adapter i2c_adapter;\n\tstruct i2c_client *i2c_client_demod[NUM_FE];\n\tstruct i2c_client *i2c_client_tuner[NUM_FE];\n\n\tu32 nfeeds;\n\tstruct mutex feed_lock;  \n\n\tbool streaming;\n\n\tstruct vidtv_mux *mux;\n\n#ifdef CONFIG_MEDIA_CONTROLLER_DVB\n\tstruct media_device mdev;\n#endif  \n};\n\n#endif \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

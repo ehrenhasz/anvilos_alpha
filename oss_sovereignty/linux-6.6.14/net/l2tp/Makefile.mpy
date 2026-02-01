@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "09bc443d118989ce0a2525a4edf0707b182997e9a69e154b58dc342d15e66cf6",
+  "original_prompt": "Ingested from linux-6.6.14/net/l2tp/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for the L2TP.\n#\n\nobj-$(CONFIG_L2TP) += l2tp_core.o\n\nCFLAGS_l2tp_core.o += -I$(src)\n\n# Build l2tp as modules if L2TP is M\nobj-$(subst y,$(CONFIG_L2TP),$(CONFIG_PPPOL2TP)) += l2tp_ppp.o\nobj-$(subst y,$(CONFIG_L2TP),$(CONFIG_L2TP_IP)) += l2tp_ip.o\nobj-$(subst y,$(CONFIG_L2TP),$(CONFIG_L2TP_V3)) += l2tp_netlink.o\nobj-$(subst y,$(CONFIG_L2TP),$(CONFIG_L2TP_ETH)) += l2tp_eth.o\nobj-$(subst y,$(CONFIG_L2TP),$(CONFIG_L2TP_DEBUGFS)) += l2tp_debugfs.o\nifneq ($(CONFIG_IPV6),)\nobj-$(subst y,$(CONFIG_L2TP),$(CONFIG_L2TP_IP)) += l2tp_ip6.o\nendif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

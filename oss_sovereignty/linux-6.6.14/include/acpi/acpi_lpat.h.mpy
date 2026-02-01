@@ -1,0 +1,9 @@
+{
+  "module_name": "acpi_lpat.h",
+  "hash_id": "0a89c40b85adb5cabfdf955ab2fc4a5ece5921290c2d4873ba1209f88fcf0294",
+  "original_prompt": "Ingested from linux-6.6.14/include/acpi/acpi_lpat.h",
+  "human_readable_source": " \n \n\n#ifndef ACPI_LPAT_H\n#define ACPI_LPAT_H\n\nstruct acpi_lpat {\n\tint temp;\n\tint raw;\n};\n\nstruct acpi_lpat_conversion_table {\n\tstruct acpi_lpat *lpat;\n\tint lpat_count;\n};\n\n#ifdef CONFIG_ACPI\n\nint acpi_lpat_raw_to_temp(struct acpi_lpat_conversion_table *lpat_table,\n\t\t\t  int raw);\nint acpi_lpat_temp_to_raw(struct acpi_lpat_conversion_table *lpat_table,\n\t\t\t  int temp);\nstruct acpi_lpat_conversion_table *acpi_lpat_get_conversion_table(acpi_handle\n\t\t\t\t\t\t\t\t  handle);\nvoid acpi_lpat_free_conversion_table(struct acpi_lpat_conversion_table\n\t\t\t\t     *lpat_table);\n\n#else\nstatic int acpi_lpat_raw_to_temp(struct acpi_lpat_conversion_table *lpat_table,\n\t\t\t\t int raw)\n{\n\treturn 0;\n}\n\nstatic int acpi_lpat_temp_to_raw(struct acpi_lpat_conversion_table *lpat_table,\n\t\t\t\t int temp)\n{\n\treturn 0;\n}\n\nstatic struct acpi_lpat_conversion_table *acpi_lpat_get_conversion_table(\n\t\t\t\t\t\t\tacpi_handle handle)\n{\n\treturn NULL;\n}\n\nstatic void acpi_lpat_free_conversion_table(struct acpi_lpat_conversion_table\n\t\t\t\t\t    *lpat_table)\n{\n}\n\n#endif\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

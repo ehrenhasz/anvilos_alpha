@@ -1,0 +1,9 @@
+{
+  "module_name": "overlay_bad_phandle.dtso",
+  "hash_id": "d8f561568ef122368e9d768c6e6381ac06bd95ede86c25b0971318c9d5e1b0f7",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/of/unittest-data/overlay_bad_phandle.dtso",
+  "human_readable_source": "// SPDX-License-Identifier: GPL-2.0\n/dts-v1/;\n/plugin/;\n\n&electric_1 {\n\t// This label should cause an error when the overlay\n\t// is applied.  There is already a phandle value\n\t// in the base tree for motor-1.\n\tspin_ctrl_1_conflict: motor-1 {\n\t\taccelerate = <3>;\n\t\tdecelerate = <5>;\n\t};\n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

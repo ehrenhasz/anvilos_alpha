@@ -1,0 +1,9 @@
+{
+  "module_name": "acl_common.h",
+  "hash_id": "168fff8464d0b2d215649cc5dc240f1561cb3057a299de6504f22f792018b159",
+  "original_prompt": "Ingested from zfs-2.2.2/include/os/freebsd/spl/acl/acl_common.h",
+  "human_readable_source": " \n \n\n#ifndef\t_ACL_COMMON_H\n#define\t_ACL_COMMON_H\n\n#include <sys/types.h>\n#include <sys/acl.h>\n#include <sys/stat.h>\n\n#ifdef\t__cplusplus\nextern \"C\" {\n#endif\n\ntypedef struct trivial_acl {\n\tuint32_t\tallow0;\t\t \n\tuint32_t\tdeny1;\t\t \n\tuint32_t\tdeny2;\t\t \n\tuint32_t\towner;\t\t \n\tuint32_t\tgroup;\t\t \n\tuint32_t\teveryone;\t \n} trivial_acl_t;\n\nextern int acltrivial(const char *);\nextern void adjust_ace_pair(ace_t *pair, mode_t mode);\nextern void adjust_ace_pair_common(void *, size_t, size_t, mode_t);\nextern int ace_trivial_common(void *, int,\n    uintptr_t (*walk)(void *, uintptr_t, int aclcnt, uint16_t *, uint16_t *,\n    uint32_t *mask));\n#if !defined(_KERNEL)\nextern acl_t *acl_alloc(acl_type_t);\nextern void acl_free(acl_t *aclp);\nextern int acl_translate(acl_t *aclp, int target_flavor, boolean_t isdir,\n    uid_t owner, gid_t group);\n#endif\t \nint cmp2acls(void *a, void *b);\nint acl_trivial_create(mode_t mode, boolean_t isdir, ace_t **acl, int *count);\nvoid acl_trivial_access_masks(mode_t mode, boolean_t isdir,\n    trivial_acl_t *masks);\n\n#ifdef\t__cplusplus\n}\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

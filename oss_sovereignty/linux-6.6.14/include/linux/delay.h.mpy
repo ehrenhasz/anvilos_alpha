@@ -1,0 +1,9 @@
+{
+  "module_name": "delay.h",
+  "hash_id": "9629477755d750b02f003b191bdc20f5f309c642843566ef22a9ad1ff13489f3",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/delay.h",
+  "human_readable_source": " \n#ifndef _LINUX_DELAY_H\n#define _LINUX_DELAY_H\n\n \n\n#include <linux/math.h>\n#include <linux/sched.h>\n\nextern unsigned long loops_per_jiffy;\n\n#include <asm/delay.h>\n\n \n\n#ifndef MAX_UDELAY_MS\n#define MAX_UDELAY_MS\t5\n#endif\n\n#ifndef mdelay\n#define mdelay(n) (\\\n\t(__builtin_constant_p(n) && (n)<=MAX_UDELAY_MS) ? udelay((n)*1000) : \\\n\t({unsigned long __ms=(n); while (__ms--) udelay(1000);}))\n#endif\n\n#ifndef ndelay\nstatic inline void ndelay(unsigned long x)\n{\n\tudelay(DIV_ROUND_UP(x, 1000));\n}\n#define ndelay(x) ndelay(x)\n#endif\n\nextern unsigned long lpj_fine;\nvoid calibrate_delay(void);\nunsigned long calibrate_delay_is_known(void);\nvoid __attribute__((weak)) calibration_delay_done(void);\nvoid msleep(unsigned int msecs);\nunsigned long msleep_interruptible(unsigned int msecs);\nvoid usleep_range_state(unsigned long min, unsigned long max,\n\t\t\tunsigned int state);\n\nstatic inline void usleep_range(unsigned long min, unsigned long max)\n{\n\tusleep_range_state(min, max, TASK_UNINTERRUPTIBLE);\n}\n\nstatic inline void usleep_idle_range(unsigned long min, unsigned long max)\n{\n\tusleep_range_state(min, max, TASK_IDLE);\n}\n\nstatic inline void ssleep(unsigned int seconds)\n{\n\tmsleep(seconds * 1000);\n}\n\n \nstatic inline void fsleep(unsigned long usecs)\n{\n\tif (usecs <= 10)\n\t\tudelay(usecs);\n\telse if (usecs <= 20000)\n\t\tusleep_range(usecs, 2 * usecs);\n\telse\n\t\tmsleep(DIV_ROUND_UP(usecs, 1000));\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

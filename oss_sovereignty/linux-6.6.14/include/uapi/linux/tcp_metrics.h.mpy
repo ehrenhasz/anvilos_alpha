@@ -1,0 +1,9 @@
+{
+  "module_name": "tcp_metrics.h",
+  "hash_id": "2e5b7cf57abe0a44de48f0d5e79928dcc840cb4adf92eec65060ab7fa69f3ac1",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/tcp_metrics.h",
+  "human_readable_source": " \n \n\n#ifndef _LINUX_TCP_METRICS_H\n#define _LINUX_TCP_METRICS_H\n\n#include <linux/types.h>\n\n \n#define TCP_METRICS_GENL_NAME\t\t\"tcp_metrics\"\n#define TCP_METRICS_GENL_VERSION\t0x1\n\nenum tcp_metric_index {\n\tTCP_METRIC_RTT,\t\t \n\tTCP_METRIC_RTTVAR,\t \n\tTCP_METRIC_SSTHRESH,\n\tTCP_METRIC_CWND,\n\tTCP_METRIC_REORDERING,\n\n\tTCP_METRIC_RTT_US,\t \n\tTCP_METRIC_RTTVAR_US,\t \n\n\t \n\t__TCP_METRIC_MAX,\n};\n\n#define TCP_METRIC_MAX\t(__TCP_METRIC_MAX - 1)\n\nenum {\n\tTCP_METRICS_ATTR_UNSPEC,\n\tTCP_METRICS_ATTR_ADDR_IPV4,\t\t \n\tTCP_METRICS_ATTR_ADDR_IPV6,\t\t \n\tTCP_METRICS_ATTR_AGE,\t\t\t \n\tTCP_METRICS_ATTR_TW_TSVAL,\t\t \n\tTCP_METRICS_ATTR_TW_TS_STAMP,\t\t \n\tTCP_METRICS_ATTR_VALS,\t\t\t \n\tTCP_METRICS_ATTR_FOPEN_MSS,\t\t \n\tTCP_METRICS_ATTR_FOPEN_SYN_DROPS,\t \n\tTCP_METRICS_ATTR_FOPEN_SYN_DROP_TS,\t \n\tTCP_METRICS_ATTR_FOPEN_COOKIE,\t\t \n\tTCP_METRICS_ATTR_SADDR_IPV4,\t\t \n\tTCP_METRICS_ATTR_SADDR_IPV6,\t\t \n\tTCP_METRICS_ATTR_PAD,\n\n\t__TCP_METRICS_ATTR_MAX,\n};\n\n#define TCP_METRICS_ATTR_MAX\t(__TCP_METRICS_ATTR_MAX - 1)\n\nenum {\n\tTCP_METRICS_CMD_UNSPEC,\n\tTCP_METRICS_CMD_GET,\n\tTCP_METRICS_CMD_DEL,\n\n\t__TCP_METRICS_CMD_MAX,\n};\n\n#define TCP_METRICS_CMD_MAX\t(__TCP_METRICS_CMD_MAX - 1)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "ps.h",
+  "hash_id": "e9dcf9eb8b717b264eff46234ff9e37857d6a4f5d12418b923f470e4f344decf",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/ti/wl1251/ps.h",
+  "human_readable_source": " \n \n\n#ifndef __WL1251_PS_H__\n#define __WL1251_PS_H__\n\n#include \"wl1251.h\"\n#include \"acx.h\"\n\nint wl1251_ps_set_mode(struct wl1251 *wl, enum wl1251_station_mode mode);\nvoid wl1251_ps_elp_sleep(struct wl1251 *wl);\nint wl1251_ps_elp_wakeup(struct wl1251 *wl);\nvoid wl1251_elp_work(struct work_struct *work);\n\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

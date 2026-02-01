@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "11c0e95c697dd29da61efbe60497a7f893a07ab37b1e3dbbe2cfc48be9697006",
+  "original_prompt": "Ingested from linux-6.6.14/security/tomoyo/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nobj-y = audit.o common.o condition.o domain.o environ.o file.o gc.o group.o load_policy.o memory.o mount.o network.o realpath.o securityfs_if.o tomoyo.o util.o\n\ntargets += builtin-policy.h\n\nquiet_cmd_policy = POLICY  $@\n      cmd_policy = { \\\n\t$(foreach x, profile exception_policy domain_policy manager stat, \\\n\tprintf 'static char tomoyo_builtin_$x[] __initdata =\\n'; \\\n\tsed -e 's/\\\\/\\\\\\\\/g' -e 's/\\\"/\\\\\"/g' -e 's/\\(.*\\)/\\t\"\\1\\\\n\"/' -- $(firstword $(filter %/$x.conf %/$x.conf.default, $^) /dev/null);  \\\n\tprintf '\\t\"\";\\n';) \\\n\t} > $@\n\n$(obj)/builtin-policy.h: $(wildcard $(obj)/policy/*.conf $(srctree)/$(src)/policy/*.conf.default) FORCE\n\t$(call if_changed,policy)\n\nifndef CONFIG_SECURITY_TOMOYO_INSECURE_BUILTIN_SETTING\n$(obj)/common.o: $(obj)/builtin-policy.h\nendif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

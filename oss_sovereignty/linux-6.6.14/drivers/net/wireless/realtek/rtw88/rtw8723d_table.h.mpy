@@ -1,0 +1,9 @@
+{
+  "module_name": "rtw8723d_table.h",
+  "hash_id": "87132489b3769c4c762285ad726a608b61b87765657d9c117ba08e8cfdee98c6",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/realtek/rtw88/rtw8723d_table.h",
+  "human_readable_source": " \n \n\n#ifndef __RTW8723D_TABLE_H__\n#define __RTW8723D_TABLE_H__\n\nextern const struct rtw_table rtw8723d_mac_tbl;\nextern const struct rtw_table rtw8723d_agc_tbl;\nextern const struct rtw_table rtw8723d_bb_tbl;\nextern const struct rtw_table rtw8723d_bb_pg_tbl;\nextern const struct rtw_table rtw8723d_rf_a_tbl;\nextern const struct rtw_table rtw8723d_txpwr_lmt_tbl;\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "stage2_data_offsets.h",
+  "hash_id": "9922fdf7bd1c2839df7d35a0bb0f2a6370222f739ce15af305a8bf28b4a97bd5",
+  "original_prompt": "Ingested from linux-6.6.14/include/trace/stages/stage2_data_offsets.h",
+  "human_readable_source": " \n\n \n\n#undef TRACE_DEFINE_ENUM\n#define TRACE_DEFINE_ENUM(a)\n\n#undef TRACE_DEFINE_SIZEOF\n#define TRACE_DEFINE_SIZEOF(a)\n\n#undef __field\n#define __field(type, item)\n\n#undef __field_ext\n#define __field_ext(type, item, filter_type)\n\n#undef __field_struct\n#define __field_struct(type, item)\n\n#undef __field_struct_ext\n#define __field_struct_ext(type, item, filter_type)\n\n#undef __array\n#define __array(type, item, len)\n\n#undef __dynamic_array\n#define __dynamic_array(type, item, len)\tu32 item;\n\n#undef __string\n#define __string(item, src) __dynamic_array(char, item, -1)\n\n#undef __string_len\n#define __string_len(item, src, len) __dynamic_array(char, item, -1)\n\n#undef __vstring\n#define __vstring(item, fmt, ap) __dynamic_array(char, item, -1)\n\n#undef __bitmask\n#define __bitmask(item, nr_bits) __dynamic_array(unsigned long, item, -1)\n\n#undef __cpumask\n#define __cpumask(item) __dynamic_array(unsigned long, item, -1)\n\n#undef __sockaddr\n#define __sockaddr(field, len) __dynamic_array(u8, field, len)\n\n#undef __rel_dynamic_array\n#define __rel_dynamic_array(type, item, len)\tu32 item;\n\n#undef __rel_string\n#define __rel_string(item, src) __rel_dynamic_array(char, item, -1)\n\n#undef __rel_string_len\n#define __rel_string_len(item, src, len) __rel_dynamic_array(char, item, -1)\n\n#undef __rel_bitmask\n#define __rel_bitmask(item, nr_bits) __rel_dynamic_array(unsigned long, item, -1)\n\n#undef __rel_cpumask\n#define __rel_cpumask(item) __rel_dynamic_array(unsigned long, item, -1)\n\n#undef __rel_sockaddr\n#define __rel_sockaddr(field, len) __rel_dynamic_array(u8, field, len)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

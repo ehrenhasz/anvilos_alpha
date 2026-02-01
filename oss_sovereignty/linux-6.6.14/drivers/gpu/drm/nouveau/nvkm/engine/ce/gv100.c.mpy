@@ -1,0 +1,9 @@
+{
+  "module_name": "gv100.c",
+  "hash_id": "9c52457564ca5180d79c0bfbf43fe232d180fb1e8c9a0a785c6b1d51acfb568e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/engine/ce/gv100.c",
+  "human_readable_source": " \n#include \"priv.h\"\n\n#include <core/gpuobj.h>\n#include <core/object.h>\n\n#include <nvif/class.h>\n\nstatic int\ngv100_ce_cclass_bind(struct nvkm_object *object, struct nvkm_gpuobj *parent, int align,\n\t\t     struct nvkm_gpuobj **pgpuobj)\n{\n\tstruct nvkm_device *device = object->engine->subdev.device;\n\tu32 size;\n\n\t \n\tsize = nvkm_rd32(device, 0x104028);  \n\tsize = 27 * 5 * (((9 + 1 + 3) * hweight32(size)) + 2);\n\tsize = roundup(size, PAGE_SIZE);\n\n\treturn nvkm_gpuobj_new(device, size, align, true, parent, pgpuobj);\n}\n\nconst struct nvkm_object_func\ngv100_ce_cclass = {\n\t.bind = gv100_ce_cclass_bind,\n};\n\nstatic const struct nvkm_engine_func\ngv100_ce = {\n\t.intr = gp100_ce_intr,\n\t.cclass = &gv100_ce_cclass,\n\t.sclass = {\n\t\t{ -1, -1, VOLTA_DMA_COPY_A },\n\t\t{}\n\t}\n};\n\nint\ngv100_ce_new(struct nvkm_device *device, enum nvkm_subdev_type type, int inst,\n\t     struct nvkm_engine **pengine)\n{\n\treturn nvkm_engine_new_(&gv100_ce, device, type, inst, true, pengine);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

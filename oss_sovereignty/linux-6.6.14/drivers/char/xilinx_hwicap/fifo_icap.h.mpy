@@ -1,0 +1,9 @@
+{
+  "module_name": "fifo_icap.h",
+  "hash_id": "a935c0e4e5882fd38dc5b6ac2486720660038e5c634bbd7e844fd07e39a2dfb4",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/char/xilinx_hwicap/fifo_icap.h",
+  "human_readable_source": " \n\n#ifndef XILINX_FIFO_ICAP_H_\t \n#define XILINX_FIFO_ICAP_H_\t \n\n#include <linux/types.h>\n#include <linux/cdev.h>\n#include <linux/platform_device.h>\n\n#include <asm/io.h>\n#include \"xilinx_hwicap.h\"\n\n \nint fifo_icap_get_configuration(\n\t\tstruct hwicap_drvdata *drvdata,\n\t\tu32 *FrameBuffer,\n\t\tu32 NumWords);\n\n \nint fifo_icap_set_configuration(\n\t\tstruct hwicap_drvdata *drvdata,\n\t\tu32 *FrameBuffer,\n\t\tu32 NumWords);\n\nu32 fifo_icap_get_status(struct hwicap_drvdata *drvdata);\nvoid fifo_icap_reset(struct hwicap_drvdata *drvdata);\nvoid fifo_icap_flush_fifo(struct hwicap_drvdata *drvdata);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

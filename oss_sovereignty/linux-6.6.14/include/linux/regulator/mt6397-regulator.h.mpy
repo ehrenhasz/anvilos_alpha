@@ -1,0 +1,9 @@
+{
+  "module_name": "mt6397-regulator.h",
+  "hash_id": "e70931dc89ca325fbc27e2118b64713eedb1ec18acafcf249ab4772cb4a3a6ad",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/regulator/mt6397-regulator.h",
+  "human_readable_source": " \n \n\n#ifndef __LINUX_REGULATOR_MT6397_H\n#define __LINUX_REGULATOR_MT6397_H\n\nenum {\n\tMT6397_ID_VPCA15 = 0,\n\tMT6397_ID_VPCA7,\n\tMT6397_ID_VSRAMCA15,\n\tMT6397_ID_VSRAMCA7,\n\tMT6397_ID_VCORE,\n\tMT6397_ID_VGPU,\n\tMT6397_ID_VDRM,\n\tMT6397_ID_VIO18 = 7,\n\tMT6397_ID_VTCXO,\n\tMT6397_ID_VA28,\n\tMT6397_ID_VCAMA,\n\tMT6397_ID_VIO28,\n\tMT6397_ID_VUSB,\n\tMT6397_ID_VMC,\n\tMT6397_ID_VMCH,\n\tMT6397_ID_VEMC3V3,\n\tMT6397_ID_VGP1,\n\tMT6397_ID_VGP2,\n\tMT6397_ID_VGP3,\n\tMT6397_ID_VGP4,\n\tMT6397_ID_VGP5,\n\tMT6397_ID_VGP6,\n\tMT6397_ID_VIBR,\n\tMT6397_ID_RG_MAX,\n};\n\n#define MT6397_MAX_REGULATOR\tMT6397_ID_RG_MAX\n#define MT6397_REGULATOR_ID97\t0x97\n#define MT6397_REGULATOR_ID91\t0x91\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

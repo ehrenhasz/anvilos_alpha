@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "518a7344a9f68a3ac0382af9ece4e3fd637f6091802aa6bc39d3ce0fac98d2dd",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/platform/mediatek/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-y += jpeg/\nobj-y += mdp/\nobj-y += vcodec/\nobj-y += vpu/\nobj-y += mdp3/\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

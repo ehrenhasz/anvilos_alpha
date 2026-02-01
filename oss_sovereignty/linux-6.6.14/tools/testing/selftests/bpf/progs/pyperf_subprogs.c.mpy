@@ -1,0 +1,9 @@
+{
+  "module_name": "pyperf_subprogs.c",
+  "hash_id": "d9806d4c1cc6a67cd3e18ad56ad0cd39a2cbb5825bd3957551e9300fffe0d67f",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/pyperf_subprogs.c",
+  "human_readable_source": "\n \n#define STACK_MAX_LEN 50\n#define SUBPROGS\n#include \"pyperf.h\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

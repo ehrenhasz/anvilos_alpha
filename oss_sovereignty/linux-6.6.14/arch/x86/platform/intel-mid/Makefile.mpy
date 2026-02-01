@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "366e25d3d39fe5ccd0962fdd25b121aa58abe9e2f996ab37fb6aeb28c00a5e92",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/platform/intel-mid/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-$(CONFIG_X86_INTEL_MID) += intel-mid.o pwr.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

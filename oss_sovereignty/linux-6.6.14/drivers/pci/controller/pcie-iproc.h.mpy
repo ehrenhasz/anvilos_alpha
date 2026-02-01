@@ -1,0 +1,9 @@
+{
+  "module_name": "pcie-iproc.h",
+  "hash_id": "71c311471ad54c17f35c988239a33b080b6d4d3afa7eb794a5046e995f0a18be",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/pci/controller/pcie-iproc.h",
+  "human_readable_source": " \n \n\n#ifndef _PCIE_IPROC_H\n#define _PCIE_IPROC_H\n\n \nenum iproc_pcie_type {\n\tIPROC_PCIE_PAXB_BCMA = 0,\n\tIPROC_PCIE_PAXB,\n\tIPROC_PCIE_PAXB_V2,\n\tIPROC_PCIE_PAXC,\n\tIPROC_PCIE_PAXC_V2,\n};\n\n \nstruct iproc_pcie_ob {\n\tresource_size_t axi_offset;\n\tunsigned int nr_windows;\n};\n\n \nstruct iproc_pcie_ib {\n\tunsigned int nr_regions;\n};\n\nstruct iproc_pcie_ob_map;\nstruct iproc_pcie_ib_map;\nstruct iproc_msi;\n\n \nstruct iproc_pcie {\n\tstruct device *dev;\n\tenum iproc_pcie_type type;\n\tu16 *reg_offsets;\n\tvoid __iomem *base;\n\tphys_addr_t base_addr;\n\tstruct resource mem;\n\tstruct phy *phy;\n\tint (*map_irq)(const struct pci_dev *, u8, u8);\n\tbool ep_is_internal;\n\tbool iproc_cfg_read;\n\tbool rej_unconfig_pf;\n\tbool has_apb_err_disable;\n\tbool fix_paxc_cap;\n\n\tbool need_ob_cfg;\n\tstruct iproc_pcie_ob ob;\n\tconst struct iproc_pcie_ob_map *ob_map;\n\n\tbool need_ib_cfg;\n\tstruct iproc_pcie_ib ib;\n\tconst struct iproc_pcie_ib_map *ib_map;\n\n\tbool need_msi_steer;\n\tstruct iproc_msi *msi;\n};\n\nint iproc_pcie_setup(struct iproc_pcie *pcie, struct list_head *res);\nvoid iproc_pcie_remove(struct iproc_pcie *pcie);\nint iproc_pcie_shutdown(struct iproc_pcie *pcie);\n\n#ifdef CONFIG_PCIE_IPROC_MSI\nint iproc_msi_init(struct iproc_pcie *pcie, struct device_node *node);\nvoid iproc_msi_exit(struct iproc_pcie *pcie);\n#else\nstatic inline int iproc_msi_init(struct iproc_pcie *pcie,\n\t\t\t\t struct device_node *node)\n{\n\treturn -ENODEV;\n}\nstatic inline void iproc_msi_exit(struct iproc_pcie *pcie)\n{\n}\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

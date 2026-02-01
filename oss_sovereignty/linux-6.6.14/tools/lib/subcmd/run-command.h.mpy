@@ -1,0 +1,9 @@
+{
+  "module_name": "run-command.h",
+  "hash_id": "7995e89328a036d5277421fd16622bcf5385797fb01bdec87fbe302ef54d6fbc",
+  "original_prompt": "Ingested from linux-6.6.14/tools/lib/subcmd/run-command.h",
+  "human_readable_source": " \n#ifndef __SUBCMD_RUN_COMMAND_H\n#define __SUBCMD_RUN_COMMAND_H\n\n#include <unistd.h>\n\nenum {\n\tERR_RUN_COMMAND_FORK = 10000,\n\tERR_RUN_COMMAND_EXEC,\n\tERR_RUN_COMMAND_PIPE,\n\tERR_RUN_COMMAND_WAITPID,\n\tERR_RUN_COMMAND_WAITPID_WRONG_PID,\n\tERR_RUN_COMMAND_WAITPID_SIGNAL,\n\tERR_RUN_COMMAND_WAITPID_NOEXIT,\n};\n#define IS_RUN_COMMAND_ERR(x) (-(x) >= ERR_RUN_COMMAND_FORK)\n\nstruct child_process {\n\tconst char **argv;\n\tpid_t pid;\n\t \n\tint in;\n\tint out;\n\tint err;\n\tconst char *dir;\n\tconst char *const *env;\n\tunsigned no_stdin:1;\n\tunsigned no_stdout:1;\n\tunsigned no_stderr:1;\n\tunsigned exec_cmd:1;  \n\tunsigned stdout_to_stderr:1;\n\tvoid (*preexec_cb)(void);\n};\n\nint start_command(struct child_process *);\nint finish_command(struct child_process *);\nint run_command(struct child_process *);\n\n#define RUN_COMMAND_NO_STDIN 1\n#define RUN_EXEC_CMD\t     2\t \n#define RUN_COMMAND_STDOUT_TO_STDERR 4\nint run_command_v_opt(const char **argv, int opt);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

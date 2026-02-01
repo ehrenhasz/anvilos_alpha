@@ -1,0 +1,9 @@
+{
+  "module_name": "cgroup.h",
+  "hash_id": "1ee5f32ac27aeb534a7a3b45438d753cea0f907105fbc385a0a459724e5fadce",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/util/cgroup.h",
+  "human_readable_source": " \n#ifndef __CGROUP_H__\n#define __CGROUP_H__\n\n#include <linux/compiler.h>\n#include <linux/refcount.h>\n#include <linux/rbtree.h>\n#include \"util/env.h\"\n\nstruct option;\n\nstruct cgroup {\n\tstruct rb_node\t\tnode;\n\tu64\t\t\tid;\n\tchar\t\t\t*name;\n\tint\t\t\tfd;\n\trefcount_t\t\trefcnt;\n};\n\nextern int nr_cgroups;  \nextern bool cgrp_event_expanded;\n\nstruct cgroup *cgroup__get(struct cgroup *cgroup);\nvoid cgroup__put(struct cgroup *cgroup);\n\nstruct evlist;\nstruct rblist;\n\nstruct cgroup *evlist__findnew_cgroup(struct evlist *evlist, const char *name);\nint evlist__expand_cgroup(struct evlist *evlist, const char *cgroups,\n\t\t\t  struct rblist *metric_events, bool open_cgroup);\n\nvoid evlist__set_default_cgroup(struct evlist *evlist, struct cgroup *cgroup);\n\nint parse_cgroups(const struct option *opt, const char *str, int unset);\n\nstruct cgroup *cgroup__findnew(struct perf_env *env, uint64_t id,\n\t\t\t       const char *path);\nstruct cgroup *cgroup__find(struct perf_env *env, uint64_t id);\n\nvoid perf_env__purge_cgroups(struct perf_env *env);\n\n#ifdef HAVE_FILE_HANDLE\nint read_cgroup_id(struct cgroup *cgrp);\n#else\nstatic inline int read_cgroup_id(struct cgroup *cgrp __maybe_unused)\n{\n\treturn -1;\n}\n#endif   \n\nint cgroup_is_v2(const char *subsys);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "inflate_syms.c",
+  "hash_id": "9ce0ff9e436efd98ac0c56a9e34b915809c05e5d91fb1e6de59d373b28bcf94d",
+  "original_prompt": "Ingested from linux-6.6.14/lib/zlib_inflate/inflate_syms.c",
+  "human_readable_source": "\n \n\n#include <linux/module.h>\n#include <linux/init.h>\n\n#include <linux/zlib.h>\n\nEXPORT_SYMBOL(zlib_inflate_workspacesize);\nEXPORT_SYMBOL(zlib_inflate);\nEXPORT_SYMBOL(zlib_inflateInit2);\nEXPORT_SYMBOL(zlib_inflateEnd);\nEXPORT_SYMBOL(zlib_inflateReset);\nEXPORT_SYMBOL(zlib_inflateIncomp); \nEXPORT_SYMBOL(zlib_inflate_blob);\nMODULE_LICENSE(\"GPL\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

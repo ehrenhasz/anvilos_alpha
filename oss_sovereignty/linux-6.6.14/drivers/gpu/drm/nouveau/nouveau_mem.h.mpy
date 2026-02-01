@@ -1,0 +1,9 @@
+{
+  "module_name": "nouveau_mem.h",
+  "hash_id": "3b04ec5c41ca5ffdc29d559af8bec6b1365d1665fa8fe84dfabf11b2d34254a7",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nouveau_mem.h",
+  "human_readable_source": "#ifndef __NOUVEAU_MEM_H__\n#define __NOUVEAU_MEM_H__\n#include <drm/ttm/ttm_bo.h>\nstruct ttm_tt;\n\n#include <nvif/mem.h>\n#include <nvif/vmm.h>\n\nstruct nouveau_mem {\n\tstruct ttm_resource base;\n\tstruct nouveau_cli *cli;\n\tu8 kind;\n\tu8 comp;\n\tstruct nvif_mem mem;\n\tstruct nvif_vma vma[2];\n};\n\nstatic inline struct nouveau_mem *\nnouveau_mem(struct ttm_resource *reg)\n{\n\treturn container_of(reg, struct nouveau_mem, base);\n}\n\nint nouveau_mem_new(struct nouveau_cli *, u8 kind, u8 comp,\n\t\t    struct ttm_resource **);\nvoid nouveau_mem_del(struct ttm_resource_manager *man,\n\t\t     struct ttm_resource *);\nbool nouveau_mem_intersects(struct ttm_resource *res,\n\t\t\t    const struct ttm_place *place,\n\t\t\t    size_t size);\nbool nouveau_mem_compatible(struct ttm_resource *res,\n\t\t\t    const struct ttm_place *place,\n\t\t\t    size_t size);\nint nouveau_mem_vram(struct ttm_resource *, bool contig, u8 page);\nint nouveau_mem_host(struct ttm_resource *, struct ttm_tt *);\nvoid nouveau_mem_fini(struct nouveau_mem *);\nint nouveau_mem_map(struct nouveau_mem *, struct nvif_vmm *, struct nvif_vma *);\nint\nnouveau_mem_map_fixed(struct nouveau_mem *mem,\n\t\t      struct nvif_vmm *vmm,\n\t\t      u8 kind, u64 addr,\n\t\t      u64 offset, u64 range);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

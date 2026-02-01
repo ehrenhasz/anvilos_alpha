@@ -1,0 +1,9 @@
+{
+  "module_name": "always-cppcheck.m4",
+  "hash_id": "a4fa9d457c76427b056a61319c7f7d32d8c94fa4f7d456b1bfea89cbde92848a",
+  "original_prompt": "Ingested from zfs-2.2.2/config/always-cppcheck.m4",
+  "human_readable_source": "dnl #\ndnl # Check if cppcheck is available.\ndnl #\nAC_DEFUN([ZFS_AC_CONFIG_ALWAYS_CPPCHECK], [\n\tAC_CHECK_PROG([CPPCHECK], [cppcheck], [cppcheck])\n\tif test -z \"$CPPCHECK\"; then\n\t\tCPPCHECK='@printf \"skipping cppcheck because cppcheck is not installed\\n\"'\n\tfi\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "parse-colors.h",
+  "hash_id": "04d5260ee9f6fde4c47f0f90c37be308c8082358ee20e1a0888dd8cd3d7801c8",
+  "original_prompt": "Ingested from readline-8.2/parse-colors.h",
+  "human_readable_source": " \n\n \n\n#ifndef _PARSE_COLORS_H_\n#define _PARSE_COLORS_H_\n\n#include \"readline.h\"\n\n#define LEN_STR_PAIR(s) sizeof (s) - 1, s\n\nvoid _rl_parse_colors (void);\n\nstatic const char *const indicator_name[]=\n  {\n    \"lc\", \"rc\", \"ec\", \"rs\", \"no\", \"fi\", \"di\", \"ln\", \"pi\", \"so\",\n    \"bd\", \"cd\", \"mi\", \"or\", \"ex\", \"do\", \"su\", \"sg\", \"st\",\n    \"ow\", \"tw\", \"ca\", \"mh\", \"cl\", NULL\n  };\n\n \nstatic char *color_buf;\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

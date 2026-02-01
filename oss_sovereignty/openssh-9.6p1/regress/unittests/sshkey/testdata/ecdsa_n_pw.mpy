@@ -1,0 +1,9 @@
+{
+  "module_name": "ecdsa_n_pw",
+  "hash_id": "cbc8cf5da1349fa844beaf613fd16ac736821bf5eb40a7a81bdce96f495e0dff",
+  "original_prompt": "Ingested from openssh-9.6p1/regress/unittests/sshkey/testdata/ecdsa_n_pw",
+  "human_readable_source": "-----BEGIN OPENSSH PRIVATE KEY-----\nb3BlbnNzaC1rZXktdjEAAAAACmFlczI1Ni1jYmMAAAAGYmNyeXB0AAAAGAAAABC4UwEov5\nz0RrCm7AMCxbuiAAAAEAAAAAEAAABoAAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlz\ndHAyNTYAAABBBAxZW5ZDq1vcnSlYbTPvQGN3PbGgRO0ht5Rcd/JwWr5AAw2iPY4d/5Lxvy\nbfb6ZttqsKJJUwhg38wpF5CCmlpQcAAACgbCnAklQTHrf5qiHiMxKYwQJ7k/X9mp4fXD4v\nxUbgNZiXSxN26mn8mC2rH+WA6Lk3CexR/hrtLI2ndpBsYu1h6HhVkOwwm3Kd/PMKArCupW\nl6sYEabrT0EghXR/3aDEZvj79hgKSdu3RpayLvMdbCR8k1cg0/mDmR9hicWfeJ61n/IH05\ntUR268+0BVRW9kDhh/cuv8tVY4L09jCCQ6CpsA==\n-----END OPENSSH PRIVATE KEY-----\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

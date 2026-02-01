@@ -1,0 +1,9 @@
+{
+  "module_name": "test-getopt-main.h",
+  "hash_id": "17552dc9a9553ecf8c19a0811da3bd7f119b5ed37fe8952cba6d84b1baf90edc",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-getopt-main.h",
+  "human_readable_source": " \n\n#include \"signature.h\"\nSIGNATURE_CHECK (getopt, int, (int, char * const[], char const *));\n\n#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\n#include <unistd.h>\n\n \n\n#define BACKUP_STDERR_FILENO 10\n#define ASSERT_STREAM myerr\n#include \"macros.h\"\n\nstatic FILE *myerr;\n\n#include \"test-getopt.h\"\n#if TEST_GETOPT_GNU\n# include \"test-getopt_long.h\"\n#endif\n\nint\nmain (void)\n{\n    \n  if (dup2 (STDERR_FILENO, BACKUP_STDERR_FILENO) != BACKUP_STDERR_FILENO\n      || (myerr = fdopen (BACKUP_STDERR_FILENO, \"w\")) == NULL)\n    return 2;\n\n  ASSERT (freopen (TEST_GETOPT_TMP_NAME, \"w\", stderr) == stderr);\n\n   \n  ASSERT (optind == 1);\n  ASSERT (opterr != 0);\n\n  setenv (\"POSIXLY_CORRECT\", \"1\", 1);\n  test_getopt ();\n\n#if TEST_GETOPT_GNU\n  test_getopt_long_posix ();\n#endif\n\n  unsetenv (\"POSIXLY_CORRECT\");\n  test_getopt ();\n\n#if TEST_GETOPT_GNU\n  test_getopt_long ();\n  test_getopt_long_only ();\n#endif\n\n  ASSERT (fclose (stderr) == 0);\n  ASSERT (remove (TEST_GETOPT_TMP_NAME) == 0);\n\n  return 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

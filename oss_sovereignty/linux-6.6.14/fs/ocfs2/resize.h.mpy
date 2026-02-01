@@ -1,0 +1,9 @@
+{
+  "module_name": "resize.h",
+  "hash_id": "fc4cf680cdd2bf1ef808ebcfc9328db097487e356c9885fdbb26dc4d6d37ec31",
+  "original_prompt": "Ingested from linux-6.6.14/fs/ocfs2/resize.h",
+  "human_readable_source": " \n \n\n#ifndef OCFS2_RESIZE_H\n#define OCFS2_RESIZE_H\n\nint ocfs2_group_extend(struct inode * inode, int new_clusters);\nint ocfs2_group_add(struct inode *inode, struct ocfs2_new_group_input *input);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

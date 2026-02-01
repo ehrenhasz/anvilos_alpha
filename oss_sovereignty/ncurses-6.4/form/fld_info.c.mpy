@@ -1,0 +1,9 @@
+{
+  "module_name": "fld_info.c",
+  "hash_id": "a1191554c253f493baafa4c668e95b4caf54d574513c32f176d271b300d33773",
+  "original_prompt": "Ingested from ncurses-6.4/form/fld_info.c",
+  "human_readable_source": " \n\n \n\n#include \"form.priv.h\"\n\nMODULE_ID(\"$Id: fld_info.c,v 1.16 2021/06/17 21:20:30 tom Exp $\")\n\n \nFORM_EXPORT(int)\nfield_info(const FIELD *field,\n\t   int *rows, int *cols,\n\t   int *frow, int *fcol,\n\t   int *nrow, int *nbuf)\n{\n  T((T_CALLED(\"field_info(%p,%p,%p,%p,%p,%p,%p)\"),\n     (const void *)field,\n     (void *)rows, (void *)cols,\n     (void *)frow, (void *)fcol,\n     (void *)nrow, (void *)nbuf));\n\n  if (!field)\n    RETURN(E_BAD_ARGUMENT);\n\n  if (rows)\n    *rows = field->rows;\n  if (cols)\n    *cols = field->cols;\n  if (frow)\n    *frow = field->frow;\n  if (fcol)\n    *fcol = field->fcol;\n  if (nrow)\n    *nrow = field->nrow;\n  if (nbuf)\n    *nbuf = field->nbuf;\n  RETURN(E_OK);\n}\n\n \nFORM_EXPORT(int)\ndynamic_field_info(const FIELD *field, int *drows, int *dcols, int *maxgrow)\n{\n  T((T_CALLED(\"dynamic_field_info(%p,%p,%p,%p)\"),\n     (const void *)field,\n     (void *)drows,\n     (void *)dcols,\n     (void *)maxgrow));\n\n  if (!field)\n    RETURN(E_BAD_ARGUMENT);\n\n  if (drows)\n    *drows = field->drows;\n  if (dcols)\n    *dcols = field->dcols;\n  if (maxgrow)\n    *maxgrow = field->maxgrow;\n\n  RETURN(E_OK);\n}\n\n \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

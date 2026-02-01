@@ -1,0 +1,9 @@
+{
+  "module_name": "lima_pp.h",
+  "hash_id": "d3b616896dc402d942802c224796f65cf23be3a6bd1acf07a9384e4be8d8e040",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/lima/lima_pp.h",
+  "human_readable_source": " \n \n\n#ifndef __LIMA_PP_H__\n#define __LIMA_PP_H__\n\nstruct lima_ip;\nstruct lima_device;\n\nint lima_pp_resume(struct lima_ip *ip);\nvoid lima_pp_suspend(struct lima_ip *ip);\nint lima_pp_init(struct lima_ip *ip);\nvoid lima_pp_fini(struct lima_ip *ip);\n\nint lima_pp_bcast_resume(struct lima_ip *ip);\nvoid lima_pp_bcast_suspend(struct lima_ip *ip);\nint lima_pp_bcast_init(struct lima_ip *ip);\nvoid lima_pp_bcast_fini(struct lima_ip *ip);\n\nint lima_pp_pipe_init(struct lima_device *dev);\nvoid lima_pp_pipe_fini(struct lima_device *dev);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

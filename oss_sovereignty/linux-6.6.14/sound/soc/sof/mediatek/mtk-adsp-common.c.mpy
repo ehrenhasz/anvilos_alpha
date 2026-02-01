@@ -1,0 +1,9 @@
+{
+  "module_name": "mtk-adsp-common.c",
+  "hash_id": "370f2128aaa55b05a7ccc297467842e8f4d2b204c8fa6229687307f152e9adb6",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/sof/mediatek/mtk-adsp-common.c",
+  "human_readable_source": "\n\n\n\n\n\n\n\n\n \n\n#include <linux/module.h>\n#include <sound/sof/xtensa.h>\n#include \"../ops.h\"\n#include \"mtk-adsp-common.h\"\n\n \nstatic void mtk_adsp_get_registers(struct snd_sof_dev *sdev,\n\t\t\t\t   struct sof_ipc_dsp_oops_xtensa *xoops,\n\t\t\t\t   struct sof_ipc_panic_info *panic_info,\n\t\t\t\t   u32 *stack, size_t stack_words)\n{\n\tu32 offset = sdev->dsp_oops_offset;\n\n\t \n\tsof_mailbox_read(sdev, offset, xoops, sizeof(*xoops));\n\n\t \n\tif (xoops->arch_hdr.totalsize > EXCEPT_MAX_HDR_SIZE) {\n\t\tdev_err(sdev->dev, \"invalid header size 0x%x\\n\",\n\t\t\txoops->arch_hdr.totalsize);\n\t\treturn;\n\t}\n\toffset += xoops->arch_hdr.totalsize;\n\tsof_mailbox_read(sdev, offset, panic_info, sizeof(*panic_info));\n\n\t \n\toffset += sizeof(*panic_info);\n\tsof_mailbox_read(sdev, offset, stack, stack_words * sizeof(u32));\n}\n\n \nvoid mtk_adsp_dump(struct snd_sof_dev *sdev, u32 flags)\n{\n\tchar *level = (flags & SOF_DBG_DUMP_OPTIONAL) ? KERN_DEBUG : KERN_ERR;\n\tstruct sof_ipc_dsp_oops_xtensa xoops;\n\tstruct sof_ipc_panic_info panic_info = {};\n\tu32 stack[MTK_ADSP_STACK_DUMP_SIZE];\n\tu32 status;\n\n\t \n\tsof_mailbox_read(sdev, sdev->debug_box.offset + 0x4, &status, 4);\n\n\t \n\tmtk_adsp_get_registers(sdev, &xoops, &panic_info, stack,\n\t\t\t       MTK_ADSP_STACK_DUMP_SIZE);\n\n\t \n\tsof_print_oops_and_stack(sdev, level, status, status, &xoops, &panic_info,\n\t\t\t\t stack, MTK_ADSP_STACK_DUMP_SIZE);\n}\nEXPORT_SYMBOL(mtk_adsp_dump);\n\nMODULE_LICENSE(\"Dual BSD/GPL\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

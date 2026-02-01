@@ -1,0 +1,9 @@
+{
+  "module_name": "ccs-reg-access.h",
+  "hash_id": "6efd246eba22956c3c3445f836f5b0d6fa4fefd96ec3fdf2a4741bdf55650ba6",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/i2c/ccs/ccs-reg-access.h",
+  "human_readable_source": " \n \n\n#ifndef SMIAPP_REGS_H\n#define SMIAPP_REGS_H\n\n#include <linux/i2c.h>\n#include <linux/types.h>\n\n#include \"ccs-regs.h\"\n\n#define CCS_REG_ADDR(reg)\t\t((u16)reg)\n\nstruct ccs_sensor;\n\nint ccs_read_addr_no_quirk(struct ccs_sensor *sensor, u32 reg, u32 *val);\nint ccs_read_addr(struct ccs_sensor *sensor, u32 reg, u32 *val);\nint ccs_read_addr_8only(struct ccs_sensor *sensor, u32 reg, u32 *val);\nint ccs_read_addr_noconv(struct ccs_sensor *sensor, u32 reg, u32 *val);\nint ccs_write_addr_no_quirk(struct ccs_sensor *sensor, u32 reg, u32 val);\nint ccs_write_addr(struct ccs_sensor *sensor, u32 reg, u32 val);\nint ccs_write_data_regs(struct ccs_sensor *sensor, struct ccs_reg *regs,\n\t\t\tsize_t num_regs);\n\nunsigned int ccs_reg_width(u32 reg);\nu32 ccs_reg_conv(struct ccs_sensor *sensor, u32 reg, u32 val);\n\n#define ccs_read(sensor, reg_name, val) \\\n\tccs_read_addr(sensor, CCS_R_##reg_name, val)\n\n#define ccs_write(sensor, reg_name, val) \\\n\tccs_write_addr(sensor, CCS_R_##reg_name, val)\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

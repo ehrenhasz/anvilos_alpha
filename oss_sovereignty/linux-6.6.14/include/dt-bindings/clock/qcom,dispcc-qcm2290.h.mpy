@@ -1,0 +1,9 @@
+{
+  "module_name": "qcom,dispcc-qcm2290.h",
+  "hash_id": "d57671c098b37dcfe6d394b4cda21c72910410516dc3b1ec7cc935d4b1bd719d",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/clock/qcom,dispcc-qcm2290.h",
+  "human_readable_source": " \n \n\n#ifndef _DT_BINDINGS_CLK_QCOM_DISP_CC_QCM2290_H\n#define _DT_BINDINGS_CLK_QCOM_DISP_CC_QCM2290_H\n\n \n#define DISP_CC_PLL0\t\t\t\t0\n#define DISP_CC_MDSS_AHB_CLK\t\t\t1\n#define DISP_CC_MDSS_AHB_CLK_SRC\t\t2\n#define DISP_CC_MDSS_BYTE0_CLK\t\t\t3\n#define DISP_CC_MDSS_BYTE0_CLK_SRC\t\t4\n#define DISP_CC_MDSS_BYTE0_DIV_CLK_SRC\t\t5\n#define DISP_CC_MDSS_BYTE0_INTF_CLK\t\t6\n#define DISP_CC_MDSS_ESC0_CLK\t\t\t7\n#define DISP_CC_MDSS_ESC0_CLK_SRC\t\t8\n#define DISP_CC_MDSS_MDP_CLK\t\t\t9\n#define DISP_CC_MDSS_MDP_CLK_SRC\t\t10\n#define DISP_CC_MDSS_MDP_LUT_CLK\t\t11\n#define DISP_CC_MDSS_NON_GDSC_AHB_CLK\t\t12\n#define DISP_CC_MDSS_PCLK0_CLK\t\t\t13\n#define DISP_CC_MDSS_PCLK0_CLK_SRC\t\t14\n#define DISP_CC_MDSS_VSYNC_CLK\t\t\t15\n#define DISP_CC_MDSS_VSYNC_CLK_SRC\t\t16\n#define DISP_CC_SLEEP_CLK\t\t\t17\n#define DISP_CC_SLEEP_CLK_SRC\t\t\t18\n#define DISP_CC_XO_CLK\t\t\t\t19\n#define DISP_CC_XO_CLK_SRC\t\t\t20\n\n \n#define MDSS_GDSC\t\t\t\t0\n\n \n#define DISP_CC_MDSS_CORE_BCR\t\t\t0\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

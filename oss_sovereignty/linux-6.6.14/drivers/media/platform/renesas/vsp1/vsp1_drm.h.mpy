@@ -1,0 +1,9 @@
+{
+  "module_name": "vsp1_drm.h",
+  "hash_id": "f1cb404a2ca3a11f705f9ff96907ada0f17c929dfa66c7bf15f20ca1620c7e25",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/platform/renesas/vsp1/vsp1_drm.h",
+  "human_readable_source": " \n \n#ifndef __VSP1_DRM_H__\n#define __VSP1_DRM_H__\n\n#include <linux/mutex.h>\n#include <linux/videodev2.h>\n#include <linux/wait.h>\n\n#include <media/vsp1.h>\n\n#include \"vsp1_pipe.h\"\n\n \nstruct vsp1_drm_pipeline {\n\tstruct vsp1_pipeline pipe;\n\n\tunsigned int width;\n\tunsigned int height;\n\n\tbool force_brx_release;\n\twait_queue_head_t wait_queue;\n\n\tstruct vsp1_entity *uif;\n\tstruct vsp1_du_crc_config crc;\n\n\t \n\tvoid (*du_complete)(void *data, unsigned int status, u32 crc);\n\tvoid *du_private;\n};\n\n \nstruct vsp1_drm {\n\tstruct vsp1_drm_pipeline pipe[VSP1_MAX_LIF];\n\tstruct mutex lock;\n\n\tstruct {\n\t\tstruct v4l2_rect crop;\n\t\tstruct v4l2_rect compose;\n\t\tunsigned int zpos;\n\t} inputs[VSP1_MAX_RPF];\n};\n\nstatic inline struct vsp1_drm_pipeline *\nto_vsp1_drm_pipeline(struct vsp1_pipeline *pipe)\n{\n\treturn container_of(pipe, struct vsp1_drm_pipeline, pipe);\n}\n\nint vsp1_drm_init(struct vsp1_device *vsp1);\nvoid vsp1_drm_cleanup(struct vsp1_device *vsp1);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

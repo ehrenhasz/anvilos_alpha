@@ -1,0 +1,9 @@
+{
+  "module_name": "debug.c",
+  "hash_id": "25701df85946785effef8cfce4b8195e8a039370032cad6c002bb87f46bc0e3b",
+  "original_prompt": "Ingested from linux-6.6.14/tools/lib/api/debug.c",
+  "human_readable_source": "\n#include <stdio.h>\n#include <stdarg.h>\n#include \"debug.h\"\n#include \"debug-internal.h\"\n\nstatic int __base_pr(const char *format, ...)\n{\n\tva_list args;\n\tint err;\n\n\tva_start(args, format);\n\terr = vfprintf(stderr, format, args);\n\tva_end(args);\n\treturn err;\n}\n\nlibapi_print_fn_t __pr_warn    = __base_pr;\nlibapi_print_fn_t __pr_info    = __base_pr;\nlibapi_print_fn_t __pr_debug;\n\nvoid libapi_set_print(libapi_print_fn_t warn,\n\t\t      libapi_print_fn_t info,\n\t\t      libapi_print_fn_t debug)\n{\n\t__pr_warn    = warn;\n\t__pr_info    = info;\n\t__pr_debug   = debug;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

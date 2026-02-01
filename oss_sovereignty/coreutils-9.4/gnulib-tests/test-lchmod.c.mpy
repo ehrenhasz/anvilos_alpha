@@ -1,0 +1,9 @@
+{
+  "module_name": "test-lchmod.c",
+  "hash_id": "114b3512ca38cf51dd5c71a234e9ec6d90d7e770879a5aeadee49f2cc12a9b57",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-lchmod.c",
+  "human_readable_source": " \n  {\n    struct stat statbuf;\n    unlink (BASE \"file\");\n    ASSERT (close (creat (BASE \"file\", 0600)) == 0);\n    ASSERT (lchmod (BASE \"file\", 0400) == 0);\n    ASSERT (stat (BASE \"file\", &statbuf) >= 0);\n    ASSERT ((statbuf.st_mode & 0700) == 0400);\n\n    errno = 0;\n    ASSERT (lchmod (BASE \"file/\", 0600) == -1);\n    ASSERT (errno == ENOTDIR);\n\n     \n    ASSERT (chmod (BASE \"file\", 0600) == 0);\n    ASSERT (unlink (BASE \"file\") == 0);\n  }\n\n   \n  {\n    struct stat statbuf;\n\n    rmdir (BASE \"dir\");\n    ASSERT (mkdir (BASE \"dir\", 0700) == 0);\n    ASSERT (lchmod (BASE \"dir\", 0500) == 0);\n    ASSERT (stat (BASE \"dir\", &statbuf) >= 0);\n    ASSERT ((statbuf.st_mode & 0700) == 0500);\n    ASSERT (lchmod (BASE \"dir/\", 0700) == 0);\n\n     \n    ASSERT (rmdir (BASE \"dir\") == 0);\n  }\n\n   \n  {\n    unlink (BASE \"file\");\n    unlink (BASE \"link\");\n    if (symlink (BASE \"file\", BASE \"link\") == 0)\n      {\n        struct stat statbuf;\n        ASSERT (close (creat (BASE \"file\", 0600)) == 0);\n        lchmod (BASE \"link\", 0400);\n        ASSERT (stat (BASE \"file\", &statbuf) >= 0);\n        ASSERT ((statbuf.st_mode & 0700) == 0600);\n      }\n     \n    unlink (BASE \"file\");\n    unlink (BASE \"link\");\n  }\n\n  return 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

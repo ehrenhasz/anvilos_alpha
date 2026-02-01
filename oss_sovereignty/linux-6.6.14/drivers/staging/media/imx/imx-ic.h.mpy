@@ -1,0 +1,9 @@
+{
+  "module_name": "imx-ic.h",
+  "hash_id": "9033ea295bd593393c3309007174c703582fcec159c55c6ffeb134e7abdd20e6",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/imx/imx-ic.h",
+  "human_readable_source": " \n \n#ifndef _IMX_IC_H\n#define _IMX_IC_H\n\n#include <media/v4l2-subdev.h>\n\nstruct imx_ic_priv {\n\tstruct device *ipu_dev;\n\tstruct ipu_soc *ipu;\n\tstruct v4l2_subdev sd;\n\tint    task_id;\n\tvoid   *task_priv;\n};\n\nstruct imx_ic_ops {\n\tconst struct v4l2_subdev_ops *subdev_ops;\n\tconst struct v4l2_subdev_internal_ops *internal_ops;\n\tconst struct media_entity_operations *entity_ops;\n\n\tint (*init)(struct imx_ic_priv *ic_priv);\n\tvoid (*remove)(struct imx_ic_priv *ic_priv);\n};\n\nextern struct imx_ic_ops imx_ic_prp_ops;\nextern struct imx_ic_ops imx_ic_prpencvf_ops;\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

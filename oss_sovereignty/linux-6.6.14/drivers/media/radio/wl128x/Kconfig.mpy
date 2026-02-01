@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "ed6d8f693f03c97bca3cfbd28a0fdee36c539589b7d56f018b5ee770b87607fc",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/radio/wl128x/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# TI's wl128x FM driver based on TI's ST driver.\n#\nconfig RADIO_WL128X\n\ttristate \"Texas Instruments WL128x FM Radio\"\n\tdepends on VIDEO_DEV && RFKILL && TTY && TI_ST\n\tdepends on GPIOLIB || COMPILE_TEST\n\thelp\n\t  Choose Y here if you have this FM radio chip.\n\n\t  In order to control your radio card, you will need to use programs\n\t  that are compatible with the Video For Linux 2 API.  Information on\n\t  this API and pointers to \"v4l2\" programs may be found at\n\t  <file:Documentation/userspace-api/media/index.rst>.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "si4713.h",
+  "hash_id": "36d4302d528dfc7cf936ceacaec0698a7fbe1bdfbd767b1f8cc0794896545e98",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/platform_data/media/si4713.h",
+  "human_readable_source": " \n\n#ifndef SI4713_H\n#define SI4713_H\n\n \n#define SI4713_I2C_ADDR_BUSEN_HIGH\t0x63\n#define SI4713_I2C_ADDR_BUSEN_LOW\t0x11\n\n \nstruct si4713_platform_data {\n\tbool is_platform_device;\n};\n\n \nstruct si4713_rnl {\n\t__u32 index;\t\t \n\t__u32 frequency;\t \n\t__s32 rnl;\t\t \n\t__u32 reserved[4];\t \n};\n\n \n#define SI4713_IOC_MEASURE_RNL\t_IOWR('V', BASE_VIDIOC_PRIVATE + 0, \\\n\t\t\t\t\t\tstruct si4713_rnl)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

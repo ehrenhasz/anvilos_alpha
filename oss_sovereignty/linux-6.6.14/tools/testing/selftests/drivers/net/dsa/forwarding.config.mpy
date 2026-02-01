@@ -1,0 +1,9 @@
+{
+  "module_name": "forwarding.config",
+  "hash_id": "23ce5af44d7ffd48c88e1d8f6ff1b4bc0dc9590c66d065357b397c4a2c5e6c2a",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/drivers/net/dsa/forwarding.config",
+  "human_readable_source": "NETIF_CREATE=no\nSTABLE_MAC_ADDRS=yes\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

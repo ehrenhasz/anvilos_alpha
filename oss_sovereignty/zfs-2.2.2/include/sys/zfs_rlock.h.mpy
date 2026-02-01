@@ -1,0 +1,9 @@
+{
+  "module_name": "zfs_rlock.h",
+  "hash_id": "eecd8541c298d875d24d135ee33deac830c729bb09a9fef75b87192208ce2697",
+  "original_prompt": "Ingested from zfs-2.2.2/include/sys/zfs_rlock.h",
+  "human_readable_source": " \n \n \n\n#ifndef\t_SYS_FS_ZFS_RLOCK_H\n#define\t_SYS_FS_ZFS_RLOCK_H\n\n#ifdef\t__cplusplus\nextern \"C\" {\n#endif\n\n#include <sys/avl.h>\n\ntypedef enum {\n\tRL_READER,\n\tRL_WRITER,\n\tRL_APPEND\n} zfs_rangelock_type_t;\n\nstruct zfs_locked_range;\n\ntypedef void (zfs_rangelock_cb_t)(struct zfs_locked_range *, void *);\n\ntypedef struct zfs_rangelock {\n\tavl_tree_t rl_tree;  \n\tkmutex_t rl_lock;\n\tzfs_rangelock_cb_t *rl_cb;\n\tvoid *rl_arg;\n} zfs_rangelock_t;\n\ntypedef struct zfs_locked_range {\n\tzfs_rangelock_t *lr_rangelock;  \n\tavl_node_t lr_node;\t \n\tuint64_t lr_offset;\t \n\tuint64_t lr_length;\t \n\tuint_t lr_count;\t \n\tzfs_rangelock_type_t lr_type;  \n\tkcondvar_t lr_write_cv;\t \n\tkcondvar_t lr_read_cv;\t \n\tuint8_t lr_proxy;\t \n\tuint8_t lr_write_wanted;  \n\tuint8_t lr_read_wanted;\t \n} zfs_locked_range_t;\n\nvoid zfs_rangelock_init(zfs_rangelock_t *, zfs_rangelock_cb_t *, void *);\nvoid zfs_rangelock_fini(zfs_rangelock_t *);\n\nzfs_locked_range_t *zfs_rangelock_enter(zfs_rangelock_t *,\n    uint64_t, uint64_t, zfs_rangelock_type_t);\nzfs_locked_range_t *zfs_rangelock_tryenter(zfs_rangelock_t *,\n    uint64_t, uint64_t, zfs_rangelock_type_t);\nvoid zfs_rangelock_exit(zfs_locked_range_t *);\nvoid zfs_rangelock_reduce(zfs_locked_range_t *, uint64_t, uint64_t);\n\n#ifdef\t__cplusplus\n}\n#endif\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

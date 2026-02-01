@@ -1,0 +1,9 @@
+{
+  "module_name": "hash_info.h",
+  "hash_id": "e1698fabeac8978a744f209d78720547885302265e69ba36886039ce8b26c17c",
+  "original_prompt": "Ingested from linux-6.6.14/include/crypto/hash_info.h",
+  "human_readable_source": " \n \n\n#ifndef _CRYPTO_HASH_INFO_H\n#define _CRYPTO_HASH_INFO_H\n\n#include <crypto/sha1.h>\n#include <crypto/sha2.h>\n#include <crypto/md5.h>\n#include <crypto/streebog.h>\n\n#include <uapi/linux/hash_info.h>\n\n \n#define RMD128_DIGEST_SIZE      16\n#define RMD160_DIGEST_SIZE\t20\n#define RMD256_DIGEST_SIZE      32\n#define RMD320_DIGEST_SIZE      40\n\n \n#define WP512_DIGEST_SIZE\t64\n#define WP384_DIGEST_SIZE\t48\n#define WP256_DIGEST_SIZE\t32\n\n \n#define TGR128_DIGEST_SIZE 16\n#define TGR160_DIGEST_SIZE 20\n#define TGR192_DIGEST_SIZE 24\n\n \n#define SM3256_DIGEST_SIZE 32\n\nextern const char *const hash_algo_name[HASH_ALGO__LAST];\nextern const int hash_digest_size[HASH_ALGO__LAST];\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "wm8785.h",
+  "hash_id": "9b6591b7a73b3361958370ca883c1d8c633329ab4e1796a45934101c7c69b5df",
+  "original_prompt": "Ingested from linux-6.6.14/sound/pci/oxygen/wm8785.h",
+  "human_readable_source": " \n#ifndef WM8785_H_INCLUDED\n#define WM8785_H_INCLUDED\n\n#define WM8785_R0\t0\n#define WM8785_R1\t1\n#define WM8785_R2\t2\n#define WM8785_R7\t7\n\n \n#define WM8785_MCR_MASK\t\t0x007\n#define WM8785_MCR_SLAVE\t0x000\n#define WM8785_MCR_MASTER_128\t0x001\n#define WM8785_MCR_MASTER_192\t0x002\n#define WM8785_MCR_MASTER_256\t0x003\n#define WM8785_MCR_MASTER_384\t0x004\n#define WM8785_MCR_MASTER_512\t0x005\n#define WM8785_MCR_MASTER_768\t0x006\n#define WM8785_OSR_MASK\t\t0x018\n#define WM8785_OSR_SINGLE\t0x000\n#define WM8785_OSR_DOUBLE\t0x008\n#define WM8785_OSR_QUAD\t\t0x010\n#define WM8785_FORMAT_MASK\t0x060\n#define WM8785_FORMAT_RJUST\t0x000\n#define WM8785_FORMAT_LJUST\t0x020\n#define WM8785_FORMAT_I2S\t0x040\n#define WM8785_FORMAT_DSP\t0x060\n \n#define WM8785_WL_MASK\t\t0x003\n#define WM8785_WL_16\t\t0x000\n#define WM8785_WL_20\t\t0x001\n#define WM8785_WL_24\t\t0x002\n#define WM8785_WL_32\t\t0x003\n#define WM8785_LRP\t\t0x004\n#define WM8785_BCLKINV\t\t0x008\n#define WM8785_LRSWAP\t\t0x010\n#define WM8785_DEVNO_MASK\t0x0e0\n \n#define WM8785_HPFR\t\t0x001\n#define WM8785_HPFL\t\t0x002\n#define WM8785_SDODIS\t\t0x004\n#define WM8785_PWRDNR\t\t0x008\n#define WM8785_PWRDNL\t\t0x010\n#define WM8785_TDM_MASK\t\t0x1c0\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "@@__@@__extmod__vfs_posix_file.c.qstr",
+  "hash_id": "6cc4bbedf651c21692f7ef21b67fc274aa9b45eef22acbb674949e0d45b4841c",
+  "original_prompt": "Ingested from sys_09_Anvil/source/ports/unix/build-bicameral/genhdr/qstr/@@__@@__extmod__vfs_posix_file.c.qstr",
+  "human_readable_source": "Q(fileno)\nQ(read)\nQ(readinto)\nQ(readline)\nQ(readlines)\nQ(write)\nQ(seek)\nQ(tell)\nQ(flush)\nQ(close)\nQ(__del__)\nQ(__enter__)\nQ(__exit__)\nQ(FileIO)\nQ(TextIOWrapper)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

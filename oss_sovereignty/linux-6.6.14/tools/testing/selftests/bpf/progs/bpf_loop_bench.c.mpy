@@ -1,0 +1,9 @@
+{
+  "module_name": "bpf_loop_bench.c",
+  "hash_id": "ce25d154cca5e0ab57a32dde508523b0d62c1a2ea85a452c749494aa6297f12e",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/bpf_loop_bench.c",
+  "human_readable_source": "\n \n\n#include \"vmlinux.h\"\n#include <bpf/bpf_helpers.h>\n#include \"bpf_misc.h\"\n\nchar _license[] SEC(\"license\") = \"GPL\";\n\nu32 nr_loops;\nlong hits;\n\nstatic int empty_callback(__u32 index, void *data)\n{\n\treturn 0;\n}\n\nstatic int outer_loop(__u32 index, void *data)\n{\n\tbpf_loop(nr_loops, empty_callback, NULL, 0);\n\t__sync_add_and_fetch(&hits, nr_loops);\n\treturn 0;\n}\n\nSEC(\"fentry/\" SYS_PREFIX \"sys_getpgid\")\nint benchmark(void *ctx)\n{\n\tbpf_loop(1000, outer_loop, NULL, 0);\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

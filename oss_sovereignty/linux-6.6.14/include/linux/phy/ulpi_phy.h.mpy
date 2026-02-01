@@ -1,0 +1,9 @@
+{
+  "module_name": "ulpi_phy.h",
+  "hash_id": "fd7db7201f510825608d8ad7fbdea185e8eaf733b6c5c9e1940eb254b05f0e1c",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/phy/ulpi_phy.h",
+  "human_readable_source": " \n#include <linux/phy/phy.h>\n\n \nstatic inline struct phy\n*ulpi_phy_create(struct ulpi *ulpi, const struct phy_ops *ops)\n{\n\tstruct phy *phy;\n\tint ret;\n\n\tphy = phy_create(&ulpi->dev, NULL, ops);\n\tif (IS_ERR(phy))\n\t\treturn phy;\n\n\tret = phy_create_lookup(phy, \"usb2-phy\", dev_name(ulpi->dev.parent));\n\tif (ret) {\n\t\tphy_destroy(phy);\n\t\treturn ERR_PTR(ret);\n\t}\n\n\treturn phy;\n}\n\n \nstatic inline void ulpi_phy_destroy(struct ulpi *ulpi, struct phy *phy)\n{\n\tphy_remove_lookup(phy, \"usb2-phy\", dev_name(ulpi->dev.parent));\n\tphy_destroy(phy);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

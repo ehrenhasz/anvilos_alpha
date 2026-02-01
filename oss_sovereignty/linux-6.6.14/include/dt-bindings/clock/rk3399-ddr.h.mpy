@@ -1,0 +1,9 @@
+{
+  "module_name": "rk3399-ddr.h",
+  "hash_id": "b360618bbf5905ce22431a60a95a2f73418ea04ae11bfcf5eb0217f1eb82881f",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/clock/rk3399-ddr.h",
+  "human_readable_source": " \n\n#ifndef DT_BINDINGS_DDR_H\n#define DT_BINDINGS_DDR_H\n\n \n\n \n#define DDR3_800D\t0\n \n#define DDR3_800E\t1\n \n#define DDR3_1066E\t2\n \n#define DDR3_1066F\t3\n \n#define DDR3_1066G\t4\n \n#define DDR3_1333F\t5\n \n#define DDR3_1333G\t6\n \n#define DDR3_1333H\t7\n \n#define DDR3_1333J \t8\n \n#define DDR3_1600G\t9\n \n#define DDR3_1600H\t10\n \n#define DDR3_1600J\t11\n \n#define DDR3_1600K\t12\n \n#define DDR3_1866J\t13\n \n#define DDR3_1866K\t14\n \n#define DDR3_1866L\t15\n \n#define DDR3_1866M\t16\n \n#define DDR3_2133K\t17\n \n#define DDR3_2133L\t18\n \n#define DDR3_2133M\t19\n \n#define DDR3_2133N\t20\n \n#define DDR3_DEFAULT\t21\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

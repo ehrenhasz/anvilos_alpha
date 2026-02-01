@@ -1,0 +1,9 @@
+{
+  "module_name": "kvm-remote-noreap.sh",
+  "hash_id": "22ce5b052684777c157e6533015ddbaed6a7a4fd4c7ca40010583279b2cbebc3",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/rcutorture/bin/kvm-remote-noreap.sh",
+  "human_readable_source": "#!/bin/bash\n# SPDX-License-Identifier: GPL-2.0+\n#\n# Periodically scan a directory tree to prevent files from being reaped\n# by systemd and friends on long runs.\n#\n# Usage: kvm-remote-noreap.sh pathname\n#\n# Copyright (C) 2021 Facebook, Inc.\n#\n# Authors: Paul E. McKenney <paulmck@kernel.org>\n\npathname=\"$1\"\nif test \"$pathname\" = \"\"\nthen\n\techo Usage: kvm-remote-noreap.sh pathname\n\texit 1\nfi\nif ! test -d \"$pathname\"\nthen\n\techo  Usage: kvm-remote-noreap.sh pathname\n\techo \"       pathname must be a directory.\"\n\texit 2\nfi\n\nwhile test -d \"$pathname\"\ndo\n\tfind \"$pathname\" -type f -exec touch -c {} \\; > /dev/null 2>&1\n\tsleep 30\ndone\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

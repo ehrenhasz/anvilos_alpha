@@ -1,0 +1,9 @@
+{
+  "module_name": "net_dropmonitor-report",
+  "hash_id": "cac152a0066f8a0f371c9cf0fa96f2e548db2b45017351fb7e384276894f33f2",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/scripts/python/bin/net_dropmonitor-report",
+  "human_readable_source": "#!/bin/bash\n# description: display a table of dropped frames\n\nperf script -s \"$PERF_EXEC_PATH\"/scripts/python/net_dropmonitor.py $@\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

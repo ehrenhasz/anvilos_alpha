@@ -1,0 +1,9 @@
+{
+  "module_name": "of.c",
+  "hash_id": "9462e1743896d58b1446c2d2be64851d4cf3a7a5617d195f66ffef353cd3b845",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/usb/phy/of.c",
+  "human_readable_source": "\n \n\n#include <linux/kernel.h>\n#include <linux/module.h>\n#include <linux/of.h>\n#include <linux/usb/of.h>\n#include <linux/usb/otg.h>\n\nstatic const char *const usbphy_modes[] = {\n\t[USBPHY_INTERFACE_MODE_UNKNOWN]\t= \"\",\n\t[USBPHY_INTERFACE_MODE_UTMI]\t= \"utmi\",\n\t[USBPHY_INTERFACE_MODE_UTMIW]\t= \"utmi_wide\",\n\t[USBPHY_INTERFACE_MODE_ULPI]\t= \"ulpi\",\n\t[USBPHY_INTERFACE_MODE_SERIAL]\t= \"serial\",\n\t[USBPHY_INTERFACE_MODE_HSIC]\t= \"hsic\",\n};\n\n \nenum usb_phy_interface of_usb_get_phy_mode(struct device_node *np)\n{\n\tconst char *phy_type;\n\tint err, i;\n\n\terr = of_property_read_string(np, \"phy_type\", &phy_type);\n\tif (err < 0)\n\t\treturn USBPHY_INTERFACE_MODE_UNKNOWN;\n\n\tfor (i = 0; i < ARRAY_SIZE(usbphy_modes); i++)\n\t\tif (!strcmp(phy_type, usbphy_modes[i]))\n\t\t\treturn i;\n\n\treturn USBPHY_INTERFACE_MODE_UNKNOWN;\n}\nEXPORT_SYMBOL_GPL(of_usb_get_phy_mode);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

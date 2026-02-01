@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "b0bbf5398d649502cdf3d7842d2f1606adf6028d735ffb509d018d58d4f520f8",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/gud/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n\nconfig DRM_GUD\n\ttristate \"GUD USB Display\"\n\tdepends on DRM && USB && MMU\n\tselect LZ4_COMPRESS\n\tselect DRM_KMS_HELPER\n\tselect DRM_GEM_SHMEM_HELPER\n\tselect BACKLIGHT_CLASS_DEVICE\n\thelp\n\t  This is a DRM display driver for GUD USB Displays or display\n\t  adapters.\n\n\t  If M is selected the module will be called gud.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

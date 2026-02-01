@@ -1,0 +1,9 @@
+{
+  "module_name": "autobuild.m4",
+  "hash_id": "5caadd64b953e31a2ce13a7fe93dc6f4428bd97719a51aa3b87ea746f96e105e",
+  "original_prompt": "Ingested from coreutils-9.4/m4/autobuild.m4",
+  "human_readable_source": "# autobuild.m4 serial 8\ndnl Copyright (C) 2004, 2006-2023 Free Software Foundation, Inc.\ndnl This file is free software; the Free Software Foundation\ndnl gives unlimited permission to copy and/or distribute it,\ndnl with or without modifications, as long as this notice is preserved.\n\ndnl From Simon Josefsson\n\n# Usage: AB_INIT([MODE]).\nAC_DEFUN([AB_INIT],\n[\n  AC_REQUIRE([AC_CANONICAL_BUILD])\n  AC_REQUIRE([AC_CANONICAL_HOST])\n\n  if test -z \"$AB_PACKAGE\"; then\n    AB_PACKAGE=${PACKAGE_NAME:-$PACKAGE}\n  fi\n  AC_MSG_NOTICE([autobuild project... $AB_PACKAGE])\n\n  if test -z \"$AB_VERSION\"; then\n    AB_VERSION=${PACKAGE_VERSION:-$VERSION}\n  fi\n  AC_MSG_NOTICE([autobuild revision... $AB_VERSION])\n\n  hostname=`hostname`\n  if test \"$hostname\"; then\n    AC_MSG_NOTICE([autobuild hostname... $hostname])\n  fi\n\n  m4_if([$1],[],,[AC_MSG_NOTICE([autobuild mode... $1])])\n\n  date=`TZ=UTC0 date +%Y%m%dT%H%M%SZ`\n  if test \"$?\" != 0; then\n    date=`date`\n  fi\n  if test \"$date\"; then\n    AC_MSG_NOTICE([autobuild timestamp... $date])\n  fi\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "etnaviv_perfmon.h",
+  "hash_id": "3c5668522d981ec14f28ec2761dd04c42efbb025e12958fb4ae631d186de1b5d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/etnaviv/etnaviv_perfmon.h",
+  "human_readable_source": " \n \n\n#ifndef __ETNAVIV_PERFMON_H__\n#define __ETNAVIV_PERFMON_H__\n\nstruct etnaviv_gpu;\nstruct drm_etnaviv_pm_domain;\nstruct drm_etnaviv_pm_signal;\n\nstruct etnaviv_perfmon_request\n{\n\tu32 flags;\n\tu8 domain;\n\tu8 signal;\n\tu32 sequence;\n\n\t \n\tu32 *bo_vma;\n\tu32 offset;\n};\n\nint etnaviv_pm_query_dom(struct etnaviv_gpu *gpu,\n\tstruct drm_etnaviv_pm_domain *domain);\n\nint etnaviv_pm_query_sig(struct etnaviv_gpu *gpu,\n\tstruct drm_etnaviv_pm_signal *signal);\n\nint etnaviv_pm_req_validate(const struct drm_etnaviv_gem_submit_pmr *r,\n\tu32 exec_state);\n\nvoid etnaviv_perfmon_process(struct etnaviv_gpu *gpu,\n\tconst struct etnaviv_perfmon_request *pmr, u32 exec_state);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

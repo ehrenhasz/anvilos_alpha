@@ -1,0 +1,9 @@
+{
+  "module_name": "tc_counters.h",
+  "hash_id": "3164bb698f774d90e6fb687c9d4d89772ded786915e2be01649fd70080432879",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/sfc/tc_counters.h",
+  "human_readable_source": " \n \n\n#ifndef EFX_TC_COUNTERS_H\n#define EFX_TC_COUNTERS_H\n#include <linux/refcount.h>\n#include \"net_driver.h\"\n\n#include \"mcdi_pcol.h\"  \n\nenum efx_tc_counter_type {\n\tEFX_TC_COUNTER_TYPE_AR = MAE_COUNTER_TYPE_AR,\n\tEFX_TC_COUNTER_TYPE_CT = MAE_COUNTER_TYPE_CT,\n\tEFX_TC_COUNTER_TYPE_OR = MAE_COUNTER_TYPE_OR,\n\tEFX_TC_COUNTER_TYPE_MAX\n};\n\nstruct efx_tc_counter {\n\tu32 fw_id;  \n\tenum efx_tc_counter_type type;\n\tstruct rhash_head linkage;  \n\tspinlock_t lock;  \n\tu32 gen;  \n\tu64 packets, bytes;\n\tu64 old_packets, old_bytes;  \n\t \n\tunsigned long touched;\n\tstruct work_struct work;  \n\t \n\tstruct list_head users;\n};\n\nstruct efx_tc_counter_index {\n\tunsigned long cookie;\n\tstruct rhash_head linkage;  \n\trefcount_t ref;\n\tstruct efx_tc_counter *cnt;\n};\n\n \nint efx_tc_init_counters(struct efx_nic *efx);\nvoid efx_tc_destroy_counters(struct efx_nic *efx);\nvoid efx_tc_fini_counters(struct efx_nic *efx);\n\nstruct efx_tc_counter *efx_tc_flower_allocate_counter(struct efx_nic *efx,\n\t\t\t\t\t\t      int type);\nvoid efx_tc_flower_release_counter(struct efx_nic *efx,\n\t\t\t\t   struct efx_tc_counter *cnt);\nstruct efx_tc_counter_index *efx_tc_flower_get_counter_index(\n\t\t\t\tstruct efx_nic *efx, unsigned long cookie,\n\t\t\t\tenum efx_tc_counter_type type);\nvoid efx_tc_flower_put_counter_index(struct efx_nic *efx,\n\t\t\t\t     struct efx_tc_counter_index *ctr);\nstruct efx_tc_counter_index *efx_tc_flower_find_counter_index(\n\t\t\t\tstruct efx_nic *efx, unsigned long cookie);\n\nextern const struct efx_channel_type efx_tc_channel_type;\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "gameport.h",
+  "hash_id": "4514dbc58beecbfd3c9344e67dc23c1aeb5ca332460e212868082f2fc9b2f394",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/gameport.h",
+  "human_readable_source": " \n \n#ifndef _UAPI_GAMEPORT_H\n#define _UAPI_GAMEPORT_H\n\n\n\n#define GAMEPORT_MODE_DISABLED\t\t0\n#define GAMEPORT_MODE_RAW\t\t1\n#define GAMEPORT_MODE_COOKED\t\t2\n\n#define GAMEPORT_ID_VENDOR_ANALOG\t0x0001\n#define GAMEPORT_ID_VENDOR_MADCATZ\t0x0002\n#define GAMEPORT_ID_VENDOR_LOGITECH\t0x0003\n#define GAMEPORT_ID_VENDOR_CREATIVE\t0x0004\n#define GAMEPORT_ID_VENDOR_GENIUS\t0x0005\n#define GAMEPORT_ID_VENDOR_INTERACT\t0x0006\n#define GAMEPORT_ID_VENDOR_MICROSOFT\t0x0007\n#define GAMEPORT_ID_VENDOR_THRUSTMASTER\t0x0008\n#define GAMEPORT_ID_VENDOR_GRAVIS\t0x0009\n#define GAMEPORT_ID_VENDOR_GUILLEMOT\t0x000a\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

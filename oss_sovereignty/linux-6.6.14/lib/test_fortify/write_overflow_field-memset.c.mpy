@@ -1,0 +1,9 @@
+{
+  "module_name": "write_overflow_field-memset.c",
+  "hash_id": "65197a19097753097a0884d37ed0908facdedbe2e2a527731dc7a84912befb4a",
+  "original_prompt": "Ingested from linux-6.6.14/lib/test_fortify/write_overflow_field-memset.c",
+  "human_readable_source": "\n#define TEST\t\\\n\tmemset(instance.buf, 0x42, sizeof(instance.buf) + 1)\n\n#include \"test_fortify.h\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

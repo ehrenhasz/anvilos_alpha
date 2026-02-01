@@ -1,0 +1,9 @@
+{
+  "module_name": "vdev_os.h",
+  "hash_id": "f486aaa83a58ded4faf21d8189eb58741848d0205632ad3092410e0928ebe263",
+  "original_prompt": "Ingested from zfs-2.2.2/include/os/freebsd/zfs/sys/vdev_os.h",
+  "human_readable_source": " \n\n \n\n#ifndef _SYS_VDEV_OS_H\n#define\t_SYS_VDEV_OS_H\n\nextern int vdev_label_write_pad2(vdev_t *vd, const char *buf, size_t size);\nextern int vdev_geom_read_pool_label(const char *name, nvlist_t ***configs,\n    uint64_t *count);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

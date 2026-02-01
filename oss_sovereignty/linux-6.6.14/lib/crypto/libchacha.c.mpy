@@ -1,0 +1,9 @@
+{
+  "module_name": "libchacha.c",
+  "hash_id": "a814c9a5361491329ad96bf0c84ba8af354d810803ebdbb7cd5c9a919a3480fd",
+  "original_prompt": "Ingested from linux-6.6.14/lib/crypto/libchacha.c",
+  "human_readable_source": "\n \n\n#include <linux/kernel.h>\n#include <linux/export.h>\n#include <linux/module.h>\n\n#include <crypto/algapi.h> \n#include <crypto/chacha.h>\n\nvoid chacha_crypt_generic(u32 *state, u8 *dst, const u8 *src,\n\t\t\t  unsigned int bytes, int nrounds)\n{\n\t \n\tu8 stream[CHACHA_BLOCK_SIZE] __aligned(sizeof(long));\n\n\twhile (bytes >= CHACHA_BLOCK_SIZE) {\n\t\tchacha_block_generic(state, stream, nrounds);\n\t\tcrypto_xor_cpy(dst, src, stream, CHACHA_BLOCK_SIZE);\n\t\tbytes -= CHACHA_BLOCK_SIZE;\n\t\tdst += CHACHA_BLOCK_SIZE;\n\t\tsrc += CHACHA_BLOCK_SIZE;\n\t}\n\tif (bytes) {\n\t\tchacha_block_generic(state, stream, nrounds);\n\t\tcrypto_xor_cpy(dst, src, stream, bytes);\n\t}\n}\nEXPORT_SYMBOL(chacha_crypt_generic);\n\nMODULE_LICENSE(\"GPL\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

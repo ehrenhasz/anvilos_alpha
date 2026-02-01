@@ -1,0 +1,9 @@
+{
+  "module_name": "scsi_lib_dma.c",
+  "hash_id": "bad0d3f4fa8a0874056cc1cec84e349f13e3422a5b93b87bc2b7891aa5ea7cdb",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/scsi/scsi_lib_dma.c",
+  "human_readable_source": "\n \n\n#include <linux/blkdev.h>\n#include <linux/device.h>\n#include <linux/export.h>\n#include <linux/kernel.h>\n\n#include <scsi/scsi.h>\n#include <scsi/scsi_cmnd.h>\n#include <scsi/scsi_device.h>\n#include <scsi/scsi_host.h>\n\n \nint scsi_dma_map(struct scsi_cmnd *cmd)\n{\n\tint nseg = 0;\n\n\tif (scsi_sg_count(cmd)) {\n\t\tstruct device *dev = cmd->device->host->dma_dev;\n\n\t\tnseg = dma_map_sg(dev, scsi_sglist(cmd), scsi_sg_count(cmd),\n\t\t\t\t  cmd->sc_data_direction);\n\t\tif (unlikely(!nseg))\n\t\t\treturn -ENOMEM;\n\t}\n\treturn nseg;\n}\nEXPORT_SYMBOL(scsi_dma_map);\n\n \nvoid scsi_dma_unmap(struct scsi_cmnd *cmd)\n{\n\tif (scsi_sg_count(cmd)) {\n\t\tstruct device *dev = cmd->device->host->dma_dev;\n\n\t\tdma_unmap_sg(dev, scsi_sglist(cmd), scsi_sg_count(cmd),\n\t\t\t     cmd->sc_data_direction);\n\t}\n}\nEXPORT_SYMBOL(scsi_dma_unmap);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "pci_mcu.c",
+  "hash_id": "79eff38cc752822385a00a39ea7a65d943affedc3c77365f28c7516c21613bb5",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/mediatek/mt76/mt7921/pci_mcu.c",
+  "human_readable_source": "\n \n\n#include \"mt7921.h\"\n#include \"mcu.h\"\n\nint mt7921e_driver_own(struct mt792x_dev *dev)\n{\n\tu32 reg = mt7921_reg_map_l1(dev, MT_TOP_LPCR_HOST_BAND0);\n\n\tmt76_wr(dev, reg, MT_TOP_LPCR_HOST_DRV_OWN);\n\tif (!mt76_poll_msec(dev, reg, MT_TOP_LPCR_HOST_FW_OWN,\n\t\t\t    0, 500)) {\n\t\tdev_err(dev->mt76.dev, \"Timeout for driver own\\n\");\n\t\treturn -EIO;\n\t}\n\n\treturn 0;\n}\n\nstatic int\nmt7921_mcu_send_message(struct mt76_dev *mdev, struct sk_buff *skb,\n\t\t\tint cmd, int *seq)\n{\n\tstruct mt792x_dev *dev = container_of(mdev, struct mt792x_dev, mt76);\n\tenum mt76_mcuq_id txq = MT_MCUQ_WM;\n\tint ret;\n\n\tret = mt76_connac2_mcu_fill_message(mdev, skb, cmd, seq);\n\tif (ret)\n\t\treturn ret;\n\n\tmdev->mcu.timeout = 3 * HZ;\n\n\tif (cmd == MCU_CMD(FW_SCATTER))\n\t\ttxq = MT_MCUQ_FWDL;\n\n\treturn mt76_tx_queue_skb_raw(dev, mdev->q_mcu[txq], skb, 0);\n}\n\nint mt7921e_mcu_init(struct mt792x_dev *dev)\n{\n\tstatic const struct mt76_mcu_ops mt7921_mcu_ops = {\n\t\t.headroom = sizeof(struct mt76_connac2_mcu_txd),\n\t\t.mcu_skb_send_msg = mt7921_mcu_send_message,\n\t\t.mcu_parse_response = mt7921_mcu_parse_response,\n\t};\n\tint err;\n\n\tdev->mt76.mcu_ops = &mt7921_mcu_ops;\n\n\terr = mt7921e_driver_own(dev);\n\tif (err)\n\t\treturn err;\n\n\tmt76_rmw_field(dev, MT_PCIE_MAC_PM, MT_PCIE_MAC_PM_L0S_DIS, 1);\n\n\terr = mt7921_run_firmware(dev);\n\n\tmt76_queue_tx_cleanup(dev, dev->mt76.q_mcu[MT_MCUQ_FWDL], false);\n\n\treturn err;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

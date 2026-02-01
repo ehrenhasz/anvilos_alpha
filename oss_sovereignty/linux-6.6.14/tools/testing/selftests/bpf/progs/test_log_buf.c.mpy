@@ -1,0 +1,9 @@
+{
+  "module_name": "test_log_buf.c",
+  "hash_id": "030ebdcabf90b1ee8306ed2295d82e761e11f1a2fcfef4590e4245138effc6dd",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/test_log_buf.c",
+  "human_readable_source": "\n \n\n#include <linux/bpf.h>\n#include <bpf/bpf_helpers.h>\n\nint a[4];\nconst volatile int off = 4000;\n\nSEC(\"raw_tp/sys_enter\")\nint good_prog(const void *ctx)\n{\n\ta[0] = (int)(long)ctx;\n\treturn a[1];\n}\n\nSEC(\"raw_tp/sys_enter\")\nint bad_prog(const void *ctx)\n{\n\t \n\treturn a[off];\n}\n\nchar _license[] SEC(\"license\") = \"GPL\";\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

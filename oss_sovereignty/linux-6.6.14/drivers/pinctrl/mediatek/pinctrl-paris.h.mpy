@@ -1,0 +1,9 @@
+{
+  "module_name": "pinctrl-paris.h",
+  "hash_id": "7c09a6f1ca9518ec783727381e6ce098ecabafe6be55e813b384e654b559a709",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/pinctrl/mediatek/pinctrl-paris.h",
+  "human_readable_source": " \n \n#ifndef __PINCTRL_PARIS_H\n#define __PINCTRL_PARIS_H\n\n#include <linux/io.h>\n#include <linux/init.h>\n#include <linux/of.h>\n#include <linux/of_platform.h>\n#include <linux/platform_device.h>\n#include <linux/pinctrl/pinctrl.h>\n#include <linux/pinctrl/pinmux.h>\n#include <linux/pinctrl/pinconf.h>\n#include <linux/pinctrl/pinconf-generic.h>\n\n#include \"../core.h\"\n#include \"../pinconf.h\"\n#include \"../pinctrl-utils.h\"\n#include \"../pinmux.h\"\n#include \"mtk-eint.h\"\n#include \"pinctrl-mtk-common-v2.h\"\n\n#define MTK_RANGE(_a)\t\t{ .range = (_a), .nranges = ARRAY_SIZE(_a), }\n\n#define MTK_EINT_FUNCTION(_eintmux, _eintnum)\t\t\t\t\\\n\t{\t\t\t\t\t\t\t\\\n\t\t.eint_m = _eintmux,\t\t\t\t\t\\\n\t\t.eint_n = _eintnum,\t\t\t\t\t\\\n\t}\n\n#define MTK_FUNCTION(_val, _name)\t\t\t\t\\\n\t{\t\t\t\t\t\t\t\\\n\t\t.muxval = _val,\t\t\t\t\t\\\n\t\t.name = _name,\t\t\t\t\t\\\n\t}\n\n#define MTK_PIN(_number, _name, _eint, _drv_n, ...) {\t\\\n\t\t.number = _number,\t\t\t\\\n\t\t.name = _name,\t\t\t\t\\\n\t\t.eint = _eint,\t\t\t\t\\\n\t\t.drv_n = _drv_n,\t\t\t\\\n\t\t.funcs = (struct mtk_func_desc[]){\t\\\n\t\t\t__VA_ARGS__, { } },\t\t\t\t\\\n\t}\n\n#define PINCTRL_PIN_GROUP(name, id)\t\t\t\\\n\t{\t\t\t\t\t\t\\\n\t\tname,\t\t\t\t\t\\\n\t\tid##_pins,\t\t\t\t\\\n\t\tARRAY_SIZE(id##_pins),\t\t\t\\\n\t\tid##_funcs,\t\t\t\t\\\n\t}\n\nint mtk_paris_pinctrl_probe(struct platform_device *pdev);\n\nssize_t mtk_pctrl_show_one_pin(struct mtk_pinctrl *hw,\n\tunsigned int gpio, char *buf, unsigned int bufLen);\n\nextern const struct dev_pm_ops mtk_paris_pinctrl_pm_ops;\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

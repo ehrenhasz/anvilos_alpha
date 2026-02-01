@@ -1,0 +1,9 @@
+{
+  "module_name": "amdtp-am824.h",
+  "hash_id": "e9da36d12e7ca8d53d4d997fe4d674b23ce7265f710a3170688359dfa24819de",
+  "original_prompt": "Ingested from linux-6.6.14/sound/firewire/amdtp-am824.h",
+  "human_readable_source": " \n#ifndef SOUND_FIREWIRE_AMDTP_AM824_H_INCLUDED\n#define SOUND_FIREWIRE_AMDTP_AM824_H_INCLUDED\n\n#include <sound/pcm.h>\n#include <sound/rawmidi.h>\n\n#include \"amdtp-stream.h\"\n\n#define AM824_IN_PCM_FORMAT_BITS\tSNDRV_PCM_FMTBIT_S32\n\n#define AM824_OUT_PCM_FORMAT_BITS\tSNDRV_PCM_FMTBIT_S32\n\n \n#define AM824_MAX_CHANNELS_FOR_PCM\t64\n\n \n#define AM824_MAX_CHANNELS_FOR_MIDI\t1\n\nint amdtp_am824_set_parameters(struct amdtp_stream *s, unsigned int rate,\n\t\t\t       unsigned int pcm_channels,\n\t\t\t       unsigned int midi_ports,\n\t\t\t       bool double_pcm_frames);\n\nvoid amdtp_am824_set_pcm_position(struct amdtp_stream *s, unsigned int index,\n\t\t\t\t unsigned int position);\n\nvoid amdtp_am824_set_midi_position(struct amdtp_stream *s,\n\t\t\t\t   unsigned int position);\n\nint amdtp_am824_add_pcm_hw_constraints(struct amdtp_stream *s,\n\t\t\t\t       struct snd_pcm_runtime *runtime);\n\nvoid amdtp_am824_midi_trigger(struct amdtp_stream *s, unsigned int port,\n\t\t\t      struct snd_rawmidi_substream *midi);\n\nint amdtp_am824_init(struct amdtp_stream *s, struct fw_unit *unit,\n\t\t     enum amdtp_stream_direction dir, unsigned int flags);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

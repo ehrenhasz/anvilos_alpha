@@ -1,0 +1,9 @@
+{
+  "module_name": "adav80x.h",
+  "hash_id": "6c8e1336d2985d7c79cd3fae331fe6725e6550ede2f24cdcc103462b32cca1ec",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/codecs/adav80x.h",
+  "human_readable_source": " \n \n\n#ifndef _ADAV80X_H\n#define _ADAV80X_H\n\n#include <linux/regmap.h>\n\nstruct device;\n\nextern const struct regmap_config adav80x_regmap_config;\nint adav80x_bus_probe(struct device *dev, struct regmap *regmap);\n\nenum adav80x_pll_src {\n\tADAV80X_PLL_SRC_XIN,\n\tADAV80X_PLL_SRC_XTAL,\n\tADAV80X_PLL_SRC_MCLKI,\n};\n\nenum adav80x_pll {\n\tADAV80X_PLL1 = 0,\n\tADAV80X_PLL2 = 1,\n};\n\nenum adav80x_clk_src {\n\tADAV80X_CLK_XIN = 0,\n\tADAV80X_CLK_MCLKI = 1,\n\tADAV80X_CLK_PLL1 = 2,\n\tADAV80X_CLK_PLL2 = 3,\n\tADAV80X_CLK_XTAL = 6,\n\n\tADAV80X_CLK_SYSCLK1 = 6,\n\tADAV80X_CLK_SYSCLK2 = 7,\n\tADAV80X_CLK_SYSCLK3 = 8,\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

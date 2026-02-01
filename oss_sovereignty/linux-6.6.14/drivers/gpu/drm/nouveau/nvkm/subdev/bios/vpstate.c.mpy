@@ -1,0 +1,9 @@
+{
+  "module_name": "vpstate.c",
+  "hash_id": "45b62bb763a19ef0599b9fecf441201ff94c74ea861adb47c8b78322f21aa903",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/subdev/bios/vpstate.c",
+  "human_readable_source": " \n#include <subdev/bios.h>\n#include <subdev/bios/bit.h>\n#include <subdev/bios/vpstate.h>\n\nstatic u32\nnvbios_vpstate_offset(struct nvkm_bios *b)\n{\n\tstruct bit_entry bit_P;\n\n\tif (!bit_entry(b, 'P', &bit_P)) {\n\t\tif (bit_P.version == 2 && bit_P.length >= 0x3c)\n\t\t\treturn nvbios_rd32(b, bit_P.offset + 0x38);\n\t}\n\n\treturn 0x0000;\n}\n\nint\nnvbios_vpstate_parse(struct nvkm_bios *b, struct nvbios_vpstate_header *h)\n{\n\tif (!h)\n\t\treturn -EINVAL;\n\n\th->offset = nvbios_vpstate_offset(b);\n\tif (!h->offset)\n\t\treturn -ENODEV;\n\n\th->version = nvbios_rd08(b, h->offset);\n\tswitch (h->version) {\n\tcase 0x10:\n\t\th->hlen     = nvbios_rd08(b, h->offset + 0x1);\n\t\th->elen     = nvbios_rd08(b, h->offset + 0x2);\n\t\th->slen     = nvbios_rd08(b, h->offset + 0x3);\n\t\th->scount   = nvbios_rd08(b, h->offset + 0x4);\n\t\th->ecount   = nvbios_rd08(b, h->offset + 0x5);\n\n\t\th->base_id  = nvbios_rd08(b, h->offset + 0x0f);\n\t\tif (h->hlen > 0x10)\n\t\t\th->boost_id = nvbios_rd08(b, h->offset + 0x10);\n\t\telse\n\t\t\th->boost_id = 0xff;\n\t\tif (h->hlen > 0x11)\n\t\t\th->tdp_id = nvbios_rd08(b, h->offset + 0x11);\n\t\telse\n\t\t\th->tdp_id = 0xff;\n\t\treturn 0;\n\tdefault:\n\t\treturn -EINVAL;\n\t}\n}\n\nint\nnvbios_vpstate_entry(struct nvkm_bios *b, struct nvbios_vpstate_header *h,\n\t\t     u8 idx, struct nvbios_vpstate_entry *e)\n{\n\tu32 offset;\n\n\tif (!e || !h || idx > h->ecount)\n\t\treturn -EINVAL;\n\n\toffset = h->offset + h->hlen + idx * (h->elen + (h->slen * h->scount));\n\te->pstate    = nvbios_rd08(b, offset);\n\te->clock_mhz = nvbios_rd16(b, offset + 0x5);\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

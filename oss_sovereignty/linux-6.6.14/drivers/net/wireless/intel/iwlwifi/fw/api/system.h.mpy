@@ -1,0 +1,9 @@
+{
+  "module_name": "system.h",
+  "hash_id": "e374dfeda5c3b39ee7e6b85a1f18fea0d07951e1a5608ac2933d7e89acfd0831",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/intel/iwlwifi/fw/api/system.h",
+  "human_readable_source": " \n \n#ifndef __iwl_fw_api_system_h__\n#define __iwl_fw_api_system_h__\n\n#define SOC_CONFIG_CMD_FLAGS_DISCRETE\t\tBIT(0)\n#define SOC_CONFIG_CMD_FLAGS_LOW_LATENCY\tBIT(1)\n\n#define SOC_FLAGS_LTR_APPLY_DELAY_MASK\t\t0xc\n#define SOC_FLAGS_LTR_APPLY_DELAY_NONE\t\t0\n#define SOC_FLAGS_LTR_APPLY_DELAY_200\t\t1\n#define SOC_FLAGS_LTR_APPLY_DELAY_2500\t\t2\n#define SOC_FLAGS_LTR_APPLY_DELAY_1820\t\t3\n\n \nstruct iwl_soc_configuration_cmd {\n\t__le32 flags;\n\t__le32 latency;\n} __packed;  \n\n \nstruct iwl_system_features_control_cmd {\n\t__le32 features[4];\n} __packed;  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

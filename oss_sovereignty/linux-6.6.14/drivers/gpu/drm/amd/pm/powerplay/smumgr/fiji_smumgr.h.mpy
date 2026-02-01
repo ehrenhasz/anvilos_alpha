@@ -1,0 +1,9 @@
+{
+  "module_name": "fiji_smumgr.h",
+  "hash_id": "89543e82858fc26f0ecf8c76f6ab1a673c60e5ee9ec7e00ce2a4f253ac486e2e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/pm/powerplay/smumgr/fiji_smumgr.h",
+  "human_readable_source": " \n#ifndef _FIJI_SMUMANAGER_H_\n#define _FIJI_SMUMANAGER_H_\n\n#include \"smu73_discrete.h\"\n#include <pp_endian.h>\n#include \"smu7_smumgr.h\"\n\n\nstruct fiji_pt_defaults {\n\tuint8_t   SviLoadLineEn;\n\tuint8_t   SviLoadLineVddC;\n\tuint8_t   TDC_VDDC_ThrottleReleaseLimitPerc;\n\tuint8_t   TDC_MAWt;\n\tuint8_t   TdcWaterfallCtl;\n\tuint8_t   DTEAmbientTempBase;\n};\n\nstruct fiji_smumgr {\n\tstruct smu7_smumgr                   smu7_data;\n\tstruct SMU73_Discrete_DpmTable       smc_state_table;\n\tstruct SMU73_Discrete_Ulv            ulv_setting;\n\tstruct SMU73_Discrete_PmFuses  power_tune_table;\n\tconst struct fiji_pt_defaults  *power_tune_defaults;\n};\n\n#endif\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "282052159dfae34b0a244de4647ce5b2961270ae4f7b341c95c255c67fb01f41",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/mediatek/mt7601u/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig MT7601U\n\ttristate \"MediaTek MT7601U (USB) support\"\n\tdepends on MAC80211\n\tdepends on USB\n\thelp\n\t  This adds support for MT7601U-based USB wireless dongles.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

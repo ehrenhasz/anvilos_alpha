@@ -1,0 +1,9 @@
+{
+  "module_name": "zwrite.c",
+  "hash_id": "b351ad1551f192b61280271a582881d8b4ba89ce4d99b49b05c39ff9a37917e6",
+  "original_prompt": "Ingested from bash-5.2.21/lib/sh/zwrite.c",
+  "human_readable_source": " \n\n \n\n#include <config.h>\n\n#include <sys/types.h>\n\n#if defined (HAVE_UNISTD_H)\n#  include <unistd.h>\n#endif\n\n#include <errno.h>\n\n#if !defined (errno)\nextern int errno;\n#endif\n\n \nint\nzwrite (fd, buf, nb)\n     int fd;\n     char *buf;\n     size_t nb;\n{\n  int n, i, nt;\n\n  for (n = nb, nt = 0;;)\n    {\n      i = write (fd, buf, n);\n      if (i > 0)\n\t{\n\t  n -= i;\n\t  if (n <= 0)\n\t    return nb;\n\t  buf += i;\n\t}\n      else if (i == 0)\n\t{\n\t  if (++nt > 3)\n\t    return (nb - n);\n\t}\n      else if (errno != EINTR)\n\treturn -1;\n    }\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

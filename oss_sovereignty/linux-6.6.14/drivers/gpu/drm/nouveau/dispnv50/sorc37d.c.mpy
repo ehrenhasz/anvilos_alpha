@@ -1,0 +1,9 @@
+{
+  "module_name": "sorc37d.c",
+  "hash_id": "248aea434991c20b522c94c7a35d2e2bd30a2a7ce6eb7dedae65241d52b81afd",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/dispnv50/sorc37d.c",
+  "human_readable_source": " \n#include \"core.h\"\n\n#include <nvif/pushc37b.h>\n\n#include <nvhw/class/clc37d.h>\n\nstatic int\nsorc37d_ctrl(struct nv50_core *core, int or, u32 ctrl,\n\t     struct nv50_head_atom *asyh)\n{\n\tstruct nvif_push *push = core->chan.push;\n\tint ret;\n\n\tif ((ret = PUSH_WAIT(push, 2)))\n\t\treturn ret;\n\n\tPUSH_MTHD(push, NVC37D, SOR_SET_CONTROL(or), ctrl);\n\treturn 0;\n}\n\nstatic void\nsorc37d_get_caps(struct nv50_disp *disp, struct nouveau_encoder *outp, int or)\n{\n\tu32 tmp = nvif_rd32(&disp->caps, 0x000144 + (or * 8));\n\n\toutp->caps.dp_interlace = !!(tmp & 0x04000000);\n}\n\nconst struct nv50_outp_func\nsorc37d = {\n\t.ctrl = sorc37d_ctrl,\n\t.get_caps = sorc37d_get_caps,\n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

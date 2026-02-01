@@ -1,0 +1,9 @@
+{
+  "module_name": "sprd-pcm-dma.h",
+  "hash_id": "8a55122980a43ed7daeaf243808e549191e8b86d8857c73c2dee9f24c7d1aa17",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/sprd/sprd-pcm-dma.h",
+  "human_readable_source": "\n\n#ifndef __SPRD_PCM_DMA_H\n#define __SPRD_PCM_DMA_H\n\n#define DRV_NAME\t\t\"sprd_pcm_dma\"\n#define SPRD_PCM_CHANNEL_MAX\t2\n\nextern const struct snd_compress_ops sprd_platform_compress_ops;\n\nstruct sprd_pcm_dma_params {\n\tdma_addr_t dev_phys[SPRD_PCM_CHANNEL_MAX];\n\tu32 datawidth[SPRD_PCM_CHANNEL_MAX];\n\tu32 fragment_len[SPRD_PCM_CHANNEL_MAX];\n\tconst char *chan_name[SPRD_PCM_CHANNEL_MAX];\n};\n\nstruct sprd_compr_playinfo {\n\tint total_time;\n\tint current_time;\n\tint total_data_length;\n\tint current_data_offset;\n};\n\nstruct sprd_compr_params {\n\tu32 direction;\n\tu32 rate;\n\tu32 sample_rate;\n\tu32 channels;\n\tu32 format;\n\tu32 period;\n\tu32 periods;\n\tu32 info_phys;\n\tu32 info_size;\n};\n\nstruct sprd_compr_callback {\n\tvoid (*drain_notify)(void *data);\n\tvoid *drain_data;\n};\n\nstruct sprd_compr_ops {\n\tint (*open)(int str_id, struct sprd_compr_callback *cb);\n\tint (*close)(int str_id);\n\tint (*start)(int str_id);\n\tint (*stop)(int str_id);\n\tint (*pause)(int str_id);\n\tint (*pause_release)(int str_id);\n\tint (*drain)(int received_total);\n\tint (*set_params)(int str_id, struct sprd_compr_params *params);\n};\n\nstruct sprd_compr_data {\n\tstruct sprd_compr_ops *ops;\n\tstruct sprd_pcm_dma_params *dma_params;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

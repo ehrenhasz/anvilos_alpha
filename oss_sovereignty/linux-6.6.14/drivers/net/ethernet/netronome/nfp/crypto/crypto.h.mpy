@@ -1,0 +1,9 @@
+{
+  "module_name": "crypto.h",
+  "hash_id": "976243d2037f513554bbc3f465d801d484aff7944b70b0a7340d1ea3d9393970",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/netronome/nfp/crypto/crypto.h",
+  "human_readable_source": " \n \n\n#ifndef NFP_CRYPTO_H\n#define NFP_CRYPTO_H 1\n\nstruct net_device;\nstruct nfp_net;\nstruct nfp_net_tls_resync_req;\n\nstruct nfp_net_tls_offload_ctx {\n\t__be32 fw_handle[2];\n\n\tu8 rx_end[0];\n\t \n\n\tu32 next_seq;\n};\n\n#ifdef CONFIG_TLS_DEVICE\nint nfp_net_tls_init(struct nfp_net *nn);\nint nfp_net_tls_rx_resync_req(struct net_device *netdev,\n\t\t\t      struct nfp_net_tls_resync_req *req,\n\t\t\t      void *pkt, unsigned int pkt_len);\n#else\nstatic inline int nfp_net_tls_init(struct nfp_net *nn)\n{\n\treturn 0;\n}\n\nstatic inline int\nnfp_net_tls_rx_resync_req(struct net_device *netdev,\n\t\t\t  struct nfp_net_tls_resync_req *req,\n\t\t\t  void *pkt, unsigned int pkt_len)\n{\n\treturn -EOPNOTSUPP;\n}\n#endif\n\n \nstruct nfp_ipsec_offload {\n\tu32 seq_hi;\n\tu32 seq_low;\n\tu32 handle;\n};\n\n#ifndef CONFIG_NFP_NET_IPSEC\nstatic inline void nfp_net_ipsec_init(struct nfp_net *nn)\n{\n}\n\nstatic inline void nfp_net_ipsec_clean(struct nfp_net *nn)\n{\n}\n#else\nvoid nfp_net_ipsec_init(struct nfp_net *nn);\nvoid nfp_net_ipsec_clean(struct nfp_net *nn);\nbool nfp_net_ipsec_tx_prep(struct nfp_net_dp *dp, struct sk_buff *skb,\n\t\t\t   struct nfp_ipsec_offload *offload_info);\nint nfp_net_ipsec_rx(struct nfp_meta_parsed *meta, struct sk_buff *skb);\n#endif\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

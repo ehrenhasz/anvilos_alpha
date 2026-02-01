@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "de32e3b25d1226e051264a10b0b3e384e025e7a188a113f2ea30f3b521f8d60e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/thermal/tegra/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nmenu \"NVIDIA Tegra thermal drivers\"\ndepends on ARCH_TEGRA || COMPILE_TEST\n\nconfig TEGRA_SOCTHERM\n\ttristate \"Tegra SOCTHERM thermal management\"\n\thelp\n\t  Enable this option for integrated thermal management support on NVIDIA\n\t  Tegra systems-on-chip. The driver supports four thermal zones\n\t  (CPU, GPU, MEM, PLLX). Cooling devices can be bound to the thermal\n\t  zones to manage temperatures. This option is also required for the\n\t  emergency thermal reset (thermtrip) feature to function.\n\nconfig TEGRA_BPMP_THERMAL\n\ttristate \"Tegra BPMP thermal sensing\"\n\tdepends on TEGRA_BPMP || COMPILE_TEST\n\thelp\n\t  Enable this option for support for sensing system temperature of NVIDIA\n\t  Tegra systems-on-chip with the BPMP coprocessor (Tegra186).\n\nconfig TEGRA30_TSENSOR\n\ttristate \"Tegra30 Thermal Sensor\"\n\tdepends on ARCH_TEGRA_3x_SOC || COMPILE_TEST\n\thelp\n\t  Enable this option to support thermal management of NVIDIA Tegra30\n\t  system-on-chip.\n\nendmenu\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

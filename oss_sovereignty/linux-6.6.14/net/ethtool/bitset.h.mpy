@@ -1,0 +1,9 @@
+{
+  "module_name": "bitset.h",
+  "hash_id": "e55f93d4a9e4ff109da42712a722e164c4d84eaaa3a68ca594ce0d7e374c4c92",
+  "original_prompt": "Ingested from linux-6.6.14/net/ethtool/bitset.h",
+  "human_readable_source": " \n\n#ifndef _NET_ETHTOOL_BITSET_H\n#define _NET_ETHTOOL_BITSET_H\n\n#define ETHNL_MAX_BITSET_SIZE S16_MAX\n\ntypedef const char (*const ethnl_string_array_t)[ETH_GSTRING_LEN];\n\nint ethnl_bitset_is_compact(const struct nlattr *bitset, bool *compact);\nint ethnl_bitset_size(const unsigned long *val, const unsigned long *mask,\n\t\t      unsigned int nbits, ethnl_string_array_t names,\n\t\t      bool compact);\nint ethnl_bitset32_size(const u32 *val, const u32 *mask, unsigned int nbits,\n\t\t\tethnl_string_array_t names, bool compact);\nint ethnl_put_bitset(struct sk_buff *skb, int attrtype,\n\t\t     const unsigned long *val, const unsigned long *mask,\n\t\t     unsigned int nbits, ethnl_string_array_t names,\n\t\t     bool compact);\nint ethnl_put_bitset32(struct sk_buff *skb, int attrtype, const u32 *val,\n\t\t       const u32 *mask, unsigned int nbits,\n\t\t       ethnl_string_array_t names, bool compact);\nint ethnl_update_bitset(unsigned long *bitmap, unsigned int nbits,\n\t\t\tconst struct nlattr *attr, ethnl_string_array_t names,\n\t\t\tstruct netlink_ext_ack *extack, bool *mod);\nint ethnl_update_bitset32(u32 *bitmap, unsigned int nbits,\n\t\t\t  const struct nlattr *attr, ethnl_string_array_t names,\n\t\t\t  struct netlink_ext_ack *extack, bool *mod);\nint ethnl_parse_bitset(unsigned long *val, unsigned long *mask,\n\t\t       unsigned int nbits, const struct nlattr *attr,\n\t\t       ethnl_string_array_t names,\n\t\t       struct netlink_ext_ack *extack);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

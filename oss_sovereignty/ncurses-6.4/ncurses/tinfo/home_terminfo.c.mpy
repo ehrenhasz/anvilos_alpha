@@ -1,0 +1,9 @@
+{
+  "module_name": "home_terminfo.c",
+  "hash_id": "858032ea197732cce9c138ce538f00bde46e8f2d4a7c81cca4a3f6273a9bfa5a",
+  "original_prompt": "Ingested from ncurses-6.4/ncurses/tinfo/home_terminfo.c",
+  "human_readable_source": " \n\n \n\n \n\n#include <curses.priv.h>\n#include <tic.h>\n\nMODULE_ID(\"$Id: home_terminfo.c,v 1.17 2020/02/02 23:34:34 tom Exp $\")\n\n \n\n#define MyBuffer _nc_globals.home_terminfo\n\nNCURSES_EXPORT(char *)\n_nc_home_terminfo(void)\n{\n    char *result = 0;\n#if USE_HOME_TERMINFO\n    if (use_terminfo_vars()) {\n\n\tif (MyBuffer == 0) {\n\t    char *home;\n\n\t    if ((home = getenv(\"HOME\")) != 0) {\n\t\tsize_t want = (strlen(home) + sizeof(PRIVATE_INFO));\n\t\tTYPE_MALLOC(char, want, MyBuffer);\n\t\t_nc_SPRINTF(MyBuffer, _nc_SLIMIT(want) PRIVATE_INFO, home);\n\t    }\n\t}\n\tresult = MyBuffer;\n    }\n#endif\n    return result;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

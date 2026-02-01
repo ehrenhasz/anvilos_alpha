@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "f0740b46322af76247b6bd31337d7632b9e2971d4ebf9a3326f86886d87dbcc7",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/usb/mon/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for USB monitor\n#\n\nusbmon-y := mon_main.o mon_stat.o mon_text.o mon_bin.o\n\nobj-$(CONFIG_USB_MON)\t+= usbmon.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

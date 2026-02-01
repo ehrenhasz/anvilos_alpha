@@ -1,0 +1,9 @@
+{
+  "module_name": "ni_names.py",
+  "hash_id": "c05469368d35f304d09590ed9b645b0e8c5621962037d0160deebeab6592b700",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/comedi/drivers/ni_routing/tools/ni_names.py",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0+\n\"\"\"\nThis file helps to extract string names of NI signals as included in comedi.h\nbetween NI_NAMES_BASE and NI_NAMES_BASE+NI_NUM_NAMES.\n\"\"\"\n\n# This is simply to aide in creating the entries in the order of the value of\n# the device-global NI signal/terminal constants defined in comedi.h\nimport comedi_h\n\n\nni_macros = (\n  'NI_PFI',\n  'TRIGGER_LINE',\n  'NI_RTSI_BRD',\n  'NI_CtrSource',\n  'NI_CtrGate',\n  'NI_CtrAux',\n  'NI_CtrA',\n  'NI_CtrB',\n  'NI_CtrZ',\n  'NI_CtrArmStartTrigger',\n  'NI_CtrInternalOutput',\n  'NI_CtrOut',\n  'NI_CtrSampleClock',\n)\n\ndef get_ni_names():\n  name_dict = dict()\n\n  # load all the static names; start with those that do not begin with NI_\n  name_dict['PXI_Star'] = comedi_h.PXI_Star\n  name_dict['PXI_Clk10'] = comedi_h.PXI_Clk10\n\n  #load all macro values\n  for fun in ni_macros:\n    f = getattr(comedi_h, fun)\n    name_dict.update({\n      '{}({})'.format(fun,i):f(i) for i in range(1 + f(-1) - f(0))\n    })\n\n  #load everything else in ni_common_signal_names enum\n  name_dict.update({\n    k:v for k,v in comedi_h.__dict__.items()\n    if k.startswith('NI_') and (not callable(v)) and\n       comedi_h.NI_COUNTER_NAMES_MAX < v < (comedi_h.NI_NAMES_BASE + comedi_h.NI_NUM_NAMES)\n  })\n\n  # now create reverse lookup (value -> name)\n\n  val_dict = {v:k for k,v in name_dict.items()}\n\n  return name_dict, val_dict\n\nname_to_value, value_to_name = get_ni_names()\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

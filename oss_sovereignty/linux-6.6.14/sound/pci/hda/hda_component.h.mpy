@@ -1,0 +1,9 @@
+{
+  "module_name": "hda_component.h",
+  "hash_id": "e0850e04f034c6b45b4dd51b8c635e490900ae34213569d9bad8e836ff0033de",
+  "original_prompt": "Ingested from linux-6.6.14/sound/pci/hda/hda_component.h",
+  "human_readable_source": " \n \n\n#include <linux/component.h>\n\n#define HDA_MAX_COMPONENTS\t4\n#define HDA_MAX_NAME_SIZE\t50\n\nstruct hda_component {\n\tstruct device *dev;\n\tchar name[HDA_MAX_NAME_SIZE];\n\tstruct hda_codec *codec;\n\tvoid (*pre_playback_hook)(struct device *dev, int action);\n\tvoid (*playback_hook)(struct device *dev, int action);\n\tvoid (*post_playback_hook)(struct device *dev, int action);\n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

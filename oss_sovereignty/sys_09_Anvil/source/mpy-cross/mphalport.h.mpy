@@ -1,0 +1,9 @@
+{
+  "module_name": "mphalport.h",
+  "hash_id": "220d5d72e3e4416518ea47318eb7e006cc1aa9fcd02baaf62d0d757945eb79af",
+  "original_prompt": "Ingested from sys_09_Anvil/source/mpy-cross/mphalport.h",
+  "human_readable_source": "\n#define mp_hal_pin_obj_t\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

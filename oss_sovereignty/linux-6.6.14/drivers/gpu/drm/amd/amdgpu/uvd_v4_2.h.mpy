@@ -1,0 +1,9 @@
+{
+  "module_name": "uvd_v4_2.h",
+  "hash_id": "b91dd3281514dba14556ab9a39fd7c884a976eaa5c50a2fae8b601ced7cbceb3",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/amdgpu/uvd_v4_2.h",
+  "human_readable_source": " \n\n#ifndef __UVD_V4_2_H__\n#define __UVD_V4_2_H__\n\nextern const struct amdgpu_ip_block_version uvd_v4_2_ip_block;\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

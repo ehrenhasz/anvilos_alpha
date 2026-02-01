@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "a92d4a4217c385cadf93f7a35867267f449b058438f08f013293c6ce274f749a",
+  "original_prompt": "Ingested from linux-6.6.14/tools/virtio/virtio-trace/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nCC = gcc\nCFLAGS = -O2 -Wall -pthread\n\nall: trace-agent\n\n.c.o:\n\t$(CC) $(CFLAGS) -c $^ -o $@\n\ntrace-agent: trace-agent.o trace-agent-ctl.o trace-agent-rw.o\n\t$(CC) $(CFLAGS) -o $@ $^\n\nclean:\n\trm -f *.o trace-agent\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

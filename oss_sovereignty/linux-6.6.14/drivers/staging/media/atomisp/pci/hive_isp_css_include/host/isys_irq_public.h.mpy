@@ -1,0 +1,9 @@
+{
+  "module_name": "isys_irq_public.h",
+  "hash_id": "db0866d84e229606c5d511432e23434eac0e03088e10202ac0edf1f237fc09c5",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/hive_isp_css_include/host/isys_irq_public.h",
+  "human_readable_source": " \n \n\n#ifndef __ISYS_IRQ_PUBLIC_H__\n#define __ISYS_IRQ_PUBLIC_H__\n\n#include \"isys_irq_global.h\"\n#include \"isys_irq_local.h\"\n\n#if defined(ISP2401)\n\nvoid isys_irqc_state_get(const isys_irq_ID_t\tisys_irqc_id,\n\t\t\t isys_irqc_state_t\t*state);\n\nvoid isys_irqc_state_dump(const isys_irq_ID_t\tisys_irqc_id,\n\t\t\t  const isys_irqc_state_t *state);\n\nvoid isys_irqc_reg_store(const isys_irq_ID_t\tisys_irqc_id,\n\t\t\t const unsigned int\treg_idx,\n\t\t\t const hrt_data\t\tvalue);\n\nhrt_data isys_irqc_reg_load(const isys_irq_ID_t\tisys_irqc_id,\n\t\t\t    const unsigned int\treg_idx);\n\nvoid isys_irqc_status_enable(const isys_irq_ID_t isys_irqc_id);\n\n#endif  \n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

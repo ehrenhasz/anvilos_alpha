@@ -1,0 +1,9 @@
+{
+  "module_name": "test_core_reloc_bitfields_direct.c",
+  "hash_id": "b11f35d25d147796425a6c9a2ea7ab899f7518e38e461cf8537b20b24364861f",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/test_core_reloc_bitfields_direct.c",
+  "human_readable_source": "\n\n\n#include <linux/bpf.h>\n#include <stdint.h>\n#include <bpf/bpf_helpers.h>\n#include <bpf/bpf_core_read.h>\n\nchar _license[] SEC(\"license\") = \"GPL\";\n\nstruct {\n\tchar in[256];\n\tchar out[256];\n} data = {};\n\nstruct core_reloc_bitfields {\n\t \n\tuint8_t\t\tub1: 1;\n\tuint8_t\t\tub2: 2;\n\tuint32_t\tub7: 7;\n\t \n\tint8_t\t\tsb4: 4;\n\tint32_t\t\tsb20: 20;\n\t \n\tuint32_t\tu32;\n\tint32_t\t\ts32;\n};\n\n \nstruct core_reloc_bitfields_output {\n\tint64_t\t\tub1;\n\tint64_t\t\tub2;\n\tint64_t\t\tub7;\n\tint64_t\t\tsb4;\n\tint64_t\t\tsb20;\n\tint64_t\t\tu32;\n\tint64_t\t\ts32;\n};\n\nstruct pt_regs;\n\nstruct trace_sys_enter {\n\tstruct pt_regs *regs;\n\tlong id;\n};\n\nSEC(\"tp_btf/sys_enter\")\nint test_core_bitfields_direct(void *ctx)\n{\n\tstruct core_reloc_bitfields *in = (void *)&data.in;\n\tstruct core_reloc_bitfields_output *out = (void *)&data.out;\n\n\tout->ub1 = BPF_CORE_READ_BITFIELD(in, ub1);\n\tout->ub2 = BPF_CORE_READ_BITFIELD(in, ub2);\n\tout->ub7 = BPF_CORE_READ_BITFIELD(in, ub7);\n\tout->sb4 = BPF_CORE_READ_BITFIELD(in, sb4);\n\tout->sb20 = BPF_CORE_READ_BITFIELD(in, sb20);\n\tout->u32 = BPF_CORE_READ_BITFIELD(in, u32);\n\tout->s32 = BPF_CORE_READ_BITFIELD(in, s32);\n\n\treturn 0;\n}\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "e0bd8d8b37756b6e98185d6ed4d47c4e0e1e454468da106be998ef8b95327715",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/fungible/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause)\n#\n# Makefile for the Fungible network device drivers.\n#\n\nobj-$(CONFIG_FUN_CORE) += funcore/\nobj-$(CONFIG_FUN_ETH) += funeth/\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

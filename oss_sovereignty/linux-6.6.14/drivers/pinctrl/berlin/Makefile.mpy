@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "2a05368f3e2fc845aa55adad445e0e3dbfacce67c42b1fd285473e13b4b36f37",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/pinctrl/berlin/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-y\t\t\t\t\t+= berlin.o\nobj-$(CONFIG_PINCTRL_BERLIN_BG2)\t+= berlin-bg2.o\nobj-$(CONFIG_PINCTRL_BERLIN_BG2CD)\t+= berlin-bg2cd.o\nobj-$(CONFIG_PINCTRL_BERLIN_BG2Q)\t+= berlin-bg2q.o\nobj-$(CONFIG_PINCTRL_BERLIN_BG4CT)\t+= berlin-bg4ct.o\nobj-$(CONFIG_PINCTRL_AS370)\t\t+= pinctrl-as370.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

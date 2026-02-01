@@ -1,0 +1,9 @@
+{
+  "module_name": "vsc7514_regs.h",
+  "hash_id": "6e755f7d3092fec7fff76d33dd0cc368f5ce00a0540f33d00f3bbaac9b9c43fd",
+  "original_prompt": "Ingested from linux-6.6.14/include/soc/mscc/vsc7514_regs.h",
+  "human_readable_source": " \n \n\n#ifndef VSC7514_REGS_H\n#define VSC7514_REGS_H\n\n#include <soc/mscc/ocelot_vcap.h>\n\nextern struct vcap_props vsc7514_vcap_props[];\n\nextern const struct reg_field vsc7514_regfields[REGFIELD_MAX];\n\nextern const u32 *vsc7514_regmap[TARGET_MAX];\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

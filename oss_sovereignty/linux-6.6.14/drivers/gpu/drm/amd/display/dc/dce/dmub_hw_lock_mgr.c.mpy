@@ -1,0 +1,9 @@
+{
+  "module_name": "dmub_hw_lock_mgr.c",
+  "hash_id": "fcd71ba699586039d18963e51656638b42dd4ebd864bbf7b2de3bb6ca9aeb5c3",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/dc/dce/dmub_hw_lock_mgr.c",
+  "human_readable_source": " \n\n#include \"dmub_hw_lock_mgr.h\"\n#include \"dc_dmub_srv.h\"\n#include \"dc_types.h\"\n#include \"core_types.h\"\n\nvoid dmub_hw_lock_mgr_cmd(struct dc_dmub_srv *dmub_srv,\n\t\t\t\tbool lock,\n\t\t\t\tunion dmub_hw_lock_flags *hw_locks,\n\t\t\t\tstruct dmub_hw_lock_inst_flags *inst_flags)\n{\n\tunion dmub_rb_cmd cmd;\n\n\tmemset(&cmd, 0, sizeof(cmd));\n\tcmd.lock_hw.header.type = DMUB_CMD__HW_LOCK;\n\tcmd.lock_hw.header.sub_type = 0;\n\tcmd.lock_hw.header.payload_bytes = sizeof(struct dmub_cmd_lock_hw_data);\n\tcmd.lock_hw.lock_hw_data.client = HW_LOCK_CLIENT_DRIVER;\n\tcmd.lock_hw.lock_hw_data.lock = lock;\n\tcmd.lock_hw.lock_hw_data.hw_locks.u8All = hw_locks->u8All;\n\tmemcpy(&cmd.lock_hw.lock_hw_data.inst_flags, inst_flags, sizeof(struct dmub_hw_lock_inst_flags));\n\n\tif (!lock)\n\t\tcmd.lock_hw.lock_hw_data.should_release = 1;\n\n\tdm_execute_dmub_cmd(dmub_srv->ctx, &cmd, DM_DMUB_WAIT_TYPE_WAIT);\n}\n\nvoid dmub_hw_lock_mgr_inbox0_cmd(struct dc_dmub_srv *dmub_srv,\n\t\tunion dmub_inbox0_cmd_lock_hw hw_lock_cmd)\n{\n\tunion dmub_inbox0_data_register data = { 0 };\n\n\tdata.inbox0_cmd_lock_hw = hw_lock_cmd;\n\tdc_dmub_srv_clear_inbox0_ack(dmub_srv);\n\tdc_dmub_srv_send_inbox0_cmd(dmub_srv, data);\n\tdc_dmub_srv_wait_for_inbox0_ack(dmub_srv);\n}\n\nbool should_use_dmub_lock(struct dc_link *link)\n{\n\tif (link->psr_settings.psr_version == DC_PSR_VERSION_SU_1)\n\t\treturn true;\n\treturn false;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

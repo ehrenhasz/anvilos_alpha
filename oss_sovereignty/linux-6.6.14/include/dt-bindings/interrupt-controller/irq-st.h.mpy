@@ -1,0 +1,9 @@
+{
+  "module_name": "irq-st.h",
+  "hash_id": "01a95438bbfa47723951c2aa6b0403461742f73daf955b0d287ad02698964edd",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/interrupt-controller/irq-st.h",
+  "human_readable_source": " \n \n\n#ifndef _DT_BINDINGS_INTERRUPT_CONTROLLER_ST_H\n#define _DT_BINDINGS_INTERRUPT_CONTROLLER_ST_H\n\n#define ST_IRQ_SYSCFG_EXT_0\t\t0\n#define ST_IRQ_SYSCFG_EXT_1\t\t1\n#define ST_IRQ_SYSCFG_EXT_2\t\t2\n#define ST_IRQ_SYSCFG_CTI_0\t\t3\n#define ST_IRQ_SYSCFG_CTI_1\t\t4\n#define ST_IRQ_SYSCFG_PMU_0\t\t5\n#define ST_IRQ_SYSCFG_PMU_1\t\t6\n#define ST_IRQ_SYSCFG_pl310_L2\t\t7\n#define ST_IRQ_SYSCFG_DISABLED\t\t0xFFFFFFFF\n\n#define ST_IRQ_SYSCFG_EXT_1_INV\t\t0x1\n#define ST_IRQ_SYSCFG_EXT_2_INV\t\t0x2\n#define ST_IRQ_SYSCFG_EXT_3_INV\t\t0x4\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

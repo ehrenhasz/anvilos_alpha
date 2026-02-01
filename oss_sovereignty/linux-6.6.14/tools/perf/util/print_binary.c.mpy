@@ -1,0 +1,9 @@
+{
+  "module_name": "print_binary.c",
+  "hash_id": "9c278e9146b73f63438c832626000508159fec6dfb8fff9565802995f5b80712",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/util/print_binary.c",
+  "human_readable_source": "\n#include \"print_binary.h\"\n#include <linux/log2.h>\n#include <linux/ctype.h>\n\nint binary__fprintf(unsigned char *data, size_t len,\n\t\t    size_t bytes_per_line, binary__fprintf_t printer,\n\t\t    void *extra, FILE *fp)\n{\n\tsize_t i, j, mask;\n\tint printed = 0;\n\n\tif (!printer)\n\t\treturn 0;\n\n\tbytes_per_line = roundup_pow_of_two(bytes_per_line);\n\tmask = bytes_per_line - 1;\n\n\tprinted += printer(BINARY_PRINT_DATA_BEGIN, 0, extra, fp);\n\tfor (i = 0; i < len; i++) {\n\t\tif ((i & mask) == 0) {\n\t\t\tprinted += printer(BINARY_PRINT_LINE_BEGIN, -1, extra, fp);\n\t\t\tprinted += printer(BINARY_PRINT_ADDR, i, extra, fp);\n\t\t}\n\n\t\tprinted += printer(BINARY_PRINT_NUM_DATA, data[i], extra, fp);\n\n\t\tif (((i & mask) == mask) || i == len - 1) {\n\t\t\tfor (j = 0; j < mask-(i & mask); j++)\n\t\t\t\tprinted += printer(BINARY_PRINT_NUM_PAD, -1, extra, fp);\n\n\t\t\tprinter(BINARY_PRINT_SEP, i, extra, fp);\n\t\t\tfor (j = i & ~mask; j <= i; j++)\n\t\t\t\tprinted += printer(BINARY_PRINT_CHAR_DATA, data[j], extra, fp);\n\t\t\tfor (j = 0; j < mask-(i & mask); j++)\n\t\t\t\tprinted += printer(BINARY_PRINT_CHAR_PAD, i, extra, fp);\n\t\t\tprinted += printer(BINARY_PRINT_LINE_END, -1, extra, fp);\n\t\t}\n\t}\n\tprinted += printer(BINARY_PRINT_DATA_END, -1, extra, fp);\n\treturn printed;\n}\n\nint is_printable_array(char *p, unsigned int len)\n{\n\tunsigned int i;\n\n\tif (!p || !len || p[len - 1] != 0)\n\t\treturn 0;\n\n\tlen--;\n\n\tfor (i = 0; i < len && p[i]; i++) {\n\t\tif (!isprint(p[i]) && !isspace(p[i]))\n\t\t\treturn 0;\n\t}\n\treturn 1;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

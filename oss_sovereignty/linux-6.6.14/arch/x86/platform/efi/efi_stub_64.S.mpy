@@ -1,0 +1,9 @@
+{
+  "module_name": "efi_stub_64.S",
+  "hash_id": "052252243f4402d7f1fa42927f2bdcee78d759108aa402976e6d88a11289c76c",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/platform/efi/efi_stub_64.S",
+  "human_readable_source": " \n \n\n#include <linux/linkage.h>\n#include <asm/nospec-branch.h>\n\nSYM_FUNC_START(__efi_call)\n\tpushq %rbp\n\tmovq %rsp, %rbp\n\tand $~0xf, %rsp\n\tmov 16(%rbp), %rax\n\tsubq $48, %rsp\n\tmov %r9, 32(%rsp)\n\tmov %rax, 40(%rsp)\n\tmov %r8, %r9\n\tmov %rcx, %r8\n\tmov %rsi, %rcx\n\tCALL_NOSPEC rdi\n\tleave\n\tRET\nSYM_FUNC_END(__efi_call)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

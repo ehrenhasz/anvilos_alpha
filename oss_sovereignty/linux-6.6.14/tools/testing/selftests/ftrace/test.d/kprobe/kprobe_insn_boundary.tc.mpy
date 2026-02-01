@@ -1,0 +1,9 @@
+{
+  "module_name": "kprobe_insn_boundary.tc",
+  "hash_id": "bef54a5d6296a95a7cbc1f46298fb09a9212a1af3c8e001c1dcb6e81c65d5e43",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/ftrace/test.d/kprobe/kprobe_insn_boundary.tc",
+  "human_readable_source": "#!/bin/sh\n# SPDX-License-Identifier: GPL-2.0-or-later\n# Copyright (C) 2023 Akanksha J N, IBM corporation\n# description: Register multiple kprobe events in a function\n# requires: kprobe_events\n\nfor i in `seq 0 255`; do\n  echo p $FUNCTION_FORK+${i} >> kprobe_events || continue\ndone\n\ncat kprobe_events >> $testlog\n\necho 1 > events/kprobes/enable\n( echo \"forked\" )\necho 0 > events/kprobes/enable\necho > kprobe_events\necho \"Waiting for unoptimizing & freeing\"\nsleep 5\necho \"Done\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

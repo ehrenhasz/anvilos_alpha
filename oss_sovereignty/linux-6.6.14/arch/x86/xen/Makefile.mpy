@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "bdaeb51ae224ada90acd57676c9ea2e08d85f8d3ff4733ce445242d510843c2e",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/xen/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n\nifdef CONFIG_FUNCTION_TRACER\n# Do not profile debug and lowlevel utilities\nCFLAGS_REMOVE_spinlock.o = -pg\nCFLAGS_REMOVE_time.o = -pg\nCFLAGS_REMOVE_irq.o = -pg\nendif\n\n# Make sure early boot has no stackprotector\nCFLAGS_enlighten_pv.o\t\t:= -fno-stack-protector\nCFLAGS_mmu_pv.o\t\t\t:= -fno-stack-protector\n\nobj-y\t\t\t\t+= enlighten.o\nobj-y\t\t\t\t+= mmu.o\nobj-y\t\t\t\t+= time.o\nobj-y\t\t\t\t+= grant-table.o\nobj-y\t\t\t\t+= suspend.o\n\nobj-$(CONFIG_XEN_PVHVM)\t\t+= enlighten_hvm.o\nobj-$(CONFIG_XEN_PVHVM)\t\t+= mmu_hvm.o\nobj-$(CONFIG_XEN_PVHVM)\t\t+= suspend_hvm.o\nobj-$(CONFIG_XEN_PVHVM)\t\t+= platform-pci-unplug.o\n\nobj-$(CONFIG_XEN_PV)\t\t+= setup.o\nobj-$(CONFIG_XEN_PV)\t\t+= apic.o\nobj-$(CONFIG_XEN_PV)\t\t+= pmu.o\nobj-$(CONFIG_XEN_PV)\t\t+= suspend_pv.o\nobj-$(CONFIG_XEN_PV)\t\t+= p2m.o\nobj-$(CONFIG_XEN_PV)\t\t+= enlighten_pv.o\nobj-$(CONFIG_XEN_PV)\t\t+= mmu_pv.o\nobj-$(CONFIG_XEN_PV)\t\t+= irq.o\nobj-$(CONFIG_XEN_PV)\t\t+= multicalls.o\nobj-$(CONFIG_XEN_PV)\t\t+= xen-asm.o\n\nobj-$(CONFIG_XEN_PVH)\t\t+= enlighten_pvh.o\n\nobj-$(CONFIG_EVENT_TRACING)\t+= trace.o\n\nobj-$(CONFIG_SMP)\t\t+= smp.o\nobj-$(CONFIG_XEN_PV_SMP)  \t+= smp_pv.o\nobj-$(CONFIG_XEN_PVHVM_SMP)  \t+= smp_hvm.o\n\nobj-$(CONFIG_PARAVIRT_SPINLOCKS)+= spinlock.o\n\nobj-$(CONFIG_XEN_DEBUG_FS)\t+= debugfs.o\n\nobj-$(CONFIG_XEN_DOM0)\t\t+= vga.o\n\nobj-$(CONFIG_XEN_EFI)\t\t+= efi.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

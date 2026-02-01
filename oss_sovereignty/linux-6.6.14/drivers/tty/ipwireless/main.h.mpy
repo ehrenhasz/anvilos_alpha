@@ -1,0 +1,9 @@
+{
+  "module_name": "main.h",
+  "hash_id": "97dda1561d670760e2208ef9504a757ea5d91b6b6467ffd830cbc90ba0a435d0",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/tty/ipwireless/main.h",
+  "human_readable_source": " \n \n\n#ifndef _IPWIRELESS_CS_H_\n#define _IPWIRELESS_CS_H_\n\n#include <linux/sched.h>\n#include <linux/types.h>\n\n#include <pcmcia/cistpl.h>\n#include <pcmcia/ds.h>\n\n#include \"hardware.h\"\n\n#define IPWIRELESS_PCCARD_NAME\t\t\"ipwireless\"\n#define IPWIRELESS_PCMCIA_VERSION\t\"1.1\"\n#define IPWIRELESS_PCMCIA_AUTHOR        \\\n\t\"Stephen Blackheath, Ben Martel, Jiri Kosina and David Sterba\"\n\n#define IPWIRELESS_TX_QUEUE_SIZE  262144\n#define IPWIRELESS_RX_QUEUE_SIZE  262144\n\n#define IPWIRELESS_STATE_DEBUG\n\nstruct ipw_hardware;\nstruct ipw_network;\nstruct ipw_tty;\n\nstruct ipw_dev {\n\tstruct pcmcia_device *link;\n\tint is_v2_card;\n\n\tvoid __iomem *attr_memory;\n\n\tvoid __iomem *common_memory;\n\n\t \n\tvoid *attribute_memory;\n\n\t \n\tstruct ipw_hardware *hardware;\n\t \n\tstruct ipw_network *network;\n\t \n\tstruct ipw_tty *tty;\n\tstruct work_struct work_reboot;\n};\n\n \nextern int ipwireless_debug;\nextern int ipwireless_loopback;\nextern int ipwireless_out_queue;\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

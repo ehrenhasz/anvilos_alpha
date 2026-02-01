@@ -1,0 +1,9 @@
+{
+  "module_name": "openat2.h",
+  "hash_id": "7fd069d61d6b8c2bfb69ab15b04aef7db0e69fb5aef80272bc6eccd2e3146f94",
+  "original_prompt": "Ingested from linux-6.6.14/tools/include/uapi/linux/openat2.h",
+  "human_readable_source": " \n#ifndef _UAPI_LINUX_OPENAT2_H\n#define _UAPI_LINUX_OPENAT2_H\n\n#include <linux/types.h>\n\n \nstruct open_how {\n\t__u64 flags;\n\t__u64 mode;\n\t__u64 resolve;\n};\n\n \n#define RESOLVE_NO_XDEV\t\t0x01  \n#define RESOLVE_NO_MAGICLINKS\t0x02  \n#define RESOLVE_NO_SYMLINKS\t0x04  \n#define RESOLVE_BENEATH\t\t0x08  \n#define RESOLVE_IN_ROOT\t\t0x10  \n#define RESOLVE_CACHED\t\t0x20  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

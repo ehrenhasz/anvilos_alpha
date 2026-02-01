@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "e4e8ec065ab19c9a6a0da131ed14d99ad87ec38994e522b4230d45b5b6faf5af",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/soc/sunxi/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Allwinner sunXi SoC drivers\n#\n\nconfig SUNXI_MBUS\n\tbool\n\tdefault ARCH_SUNXI\n\tdepends on ARM || ARM64\n\thelp\n\t  Say y to enable the fixups needed to support the Allwinner\n\t  MBUS DMA quirks.\n\nconfig SUNXI_SRAM\n\tbool\n\tdefault ARCH_SUNXI\n\tselect REGMAP_MMIO\n\thelp\n\t  Say y here to enable the SRAM controller support. This\n\t  device is responsible on mapping the SRAM in the sunXi SoCs\n\t  whether to the CPU/DMA, or to the devices.\n\nconfig SUN20I_PPU\n\tbool \"Allwinner D1 PPU power domain driver\"\n\tdepends on ARCH_SUNXI || COMPILE_TEST\n\tdepends on PM\n\tselect PM_GENERIC_DOMAINS\n\thelp\n\t  Say y to enable the PPU power domain driver. This saves power\n\t  when certain peripherals, such as the video engine, are idle.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

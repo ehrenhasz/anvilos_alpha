@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "cf43144e971d065d29f7d22d893c2a1a996a0995d9e6b9269b059ffe7fc71998",
+  "original_prompt": "Ingested from linux-6.6.14/sound/usb/hiface/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nsnd-usb-hiface-objs := chip.o pcm.o\nobj-$(CONFIG_SND_USB_HIFACE) += snd-usb-hiface.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

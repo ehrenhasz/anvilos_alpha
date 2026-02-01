@@ -1,0 +1,9 @@
+{
+  "module_name": "mdev.h",
+  "hash_id": "25444570c9fd576d744d5e79158bf63f97b68752c192b071f924582e448ae887",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/mdev.h",
+  "human_readable_source": " \n \n\n#ifndef MDEV_H\n#define MDEV_H\n\n#include <linux/device.h>\n#include <linux/uuid.h>\n\nstruct mdev_type;\n\nstruct mdev_device {\n\tstruct device dev;\n\tguid_t uuid;\n\tstruct list_head next;\n\tstruct mdev_type *type;\n\tbool active;\n};\n\nstruct mdev_type {\n\t \n\tconst char *sysfs_name;\n\tconst char *pretty_name;\n\n\t \n\tstruct mdev_parent *parent;\n\n\t \n\tstruct kobject kobj;\n\tstruct kobject *devices_kobj;\n};\n\n \nstruct mdev_parent {\n\tstruct device *dev;\n\tstruct mdev_driver *mdev_driver;\n\tstruct kset *mdev_types_kset;\n\t \n\tstruct rw_semaphore unreg_sem;\n\tstruct mdev_type **types;\n\tunsigned int nr_types;\n\tatomic_t available_instances;\n};\n\nstatic inline struct mdev_device *to_mdev_device(struct device *dev)\n{\n\treturn container_of(dev, struct mdev_device, dev);\n}\n\n \nstruct mdev_driver {\n\tconst char *device_api;\n\tunsigned int max_instances;\n\tint (*probe)(struct mdev_device *dev);\n\tvoid (*remove)(struct mdev_device *dev);\n\tunsigned int (*get_available)(struct mdev_type *mtype);\n\tssize_t (*show_description)(struct mdev_type *mtype, char *buf);\n\tstruct device_driver driver;\n};\n\nint mdev_register_parent(struct mdev_parent *parent, struct device *dev,\n\t\tstruct mdev_driver *mdev_driver, struct mdev_type **types,\n\t\tunsigned int nr_types);\nvoid mdev_unregister_parent(struct mdev_parent *parent);\n\nint mdev_register_driver(struct mdev_driver *drv);\nvoid mdev_unregister_driver(struct mdev_driver *drv);\n\nstatic inline struct device *mdev_dev(struct mdev_device *mdev)\n{\n\treturn &mdev->dev;\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

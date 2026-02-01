@@ -1,0 +1,9 @@
+{
+  "module_name": ".gitignore",
+  "hash_id": "db81543b04f1e4541959107173e4ac951a1dabc542a7c136c59e9b15ff89ffd0",
+  "original_prompt": "Ingested from linux-6.6.14/tools/bpf/bpftool/.gitignore",
+  "human_readable_source": "# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)\n*.d\n/bootstrap/\n/bpftool\nbpftool*.8\nFEATURE-DUMP.bpftool\nfeature\nlibbpf\n/*.skel.h\n/vmlinux.h\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

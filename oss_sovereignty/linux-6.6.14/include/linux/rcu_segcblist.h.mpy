@@ -1,0 +1,9 @@
+{
+  "module_name": "rcu_segcblist.h",
+  "hash_id": "1132a15fcd561d73c6bf12fcd820a58ded3687d1be114751edf743e487a04748",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/rcu_segcblist.h",
+  "human_readable_source": " \n \n\n#ifndef __INCLUDE_LINUX_RCU_SEGCBLIST_H\n#define __INCLUDE_LINUX_RCU_SEGCBLIST_H\n\n#include <linux/types.h>\n#include <linux/atomic.h>\n\n \nstruct rcu_cblist {\n\tstruct rcu_head *head;\n\tstruct rcu_head **tail;\n\tlong len;\n};\n\n#define RCU_CBLIST_INITIALIZER(n) { .head = NULL, .tail = &n.head }\n\n \n\n \n#define RCU_DONE_TAIL\t\t0\t \n#define RCU_WAIT_TAIL\t\t1\t \n#define RCU_NEXT_READY_TAIL\t2\t \n#define RCU_NEXT_TAIL\t\t3\n#define RCU_CBLIST_NSEGS\t4\n\n\n \n\n\n\n \n#define SEGCBLIST_ENABLED\tBIT(0)\n#define SEGCBLIST_RCU_CORE\tBIT(1)\n#define SEGCBLIST_LOCKING\tBIT(2)\n#define SEGCBLIST_KTHREAD_CB\tBIT(3)\n#define SEGCBLIST_KTHREAD_GP\tBIT(4)\n#define SEGCBLIST_OFFLOADED\tBIT(5)\n\nstruct rcu_segcblist {\n\tstruct rcu_head *head;\n\tstruct rcu_head **tails[RCU_CBLIST_NSEGS];\n\tunsigned long gp_seq[RCU_CBLIST_NSEGS];\n#ifdef CONFIG_RCU_NOCB_CPU\n\tatomic_long_t len;\n#else\n\tlong len;\n#endif\n\tlong seglen[RCU_CBLIST_NSEGS];\n\tu8 flags;\n};\n\n#define RCU_SEGCBLIST_INITIALIZER(n) \\\n{ \\\n\t.head = NULL, \\\n\t.tails[RCU_DONE_TAIL] = &n.head, \\\n\t.tails[RCU_WAIT_TAIL] = &n.head, \\\n\t.tails[RCU_NEXT_READY_TAIL] = &n.head, \\\n\t.tails[RCU_NEXT_TAIL] = &n.head, \\\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

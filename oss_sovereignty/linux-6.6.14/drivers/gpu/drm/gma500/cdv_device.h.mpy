@@ -1,0 +1,9 @@
+{
+  "module_name": "cdv_device.h",
+  "hash_id": "c8b671057f13e6c7c12a4cbe0ca4fa0f4e59f59044a558b0f945c90a8e5b0033",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/gma500/cdv_device.h",
+  "human_readable_source": " \n \n\nstruct drm_crtc;\nstruct drm_device;\nstruct psb_intel_mode_device;\n\nextern const struct drm_crtc_helper_funcs cdv_intel_helper_funcs;\nextern const struct gma_clock_funcs cdv_clock_funcs;\nextern void cdv_intel_crt_init(struct drm_device *dev,\n\t\t\tstruct psb_intel_mode_device *mode_dev);\nextern void cdv_intel_lvds_init(struct drm_device *dev,\n\t\t\tstruct psb_intel_mode_device *mode_dev);\nextern void cdv_hdmi_init(struct drm_device *dev, struct psb_intel_mode_device *mode_dev,\n\t\t\tint reg);\nextern struct drm_display_mode *cdv_intel_crtc_mode_get(struct drm_device *dev,\n\t\t\t\t\t     struct drm_crtc *crtc);\nextern void cdv_update_wm(struct drm_device *dev, struct drm_crtc *crtc);\nextern void cdv_disable_sr(struct drm_device *dev);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

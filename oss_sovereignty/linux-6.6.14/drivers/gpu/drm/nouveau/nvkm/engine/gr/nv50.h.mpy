@@ -1,0 +1,9 @@
+{
+  "module_name": "nv50.h",
+  "hash_id": "dc835f3b1fc3111c37cb2b56fa6ced3a083130d9b7506bafde53609357530bfa",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/engine/gr/nv50.h",
+  "human_readable_source": " \n#ifndef __NV50_GR_H__\n#define __NV50_GR_H__\n#define nv50_gr(p) container_of((p), struct nv50_gr, base)\n#include \"priv.h\"\n\nstruct nv50_gr {\n\tstruct nvkm_gr base;\n\tconst struct nv50_gr_func *func;\n\tspinlock_t lock;\n\tu32 size;\n};\n\nint nv50_gr_new_(const struct nvkm_gr_func *, struct nvkm_device *, enum nvkm_subdev_type, int,\n\t\t struct nvkm_gr **);\nint nv50_gr_init(struct nvkm_gr *);\nvoid nv50_gr_intr(struct nvkm_gr *);\nu64 nv50_gr_units(struct nvkm_gr *);\n\nint g84_gr_tlb_flush(struct nvkm_gr *);\n\n#define nv50_gr_chan(p) container_of((p), struct nv50_gr_chan, object)\n#include <core/object.h>\n\nstruct nv50_gr_chan {\n\tstruct nvkm_object object;\n\tstruct nv50_gr *gr;\n};\n\nint nv50_gr_chan_new(struct nvkm_gr *, struct nvkm_chan *,\n\t\t     const struct nvkm_oclass *, struct nvkm_object **);\n\nextern const struct nvkm_object_func nv50_gr_object;\n\nint  nv50_grctx_init(struct nvkm_device *, u32 *size);\nvoid nv50_grctx_fill(struct nvkm_device *, struct nvkm_gpuobj *);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

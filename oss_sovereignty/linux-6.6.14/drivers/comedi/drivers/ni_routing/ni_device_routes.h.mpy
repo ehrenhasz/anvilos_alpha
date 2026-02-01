@@ -1,0 +1,9 @@
+{
+  "module_name": "ni_device_routes.h",
+  "hash_id": "6bf5a4c9c9566735b53eba74b6c393a2921b48d9b4f30124d94d87ba61ed1017",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/comedi/drivers/ni_routing/ni_device_routes.h",
+  "human_readable_source": " \n \n\n \n\n#ifndef _COMEDI_DRIVERS_NI_ROUTINT_NI_DEVICE_ROUTES_H\n#define _COMEDI_DRIVERS_NI_ROUTINT_NI_DEVICE_ROUTES_H\n\n#include \"../ni_routes.h\"\n\nextern struct ni_device_routes *const ni_device_routes_list[];\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

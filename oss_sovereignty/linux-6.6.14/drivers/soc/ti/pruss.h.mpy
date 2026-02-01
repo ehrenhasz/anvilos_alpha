@@ -1,0 +1,9 @@
+{
+  "module_name": "pruss.h",
+  "hash_id": "87f395703c26486c7cfdbc689fd44965b5c201880a8fdf384cc2994dea874712",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/soc/ti/pruss.h",
+  "human_readable_source": " \n \n\n#ifndef _SOC_TI_PRUSS_H_\n#define _SOC_TI_PRUSS_H_\n\n#include <linux/bits.h>\n#include <linux/regmap.h>\n\n \n#define PRUSS_CFG_REVID         0x00\n#define PRUSS_CFG_SYSCFG        0x04\n#define PRUSS_CFG_GPCFG(x)      (0x08 + (x) * 4)\n#define PRUSS_CFG_CGR           0x10\n#define PRUSS_CFG_ISRP          0x14\n#define PRUSS_CFG_ISP           0x18\n#define PRUSS_CFG_IESP          0x1C\n#define PRUSS_CFG_IECP          0x20\n#define PRUSS_CFG_SCRP          0x24\n#define PRUSS_CFG_PMAO          0x28\n#define PRUSS_CFG_MII_RT        0x2C\n#define PRUSS_CFG_IEPCLK        0x30\n#define PRUSS_CFG_SPP           0x34\n#define PRUSS_CFG_PIN_MX        0x40\n\n \n#define PRUSS_GPCFG_PRU_GPI_MODE_MASK           GENMASK(1, 0)\n#define PRUSS_GPCFG_PRU_GPI_MODE_SHIFT          0\n\n#define PRUSS_GPCFG_PRU_MUX_SEL_SHIFT           26\n#define PRUSS_GPCFG_PRU_MUX_SEL_MASK            GENMASK(29, 26)\n\n \n#define PRUSS_MII_RT_EVENT_EN                   BIT(0)\n\n \n#define PRUSS_SPP_XFER_SHIFT_EN                 BIT(1)\n#define PRUSS_SPP_PRU1_PAD_HP_EN                BIT(0)\n#define PRUSS_SPP_RTU_XFR_SHIFT_EN              BIT(3)\n\n \nstatic int pruss_cfg_read(struct pruss *pruss, unsigned int reg, unsigned int *val)\n{\n\tif (IS_ERR_OR_NULL(pruss))\n\t\treturn -EINVAL;\n\n\treturn regmap_read(pruss->cfg_regmap, reg, val);\n}\n\n \nstatic int pruss_cfg_update(struct pruss *pruss, unsigned int reg,\n\t\t\t    unsigned int mask, unsigned int val)\n{\n\tif (IS_ERR_OR_NULL(pruss))\n\t\treturn -EINVAL;\n\n\treturn regmap_update_bits(pruss->cfg_regmap, reg, mask, val);\n}\n\n#endif   \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

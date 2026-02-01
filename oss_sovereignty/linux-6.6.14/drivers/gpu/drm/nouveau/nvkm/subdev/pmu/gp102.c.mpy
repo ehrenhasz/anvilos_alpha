@@ -1,0 +1,9 @@
+{
+  "module_name": "gp102.c",
+  "hash_id": "34baba5bd1e6e23a712530cb8ae03c493287b64c7013bd0c47624c03955f5536",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/subdev/pmu/gp102.c",
+  "human_readable_source": " \n#include \"priv.h\"\n\nstatic const struct nvkm_falcon_func\ngp102_pmu_flcn = {\n\t.disable = gm200_flcn_disable,\n\t.enable = gm200_flcn_enable,\n\t.reset_eng = gp102_flcn_reset_eng,\n\t.reset_wait_mem_scrubbing = gm200_flcn_reset_wait_mem_scrubbing,\n\t.debug = 0xc08,\n\t.bind_inst = gm200_pmu_flcn_bind_inst,\n\t.bind_stat = gm200_flcn_bind_stat,\n\t.imem_pio = &gm200_flcn_imem_pio,\n\t.dmem_pio = &gm200_flcn_dmem_pio,\n\t.start = nvkm_falcon_v1_start,\n\t.cmdq = { 0x4a0, 0x4b0, 4 },\n\t.msgq = { 0x4c8, 0x4cc, 0 },\n};\n\nstatic const struct nvkm_pmu_func\ngp102_pmu = {\n\t.flcn = &gp102_pmu_flcn,\n};\n\nstatic const struct nvkm_pmu_fwif\ngp102_pmu_fwif[] = {\n\t{ -1, gm200_pmu_nofw, &gp102_pmu },\n\t{}\n};\n\nint\ngp102_pmu_new(struct nvkm_device *device, enum nvkm_subdev_type type, int inst,\n\t      struct nvkm_pmu **ppmu)\n{\n\treturn nvkm_pmu_new_(gp102_pmu_fwif, device, type, inst, ppmu);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

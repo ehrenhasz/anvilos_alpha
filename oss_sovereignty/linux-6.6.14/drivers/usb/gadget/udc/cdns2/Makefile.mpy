@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "340cee988a55fd49c599818a7c28b639d859112e64424beb72ea6e4af5f02329",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/usb/gadget/udc/cdns2/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n# define_trace.h needs to know how to find our header\nCFLAGS_cdns2-trace.o\t\t:= -I$(src)\n\nobj-$(CONFIG_USB_CDNS2_UDC)\t\t+= cdns2-udc-pci.o\ncdns2-udc-pci-$(CONFIG_USB_CDNS2_UDC)\t+= cdns2-pci.o cdns2-gadget.o cdns2-ep0.o\ncdns2-udc-pci-$(CONFIG_TRACING)\t+= cdns2-trace.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

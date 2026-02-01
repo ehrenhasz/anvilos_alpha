@@ -1,0 +1,9 @@
+{
+  "module_name": "time.m4",
+  "hash_id": "a0f9b23fcbf0d074ff2f4f6c48a91c481f8aa32eba214a2a57785a7c0012f39e",
+  "original_prompt": "Ingested from coreutils-9.4/m4/time.m4",
+  "human_readable_source": "# time.m4 serial 4\ndnl Copyright (C) 2023 Free Software Foundation, Inc.\ndnl This file is free software; the Free Software Foundation\ndnl gives unlimited permission to copy and/or distribute it,\ndnl with or without modifications, as long as this notice is preserved.\n\ndnl From Bruno Haible.\n\nAC_DEFUN([gl_FUNC_TIME],\n[\n  AC_REQUIRE([AC_CANONICAL_HOST])\n  dnl glibc has the bug https://sourceware.org/bugzilla/show_bug.cgi?id=30200 .\n  AC_CACHE_CHECK([whether time() works],\n    [gl_cv_func_time_works],\n    [dnl Guess that it works except on\n     dnl   - glibc >= 2.31 with Linux. And binaries produced on glibc < 2.31\n     dnl     need to run fine on newer glibc versions as well; therefore ignore\n     dnl     __GLIBC_MINOR__.\n     dnl   - AIX,\n     dnl   - native Windows.\n     case \"$host_os\" in\n       linux*-gnu*)\n         AC_EGREP_CPP([Unlucky], [\n           #include <features.h>\n           #ifdef __GNU_LIBRARY__\n            #if __GLIBC__ == 2\n             Unlucky GNU user\n            #endif\n           #endif\n           ],\n           [gl_cv_func_time_works=\"guessing no\"],\n           [gl_cv_func_time_works=\"guessing yes\"])\n         ;;\n       aix*)              gl_cv_func_time_works=\"guessing no\";;\n       mingw* | windows*) gl_cv_func_time_works=\"guessing no\";;\n       *)                 gl_cv_func_time_works=\"guessing yes\";;\n     esac\n    ])\n  case \"$gl_cv_func_time_works\" in\n    *no) REPLACE_TIME=1 ;;\n  esac\n])\n\n# Prerequisites of lib/time.c.\nAC_DEFUN([gl_PREREQ_TIME],\n[\n  :\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

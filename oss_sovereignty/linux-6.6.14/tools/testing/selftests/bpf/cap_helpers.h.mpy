@@ -1,0 +1,9 @@
+{
+  "module_name": "cap_helpers.h",
+  "hash_id": "592d6f67ea18ce41142ed643aba9c22752a92b4d67645fdd4e0cab9230f1d7de",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/cap_helpers.h",
+  "human_readable_source": " \n#ifndef __CAP_HELPERS_H\n#define __CAP_HELPERS_H\n\n#include <linux/types.h>\n#include <linux/capability.h>\n\n#ifndef CAP_PERFMON\n#define CAP_PERFMON\t\t38\n#endif\n\n#ifndef CAP_BPF\n#define CAP_BPF\t\t\t39\n#endif\n\nint cap_enable_effective(__u64 caps, __u64 *old_caps);\nint cap_disable_effective(__u64 caps, __u64 *old_caps);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

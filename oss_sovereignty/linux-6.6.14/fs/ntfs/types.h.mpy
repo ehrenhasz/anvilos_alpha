@@ -1,0 +1,9 @@
+{
+  "module_name": "types.h",
+  "hash_id": "236ab907cbda6a70e84f4de4c184998d6a4d51f30c59ab031519277d1fc1e8fc",
+  "original_prompt": "Ingested from linux-6.6.14/fs/ntfs/types.h",
+  "human_readable_source": " \n \n\n#ifndef _LINUX_NTFS_TYPES_H\n#define _LINUX_NTFS_TYPES_H\n\n#include <linux/types.h>\n\ntypedef __le16 le16;\ntypedef __le32 le32;\ntypedef __le64 le64;\ntypedef __u16 __bitwise sle16;\ntypedef __u32 __bitwise sle32;\ntypedef __u64 __bitwise sle64;\n\n \ntypedef le16 ntfschar;\n#define UCHAR_T_SIZE_BITS 1\n\n \ntypedef s64 VCN;\ntypedef sle64 leVCN;\ntypedef s64 LCN;\ntypedef sle64 leLCN;\n\n \ntypedef s64 LSN;\ntypedef sle64 leLSN;\n\n \ntypedef s64 USN;\ntypedef sle64 leUSN;\n\ntypedef enum {\n\tCASE_SENSITIVE = 0,\n\tIGNORE_CASE = 1,\n} IGNORE_CASE_BOOL;\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

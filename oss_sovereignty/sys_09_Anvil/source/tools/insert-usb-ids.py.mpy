@@ -1,0 +1,9 @@
+{
+  "module_name": "insert-usb-ids.py",
+  "hash_id": "56b334e6ec028d678a67495d9fcd3a62574f0708256722c1d0218a3f371793c5",
+  "original_prompt": "Ingested from sys_09_Anvil/source/tools/insert-usb-ids.py",
+  "human_readable_source": "# Reads the USB VID and PID from the file specified by sys.argv[1] and then\n# inserts those values into the template file specified by sys.argv[2],\n# printing the result to stdout\n\nfrom __future__ import print_function\n\nimport sys\nimport re\nimport string\n\nconfig_prefix = \"MICROPY_HW_USB_\"\nneeded_keys = (\"USB_PID_CDC_MSC\", \"USB_PID_CDC_HID\", \"USB_PID_CDC\", \"USB_VID\")\n\n\ndef parse_usb_ids(filename):\n    rv = dict()\n    for line in open(filename).readlines():\n        line = line.rstrip(\"\\r\\n\")\n        match = re.match(r\"^#define\\s+(\\w+)\\s+\\(0x([0-9A-Fa-f]+)\\)$\", line)\n        if match and match.group(1).startswith(config_prefix):\n            key = match.group(1).replace(config_prefix, \"USB_\")\n            val = match.group(2)\n            # print(\"key =\", key, \"val =\", val)\n            if key in needed_keys:\n                rv[key] = val\n    for k in needed_keys:\n        if k not in rv:\n            raise Exception(\"Unable to parse %s from %s\" % (k, filename))\n    return rv\n\n\nif __name__ == \"__main__\":\n    usb_ids_file = sys.argv[1]\n    template_file = sys.argv[2]\n    replacements = parse_usb_ids(usb_ids_file)\n    for line in open(template_file, \"r\").readlines():\n        print(string.Template(line).safe_substitute(replacements), end=\"\")\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "selinux-at.h",
+  "hash_id": "34b97e9c71ab3443461a78a2c836d5992e6204d8a92ebfa05769aaa10470592d",
+  "original_prompt": "Ingested from coreutils-9.4/lib/selinux-at.h",
+  "human_readable_source": " \n\n \nint  getfileconat (int dir_fd, char const *file, char **con);\n\n \nint lgetfileconat (int dir_fd, char const *file, char **con);\n\n \nint  setfileconat (int dir_fd, char const *file, char const *con);\n\n \n \nint lsetfileconat (int dir_fd, char const *file, char const *con);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

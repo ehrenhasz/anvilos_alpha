@@ -1,0 +1,9 @@
+{
+  "module_name": "i915_gem_userptr.h",
+  "hash_id": "f8db3dccd5b1d573daa563938aba25c65e0e5ce9920c556366554b46fc376df3",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/gem/i915_gem_userptr.h",
+  "human_readable_source": " \n \n\n#ifndef __I915_GEM_USERPTR_H__\n#define __I915_GEM_USERPTR_H__\n\nstruct drm_i915_private;\n\nint i915_gem_init_userptr(struct drm_i915_private *dev_priv);\nvoid i915_gem_cleanup_userptr(struct drm_i915_private *dev_priv);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

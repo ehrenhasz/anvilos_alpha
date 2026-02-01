@@ -1,0 +1,9 @@
+{
+  "module_name": "intel_sdvo.h",
+  "hash_id": "5f66678d4e9015772595bc237f3cba81d0f752460229361d67fe40ee0c95aa3a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/display/intel_sdvo.h",
+  "human_readable_source": " \n \n\n#ifndef __INTEL_SDVO_H__\n#define __INTEL_SDVO_H__\n\n#include <linux/types.h>\n\n#include \"i915_reg_defs.h\"\n\nstruct drm_i915_private;\nenum pipe;\nenum port;\n\nbool intel_sdvo_port_enabled(struct drm_i915_private *dev_priv,\n\t\t\t     i915_reg_t sdvo_reg, enum pipe *pipe);\nbool intel_sdvo_init(struct drm_i915_private *dev_priv,\n\t\t     i915_reg_t reg, enum port port);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

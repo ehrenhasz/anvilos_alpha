@@ -1,0 +1,9 @@
+{
+  "module_name": "lgs8gxx_priv.h",
+  "hash_id": "a68cf7919c3e192afea72aa148d6cdb29b36c6078d869ccedd538117ab4d0af0",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/dvb-frontends/lgs8gxx_priv.h",
+  "human_readable_source": " \n \n\n#ifndef LGS8913_PRIV_H\n#define LGS8913_PRIV_H\n\nstruct lgs8gxx_state {\n\tstruct i2c_adapter *i2c;\n\t \n\tconst struct lgs8gxx_config *config;\n\tstruct dvb_frontend frontend;\n\tu16 curr_gi;  \n};\n\n#define SC_MASK\t\t0x1C\t \n#define SC_QAM64\t0x10\t \n#define SC_QAM32\t0x0C\t \n#define SC_QAM16\t0x08\t \n#define SC_QAM4NR\t0x04\t \n#define SC_QAM4\t\t0x00\t \n\n#define LGS_FEC_MASK\t0x03\t \n#define LGS_FEC_0_4\t0x00\t \n#define LGS_FEC_0_6\t0x01\t \n#define LGS_FEC_0_8\t0x02\t \n\n#define TIM_MASK\t  0x20\t \n#define TIM_LONG\t  0x20\t \n#define TIM_MIDDLE     0x00    \n\n#define CF_MASK\t0x80\t \n#define CF_EN\t0x80\t \n\n#define GI_MASK\t0x03\t \n#define GI_420\t0x00\t \n#define GI_595\t0x01\t \n#define GI_945\t0x02\t \n\n\n#define TS_PARALLEL\t0x00\t \n#define TS_SERIAL\t0x01\t \n#define TS_CLK_NORMAL\t\t0x00\t \n#define TS_CLK_INVERTED\t\t0x02\t \n#define TS_CLK_GATED\t\t0x00\t \n#define TS_CLK_FREERUN\t\t0x04\t \n\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

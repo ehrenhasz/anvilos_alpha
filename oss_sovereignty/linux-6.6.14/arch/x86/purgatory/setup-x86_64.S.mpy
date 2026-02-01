@@ -1,0 +1,9 @@
+{
+  "module_name": "setup-x86_64.S",
+  "hash_id": "6837f8bf20d26a9022f6556b9c58d13b8977928852be084c4f3cc5240baac638",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/purgatory/setup-x86_64.S",
+  "human_readable_source": " \n \n#include <linux/linkage.h>\n#include <asm/purgatory.h>\n\n\t.text\n\t.balign 16\n\t.code64\n\nSYM_CODE_START(purgatory_start)\n\t \n\tlgdt\tgdt(%rip)\n\n\t \n\tmovl\t$0x18, %eax\t \n\tmovl\t%eax, %ds\n\tmovl\t%eax, %es\n\tmovl\t%eax, %ss\n\tmovl\t%eax, %fs\n\tmovl\t%eax, %gs\n\n\t \n\tleaq\tlstack_end(%rip), %rsp\n\n\t \n\tcall purgatory\n\tjmp\tentry64\nSYM_CODE_END(purgatory_start)\n\n\t.section \".rodata\"\n\t.balign 16\nSYM_DATA_START_LOCAL(gdt)\n\t \n\t.word\tgdt_end - gdt - 1\n\t.quad\tgdt\n\t.word\t0, 0, 0\n\n\t \n\t.word\t0xFFFF, 0x0000, 0x9A00, 0x00AF\n\n\t \n\t.word\t0xFFFF, 0x0000, 0x9200, 0x00CF\nSYM_DATA_END_LABEL(gdt, SYM_L_LOCAL, gdt_end)\n\n\t.bss\n\t.balign 4096\nSYM_DATA_START_LOCAL(lstack)\n\t.skip 4096\nSYM_DATA_END_LABEL(lstack, SYM_L_LOCAL, lstack_end)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

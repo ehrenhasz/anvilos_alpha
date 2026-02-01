@@ -1,0 +1,9 @@
+{
+  "module_name": "cx25821-video.h",
+  "hash_id": "11042cc5ce0e5ef86a509a2dc48e43b56ba674696191cf657ee1c749dae97699",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/pci/cx25821/cx25821-video.h",
+  "human_readable_source": " \n \n\n#ifndef CX25821_VIDEO_H_\n#define CX25821_VIDEO_H_\n\n#include <linux/init.h>\n#include <linux/list.h>\n#include <linux/module.h>\n#include <linux/moduleparam.h>\n#include <linux/kmod.h>\n#include <linux/kernel.h>\n#include <linux/slab.h>\n#include <linux/interrupt.h>\n#include <linux/delay.h>\n#include <linux/kthread.h>\n#include <asm/div64.h>\n\n#include \"cx25821.h\"\n#include <media/v4l2-common.h>\n#include <media/v4l2-ioctl.h>\n#include <media/v4l2-event.h>\n\n#define VIDEO_DEBUG 0\n\n#define dprintk(level, fmt, arg...)\t\t\t\t\t\\\ndo {\t\t\t\t\t\t\t\t\t\\\n\tif (VIDEO_DEBUG >= level)\t\t\t\t\t\\\n\t\tprintk(KERN_DEBUG \"%s/0: \" fmt, dev->name, ##arg);\t\\\n} while (0)\n\n#define FORMAT_FLAGS_PACKED       0x01\nextern int cx25821_start_video_dma(struct cx25821_dev *dev,\n\t\t\t\t   struct cx25821_dmaqueue *q,\n\t\t\t\t   struct cx25821_buffer *buf,\n\t\t\t\t   const struct sram_channel *channel);\n\nextern int cx25821_video_irq(struct cx25821_dev *dev, int chan_num, u32 status);\nextern void cx25821_video_unregister(struct cx25821_dev *dev, int chan_num);\nextern int cx25821_video_register(struct cx25821_dev *dev);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

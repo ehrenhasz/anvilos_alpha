@@ -1,0 +1,9 @@
+{
+  "module_name": "symtab.c",
+  "hash_id": "d51f7d5d0a09ce45a267d0d95cb9bee224d31399460b087fb5e2efbd48ed7bfc",
+  "original_prompt": "Ingested from linux-6.6.14/security/selinux/ss/symtab.c",
+  "human_readable_source": "\n \n#include <linux/kernel.h>\n#include <linux/string.h>\n#include <linux/errno.h>\n#include \"symtab.h\"\n\nstatic unsigned int symhash(const void *key)\n{\n\tconst char *p, *keyp;\n\tunsigned int size;\n\tunsigned int val;\n\n\tval = 0;\n\tkeyp = key;\n\tsize = strlen(keyp);\n\tfor (p = keyp; (p - keyp) < size; p++)\n\t\tval = (val << 4 | (val >> (8*sizeof(unsigned int)-4))) ^ (*p);\n\treturn val;\n}\n\nstatic int symcmp(const void *key1, const void *key2)\n{\n\tconst char *keyp1, *keyp2;\n\n\tkeyp1 = key1;\n\tkeyp2 = key2;\n\treturn strcmp(keyp1, keyp2);\n}\n\nstatic const struct hashtab_key_params symtab_key_params = {\n\t.hash = symhash,\n\t.cmp = symcmp,\n};\n\nint symtab_init(struct symtab *s, u32 size)\n{\n\ts->nprim = 0;\n\treturn hashtab_init(&s->table, size);\n}\n\nint symtab_insert(struct symtab *s, char *name, void *datum)\n{\n\treturn hashtab_insert(&s->table, name, datum, symtab_key_params);\n}\n\nvoid *symtab_search(struct symtab *s, const char *name)\n{\n\treturn hashtab_search(&s->table, name, symtab_key_params);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

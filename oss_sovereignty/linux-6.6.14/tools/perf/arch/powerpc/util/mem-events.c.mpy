@@ -1,0 +1,9 @@
+{
+  "module_name": "mem-events.c",
+  "hash_id": "bd464ea36f3937cea96da56b831f10c717f645d9ec04e7d57986df02dde47838",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/arch/powerpc/util/mem-events.c",
+  "human_readable_source": "\n#include \"map_symbol.h\"\n#include \"mem-events.h\"\n\n \nconst char *perf_mem_events__name(int i, const char *pmu_name __maybe_unused)\n{\n\tif (i == PERF_MEM_EVENTS__LOAD)\n\t\treturn \"cpu/mem-loads/\";\n\n\treturn \"cpu/mem-stores/\";\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

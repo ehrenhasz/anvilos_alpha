@@ -1,0 +1,9 @@
+{
+  "module_name": "mt8186-power.h",
+  "hash_id": "af311c5800ceef104c88cf5860acd02beeea09f2e4f1861e94d6d3baa536213c",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/power/mt8186-power.h",
+  "human_readable_source": " \n \n\n#ifndef _DT_BINDINGS_POWER_MT8186_POWER_H\n#define _DT_BINDINGS_POWER_MT8186_POWER_H\n\n#define MT8186_POWER_DOMAIN_MFG0\t\t\t0\n#define MT8186_POWER_DOMAIN_MFG1\t\t\t1\n#define MT8186_POWER_DOMAIN_MFG2\t\t\t2\n#define MT8186_POWER_DOMAIN_MFG3\t\t\t3\n#define MT8186_POWER_DOMAIN_SSUSB\t\t\t4\n#define MT8186_POWER_DOMAIN_SSUSB_P1\t\t\t5\n#define MT8186_POWER_DOMAIN_DIS\t\t\t\t6\n#define MT8186_POWER_DOMAIN_IMG\t\t\t\t7\n#define MT8186_POWER_DOMAIN_IMG2\t\t\t8\n#define MT8186_POWER_DOMAIN_IPE\t\t\t\t9\n#define MT8186_POWER_DOMAIN_CAM\t\t\t\t10\n#define MT8186_POWER_DOMAIN_CAM_RAWA\t\t\t11\n#define MT8186_POWER_DOMAIN_CAM_RAWB\t\t\t12\n#define MT8186_POWER_DOMAIN_VENC\t\t\t13\n#define MT8186_POWER_DOMAIN_VDEC\t\t\t14\n#define MT8186_POWER_DOMAIN_WPE\t\t\t\t15\n#define MT8186_POWER_DOMAIN_CONN_ON\t\t\t16\n#define MT8186_POWER_DOMAIN_CSIRX_TOP\t\t\t17\n#define MT8186_POWER_DOMAIN_ADSP_AO\t\t\t18\n#define MT8186_POWER_DOMAIN_ADSP_INFRA\t\t\t19\n#define MT8186_POWER_DOMAIN_ADSP_TOP\t\t\t20\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

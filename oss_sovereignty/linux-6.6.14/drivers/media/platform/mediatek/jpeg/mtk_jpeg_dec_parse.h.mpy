@@ -1,0 +1,9 @@
+{
+  "module_name": "mtk_jpeg_dec_parse.h",
+  "hash_id": "6c70750f1dcba5841cbe452de7ed2d4e1df9f571782af91b531f3dfd0fd177a6",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/platform/mediatek/jpeg/mtk_jpeg_dec_parse.h",
+  "human_readable_source": " \n \n\n#ifndef _MTK_JPEG_PARSE_H\n#define _MTK_JPEG_PARSE_H\n\n#include \"mtk_jpeg_dec_hw.h\"\n\nbool mtk_jpeg_parse(struct mtk_jpeg_dec_param *param, u8 *src_addr_va,\n\t\t    u32 src_size);\n\n#endif  \n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

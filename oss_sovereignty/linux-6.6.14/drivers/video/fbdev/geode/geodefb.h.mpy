@@ -1,0 +1,9 @@
+{
+  "module_name": "geodefb.h",
+  "hash_id": "3a115e297c3728248cadcc69ee2b9109f1f8849005e21d94bf4eef493cb49ad8",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/video/fbdev/geode/geodefb.h",
+  "human_readable_source": " \n \n#ifndef __GEODEFB_H__\n#define __GEODEFB_H__\n\nstruct geodefb_info;\n\nstruct geode_dc_ops {\n\tvoid (*set_mode)(struct fb_info *);\n\tvoid (*set_palette_reg)(struct fb_info *, unsigned, unsigned, unsigned, unsigned);\n};\n\nstruct geode_vid_ops {\n\tvoid (*set_dclk)(struct fb_info *);\n\tvoid (*configure_display)(struct fb_info *);\n\tint  (*blank_display)(struct fb_info *, int blank_mode);\n};\n\nstruct geodefb_par {\n\tint enable_crt;\n\tint panel_x;  \n\tint panel_y;\n\tvoid __iomem *dc_regs;\n\tvoid __iomem *vid_regs;\n\tconst struct geode_dc_ops  *dc_ops;\n\tconst struct geode_vid_ops *vid_ops;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

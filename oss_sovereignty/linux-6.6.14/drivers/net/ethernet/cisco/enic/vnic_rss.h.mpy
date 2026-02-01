@@ -1,0 +1,9 @@
+{
+  "module_name": "vnic_rss.h",
+  "hash_id": "010f216fac628a6884ef0d7c95f30f3956088adb9ca45478134736057e7e40ca",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/cisco/enic/vnic_rss.h",
+  "human_readable_source": " \n \n\n#ifndef _VNIC_RSS_H_\n#define _VNIC_RSS_H_\n\n \n\n#define ENIC_RSS_BYTES_PER_KEY\t10\n#define ENIC_RSS_KEYS\t\t4\n#define ENIC_RSS_LEN\t\t(ENIC_RSS_BYTES_PER_KEY * ENIC_RSS_KEYS)\n\nunion vnic_rss_key {\n\tstruct {\n\t\tu8 b[ENIC_RSS_BYTES_PER_KEY];\n\t\tu8 b_pad[6];\n\t} key[ENIC_RSS_KEYS];\n\tu64 raw[8];\n};\n\n \nunion vnic_rss_cpu {\n\tstruct {\n\t\tu8 b[4] ;\n\t\tu8 b_pad[4];\n\t} cpu[32];\n\tu64 raw[32];\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

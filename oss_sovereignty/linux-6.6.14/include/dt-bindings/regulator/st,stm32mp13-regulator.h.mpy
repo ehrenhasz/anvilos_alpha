@@ -1,0 +1,9 @@
+{
+  "module_name": "st,stm32mp13-regulator.h",
+  "hash_id": "90bc473434972d4498c5ef1b3d5704661737c4b00059928adfa390726a818f73",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/regulator/st,stm32mp13-regulator.h",
+  "human_readable_source": " \n \n\n#ifndef __DT_BINDINGS_REGULATOR_ST_STM32MP13_REGULATOR_H\n#define __DT_BINDINGS_REGULATOR_ST_STM32MP13_REGULATOR_H\n\n \n\n \n#define VOLTD_SCMI_REG11\t\t0\n#define VOLTD_SCMI_REG18\t\t1\n#define VOLTD_SCMI_USB33\t\t2\n#define VOLTD_SCMI_SDMMC1_IO\t\t3\n#define VOLTD_SCMI_SDMMC2_IO\t\t4\n#define VOLTD_SCMI_VREFBUF\t\t5\n\n \n#define VOLTD_SCMI_STPMIC1_BUCK1\t6\n#define VOLTD_SCMI_STPMIC1_BUCK2\t7\n#define VOLTD_SCMI_STPMIC1_BUCK3\t8\n#define VOLTD_SCMI_STPMIC1_BUCK4\t9\n#define VOLTD_SCMI_STPMIC1_LDO1\t        10\n#define VOLTD_SCMI_STPMIC1_LDO2\t        11\n#define VOLTD_SCMI_STPMIC1_LDO3\t        12\n#define VOLTD_SCMI_STPMIC1_LDO4\t        13\n#define VOLTD_SCMI_STPMIC1_LDO5\t        14\n#define VOLTD_SCMI_STPMIC1_LDO6\t        15\n#define VOLTD_SCMI_STPMIC1_VREFDDR\t16\n#define VOLTD_SCMI_STPMIC1_BOOST\t17\n#define VOLTD_SCMI_STPMIC1_PWR_SW1\t18\n#define VOLTD_SCMI_STPMIC1_PWR_SW2\t19\n\n \n#define VOLTD_SCMI_REGU0\t\t20\n#define VOLTD_SCMI_REGU1\t\t21\n#define VOLTD_SCMI_REGU2\t\t22\n#define VOLTD_SCMI_REGU3\t\t23\n#define VOLTD_SCMI_REGU4\t\t24\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

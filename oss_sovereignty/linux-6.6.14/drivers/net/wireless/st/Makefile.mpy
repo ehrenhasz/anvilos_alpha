@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "36c0fa29593edd88ef3538bb31ac14506b979e72d51c9b4283d9c27fd9ca1f4a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/st/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-$(CONFIG_CW1200)\t+= cw1200/\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

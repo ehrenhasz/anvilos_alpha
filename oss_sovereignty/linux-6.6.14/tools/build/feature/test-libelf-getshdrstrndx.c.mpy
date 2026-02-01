@@ -1,0 +1,9 @@
+{
+  "module_name": "test-libelf-getshdrstrndx.c",
+  "hash_id": "17fff958e99ed487ee02202471f7f9e3de6c2cd8ec6326d62d56343379284cf0",
+  "original_prompt": "Ingested from linux-6.6.14/tools/build/feature/test-libelf-getshdrstrndx.c",
+  "human_readable_source": "\n#include <libelf.h>\n\nint main(void)\n{\n\tsize_t dst;\n\n\treturn elf_getshdrstrndx(0, &dst);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

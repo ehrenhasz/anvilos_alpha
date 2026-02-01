@@ -1,0 +1,9 @@
+{
+  "module_name": "irq-sa11x0.h",
+  "hash_id": "f1c3122b0cf901dceccbff698585031186345641ca1b8e690ecc1e1e6a33ad4f",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/irqchip/irq-sa11x0.h",
+  "human_readable_source": " \n \n\n#ifndef __INCLUDE_LINUX_IRQCHIP_IRQ_SA11x0_H\n#define __INCLUDE_LINUX_IRQCHIP_IRQ_SA11x0_H\n\nvoid __init sa11x0_init_irq_nodt(int irq_start, resource_size_t io_start);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

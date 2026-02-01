@@ -1,0 +1,9 @@
+{
+  "module_name": "mp_cdc_common.c",
+  "hash_id": "3c57af1eca9ed7804c6ca5cfec0754f8797dd10b593b56212f0d52e5c033422e",
+  "original_prompt": "Ingested from sys_09_Anvil/source/shared/tinyusb/mp_cdc_common.c",
+  "human_readable_source": " \n\n#include \"py/runtime.h\"\n#include \"py/mphal.h\"\n#include \"extmod/modmachine.h\"\n\n#if MICROPY_HW_USB_CDC_1200BPS_TOUCH && MICROPY_HW_ENABLE_USBDEV\n\n#include \"tusb.h\"\n\nstatic mp_sched_node_t mp_bootloader_sched_node;\n\nstatic void usbd_cdc_run_bootloader_task(mp_sched_node_t *node) {\n    mp_hal_delay_ms(250);\n    machine_bootloader(0, NULL);\n}\n\nvoid\n#if MICROPY_HW_USB_EXTERNAL_TINYUSB\nmp_usbd_line_state_cb\n#else\ntud_cdc_line_state_cb\n#endif\n    (uint8_t itf, bool dtr, bool rts) {\n    if (dtr == false && rts == false) {\n        \n        cdc_line_coding_t line_coding;\n        tud_cdc_n_get_line_coding(itf, &line_coding);\n        if (line_coding.bit_rate == 1200) {\n            \n            mp_sched_schedule_node(&mp_bootloader_sched_node, usbd_cdc_run_bootloader_task);\n        }\n    }\n}\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

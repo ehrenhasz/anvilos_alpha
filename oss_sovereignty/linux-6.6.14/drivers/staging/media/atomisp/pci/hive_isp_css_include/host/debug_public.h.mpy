@@ -1,0 +1,9 @@
+{
+  "module_name": "debug_public.h",
+  "hash_id": "62d5e52bbf13e59b59f14e7a7b307e2a43ddcba51d2b7bca2b7185c8d093116d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/hive_isp_css_include/host/debug_public.h",
+  "human_readable_source": " \n \n\n#ifndef __DEBUG_PUBLIC_H_INCLUDED__\n#define __DEBUG_PUBLIC_H_INCLUDED__\n\n#include <type_support.h>\n#include <ia_css_types.h>\n#include \"system_local.h\"\n\n \n\ntypedef struct debug_data_s\t\tdebug_data_t;\ntypedef struct debug_data_ddr_s\tdebug_data_ddr_t;\n\nextern debug_data_t\t\t\t\t*debug_data_ptr;\nextern hrt_address\t\t\t\tdebug_buffer_address;\nextern ia_css_ptr\t\t\t\tdebug_buffer_ddr_address;\n\n \nSTORAGE_CLASS_DEBUG_H bool is_debug_buffer_empty(void);\n\n \nSTORAGE_CLASS_DEBUG_H hrt_data debug_dequeue(void);\n\n \nSTORAGE_CLASS_DEBUG_H void debug_synch_queue(void);\n\n \nSTORAGE_CLASS_DEBUG_H void debug_synch_queue_isp(void);\n\n \nSTORAGE_CLASS_DEBUG_H void debug_synch_queue_ddr(void);\n\n \nvoid debug_buffer_init(\n    const hrt_address\t\taddr);\n\n \nvoid debug_buffer_ddr_init(\n    const ia_css_ptr\t\taddr);\n\n \nvoid debug_buffer_setmode(\n    const debug_buf_mode_t\tmode);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

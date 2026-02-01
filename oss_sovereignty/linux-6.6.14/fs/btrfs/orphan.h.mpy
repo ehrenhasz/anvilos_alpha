@@ -1,0 +1,9 @@
+{
+  "module_name": "orphan.h",
+  "hash_id": "dd8d2f3dab6c7d6219e7fd959e3d1ccb03ea91f2e796233900abeee00ab31e96",
+  "original_prompt": "Ingested from linux-6.6.14/fs/btrfs/orphan.h",
+  "human_readable_source": " \n\n#ifndef BTRFS_ORPHAN_H\n#define BTRFS_ORPHAN_H\n\nint btrfs_insert_orphan_item(struct btrfs_trans_handle *trans,\n\t\t\t     struct btrfs_root *root, u64 offset);\nint btrfs_del_orphan_item(struct btrfs_trans_handle *trans,\n\t\t\t  struct btrfs_root *root, u64 offset);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

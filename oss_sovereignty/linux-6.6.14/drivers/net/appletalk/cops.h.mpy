@@ -1,0 +1,9 @@
+{
+  "module_name": "cops.h",
+  "hash_id": "0da6232417e2cf70ad661f8cb47d5e517fdc27b35ceb9c6ddbb0f75812158c9f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/appletalk/cops.h",
+  "human_readable_source": " \n \n\n#ifndef __LINUX_COPSLTALK_H\n#define __LINUX_COPSLTALK_H\n\n#ifdef __KERNEL__\n\n \n#define MAX_LLAP_SIZE\t\t603\n\n \n#define TANG_CARD_STATUS        1\n#define TANG_CLEAR_INT          1\n#define TANG_RESET              3\n\n#define TANG_TX_READY           1\n#define TANG_RX_READY           2\n\n \n#define DAYNA_CMD_DATA          0\n#define DAYNA_CLEAR_INT         1\n#define DAYNA_CARD_STATUS       2\n#define DAYNA_INT_CARD          3\n#define DAYNA_RESET             4\n\n#define DAYNA_RX_READY          0\n#define DAYNA_TX_READY          1\n#define DAYNA_RX_REQUEST        3\n\n \n#define COPS_CLEAR_INT  1\n\n \n#define LAP_INIT        1        \n#define LAP_INIT_RSP    2        \n#define LAP_WRITE       3        \n#define DATA_READ       4        \n#define LAP_RESPONSE    4        \n#define LAP_GETSTAT     5        \n#define LAP_RSPSTAT     6        \n\n#endif\n\n \nstruct ltfirmware\n{\n        unsigned int length;\n        const unsigned char *data;\n};\n\n#define DAYNA 1\n#define TANGENT 2\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

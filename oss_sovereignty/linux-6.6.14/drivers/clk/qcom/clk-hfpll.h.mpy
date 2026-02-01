@@ -1,0 +1,9 @@
+{
+  "module_name": "clk-hfpll.h",
+  "hash_id": "c153eace1005a665c18490d5ddc1b162c15a776450536c6b0aa2d4e5ea0c46f3",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/clk/qcom/clk-hfpll.h",
+  "human_readable_source": " \n\n#ifndef __QCOM_CLK_HFPLL_H__\n#define __QCOM_CLK_HFPLL_H__\n\n#include <linux/clk-provider.h>\n#include <linux/spinlock.h>\n#include \"clk-regmap.h\"\n\nstruct hfpll_data {\n\tu32 mode_reg;\n\tu32 l_reg;\n\tu32 m_reg;\n\tu32 n_reg;\n\tu32 user_reg;\n\tu32 droop_reg;\n\tu32 config_reg;\n\tu32 status_reg;\n\tu8  lock_bit;\n\n\tu32 droop_val;\n\tu32 config_val;\n\tu32 user_val;\n\tu32 user_vco_mask;\n\tunsigned long low_vco_max_rate;\n\n\tunsigned long min_rate;\n\tunsigned long max_rate;\n};\n\nstruct clk_hfpll {\n\tstruct hfpll_data const *d;\n\tint init_done;\n\n\tstruct clk_regmap clkr;\n\tspinlock_t lock;\n};\n\n#define to_clk_hfpll(_hw) \\\n\tcontainer_of(to_clk_regmap(_hw), struct clk_hfpll, clkr)\n\nextern const struct clk_ops clk_ops_hfpll;\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "report_hw_tags.c",
+  "hash_id": "700e24d5d308b0f9429631e7db270eaba932bfaf4c01e7e61cb1d91c0b2f9064",
+  "original_prompt": "Ingested from linux-6.6.14/mm/kasan/report_hw_tags.c",
+  "human_readable_source": "\n \n\n#include <linux/kasan.h>\n#include <linux/kernel.h>\n#include <linux/memory.h>\n#include <linux/mm.h>\n#include <linux/string.h>\n#include <linux/types.h>\n\n#include \"kasan.h\"\n\nconst void *kasan_find_first_bad_addr(const void *addr, size_t size)\n{\n\t \n\treturn kasan_reset_tag(addr);\n}\n\nsize_t kasan_get_alloc_size(void *object, struct kmem_cache *cache)\n{\n\tsize_t size = 0;\n\tint i = 0;\n\tu8 memory_tag;\n\n\t \n\n\t \n\twhile (size < cache->object_size) {\n\t\tmemory_tag = hw_get_mem_tag(object + i * KASAN_GRANULE_SIZE);\n\t\tif (memory_tag != KASAN_TAG_INVALID)\n\t\t\tsize += KASAN_GRANULE_SIZE;\n\t\telse\n\t\t\treturn size;\n\t\ti++;\n\t}\n\n\treturn cache->object_size;\n}\n\nvoid kasan_metadata_fetch_row(char *buffer, void *row)\n{\n\tint i;\n\n\tfor (i = 0; i < META_BYTES_PER_ROW; i++)\n\t\tbuffer[i] = hw_get_mem_tag(row + i * KASAN_GRANULE_SIZE);\n}\n\nvoid kasan_print_tags(u8 addr_tag, const void *addr)\n{\n\tu8 memory_tag = hw_get_mem_tag((void *)addr);\n\n\tpr_err(\"Pointer tag: [%02x], memory tag: [%02x]\\n\",\n\t\taddr_tag, memory_tag);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

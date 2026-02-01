@@ -1,0 +1,9 @@
+{
+  "module_name": "ucontext.h",
+  "hash_id": "924e34afff62b66fdc44c551697f48929c6a11edcb2684e91533de07283c58b4",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/asm-generic/ucontext.h",
+  "human_readable_source": " \n#ifndef __ASM_GENERIC_UCONTEXT_H\n#define __ASM_GENERIC_UCONTEXT_H\n\nstruct ucontext {\n\tunsigned long\t  uc_flags;\n\tstruct ucontext  *uc_link;\n\tstack_t\t\t  uc_stack;\n\tstruct sigcontext uc_mcontext;\n\tsigset_t\t  uc_sigmask;\t \n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "clps711x-clock.h",
+  "hash_id": "7ba4c98ee9353296940891fa8afdb0ac24e04886ade7c21b401554acfaaad10c",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/clock/clps711x-clock.h",
+  "human_readable_source": " \n \n\n#ifndef __DT_BINDINGS_CLOCK_CLPS711X_H\n#define __DT_BINDINGS_CLOCK_CLPS711X_H\n\n#define CLPS711X_CLK_DUMMY\t0\n#define CLPS711X_CLK_CPU\t1\n#define CLPS711X_CLK_BUS\t2\n#define CLPS711X_CLK_PLL\t3\n#define CLPS711X_CLK_TIMERREF\t4\n#define CLPS711X_CLK_TIMER1\t5\n#define CLPS711X_CLK_TIMER2\t6\n#define CLPS711X_CLK_PWM\t7\n#define CLPS711X_CLK_SPIREF\t8\n#define CLPS711X_CLK_SPI\t9\n#define CLPS711X_CLK_UART\t10\n#define CLPS711X_CLK_TICK\t11\n#define CLPS711X_CLK_MAX\t12\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

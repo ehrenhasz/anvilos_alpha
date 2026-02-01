@@ -1,0 +1,9 @@
+{
+  "module_name": "xfs_ioctl.h",
+  "hash_id": "26288f92cd6f71527aeb965adf2031f757973b51156500d4e35f4dfc48e9a7d4",
+  "original_prompt": "Ingested from linux-6.6.14/fs/xfs/xfs_ioctl.h",
+  "human_readable_source": "\n \n#ifndef __XFS_IOCTL_H__\n#define __XFS_IOCTL_H__\n\nstruct xfs_bstat;\nstruct xfs_ibulk;\nstruct xfs_inogrp;\n\nint\nxfs_ioc_swapext(\n\txfs_swapext_t\t*sxp);\n\nextern int\nxfs_find_handle(\n\tunsigned int\t\tcmd,\n\txfs_fsop_handlereq_t\t*hreq);\n\nextern int\nxfs_open_by_handle(\n\tstruct file\t\t*parfilp,\n\txfs_fsop_handlereq_t\t*hreq);\n\nextern int\nxfs_readlink_by_handle(\n\tstruct file\t\t*parfilp,\n\txfs_fsop_handlereq_t\t*hreq);\n\nint xfs_ioc_attrmulti_one(struct file *parfilp, struct inode *inode,\n\t\tuint32_t opcode, void __user *uname, void __user *value,\n\t\tuint32_t *len, uint32_t flags);\nint xfs_ioc_attr_list(struct xfs_inode *dp, void __user *ubuf,\n\t\t      size_t bufsize, int flags,\n\t\t      struct xfs_attrlist_cursor __user *ucursor);\n\nextern struct dentry *\nxfs_handle_to_dentry(\n\tstruct file\t\t*parfilp,\n\tvoid __user\t\t*uhandle,\n\tu32\t\t\thlen);\n\nextern int\nxfs_fileattr_get(\n\tstruct dentry\t\t*dentry,\n\tstruct fileattr\t\t*fa);\n\nextern int\nxfs_fileattr_set(\n\tstruct mnt_idmap\t*idmap,\n\tstruct dentry\t\t*dentry,\n\tstruct fileattr\t\t*fa);\n\nextern long\nxfs_file_ioctl(\n\tstruct file\t\t*filp,\n\tunsigned int\t\tcmd,\n\tunsigned long\t\tp);\n\nextern long\nxfs_file_compat_ioctl(\n\tstruct file\t\t*file,\n\tunsigned int\t\tcmd,\n\tunsigned long\t\targ);\n\nint xfs_fsbulkstat_one_fmt(struct xfs_ibulk *breq,\n\t\t\t   const struct xfs_bulkstat *bstat);\nint xfs_fsinumbers_fmt(struct xfs_ibulk *breq, const struct xfs_inumbers *igrp);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

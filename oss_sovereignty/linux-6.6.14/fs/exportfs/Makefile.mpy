@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "5764a6d86edcda567c628b9a2290b441030e0f10b9315b8845186c22bb59b686",
+  "original_prompt": "Ingested from linux-6.6.14/fs/exportfs/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Makefile for the filesystem export support routines.\n\nobj-$(CONFIG_EXPORTFS) += exportfs.o\n\nexportfs-objs := expfs.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

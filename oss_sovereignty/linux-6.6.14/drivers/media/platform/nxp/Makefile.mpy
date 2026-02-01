@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "8e6a353adb4cde713c7bd37c3818b83eda90cc56b77da35cb6b666ec06d8e18c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/platform/nxp/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n\nobj-y += dw100/\nobj-y += imx-jpeg/\nobj-y += imx8-isi/\n\nobj-$(CONFIG_VIDEO_IMX7_CSI) += imx7-media-csi.o\nobj-$(CONFIG_VIDEO_IMX8MQ_MIPI_CSI2) += imx8mq-mipi-csi2.o\nobj-$(CONFIG_VIDEO_IMX_MIPI_CSIS) += imx-mipi-csis.o\nobj-$(CONFIG_VIDEO_IMX_PXP) += imx-pxp.o\nobj-$(CONFIG_VIDEO_MX2_EMMAPRP) += mx2_emmaprp.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "omap-wd-timer.h",
+  "hash_id": "4f8a96d5517e257677dfd968a5a8b8ea790fc7d91c3b9d7dd36927f330eef8cb",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/platform_data/omap-wd-timer.h",
+  "human_readable_source": " \n \n\n#ifndef __LINUX_PLATFORM_DATA_OMAP_WD_TIMER_H\n#define __LINUX_PLATFORM_DATA_OMAP_WD_TIMER_H\n\n#include <linux/types.h>\n\n \n#define OMAP_MPU_WD_RST_SRC_ID_SHIFT\t\t\t\t3\n\n \nstruct omap_wd_timer_platform_data {\n\tu32 (*read_reset_sources)(void);\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

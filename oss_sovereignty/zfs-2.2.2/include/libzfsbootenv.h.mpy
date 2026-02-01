@@ -1,0 +1,9 @@
+{
+  "module_name": "libzfsbootenv.h",
+  "hash_id": "f085c82e06fc95a0e5ff2f4c5bba0c84e153c5a6f331419d87cf382fe0ea40a3",
+  "original_prompt": "Ingested from zfs-2.2.2/include/libzfsbootenv.h",
+  "human_readable_source": " \n\n \n\n#ifndef _LIBZFSBOOTENV_H\n#define\t_LIBZFSBOOTENV_H extern __attribute__((visibility(\"default\")))\n\n#ifdef __cplusplus\nextern \"C\" {\n#endif\n\ntypedef enum lzbe_flags {\n\tlzbe_add,\t \n\tlzbe_replace\t \n} lzbe_flags_t;\n\n_LIBZFSBOOTENV_H int lzbe_nvlist_get(const char *, const char *, void **);\n_LIBZFSBOOTENV_H int lzbe_nvlist_set(const char *, const char *, void *);\n_LIBZFSBOOTENV_H void lzbe_nvlist_free(void *);\n_LIBZFSBOOTENV_H int lzbe_add_pair(void *, const char *, const char *, void *,\n    size_t);\n_LIBZFSBOOTENV_H int lzbe_remove_pair(void *, const char *);\n_LIBZFSBOOTENV_H int lzbe_set_boot_device(const char *, lzbe_flags_t,\n    const char *);\n_LIBZFSBOOTENV_H int lzbe_get_boot_device(const char *, char **);\n_LIBZFSBOOTENV_H int lzbe_bootenv_print(const char *, const char *, FILE *);\n\n#ifdef __cplusplus\n}\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

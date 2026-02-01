@@ -1,0 +1,9 @@
+{
+  "module_name": "llist.c",
+  "hash_id": "bd8c0ff5cddebb77ad1beff881e858b5ab57f6ba87b4c6a8d14725a2fff83399",
+  "original_prompt": "Ingested from linux-6.6.14/lib/llist.c",
+  "human_readable_source": "\n \n#include <linux/kernel.h>\n#include <linux/export.h>\n#include <linux/llist.h>\n\n\n \nbool llist_add_batch(struct llist_node *new_first, struct llist_node *new_last,\n\t\t     struct llist_head *head)\n{\n\tstruct llist_node *first = READ_ONCE(head->first);\n\n\tdo {\n\t\tnew_last->next = first;\n\t} while (!try_cmpxchg(&head->first, &first, new_first));\n\n\treturn !first;\n}\nEXPORT_SYMBOL_GPL(llist_add_batch);\n\n \nstruct llist_node *llist_del_first(struct llist_head *head)\n{\n\tstruct llist_node *entry, *next;\n\n\tentry = smp_load_acquire(&head->first);\n\tdo {\n\t\tif (entry == NULL)\n\t\t\treturn NULL;\n\t\tnext = READ_ONCE(entry->next);\n\t} while (!try_cmpxchg(&head->first, &entry, next));\n\n\treturn entry;\n}\nEXPORT_SYMBOL_GPL(llist_del_first);\n\n \nstruct llist_node *llist_reverse_order(struct llist_node *head)\n{\n\tstruct llist_node *new_head = NULL;\n\n\twhile (head) {\n\t\tstruct llist_node *tmp = head;\n\t\thead = head->next;\n\t\ttmp->next = new_head;\n\t\tnew_head = tmp;\n\t}\n\n\treturn new_head;\n}\nEXPORT_SYMBOL_GPL(llist_reverse_order);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

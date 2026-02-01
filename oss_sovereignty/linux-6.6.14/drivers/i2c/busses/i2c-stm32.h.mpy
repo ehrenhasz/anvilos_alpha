@@ -1,0 +1,9 @@
+{
+  "module_name": "i2c-stm32.h",
+  "hash_id": "b428c457099c730e5a4f3f1784a535f13ec2978eaac0c04a553a7f213609427c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/i2c/busses/i2c-stm32.h",
+  "human_readable_source": " \n \n\n#ifndef _I2C_STM32_H\n#define _I2C_STM32_H\n\n#include <linux/dma-direction.h>\n#include <linux/dmaengine.h>\n#include <linux/dma-mapping.h>\n\nenum stm32_i2c_speed {\n\tSTM32_I2C_SPEED_STANDARD,  \n\tSTM32_I2C_SPEED_FAST,  \n\tSTM32_I2C_SPEED_FAST_PLUS,  \n\tSTM32_I2C_SPEED_END,\n};\n\n \nstruct stm32_i2c_dma {\n\tstruct dma_chan *chan_tx;\n\tstruct dma_chan *chan_rx;\n\tstruct dma_chan *chan_using;\n\tdma_addr_t dma_buf;\n\tunsigned int dma_len;\n\tenum dma_transfer_direction dma_transfer_dir;\n\tenum dma_data_direction dma_data_dir;\n\tstruct completion dma_complete;\n};\n\nstruct stm32_i2c_dma *stm32_i2c_dma_request(struct device *dev,\n\t\t\t\t\t    dma_addr_t phy_addr,\n\t\t\t\t\t    u32 txdr_offset, u32 rxdr_offset);\n\nvoid stm32_i2c_dma_free(struct stm32_i2c_dma *dma);\n\nint stm32_i2c_prep_dma_xfer(struct device *dev, struct stm32_i2c_dma *dma,\n\t\t\t    bool rd_wr, u32 len, u8 *buf,\n\t\t\t    dma_async_tx_callback callback,\n\t\t\t    void *dma_async_param);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

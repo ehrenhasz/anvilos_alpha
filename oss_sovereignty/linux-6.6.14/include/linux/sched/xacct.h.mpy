@@ -1,0 +1,9 @@
+{
+  "module_name": "xacct.h",
+  "hash_id": "1ae8c3a77712672f2a4e8888c63b0bab7fbe7ebf942a0a62b7ec5c5631e592a6",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/sched/xacct.h",
+  "human_readable_source": " \n#ifndef _LINUX_SCHED_XACCT_H\n#define _LINUX_SCHED_XACCT_H\n\n \n\n#include <linux/sched.h>\n\n#ifdef CONFIG_TASK_XACCT\nstatic inline void add_rchar(struct task_struct *tsk, ssize_t amt)\n{\n\ttsk->ioac.rchar += amt;\n}\n\nstatic inline void add_wchar(struct task_struct *tsk, ssize_t amt)\n{\n\ttsk->ioac.wchar += amt;\n}\n\nstatic inline void inc_syscr(struct task_struct *tsk)\n{\n\ttsk->ioac.syscr++;\n}\n\nstatic inline void inc_syscw(struct task_struct *tsk)\n{\n\ttsk->ioac.syscw++;\n}\n#else\nstatic inline void add_rchar(struct task_struct *tsk, ssize_t amt)\n{\n}\n\nstatic inline void add_wchar(struct task_struct *tsk, ssize_t amt)\n{\n}\n\nstatic inline void inc_syscr(struct task_struct *tsk)\n{\n}\n\nstatic inline void inc_syscw(struct task_struct *tsk)\n{\n}\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "wakeup.h",
+  "hash_id": "bc6f3c9e2c22d05f82589831dd6e8eed1c98bbc3666c1402592c719e328e10ae",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/realmode/rm/wakeup.h",
+  "human_readable_source": " \n \n\n#ifndef ARCH_X86_KERNEL_ACPI_RM_WAKEUP_H\n#define ARCH_X86_KERNEL_ACPI_RM_WAKEUP_H\n\n#ifndef __ASSEMBLY__\n#include <linux/types.h>\n\n \nstruct wakeup_header {\n\tu16 video_mode;\t\t \n\tu32 pmode_entry;\t \n\tu16 pmode_cs;\n\tu32 pmode_cr0;\t\t \n\tu32 pmode_cr3;\t\t \n\tu32 pmode_cr4;\t\t \n\tu32 pmode_efer_low;\t \n\tu32 pmode_efer_high;\n\tu64 pmode_gdt;\n\tu32 pmode_misc_en_low;\t \n\tu32 pmode_misc_en_high;\n\tu32 pmode_behavior;\t \n\tu32 realmode_flags;\n\tu32 real_magic;\n\tu32 signature;\t\t \n} __attribute__((__packed__));\n\nextern struct wakeup_header wakeup_header;\n#endif\n\n#define WAKEUP_HEADER_OFFSET\t8\n#define WAKEUP_HEADER_SIGNATURE 0x51ee1111\n\n \n#define WAKEUP_BEHAVIOR_RESTORE_MISC_ENABLE     0\n#define WAKEUP_BEHAVIOR_RESTORE_CR4\t\t1\n#define WAKEUP_BEHAVIOR_RESTORE_EFER\t\t2\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

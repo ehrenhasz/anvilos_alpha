@@ -1,0 +1,9 @@
+{
+  "module_name": "sleep.h",
+  "hash_id": "4074b4411bffbc36c75a90116a22fc02e92eb67c2e3547bb774d4dad05c0febb",
+  "original_prompt": "Ingested from sys_09_Anvil/source/extmod/libmetal/metal/system/micropython/sleep.h",
+  "human_readable_source": "#include <metal/config.h>\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

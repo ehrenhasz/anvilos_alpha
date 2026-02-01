@@ -1,0 +1,9 @@
+{
+  "module_name": "test_btf_newkv.c",
+  "hash_id": "fc65a46a628eedc35f2f52fdcea1974fd4aec778bc990a87236159660542bb8a",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/test_btf_newkv.c",
+  "human_readable_source": " \n \n#include <linux/bpf.h>\n#include <bpf/bpf_helpers.h>\n#include \"bpf_legacy.h\"\n\nstruct ipv_counts {\n\tunsigned int v4;\n\tunsigned int v6;\n};\n\nstruct {\n\t__uint(type, BPF_MAP_TYPE_ARRAY);\n\t__uint(max_entries, 4);\n\t__type(key, int);\n\t__type(value, struct ipv_counts);\n} btf_map SEC(\".maps\");\n\n__attribute__((noinline))\nint test_long_fname_2(void)\n{\n\tstruct ipv_counts *counts;\n\tint key = 0;\n\n\tcounts = bpf_map_lookup_elem(&btf_map, &key);\n\tif (!counts)\n\t\treturn 0;\n\n\tcounts->v6++;\n\n\treturn 0;\n}\n\n__attribute__((noinline))\nint test_long_fname_1(void)\n{\n\treturn test_long_fname_2();\n}\n\nSEC(\"dummy_tracepoint\")\nint _dummy_tracepoint(void *arg)\n{\n\treturn test_long_fname_1();\n}\n\nchar _license[] SEC(\"license\") = \"GPL\";\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "dr_dbg.h",
+  "hash_id": "64bffb78fea6657c88c2c4651d8b53a10b71b47eed26275bc12991b9fa698e38",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_dbg.h",
+  "human_readable_source": " \n \n\nstruct mlx5dr_dbg_dump_info {\n\tstruct mutex dbg_mutex;  \n\tstruct dentry *steering_debugfs;\n\tstruct dentry *fdb_debugfs;\n};\n\nvoid mlx5dr_dbg_init_dump(struct mlx5dr_domain *dmn);\nvoid mlx5dr_dbg_uninit_dump(struct mlx5dr_domain *dmn);\nvoid mlx5dr_dbg_tbl_add(struct mlx5dr_table *tbl);\nvoid mlx5dr_dbg_tbl_del(struct mlx5dr_table *tbl);\nvoid mlx5dr_dbg_rule_add(struct mlx5dr_rule *rule);\nvoid mlx5dr_dbg_rule_del(struct mlx5dr_rule *rule);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

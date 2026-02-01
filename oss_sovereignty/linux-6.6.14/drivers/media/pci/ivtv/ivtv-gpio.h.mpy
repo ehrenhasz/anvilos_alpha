@@ -1,0 +1,9 @@
+{
+  "module_name": "ivtv-gpio.h",
+  "hash_id": "929b5b80a7d53301c340d1b52b0c4e462da78b797dd461d9013657c2c188d70c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/pci/ivtv/ivtv-gpio.h",
+  "human_readable_source": " \n \n\n#ifndef IVTV_GPIO_H\n#define IVTV_GPIO_H\n\n \nint ivtv_gpio_init(struct ivtv *itv);\nvoid ivtv_reset_ir_gpio(struct ivtv *itv);\nint ivtv_reset_tuner_gpio(void *dev, int component, int cmd, int value);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

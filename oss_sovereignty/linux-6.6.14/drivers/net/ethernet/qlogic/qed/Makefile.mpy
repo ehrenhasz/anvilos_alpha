@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "0b8a88747065de6e569dc3949835eea547ab23ae5fd2b42b71514d1aadee5019",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/qlogic/qed/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause)\n# Copyright (c) 2019-2020 Marvell International Ltd.\n\nobj-$(CONFIG_QED) := qed.o\n\nqed-y :=\t\t\t\\\n\tqed_chain.o\t\t\\\n\tqed_cxt.o\t\t\\\n\tqed_dcbx.o\t\t\\\n\tqed_debug.o\t\t\\\n\tqed_dev.o\t\t\\\n\tqed_devlink.o\t\t\\\n\tqed_hw.o\t\t\\\n\tqed_init_fw_funcs.o\t\\\n\tqed_init_ops.o\t\t\\\n\tqed_int.o\t\t\\\n\tqed_l2.o\t\t\\\n\tqed_main.o\t\t\\\n\tqed_mcp.o\t\t\\\n\tqed_mng_tlv.o\t\t\\\n\tqed_ptp.o\t\t\\\n\tqed_selftest.o\t\t\\\n\tqed_sp_commands.o\t\\\n\tqed_spq.o\n\nqed-$(CONFIG_QED_FCOE) += qed_fcoe.o\nqed-$(CONFIG_QED_ISCSI) += qed_iscsi.o\nqed-$(CONFIG_QED_LL2) += qed_ll2.o\nqed-$(CONFIG_QED_OOO) += qed_ooo.o\n\nqed-$(CONFIG_QED_NVMETCP) +=\t\\\n\tqed_nvmetcp.o\t\t\\\n\tqed_nvmetcp_fw_funcs.o\n\nqed-$(CONFIG_QED_RDMA) +=\t\\\n\tqed_iwarp.o\t\t\\\n\tqed_rdma.o\t\t\\\n\tqed_roce.o\n\nqed-$(CONFIG_QED_SRIOV) +=\t\\\n\tqed_sriov.o\t\t\\\n\tqed_vf.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

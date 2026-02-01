@@ -1,0 +1,9 @@
+{
+  "module_name": "pllgt215.c",
+  "hash_id": "c40cabd15b84f326e3b07c0ccfc40776eec7190a843ed80e6cada086ca6d86ca",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/subdev/clk/pllgt215.c",
+  "human_readable_source": " \n#include \"pll.h\"\n\n#include <subdev/bios.h>\n#include <subdev/bios/pll.h>\n\nint\ngt215_pll_calc(struct nvkm_subdev *subdev, struct nvbios_pll *info,\n\t       u32 freq, int *pN, int *pfN, int *pM, int *P)\n{\n\tu32 best_err = ~0, err;\n\tint M, lM, hM, N, fN;\n\n\t*P = info->vco1.max_freq / freq;\n\tif (*P > info->max_p)\n\t\t*P = info->max_p;\n\tif (*P < info->min_p)\n\t\t*P = info->min_p;\n\n\tlM = (info->refclk + info->vco1.max_inputfreq) / info->vco1.max_inputfreq;\n\tlM = max(lM, (int)info->vco1.min_m);\n\thM = (info->refclk + info->vco1.min_inputfreq) / info->vco1.min_inputfreq;\n\thM = min(hM, (int)info->vco1.max_m);\n\tlM = min(lM, hM);\n\n\tfor (M = lM; M <= hM; M++) {\n\t\tu32 tmp = freq * *P * M;\n\t\tN  = tmp / info->refclk;\n\t\tfN = tmp % info->refclk;\n\n\t\tif (!pfN) {\n\t\t\tif (fN >= info->refclk / 2)\n\t\t\t\tN++;\n\t\t} else {\n\t\t\tif (fN <  info->refclk / 2)\n\t\t\t\tN--;\n\t\t\tfN = tmp - (N * info->refclk);\n\t\t}\n\n\t\tif (N < info->vco1.min_n)\n\t\t\tcontinue;\n\t\tif (N > info->vco1.max_n)\n\t\t\tbreak;\n\n\t\terr = abs(freq - (info->refclk * N / M / *P));\n\t\tif (err < best_err) {\n\t\t\tbest_err = err;\n\t\t\t*pN = N;\n\t\t\t*pM = M;\n\t\t}\n\n\t\tif (pfN) {\n\t\t\t*pfN = ((fN << 13) + info->refclk / 2) / info->refclk;\n\t\t\t*pfN = (*pfN - 4096) & 0xffff;\n\t\t\treturn freq;\n\t\t}\n\t}\n\n\tif (unlikely(best_err == ~0)) {\n\t\tnvkm_error(subdev, \"unable to find matching pll values\\n\");\n\t\treturn -EINVAL;\n\t}\n\n\treturn info->refclk * *pN / *pM / *P;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

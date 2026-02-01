@@ -1,0 +1,9 @@
+{
+  "module_name": "string-stream-test.c",
+  "hash_id": "b97e16f24e8f9b8f5fa587c3e5fd6b3efce06f79f33ad1253939cce8ddbc6e78",
+  "original_prompt": "Ingested from linux-6.6.14/lib/kunit/string-stream-test.c",
+  "human_readable_source": "\n \n\n#include <kunit/test.h>\n#include <linux/slab.h>\n\n#include \"string-stream.h\"\n\nstatic void string_stream_test_empty_on_creation(struct kunit *test)\n{\n\tstruct string_stream *stream = alloc_string_stream(test, GFP_KERNEL);\n\n\tKUNIT_EXPECT_TRUE(test, string_stream_is_empty(stream));\n}\n\nstatic void string_stream_test_not_empty_after_add(struct kunit *test)\n{\n\tstruct string_stream *stream = alloc_string_stream(test, GFP_KERNEL);\n\n\tstring_stream_add(stream, \"Foo\");\n\n\tKUNIT_EXPECT_FALSE(test, string_stream_is_empty(stream));\n}\n\nstatic void string_stream_test_get_string(struct kunit *test)\n{\n\tstruct string_stream *stream = alloc_string_stream(test, GFP_KERNEL);\n\tchar *output;\n\n\tstring_stream_add(stream, \"Foo\");\n\tstring_stream_add(stream, \" %s\", \"bar\");\n\n\toutput = string_stream_get_string(stream);\n\tKUNIT_ASSERT_STREQ(test, output, \"Foo bar\");\n}\n\nstatic struct kunit_case string_stream_test_cases[] = {\n\tKUNIT_CASE(string_stream_test_empty_on_creation),\n\tKUNIT_CASE(string_stream_test_not_empty_after_add),\n\tKUNIT_CASE(string_stream_test_get_string),\n\t{}\n};\n\nstatic struct kunit_suite string_stream_test_suite = {\n\t.name = \"string-stream-test\",\n\t.test_cases = string_stream_test_cases\n};\nkunit_test_suites(&string_stream_test_suite);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "smi.h",
+  "hash_id": "9ba771bf5f5c9629f0b88717f291315914968873241623e9f6c2e2fa2a5f98ed",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/infiniband/core/smi.h",
+  "human_readable_source": " \n\n#ifndef __SMI_H_\n#define __SMI_H_\n\n#include <rdma/ib_smi.h>\n\nenum smi_action {\n\tIB_SMI_DISCARD,\n\tIB_SMI_HANDLE\n};\n\nenum smi_forward_action {\n\tIB_SMI_LOCAL,\t \n\tIB_SMI_SEND,\t \n\tIB_SMI_FORWARD\t \n};\n\nenum smi_action smi_handle_dr_smp_recv(struct ib_smp *smp, bool is_switch,\n\t\t\t\t       u32 port_num, int phys_port_cnt);\nint smi_get_fwd_port(struct ib_smp *smp);\nextern enum smi_forward_action smi_check_forward_dr_smp(struct ib_smp *smp);\nextern enum smi_action smi_handle_dr_smp_send(struct ib_smp *smp,\n\t\t\t\t\t      bool is_switch, u32 port_num);\n\n \nstatic inline enum smi_action smi_check_local_smp(struct ib_smp *smp,\n\t\t\t\t\t\t  struct ib_device *device)\n{\n\t \n\t \n\treturn ((device->ops.process_mad &&\n\t\t!ib_get_smp_direction(smp) &&\n\t\t(smp->hop_ptr == smp->hop_cnt + 1)) ?\n\t\tIB_SMI_HANDLE : IB_SMI_DISCARD);\n}\n\n \nstatic inline enum smi_action smi_check_local_returning_smp(struct ib_smp *smp,\n\t\t\t\t\t\t   struct ib_device *device)\n{\n\t \n\t \n\treturn ((device->ops.process_mad &&\n\t\tib_get_smp_direction(smp) &&\n\t\t!smp->hop_ptr) ? IB_SMI_HANDLE : IB_SMI_DISCARD);\n}\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

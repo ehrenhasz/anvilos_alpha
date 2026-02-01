@@ -1,0 +1,9 @@
+{
+  "module_name": "ssh-com-sftp.sh",
+  "hash_id": "39b1f85f69d358e766368832fffead6e67d34fcc32b2ec9004953d4dafc819dc",
+  "original_prompt": "Ingested from openssh-9.6p1/regress/ssh-com-sftp.sh",
+  "human_readable_source": "#\t$OpenBSD: ssh-com-sftp.sh,v 1.7 2013/05/17 04:29:14 dtucker Exp $\n#\tPlaced in the Public Domain.\n\ntid=\"basic sftp put/get with ssh.com server\"\n\nSFTPCMDFILE=${OBJ}/batch\n\ncat >$SFTPCMDFILE <<EOF\nversion\nget $DATA ${COPY}.1\nput $DATA ${COPY}.2\nEOF\n\nBUFFERSIZE=\"5 1000 32000 64000\"\nREQUESTS=\"1 2 10\"\n\n#TEST_COMBASE=/path/to/ssh/com/binaries\nif [ \"X${TEST_COMBASE}\" = \"X\" ]; then\n\tfatal '$TEST_COMBASE is not set'\nfi\n\nVERSIONS=\"\n\t2.0.10\n\t2.0.12\n\t2.0.13\n\t2.1.0\n\t2.2.0\n\t2.3.0\n\t2.3.1\n\t2.4.0\n\t3.0.0\n\t3.1.0\n\t3.2.0\n\t3.2.2\n\t3.2.3\n\t3.2.5\n\t3.2.9\n\t3.2.9.1\n\t3.3.0\"\n\n# go for it\nfor v in ${VERSIONS}; do\n\tserver=${TEST_COMBASE}/${v}/sftp-server2\n\tif [ ! -x ${server} ]; then\n\t\tcontinue\n\tfi\n\tverbose \"sftp-server $v\"\n\tfor B in ${BUFFERSIZE}; do\n\t\tfor R in ${REQUESTS}; do\n\t\t\tverbose \"test $tid: buffer_size $B num_requests $R\"\n\t\t\trm -f ${COPY}.1 ${COPY}.2\n\t\t\t${SFTP} -D ${server} -B $B -R $R -b $SFTPCMDFILE \\\n\t\t\t> /dev/null 2>&1\n\t\t\tr=$?\n\t\t\tif [ $r -ne 0 ]; then\n\t\t\t\tfail \"sftp failed with $r\"\n\t\t\telse                                \n\t\t\t\tcmp $DATA ${COPY}.1 || fail \"corrupted copy after get\"\n\t\t\t\tcmp $DATA ${COPY}.2 || fail \"corrupted copy after put\"\n\t\t\tfi\n\t\tdone\n\tdone\ndone\nrm -f ${COPY}.1 ${COPY}.2                \nrm -f $SFTPCMDFILE\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

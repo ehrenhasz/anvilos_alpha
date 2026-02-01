@@ -1,0 +1,9 @@
+{
+  "module_name": "ttm_module.c",
+  "hash_id": "590e033c010fc6ebaa8265f12828fd7b925ae7aa814361ba0b7a114cdeb98cb8",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/ttm/ttm_module.c",
+  "human_readable_source": " \n \n \n#include <linux/module.h>\n#include <linux/device.h>\n#include <linux/pgtable.h>\n#include <linux/sched.h>\n#include <linux/debugfs.h>\n#include <drm/drm_sysfs.h>\n#include <drm/ttm/ttm_caching.h>\n\n#include \"ttm_module.h\"\n\n \n\n \npgprot_t ttm_prot_from_caching(enum ttm_caching caching, pgprot_t tmp)\n{\n\t \n\tif (caching == ttm_cached)\n\t\treturn tmp;\n\n#if defined(__i386__) || defined(__x86_64__)\n\tif (caching == ttm_write_combined)\n\t\ttmp = pgprot_writecombine(tmp);\n#ifndef CONFIG_UML\n\telse if (boot_cpu_data.x86 > 3)\n\t\ttmp = pgprot_noncached(tmp);\n#endif  \n#endif  \n#if defined(__ia64__) || defined(__arm__) || defined(__aarch64__) || \\\n\tdefined(__powerpc__) || defined(__mips__) || defined(__loongarch__)\n\tif (caching == ttm_write_combined)\n\t\ttmp = pgprot_writecombine(tmp);\n\telse\n\t\ttmp = pgprot_noncached(tmp);\n#endif\n#if defined(__sparc__)\n\ttmp = pgprot_noncached(tmp);\n#endif\n\treturn tmp;\n}\n\nMODULE_AUTHOR(\"Thomas Hellstrom, Jerome Glisse\");\nMODULE_DESCRIPTION(\"TTM memory manager subsystem (for DRM device)\");\nMODULE_LICENSE(\"GPL and additional rights\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

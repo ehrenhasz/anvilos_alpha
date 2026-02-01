@@ -1,0 +1,9 @@
+{
+  "module_name": "charclass.c",
+  "hash_id": "766ee3499f43ad5d11e159ccf33680487249fff737ef6793c6410bef53c654fe",
+  "original_prompt": "Ingested from sys_09_Anvil/source/lib/re1.5/charclass.c",
+  "human_readable_source": "#include \"re1.5.h\"\n\nint _re1_5_classmatch(const char *pc, const char *sp)\n{\n    \n    int is_positive = (pc[-1] == Class);\n    int cnt = *pc++;\n    while (cnt--) {\n        if (*pc == RE15_CLASS_NAMED_CLASS_INDICATOR) {\n            if (_re1_5_namedclassmatch(pc + 1, sp)) {\n                return is_positive;\n            }\n        } else {\n            if (*sp >= *pc && *sp <= pc[1]) {\n                return is_positive;\n            }\n        }\n        pc += 2;\n    }\n    return !is_positive;\n}\n\nint _re1_5_namedclassmatch(const char *pc, const char *sp)\n{\n    \n    int off = (*pc >> 5) & 1;\n    if ((*pc | 0x20) == 'd') {\n        if (!(*sp >= '0' && *sp <= '9')) {\n            off ^= 1;\n        }\n    } else if ((*pc | 0x20) == 's') {\n        if (!(*sp == ' ' || (*sp >= '\\t' && *sp <= '\\r'))) {\n            off ^= 1;\n        }\n    } else { \n        if (!((*sp >= 'A' && *sp <= 'Z') || (*sp >= 'a' && *sp <= 'z') || (*sp >= '0' && *sp <= '9') || *sp == '_')) {\n            off ^= 1;\n        }\n    }\n    return off;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

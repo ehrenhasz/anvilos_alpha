@@ -1,0 +1,9 @@
+{
+  "module_name": "hda.c",
+  "hash_id": "f0ce282ebdaf0f74c3ca096c66bcc68e776f4a3db3688e24bc7e86fc0d69f284",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/tegra/hda.c",
+  "human_readable_source": "\n \n\n#include <linux/bug.h>\n\n#include <sound/hda_verbs.h>\n\n#include \"hda.h\"\n\nvoid tegra_hda_parse_format(unsigned int format, struct tegra_hda_format *fmt)\n{\n\tunsigned int mul, div, bits, channels;\n\n\tif (format & AC_FMT_TYPE_NON_PCM)\n\t\tfmt->pcm = false;\n\telse\n\t\tfmt->pcm = true;\n\n\tif (format & AC_FMT_BASE_44K)\n\t\tfmt->sample_rate = 44100;\n\telse\n\t\tfmt->sample_rate = 48000;\n\n\tmul = (format & AC_FMT_MULT_MASK) >> AC_FMT_MULT_SHIFT;\n\tdiv = (format & AC_FMT_DIV_MASK) >> AC_FMT_DIV_SHIFT;\n\n\tfmt->sample_rate *= (mul + 1) / (div + 1);\n\n\tswitch (format & AC_FMT_BITS_MASK) {\n\tcase AC_FMT_BITS_8:\n\t\tfmt->bits = 8;\n\t\tbreak;\n\n\tcase AC_FMT_BITS_16:\n\t\tfmt->bits = 16;\n\t\tbreak;\n\n\tcase AC_FMT_BITS_20:\n\t\tfmt->bits = 20;\n\t\tbreak;\n\n\tcase AC_FMT_BITS_24:\n\t\tfmt->bits = 24;\n\t\tbreak;\n\n\tcase AC_FMT_BITS_32:\n\t\tfmt->bits = 32;\n\t\tbreak;\n\n\tdefault:\n\t\tbits = (format & AC_FMT_BITS_MASK) >> AC_FMT_BITS_SHIFT;\n\t\tWARN(1, \"invalid number of bits: %#x\\n\", bits);\n\t\tfmt->bits = 8;\n\t\tbreak;\n\t}\n\n\tchannels = (format & AC_FMT_CHAN_MASK) >> AC_FMT_CHAN_SHIFT;\n\n\t \n\tfmt->channels = channels + 1;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

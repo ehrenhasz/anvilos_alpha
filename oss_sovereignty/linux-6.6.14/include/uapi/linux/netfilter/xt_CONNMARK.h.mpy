@@ -1,0 +1,9 @@
+{
+  "module_name": "xt_CONNMARK.h",
+  "hash_id": "224520aa62919322c1ea7e204c483233e57f767e622267ff783873eec33f572c",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/netfilter/xt_CONNMARK.h",
+  "human_readable_source": " \n#ifndef _XT_CONNMARK_H_target\n#define _XT_CONNMARK_H_target\n\n#include <linux/netfilter/xt_connmark.h>\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "mei-trace.c",
+  "hash_id": "52f3f8ae7d9f531761a77a0b7e5187b6faec0acf1e198cb32f648949df194b68",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/misc/mei/mei-trace.c",
+  "human_readable_source": "\n \n#include <linux/module.h>\n\n \n#ifndef __CHECKER__\n#define CREATE_TRACE_POINTS\n#include \"mei-trace.h\"\n\nEXPORT_TRACEPOINT_SYMBOL(mei_reg_read);\nEXPORT_TRACEPOINT_SYMBOL(mei_reg_write);\nEXPORT_TRACEPOINT_SYMBOL(mei_pci_cfg_read);\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

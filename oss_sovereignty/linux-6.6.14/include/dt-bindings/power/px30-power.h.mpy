@@ -1,0 +1,9 @@
+{
+  "module_name": "px30-power.h",
+  "hash_id": "12df472fc307215fa838e3115f7a5ada2bf2a3f2d956ce4d4dfe7d8ac918060b",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/power/px30-power.h",
+  "human_readable_source": " \n#ifndef __DT_BINDINGS_POWER_PX30_POWER_H__\n#define __DT_BINDINGS_POWER_PX30_POWER_H__\n\n \n#define PX30_PD_A35_0\t\t0\n#define PX30_PD_A35_1\t\t1\n#define PX30_PD_A35_2\t\t2\n#define PX30_PD_A35_3\t\t3\n#define PX30_PD_SCU\t\t4\n\n \n#define PX30_PD_USB\t\t5\n#define PX30_PD_DDR\t\t6\n#define PX30_PD_SDCARD\t\t7\n#define PX30_PD_CRYPTO\t\t8\n#define PX30_PD_GMAC\t\t9\n#define PX30_PD_MMC_NAND\t10\n#define PX30_PD_VPU\t\t11\n#define PX30_PD_VO\t\t12\n#define PX30_PD_VI\t\t13\n#define PX30_PD_GPU\t\t14\n\n \n#define PX30_PD_PMU\t\t15\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

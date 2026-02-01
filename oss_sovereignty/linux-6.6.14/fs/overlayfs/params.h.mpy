@@ -1,0 +1,9 @@
+{
+  "module_name": "params.h",
+  "hash_id": "bf7c435f04d062e72c4331b0b508127c52937bf720379b8730031f15ba77a6ba",
+  "original_prompt": "Ingested from linux-6.6.14/fs/overlayfs/params.h",
+  "human_readable_source": " \n\n#include <linux/fs_context.h>\n#include <linux/fs_parser.h>\n\nstruct ovl_fs;\nstruct ovl_config;\n\nextern const struct fs_parameter_spec ovl_parameter_spec[];\nextern const struct constant_table ovl_parameter_redirect_dir[];\n\n \nstruct ovl_opt_set {\n\tbool metacopy;\n\tbool redirect;\n\tbool nfs_export;\n\tbool index;\n};\n\n#define OVL_MAX_STACK 500\n\nstruct ovl_fs_context_layer {\n\tchar *name;\n\tstruct path path;\n};\n\nstruct ovl_fs_context {\n\tstruct path upper;\n\tstruct path work;\n\tsize_t capacity;\n\tsize_t nr;  \n\tsize_t nr_data;\n\tstruct ovl_opt_set set;\n\tstruct ovl_fs_context_layer *lower;\n};\n\nint ovl_init_fs_context(struct fs_context *fc);\nvoid ovl_free_fs(struct ovl_fs *ofs);\nint ovl_fs_params_verify(const struct ovl_fs_context *ctx,\n\t\t\t struct ovl_config *config);\nint ovl_show_options(struct seq_file *m, struct dentry *dentry);\nconst char *ovl_xino_mode(struct ovl_config *config);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

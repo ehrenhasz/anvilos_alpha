@@ -1,0 +1,9 @@
+{
+  "module_name": "serial.h",
+  "hash_id": "a2896c73a304c814046872938bc908cee6a27c020b5d189cb7edd00e47235315",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/serial.h",
+  "human_readable_source": " \n#ifndef _LINUX_SERIAL_H\n#define _LINUX_SERIAL_H\n\n#include <uapi/linux/serial.h>\n#include <uapi/linux/serial_reg.h>\n\n#define UART_IER_ALL_INTR\t(UART_IER_MSI | \\\n\t\t\t\t UART_IER_RLSI | \\\n\t\t\t\t UART_IER_THRI | \\\n\t\t\t\t UART_IER_RDI)\n\n \n#define UART_LCR_WLEN(x)\t((x) - 5)\n\n \n#define UART_LSR_BOTH_EMPTY\t(UART_LSR_TEMT | UART_LSR_THRE)\n\nstatic inline bool uart_lsr_tx_empty(u16 lsr)\n{\n\treturn (lsr & UART_LSR_BOTH_EMPTY) == UART_LSR_BOTH_EMPTY;\n}\n\n#define UART_MSR_STATUS_BITS\t(UART_MSR_DCD | \\\n\t\t\t\t UART_MSR_RI | \\\n\t\t\t\t UART_MSR_DSR | \\\n\t\t\t\t UART_MSR_CTS)\n\n \n\nstruct async_icount {\n\t__u32\tcts, dsr, rng, dcd, tx, rx;\n\t__u32\tframe, parity, overrun, brk;\n\t__u32\tbuf_overrun;\n};\n\n#include <linux/compiler.h>\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

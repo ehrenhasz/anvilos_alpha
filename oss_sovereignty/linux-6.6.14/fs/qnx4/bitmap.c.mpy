@@ -1,0 +1,9 @@
+{
+  "module_name": "bitmap.c",
+  "hash_id": "e242deeaa4d089d462ddc3a0172b7e4d40f21635ce097a41d77789b9184373f4",
+  "original_prompt": "Ingested from linux-6.6.14/fs/qnx4/bitmap.c",
+  "human_readable_source": "\n \n\n#include <linux/buffer_head.h>\n#include <linux/bitops.h>\n#include \"qnx4.h\"\n\nunsigned long qnx4_count_free_blocks(struct super_block *sb)\n{\n\tint start = le32_to_cpu(qnx4_sb(sb)->BitMap->di_first_xtnt.xtnt_blk) - 1;\n\tint total = 0;\n\tint total_free = 0;\n\tint offset = 0;\n\tint size = le32_to_cpu(qnx4_sb(sb)->BitMap->di_size);\n\tstruct buffer_head *bh;\n\n\twhile (total < size) {\n\t\tint bytes = min(size - total, QNX4_BLOCK_SIZE);\n\n\t\tif ((bh = sb_bread(sb, start + offset)) == NULL) {\n\t\t\tprintk(KERN_ERR \"qnx4: I/O error in counting free blocks\\n\");\n\t\t\tbreak;\n\t\t}\n\t\ttotal_free += bytes * BITS_PER_BYTE -\n\t\t\t\tmemweight(bh->b_data, bytes);\n\t\tbrelse(bh);\n\t\ttotal += bytes;\n\t\toffset++;\n\t}\n\n\treturn total_free;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

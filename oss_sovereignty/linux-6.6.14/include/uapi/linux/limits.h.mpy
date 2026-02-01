@@ -1,0 +1,9 @@
+{
+  "module_name": "limits.h",
+  "hash_id": "7d1c879478d6090d391887493f0c1d9f6a5d00aacf41191eaf2a4caf1c60a0cd",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/limits.h",
+  "human_readable_source": " \n#ifndef _UAPI_LINUX_LIMITS_H\n#define _UAPI_LINUX_LIMITS_H\n\n#define NR_OPEN\t        1024\n\n#define NGROUPS_MAX    65536\t \n#define ARG_MAX       131072\t \n#define LINK_MAX         127\t \n#define MAX_CANON        255\t \n#define MAX_INPUT        255\t \n#define NAME_MAX         255\t \n#define PATH_MAX        4096\t \n#define PIPE_BUF        4096\t \n#define XATTR_NAME_MAX   255\t \n#define XATTR_SIZE_MAX 65536\t \n#define XATTR_LIST_MAX 65536\t \n\n#define RTSIG_MAX\t  32\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

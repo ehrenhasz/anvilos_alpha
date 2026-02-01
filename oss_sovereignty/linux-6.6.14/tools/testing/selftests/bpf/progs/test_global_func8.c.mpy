@@ -1,0 +1,9 @@
+{
+  "module_name": "test_global_func8.c",
+  "hash_id": "4eb8cac7822649b760a3c8e0c19b292197d8749189f4919977866b4a7c5a18da",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/test_global_func8.c",
+  "human_readable_source": "\n \n#include <stddef.h>\n#include <linux/bpf.h>\n#include <bpf/bpf_helpers.h>\n#include \"bpf_misc.h\"\n\n__noinline int foo(struct __sk_buff *skb)\n{\n\treturn bpf_get_prandom_u32();\n}\n\nSEC(\"cgroup_skb/ingress\")\n__success\nint global_func8(struct __sk_buff *skb)\n{\n\tif (!foo(skb))\n\t\treturn 0;\n\n\treturn 1;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

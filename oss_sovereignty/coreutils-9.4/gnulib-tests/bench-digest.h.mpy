@@ -1,0 +1,9 @@
+{
+  "module_name": "bench-digest.h",
+  "hash_id": "0a56b6464c0b95bc549597ff8cec48d7a3b53de4f3d2931f2e9f50326700943a",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/bench-digest.h",
+  "human_readable_source": " \n  {\n    size_t i;\n    for (i = 0; i < size; i++)\n      memblock[i] =\n        (unsigned char) (((i * (i-1) * (i-5)) >> 6) + (i % 499) + (i % 101));\n  }\n\n  struct timings_state ts;\n  timing_start (&ts);\n\n  int count;\n  for (count = 0; count < repeat; count++)\n    {\n      char digest[64];\n      FUNC (memblock, size, digest);\n    }\n\n  timing_end (&ts);\n  timing_output (&ts);\n\n  return 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

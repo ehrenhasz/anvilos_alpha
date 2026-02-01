@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "58fcc13b28f3021967ab150d6f867fff9f567e399171554c873cef5d10356bd2",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/pci/saa7146/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig VIDEO_HEXIUM_GEMINI\n\ttristate \"Hexium Gemini frame grabber\"\n\tdepends on PCI && VIDEO_DEV && I2C\n\tselect VIDEO_SAA7146_VV\n\thelp\n\t  This is a video4linux driver for the Hexium Gemini frame\n\t  grabber card by Hexium. Please note that the Gemini Dual\n\t  card is *not* fully supported.\n\n\t  To compile this driver as a module, choose M here: the\n\t  module will be called hexium_gemini.\n\nconfig VIDEO_HEXIUM_ORION\n\ttristate \"Hexium HV-PCI6 and Orion frame grabber\"\n\tdepends on PCI && VIDEO_DEV && I2C\n\tselect VIDEO_SAA7146_VV\n\thelp\n\t  This is a video4linux driver for the Hexium HV-PCI6 and\n\t  Orion frame grabber cards by Hexium.\n\n\t  To compile this driver as a module, choose M here: the\n\t  module will be called hexium_orion.\n\nconfig VIDEO_MXB\n\ttristate \"Siemens-Nixdorf 'Multimedia eXtension Board'\"\n\tdepends on PCI && VIDEO_DEV && I2C\n\tselect VIDEO_SAA7146_VV\n\tselect VIDEO_TUNER\n\tselect VIDEO_SAA711X if MEDIA_SUBDRV_AUTOSELECT\n\tselect VIDEO_TDA9840 if MEDIA_SUBDRV_AUTOSELECT\n\tselect VIDEO_TEA6415C if MEDIA_SUBDRV_AUTOSELECT\n\tselect VIDEO_TEA6420 if MEDIA_SUBDRV_AUTOSELECT\n\thelp\n\t  This is a video4linux driver for the 'Multimedia eXtension Board'\n\t  TV card by Siemens-Nixdorf.\n\n\t  To compile this driver as a module, choose M here: the\n\t  module will be called mxb.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

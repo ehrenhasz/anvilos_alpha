@@ -1,0 +1,9 @@
+{
+  "module_name": "setjmp_aarch64.S",
+  "hash_id": "307400b11b1fdab77885021e0cb2a6fea7aa265a7869e3ac0f0d13db00be7036",
+  "original_prompt": "Ingested from zfs-2.2.2/module/lua/setjmp/setjmp_aarch64.S",
+  "human_readable_source": " \n\n\n#ifdef __aarch64__\n\n#define\tENTRY(sym) \\\n\t.text; \\\n\t.globl\tsym; \\\n\t.balign\t2; \\\n\t.type\tsym,#function; \\\nsym:\n\n#define\tEND(sym) \\\n\t.size\tsym, . - sym\n\n\nENTRY(setjmp)\n\t \n\tmov\tx8, sp\n\tstr\tx8, [x0], #8\n\n\t \n\tstp\tx19, x20, [x0], #16\n\tstp\tx21, x22, [x0], #16\n\tstp\tx23, x24, [x0], #16\n\tstp\tx25, x26, [x0], #16\n\tstp\tx27, x28, [x0], #16\n\tstp\tx29, x30, [x0], #16\n\n\t \n\tmov\tx0, #0\n\tret\nEND(setjmp)\n\nENTRY(longjmp)\n\t \n\tldr\tx8, [x0], #8\n\tmov\tsp, x8\n\n\t \n\tldp\tx19, x20, [x0], #16\n\tldp\tx21, x22, [x0], #16\n\tldp\tx23, x24, [x0], #16\n\tldp\tx25, x26, [x0], #16\n\tldp\tx27, x28, [x0], #16\n\tldp\tx29, x30, [x0], #16\n\n\t \n\tmov\tx0, x1\n\tret\nEND(longjmp)\n\n#ifdef __ELF__\n.section .note.GNU-stack,\"\",%progbits\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

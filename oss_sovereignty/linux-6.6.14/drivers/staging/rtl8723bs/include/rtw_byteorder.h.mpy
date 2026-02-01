@@ -1,0 +1,9 @@
+{
+  "module_name": "rtw_byteorder.h",
+  "hash_id": "3afd43a1014f1fe1c41879690a755a5ca162afe4dcf678be6d3ce005ec37588c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/rtl8723bs/include/rtw_byteorder.h",
+  "human_readable_source": " \n \n#ifndef _RTL871X_BYTEORDER_H_\n#define _RTL871X_BYTEORDER_H_\n\n#if defined(__LITTLE_ENDIAN)\n#include <linux/byteorder/little_endian.h>\n#else\n#  include <linux/byteorder/big_endian.h>\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

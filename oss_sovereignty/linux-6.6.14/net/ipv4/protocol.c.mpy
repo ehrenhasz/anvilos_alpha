@@ -1,0 +1,9 @@
+{
+  "module_name": "protocol.c",
+  "hash_id": "92aea59faed3f5ad0d13adf6bcbbeb96b38a539cfaa5692de3cc7a33df25616e",
+  "original_prompt": "Ingested from linux-6.6.14/net/ipv4/protocol.c",
+  "human_readable_source": "\n \n#include <linux/cache.h>\n#include <linux/module.h>\n#include <linux/netdevice.h>\n#include <linux/spinlock.h>\n#include <net/protocol.h>\n\nstruct net_protocol __rcu *inet_protos[MAX_INET_PROTOS] __read_mostly;\nEXPORT_SYMBOL(inet_protos);\nconst struct net_offload __rcu *inet_offloads[MAX_INET_PROTOS] __read_mostly;\nEXPORT_SYMBOL(inet_offloads);\n\nint inet_add_protocol(const struct net_protocol *prot, unsigned char protocol)\n{\n\treturn !cmpxchg((const struct net_protocol **)&inet_protos[protocol],\n\t\t\tNULL, prot) ? 0 : -1;\n}\nEXPORT_SYMBOL(inet_add_protocol);\n\nint inet_add_offload(const struct net_offload *prot, unsigned char protocol)\n{\n\treturn !cmpxchg((const struct net_offload **)&inet_offloads[protocol],\n\t\t\tNULL, prot) ? 0 : -1;\n}\nEXPORT_SYMBOL(inet_add_offload);\n\nint inet_del_protocol(const struct net_protocol *prot, unsigned char protocol)\n{\n\tint ret;\n\n\tret = (cmpxchg((const struct net_protocol **)&inet_protos[protocol],\n\t\t       prot, NULL) == prot) ? 0 : -1;\n\n\tsynchronize_net();\n\n\treturn ret;\n}\nEXPORT_SYMBOL(inet_del_protocol);\n\nint inet_del_offload(const struct net_offload *prot, unsigned char protocol)\n{\n\tint ret;\n\n\tret = (cmpxchg((const struct net_offload **)&inet_offloads[protocol],\n\t\t       prot, NULL) == prot) ? 0 : -1;\n\n\tsynchronize_net();\n\n\treturn ret;\n}\nEXPORT_SYMBOL(inet_del_offload);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

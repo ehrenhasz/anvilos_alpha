@@ -1,0 +1,9 @@
+{
+  "module_name": "uprobes.h",
+  "hash_id": "af384a7b2d6a68b65f15f6691afb24748a229b19ce2f6a64fb9d4cc32c4af032",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/include/asm/uprobes.h",
+  "human_readable_source": " \n#ifndef _ASM_UPROBES_H\n#define _ASM_UPROBES_H\n \n\n#include <linux/notifier.h>\n\ntypedef u8 uprobe_opcode_t;\n\n#define MAX_UINSN_BYTES\t\t\t  16\n#define UPROBE_XOL_SLOT_BYTES\t\t 128\t \n\n#define UPROBE_SWBP_INSN\t\t0xcc\n#define UPROBE_SWBP_INSN_SIZE\t\t   1\n\nstruct uprobe_xol_ops;\n\nstruct arch_uprobe {\n\tunion {\n\t\tu8\t\t\tinsn[MAX_UINSN_BYTES];\n\t\tu8\t\t\tixol[MAX_UINSN_BYTES];\n\t};\n\n\tconst struct uprobe_xol_ops\t*ops;\n\n\tunion {\n\t\tstruct {\n\t\t\ts32\toffs;\n\t\t\tu8\tilen;\n\t\t\tu8\topc1;\n\t\t}\t\t\tbranch;\n\t\tstruct {\n\t\t\tu8\tfixups;\n\t\t\tu8\tilen;\n\t\t} \t\t\tdefparam;\n\t\tstruct {\n\t\t\tu8\treg_offset;\t \n\t\t\tu8\tilen;\n\t\t}\t\t\tpush;\n\t};\n};\n\nstruct arch_uprobe_task {\n#ifdef CONFIG_X86_64\n\tunsigned long\t\t\tsaved_scratch_register;\n#endif\n\tunsigned int\t\t\tsaved_trap_nr;\n\tunsigned int\t\t\tsaved_tf;\n};\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

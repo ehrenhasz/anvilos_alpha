@@ -1,0 +1,9 @@
+{
+  "module_name": "bma400_i2c.c",
+  "hash_id": "063bb67d2903269bde92b897b58bf41e0ae6643b317561771801d5340c851894",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/iio/accel/bma400_i2c.c",
+  "human_readable_source": "\n \n#include <linux/i2c.h>\n#include <linux/mod_devicetable.h>\n#include <linux/module.h>\n#include <linux/regmap.h>\n\n#include \"bma400.h\"\n\nstatic int bma400_i2c_probe(struct i2c_client *client)\n{\n\tconst struct i2c_device_id *id = i2c_client_get_device_id(client);\n\tstruct regmap *regmap;\n\n\tregmap = devm_regmap_init_i2c(client, &bma400_regmap_config);\n\tif (IS_ERR(regmap)) {\n\t\tdev_err(&client->dev, \"failed to create regmap\\n\");\n\t\treturn PTR_ERR(regmap);\n\t}\n\n\treturn bma400_probe(&client->dev, regmap, client->irq, id->name);\n}\n\nstatic const struct i2c_device_id bma400_i2c_ids[] = {\n\t{ \"bma400\", 0 },\n\t{ }\n};\nMODULE_DEVICE_TABLE(i2c, bma400_i2c_ids);\n\nstatic const struct of_device_id bma400_of_i2c_match[] = {\n\t{ .compatible = \"bosch,bma400\" },\n\t{ }\n};\nMODULE_DEVICE_TABLE(of, bma400_of_i2c_match);\n\nstatic struct i2c_driver bma400_i2c_driver = {\n\t.driver = {\n\t\t.name = \"bma400\",\n\t\t.of_match_table = bma400_of_i2c_match,\n\t},\n\t.probe = bma400_i2c_probe,\n\t.id_table = bma400_i2c_ids,\n};\n\nmodule_i2c_driver(bma400_i2c_driver);\n\nMODULE_AUTHOR(\"Dan Robertson <dan@dlrobertson.com>\");\nMODULE_DESCRIPTION(\"Bosch BMA400 triaxial acceleration sensor (I2C)\");\nMODULE_LICENSE(\"GPL\");\nMODULE_IMPORT_NS(IIO_BMA400);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

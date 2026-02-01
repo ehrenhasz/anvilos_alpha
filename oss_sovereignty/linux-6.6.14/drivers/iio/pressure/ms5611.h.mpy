@@ -1,0 +1,9 @@
+{
+  "module_name": "ms5611.h",
+  "hash_id": "ae695cd7c29f0841031e113063abc676d9e4215c36ac6c7b5c49db695cb5d314",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/iio/pressure/ms5611.h",
+  "human_readable_source": " \n \n\n#ifndef _MS5611_H\n#define _MS5611_H\n\n#include <linux/device.h>\n#include <linux/iio/iio.h>\n#include <linux/mutex.h>\n\n#define MS5611_RESET\t\t\t0x1e\n#define MS5611_READ_ADC\t\t\t0x00\n#define MS5611_READ_PROM_WORD\t\t0xA0\n#define MS5611_PROM_WORDS_NB\t\t8\n\nenum {\n\tMS5611,\n\tMS5607,\n};\n\n \nstruct ms5611_osr {\n\tunsigned long conv_usec;\n\tu8 cmd;\n\tunsigned short rate;\n};\n\nstruct ms5611_state {\n\tvoid *client;\n\tstruct mutex lock;\n\n\tconst struct ms5611_osr *pressure_osr;\n\tconst struct ms5611_osr *temp_osr;\n\n\tu16 prom[MS5611_PROM_WORDS_NB];\n\n\tint (*reset)(struct ms5611_state *st);\n\tint (*read_prom_word)(struct ms5611_state *st, int index, u16 *word);\n\tint (*read_adc_temp_and_pressure)(struct ms5611_state *st,\n\t\t\t\t\t  s32 *temp, s32 *pressure);\n\n\tint (*compensate_temp_and_pressure)(struct ms5611_state *st, s32 *temp,\n\t\t\t\t\t  s32 *pressure);\n};\n\nint ms5611_probe(struct iio_dev *indio_dev, struct device *dev,\n\t\t const char *name, int type);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

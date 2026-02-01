@@ -1,0 +1,9 @@
+{
+  "module_name": "raspberrypi,firmware-reset.h",
+  "hash_id": "9f3f10d9ec49ad92b60baf995a25677028eed92ae5b4d77c11ac97b3880ad336",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/reset/raspberrypi,firmware-reset.h",
+  "human_readable_source": " \n \n\n#ifndef _DT_BINDINGS_RASPBERRYPI_FIRMWARE_RESET_H\n#define _DT_BINDINGS_RASPBERRYPI_FIRMWARE_RESET_H\n\n#define RASPBERRYPI_FIRMWARE_RESET_ID_USB\t0\n#define RASPBERRYPI_FIRMWARE_RESET_NUM_IDS\t1\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "03c292fc98bdea80009a0f17ce6551e000d42d2cb48a9a5762c8112d2ac9b1dd",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/vc04_services/bcm2835-audio/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nobj-$(CONFIG_SND_BCM2835)\t+= snd-bcm2835.o\nsnd-bcm2835-objs\t\t:= bcm2835.o bcm2835-ctl.o bcm2835-pcm.o bcm2835-vchiq.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

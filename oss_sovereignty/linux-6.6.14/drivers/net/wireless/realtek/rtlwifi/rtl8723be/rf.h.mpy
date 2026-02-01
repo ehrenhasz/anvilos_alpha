@@ -1,0 +1,9 @@
+{
+  "module_name": "rf.h",
+  "hash_id": "dae9962cb3ef646ef3930f8e4dfa6e2bf8d053455dc3334395290e99f284af9c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/realtek/rtlwifi/rtl8723be/rf.h",
+  "human_readable_source": " \n \n\n#ifndef __RTL8723BE_RF_H__\n#define __RTL8723BE_RF_H__\n\n#define RF6052_MAX_TX_PWR\t\t0x3F\n\nvoid rtl8723be_phy_rf6052_set_bandwidth(struct ieee80211_hw *hw,\n\t\t\t\t\tu8 bandwidth);\nvoid rtl8723be_phy_rf6052_set_cck_txpower(struct ieee80211_hw *hw,\n\t\t\t\t\t  u8 *ppowerlevel);\nvoid rtl8723be_phy_rf6052_set_ofdm_txpower(struct ieee80211_hw *hw,\n\t\t\t\t\t   u8 *ppowerlevel_ofdm,\n\t\t\t\t\t   u8 *ppowerlevel_bw20,\n\t\t\t\t\t   u8 *ppowerlevel_bw40,\n\t\t\t\t\t   u8 channel);\nbool rtl8723be_phy_rf6052_config(struct ieee80211_hw *hw);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

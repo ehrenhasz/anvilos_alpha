@@ -1,0 +1,9 @@
+{
+  "module_name": "usermode_driver.h",
+  "hash_id": "16a400e636b507737897888094f22f4e2cbbee3d223ac49e9ab8b05762026c52",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/usermode_driver.h",
+  "human_readable_source": "#ifndef __LINUX_USERMODE_DRIVER_H__\n#define __LINUX_USERMODE_DRIVER_H__\n\n#include <linux/umh.h>\n#include <linux/path.h>\n\nstruct umd_info {\n\tconst char *driver_name;\n\tstruct file *pipe_to_umh;\n\tstruct file *pipe_from_umh;\n\tstruct path wd;\n\tstruct pid *tgid;\n};\nint umd_load_blob(struct umd_info *info, const void *data, size_t len);\nint umd_unload_blob(struct umd_info *info);\nint fork_usermode_driver(struct umd_info *info);\nvoid umd_cleanup_helper(struct umd_info *info);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

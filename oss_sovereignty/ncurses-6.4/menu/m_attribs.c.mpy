@@ -1,0 +1,9 @@
+{
+  "module_name": "m_attribs.c",
+  "hash_id": "8f0aa33029e1fe8211339f4fdf3d351670e4a1d1f5f0c4c0386212b68fb5c859",
+  "original_prompt": "Ingested from ncurses-6.4/menu/m_attribs.c",
+  "human_readable_source": " \n\n \n\n \n\n#include \"menu.priv.h\"\n\nMODULE_ID(\"$Id: m_attribs.c,v 1.20 2021/06/17 21:20:30 tom Exp $\")\n\n \n#define Refresh_Menu(menu) \\\n   if ( (menu) && ((menu)->status & _POSTED) )\\\n   {\\\n      _nc_Draw_Menu( menu );\\\n      _nc_Show_Menu( menu );\\\n   }\n\n \n#define GEN_MENU_ATTR_SET_FCT( name ) \\\nMENU_EXPORT(int) NCURSES_API set_menu_ ## name (MENU* menu, chtype attr) \\\n{\\\n  T((T_CALLED(\"set_menu_\" #name \"(%p,%s)\"), (void *) menu, _traceattr(attr))); \\\n   if (!(attr==A_NORMAL || (attr & A_ATTRIBUTES)==attr))\\\n      RETURN(E_BAD_ARGUMENT);\\\n   if (menu && ( menu -> name != attr))\\\n     {\\\n       (menu -> name) = attr;\\\n       Refresh_Menu(menu);\\\n     }\\\n   Normalize_Menu( menu ) -> name = attr;\\\n   RETURN(E_OK);\\\n}\n\n \n#define GEN_MENU_ATTR_GET_FCT( name ) \\\nMENU_EXPORT(chtype) NCURSES_API menu_ ## name (const MENU * menu)\\\n{\\\n   T((T_CALLED(\"menu_\" #name \"(%p)\"), (const void *) menu));\\\n   returnAttr(Normalize_Menu( menu ) -> name);\\\n}\n\n \nGEN_MENU_ATTR_SET_FCT(fore)\n\n \nGEN_MENU_ATTR_GET_FCT(fore)\n\n \nGEN_MENU_ATTR_SET_FCT(back)\n\n \nGEN_MENU_ATTR_GET_FCT(back)\n\n \nGEN_MENU_ATTR_SET_FCT(grey)\n\n \nGEN_MENU_ATTR_GET_FCT(grey)\n\n \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

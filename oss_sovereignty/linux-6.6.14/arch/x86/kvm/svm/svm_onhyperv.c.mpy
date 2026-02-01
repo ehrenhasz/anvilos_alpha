@@ -1,0 +1,9 @@
+{
+  "module_name": "svm_onhyperv.c",
+  "hash_id": "d9606ad82404d033be2442152e63cbf605f13e9801cbccae29eec33bcc052c91",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/kvm/svm/svm_onhyperv.c",
+  "human_readable_source": "\n \n#define pr_fmt(fmt) KBUILD_MODNAME \": \" fmt\n\n#include <linux/kvm_host.h>\n\n#include <asm/mshyperv.h>\n\n#include \"svm.h\"\n#include \"svm_ops.h\"\n\n#include \"hyperv.h\"\n#include \"kvm_onhyperv.h\"\n#include \"svm_onhyperv.h\"\n\nint svm_hv_enable_l2_tlb_flush(struct kvm_vcpu *vcpu)\n{\n\tstruct hv_vmcb_enlightenments *hve;\n\tstruct hv_partition_assist_pg **p_hv_pa_pg =\n\t\t\t&to_kvm_hv(vcpu->kvm)->hv_pa_pg;\n\n\tif (!*p_hv_pa_pg)\n\t\t*p_hv_pa_pg = kzalloc(PAGE_SIZE, GFP_KERNEL);\n\n\tif (!*p_hv_pa_pg)\n\t\treturn -ENOMEM;\n\n\thve = &to_svm(vcpu)->vmcb->control.hv_enlightenments;\n\n\thve->partition_assist_page = __pa(*p_hv_pa_pg);\n\thve->hv_vm_id = (unsigned long)vcpu->kvm;\n\tif (!hve->hv_enlightenments_control.nested_flush_hypercall) {\n\t\thve->hv_enlightenments_control.nested_flush_hypercall = 1;\n\t\tvmcb_mark_dirty(to_svm(vcpu)->vmcb, HV_VMCB_NESTED_ENLIGHTENMENTS);\n\t}\n\n\treturn 0;\n}\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

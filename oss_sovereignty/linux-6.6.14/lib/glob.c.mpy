@@ -1,0 +1,9 @@
+{
+  "module_name": "glob.c",
+  "hash_id": "d104fe9512caef9cc7fc5c8f44ae05ef8038be9ec0692bcc06184e36afe3b1f8",
+  "original_prompt": "Ingested from linux-6.6.14/lib/glob.c",
+  "human_readable_source": "#include <linux/module.h>\n#include <linux/glob.h>\n\n \nMODULE_DESCRIPTION(\"glob(7) matching\");\nMODULE_LICENSE(\"Dual MIT/GPL\");\n\n \nbool __pure glob_match(char const *pat, char const *str)\n{\n\t \n\tchar const *back_pat = NULL, *back_str;\n\n\t \n\tfor (;;) {\n\t\tunsigned char c = *str++;\n\t\tunsigned char d = *pat++;\n\n\t\tswitch (d) {\n\t\tcase '?':\t \n\t\t\tif (c == '\\0')\n\t\t\t\treturn false;\n\t\t\tbreak;\n\t\tcase '*':\t \n\t\t\tif (*pat == '\\0')\t \n\t\t\t\treturn true;\n\t\t\tback_pat = pat;\n\t\t\tback_str = --str;\t \n\t\t\tbreak;\n\t\tcase '[': {\t \n\t\t\tbool match = false, inverted = (*pat == '!');\n\t\t\tchar const *class = pat + inverted;\n\t\t\tunsigned char a = *class++;\n\n\t\t\t \n\t\t\tdo {\n\t\t\t\tunsigned char b = a;\n\n\t\t\t\tif (a == '\\0')\t \n\t\t\t\t\tgoto literal;\n\n\t\t\t\tif (class[0] == '-' && class[1] != ']') {\n\t\t\t\t\tb = class[1];\n\n\t\t\t\t\tif (b == '\\0')\n\t\t\t\t\t\tgoto literal;\n\n\t\t\t\t\tclass += 2;\n\t\t\t\t\t \n\t\t\t\t}\n\t\t\t\tmatch |= (a <= c && c <= b);\n\t\t\t} while ((a = *class++) != ']');\n\n\t\t\tif (match == inverted)\n\t\t\t\tgoto backtrack;\n\t\t\tpat = class;\n\t\t\t}\n\t\t\tbreak;\n\t\tcase '\\\\':\n\t\t\td = *pat++;\n\t\t\tfallthrough;\n\t\tdefault:\t \nliteral:\n\t\t\tif (c == d) {\n\t\t\t\tif (d == '\\0')\n\t\t\t\t\treturn true;\n\t\t\t\tbreak;\n\t\t\t}\nbacktrack:\n\t\t\tif (c == '\\0' || !back_pat)\n\t\t\t\treturn false;\t \n\t\t\t \n\t\t\tpat = back_pat;\n\t\t\tstr = ++back_str;\n\t\t\tbreak;\n\t\t}\n\t}\n}\nEXPORT_SYMBOL(glob_match);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

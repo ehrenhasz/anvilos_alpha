@@ -1,0 +1,9 @@
+{
+  "module_name": "bcm6358-reset.h",
+  "hash_id": "dbc53a371dbd3f309267d716d00eea55f3ababf66ab07b710e022963be276922",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/reset/bcm6358-reset.h",
+  "human_readable_source": " \n\n#ifndef __DT_BINDINGS_RESET_BCM6358_H\n#define __DT_BINDINGS_RESET_BCM6358_H\n\n#define BCM6358_RST_SPI\t\t0\n#define BCM6358_RST_ENET\t2\n#define BCM6358_RST_MPI\t\t3\n#define BCM6358_RST_EPHY\t6\n#define BCM6358_RST_SAR\t\t7\n#define BCM6358_RST_USBH\t12\n#define BCM6358_RST_PCM\t\t13\n#define BCM6358_RST_ADSL\t14\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

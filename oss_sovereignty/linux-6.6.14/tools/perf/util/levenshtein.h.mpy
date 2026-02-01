@@ -1,0 +1,9 @@
+{
+  "module_name": "levenshtein.h",
+  "hash_id": "dff751f41ca1e1dce1572f773718ed3b678af8f090784d47c98cd773026e7df8",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/util/levenshtein.h",
+  "human_readable_source": " \n#ifndef __PERF_LEVENSHTEIN_H\n#define __PERF_LEVENSHTEIN_H\n\nint levenshtein(const char *string1, const char *string2,\n\tint swap_penalty, int substition_penalty,\n\tint insertion_penalty, int deletion_penalty);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

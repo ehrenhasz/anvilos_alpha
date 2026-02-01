@@ -1,0 +1,9 @@
+{
+  "module_name": "perf-read-vdso.c",
+  "hash_id": "8573c1c767556a68917a934f9fc2117b32072cb623d35401d19854085b2a6ca5",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/perf-read-vdso.c",
+  "human_readable_source": "\n#include <stdio.h>\n#include <string.h>\n\n#define VDSO__MAP_NAME \"[vdso]\"\n\n \n#include \"util/find-map.c\"\n\nint main(void)\n{\n\tvoid *start, *end;\n\tsize_t size, written;\n\n\tif (find_map(&start, &end, VDSO__MAP_NAME))\n\t\treturn 1;\n\n\tsize = end - start;\n\n\twhile (size) {\n\t\twritten = fwrite(start, 1, size, stdout);\n\t\tif (!written)\n\t\t\treturn 1;\n\t\tstart += written;\n\t\tsize -= written;\n\t}\n\n\tif (fflush(stdout))\n\t\treturn 1;\n\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

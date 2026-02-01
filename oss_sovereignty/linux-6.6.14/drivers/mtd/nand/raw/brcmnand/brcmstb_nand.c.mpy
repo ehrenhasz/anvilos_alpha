@@ -1,0 +1,9 @@
+{
+  "module_name": "brcmstb_nand.c",
+  "hash_id": "2163359030979a0eea9d1641774693fef77e9a822ea6c9b6152d7f5d91bd74ce",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/mtd/nand/raw/brcmnand/brcmstb_nand.c",
+  "human_readable_source": "\n \n\n#include <linux/device.h>\n#include <linux/module.h>\n#include <linux/mod_devicetable.h>\n#include <linux/platform_device.h>\n\n#include \"brcmnand.h\"\n\nstatic const struct of_device_id brcmstb_nand_of_match[] = {\n\t{ .compatible = \"brcm,brcmnand\" },\n\t{},\n};\nMODULE_DEVICE_TABLE(of, brcmstb_nand_of_match);\n\nstatic int brcmstb_nand_probe(struct platform_device *pdev)\n{\n\treturn brcmnand_probe(pdev, NULL);\n}\n\nstatic struct platform_driver brcmstb_nand_driver = {\n\t.probe\t\t\t= brcmstb_nand_probe,\n\t.remove\t\t\t= brcmnand_remove,\n\t.driver = {\n\t\t.name\t\t= \"brcmstb_nand\",\n\t\t.pm\t\t= &brcmnand_pm_ops,\n\t\t.of_match_table = brcmstb_nand_of_match,\n\t}\n};\nmodule_platform_driver(brcmstb_nand_driver);\n\nMODULE_LICENSE(\"GPL v2\");\nMODULE_AUTHOR(\"Brian Norris\");\nMODULE_DESCRIPTION(\"NAND driver for Broadcom STB chips\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

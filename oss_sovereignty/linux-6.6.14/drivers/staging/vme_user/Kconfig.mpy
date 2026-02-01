@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "82ef96d5d5a67d32ec09c5a10563781281c21b2b5500e324ea7dad2f932facfb",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/vme_user/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nmenuconfig VME_BUS\n\tbool \"VME bridge support\"\n\tdepends on PCI\n\thelp\n\t  If you say Y here you get support for the VME bridge Framework.\n\nif VME_BUS\n\ncomment \"VME Bridge Drivers\"\n\nconfig VME_TSI148\n\ttristate \"Tempe\"\n\tdepends on HAS_DMA\n\thelp\n\t If you say Y here you get support for the Tundra TSI148 VME bridge\n\t chip.\n\nconfig VME_FAKE\n\ttristate \"Fake\"\n\thelp\n\t If you say Y here you get support for the fake VME bridge. This\n\t provides a virtualised VME Bus for devices with no VME bridge. This\n\t is mainly useful for VME development (in the absence of VME\n\t hardware).\n\ncomment \"VME Device Drivers\"\n\nconfig VME_USER\n\ttristate \"VME user space access driver\"\n\thelp\n\t  If you say Y here you want to be able to access a limited number of\n\t  VME windows in a manner at least semi-compatible with the interface\n\t  provided with the original driver at <http://www.vmelinux.org/>.\n\n\t  To compile this driver as a module, choose M here. The module will\n\t  be called vme_user. If unsure, say N.\n\nendif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

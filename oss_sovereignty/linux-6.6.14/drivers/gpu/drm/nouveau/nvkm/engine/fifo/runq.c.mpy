@@ -1,0 +1,9 @@
+{
+  "module_name": "runq.c",
+  "hash_id": "d198c323a8093eac24eb736bfbb904276e987ca0f08429e16fce2011a4a2d0c2",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/engine/fifo/runq.c",
+  "human_readable_source": " \n#include \"runq.h\"\n#include \"priv.h\"\n\nvoid\nnvkm_runq_del(struct nvkm_runq *runq)\n{\n\tlist_del(&runq->head);\n\tkfree(runq);\n}\n\nstruct nvkm_runq *\nnvkm_runq_new(struct nvkm_fifo *fifo, int pbid)\n{\n\tstruct nvkm_runq *runq;\n\n\tif (!(runq = kzalloc(sizeof(*runq), GFP_KERNEL)))\n\t\treturn NULL;\n\n\trunq->func = fifo->func->runq;\n\trunq->fifo = fifo;\n\trunq->id = pbid;\n\tlist_add_tail(&runq->head, &fifo->runqs);\n\treturn runq;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

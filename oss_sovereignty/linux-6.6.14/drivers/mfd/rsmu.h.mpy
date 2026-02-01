@@ -1,0 +1,9 @@
+{
+  "module_name": "rsmu.h",
+  "hash_id": "7ce8bc9f1ed2739b77fd6b4678e13e5dff094936521b4b4ffd45a16123e9d02a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/mfd/rsmu.h",
+  "human_readable_source": " \n \n\n#ifndef __RSMU_MFD_H\n#define __RSMU_MFD_H\n\n#include <linux/mfd/rsmu.h>\n\n#define RSMU_CM_SCSR_BASE\t\t0x20100000\n\nint rsmu_core_init(struct rsmu_ddata *rsmu);\nvoid rsmu_core_exit(struct rsmu_ddata *rsmu);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

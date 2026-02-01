@@ -1,0 +1,9 @@
+{
+  "module_name": "coresight-stm.h",
+  "hash_id": "b9eacf929e3c77b7b1ac4960641e8456a9a5ab12db8c8433fd28d872bf562c46",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/coresight-stm.h",
+  "human_readable_source": " \n#ifndef __UAPI_CORESIGHT_STM_H_\n#define __UAPI_CORESIGHT_STM_H_\n\n#include <linux/const.h>\n\n#define STM_FLAG_TIMESTAMPED   _BITUL(3)\n#define STM_FLAG_MARKED        _BITUL(4)\n#define STM_FLAG_GUARANTEED    _BITUL(7)\n\n \nenum {\n\tSTM_OPTION_GUARANTEED = 0,\n\tSTM_OPTION_INVARIANT,\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

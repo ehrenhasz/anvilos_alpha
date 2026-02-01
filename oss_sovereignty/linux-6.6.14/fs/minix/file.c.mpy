@@ -1,0 +1,9 @@
+{
+  "module_name": "file.c",
+  "hash_id": "b64befff77d164799a9c0a3d98ecaba869f923951455e7882269baed8c6d46c2",
+  "original_prompt": "Ingested from linux-6.6.14/fs/minix/file.c",
+  "human_readable_source": "\n \n\n#include \"minix.h\"\n\n \nconst struct file_operations minix_file_operations = {\n\t.llseek\t\t= generic_file_llseek,\n\t.read_iter\t= generic_file_read_iter,\n\t.write_iter\t= generic_file_write_iter,\n\t.mmap\t\t= generic_file_mmap,\n\t.fsync\t\t= generic_file_fsync,\n\t.splice_read\t= filemap_splice_read,\n};\n\nstatic int minix_setattr(struct mnt_idmap *idmap,\n\t\t\t struct dentry *dentry, struct iattr *attr)\n{\n\tstruct inode *inode = d_inode(dentry);\n\tint error;\n\n\terror = setattr_prepare(&nop_mnt_idmap, dentry, attr);\n\tif (error)\n\t\treturn error;\n\n\tif ((attr->ia_valid & ATTR_SIZE) &&\n\t    attr->ia_size != i_size_read(inode)) {\n\t\terror = inode_newsize_ok(inode, attr->ia_size);\n\t\tif (error)\n\t\t\treturn error;\n\n\t\ttruncate_setsize(inode, attr->ia_size);\n\t\tminix_truncate(inode);\n\t}\n\n\tsetattr_copy(&nop_mnt_idmap, inode, attr);\n\tmark_inode_dirty(inode);\n\treturn 0;\n}\n\nconst struct inode_operations minix_file_inode_operations = {\n\t.setattr\t= minix_setattr,\n\t.getattr\t= minix_getattr,\n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

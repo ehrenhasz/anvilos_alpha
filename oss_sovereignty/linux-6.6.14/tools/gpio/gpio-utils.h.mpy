@@ -1,0 +1,9 @@
+{
+  "module_name": "gpio-utils.h",
+  "hash_id": "fd346a35d2f5ce9d78224f66a9e33aa107d99e82dca3e963a1b24c5e79406626",
+  "original_prompt": "Ingested from linux-6.6.14/tools/gpio/gpio-utils.h",
+  "human_readable_source": " \n \n#ifndef _GPIO_UTILS_H_\n#define _GPIO_UTILS_H_\n\n#include <stdbool.h>\n#include <string.h>\n#include <linux/types.h>\n\n#define ARRAY_SIZE(arr) (sizeof(arr) / sizeof((arr)[0]))\n\nstatic inline int check_prefix(const char *str, const char *prefix)\n{\n\treturn strlen(str) > strlen(prefix) &&\n\t\tstrncmp(str, prefix, strlen(prefix)) == 0;\n}\n\nint gpiotools_request_line(const char *device_name,\n\t\t\t   unsigned int *lines,\n\t\t\t   unsigned int num_lines,\n\t\t\t   struct gpio_v2_line_config *config,\n\t\t\t   const char *consumer);\nint gpiotools_set_values(const int fd, struct gpio_v2_line_values *values);\nint gpiotools_get_values(const int fd, struct gpio_v2_line_values *values);\nint gpiotools_release_line(const int fd);\n\nint gpiotools_get(const char *device_name, unsigned int line);\nint gpiotools_gets(const char *device_name, unsigned int *lines,\n\t\t   unsigned int num_lines, unsigned int *values);\nint gpiotools_set(const char *device_name, unsigned int line,\n\t\t  unsigned int value);\nint gpiotools_sets(const char *device_name, unsigned int *lines,\n\t\t   unsigned int num_lines, unsigned int *values);\n\n \nstatic inline void gpiotools_set_bit(__u64 *b, int n)\n{\n\t*b |= _BITULL(n);\n}\n\nstatic inline void gpiotools_change_bit(__u64 *b, int n)\n{\n\t*b ^= _BITULL(n);\n}\n\nstatic inline void gpiotools_clear_bit(__u64 *b, int n)\n{\n\t*b &= ~_BITULL(n);\n}\n\nstatic inline int gpiotools_test_bit(__u64 b, int n)\n{\n\treturn !!(b & _BITULL(n));\n}\n\nstatic inline void gpiotools_assign_bit(__u64 *b, int n, bool value)\n{\n\tif (value)\n\t\tgpiotools_set_bit(b, n);\n\telse\n\t\tgpiotools_clear_bit(b, n);\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

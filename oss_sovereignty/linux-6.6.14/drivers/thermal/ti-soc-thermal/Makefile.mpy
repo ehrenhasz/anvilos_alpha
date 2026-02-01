@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "ec31609126631d0b84833d74aac85a5637d7e1bee4d8ae9486bbe78676227d76",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/thermal/ti-soc-thermal/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nobj-$(CONFIG_TI_SOC_THERMAL)\t\t+= ti-soc-thermal.o\nti-soc-thermal-y\t\t\t:= ti-bandgap.o\nti-soc-thermal-$(CONFIG_TI_THERMAL)\t+= ti-thermal-common.o\nti-soc-thermal-$(CONFIG_DRA752_THERMAL)\t+= dra752-thermal-data.o\nti-soc-thermal-$(CONFIG_OMAP3_THERMAL)\t+= omap3-thermal-data.o\nti-soc-thermal-$(CONFIG_OMAP4_THERMAL)\t+= omap4-thermal-data.o\nti-soc-thermal-$(CONFIG_OMAP5_THERMAL)\t+= omap5-thermal-data.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

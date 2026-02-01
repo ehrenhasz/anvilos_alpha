@@ -1,0 +1,9 @@
+{
+  "module_name": "leds-lp3944.h",
+  "hash_id": "85d41d4c029ce3440a30bd54bd06db4e52758003a0236d6aa5c5569aea14ea0b",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/leds-lp3944.h",
+  "human_readable_source": " \n \n\n#ifndef __LINUX_LEDS_LP3944_H\n#define __LINUX_LEDS_LP3944_H\n\n#define LP3944_LED0 0\n#define LP3944_LED1 1\n#define LP3944_LED2 2\n#define LP3944_LED3 3\n#define LP3944_LED4 4\n#define LP3944_LED5 5\n#define LP3944_LED6 6\n#define LP3944_LED7 7\n#define LP3944_LEDS_MAX 8\n\n#define LP3944_LED_STATUS_MASK\t0x03\nenum lp3944_status {\n\tLP3944_LED_STATUS_OFF  = 0x0,\n\tLP3944_LED_STATUS_ON   = 0x1,\n\tLP3944_LED_STATUS_DIM0 = 0x2,\n\tLP3944_LED_STATUS_DIM1 = 0x3\n};\n\nenum lp3944_type {\n\tLP3944_LED_TYPE_NONE,\n\tLP3944_LED_TYPE_LED,\n\tLP3944_LED_TYPE_LED_INVERTED,\n};\n\nstruct lp3944_led {\n\tchar *name;\n\tenum lp3944_type type;\n\tenum lp3944_status status;\n};\n\nstruct lp3944_platform_data {\n\tstruct lp3944_led leds[LP3944_LEDS_MAX];\n\tu8 leds_size;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

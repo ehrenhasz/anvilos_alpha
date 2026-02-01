@@ -1,0 +1,9 @@
+{
+  "module_name": "tanh.c",
+  "hash_id": "e4ae9f6006433e7adff08c4ba00e77371032945d4fea9e548ec5ad0c783d883f",
+  "original_prompt": "Ingested from sys_09_Anvil/source/lib/libm_dbl/tanh.c",
+  "human_readable_source": "#include <math.h>\n\ndouble tanh(double x) {\n    int sign = 0;\n    if (x < 0) {\n        sign = 1;\n        x = -x;\n    }\n    x = expm1(-2 * x);\n    x = x / (x + 2);\n    return sign ? x : -x;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

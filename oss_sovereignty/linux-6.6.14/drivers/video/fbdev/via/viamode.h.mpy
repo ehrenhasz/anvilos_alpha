@@ -1,0 +1,9 @@
+{
+  "module_name": "viamode.h",
+  "hash_id": "f20b3c4c458030c4eb4bdd6c45299304090fff61e380eaacff9b68e8970bbce8",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/video/fbdev/via/viamode.h",
+  "human_readable_source": " \n \n\n#ifndef __VIAMODE_H__\n#define __VIAMODE_H__\n\n#include \"global.h\"\n\nstruct VPITTable {\n\tunsigned char Misc;\n\tunsigned char SR[StdSR];\n\tunsigned char GR[StdGR];\n\tunsigned char AR[StdAR];\n};\n\nstruct patch_table {\n\tint table_length;\n\tstruct io_reg *io_reg_table;\n};\n\nextern int NUM_TOTAL_CN400_ModeXregs;\nextern int NUM_TOTAL_CN700_ModeXregs;\nextern int NUM_TOTAL_KM400_ModeXregs;\nextern int NUM_TOTAL_CX700_ModeXregs;\nextern int NUM_TOTAL_VX855_ModeXregs;\nextern int NUM_TOTAL_CLE266_ModeXregs;\nextern int NUM_TOTAL_PATCH_MODE;\n\nextern struct io_reg CN400_ModeXregs[];\nextern struct io_reg CN700_ModeXregs[];\nextern struct io_reg KM400_ModeXregs[];\nextern struct io_reg CX700_ModeXregs[];\nextern struct io_reg VX800_ModeXregs[];\nextern struct io_reg VX855_ModeXregs[];\nextern struct io_reg CLE266_ModeXregs[];\nextern struct io_reg PM1024x768[];\nextern struct patch_table res_patch_table[];\nextern struct VPITTable VPIT;\n\nconst struct fb_videomode *viafb_get_best_mode(int hres, int vres,\n\tint refresh);\nconst struct fb_videomode *viafb_get_best_rb_mode(int hres, int vres,\n\tint refresh);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

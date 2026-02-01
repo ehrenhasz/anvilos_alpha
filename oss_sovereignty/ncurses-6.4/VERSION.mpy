@@ -1,0 +1,9 @@
+{
+  "module_name": "VERSION",
+  "hash_id": "2bafac395428bbb0c2e3ef37e36c3021f5919e9154a4ab4a1d8b214c63852154",
+  "original_prompt": "Ingested from ncurses-6.4/VERSION",
+  "human_readable_source": "5:0:10\t6.4\t20221231\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

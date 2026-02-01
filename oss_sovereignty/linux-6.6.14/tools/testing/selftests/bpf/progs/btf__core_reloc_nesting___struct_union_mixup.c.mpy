@@ -1,0 +1,9 @@
+{
+  "module_name": "btf__core_reloc_nesting___struct_union_mixup.c",
+  "hash_id": "285a878a195245f1de0664ec6725748e87302695a2ea0e2924e9f56dc82db33c",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/btf__core_reloc_nesting___struct_union_mixup.c",
+  "human_readable_source": "#include \"core_reloc_types.h\"\n\nvoid f(struct core_reloc_nesting___struct_union_mixup x) {}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

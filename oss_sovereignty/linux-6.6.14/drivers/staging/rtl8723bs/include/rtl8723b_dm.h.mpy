@@ -1,0 +1,9 @@
+{
+  "module_name": "rtl8723b_dm.h",
+  "hash_id": "bc2efeea41928154c0655887eb9196d833905be7181d8555173fe6cddba8f786",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/rtl8723bs/include/rtl8723b_dm.h",
+  "human_readable_source": " \n \n#ifndef __RTL8723B_DM_H__\n#define __RTL8723B_DM_H__\n \n \n \n \n \n \n \n\n \n \n \n\n \n \n \n\nvoid rtl8723b_init_dm_priv(struct adapter *padapter);\n\nvoid rtl8723b_InitHalDm(struct adapter *padapter);\nvoid rtl8723b_HalDmWatchDog(struct adapter *padapter);\nvoid rtl8723b_HalDmWatchDog_in_LPS(struct adapter *padapter);\nvoid rtl8723b_hal_dm_in_lps(struct adapter *padapter);\n\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

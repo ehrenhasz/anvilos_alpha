@@ -1,0 +1,9 @@
+{
+  "module_name": "debug.c",
+  "hash_id": "a0769401425d2c9fbac148931152767aa93c6200b1ae97c6ac3e213d02027bc3",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/broadcom/brcm80211/brcmfmac/debug.c",
+  "human_readable_source": "\n \n#include <linux/debugfs.h>\n#include <linux/netdevice.h>\n#include <linux/module.h>\n#include <linux/devcoredump.h>\n\n#include <brcmu_wifi.h>\n#include <brcmu_utils.h>\n#include \"core.h\"\n#include \"bus.h\"\n#include \"fweh.h\"\n#include \"debug.h\"\n\nint brcmf_debug_create_memdump(struct brcmf_bus *bus, const void *data,\n\t\t\t       size_t len)\n{\n\tvoid *dump;\n\tsize_t ramsize;\n\tint err;\n\n\tramsize = brcmf_bus_get_ramsize(bus);\n\tif (!ramsize)\n\t\treturn -ENOTSUPP;\n\n\tdump = vzalloc(len + ramsize);\n\tif (!dump)\n\t\treturn -ENOMEM;\n\n\tif (data && len > 0)\n\t\tmemcpy(dump, data, len);\n\terr = brcmf_bus_get_memdump(bus, dump + len, ramsize);\n\tif (err) {\n\t\tvfree(dump);\n\t\treturn err;\n\t}\n\n\tdev_coredumpv(bus->dev, dump, len + ramsize, GFP_KERNEL);\n\n\treturn 0;\n}\n\nstruct dentry *brcmf_debugfs_get_devdir(struct brcmf_pub *drvr)\n{\n\treturn drvr->wiphy->debugfsdir;\n}\n\nvoid brcmf_debugfs_add_entry(struct brcmf_pub *drvr, const char *fn,\n\t\t\t    int (*read_fn)(struct seq_file *seq, void *data))\n{\n\tWARN(!drvr->wiphy->debugfsdir, \"wiphy not (yet) registered\\n\");\n\tdebugfs_create_devm_seqfile(drvr->bus_if->dev, fn,\n\t\t\t\t    drvr->wiphy->debugfsdir, read_fn);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

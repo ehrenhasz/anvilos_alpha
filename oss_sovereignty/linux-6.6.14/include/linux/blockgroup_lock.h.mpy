@@ -1,0 +1,9 @@
+{
+  "module_name": "blockgroup_lock.h",
+  "hash_id": "124cd998993deb3e821514269de8e93a6ae33d0a0f7fed15d423a766819f3d6d",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/blockgroup_lock.h",
+  "human_readable_source": " \n#ifndef _LINUX_BLOCKGROUP_LOCK_H\n#define _LINUX_BLOCKGROUP_LOCK_H\n \n\n#include <linux/spinlock.h>\n#include <linux/cache.h>\n\n#ifdef CONFIG_SMP\n#define NR_BG_LOCKS\t(4 << ilog2(NR_CPUS < 32 ? NR_CPUS : 32))\n#else\n#define NR_BG_LOCKS\t1\n#endif\n\nstruct bgl_lock {\n\tspinlock_t lock;\n} ____cacheline_aligned_in_smp;\n\nstruct blockgroup_lock {\n\tstruct bgl_lock locks[NR_BG_LOCKS];\n};\n\nstatic inline void bgl_lock_init(struct blockgroup_lock *bgl)\n{\n\tint i;\n\n\tfor (i = 0; i < NR_BG_LOCKS; i++)\n\t\tspin_lock_init(&bgl->locks[i].lock);\n}\n\nstatic inline spinlock_t *\nbgl_lock_ptr(struct blockgroup_lock *bgl, unsigned int block_group)\n{\n\treturn &bgl->locks[block_group & (NR_BG_LOCKS-1)].lock;\n}\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

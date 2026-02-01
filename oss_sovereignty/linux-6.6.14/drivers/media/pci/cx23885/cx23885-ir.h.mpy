@@ -1,0 +1,9 @@
+{
+  "module_name": "cx23885-ir.h",
+  "hash_id": "0a11ffe34c2eef2feaea3a9e5703c10130d9959e8ac32bdd8b10c9b0e1194a63",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/pci/cx23885/cx23885-ir.h",
+  "human_readable_source": " \n \n\n#ifndef _CX23885_IR_H_\n#define _CX23885_IR_H_\nvoid cx23885_ir_rx_v4l2_dev_notify(struct v4l2_subdev *sd, u32 events);\nvoid cx23885_ir_tx_v4l2_dev_notify(struct v4l2_subdev *sd, u32 events);\n\nvoid cx23885_ir_rx_work_handler(struct work_struct *work);\nvoid cx23885_ir_tx_work_handler(struct work_struct *work);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

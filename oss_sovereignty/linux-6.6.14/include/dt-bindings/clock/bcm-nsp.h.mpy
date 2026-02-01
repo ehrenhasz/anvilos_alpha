@@ -1,0 +1,9 @@
+{
+  "module_name": "bcm-nsp.h",
+  "hash_id": "9378fdade1fc698352747ddb183dc9bd99856ef3eda5a60edf85cda3ff34c030",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/clock/bcm-nsp.h",
+  "human_readable_source": " \n\n#ifndef _CLOCK_BCM_NSP_H\n#define _CLOCK_BCM_NSP_H\n\n \n#define BCM_NSP_GENPLL\t\t\t0\n#define BCM_NSP_GENPLL_PHY_CLK\t\t1\n#define BCM_NSP_GENPLL_ENET_SW_CLK\t2\n#define BCM_NSP_GENPLL_USB_PHY_REF_CLK\t3\n#define BCM_NSP_GENPLL_IPROCFAST_CLK\t4\n#define BCM_NSP_GENPLL_SATA1_CLK\t5\n#define BCM_NSP_GENPLL_SATA2_CLK\t6\n\n \n#define BCM_NSP_LCPLL0\t\t\t0\n#define BCM_NSP_LCPLL0_PCIE_PHY_REF_CLK\t1\n#define BCM_NSP_LCPLL0_SDIO_CLK\t\t2\n#define BCM_NSP_LCPLL0_DDR_PHY_CLK\t3\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

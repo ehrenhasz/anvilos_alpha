@@ -1,0 +1,9 @@
+{
+  "module_name": "thread_pool.h",
+  "hash_id": "fbacbdbece07403cf173742840184d40a86d4b4bec0a43eeb4f83a3412f51984",
+  "original_prompt": "Ingested from zfs-2.2.2/include/thread_pool.h",
+  "human_readable_source": " \n\n \n\n#ifndef\t_THREAD_POOL_H_\n#define\t_THREAD_POOL_H_ extern __attribute__((visibility(\"default\")))\n\n#include <sys/types.h>\n#include <pthread.h>\n\n#ifdef\t__cplusplus\nextern \"C\" {\n#endif\n\ntypedef\tstruct tpool tpool_t;\t \n\n_THREAD_POOL_H_ tpool_t\t*tpool_create(uint_t min_threads, uint_t max_threads,\n\t\t\tuint_t linger, pthread_attr_t *attr);\n_THREAD_POOL_H_ int\ttpool_dispatch(tpool_t *tpool,\n\t\t\tvoid (*func)(void *), void *arg);\n_THREAD_POOL_H_ void\ttpool_destroy(tpool_t *tpool);\n_THREAD_POOL_H_ void\ttpool_abandon(tpool_t *tpool);\n_THREAD_POOL_H_ void\ttpool_wait(tpool_t *tpool);\n_THREAD_POOL_H_ void\ttpool_suspend(tpool_t *tpool);\n_THREAD_POOL_H_ int\ttpool_suspended(tpool_t *tpool);\n_THREAD_POOL_H_ void\ttpool_resume(tpool_t *tpool);\n_THREAD_POOL_H_ int\ttpool_member(tpool_t *tpool);\n\n#ifdef\t__cplusplus\n}\n#endif\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

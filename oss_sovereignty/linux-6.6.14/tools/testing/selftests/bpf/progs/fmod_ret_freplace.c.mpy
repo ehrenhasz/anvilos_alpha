@@ -1,0 +1,9 @@
+{
+  "module_name": "fmod_ret_freplace.c",
+  "hash_id": "3113183040fcc35814bb38d48dbdbba156f4005a2b8ac0f4edc213c0aaf02ffb",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/fmod_ret_freplace.c",
+  "human_readable_source": "\n#include <linux/bpf.h>\n#include <bpf/bpf_helpers.h>\n#include <bpf/bpf_tracing.h>\n\nvolatile __u64 test_fmod_ret = 0;\nSEC(\"fmod_ret/security_new_get_constant\")\nint BPF_PROG(fmod_ret_test, long val, int ret)\n{\n\ttest_fmod_ret = 1;\n\treturn 120;\n}\n\nchar _license[] SEC(\"license\") = \"GPL\";\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

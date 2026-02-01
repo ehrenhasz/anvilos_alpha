@@ -1,0 +1,9 @@
+{
+  "module_name": "run-tests.sh",
+  "hash_id": "81df8c6dc1785c076da72e98922d492a25346be171d8da8c7e8dff0b56aa7200",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/crypto/chacha20-s390/run-tests.sh",
+  "human_readable_source": "#!/bin/bash\n# SPDX-License-Identifier: GPL-2.0\n#\n# Copyright (C) 2022 Red Hat, Inc.\n# Author: Vladis Dronov <vdronoff@gmail.com>\n#\n# This script runs (via instmod) test-cipher.ko module which invokes\n# generic and s390-native ChaCha20 encryprion algorithms with different\n# size of data. Check 'dmesg' for results.\n#\n# The insmod error is expected:\n# insmod: ERROR: could not insert module test_cipher.ko: Operation not permitted\n\nlsmod | grep chacha | cut -f1 -d' ' | xargs rmmod\nmodprobe chacha_generic\nmodprobe chacha_s390\n\n# run encryption for different data size, including whole block(s) +/- 1\ninsmod test_cipher.ko size=63\ninsmod test_cipher.ko size=64\ninsmod test_cipher.ko size=65\ninsmod test_cipher.ko size=127\ninsmod test_cipher.ko size=128\ninsmod test_cipher.ko size=129\ninsmod test_cipher.ko size=511\ninsmod test_cipher.ko size=512\ninsmod test_cipher.ko size=513\ninsmod test_cipher.ko size=4096\ninsmod test_cipher.ko size=65611\ninsmod test_cipher.ko size=6291456\ninsmod test_cipher.ko size=62914560\n\n# print test logs\ndmesg | tail -170\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

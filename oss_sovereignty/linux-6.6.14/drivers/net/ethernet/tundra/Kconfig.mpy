@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "edd9b22716da2a1f92e5609c16f56fbc9fcb1fbd8e6d54d3c745b986ed2ddd28",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/tundra/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Tundra network device configuration\n#\n\nconfig NET_VENDOR_TUNDRA\n\tbool \"Tundra devices\"\n\tdefault y\n\tdepends on TSI108_BRIDGE\n\thelp\n\t  If you have a network (Ethernet) card belonging to this class, say Y.\n\n\t  Note that the answer to this question doesn't directly affect the\n\t  kernel: saying N will just cause the configurator to skip all\n\t  the questions about Tundra cards. If you say Y, you will be asked for\n\t  your specific card in the following questions.\n\nif NET_VENDOR_TUNDRA\n\nconfig TSI108_ETH\n\ttristate \"Tundra TSI108 gigabit Ethernet support\"\n\tdepends on TSI108_BRIDGE\n\thelp\n\t  This driver supports Tundra TSI108 gigabit Ethernet ports.\n\t  To compile this driver as a module, choose M here: the module\n\t  will be called tsi108_eth.\n\nendif # NET_VENDOR_TUNDRA\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "crc32poly.h",
+  "hash_id": "d1a44d22865365055c61a36d397383d783bece99c69a3258c44b67f769ed2eee",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/crc32poly.h",
+  "human_readable_source": " \n#ifndef _LINUX_CRC32_POLY_H\n#define _LINUX_CRC32_POLY_H\n\n \n#define CRC32_POLY_LE 0xedb88320\n#define CRC32_POLY_BE 0x04c11db7\n\n \n#define CRC32C_POLY_LE 0x82F63B78\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "cryptd.h",
+  "hash_id": "da4d6aee482774084641be7ab27f42b0735d55bb3963c6219e2a3bade319af38",
+  "original_prompt": "Ingested from linux-6.6.14/include/crypto/cryptd.h",
+  "human_readable_source": " \n \n\n#ifndef _CRYPTO_CRYPT_H\n#define _CRYPTO_CRYPT_H\n\n#include <linux/types.h>\n\n#include <crypto/aead.h>\n#include <crypto/hash.h>\n#include <crypto/skcipher.h>\n\nstruct cryptd_skcipher {\n\tstruct crypto_skcipher base;\n};\n\n \nstruct cryptd_skcipher *cryptd_alloc_skcipher(const char *alg_name,\n\t\t\t\t\t      u32 type, u32 mask);\nstruct crypto_skcipher *cryptd_skcipher_child(struct cryptd_skcipher *tfm);\n \nbool cryptd_skcipher_queued(struct cryptd_skcipher *tfm);\nvoid cryptd_free_skcipher(struct cryptd_skcipher *tfm);\n\nstruct cryptd_ahash {\n\tstruct crypto_ahash base;\n};\n\nstatic inline struct cryptd_ahash *__cryptd_ahash_cast(\n\tstruct crypto_ahash *tfm)\n{\n\treturn (struct cryptd_ahash *)tfm;\n}\n\n \nstruct cryptd_ahash *cryptd_alloc_ahash(const char *alg_name,\n\t\t\t\t\tu32 type, u32 mask);\nstruct crypto_shash *cryptd_ahash_child(struct cryptd_ahash *tfm);\nstruct shash_desc *cryptd_shash_desc(struct ahash_request *req);\n \nbool cryptd_ahash_queued(struct cryptd_ahash *tfm);\nvoid cryptd_free_ahash(struct cryptd_ahash *tfm);\n\nstruct cryptd_aead {\n\tstruct crypto_aead base;\n};\n\nstatic inline struct cryptd_aead *__cryptd_aead_cast(\n\tstruct crypto_aead *tfm)\n{\n\treturn (struct cryptd_aead *)tfm;\n}\n\nstruct cryptd_aead *cryptd_alloc_aead(const char *alg_name,\n\t\t\t\t\t  u32 type, u32 mask);\n\nstruct crypto_aead *cryptd_aead_child(struct cryptd_aead *tfm);\n \nbool cryptd_aead_queued(struct cryptd_aead *tfm);\n\nvoid cryptd_free_aead(struct cryptd_aead *tfm);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

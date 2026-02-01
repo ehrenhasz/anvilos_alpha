@@ -1,0 +1,9 @@
+{
+  "module_name": "sembuf.h",
+  "hash_id": "f838ad013f14beef1ac21bb298ace4203608fdf7ba3813c265fb79a8f79f79ab",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/asm-generic/sembuf.h",
+  "human_readable_source": " \n#ifndef __ASM_GENERIC_SEMBUF_H\n#define __ASM_GENERIC_SEMBUF_H\n\n#include <asm/bitsperlong.h>\n#include <asm/ipcbuf.h>\n\n \nstruct semid64_ds {\n\tstruct ipc64_perm sem_perm;\t \n#if __BITS_PER_LONG == 64\n\tlong\t\tsem_otime;\t \n\tlong\t\tsem_ctime;\t \n#else\n\tunsigned long\tsem_otime;\t \n\tunsigned long\tsem_otime_high;\n\tunsigned long\tsem_ctime;\t \n\tunsigned long\tsem_ctime_high;\n#endif\n\tunsigned long\tsem_nsems;\t \n\tunsigned long\t__unused3;\n\tunsigned long\t__unused4;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

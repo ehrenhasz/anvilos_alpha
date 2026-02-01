@@ -1,0 +1,9 @@
+{
+  "module_name": "spinlock_up.h",
+  "hash_id": "b2fd6eefbd0c796fb6668b77e887c7ca83407aedbcfb34b35520b8ceb4f375a1",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/spinlock_up.h",
+  "human_readable_source": "#ifndef __LINUX_SPINLOCK_UP_H\n#define __LINUX_SPINLOCK_UP_H\n\n#ifndef __LINUX_INSIDE_SPINLOCK_H\n# error \"please don't include this file directly\"\n#endif\n\n#include <asm/processor.h>\t \n#include <asm/barrier.h>\n\n \n\n#ifdef CONFIG_DEBUG_SPINLOCK\n#define arch_spin_is_locked(x)\t\t((x)->slock == 0)\n\nstatic inline void arch_spin_lock(arch_spinlock_t *lock)\n{\n\tlock->slock = 0;\n\tbarrier();\n}\n\nstatic inline int arch_spin_trylock(arch_spinlock_t *lock)\n{\n\tchar oldval = lock->slock;\n\n\tlock->slock = 0;\n\tbarrier();\n\n\treturn oldval > 0;\n}\n\nstatic inline void arch_spin_unlock(arch_spinlock_t *lock)\n{\n\tbarrier();\n\tlock->slock = 1;\n}\n\n \n#define arch_read_lock(lock)\t\tdo { barrier(); (void)(lock); } while (0)\n#define arch_write_lock(lock)\t\tdo { barrier(); (void)(lock); } while (0)\n#define arch_read_trylock(lock)\t({ barrier(); (void)(lock); 1; })\n#define arch_write_trylock(lock)\t({ barrier(); (void)(lock); 1; })\n#define arch_read_unlock(lock)\t\tdo { barrier(); (void)(lock); } while (0)\n#define arch_write_unlock(lock)\tdo { barrier(); (void)(lock); } while (0)\n\n#else  \n#define arch_spin_is_locked(lock)\t((void)(lock), 0)\n \n# define arch_spin_lock(lock)\t\tdo { barrier(); (void)(lock); } while (0)\n# define arch_spin_unlock(lock)\tdo { barrier(); (void)(lock); } while (0)\n# define arch_spin_trylock(lock)\t({ barrier(); (void)(lock); 1; })\n#endif  \n\n#define arch_spin_is_contended(lock)\t(((void)(lock), 0))\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

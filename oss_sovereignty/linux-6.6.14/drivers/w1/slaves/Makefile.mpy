@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "9c1a619f448688182b3b2c8a456d834bb27106c2d56b9bd44cde3945b4f26c7f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/w1/slaves/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for the Dallas's 1-wire slaves.\n#\n\nobj-$(CONFIG_W1_SLAVE_THERM)\t+= w1_therm.o\nobj-$(CONFIG_W1_SLAVE_SMEM)\t+= w1_smem.o\nobj-$(CONFIG_W1_SLAVE_DS2405)\t+= w1_ds2405.o\nobj-$(CONFIG_W1_SLAVE_DS2408)\t+= w1_ds2408.o\nobj-$(CONFIG_W1_SLAVE_DS2413)\t+= w1_ds2413.o\nobj-$(CONFIG_W1_SLAVE_DS2406)\t+= w1_ds2406.o\nobj-$(CONFIG_W1_SLAVE_DS2423)\t+= w1_ds2423.o\nobj-$(CONFIG_W1_SLAVE_DS2430)\t+= w1_ds2430.o\nobj-$(CONFIG_W1_SLAVE_DS2431)\t+= w1_ds2431.o\nobj-$(CONFIG_W1_SLAVE_DS2805)\t+= w1_ds2805.o\nobj-$(CONFIG_W1_SLAVE_DS2433)\t+= w1_ds2433.o\nobj-$(CONFIG_W1_SLAVE_DS2438)\t+= w1_ds2438.o\nobj-$(CONFIG_W1_SLAVE_DS250X)\t+= w1_ds250x.o\nobj-$(CONFIG_W1_SLAVE_DS2780)\t+= w1_ds2780.o\nobj-$(CONFIG_W1_SLAVE_DS2781)\t+= w1_ds2781.o\nobj-$(CONFIG_W1_SLAVE_DS28E04)\t+= w1_ds28e04.o\nobj-$(CONFIG_W1_SLAVE_DS28E17)\t+= w1_ds28e17.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

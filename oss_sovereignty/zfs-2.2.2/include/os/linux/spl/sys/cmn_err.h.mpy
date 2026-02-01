@@ -1,0 +1,9 @@
+{
+  "module_name": "cmn_err.h",
+  "hash_id": "5e99eac54211cdf3dfc7ff440a0688059dabdec7233ba8a709472981e68594fd",
+  "original_prompt": "Ingested from zfs-2.2.2/include/os/linux/spl/sys/cmn_err.h",
+  "human_readable_source": " \n\n#ifndef _SPL_CMN_ERR_H\n#define\t_SPL_CMN_ERR_H\n\n#if defined(_KERNEL) && defined(HAVE_STANDALONE_LINUX_STDARG)\n#include <linux/stdarg.h>\n#else\n#include <stdarg.h>\n#endif\n#include <sys/atomic.h>\n\n#define\tCE_CONT\t\t0  \n#define\tCE_NOTE\t\t1  \n#define\tCE_WARN\t\t2  \n#define\tCE_PANIC\t3  \n#define\tCE_IGNORE\t4  \n\nextern void cmn_err(int, const char *, ...)\n    __attribute__((format(printf, 2, 3)));\nextern void vcmn_err(int, const char *, va_list)\n    __attribute__((format(printf, 2, 0)));\nextern void vpanic(const char *, va_list)\n    __attribute__((format(printf, 1, 0), __noreturn__));\n\n#define\tfm_panic\tpanic\n\n#define\tcmn_err_once(ce, ...)\t\t\t\t\\\ndo {\t\t\t\t\t\t\t\\\n\tstatic volatile uint32_t printed = 0;\t\t\\\n\tif (atomic_cas_32(&printed, 0, 1) == 0) {\t\\\n\t\tcmn_err(ce, __VA_ARGS__);\t\t\\\n\t}\t\t\t\t\t\t\\\n} while (0)\n\n#define\tvcmn_err_once(ce, fmt, ap)\t\t\t\\\ndo {\t\t\t\t\t\t\t\\\n\tstatic volatile uint32_t printed = 0;\t\t\\\n\tif (atomic_cas_32(&printed, 0, 1) == 0) {\t\\\n\t\tvcmn_err(ce, fmt, ap);\t\t\t\\\n\t}\t\t\t\t\t\t\\\n} while (0)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

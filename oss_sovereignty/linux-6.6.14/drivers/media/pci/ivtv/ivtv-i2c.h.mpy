@@ -1,0 +1,9 @@
+{
+  "module_name": "ivtv-i2c.h",
+  "hash_id": "f9733005581a7d7781c87f77db213b3c81efbca637ed502bc053c0c4318a927c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/pci/ivtv/ivtv-i2c.h",
+  "human_readable_source": " \n \n\n#ifndef IVTV_I2C_H\n#define IVTV_I2C_H\n\nvoid ivtv_i2c_new_ir_legacy(struct ivtv *itv);\nint ivtv_i2c_register(struct ivtv *itv, unsigned idx);\nstruct v4l2_subdev *ivtv_find_hw(struct ivtv *itv, u32 hw);\n\n \nint init_ivtv_i2c(struct ivtv *itv);\nvoid exit_ivtv_i2c(struct ivtv *itv);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

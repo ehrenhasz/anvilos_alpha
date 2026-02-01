@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "73fce800e958ed506bc8a470ca7b3a6ab3781c16b68a6ff5dec810b68a1fe1cb",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/spear/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n# SPEAR Platform Support\nsnd-soc-spear-pcm-objs := spear_pcm.o\nsnd-soc-spear-spdif-in-objs := spdif_in.o\nsnd-soc-spear-spdif-out-objs := spdif_out.o\n\nobj-$(CONFIG_SND_SPEAR_SOC) += snd-soc-spear-pcm.o\nobj-$(CONFIG_SND_SPEAR_SPDIF_IN) += snd-soc-spear-spdif-in.o\nobj-$(CONFIG_SND_SPEAR_SPDIF_OUT) += snd-soc-spear-spdif-out.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

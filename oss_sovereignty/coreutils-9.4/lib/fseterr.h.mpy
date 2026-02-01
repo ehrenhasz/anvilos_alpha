@@ -1,0 +1,9 @@
+{
+  "module_name": "fseterr.h",
+  "hash_id": "f44fd8f61fe9d9165e03d88038f1d7865b4c197bb8d92c9bd3293ff8a62aaefd",
+  "original_prompt": "Ingested from coreutils-9.4/lib/fseterr.h",
+  "human_readable_source": " \n#if !_GL_CONFIG_H_INCLUDED\n #error \"Please include config.h first.\"\n#endif\n\n#include <stdio.h>\n\n \n\n#if HAVE___FSETERR  \n\n# include <stdio_ext.h>\n# define fseterr(fp) __fseterr (fp)\n\n#else\n\n# ifdef __cplusplus\nextern \"C\" {\n# endif\n\nextern void fseterr (FILE *fp);\n\n# ifdef __cplusplus\n}\n# endif\n\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

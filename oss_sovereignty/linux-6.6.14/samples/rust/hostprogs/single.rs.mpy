@@ -1,0 +1,9 @@
+{
+  "module_name": "single.rs",
+  "hash_id": "7f655a56aae81ca98a38c90e65eb0b466234593d025e4b29b28ff18849dcc980",
+  "original_prompt": "Ingested from linux-6.6.14/samples/rust/hostprogs/single.rs",
+  "human_readable_source": "// SPDX-License-Identifier: GPL-2.0\n\n//! Rust single host program sample.\n\nmod a;\nmod b;\n\nfn main() {\n    println!(\"Hello world!\");\n\n    a::f(b::CONSTANT);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

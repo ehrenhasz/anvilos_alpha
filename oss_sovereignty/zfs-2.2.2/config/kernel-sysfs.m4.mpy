@@ -1,0 +1,9 @@
+{
+  "module_name": "kernel-sysfs.m4",
+  "hash_id": "72c4326e77397a24ac3711d4f4a1fad2db27111cd5e07156e11d3c8f016f4091",
+  "original_prompt": "Ingested from zfs-2.2.2/config/kernel-sysfs.m4",
+  "human_readable_source": "dnl #\ndnl # Linux 5.2/5.18 API\ndnl #\ndnl # In cdb4f26a63c391317e335e6e683a614358e70aeb (\"kobject: kobj_type: remove default_attrs\")\ndnl # \tstruct kobj_type.default_attrs\ndnl # was finally removed in favour of\ndnl # \tstruct kobj_type.default_groups\ndnl #\ndnl # This was added in aa30f47cf666111f6bbfd15f290a27e8a7b9d854 (\"kobject: Add support for default attribute groups to kobj_type\"),\ndnl # if both are present (5.2-5.17), we prefer default_groups; they're otherwise equivalent\ndnl #\nAC_DEFUN([ZFS_AC_KERNEL_SRC_SYSFS_DEFAULT_GROUPS], [\n\tZFS_LINUX_TEST_SRC([sysfs_default_groups], [\n\t\t#include <linux/kobject.h>\n\t],[\n\t\tstruct kobj_type __attribute__ ((unused)) kt = {\n\t\t\t.default_groups = (const struct attribute_group **)NULL };\n\t])\n])\n\nAC_DEFUN([ZFS_AC_KERNEL_SYSFS_DEFAULT_GROUPS], [\n\tAC_MSG_CHECKING([whether struct kobj_type.default_groups exists])\n\tZFS_LINUX_TEST_RESULT([sysfs_default_groups],[\n\t\tAC_MSG_RESULT(yes)\n\t\tAC_DEFINE([HAVE_SYSFS_DEFAULT_GROUPS], 1, [struct kobj_type has default_groups])\n\t],[\n\t\tAC_MSG_RESULT(no)\n\t])\n])\n\nAC_DEFUN([ZFS_AC_KERNEL_SRC_SYSFS], [\n\tZFS_AC_KERNEL_SRC_SYSFS_DEFAULT_GROUPS\n])\n\nAC_DEFUN([ZFS_AC_KERNEL_SYSFS], [\n\tZFS_AC_KERNEL_SYSFS_DEFAULT_GROUPS\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

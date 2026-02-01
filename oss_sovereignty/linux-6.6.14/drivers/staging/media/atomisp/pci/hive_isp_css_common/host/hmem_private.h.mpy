@@ -1,0 +1,9 @@
+{
+  "module_name": "hmem_private.h",
+  "hash_id": "46f358b3339234729b7f9a4cfdfc85d5cbbff0a3df2932635c74548d4250640d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/hive_isp_css_common/host/hmem_private.h",
+  "human_readable_source": " \n \n\n#ifndef __HMEM_PRIVATE_H_INCLUDED__\n#define __HMEM_PRIVATE_H_INCLUDED__\n\n#include \"hmem_public.h\"\n\n#include \"assert_support.h\"\n\nSTORAGE_CLASS_HMEM_C size_t sizeof_hmem(\n    const hmem_ID_t\t\tID)\n{\n\tassert(ID < N_HMEM_ID);\n\t(void)ID;\n\treturn HMEM_SIZE * sizeof(hmem_data_t);\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "tpmrm-dev.c",
+  "hash_id": "952a77c720142f76276ff47898916719c3c75cdadf68dfbb3cf327fde8040443",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/char/tpm/tpmrm-dev.c",
+  "human_readable_source": "\n \n#include <linux/slab.h>\n#include \"tpm-dev.h\"\n\nstruct tpmrm_priv {\n\tstruct file_priv priv;\n\tstruct tpm_space space;\n};\n\nstatic int tpmrm_open(struct inode *inode, struct file *file)\n{\n\tstruct tpm_chip *chip;\n\tstruct tpmrm_priv *priv;\n\tint rc;\n\n\tchip = container_of(inode->i_cdev, struct tpm_chip, cdevs);\n\tpriv = kzalloc(sizeof(*priv), GFP_KERNEL);\n\tif (priv == NULL)\n\t\treturn -ENOMEM;\n\n\trc = tpm2_init_space(&priv->space, TPM2_SPACE_BUFFER_SIZE);\n\tif (rc) {\n\t\tkfree(priv);\n\t\treturn -ENOMEM;\n\t}\n\n\ttpm_common_open(file, chip, &priv->priv, &priv->space);\n\n\treturn 0;\n}\n\nstatic int tpmrm_release(struct inode *inode, struct file *file)\n{\n\tstruct file_priv *fpriv = file->private_data;\n\tstruct tpmrm_priv *priv = container_of(fpriv, struct tpmrm_priv, priv);\n\n\ttpm_common_release(file, fpriv);\n\ttpm2_del_space(fpriv->chip, &priv->space);\n\tkfree(priv);\n\n\treturn 0;\n}\n\nconst struct file_operations tpmrm_fops = {\n\t.owner = THIS_MODULE,\n\t.llseek = no_llseek,\n\t.open = tpmrm_open,\n\t.read = tpm_common_read,\n\t.write = tpm_common_write,\n\t.poll = tpm_common_poll,\n\t.release = tpmrm_release,\n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

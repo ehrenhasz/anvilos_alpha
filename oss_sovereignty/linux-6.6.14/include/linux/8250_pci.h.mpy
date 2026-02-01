@@ -1,0 +1,9 @@
+{
+  "module_name": "8250_pci.h",
+  "hash_id": "3febd64f7f34092ccb977526d78794f8846fea0e6152f33c49d1a6d04e93c74f",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/8250_pci.h",
+  "human_readable_source": " \n \n#define FL_BASE_MASK\t\t0x0007\n#define FL_BASE0\t\t0x0000\n#define FL_BASE1\t\t0x0001\n#define FL_BASE2\t\t0x0002\n#define FL_BASE3\t\t0x0003\n#define FL_BASE4\t\t0x0004\n#define FL_GET_BASE(x)\t\t(x & FL_BASE_MASK)\n\n \n#define FL_BASE_BARS\t\t0x0008\n\n \n#define FL_NOIRQ\t\t0x0080\n\n \n#define FL_REGION_SZ_CAP\t0x0100\n\nstruct pciserial_board {\n\tunsigned int flags;\n\tunsigned int num_ports;\n\tunsigned int base_baud;\n\tunsigned int uart_offset;\n\tunsigned int reg_shift;\n\tunsigned int first_offset;\n};\n\nstruct serial_private;\n\nstruct serial_private *\npciserial_init_ports(struct pci_dev *dev, const struct pciserial_board *board);\nvoid pciserial_remove_ports(struct serial_private *priv);\nvoid pciserial_suspend_ports(struct serial_private *priv);\nvoid pciserial_resume_ports(struct serial_private *priv);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

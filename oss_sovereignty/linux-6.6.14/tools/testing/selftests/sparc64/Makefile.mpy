@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "35954c877685917d9dbc52e6bca78046ef4103be357b6e44946ecb8c4d5399b5",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/sparc64/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nuname_M := $(shell uname -m 2>/dev/null || echo not)\nARCH ?= $(shell echo $(uname_M) | sed -e s/x86_64/x86/)\n\nifneq ($(ARCH),sparc64)\nnothing:\n.PHONY: all clean run_tests install\n.SILENT:\nelse\n\nSUBDIRS := drivers\n\nTEST_PROGS := run.sh\n\n\n.PHONY: all clean\n\ninclude ../lib.mk\n\nall:\n\t@for DIR in $(SUBDIRS); do\t\t\\\n\t\tBUILD_TARGET=$(OUTPUT)/$$DIR;\t\\\n\t\tmkdir $$BUILD_TARGET  -p;\t\\\n\t\tmake OUTPUT=$$BUILD_TARGET -C $$DIR $@;\\\n\t\t#SUBDIR test prog name should be in the form: SUBDIR_test.sh \\\n\t\tTEST=$$DIR\"_test.sh\"; \\\n\t\tif [ -e $$DIR/$$TEST ]; then \\\n\t\t\trsync -a $$DIR/$$TEST $$BUILD_TARGET/; \\\n\t\tfi \\\n\tdone\n\noverride define INSTALL_RULE\n\tmkdir -p $(INSTALL_PATH)\n\tinstall -t $(INSTALL_PATH) $(TEST_PROGS) $(TEST_PROGS_EXTENDED) $(TEST_FILES)\n\n\t@for SUBDIR in $(SUBDIRS); do \\\n\t\tBUILD_TARGET=$(OUTPUT)/$$SUBDIR;\t\\\n\t\tmkdir $$BUILD_TARGET  -p;\t\\\n\t\t$(MAKE) OUTPUT=$$BUILD_TARGET -C $$SUBDIR INSTALL_PATH=$(INSTALL_PATH)/$$SUBDIR install; \\\n\tdone;\nendef\n\noverride define CLEAN\n\t@for DIR in $(SUBDIRS); do\t\t\\\n\t\tBUILD_TARGET=$(OUTPUT)/$$DIR;\t\\\n\t\tmkdir $$BUILD_TARGET  -p;\t\\\n\t\tmake OUTPUT=$$BUILD_TARGET -C $$DIR $@;\\\n\tdone\nendef\nendif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

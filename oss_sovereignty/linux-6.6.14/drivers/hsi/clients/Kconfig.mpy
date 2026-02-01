@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "2d6ebc644d40ac50b886becbbd3cb7e8c435de57dbdb1ba0e86bb1312bdaf5f6",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/hsi/clients/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# HSI clients configuration\n#\n\ncomment \"HSI clients\"\n\nconfig NOKIA_MODEM\n\ttristate \"Nokia Modem\"\n\tdepends on HSI && SSI_PROTOCOL && CMT_SPEECH\n\thelp\n\tSay Y here if you want to add support for the modem on Nokia\n\tN900 (Nokia RX-51) hardware.\n\n\tIf unsure, say N.\n\nconfig CMT_SPEECH\n\ttristate \"CMT speech\"\n\tdepends on HSI && SSI_PROTOCOL\n\thelp\n\tIf you say Y here, you will enable the CMT speech protocol used\n\tby Nokia modems. If you say M the protocol will be available as\n\tmodule named cmt_speech.\n\n\tIf unsure, say N.\n\nconfig SSI_PROTOCOL\n\ttristate \"SSI protocol\"\n\tdepends on HSI && PHONET && OMAP_SSI\n\thelp\n\tIf you say Y here, you will enable the SSI protocol aka McSAAB.\n\n\tIf unsure, say N.\n\nconfig HSI_CHAR\n\ttristate \"HSI/SSI character driver\"\n\tdepends on HSI\n\thelp\n\t  If you say Y here, you will enable the HSI/SSI character driver.\n\t  This driver provides a simple character device interface for\n\t  serial communication with the cellular modem over HSI/SSI bus.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

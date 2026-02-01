@@ -1,0 +1,9 @@
+{
+  "module_name": "bios_parser_helper.c",
+  "hash_id": "635a190e14558f779f87e030bd2ceac4afd75e5d4d0bbf9f6faceb163cb513fc",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/dc/bios/bios_parser_helper.c",
+  "human_readable_source": " \n\n#include \"dm_services.h\"\n\n#include \"atom.h\"\n\n#include \"include/bios_parser_types.h\"\n#include \"bios_parser_helper.h\"\n#include \"command_table_helper.h\"\n#include \"command_table.h\"\n#include \"bios_parser_types_internal.h\"\n\nuint8_t *bios_get_image(struct dc_bios *bp,\n\tuint32_t offset,\n\tuint32_t size)\n{\n\tif (bp->bios && offset + size < bp->bios_size)\n\t\treturn bp->bios + offset;\n\telse\n\t\treturn NULL;\n}\n\n#include \"reg_helper.h\"\n\n#define CTX \\\n\tbios->ctx\n#define REG(reg)\\\n\t(bios->regs->reg)\n\n#undef FN\n#define FN(reg_name, field_name) \\\n\t\tATOM_ ## field_name ## _SHIFT, ATOM_ ## field_name\n\nbool bios_is_accelerated_mode(\n\tstruct dc_bios *bios)\n{\n\tuint32_t acc_mode;\n\tREG_GET(BIOS_SCRATCH_6, S6_ACC_MODE, &acc_mode);\n\treturn (acc_mode == 1);\n}\n\n\nvoid bios_set_scratch_acc_mode_change(\n\tstruct dc_bios *bios,\n\tuint32_t state)\n{\n\tREG_UPDATE(BIOS_SCRATCH_6, S6_ACC_MODE, state);\n}\n\n\nvoid bios_set_scratch_critical_state(\n\tstruct dc_bios *bios,\n\tbool state)\n{\n\tuint32_t critial_state = state ? 1 : 0;\n\tREG_UPDATE(BIOS_SCRATCH_6, S6_CRITICAL_STATE, critial_state);\n}\n\nuint32_t bios_get_vga_enabled_displays(\n\tstruct dc_bios *bios)\n{\n\treturn REG_READ(BIOS_SCRATCH_3) & 0XFFFF;\n}\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "scsi_ioctl.h",
+  "hash_id": "2d44eb22d39a29e6bf7736c4f9871d7e7816b25780172d364eab662c4295ec19",
+  "original_prompt": "Ingested from linux-6.6.14/include/scsi/scsi_ioctl.h",
+  "human_readable_source": " \n#ifndef _SCSI_IOCTL_H\n#define _SCSI_IOCTL_H \n\n#define SCSI_IOCTL_SEND_COMMAND 1\n#define SCSI_IOCTL_TEST_UNIT_READY 2\n#define SCSI_IOCTL_BENCHMARK_COMMAND 3\n#define SCSI_IOCTL_SYNC 4\t\t\t \n#define SCSI_IOCTL_START_UNIT 5\n#define SCSI_IOCTL_STOP_UNIT 6\n \n#define SCSI_IOCTL_DOORLOCK 0x5380\t\t \n#define SCSI_IOCTL_DOORUNLOCK 0x5381\t\t \n\n#define\tSCSI_REMOVAL_PREVENT\t1\n#define\tSCSI_REMOVAL_ALLOW\t0\n\n#ifdef __KERNEL__\n\nstruct gendisk;\nstruct scsi_device;\nstruct sg_io_hdr;\n\n \n\ntypedef struct scsi_ioctl_command {\n\tunsigned int inlen;\n\tunsigned int outlen;\n\tunsigned char data[];\n} Scsi_Ioctl_Command;\n\ntypedef struct scsi_idlun {\n\t__u32 dev_id;\n\t__u32 host_unique_id;\n} Scsi_Idlun;\n\n \ntypedef struct scsi_fctargaddress {\n\t__u32 host_port_id;\n\tunsigned char host_wwn[8]; \n} Scsi_FCTargAddress;\n\nint scsi_ioctl_block_when_processing_errors(struct scsi_device *sdev,\n\t\tint cmd, bool ndelay);\nint scsi_ioctl(struct scsi_device *sdev, bool open_for_write, int cmd,\n\t\tvoid __user *arg);\nint get_sg_io_hdr(struct sg_io_hdr *hdr, const void __user *argp);\nint put_sg_io_hdr(const struct sg_io_hdr *hdr, void __user *argp);\nbool scsi_cmd_allowed(unsigned char *cmd, bool open_for_write);\n\n#endif  \n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

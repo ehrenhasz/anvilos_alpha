@@ -1,0 +1,9 @@
+{
+  "module_name": "kxtj9.h",
+  "hash_id": "39f1efbc6776942f98c73ffcbb196ea694d2ec24f5a2d07502859e6fca98c72b",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/input/kxtj9.h",
+  "human_readable_source": " \n \n\n#ifndef __KXTJ9_H__\n#define __KXTJ9_H__\n\n#define KXTJ9_I2C_ADDR\t\t0x0F\n\nstruct kxtj9_platform_data {\n\tunsigned int min_interval;\t \n\tunsigned int init_interval;\t \n\n\t \n\tu8 axis_map_x;\n\tu8 axis_map_y;\n\tu8 axis_map_z;\n\n\t \n\tbool negate_x;\n\tbool negate_y;\n\tbool negate_z;\n\n\t \n\t \n\t#define RES_8BIT\t\t0\n\t#define RES_12BIT\t\t(1 << 6)\n\tu8 res_12bit;\n\t \n\t#define KXTJ9_G_2G\t\t0\n\t#define KXTJ9_G_4G\t\t(1 << 3)\n\t#define KXTJ9_G_8G\t\t(1 << 4)\n\tu8 g_range;\n\n\tint (*init)(void);\n\tvoid (*exit)(void);\n\tint (*power_on)(void);\n\tint (*power_off)(void);\n};\n#endif   \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

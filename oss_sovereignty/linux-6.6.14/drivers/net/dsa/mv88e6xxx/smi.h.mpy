@@ -1,0 +1,9 @@
+{
+  "module_name": "smi.h",
+  "hash_id": "ff5d0f4408ca55cf6f1562f5d7df093e62da0f4bc7c384c15769905a470564e2",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/dsa/mv88e6xxx/smi.h",
+  "human_readable_source": " \n \n\n#ifndef _MV88E6XXX_SMI_H\n#define _MV88E6XXX_SMI_H\n\n#include \"chip.h\"\n\n \n#define MV88E6XXX_SMI_CMD\t\t\t0x00\n#define MV88E6XXX_SMI_CMD_BUSY\t\t\t0x8000\n#define MV88E6XXX_SMI_CMD_MODE_MASK\t\t0x1000\n#define MV88E6XXX_SMI_CMD_MODE_45\t\t0x0000\n#define MV88E6XXX_SMI_CMD_MODE_22\t\t0x1000\n#define MV88E6XXX_SMI_CMD_OP_MASK\t\t0x0c00\n#define MV88E6XXX_SMI_CMD_OP_22_WRITE\t\t0x0400\n#define MV88E6XXX_SMI_CMD_OP_22_READ\t\t0x0800\n#define MV88E6XXX_SMI_CMD_OP_45_WRITE_ADDR\t0x0000\n#define MV88E6XXX_SMI_CMD_OP_45_WRITE_DATA\t0x0400\n#define MV88E6XXX_SMI_CMD_OP_45_READ_DATA\t0x0800\n#define MV88E6XXX_SMI_CMD_OP_45_READ_DATA_INC\t0x0c00\n#define MV88E6XXX_SMI_CMD_DEV_ADDR_MASK\t\t0x003e\n#define MV88E6XXX_SMI_CMD_REG_ADDR_MASK\t\t0x001f\n\n \n#define MV88E6XXX_SMI_DATA\t\t\t0x01\n\nint mv88e6xxx_smi_init(struct mv88e6xxx_chip *chip,\n\t\t       struct mii_bus *bus, int sw_addr);\n\nstatic inline int mv88e6xxx_smi_read(struct mv88e6xxx_chip *chip,\n\t\t\t\t     int dev, int reg, u16 *data)\n{\n\tif (chip->smi_ops && chip->smi_ops->read)\n\t\treturn chip->smi_ops->read(chip, dev, reg, data);\n\n\treturn -EOPNOTSUPP;\n}\n\nstatic inline int mv88e6xxx_smi_write(struct mv88e6xxx_chip *chip,\n\t\t\t\t      int dev, int reg, u16 data)\n{\n\tif (chip->smi_ops && chip->smi_ops->write)\n\t\treturn chip->smi_ops->write(chip, dev, reg, data);\n\n\treturn -EOPNOTSUPP;\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

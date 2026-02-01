@@ -1,0 +1,9 @@
+{
+  "module_name": "scsi_status.h",
+  "hash_id": "710f26bc4fff6cb42ef32034a5a77338be031a0f71d20487f4035858c69ca09f",
+  "original_prompt": "Ingested from linux-6.6.14/include/scsi/scsi_status.h",
+  "human_readable_source": " \n\n#ifndef _SCSI_SCSI_STATUS_H\n#define _SCSI_SCSI_STATUS_H\n\n#include <linux/types.h>\n#include <scsi/scsi_proto.h>\n\n \nenum scsi_msg_byte {\n\tCOMMAND_COMPLETE\t= 0x00,\n\tEXTENDED_MESSAGE\t= 0x01,\n\tSAVE_POINTERS\t\t= 0x02,\n\tRESTORE_POINTERS\t= 0x03,\n\tDISCONNECT\t\t= 0x04,\n\tINITIATOR_ERROR\t\t= 0x05,\n\tABORT_TASK_SET\t\t= 0x06,\n\tMESSAGE_REJECT\t\t= 0x07,\n\tNOP\t\t\t= 0x08,\n\tMSG_PARITY_ERROR\t= 0x09,\n\tLINKED_CMD_COMPLETE\t= 0x0a,\n\tLINKED_FLG_CMD_COMPLETE\t= 0x0b,\n\tTARGET_RESET\t\t= 0x0c,\n\tABORT_TASK\t\t= 0x0d,\n\tCLEAR_TASK_SET\t\t= 0x0e,\n\tINITIATE_RECOVERY\t= 0x0f,             \n\tRELEASE_RECOVERY\t= 0x10,             \n\tTERMINATE_IO_PROC\t= 0x11,             \n\tCLEAR_ACA\t\t= 0x16,\n\tLOGICAL_UNIT_RESET\t= 0x17,\n\tSIMPLE_QUEUE_TAG\t= 0x20,\n\tHEAD_OF_QUEUE_TAG\t= 0x21,\n\tORDERED_QUEUE_TAG\t= 0x22,\n\tIGNORE_WIDE_RESIDUE\t= 0x23,\n\tACA\t\t\t= 0x24,\n\tQAS_REQUEST\t\t= 0x55,\n\n\t \n\tBUS_DEVICE_RESET\t= TARGET_RESET,\n\tABORT\t\t\t= ABORT_TASK_SET,\n};\n\n \nenum scsi_host_status {\n\tDID_OK\t\t= 0x00,\t \n\tDID_NO_CONNECT\t= 0x01,\t \n\tDID_BUS_BUSY\t= 0x02,\t \n\tDID_TIME_OUT\t= 0x03,\t \n\tDID_BAD_TARGET\t= 0x04,\t \n\tDID_ABORT\t= 0x05,\t \n\tDID_PARITY\t= 0x06,\t \n\tDID_ERROR\t= 0x07,\t \n\tDID_RESET\t= 0x08,\t \n\tDID_BAD_INTR\t= 0x09,\t \n\tDID_PASSTHROUGH\t= 0x0a,\t \n\tDID_SOFT_ERROR\t= 0x0b,\t \n\tDID_IMM_RETRY\t= 0x0c,\t \n\tDID_REQUEUE\t= 0x0d,\t \n\tDID_TRANSPORT_DISRUPTED = 0x0e,  \n\tDID_TRANSPORT_FAILFAST = 0x0f,  \n\t \n\tDID_TRANSPORT_MARGINAL = 0x14,  \n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

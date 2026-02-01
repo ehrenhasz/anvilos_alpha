@@ -1,0 +1,9 @@
+{
+  "module_name": "mt8173-power.h",
+  "hash_id": "a5cee2d4afc6b2555a0c4e33e70c43d3c0ac52bd20402cef762a22024210915f",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/power/mt8173-power.h",
+  "human_readable_source": " \n#ifndef _DT_BINDINGS_POWER_MT8173_POWER_H\n#define _DT_BINDINGS_POWER_MT8173_POWER_H\n\n#define MT8173_POWER_DOMAIN_VDEC\t0\n#define MT8173_POWER_DOMAIN_VENC\t1\n#define MT8173_POWER_DOMAIN_ISP\t\t2\n#define MT8173_POWER_DOMAIN_MM\t\t3\n#define MT8173_POWER_DOMAIN_VENC_LT\t4\n#define MT8173_POWER_DOMAIN_AUDIO\t5\n#define MT8173_POWER_DOMAIN_USB\t\t6\n#define MT8173_POWER_DOMAIN_MFG_ASYNC\t7\n#define MT8173_POWER_DOMAIN_MFG_2D\t8\n#define MT8173_POWER_DOMAIN_MFG\t\t9\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

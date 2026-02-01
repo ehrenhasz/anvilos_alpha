@@ -1,0 +1,9 @@
+{
+  "module_name": "test-bind.c",
+  "hash_id": "b3bdd67344e40f6be13bffe76d1fc0e5201b8d755ef8377a03972c1cc6f70238",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-bind.c",
+  "human_readable_source": " \n  {\n    struct sockaddr_in addr;\n\n    addr.sin_family = AF_INET;\n    inet_pton (AF_INET, \"127.0.0.1\", &addr.sin_addr);\n    addr.sin_port = htons (80);\n    {\n      errno = 0;\n      ASSERT (bind (-1, (const struct sockaddr *) &addr, sizeof (addr)) == -1);\n      ASSERT (errno == EBADF);\n    }\n    {\n      close (99);\n      errno = 0;\n      ASSERT (bind (99, (const struct sockaddr *) &addr, sizeof (addr)) == -1);\n      ASSERT (errno == EBADF);\n    }\n  }\n\n  return 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

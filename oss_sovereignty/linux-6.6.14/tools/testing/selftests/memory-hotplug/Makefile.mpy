@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "5ba76434ccfa8a7ecf3eecde2302276b9ba13192932fd60614b6d36e0ffaa005",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/memory-hotplug/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nall:\n\ninclude ../lib.mk\n\nTEST_PROGS := mem-on-off-test.sh\n\nrun_full_test:\n\t@/bin/bash ./mem-on-off-test.sh -r 10 && echo \"memory-hotplug selftests: [PASS]\" || echo \"memory-hotplug selftests: [FAIL]\"\n\nclean:\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

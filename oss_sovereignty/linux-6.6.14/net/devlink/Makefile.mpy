@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "8b85ef1e198e310d5d66dd207585d0d04ad3763096d65f74f2fc94d903c69de8",
+  "original_prompt": "Ingested from linux-6.6.14/net/devlink/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n\nobj-y := core.o netlink.o netlink_gen.o dev.o port.o sb.o dpipe.o \\\n\t resource.o param.o region.o health.o trap.o rate.o linecard.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

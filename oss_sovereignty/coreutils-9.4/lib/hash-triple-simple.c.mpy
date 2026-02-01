@@ -1,0 +1,9 @@
+{
+  "module_name": "hash-triple-simple.c",
+  "hash_id": "ba60531a469c1cd3746b885c581deedc7fabedbe660730fe5cc3e357ccf3e70a",
+  "original_prompt": "Ingested from coreutils-9.4/lib/hash-triple-simple.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n \n#include \"hash-triple.h\"\n\n#include <stdlib.h>\n#include <string.h>\n\n#include \"hash-pjw.h\"\n#include \"same-inode.h\"\n\n#define STREQ(a, b) (strcmp (a, b) == 0)\n\n \nsize_t\ntriple_hash (void const *x, size_t table_size)\n{\n  struct F_triple const *p = x;\n  size_t tmp = hash_pjw (p->name, table_size);\n\n   \n  return (tmp ^ p->st_ino) % table_size;\n}\n\n \nbool\ntriple_compare_ino_str (void const *x, void const *y)\n{\n  struct F_triple const *a = x;\n  struct F_triple const *b = y;\n  return (SAME_INODE (*a, *b) && STREQ (a->name, b->name)) ? true : false;\n}\n\n \nvoid\ntriple_free (void *x)\n{\n  struct F_triple *a = x;\n  free (a->name);\n  free (a);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

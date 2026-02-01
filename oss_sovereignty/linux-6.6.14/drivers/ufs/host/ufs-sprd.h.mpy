@@ -1,0 +1,9 @@
+{
+  "module_name": "ufs-sprd.h",
+  "hash_id": "99406ed87571974a8d612e24296e4065e1ed6303c73daa34870144f1887813d6",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/ufs/host/ufs-sprd.h",
+  "human_readable_source": " \n \n\n#ifndef _UFS_SPRD_H_\n#define _UFS_SPRD_H_\n\n \n#define RXSQCONTROL\t0x8009\n#define CBRATESEL\t0x8114\n#define CBCREGADDRLSB\t0x8116\n#define CBCREGADDRMSB\t0x8117\n#define CBCREGWRLSB\t0x8118\n#define CBCREGWRMSB\t0x8119\n#define CBCREGRDWRSEL\t0x811C\n#define CBCRCTRL\t0x811F\n#define CBREFCLKCTRL2\t0x8132\n#define VS_MPHYDISABLE\t0xD0C1\n\n#define APB_UFSDEV_REG\t\t0xCE8\n#define APB_UFSDEV_REFCLK_EN\t0x2\n#define APB_USB31PLL_CTRL\t0xCFC\n#define APB_USB31PLLV_REF2MPHY\t0x1\n\n#define SPRD_SIP_SVC_STORAGE_UFS_CRYPTO_ENABLE\t\t\t\t\\\n\tARM_SMCCC_CALL_VAL(ARM_SMCCC_FAST_CALL,\t\t\t\t\\\n\t\t\t   ARM_SMCCC_SMC_32,\t\t\t\t\\\n\t\t\t   ARM_SMCCC_OWNER_SIP,\t\t\t\t\\\n\t\t\t   0x0301)\n\nenum SPRD_UFS_RST_INDEX {\n\tSPRD_UFSHCI_SOFT_RST,\n\tSPRD_UFS_DEV_RST,\n\n\tSPRD_UFS_RST_MAX\n};\n\nenum SPRD_UFS_SYSCON_INDEX {\n\tSPRD_UFS_ANLG,\n\tSPRD_UFS_AON_APB,\n\n\tSPRD_UFS_SYSCON_MAX\n};\n\nenum SPRD_UFS_VREG_INDEX {\n\tSPRD_UFS_VDD_MPHY,\n\n\tSPRD_UFS_VREG_MAX\n};\n\nstruct ufs_sprd_rst {\n\tconst char *name;\n\tstruct reset_control *rc;\n};\n\nstruct ufs_sprd_syscon {\n\tconst char *name;\n\tstruct regmap *regmap;\n};\n\nstruct ufs_sprd_vreg {\n\tconst char *name;\n\tstruct regulator *vreg;\n};\n\nstruct ufs_sprd_priv {\n\tstruct ufs_sprd_rst rci[SPRD_UFS_RST_MAX];\n\tstruct ufs_sprd_syscon sysci[SPRD_UFS_SYSCON_MAX];\n\tstruct ufs_sprd_vreg vregi[SPRD_UFS_VREG_MAX];\n\tconst struct ufs_hba_variant_ops ufs_hba_sprd_vops;\n};\n\nstruct ufs_sprd_host {\n\tstruct ufs_hba *hba;\n\tstruct ufs_sprd_priv *priv;\n\tvoid __iomem *ufs_dbg_mmio;\n\n\tenum ufs_unipro_ver unipro_ver;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

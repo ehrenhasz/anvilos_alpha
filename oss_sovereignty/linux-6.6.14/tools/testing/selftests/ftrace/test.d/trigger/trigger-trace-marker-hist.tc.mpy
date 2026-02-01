@@ -1,0 +1,9 @@
+{
+  "module_name": "trigger-trace-marker-hist.tc",
+  "hash_id": "4d5c7c0376d2e3b80e0e6503bf299dab684e9e13882ebd3299f21045f224d999",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/ftrace/test.d/trigger/trigger-trace-marker-hist.tc",
+  "human_readable_source": "#!/bin/sh\n# SPDX-License-Identifier: GPL-2.0\n# description: trace_marker trigger - test histogram trigger\n# requires: set_event events/ftrace/print/trigger events/ftrace/print/hist\n# flags: instance\n\nfail() { #msg\n    echo $1\n    exit_fail\n}\n\necho \"Test histogram trace_marker trigger\"\n\necho 'hist:keys=common_pid' > events/ftrace/print/trigger\nfor i in `seq 1 10` ; do echo \"hello\" > trace_marker; done\ngrep 'hitcount: *10$' events/ftrace/print/hist > /dev/null || \\\n    fail \"hist trigger did not trigger correct times on trace_marker\"\n\nexit 0\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

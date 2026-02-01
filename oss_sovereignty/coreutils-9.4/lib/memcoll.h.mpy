@@ -1,0 +1,9 @@
+{
+  "module_name": "memcoll.h",
+  "hash_id": "81ee8697372d8fc2f736a93239d9025531052eb6d4ce303fd7905f48d315a021",
+  "original_prompt": "Ingested from coreutils-9.4/lib/memcoll.h",
+  "human_readable_source": " \n\n#ifndef MEMCOLL_H_\n# define MEMCOLL_H_ 1\n\n# include <stddef.h>\n\nint memcoll (char *restrict, size_t, char *restrict, size_t);\nint memcoll0 (char const *, size_t, char const *, size_t);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

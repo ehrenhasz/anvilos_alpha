@@ -1,0 +1,9 @@
+{
+  "module_name": "ipt_ttl.h",
+  "hash_id": "ba50e7bf23b58331e8d006a504189fead151938752340f0ab7d966f22fd4f68b",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/netfilter_ipv4/ipt_ttl.h",
+  "human_readable_source": " \n \n\n#ifndef _IPT_TTL_H\n#define _IPT_TTL_H\n\n#include <linux/types.h>\n\nenum {\n\tIPT_TTL_EQ = 0,\t\t \n\tIPT_TTL_NE,\t\t \n\tIPT_TTL_LT,\t\t \n\tIPT_TTL_GT,\t\t \n};\n\n\nstruct ipt_ttl_info {\n\t__u8\tmode;\n\t__u8\tttl;\n};\n\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

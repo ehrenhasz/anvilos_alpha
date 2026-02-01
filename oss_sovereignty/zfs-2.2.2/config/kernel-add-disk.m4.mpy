@@ -1,0 +1,9 @@
+{
+  "module_name": "kernel-add-disk.m4",
+  "hash_id": "c2fd78bb8ca8ec55d887f829dd061f987a43baac1c367565f5fe1a2b05f5cd35",
+  "original_prompt": "Ingested from zfs-2.2.2/config/kernel-add-disk.m4",
+  "human_readable_source": "dnl #\ndnl # 5.16 API change\ndnl # add_disk grew a must-check return code\ndnl #\nAC_DEFUN([ZFS_AC_KERNEL_SRC_ADD_DISK], [\n\tZFS_LINUX_TEST_SRC([add_disk_ret], [\n\t\t#include <linux/blkdev.h>\n\t], [\n\t\tstruct gendisk *disk = NULL;\n\t\tint error __attribute__ ((unused)) = add_disk(disk);\n\t])\n])\n\nAC_DEFUN([ZFS_AC_KERNEL_ADD_DISK], [\n\tAC_MSG_CHECKING([whether add_disk() returns int])\n\tZFS_LINUX_TEST_RESULT([add_disk_ret],\n\t[\n\t\tAC_MSG_RESULT(yes)\n\t\tAC_DEFINE(HAVE_ADD_DISK_RET, 1,\n\t\t    [add_disk() returns int])\n\t], [\n\t\tAC_MSG_RESULT(no)\n\t])\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "caif_socket.h",
+  "hash_id": "56f02931274e44de14bc9f682621e95c5acb8566d030e63398dc5e945fe75ac3",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/caif/caif_socket.h",
+  "human_readable_source": " \n \n\n#ifndef _LINUX_CAIF_SOCKET_H\n#define _LINUX_CAIF_SOCKET_H\n\n#include <linux/types.h>\n#include <linux/socket.h>\n\n \nenum caif_link_selector {\n\tCAIF_LINK_HIGH_BANDW,\n\tCAIF_LINK_LOW_LATENCY\n};\n\n \nenum caif_channel_priority {\n\tCAIF_PRIO_MIN\t = 0x01,\n\tCAIF_PRIO_LOW\t = 0x04,\n\tCAIF_PRIO_NORMAL = 0x0f,\n\tCAIF_PRIO_HIGH\t = 0x14,\n\tCAIF_PRIO_MAX\t = 0x1F\n};\n\n \nenum caif_protocol_type {\n\tCAIFPROTO_AT,\n\tCAIFPROTO_DATAGRAM,\n\tCAIFPROTO_DATAGRAM_LOOP,\n\tCAIFPROTO_UTIL,\n\tCAIFPROTO_RFM,\n\tCAIFPROTO_DEBUG,\n\t_CAIFPROTO_MAX\n};\n#define\tCAIFPROTO_MAX _CAIFPROTO_MAX\n\n \nenum caif_at_type {\n\tCAIF_ATTYPE_PLAIN = 2\n};\n  \nenum caif_debug_type {\n\tCAIF_DEBUG_TRACE_INTERACTIVE = 0,\n\tCAIF_DEBUG_TRACE,\n\tCAIF_DEBUG_INTERACTIVE,\n};\n\n \nenum caif_debug_service {\n\tCAIF_RADIO_DEBUG_SERVICE = 1,\n\tCAIF_APP_DEBUG_SERVICE\n};\n\n \nstruct sockaddr_caif {\n\t__kernel_sa_family_t  family;\n\tunion {\n\t\tstruct {\n\t\t\t__u8  type;\t\t \n\t\t} at;\t\t\t\t \n\t\tstruct {\n\t\t\tchar\t  service[16];\n\t\t} util;\t\t\t\t \n\t\tunion {\n\t\t\t__u32 connection_id;\n\t\t\t__u8  nsapi;\n\t\t} dgm;\t\t\t\t \n\t\tstruct {\n\t\t\t__u32 connection_id;\n\t\t\tchar\t  volume[16];\n\t\t} rfm;\t\t\t\t \n\t\tstruct {\n\t\t\t__u8  type;\t\t \n\t\t\t__u8  service;\t\t \n\t\t} dbg;\t\t\t\t \n\t} u;\n};\n\n \nenum caif_socket_opts {\n\tCAIFSO_LINK_SELECT\t= 127,\n\tCAIFSO_REQ_PARAM\t= 128,\n\tCAIFSO_RSP_PARAM\t= 129,\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

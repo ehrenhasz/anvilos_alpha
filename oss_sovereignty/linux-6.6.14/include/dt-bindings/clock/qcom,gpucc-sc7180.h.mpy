@@ -1,0 +1,9 @@
+{
+  "module_name": "qcom,gpucc-sc7180.h",
+  "hash_id": "61bccb53785570637268d40cc3be3b66a2db16f27d07204a559d7058f306fe86",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/clock/qcom,gpucc-sc7180.h",
+  "human_readable_source": " \n \n\n#ifndef _DT_BINDINGS_CLK_QCOM_GPU_CC_SC7180_H\n#define _DT_BINDINGS_CLK_QCOM_GPU_CC_SC7180_H\n\n#define GPU_CC_PLL1\t\t\t0\n#define GPU_CC_AHB_CLK\t\t\t1\n#define GPU_CC_CRC_AHB_CLK\t\t2\n#define GPU_CC_CX_GMU_CLK\t\t3\n#define GPU_CC_CX_SNOC_DVM_CLK\t\t4\n#define GPU_CC_CXO_AON_CLK\t\t5\n#define GPU_CC_CXO_CLK\t\t\t6\n#define GPU_CC_GMU_CLK_SRC\t\t7\n\n \n#define CX_GDSC\t\t\t\t0\n#define GX_GDSC\t\t\t\t1\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

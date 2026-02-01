@@ -1,0 +1,9 @@
+{
+  "module_name": "general.c",
+  "hash_id": "0765d57c1007917780c902567702b52219e630cc0c470de5ffa0bd159d90e90c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/rts5208/general.c",
+  "human_readable_source": "\n \n\n#include \"general.h\"\n\nint bit1cnt_long(u32 data)\n{\n\tint i, cnt = 0;\n\n\tfor (i = 0; i < 32; i++) {\n\t\tif (data & 0x01)\n\t\t\tcnt++;\n\t\tdata >>= 1;\n\t}\n\treturn cnt;\n}\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

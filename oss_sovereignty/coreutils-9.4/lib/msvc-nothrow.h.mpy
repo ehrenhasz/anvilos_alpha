@@ -1,0 +1,9 @@
+{
+  "module_name": "msvc-nothrow.h",
+  "hash_id": "f04f6faedf8e37b9bacaa8fb2972ecd1ea32aef59a1bf9942dc51d35de034fa4",
+  "original_prompt": "Ingested from coreutils-9.4/lib/msvc-nothrow.h",
+  "human_readable_source": " \n\n \n#if !_GL_CONFIG_H_INCLUDED\n #error \"Please include config.h first.\"\n#endif\n\n#if defined _WIN32 && ! defined __CYGWIN__\n\n \n# include <io.h>\n\n# if HAVE_MSVC_INVALID_PARAMETER_HANDLER\n\n \nextern intptr_t _gl_nothrow_get_osfhandle (int fd);\n#  define _get_osfhandle _gl_nothrow_get_osfhandle\n\n# endif\n\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

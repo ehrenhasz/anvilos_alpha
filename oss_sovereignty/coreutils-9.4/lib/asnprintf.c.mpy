@@ -1,0 +1,9 @@
+{
+  "module_name": "asnprintf.c",
+  "hash_id": "15504db8f6fc466950b608c14901e5e9d6987ca6d0ecdc2b2c671481f45a6dde",
+  "original_prompt": "Ingested from coreutils-9.4/lib/asnprintf.c",
+  "human_readable_source": " \n#include \"vasnprintf.h\"\n\n#include <stdarg.h>\n\nchar *\nasnprintf (char *resultbuf, size_t *lengthp, const char *format, ...)\n{\n  va_list args;\n  char *result;\n\n  va_start (args, format);\n  result = vasnprintf (resultbuf, lengthp, format, args);\n  va_end (args);\n  return result;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

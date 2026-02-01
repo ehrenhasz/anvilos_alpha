@@ -1,0 +1,9 @@
+{
+  "module_name": "zynq.h",
+  "hash_id": "ffc99c67f57946a84b3475c174f5307f498ee54bc7b4096766aabb4aad91b1f7",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/clk/zynq.h",
+  "human_readable_source": " \n \n\n#ifndef __LINUX_CLK_ZYNQ_H_\n#define __LINUX_CLK_ZYNQ_H_\n\n#include <linux/spinlock.h>\n\nvoid zynq_clock_init(void);\n\nstruct clk *clk_register_zynq_pll(const char *name, const char *parent,\n\t\tvoid __iomem *pll_ctrl, void __iomem *pll_status, u8 lock_index,\n\t\tspinlock_t *lock);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

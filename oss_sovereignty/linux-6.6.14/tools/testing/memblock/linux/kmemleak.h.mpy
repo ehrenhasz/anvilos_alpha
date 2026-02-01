@@ -1,0 +1,9 @@
+{
+  "module_name": "kmemleak.h",
+  "hash_id": "a82abc8109f35ba78a92172f64170b93db6d70c671eb4cac990af8ed9b92dfaf",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/memblock/linux/kmemleak.h",
+  "human_readable_source": " \n#ifndef _KMEMLEAK_H\n#define _KMEMLEAK_H\n\nstatic inline void kmemleak_free_part_phys(phys_addr_t phys, size_t size)\n{\n}\n\nstatic inline void kmemleak_alloc_phys(phys_addr_t phys, size_t size,\n\t\t\t\t       gfp_t gfp)\n{\n}\n\nstatic inline void dump_stack(void)\n{\n}\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

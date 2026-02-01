@@ -1,0 +1,9 @@
+{
+  "module_name": "barrier.h",
+  "hash_id": "5bc126e55e485d1eabe721d3d2a1404635d2bfafef2fed0f85d04f08ded5609c",
+  "original_prompt": "Ingested from linux-6.6.14/tools/include/asm-generic/barrier.h",
+  "human_readable_source": " \n \n#ifndef __TOOLS_LINUX_ASM_GENERIC_BARRIER_H\n#define __TOOLS_LINUX_ASM_GENERIC_BARRIER_H\n\n#ifndef __ASSEMBLY__\n\n#include <linux/compiler.h>\n\n \n\n#ifndef mb\n#define mb()\tbarrier()\n#endif\n\n#ifndef rmb\n#define rmb()\tmb()\n#endif\n\n#ifndef wmb\n#define wmb()\tmb()\n#endif\n\n#endif  \n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

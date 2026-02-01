@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "19fe9a9183d0ef6c2ece52ba7ebf51b0e028508646cdcacb7b315af176f90750",
+  "original_prompt": "Ingested from linux-6.6.14/fs/nfs/filelayout/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Makefile for the pNFS Files Layout Driver kernel module\n#\nobj-$(CONFIG_PNFS_FILE_LAYOUT) += nfs_layout_nfsv41_files.o\nnfs_layout_nfsv41_files-y := filelayout.o filelayoutdev.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

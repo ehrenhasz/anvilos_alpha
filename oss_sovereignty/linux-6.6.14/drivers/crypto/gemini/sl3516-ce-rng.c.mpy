@@ -1,0 +1,9 @@
+{
+  "module_name": "sl3516-ce-rng.c",
+  "hash_id": "e4c7a8ebc134ae3048b4df25c145f20652694cce50e346c62fe98adf7e5c1e1c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/crypto/gemini/sl3516-ce-rng.c",
+  "human_readable_source": "\n \n#include \"sl3516-ce.h\"\n#include <linux/pm_runtime.h>\n#include <linux/hw_random.h>\n\nstatic int sl3516_ce_rng_read(struct hwrng *rng, void *buf, size_t max, bool wait)\n{\n\tstruct sl3516_ce_dev *ce;\n\tu32 *data = buf;\n\tsize_t read = 0;\n\tint err;\n\n\tce = container_of(rng, struct sl3516_ce_dev, trng);\n\n#ifdef CONFIG_CRYPTO_DEV_SL3516_DEBUG\n\tce->hwrng_stat_req++;\n\tce->hwrng_stat_bytes += max;\n#endif\n\n\terr = pm_runtime_get_sync(ce->dev);\n\tif (err < 0) {\n\t\tpm_runtime_put_noidle(ce->dev);\n\t\treturn err;\n\t}\n\n\twhile (read < max) {\n\t\t*data = readl(ce->base + IPSEC_RAND_NUM_REG);\n\t\tdata++;\n\t\tread += 4;\n\t}\n\n\tpm_runtime_put(ce->dev);\n\n\treturn read;\n}\n\nint sl3516_ce_rng_register(struct sl3516_ce_dev *ce)\n{\n\tint ret;\n\n\tce->trng.name = \"SL3516 Crypto Engine RNG\";\n\tce->trng.read = sl3516_ce_rng_read;\n\tce->trng.quality = 700;\n\n\tret = hwrng_register(&ce->trng);\n\tif (ret)\n\t\tdev_err(ce->dev, \"Fail to register the RNG\\n\");\n\treturn ret;\n}\n\nvoid sl3516_ce_rng_unregister(struct sl3516_ce_dev *ce)\n{\n\thwrng_unregister(&ce->trng);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

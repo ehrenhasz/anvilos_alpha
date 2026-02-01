@@ -1,0 +1,9 @@
+{
+  "module_name": "sram.h",
+  "hash_id": "4d214d6a2258a2ac571980c70df8b08b8e99b44a14b567f22cd771f57a8843a4",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/fsl/bestcomm/sram.h",
+  "human_readable_source": " \n\n#ifndef __BESTCOMM_SRAM_H__\n#define __BESTCOMM_SRAM_H__\n\n#include <asm/rheap.h>\n#include <asm/mmu.h>\n#include <linux/spinlock.h>\n\n\n \n\t \nstruct bcom_sram {\n\tphys_addr_t\t\t base_phys;\n\tvoid \t\t\t*base_virt;\n\tunsigned int\t\t size;\n\trh_info_t\t\t*rh;\n\tspinlock_t\t\t lock;\n};\n\nextern struct bcom_sram *bcom_sram;\n\n\n \nextern int  bcom_sram_init(struct device_node *sram_node, char *owner);\nextern void bcom_sram_cleanup(void);\n\nextern void* bcom_sram_alloc(int size, int align, phys_addr_t *phys);\nextern void  bcom_sram_free(void *ptr);\n\nstatic inline phys_addr_t bcom_sram_va2pa(void *va) {\n\treturn bcom_sram->base_phys +\n\t\t(unsigned long)(va - bcom_sram->base_virt);\n}\n\nstatic inline void *bcom_sram_pa2va(phys_addr_t pa) {\n\treturn bcom_sram->base_virt +\n\t\t(unsigned long)(pa - bcom_sram->base_phys);\n}\n\n\n#endif   \n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

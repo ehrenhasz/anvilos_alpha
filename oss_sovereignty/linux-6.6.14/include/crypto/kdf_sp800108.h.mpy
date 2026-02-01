@@ -1,0 +1,9 @@
+{
+  "module_name": "kdf_sp800108.h",
+  "hash_id": "e75a6e590be4e6eb07769afe0a6f2c5355cac3ac577a78400d6795cd7d96a8c9",
+  "original_prompt": "Ingested from linux-6.6.14/include/crypto/kdf_sp800108.h",
+  "human_readable_source": " \n\n \n\n#ifndef _CRYPTO_KDF108_H\n#define _CRYPTO_KDF108_H\n\n#include <crypto/hash.h>\n#include <linux/uio.h>\n\n \nint crypto_kdf108_ctr_generate(struct crypto_shash *kmd,\n\t\t\t       const struct kvec *info, unsigned int info_nvec,\n\t\t\t       u8 *dst, unsigned int dlen);\n\n \nint crypto_kdf108_setkey(struct crypto_shash *kmd,\n\t\t\t const u8 *key, size_t keylen,\n\t\t\t const u8 *ikm, size_t ikmlen);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

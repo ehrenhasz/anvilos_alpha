@@ -1,0 +1,9 @@
+{
+  "module_name": "@@__@@__py__modbuiltins.c.compress",
+  "hash_id": "324481893ede3047f43ad6ef9be6d08733cc6d0e2a55165d9c436e7b8bf076fc",
+  "original_prompt": "Ingested from sys_09_Anvil/source/ports/unix/build-bicameral/genhdr/compress/@@__@@__py__modbuiltins.c.compress",
+  "human_readable_source": "chr() arg not in range(256)\narg is an empty sequence\nord() expected a character, but string of length %d found\n3-arg pow() not supported\nmust use keyword argument for key function\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

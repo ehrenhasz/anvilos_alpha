@@ -1,0 +1,9 @@
+{
+  "module_name": "mkcpustr.c",
+  "hash_id": "ace6f89a071f24a6d74e7cf648e44fe80a3d2c83dc28d8fbf8d88dd2f8d5d400",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/boot/mkcpustr.c",
+  "human_readable_source": "\n \n\n \n\n#include <stdio.h>\n\n#include \"../include/asm/required-features.h\"\n#include \"../include/asm/disabled-features.h\"\n#include \"../include/asm/cpufeatures.h\"\n#include \"../include/asm/vmxfeatures.h\"\n#include \"../kernel/cpu/capflags.c\"\n\nint main(void)\n{\n\tint i, j;\n\tconst char *str;\n\n\tprintf(\"static const char x86_cap_strs[] =\\n\");\n\n\tfor (i = 0; i < NCAPINTS; i++) {\n\t\tfor (j = 0; j < 32; j++) {\n\t\t\tstr = x86_cap_flags[i*32+j];\n\n\t\t\tif (i == NCAPINTS-1 && j == 31) {\n\t\t\t\t \n\t\t\t\tif (!str)\n\t\t\t\t\tstr = \"\";\n\t\t\t\tprintf(\"\\t\\\"\\\\x%02x\\\\x%02x\\\"\\\"%s\\\"\\n\",\n\t\t\t\t       i, j, str);\n\t\t\t} else if (str) {\n\t\t\t\tprintf(\"#if REQUIRED_MASK%d & (1 << %d)\\n\"\n\t\t\t\t       \"\\t\\\"\\\\x%02x\\\\x%02x\\\"\\\"%s\\\\0\\\"\\n\"\n\t\t\t\t       \"#endif\\n\",\n\t\t\t\t       i, j, i, j, str);\n\t\t\t}\n\t\t}\n\t}\n\tprintf(\"\\t;\\n\");\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

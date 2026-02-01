@@ -1,0 +1,9 @@
+{
+  "module_name": "fou_nl.c",
+  "hash_id": "c8d6cac0c7c69bdce4b8a57778075088c95dbdcde5ebf1f63fcd4bd8a010b4e1",
+  "original_prompt": "Ingested from linux-6.6.14/net/ipv4/fou_nl.c",
+  "human_readable_source": "\n \n \n \n\n#include <net/netlink.h>\n#include <net/genetlink.h>\n\n#include \"fou_nl.h\"\n\n#include <uapi/linux/fou.h>\n\n \nconst struct nla_policy fou_nl_policy[FOU_ATTR_IFINDEX + 1] = {\n\t[FOU_ATTR_PORT] = { .type = NLA_U16, },\n\t[FOU_ATTR_AF] = { .type = NLA_U8, },\n\t[FOU_ATTR_IPPROTO] = { .type = NLA_U8, },\n\t[FOU_ATTR_TYPE] = { .type = NLA_U8, },\n\t[FOU_ATTR_REMCSUM_NOPARTIAL] = { .type = NLA_FLAG, },\n\t[FOU_ATTR_LOCAL_V4] = { .type = NLA_U32, },\n\t[FOU_ATTR_LOCAL_V6] = { .len = 16, },\n\t[FOU_ATTR_PEER_V4] = { .type = NLA_U32, },\n\t[FOU_ATTR_PEER_V6] = { .len = 16, },\n\t[FOU_ATTR_PEER_PORT] = { .type = NLA_U16, },\n\t[FOU_ATTR_IFINDEX] = { .type = NLA_S32, },\n};\n\n \nconst struct genl_small_ops fou_nl_ops[3] = {\n\t{\n\t\t.cmd\t\t= FOU_CMD_ADD,\n\t\t.validate\t= GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,\n\t\t.doit\t\t= fou_nl_add_doit,\n\t\t.flags\t\t= GENL_ADMIN_PERM,\n\t},\n\t{\n\t\t.cmd\t\t= FOU_CMD_DEL,\n\t\t.validate\t= GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,\n\t\t.doit\t\t= fou_nl_del_doit,\n\t\t.flags\t\t= GENL_ADMIN_PERM,\n\t},\n\t{\n\t\t.cmd\t\t= FOU_CMD_GET,\n\t\t.validate\t= GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,\n\t\t.doit\t\t= fou_nl_get_doit,\n\t\t.dumpit\t\t= fou_nl_get_dumpit,\n\t},\n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

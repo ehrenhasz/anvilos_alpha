@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "49ada2168d4b12e19d7a6f5104491e4adb3544d028a7fc98592c5cefa5fec60b",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/scsi/aic94xx/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Kernel configuration file for aic94xx SAS/SATA driver.\n#\n# Copyright (c) 2005 Adaptec, Inc.  All rights reserved.\n# Copyright (c) 2005 Luben Tuikov <luben_tuikov@adaptec.com>\n#\n\nconfig SCSI_AIC94XX\n\ttristate \"Adaptec AIC94xx SAS/SATA support\"\n\tdepends on PCI && HAS_IOPORT\n\tselect SCSI_SAS_LIBSAS\n\tselect FW_LOADER\n\thelp\n\t\tThis driver supports Adaptec's SAS/SATA 3Gb/s 64 bit PCI-X\n\t\tAIC94xx chip based host adapters.\n\nconfig AIC94XX_DEBUG\n\tbool \"Compile in debug mode\"\n\tdefault y\n\tdepends on SCSI_AIC94XX\n\thelp\n\t\tCompiles the aic94xx driver in debug mode.  In debug mode,\n\t\tthe driver prints some messages to the console.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

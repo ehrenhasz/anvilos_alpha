@@ -1,0 +1,9 @@
+{
+  "module_name": "qrwlock.c",
+  "hash_id": "c9499c853eb052bf870710753a969bf1d09d0d55a48e411c1e9004efdb3566fd",
+  "original_prompt": "Ingested from linux-6.6.14/kernel/locking/qrwlock.c",
+  "human_readable_source": "\n \n#include <linux/smp.h>\n#include <linux/bug.h>\n#include <linux/cpumask.h>\n#include <linux/percpu.h>\n#include <linux/hardirq.h>\n#include <linux/spinlock.h>\n#include <trace/events/lock.h>\n\n \nvoid __lockfunc queued_read_lock_slowpath(struct qrwlock *lock)\n{\n\t \n\tif (unlikely(in_interrupt())) {\n\t\t \n\t\tatomic_cond_read_acquire(&lock->cnts, !(VAL & _QW_LOCKED));\n\t\treturn;\n\t}\n\tatomic_sub(_QR_BIAS, &lock->cnts);\n\n\ttrace_contention_begin(lock, LCB_F_SPIN | LCB_F_READ);\n\n\t \n\tarch_spin_lock(&lock->wait_lock);\n\tatomic_add(_QR_BIAS, &lock->cnts);\n\n\t \n\tatomic_cond_read_acquire(&lock->cnts, !(VAL & _QW_LOCKED));\n\n\t \n\tarch_spin_unlock(&lock->wait_lock);\n\n\ttrace_contention_end(lock, 0);\n}\nEXPORT_SYMBOL(queued_read_lock_slowpath);\n\n \nvoid __lockfunc queued_write_lock_slowpath(struct qrwlock *lock)\n{\n\tint cnts;\n\n\ttrace_contention_begin(lock, LCB_F_SPIN | LCB_F_WRITE);\n\n\t \n\tarch_spin_lock(&lock->wait_lock);\n\n\t \n\tif (!(cnts = atomic_read(&lock->cnts)) &&\n\t    atomic_try_cmpxchg_acquire(&lock->cnts, &cnts, _QW_LOCKED))\n\t\tgoto unlock;\n\n\t \n\tatomic_or(_QW_WAITING, &lock->cnts);\n\n\t \n\tdo {\n\t\tcnts = atomic_cond_read_relaxed(&lock->cnts, VAL == _QW_WAITING);\n\t} while (!atomic_try_cmpxchg_acquire(&lock->cnts, &cnts, _QW_LOCKED));\nunlock:\n\tarch_spin_unlock(&lock->wait_lock);\n\n\ttrace_contention_end(lock, 0);\n}\nEXPORT_SYMBOL(queued_write_lock_slowpath);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

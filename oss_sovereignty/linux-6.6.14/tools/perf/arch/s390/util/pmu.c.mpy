@@ -1,0 +1,9 @@
+{
+  "module_name": "pmu.c",
+  "hash_id": "0a23b869edd0b52d4a33f281b1019d0c0676685b4a674da1c07b2be7ea641168",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/arch/s390/util/pmu.c",
+  "human_readable_source": "\n\n \n\n#include <string.h>\n\n#include \"../../../util/pmu.h\"\n\n#define\tS390_PMUPAI_CRYPTO\t\"pai_crypto\"\n#define\tS390_PMUPAI_EXT\t\t\"pai_ext\"\n#define\tS390_PMUCPUM_CF\t\t\"cpum_cf\"\n\nstruct perf_event_attr *perf_pmu__get_default_config(struct perf_pmu *pmu)\n{\n\tif (!strcmp(pmu->name, S390_PMUPAI_CRYPTO) ||\n\t    !strcmp(pmu->name, S390_PMUPAI_EXT) ||\n\t    !strcmp(pmu->name, S390_PMUCPUM_CF))\n\t\tpmu->selectable = true;\n\treturn NULL;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "pcm3060-spi.c",
+  "hash_id": "27eef6ebb3a956d506adaeada0740a93a7b16f5f0451f410d4f5d65e242f2879",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/codecs/pcm3060-spi.c",
+  "human_readable_source": "\n\n\n\n\n\n#include <linux/module.h>\n#include <linux/spi/spi.h>\n#include <sound/soc.h>\n\n#include \"pcm3060.h\"\n\nstatic int pcm3060_spi_probe(struct spi_device *spi)\n{\n\tstruct pcm3060_priv *priv;\n\n\tpriv = devm_kzalloc(&spi->dev, sizeof(*priv), GFP_KERNEL);\n\tif (!priv)\n\t\treturn -ENOMEM;\n\n\tspi_set_drvdata(spi, priv);\n\n\tpriv->regmap = devm_regmap_init_spi(spi, &pcm3060_regmap);\n\tif (IS_ERR(priv->regmap))\n\t\treturn PTR_ERR(priv->regmap);\n\n\treturn pcm3060_probe(&spi->dev);\n}\n\nstatic const struct spi_device_id pcm3060_spi_id[] = {\n\t{ .name = \"pcm3060\" },\n\t{ },\n};\nMODULE_DEVICE_TABLE(spi, pcm3060_spi_id);\n\n#ifdef CONFIG_OF\nstatic const struct of_device_id pcm3060_of_match[] = {\n\t{ .compatible = \"ti,pcm3060\" },\n\t{ },\n};\nMODULE_DEVICE_TABLE(of, pcm3060_of_match);\n#endif  \n\nstatic struct spi_driver pcm3060_spi_driver = {\n\t.driver = {\n\t\t.name = \"pcm3060\",\n#ifdef CONFIG_OF\n\t\t.of_match_table = pcm3060_of_match,\n#endif  \n\t},\n\t.id_table = pcm3060_spi_id,\n\t.probe = pcm3060_spi_probe,\n};\n\nmodule_spi_driver(pcm3060_spi_driver);\n\nMODULE_DESCRIPTION(\"PCM3060 SPI driver\");\nMODULE_AUTHOR(\"Kirill Marinushkin <kmarinushkin@birdec.com>\");\nMODULE_LICENSE(\"GPL v2\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

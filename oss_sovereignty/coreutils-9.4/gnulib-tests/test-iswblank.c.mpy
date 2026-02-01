@@ -1,0 +1,9 @@
+{
+  "module_name": "test-iswblank.c",
+  "hash_id": "f486b2cc23b17fbbbab25ec5a7ec7c909e6f7a6360319e1b710a8d1704e55efb",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-iswblank.c",
+  "human_readable_source": " \nwint_t e = WEOF;\n\nint\nmain (void)\n{\n   \n  (void) iswblank (0);\n   \n  ASSERT (!iswblank (e));\n\n   \n  ASSERT (iswblank (L' '));\n  ASSERT (iswblank (L'\\t'));\n  ASSERT (!iswblank (L'\\n'));\n\n  return 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

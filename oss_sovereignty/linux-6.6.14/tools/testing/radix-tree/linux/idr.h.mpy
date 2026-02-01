@@ -1,0 +1,9 @@
+{
+  "module_name": "idr.h",
+  "hash_id": "a8cf2fa87bb301c490189d1ee07fbae9f0740bc0723dc9a9db73663b9e98759a",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/radix-tree/linux/idr.h",
+  "human_readable_source": "#include \"../../../../include/linux/idr.h\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "ip6t_mh.h",
+  "hash_id": "2b7dbc6c0542c1206b1cb686299f9bd4ff2ad947288f503ff89c21567d11cc1f",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/netfilter_ipv6/ip6t_mh.h",
+  "human_readable_source": " \n#ifndef _IP6T_MH_H\n#define _IP6T_MH_H\n\n#include <linux/types.h>\n\n \nstruct ip6t_mh {\n\t__u8 types[2];\t \n\t__u8 invflags;\t \n};\n\n \n#define IP6T_MH_INV_TYPE\t0x01\t \n#define IP6T_MH_INV_MASK\t0x01\t \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

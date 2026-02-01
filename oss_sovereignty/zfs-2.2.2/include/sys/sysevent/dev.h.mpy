@@ -1,0 +1,9 @@
+{
+  "module_name": "dev.h",
+  "hash_id": "738a1ef2babcee16f083bf15f278c091e616177f6c832d76b7904400229a94a5",
+  "original_prompt": "Ingested from zfs-2.2.2/include/sys/sysevent/dev.h",
+  "human_readable_source": " \n \n\n#ifndef\t_SYS_SYSEVENT_DEV_H\n#define\t_SYS_SYSEVENT_DEV_H\n\n#include <sys/sysevent/eventdefs.h>\n\n#ifdef\t__cplusplus\nextern \"C\" {\n#endif\n\n \n\n#define\tEV_VERSION\t\t\"version\"\n#define\tDEV_PHYS_PATH\t\t\"phys_path\"\n#define\tDEV_NAME\t\t\"dev_name\"\n#define\tDEV_DRIVER_NAME\t\t\"driver_name\"\n#define\tDEV_INSTANCE\t\t\"instance\"\n#define\tDEV_PROP_PREFIX\t\t\"prop-\"\n\n#ifdef __linux__\n#define\tDEV_IDENTIFIER\t\t\"devid\"\n#define\tDEV_PATH\t\t\"path\"\n#define\tDEV_IS_PART\t\t\"is_slice\"\n#define\tDEV_SIZE\t\t\"dev_size\"\n\n \n#define\tDEV_PARENT_SIZE\t\t\"dev_parent_size\"\n#endif  \n\n#define\tEV_V1\t\t\t1\n\n \n#define\tMAX_PROP_COUNT\t\t100\n\n \n#define\tPROP_LEN_LIMIT\t\t1024\n\n#ifdef\t__cplusplus\n}\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

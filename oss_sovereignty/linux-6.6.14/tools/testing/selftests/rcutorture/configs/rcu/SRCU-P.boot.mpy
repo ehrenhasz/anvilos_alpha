@@ -1,0 +1,9 @@
+{
+  "module_name": "SRCU-P.boot",
+  "hash_id": "5879e793dd486736e6ac90b22ca8a5324eeca7bdabfd0b16f84c2620b1bfba4e",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/rcutorture/configs/rcu/SRCU-P.boot",
+  "human_readable_source": "rcutorture.torture_type=srcud\nrcupdate.rcu_self_test=1\nrcutorture.fwd_progress=3\nsrcutree.big_cpu_lim=5\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

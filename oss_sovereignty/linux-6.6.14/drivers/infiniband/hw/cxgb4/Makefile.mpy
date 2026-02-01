@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "83febc66d41cba678238f1e3fb9f5b73639bdba20a8e128c8de28da6b3daaae0",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/infiniband/hw/cxgb4/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nccflags-y := -I $(srctree)/drivers/net/ethernet/chelsio/cxgb4\nccflags-y += -I $(srctree)/drivers/net/ethernet/chelsio/libcxgb\n\nobj-$(CONFIG_INFINIBAND_CXGB4) += iw_cxgb4.o\n\niw_cxgb4-y :=  device.o cm.o provider.o mem.o cq.o qp.o resource.o ev.o id_table.o \\\n\t       restrack.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

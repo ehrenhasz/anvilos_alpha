@@ -1,0 +1,9 @@
+{
+  "module_name": "wcd-clsh-v2.h",
+  "hash_id": "e1472924176e8adc0904ca7585673b2591c92068085164c242d418f3e6d93815",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/codecs/wcd-clsh-v2.h",
+  "human_readable_source": " \n\n#ifndef _WCD_CLSH_V2_H_\n#define _WCD_CLSH_V2_H_\n#include <sound/soc.h>\n\nenum wcd_clsh_event {\n\tWCD_CLSH_EVENT_PRE_DAC = 1,\n\tWCD_CLSH_EVENT_POST_PA,\n};\n\n \n#define\tWCD_CLSH_STATE_IDLE\t0\n#define\tWCD_CLSH_STATE_EAR\tBIT(0)\n#define\tWCD_CLSH_STATE_HPHL\tBIT(1)\n#define\tWCD_CLSH_STATE_HPHR\tBIT(2)\n#define\tWCD_CLSH_STATE_LO\tBIT(3)\n#define\tWCD_CLSH_STATE_AUX\tBIT(4)\n#define WCD_CLSH_STATE_MAX\t4\n#define WCD_CLSH_V3_STATE_MAX\t5\n#define NUM_CLSH_STATES_V2\tBIT(WCD_CLSH_STATE_MAX)\n#define NUM_CLSH_STATES_V3\tBIT(WCD_CLSH_V3_STATE_MAX)\n\nenum wcd_clsh_mode {\n\tCLS_H_NORMAL = 0,  \n\tCLS_H_HIFI,  \n\tCLS_H_LP,  \n\tCLS_AB,  \n\tCLS_H_LOHIFI,  \n\tCLS_H_ULP,  \n\tCLS_AB_HIFI,  \n\tCLS_AB_LP,  \n\tCLS_AB_LOHIFI,  \n\tCLS_NONE,  \n};\n\nenum wcd_codec_version {\n\tWCD9335  = 0,\n\tWCD934X  = 1,\n\t \n\tWCD937X  = 2,\n\tWCD938X  = 3,\n};\nstruct wcd_clsh_ctrl;\n\nextern struct wcd_clsh_ctrl *wcd_clsh_ctrl_alloc(\n\t\t\t\tstruct snd_soc_component *comp,\n\t\t\t\tint version);\nextern void wcd_clsh_ctrl_free(struct wcd_clsh_ctrl *ctrl);\nextern int wcd_clsh_ctrl_get_state(struct wcd_clsh_ctrl *ctrl);\nextern int wcd_clsh_ctrl_set_state(struct wcd_clsh_ctrl *ctrl,\n\t\t\t\t   enum wcd_clsh_event clsh_event,\n\t\t\t\t   int nstate,\n\t\t\t\t   enum wcd_clsh_mode mode);\nextern void wcd_clsh_set_hph_mode(struct wcd_clsh_ctrl *ctrl,\n\t\t\t\t  int mode);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

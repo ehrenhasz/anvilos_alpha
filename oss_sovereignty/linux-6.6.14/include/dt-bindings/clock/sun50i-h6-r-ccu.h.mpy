@@ -1,0 +1,9 @@
+{
+  "module_name": "sun50i-h6-r-ccu.h",
+  "hash_id": "92aacb2ede0ac5fdb5108bfde50bb987c6146d80e7ae4d8a8e4fa12384bb376c",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/clock/sun50i-h6-r-ccu.h",
+  "human_readable_source": " \n \n\n#ifndef _DT_BINDINGS_CLK_SUN50I_H6_R_CCU_H_\n#define _DT_BINDINGS_CLK_SUN50I_H6_R_CCU_H_\n\n#define CLK_AR100\t\t0\n\n#define CLK_R_APB1\t\t2\n\n#define CLK_R_APB1_TIMER\t4\n#define CLK_R_APB1_TWD\t\t5\n#define CLK_R_APB1_PWM\t\t6\n#define CLK_R_APB2_UART\t\t7\n#define CLK_R_APB2_I2C\t\t8\n#define CLK_R_APB1_IR\t\t9\n#define CLK_R_APB1_W1\t\t10\n\n#define CLK_IR\t\t\t11\n#define CLK_W1\t\t\t12\n\n#define CLK_R_APB2_RSB\t\t13\n#define CLK_R_APB1_RTC\t\t14\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

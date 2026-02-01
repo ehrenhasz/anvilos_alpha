@@ -1,0 +1,9 @@
+{
+  "module_name": "regression_enomem.c",
+  "hash_id": "c61be6a495a809a9b722e0b6048b84ae9c52830f03596148a157c736d87c8ee6",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/pid_namespace/regression_enomem.c",
+  "human_readable_source": "#define _GNU_SOURCE\n#include <assert.h>\n#include <errno.h>\n#include <fcntl.h>\n#include <linux/types.h>\n#include <sched.h>\n#include <signal.h>\n#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\n#include <syscall.h>\n#include <sys/wait.h>\n\n#include \"../kselftest_harness.h\"\n#include \"../pidfd/pidfd.h\"\n\n \nTEST(regression_enomem)\n{\n\tpid_t pid;\n\n\tif (geteuid())\n\t\tEXPECT_EQ(0, unshare(CLONE_NEWUSER));\n\n\tEXPECT_EQ(0, unshare(CLONE_NEWPID));\n\n\tpid = fork();\n\tASSERT_GE(pid, 0);\n\n\tif (pid == 0)\n\t\texit(EXIT_SUCCESS);\n\n\tEXPECT_EQ(0, wait_for_pid(pid));\n\n\tpid = fork();\n\tASSERT_LT(pid, 0);\n\tASSERT_EQ(errno, ENOMEM);\n}\n\nTEST_HARNESS_MAIN\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

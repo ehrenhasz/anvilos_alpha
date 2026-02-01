@@ -1,0 +1,9 @@
+{
+  "module_name": "pcitest.sh",
+  "hash_id": "c6d6dcad68a33f08bc521746f767cee60b9006fd2d18219f7474403f93841eab",
+  "original_prompt": "Ingested from linux-6.6.14/tools/pci/pcitest.sh",
+  "human_readable_source": "#!/bin/sh\n# SPDX-License-Identifier: GPL-2.0\n\necho \"BAR tests\"\necho\n\nbar=0\n\nwhile [ $bar -lt 6 ]\ndo\n\tpcitest -b $bar\n\tbar=`expr $bar + 1`\ndone\necho\n\necho \"Interrupt tests\"\necho\n\npcitest -i 0\npcitest -l\n\npcitest -i 1\nmsi=1\n\nwhile [ $msi -lt 33 ]\ndo\n        pcitest -m $msi\n        msi=`expr $msi + 1`\ndone\necho\n\npcitest -i 2\nmsix=1\n\nwhile [ $msix -lt 2049 ]\ndo\n        pcitest -x $msix\n        msix=`expr $msix + 1`\ndone\necho\n\necho \"Read Tests\"\necho\n\npcitest -i 1\n\npcitest -r -s 1\npcitest -r -s 1024\npcitest -r -s 1025\npcitest -r -s 1024000\npcitest -r -s 1024001\necho\n\necho \"Write Tests\"\necho\n\npcitest -w -s 1\npcitest -w -s 1024\npcitest -w -s 1025\npcitest -w -s 1024000\npcitest -w -s 1024001\necho\n\necho \"Copy Tests\"\necho\n\npcitest -c -s 1\npcitest -c -s 1024\npcitest -c -s 1025\npcitest -c -s 1024000\npcitest -c -s 1024001\necho\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

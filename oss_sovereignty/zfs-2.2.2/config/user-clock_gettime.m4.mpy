@@ -1,0 +1,9 @@
+{
+  "module_name": "user-clock_gettime.m4",
+  "hash_id": "c8b616c7045ea5ce7b99469d05a6a7ed0ef36ba56668bb434160f444865acf4c",
+  "original_prompt": "Ingested from zfs-2.2.2/config/user-clock_gettime.m4",
+  "human_readable_source": "dnl #\ndnl # Check if librt is required for clock_gettime.\ndnl # clock_gettime is generally available in libc on modern systems.\ndnl #\nAC_DEFUN([ZFS_AC_CONFIG_USER_CLOCK_GETTIME], [\n\tAC_CHECK_FUNC([clock_gettime], [], [\n\t    AC_CHECK_LIB([rt], [clock_gettime], [\n\t\tAC_SUBST([LIBCLOCK_GETTIME], [-lrt])], [\n\t\tAC_MSG_FAILURE([*** clock_gettime is missing in libc and librt])\n\t    ])\n\t])\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "sys_hwprobe.S",
+  "hash_id": "389a126ae56fd3c4e7931bbdb51097ad7a375ab5c59cd73f4d5e00c93d4c06e2",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/riscv/hwprobe/sys_hwprobe.S",
+  "human_readable_source": " \n \n\n.text\n.global riscv_hwprobe\nriscv_hwprobe:\n\t# Put __NR_riscv_hwprobe in the syscall number register, then just shim\n\t# back the kernel's return.  This doesn't do any sort of errno\n\t# handling, the caller can deal with it.\n\tli a7, 258\n\tecall\n\tret\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

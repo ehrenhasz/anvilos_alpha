@@ -1,0 +1,9 @@
+{
+  "module_name": ".gitignore",
+  "hash_id": "67ef2df89b1f6ae8c72f252a614d9e458a2ccd44066209063722d5ae266d90bc",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/util/bpf_skel/vmlinux/.gitignore",
+  "human_readable_source": "!vmlinux.h\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

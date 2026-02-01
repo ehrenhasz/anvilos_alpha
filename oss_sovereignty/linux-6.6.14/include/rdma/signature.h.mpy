@@ -1,0 +1,9 @@
+{
+  "module_name": "signature.h",
+  "hash_id": "ffd7632105585683db4fc3e1b5e45b0d6951ad9808ffa49203cdd81578e8b329",
+  "original_prompt": "Ingested from linux-6.6.14/include/rdma/signature.h",
+  "human_readable_source": " \n \n\n#ifndef _RDMA_SIGNATURE_H_\n#define _RDMA_SIGNATURE_H_\n\n#include <linux/types.h>\n\nenum ib_signature_prot_cap {\n\tIB_PROT_T10DIF_TYPE_1 = 1,\n\tIB_PROT_T10DIF_TYPE_2 = 1 << 1,\n\tIB_PROT_T10DIF_TYPE_3 = 1 << 2,\n};\n\nenum ib_signature_guard_cap {\n\tIB_GUARD_T10DIF_CRC\t= 1,\n\tIB_GUARD_T10DIF_CSUM\t= 1 << 1,\n};\n\n \nenum ib_signature_type {\n\tIB_SIG_TYPE_NONE,\n\tIB_SIG_TYPE_T10_DIF,\n};\n\n \nenum ib_t10_dif_bg_type {\n\tIB_T10DIF_CRC,\n\tIB_T10DIF_CSUM,\n};\n\n \nstruct ib_t10_dif_domain {\n\tenum ib_t10_dif_bg_type bg_type;\n\tu16\t\t\tpi_interval;\n\tu16\t\t\tbg;\n\tu16\t\t\tapp_tag;\n\tu32\t\t\tref_tag;\n\tbool\t\t\tref_remap;\n\tbool\t\t\tapp_escape;\n\tbool\t\t\tref_escape;\n\tu16\t\t\tapptag_check_mask;\n};\n\n \nstruct ib_sig_domain {\n\tenum ib_signature_type sig_type;\n\tunion {\n\t\tstruct ib_t10_dif_domain dif;\n\t} sig;\n};\n\n \nstruct ib_sig_attrs {\n\tu8\t\t\tcheck_mask;\n\tstruct ib_sig_domain\tmem;\n\tstruct ib_sig_domain\twire;\n\tint\t\t\tmeta_length;\n};\n\nenum ib_sig_err_type {\n\tIB_SIG_BAD_GUARD,\n\tIB_SIG_BAD_REFTAG,\n\tIB_SIG_BAD_APPTAG,\n};\n\n \nenum {\n\tIB_SIG_CHECK_GUARD = 0xc0,\n\tIB_SIG_CHECK_APPTAG = 0x30,\n\tIB_SIG_CHECK_REFTAG = 0x0f,\n};\n\n \nstruct ib_sig_err {\n\tenum ib_sig_err_type\terr_type;\n\tu32\t\t\texpected;\n\tu32\t\t\tactual;\n\tu64\t\t\tsig_err_offset;\n\tu32\t\t\tkey;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

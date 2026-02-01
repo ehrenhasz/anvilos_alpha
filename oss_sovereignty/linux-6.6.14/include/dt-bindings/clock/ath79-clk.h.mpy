@@ -1,0 +1,9 @@
+{
+  "module_name": "ath79-clk.h",
+  "hash_id": "58d3c28887d595df4ecf14645af73f4be0123098bd3c3af79d71e245b2615dd8",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/clock/ath79-clk.h",
+  "human_readable_source": " \n \n\n#ifndef __DT_BINDINGS_ATH79_CLK_H\n#define __DT_BINDINGS_ATH79_CLK_H\n\n#define ATH79_CLK_CPU\t\t0\n#define ATH79_CLK_DDR\t\t1\n#define ATH79_CLK_AHB\t\t2\n#define ATH79_CLK_REF\t\t3\n#define ATH79_CLK_MDIO\t\t4\n\n#define ATH79_CLK_END\t\t5\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

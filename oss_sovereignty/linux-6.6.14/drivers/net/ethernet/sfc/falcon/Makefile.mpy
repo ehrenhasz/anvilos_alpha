@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "6477e6b6cdc6f93ad75f5187e5a7c07a973a86b25635b7b46733659c562e1a95",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/sfc/falcon/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nsfc-falcon-y\t\t+= efx.o nic.o farch.o falcon.o tx.o rx.o selftest.o \\\n\t\t\t   ethtool.o qt202x_phy.o mdio_10g.o tenxpress.o \\\n\t\t\t   txc43128_phy.o falcon_boards.o\n\nsfc-falcon-$(CONFIG_SFC_FALCON_MTD)\t+= mtd.o\nobj-$(CONFIG_SFC_FALCON)\t\t+= sfc-falcon.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

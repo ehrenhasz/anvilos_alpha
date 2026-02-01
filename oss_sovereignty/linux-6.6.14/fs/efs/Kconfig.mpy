@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "7070334aa8db8dfd7aa8255852f866587236c82d332985572e2156a7327c2602",
+  "original_prompt": "Ingested from linux-6.6.14/fs/efs/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig EFS_FS\n\ttristate \"EFS file system support (read only)\"\n\tdepends on BLOCK\n\tselect BUFFER_HEAD\n\thelp\n\t  EFS is an older file system used for non-ISO9660 CD-ROMs and hard\n\t  disk partitions by SGI's IRIX operating system (IRIX 6.0 and newer\n\t  uses the XFS file system for hard disk partitions however).\n\n\t  This implementation only offers read-only access. If you don't know\n\t  what all this is about, it's safe to say N. For more information\n\t  about EFS see its home page at <http://aeschi.ch.eu.org/efs/>.\n\n\t  To compile the EFS file system support as a module, choose M here: the\n\t  module will be called efs.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

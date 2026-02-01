@@ -1,0 +1,9 @@
+{
+  "module_name": "bsd-getline.c",
+  "hash_id": "677bfaf593d1164c8572ccd5ee580a752ef9ce743f38c55e419002625dc14bd5",
+  "original_prompt": "Ingested from openssh-9.6p1/openbsd-compat/bsd-getline.c",
+  "human_readable_source": " \n\n \n\n \n\n \n\n#include \"includes.h\"\n\n#if 0\n#include \"file.h\"\n#endif\n\n#if !defined(HAVE_GETLINE) || defined(BROKEN_GETLINE)\n#include <stdlib.h>\n#include <stdio.h>\n#include <unistd.h>\n#include <errno.h>\n#include <string.h>\n\nstatic ssize_t\ngetdelim(char **buf, size_t *bufsiz, int delimiter, FILE *fp)\n{\n\tchar *ptr, *eptr;\n\n\n\tif (*buf == NULL || *bufsiz == 0) {\n\t\tif ((*buf = malloc(BUFSIZ)) == NULL)\n\t\t\treturn -1;\n\t\t*bufsiz = BUFSIZ;\n\t}\n\n\tfor (ptr = *buf, eptr = *buf + *bufsiz;;) {\n\t\tint c = fgetc(fp);\n\t\tif (c == -1) {\n\t\t\tif (feof(fp)) {\n\t\t\t\tssize_t diff = (ssize_t)(ptr - *buf);\n\t\t\t\tif (diff != 0) {\n\t\t\t\t\t*ptr = '\\0';\n\t\t\t\t\treturn diff;\n\t\t\t\t}\n\t\t\t}\n\t\t\treturn -1;\n\t\t}\n\t\t*ptr++ = c;\n\t\tif (c == delimiter) {\n\t\t\t*ptr = '\\0';\n\t\t\treturn ptr - *buf;\n\t\t}\n\t\tif (ptr + 2 >= eptr) {\n\t\t\tchar *nbuf;\n\t\t\tsize_t nbufsiz = *bufsiz * 2;\n\t\t\tssize_t d = ptr - *buf;\n\t\t\tif ((nbuf = realloc(*buf, nbufsiz)) == NULL)\n\t\t\t\treturn -1;\n\t\t\t*buf = nbuf;\n\t\t\t*bufsiz = nbufsiz;\n\t\t\teptr = nbuf + nbufsiz;\n\t\t\tptr = nbuf + d;\n\t\t}\n\t}\n}\n\nssize_t\ngetline(char **buf, size_t *bufsiz, FILE *fp)\n{\n\treturn getdelim(buf, bufsiz, '\\n', fp);\n}\n\n#endif\n\n#ifdef TEST\nint\nmain(int argc, char *argv[])\n{\n\tchar *p = NULL;\n\tssize_t len;\n\tsize_t n = 0;\n\n\twhile ((len = getline(&p, &n, stdin)) != -1)\n\t\t(void)printf(\"%\" SIZE_T_FORMAT \"d %s\", len, p);\n\tfree(p);\n\treturn 0;\n}\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

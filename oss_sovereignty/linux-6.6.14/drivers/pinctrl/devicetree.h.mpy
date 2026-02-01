@@ -1,0 +1,9 @@
+{
+  "module_name": "devicetree.h",
+  "hash_id": "64f873270be81257e2e3a22bcdc4930338920c770ad7e9fdad16dfdbfb610a28",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/pinctrl/devicetree.h",
+  "human_readable_source": " \n \n\n#include <linux/errno.h>\n\nstruct device_node;\nstruct of_phandle_args;\n\nstruct pinctrl;\nstruct pinctrl_dev;\n\n#ifdef CONFIG_OF\n\nvoid pinctrl_dt_free_maps(struct pinctrl *p);\nint pinctrl_dt_to_map(struct pinctrl *p, struct pinctrl_dev *pctldev);\n\nint pinctrl_count_index_with_args(const struct device_node *np,\n\t\t\t\t  const char *list_name);\n\nint pinctrl_parse_index_with_args(const struct device_node *np,\n\t\t\t\t  const char *list_name, int index,\n\t\t\t\t  struct of_phandle_args *out_args);\n\n#else\n\nstatic inline int pinctrl_dt_to_map(struct pinctrl *p,\n\t\t\t\t    struct pinctrl_dev *pctldev)\n{\n\treturn 0;\n}\n\nstatic inline void pinctrl_dt_free_maps(struct pinctrl *p)\n{\n}\n\nstatic inline int pinctrl_count_index_with_args(const struct device_node *np,\n\t\t\t\t\t\tconst char *list_name)\n{\n\treturn -ENODEV;\n}\n\nstatic inline int\npinctrl_parse_index_with_args(const struct device_node *np,\n\t\t\t      const char *list_name, int index,\n\t\t\t      struct of_phandle_args *out_args)\n{\n\treturn -ENODEV;\n}\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

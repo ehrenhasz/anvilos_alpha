@@ -1,0 +1,9 @@
+{
+  "module_name": "bpf_tcp_nogpl.c",
+  "hash_id": "bd2edc5ea6bc54b4dc118729b960984813ddb1362cf33ca04e1e035e8b928c04",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/bpf_tcp_nogpl.c",
+  "human_readable_source": "\n\n#include <linux/bpf.h>\n#include <linux/types.h>\n#include <bpf/bpf_helpers.h>\n#include <bpf/bpf_tracing.h>\n#include \"bpf_tcp_helpers.h\"\n\nchar _license[] SEC(\"license\") = \"X\";\n\nvoid BPF_STRUCT_OPS(nogpltcp_init, struct sock *sk)\n{\n}\n\nSEC(\".struct_ops\")\nstruct tcp_congestion_ops bpf_nogpltcp = {\n\t.init           = (void *)nogpltcp_init,\n\t.name           = \"bpf_nogpltcp\",\n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

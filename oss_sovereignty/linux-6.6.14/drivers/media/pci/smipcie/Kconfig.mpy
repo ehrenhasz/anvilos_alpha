@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "18d867425691ea0af8c483f7d8e907c49d2eccb57fb14fa33b1c9eb8acd7b952",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/pci/smipcie/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig DVB_SMIPCIE\n\ttristate \"SMI PCIe DVBSky cards\"\n\tdepends on DVB_CORE && PCI && I2C\n\tselect I2C_ALGOBIT\n\tselect DVB_M88DS3103 if MEDIA_SUBDRV_AUTOSELECT\n\tselect DVB_SI2168 if MEDIA_SUBDRV_AUTOSELECT\n\tselect DVB_TS2020 if MEDIA_SUBDRV_AUTOSELECT\n\tselect MEDIA_TUNER_M88RS6000T if MEDIA_SUBDRV_AUTOSELECT\n\tselect MEDIA_TUNER_SI2157 if MEDIA_SUBDRV_AUTOSELECT\n\tdepends on RC_CORE\n\thelp\n\t  Support for cards with SMI PCIe bridge:\n\t  - DVBSky S950 V3\n\t  - DVBSky S952 V3\n\t  - DVBSky T9580 V3\n\n\t  Say Y or M if you own such a device and want to use it.\n\t  If unsure say N.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

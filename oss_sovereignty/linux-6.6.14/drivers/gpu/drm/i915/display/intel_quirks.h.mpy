@@ -1,0 +1,9 @@
+{
+  "module_name": "intel_quirks.h",
+  "hash_id": "9994220786926a0b11cb82ae0521c08c34698fc617a448f627a384a19b596e22",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/display/intel_quirks.h",
+  "human_readable_source": " \n \n\n#ifndef __INTEL_QUIRKS_H__\n#define __INTEL_QUIRKS_H__\n\n#include <linux/types.h>\n\nstruct drm_i915_private;\n\nenum intel_quirk_id {\n\tQUIRK_BACKLIGHT_PRESENT,\n\tQUIRK_INCREASE_DDI_DISABLED_TIME,\n\tQUIRK_INCREASE_T12_DELAY,\n\tQUIRK_INVERT_BRIGHTNESS,\n\tQUIRK_LVDS_SSC_DISABLE,\n\tQUIRK_NO_PPS_BACKLIGHT_POWER_HOOK,\n};\n\nvoid intel_init_quirks(struct drm_i915_private *i915);\nbool intel_has_quirk(struct drm_i915_private *i915, enum intel_quirk_id quirk);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

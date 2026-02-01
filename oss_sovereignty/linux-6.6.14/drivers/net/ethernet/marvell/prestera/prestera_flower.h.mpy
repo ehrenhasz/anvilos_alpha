@@ -1,0 +1,9 @@
+{
+  "module_name": "prestera_flower.h",
+  "hash_id": "7af113e3dcc7dfaedfb0e2ab8f06d04859c62cf15e2ca0f6c0df61750377333e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/marvell/prestera/prestera_flower.h",
+  "human_readable_source": " \n \n\n#ifndef _PRESTERA_FLOWER_H_\n#define _PRESTERA_FLOWER_H_\n\n#include <net/pkt_cls.h>\n\nstruct prestera_flow_block;\n\nint prestera_flower_replace(struct prestera_flow_block *block,\n\t\t\t    struct flow_cls_offload *f);\nvoid prestera_flower_destroy(struct prestera_flow_block *block,\n\t\t\t     struct flow_cls_offload *f);\nint prestera_flower_stats(struct prestera_flow_block *block,\n\t\t\t  struct flow_cls_offload *f);\nint prestera_flower_tmplt_create(struct prestera_flow_block *block,\n\t\t\t\t struct flow_cls_offload *f);\nvoid prestera_flower_tmplt_destroy(struct prestera_flow_block *block,\n\t\t\t\t   struct flow_cls_offload *f);\nvoid prestera_flower_template_cleanup(struct prestera_flow_block *block);\nint prestera_flower_prio_get(struct prestera_flow_block *block, u32 chain_index,\n\t\t\t     u32 *prio_min, u32 *prio_max);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

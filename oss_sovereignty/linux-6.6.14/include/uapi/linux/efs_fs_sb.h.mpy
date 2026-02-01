@@ -1,0 +1,9 @@
+{
+  "module_name": "efs_fs_sb.h",
+  "hash_id": "b4c27d892fa6057b6fc032f5bee3603d1367fc38e9d02bfd51af6805b3dbcad8",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/efs_fs_sb.h",
+  "human_readable_source": " \n \n\n#ifndef __EFS_FS_SB_H__\n#define __EFS_FS_SB_H__\n\n#include <linux/types.h>\n#include <linux/magic.h>\n\n \n#define EFS_MAGIC\t0x072959\n#define EFS_NEWMAGIC\t0x07295a\n\n#define IS_EFS_MAGIC(x)\t((x == EFS_MAGIC) || (x == EFS_NEWMAGIC))\n\n#define EFS_SUPER\t\t1\n#define EFS_ROOTINODE\t\t2\n\n \nstruct efs_super {\n\t__be32\t\tfs_size;         \n\t__be32\t\tfs_firstcg;      \n\t__be32\t\tfs_cgfsize;      \n\t__be16\t\tfs_cgisize;      \n\t__be16\t\tfs_sectors;      \n\t__be16\t\tfs_heads;        \n\t__be16\t\tfs_ncg;          \n\t__be16\t\tfs_dirty;        \n\t__be32\t\tfs_time;         \n\t__be32\t\tfs_magic;        \n\tchar\t\tfs_fname[6];     \n\tchar\t\tfs_fpack[6];     \n\t__be32\t\tfs_bmsize;       \n\t__be32\t\tfs_tfree;        \n\t__be32\t\tfs_tinode;       \n\t__be32\t\tfs_bmblock;      \n\t__be32\t\tfs_replsb;       \n\t__be32\t\tfs_lastialloc;   \n\tchar\t\tfs_spare[20];    \n\t__be32\t\tfs_checksum;     \n};\n\n \nstruct efs_sb_info {\n\t__u32\tfs_magic;\t \n\t__u32\tfs_start;\t \n\t__u32\tfirst_block;\t \n\t__u32\ttotal_blocks;\t \n\t__u32\tgroup_size;\t  \n\t__u32\tdata_free;\t \n\t__u32\tinode_free;\t \n\t__u16\tinode_blocks;\t \n\t__u16\ttotal_groups;\t \n};\n\n#endif  \n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

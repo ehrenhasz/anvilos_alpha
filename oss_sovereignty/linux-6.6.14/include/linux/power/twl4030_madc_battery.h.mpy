@@ -1,0 +1,9 @@
+{
+  "module_name": "twl4030_madc_battery.h",
+  "hash_id": "f1f1498ab9d3782c314322c071aca24cc70c9bea9c01fac57a38b1ebf1b70d4d",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/power/twl4030_madc_battery.h",
+  "human_readable_source": " \n \n\n#ifndef __TWL4030_MADC_BATTERY_H\n#define __TWL4030_MADC_BATTERY_H\n\n \n\nstruct twl4030_madc_bat_calibration {\n\tshort voltage;\t \n\tshort level;\t \n};\n\nstruct twl4030_madc_bat_platform_data {\n\tunsigned int capacity;\t \n\tstruct twl4030_madc_bat_calibration *charging;\n\tint charging_size;\n\tstruct twl4030_madc_bat_calibration *discharging;\n\tint discharging_size;\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

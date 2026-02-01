@@ -1,0 +1,9 @@
+{
+  "module_name": "backend.h",
+  "hash_id": "5a66503c39b7811552537c037b62990d7d31346323544d542fa46c6253edfa03",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/scsi/cxlflash/backend.h",
+  "human_readable_source": " \n \n\n#ifndef _CXLFLASH_BACKEND_H\n#define _CXLFLASH_BACKEND_H\n\nextern const struct cxlflash_backend_ops cxlflash_cxl_ops;\nextern const struct cxlflash_backend_ops cxlflash_ocxl_ops;\n\nstruct cxlflash_backend_ops {\n\tstruct module *module;\n\tvoid __iomem * (*psa_map)(void *ctx_cookie);\n\tvoid (*psa_unmap)(void __iomem *addr);\n\tint (*process_element)(void *ctx_cookie);\n\tint (*map_afu_irq)(void *ctx_cookie, int num, irq_handler_t handler,\n\t\t\t   void *cookie, char *name);\n\tvoid (*unmap_afu_irq)(void *ctx_cookie, int num, void *cookie);\n\tu64 (*get_irq_objhndl)(void *ctx_cookie, int irq);\n\tint (*start_context)(void *ctx_cookie);\n\tint (*stop_context)(void *ctx_cookie);\n\tint (*afu_reset)(void *ctx_cookie);\n\tvoid (*set_master)(void *ctx_cookie);\n\tvoid * (*get_context)(struct pci_dev *dev, void *afu_cookie);\n\tvoid * (*dev_context_init)(struct pci_dev *dev, void *afu_cookie);\n\tint (*release_context)(void *ctx_cookie);\n\tvoid (*perst_reloads_same_image)(void *afu_cookie, bool image);\n\tssize_t (*read_adapter_vpd)(struct pci_dev *dev, void *buf,\n\t\t\t\t    size_t count);\n\tint (*allocate_afu_irqs)(void *ctx_cookie, int num);\n\tvoid (*free_afu_irqs)(void *ctx_cookie);\n\tvoid * (*create_afu)(struct pci_dev *dev);\n\tvoid (*destroy_afu)(void *afu_cookie);\n\tstruct file * (*get_fd)(void *ctx_cookie, struct file_operations *fops,\n\t\t\t\tint *fd);\n\tvoid * (*fops_get_context)(struct file *file);\n\tint (*start_work)(void *ctx_cookie, u64 irqs);\n\tint (*fd_mmap)(struct file *file, struct vm_area_struct *vm);\n\tint (*fd_release)(struct inode *inode, struct file *file);\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

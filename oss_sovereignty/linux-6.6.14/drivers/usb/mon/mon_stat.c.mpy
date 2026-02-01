@@ -1,0 +1,9 @@
+{
+  "module_name": "mon_stat.c",
+  "hash_id": "6381597b7a91d0285eae23ff0b3363b944361ebd76fb5c5b86287b640e7b5f70",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/usb/mon/mon_stat.c",
+  "human_readable_source": "\n \n\n#include <linux/kernel.h>\n#include <linux/slab.h>\n#include <linux/export.h>\n#include <linux/usb.h>\n#include <linux/fs.h>\n#include <linux/uaccess.h>\n\n#include \"usb_mon.h\"\n\n#define STAT_BUF_SIZE  80\n\nstruct snap {\n\tint slen;\n\tchar str[STAT_BUF_SIZE];\n};\n\nstatic int mon_stat_open(struct inode *inode, struct file *file)\n{\n\tstruct mon_bus *mbus;\n\tstruct snap *sp;\n\n\tsp = kmalloc(sizeof(struct snap), GFP_KERNEL);\n\tif (sp == NULL)\n\t\treturn -ENOMEM;\n\n\tmbus = inode->i_private;\n\n\tsp->slen = snprintf(sp->str, STAT_BUF_SIZE,\n\t    \"nreaders %d events %u text_lost %u\\n\",\n\t    mbus->nreaders, mbus->cnt_events, mbus->cnt_text_lost);\n\n\tfile->private_data = sp;\n\treturn 0;\n}\n\nstatic ssize_t mon_stat_read(struct file *file, char __user *buf,\n\t\t\t\tsize_t nbytes, loff_t *ppos)\n{\n\tstruct snap *sp = file->private_data;\n\n\treturn simple_read_from_buffer(buf, nbytes, ppos, sp->str, sp->slen);\n}\n\nstatic int mon_stat_release(struct inode *inode, struct file *file)\n{\n\tstruct snap *sp = file->private_data;\n\tfile->private_data = NULL;\n\tkfree(sp);\n\treturn 0;\n}\n\nconst struct file_operations mon_fops_stat = {\n\t.owner =\tTHIS_MODULE,\n\t.open =\t\tmon_stat_open,\n\t.llseek =\tno_llseek,\n\t.read =\t\tmon_stat_read,\n\t \n\t \n\t \n\t.release =\tmon_stat_release,\n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

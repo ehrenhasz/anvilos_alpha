@@ -1,0 +1,9 @@
+{
+  "module_name": "probe.c",
+  "hash_id": "c05a4ebeb8788f3ed6a05d4502d74e0da2c69eb8c2f0b58c52d9330a323f0ab0",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/events/probe.c",
+  "human_readable_source": "\n#include <linux/export.h>\n#include <linux/types.h>\n#include <linux/bits.h>\n#include \"probe.h\"\n\nstatic umode_t\nnot_visible(struct kobject *kobj, struct attribute *attr, int i)\n{\n\treturn 0;\n}\n\n \nunsigned long\nperf_msr_probe(struct perf_msr *msr, int cnt, bool zero, void *data)\n{\n\tunsigned long avail = 0;\n\tunsigned int bit;\n\tu64 val;\n\n\tif (cnt >= BITS_PER_LONG)\n\t\treturn 0;\n\n\tfor (bit = 0; bit < cnt; bit++) {\n\t\tif (!msr[bit].no_check) {\n\t\t\tstruct attribute_group *grp = msr[bit].grp;\n\t\t\tu64 mask;\n\n\t\t\t \n\t\t\tif (!grp)\n\t\t\t\tcontinue;\n\n\t\t\tgrp->is_visible = not_visible;\n\n\t\t\t \n\t\t\tif (!msr[bit].msr)\n\t\t\t\tcontinue;\n\n\t\t\tif (msr[bit].test && !msr[bit].test(bit, data))\n\t\t\t\tcontinue;\n\t\t\t \n\t\t\tif (rdmsrl_safe(msr[bit].msr, &val))\n\t\t\t\tcontinue;\n\n\t\t\tmask = msr[bit].mask;\n\t\t\tif (!mask)\n\t\t\t\tmask = ~0ULL;\n\t\t\t \n\t\t\tif (!zero && !(val & mask))\n\t\t\t\tcontinue;\n\n\t\t\tgrp->is_visible = NULL;\n\t\t}\n\t\tavail |= BIT(bit);\n\t}\n\n\treturn avail;\n}\nEXPORT_SYMBOL_GPL(perf_msr_probe);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

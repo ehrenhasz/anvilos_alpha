@@ -1,0 +1,9 @@
+{
+  "module_name": "guest.ld",
+  "hash_id": "70ba1ac10dd0e1ed267603ad676c4e560884cc5cc36bbe58acb8037ddd7908cc",
+  "original_prompt": "Ingested from linux-6.6.14/samples/acrn/guest.ld",
+  "human_readable_source": "/* SPDX-License-Identifier: GPL-2.0 */\nOUTPUT_FORMAT(binary)\nSECTIONS\n{\n        .start : { *(.start) }\n        .text : { *(.text*) }\n        .rodata : { *(.rodata) }\n        .data : { *(.data) }\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

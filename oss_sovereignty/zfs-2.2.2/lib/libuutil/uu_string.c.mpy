@@ -1,0 +1,9 @@
+{
+  "module_name": "uu_string.c",
+  "hash_id": "ae848a73147df900d95e602768a8f21347d31b2f678f199f9cda850d457cecfa",
+  "original_prompt": "Ingested from zfs-2.2.2/lib/libuutil/uu_string.c",
+  "human_readable_source": " \n\n \n\n \n\n#include <string.h>\n#include <sys/types.h>\n#include <ctype.h>\n#include \"libuutil.h\"\n\n \nboolean_t\nuu_streq(const char *a, const char *b)\n{\n\treturn (strcmp(a, b) == 0);\n}\n\n \nboolean_t\nuu_strcaseeq(const char *a, const char *b)\n{\n\treturn (strcasecmp(a, b) == 0);\n}\n\n \nboolean_t\nuu_strbw(const char *a, const char *b)\n{\n\treturn (strncmp(a, b, strlen(b)) == 0);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

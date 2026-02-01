@@ -1,0 +1,9 @@
+{
+  "module_name": "ctype_cntrl.c",
+  "hash_id": "30de71e4176af1431e710d529bf25b04484f156a0614b5c02d23b3fc8435ff8b",
+  "original_prompt": "Ingested from coreutils-9.4/lib/unictype/ctype_cntrl.c",
+  "human_readable_source": " \n#include \"unictype.h\"\n\n#include \"bitmap.h\"\n\n \n#include \"ctype_cntrl.h\"\n\nbool\nuc_is_cntrl (ucs4_t uc)\n{\n  return bitmap_lookup (&u_is_cntrl, uc);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

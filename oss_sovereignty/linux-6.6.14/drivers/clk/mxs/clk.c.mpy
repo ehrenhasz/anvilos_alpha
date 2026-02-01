@@ -1,0 +1,9 @@
+{
+  "module_name": "clk.c",
+  "hash_id": "2f7b50da734b97b9de8273ac6672e7497f15d5190a4d75009472738b091219df",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/clk/mxs/clk.c",
+  "human_readable_source": "\n \n\n#include <linux/err.h>\n#include <linux/io.h>\n#include <linux/jiffies.h>\n#include <linux/spinlock.h>\n#include \"clk.h\"\n\nDEFINE_SPINLOCK(mxs_lock);\n\nint mxs_clk_wait(void __iomem *reg, u8 shift)\n{\n\tunsigned long timeout = jiffies + msecs_to_jiffies(10);\n\n\twhile (readl_relaxed(reg) & (1 << shift))\n\t\tif (time_after(jiffies, timeout))\n\t\t\treturn -ETIMEDOUT;\n\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

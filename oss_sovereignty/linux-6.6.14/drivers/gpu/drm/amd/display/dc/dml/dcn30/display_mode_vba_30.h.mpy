@@ -1,0 +1,9 @@
+{
+  "module_name": "display_mode_vba_30.h",
+  "hash_id": "7ed91341996702a3c581cd901157af71db870bea2f0b58d83b4605d913ae04c5",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/dc/dml/dcn30/display_mode_vba_30.h",
+  "human_readable_source": " \n\n#ifndef __DML30_DISPLAY_MODE_VBA_H__\n#define __DML30_DISPLAY_MODE_VBA_H__\n\nvoid dml30_recalculate(struct display_mode_lib *mode_lib);\nvoid dml30_ModeSupportAndSystemConfigurationFull(struct display_mode_lib *mode_lib);\ndouble dml30_CalculateWriteBackDISPCLK(\n\t\tenum source_format_class WritebackPixelFormat,\n\t\tdouble PixelClock,\n\t\tdouble WritebackHRatio,\n\t\tdouble WritebackVRatio,\n\t\tunsigned int WritebackHTaps,\n\t\tunsigned int WritebackVTaps,\n\t\tlong   WritebackSourceWidth,\n\t\tlong   WritebackDestinationWidth,\n\t\tunsigned int HTotal,\n\t\tunsigned int WritebackLineBufferSize);\nvoid dml30_CalculateBytePerPixelAnd256BBlockSizes(\n\t\tenum source_format_class SourcePixelFormat,\n\t\tenum dm_swizzle_mode SurfaceTiling,\n\t\tunsigned int *BytePerPixelY,\n\t\tunsigned int *BytePerPixelC,\n\t\tdouble       *BytePerPixelDETY,\n\t\tdouble       *BytePerPixelDETC,\n\t\tunsigned int *BlockHeight256BytesY,\n\t\tunsigned int *BlockHeight256BytesC,\n\t\tunsigned int *BlockWidth256BytesY,\n\t\tunsigned int *BlockWidth256BytesC);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

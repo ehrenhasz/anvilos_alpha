@@ -1,0 +1,9 @@
+{
+  "module_name": "vhost_test.c",
+  "hash_id": "87599eae5c50d2e99864ba576c6c5ca8992eb82f3fbde5366a1418bce3039f34",
+  "original_prompt": "Ingested from linux-6.6.14/tools/virtio/vhost_test/vhost_test.c",
+  "human_readable_source": "#include \"test.c\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

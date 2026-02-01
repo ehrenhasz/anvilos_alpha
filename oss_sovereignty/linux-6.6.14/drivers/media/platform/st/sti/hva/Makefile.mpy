@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "27e55172e0ad4ec4ade2d87c5bfae6a1e9802da772d694471babccc8f756595f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/platform/st/sti/hva/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-$(CONFIG_VIDEO_STI_HVA) += st-hva.o\nst-hva-y := hva-v4l2.o hva-hw.o hva-mem.o hva-h264.o\nst-hva-$(CONFIG_VIDEO_STI_HVA_DEBUGFS) += hva-debugfs.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "i915_gem_lmem.h",
+  "hash_id": "5b9f97187066720568ad8ec6b512333c954217cba5e0131fda83389e080d00b6",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/gem/i915_gem_lmem.h",
+  "human_readable_source": " \n \n\n#ifndef __I915_GEM_LMEM_H\n#define __I915_GEM_LMEM_H\n\n#include <linux/types.h>\n\nstruct drm_i915_private;\nstruct drm_i915_gem_object;\nstruct intel_memory_region;\n\nvoid __iomem *\ni915_gem_object_lmem_io_map(struct drm_i915_gem_object *obj,\n\t\t\t    unsigned long n,\n\t\t\t    unsigned long size);\n\nbool i915_gem_object_is_lmem(struct drm_i915_gem_object *obj);\n\nbool __i915_gem_object_is_lmem(struct drm_i915_gem_object *obj);\n\nstruct drm_i915_gem_object *\ni915_gem_object_create_lmem_from_data(struct drm_i915_private *i915,\n\t\t\t\t      const void *data, size_t size);\n\nstruct drm_i915_gem_object *\n__i915_gem_object_create_lmem_with_ps(struct drm_i915_private *i915,\n\t\t\t\t      resource_size_t size,\n\t\t\t\t      resource_size_t page_size,\n\t\t\t\t      unsigned int flags);\nstruct drm_i915_gem_object *\ni915_gem_object_create_lmem(struct drm_i915_private *i915,\n\t\t\t    resource_size_t size,\n\t\t\t    unsigned int flags);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "objfilter.c",
+  "hash_id": "f56864e2921a2aa86b2b324885a69a76741f11d5d023d9cf54bb3a13ad710c85",
+  "original_prompt": "Ingested from sys_09_Anvil/source/py/objfilter.c",
+  "human_readable_source": " \n\n#include \"py/runtime.h\"\n\n#if MICROPY_PY_BUILTINS_FILTER\n\ntypedef struct _mp_obj_filter_t {\n    mp_obj_base_t base;\n    mp_obj_t fun;\n    mp_obj_t iter;\n} mp_obj_filter_t;\n\nstatic mp_obj_t filter_make_new(const mp_obj_type_t *type, size_t n_args, size_t n_kw, const mp_obj_t *args) {\n    mp_arg_check_num(n_args, n_kw, 2, 2, false);\n    mp_obj_filter_t *o = mp_obj_malloc(mp_obj_filter_t, type);\n    o->fun = args[0];\n    o->iter = mp_getiter(args[1], NULL);\n    return MP_OBJ_FROM_PTR(o);\n}\n\nstatic mp_obj_t filter_iternext(mp_obj_t self_in) {\n    mp_check_self(mp_obj_is_type(self_in, &mp_type_filter));\n    mp_obj_filter_t *self = MP_OBJ_TO_PTR(self_in);\n    mp_obj_t next;\n    while ((next = mp_iternext(self->iter)) != MP_OBJ_STOP_ITERATION) {\n        mp_obj_t val;\n        if (self->fun != mp_const_none) {\n            val = mp_call_function_n_kw(self->fun, 1, 0, &next);\n        } else {\n            val = next;\n        }\n        if (mp_obj_is_true(val)) {\n            return next;\n        }\n    }\n    return MP_OBJ_STOP_ITERATION;\n}\n\nMP_DEFINE_CONST_OBJ_TYPE(\n    mp_type_filter,\n    MP_QSTR_filter,\n    MP_TYPE_FLAG_ITER_IS_ITERNEXT,\n    make_new, filter_make_new,\n    iter, filter_iternext\n    );\n\n#endif \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

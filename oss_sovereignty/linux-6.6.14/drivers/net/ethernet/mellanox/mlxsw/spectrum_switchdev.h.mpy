@@ -1,0 +1,9 @@
+{
+  "module_name": "spectrum_switchdev.h",
+  "hash_id": "88749b056953ec135fc0b19140039460ccc7cb0c632a1449d1a90a6f9d50a713",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/mellanox/mlxsw/spectrum_switchdev.h",
+  "human_readable_source": " \n \n\n#include <linux/netdevice.h>\n\nstruct mlxsw_sp_bridge;\nstruct mlxsw_sp_bridge_port;\n\nstruct mlxsw_sp_bridge_port *\nmlxsw_sp_bridge_port_find(struct mlxsw_sp_bridge *bridge,\n\t\t\t  struct net_device *brport_dev);\n\nu8 mlxsw_sp_bridge_port_stp_state(struct mlxsw_sp_bridge_port *bridge_port);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

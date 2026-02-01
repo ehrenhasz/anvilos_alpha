@@ -1,0 +1,9 @@
+{
+  "module_name": "bitmask.h",
+  "hash_id": "634ff7fc19d0f46a8c78f5ad7b1566a14f4fdfc21d79e660aed7ed970f3c6840",
+  "original_prompt": "Ingested from linux-6.6.14/tools/power/cpupower/utils/helpers/bitmask.h",
+  "human_readable_source": " \n#ifndef __CPUPOWER_BITMASK__\n#define __CPUPOWER_BITMASK__\n\n \n\nstruct bitmask {\n\tunsigned int size;\n\tunsigned long *maskp;\n};\n\nstruct bitmask *bitmask_alloc(unsigned int n);\nvoid bitmask_free(struct bitmask *bmp);\n\nstruct bitmask *bitmask_setbit(struct bitmask *bmp, unsigned int i);\nstruct bitmask *bitmask_setall(struct bitmask *bmp);\nstruct bitmask *bitmask_clearall(struct bitmask *bmp);\n\nunsigned int bitmask_first(const struct bitmask *bmp);\nunsigned int bitmask_next(const struct bitmask *bmp, unsigned int i);\nunsigned int bitmask_last(const struct bitmask *bmp);\nint bitmask_isallclear(const struct bitmask *bmp);\nint bitmask_isbitset(const struct bitmask *bmp, unsigned int i);\n\nint bitmask_parselist(const char *buf, struct bitmask *bmp);\nint bitmask_displaylist(char *buf, int len, const struct bitmask *bmp);\n\n\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

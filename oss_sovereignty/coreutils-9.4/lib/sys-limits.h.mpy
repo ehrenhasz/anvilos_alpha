@@ -1,0 +1,9 @@
+{
+  "module_name": "sys-limits.h",
+  "hash_id": "42a763caffa6c1835c7a569bddc42d40ddf2e4ea87e4cb4a92ccd261cc134e6d",
+  "original_prompt": "Ingested from coreutils-9.4/lib/sys-limits.h",
+  "human_readable_source": " \n\nenum { SYS_BUFSIZE_MAX = INT_MAX >> 20 << 20 };\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

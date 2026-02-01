@@ -1,0 +1,9 @@
+{
+  "module_name": "pata_arasan_cf_data.h",
+  "hash_id": "d82c890243748c1238606089d4f854f154f98116e9eb568b060e701042ba07c3",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/pata_arasan_cf_data.h",
+  "human_readable_source": " \n\n#ifndef _PATA_ARASAN_CF_DATA_H\n#define _PATA_ARASAN_CF_DATA_H\n\n#include <linux/platform_device.h>\n\nstruct arasan_cf_pdata {\n\tu8 cf_if_clk;\n\t#define CF_IF_CLK_100M\t\t\t(0x0)\n\t#define CF_IF_CLK_75M\t\t\t(0x1)\n\t#define CF_IF_CLK_66M\t\t\t(0x2)\n\t#define CF_IF_CLK_50M\t\t\t(0x3)\n\t#define CF_IF_CLK_40M\t\t\t(0x4)\n\t#define CF_IF_CLK_33M\t\t\t(0x5)\n\t#define CF_IF_CLK_25M\t\t\t(0x6)\n\t#define CF_IF_CLK_125M\t\t\t(0x7)\n\t#define CF_IF_CLK_150M\t\t\t(0x8)\n\t#define CF_IF_CLK_166M\t\t\t(0x9)\n\t#define CF_IF_CLK_200M\t\t\t(0xA)\n\t \n\tu32 quirk;\n\t#define CF_BROKEN_PIO\t\t\t(1)\n\t#define CF_BROKEN_MWDMA\t\t\t(1 << 1)\n\t#define CF_BROKEN_UDMA\t\t\t(1 << 2)\n};\n\nstatic inline void\nset_arasan_cf_pdata(struct platform_device *pdev, struct arasan_cf_pdata *data)\n{\n\tpdev->dev.platform_data = data;\n}\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "trace_custom_sched.c",
+  "hash_id": "77f49aa687476c7cc3eb54b8788c719adf81d5fce1a9f1a8bd5e676ab406d011",
+  "original_prompt": "Ingested from linux-6.6.14/samples/trace_events/trace_custom_sched.c",
+  "human_readable_source": "\n \n\n#define pr_fmt(fmt) fmt\n\n#include <linux/trace_events.h>\n#include <linux/version.h>\n#include <linux/module.h>\n#include <linux/sched.h>\n\n \n#include <trace/events/sched.h>\n\n \n#define CREATE_CUSTOM_TRACE_EVENTS\n\n#include \"trace_custom_sched.h\"\n\n \nstatic void fct(struct tracepoint *tp, void *priv)\n{\n\ttrace_custom_event_sched_switch_update(tp);\n\ttrace_custom_event_sched_waking_update(tp);\n}\n\nstatic int __init trace_sched_init(void)\n{\n\tfor_each_kernel_tracepoint(fct, NULL);\n\treturn 0;\n}\n\nstatic void __exit trace_sched_exit(void)\n{\n}\n\nmodule_init(trace_sched_init);\nmodule_exit(trace_sched_exit);\n\nMODULE_AUTHOR(\"Steven Rostedt\");\nMODULE_DESCRIPTION(\"Custom scheduling events\");\nMODULE_LICENSE(\"GPL\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

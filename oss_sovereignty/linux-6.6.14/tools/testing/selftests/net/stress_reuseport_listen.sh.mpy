@@ -1,0 +1,9 @@
+{
+  "module_name": "stress_reuseport_listen.sh",
+  "hash_id": "f2b3e9dd925cb7ded8c91f1c7aa4a2ccc1a0953bd7ed324a21dec5060d93bc8f",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/net/stress_reuseport_listen.sh",
+  "human_readable_source": "#!/bin/bash\n# SPDX-License-Identifier: GPL-2.0\n# Copyright (c) 2022 Meta Platforms, Inc. and affiliates.\n\nNS='stress_reuseport_listen_ns'\nNR_FILES=24100\nSAVED_NR_FILES=$(ulimit -n)\n\nsetup() {\n\tip netns add $NS\n\tip netns exec $NS sysctl -q -w net.ipv6.ip_nonlocal_bind=1\n\tulimit -n $NR_FILES\n}\n\ncleanup() {\n\tip netns del $NS\n\tulimit -n $SAVED_NR_FILES\n}\n\ntrap cleanup EXIT\nsetup\n# 300 different vips listen on port 443\n# Each vip:443 sockaddr has 80 LISTEN sock by using SO_REUSEPORT\n# Total 24000 listening socks\nip netns exec $NS ./stress_reuseport_listen 300 80\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

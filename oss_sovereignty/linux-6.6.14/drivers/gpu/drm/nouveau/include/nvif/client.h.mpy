@@ -1,0 +1,9 @@
+{
+  "module_name": "client.h",
+  "hash_id": "995c028448282077222e0b7690ac93d37eafd43f4b82921234895c75444771f0",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/include/nvif/client.h",
+  "human_readable_source": " \n#ifndef __NVIF_CLIENT_H__\n#define __NVIF_CLIENT_H__\n\n#include <nvif/object.h>\n\nstruct nvif_client {\n\tstruct nvif_object object;\n\tconst struct nvif_driver *driver;\n\tu64 version;\n\tu8 route;\n};\n\nint  nvif_client_ctor(struct nvif_client *parent, const char *name, u64 device,\n\t\t      struct nvif_client *);\nvoid nvif_client_dtor(struct nvif_client *);\nint  nvif_client_ioctl(struct nvif_client *, void *, u32);\nint  nvif_client_suspend(struct nvif_client *);\nint  nvif_client_resume(struct nvif_client *);\n\n \n#include <core/client.h>\n#define nvxx_client(a) ({                                                      \\\n\tstruct nvif_client *_client = (a);                                     \\\n\t(struct nvkm_client *)_client->object.priv;                            \\\n})\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

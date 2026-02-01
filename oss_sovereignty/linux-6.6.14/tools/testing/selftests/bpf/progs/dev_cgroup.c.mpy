@@ -1,0 +1,9 @@
+{
+  "module_name": "dev_cgroup.c",
+  "hash_id": "2a4e75702fbe367a5664a59a540ebfd7174a0447a683666e63da1a8340c60352",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/dev_cgroup.c",
+  "human_readable_source": " \n\n#include <linux/bpf.h>\n#include <linux/version.h>\n#include <bpf/bpf_helpers.h>\n\nSEC(\"cgroup/dev\")\nint bpf_prog1(struct bpf_cgroup_dev_ctx *ctx)\n{\n\tshort type = ctx->access_type & 0xFFFF;\n#ifdef DEBUG\n\tshort access = ctx->access_type >> 16;\n\tchar fmt[] = \"  %d:%d    \\n\";\n\n\tswitch (type) {\n\tcase BPF_DEVCG_DEV_BLOCK:\n\t\tfmt[0] = 'b';\n\t\tbreak;\n\tcase BPF_DEVCG_DEV_CHAR:\n\t\tfmt[0] = 'c';\n\t\tbreak;\n\tdefault:\n\t\tfmt[0] = '?';\n\t\tbreak;\n\t}\n\n\tif (access & BPF_DEVCG_ACC_READ)\n\t\tfmt[8] = 'r';\n\n\tif (access & BPF_DEVCG_ACC_WRITE)\n\t\tfmt[9] = 'w';\n\n\tif (access & BPF_DEVCG_ACC_MKNOD)\n\t\tfmt[10] = 'm';\n\n\tbpf_trace_printk(fmt, sizeof(fmt), ctx->major, ctx->minor);\n#endif\n\n\t \n\tif (ctx->major != 1 || type != BPF_DEVCG_DEV_CHAR)\n\t\treturn 0;\n\n\tswitch (ctx->minor) {\n\tcase 5:  \n\tcase 9:  \n\t\treturn 1;\n\t}\n\n\treturn 0;\n}\n\nchar _license[] SEC(\"license\") = \"GPL\";\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

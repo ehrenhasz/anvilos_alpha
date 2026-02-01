@@ -1,0 +1,9 @@
+{
+  "module_name": "io.h",
+  "hash_id": "0d220700c4b5a4dacfb0d71a8f42bddd66324fc6203b717bab7697c210d46f9f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/usb/dwc3/io.h",
+  "human_readable_source": " \n \n\n#ifndef __DRIVERS_USB_DWC3_IO_H\n#define __DRIVERS_USB_DWC3_IO_H\n\n#include <linux/io.h>\n#include \"trace.h\"\n#include \"debug.h\"\n#include \"core.h\"\n\nstatic inline u32 dwc3_readl(void __iomem *base, u32 offset)\n{\n\tu32 value;\n\n\t \n\tvalue = readl(base + offset - DWC3_GLOBALS_REGS_START);\n\n\t \n\ttrace_dwc3_readl(base - DWC3_GLOBALS_REGS_START, offset, value);\n\n\treturn value;\n}\n\nstatic inline void dwc3_writel(void __iomem *base, u32 offset, u32 value)\n{\n\t \n\twritel(value, base + offset - DWC3_GLOBALS_REGS_START);\n\n\t \n\ttrace_dwc3_writel(base - DWC3_GLOBALS_REGS_START, offset, value);\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

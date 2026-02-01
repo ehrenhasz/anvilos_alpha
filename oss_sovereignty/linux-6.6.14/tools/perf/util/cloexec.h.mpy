@@ -1,0 +1,9 @@
+{
+  "module_name": "cloexec.h",
+  "hash_id": "1ba05eee31003e08380d76533e45577b5308a9a4eb3a0e40e4ecaacb389c9789",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/util/cloexec.h",
+  "human_readable_source": " \n#ifndef __PERF_CLOEXEC_H\n#define __PERF_CLOEXEC_H\n\nunsigned long perf_event_open_cloexec_flag(void);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

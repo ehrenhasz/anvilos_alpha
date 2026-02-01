@@ -1,0 +1,9 @@
+{
+  "module_name": "ice_sbq_cmd.h",
+  "hash_id": "7b5ce04e7522bc1dbd22d4e11ef8260d4e006b1a5a04a5f309a0a46a955a889d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/intel/ice/ice_sbq_cmd.h",
+  "human_readable_source": " \n \n\n#ifndef _ICE_SBQ_CMD_H_\n#define _ICE_SBQ_CMD_H_\n\n \n\n \nenum ice_sbq_opc {\n\t \n\tice_sbq_opc_neigh_dev_req\t\t\t= 0x0C00,\n\tice_sbq_opc_neigh_dev_ev\t\t\t= 0x0C01\n};\n\n \nstruct ice_sbq_cmd_desc {\n\t__le16 flags;\n\t__le16 opcode;\n\t__le16 datalen;\n\t__le16 cmd_retval;\n\n\t \n\t__le32 cookie_high;\n\t__le32 cookie_low;\n\n\tunion {\n\t\t__le16 cmd_len;\n\t\t__le16 cmpl_len;\n\t} param0;\n\n\tu8 reserved[6];\n\t__le32 addr_high;\n\t__le32 addr_low;\n};\n\nstruct ice_sbq_evt_desc {\n\t__le16 flags;\n\t__le16 opcode;\n\t__le16 datalen;\n\t__le16 cmd_retval;\n\tu8 data[24];\n};\n\nenum ice_sbq_msg_dev {\n\trmn_0\t= 0x02,\n\trmn_1\t= 0x03,\n\trmn_2\t= 0x04,\n\tcgu\t= 0x06\n};\n\nenum ice_sbq_msg_opcode {\n\tice_sbq_msg_rd\t= 0x00,\n\tice_sbq_msg_wr\t= 0x01\n};\n\n#define ICE_SBQ_MSG_FLAGS\t0x40\n#define ICE_SBQ_MSG_SBE_FBE\t0x0F\n\nstruct ice_sbq_msg_req {\n\tu8 dest_dev;\n\tu8 src_dev;\n\tu8 opcode;\n\tu8 flags;\n\tu8 sbe_fbe;\n\tu8 func_id;\n\t__le16 msg_addr_low;\n\t__le32 msg_addr_high;\n\t__le32 data;\n};\n\nstruct ice_sbq_msg_cmpl {\n\tu8 dest_dev;\n\tu8 src_dev;\n\tu8 opcode;\n\tu8 flags;\n\t__le32 data;\n};\n\n \nstruct ice_sbq_msg_input {\n\tu8 dest_dev;\n\tu8 opcode;\n\tu16 msg_addr_low;\n\tu32 msg_addr_high;\n\tu32 data;\n};\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

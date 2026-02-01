@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "e100bab7658df20a42ae557ef9cc667b216937aa53e4e66c24aa0184dbb7162f",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/net/hsr/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n\ntop_srcdir = ../../../../..\n\nTEST_PROGS := hsr_ping.sh\n\ninclude ../../lib.mk\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

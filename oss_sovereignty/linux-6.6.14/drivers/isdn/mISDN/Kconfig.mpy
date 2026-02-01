@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "2796e716aab79e3ea4f48a384dbbdbe865bd4914e72d7bcee8ccbb0811c82af8",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/isdn/mISDN/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# modularer ISDN driver\n#\n\nmenuconfig MISDN\n\ttristate \"Modular ISDN driver\"\n\thelp\n\t  Enable support for the modular ISDN driver.\n\nif MISDN != n\n\nconfig MISDN_DSP\n\ttristate \"Digital Audio Processing of transparent data\"\n\tdepends on MISDN\n\tselect BITREVERSE\n\thelp\n\t  Enable support for digital audio processing capability.\n\n\t  This module may be used for special applications that require\n\t  cross connecting of bchannels, conferencing, dtmf decoding,\n\t  echo cancellation, tone generation, and Blowfish encryption and\n\t  decryption. It may use hardware features if available.\n\n\t  E.g. it is required for PBX4Linux. Go to http://isdn.eversberg.eu\n\t  and get more information about this module and its usage.\n\n\t  If unsure, say 'N'.\n\nconfig MISDN_L1OIP\n\ttristate \"ISDN over IP tunnel\"\n\tdepends on MISDN\n\thelp\n\t  Enable support for ISDN over IP tunnel.\n\n\t  It features:\n\t    - dynamic IP exchange, if one or both peers have dynamic IPs\n\t    - BRI (S0) and PRI (S2M) interface\n\t    - layer 1 control via network keepalive frames\n\t    - direct tunneling of physical interface via IP\n\n\t  NOTE: This protocol is called 'Layer 1 over IP' and is not\n\t  compatible with ISDNoIP (Agfeo) or TDMoIP. Protocol description is\n\t  provided in the source code.\n\nsource \"drivers/isdn/hardware/mISDN/Kconfig\"\n\nendif #MISDN\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

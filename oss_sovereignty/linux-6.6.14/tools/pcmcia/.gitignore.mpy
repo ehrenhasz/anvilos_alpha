@@ -1,0 +1,9 @@
+{
+  "module_name": ".gitignore",
+  "hash_id": "009216ceaddf49c6e83a1256b8c087b8c35b492dfb0e7caa3f2667ec3433df53",
+  "original_prompt": "Ingested from linux-6.6.14/tools/pcmcia/.gitignore",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\ncrc32hash\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

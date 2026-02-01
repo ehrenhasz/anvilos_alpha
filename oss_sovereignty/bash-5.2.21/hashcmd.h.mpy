@@ -1,0 +1,9 @@
+{
+  "module_name": "hashcmd.h",
+  "hash_id": "78c934d68bca3c700c88d63e97c02c7ce347505c555f78a9b36895dd06064c7a",
+  "original_prompt": "Ingested from bash-5.2.21/hashcmd.h",
+  "human_readable_source": " \n\n \n\n#include \"stdc.h\"\n#include \"hashlib.h\"\n\n#define FILENAME_HASH_BUCKETS 256\t \n\nextern HASH_TABLE *hashed_filenames;\n\ntypedef struct _pathdata {\n  char *path;\t\t \n  int flags;\n} PATH_DATA;\n\n#define HASH_RELPATH\t0x01\t \n#define HASH_CHKDOT\t0x02\t \n\n#define pathdata(x) ((PATH_DATA *)(x)->data)\n\nextern void phash_create PARAMS((void));\nextern void phash_flush PARAMS((void));\n\nextern void phash_insert PARAMS((char *, char *, int, int));\nextern int phash_remove PARAMS((const char *));\nextern char *phash_search PARAMS((const char *));\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

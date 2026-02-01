@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "d42cb6b25af4fb036fb040554b7486da3023e0f33e2a9499335d11518be40572",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/intel/e1000/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n# Copyright(c) 1999 - 2006 Intel Corporation.\n\n#\n# Makefile for the Intel(R) PRO/1000 ethernet driver\n#\n\nobj-$(CONFIG_E1000) += e1000.o\n\ne1000-objs := e1000_main.o e1000_hw.o e1000_ethtool.o e1000_param.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

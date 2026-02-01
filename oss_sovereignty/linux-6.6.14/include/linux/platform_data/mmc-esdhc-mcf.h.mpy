@@ -1,0 +1,9 @@
+{
+  "module_name": "mmc-esdhc-mcf.h",
+  "hash_id": "afd4b0916de9e6a32f839e00495a65d3044c39b4449d50609c4050cb4c6b997d",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/platform_data/mmc-esdhc-mcf.h",
+  "human_readable_source": " \n\n#ifndef __LINUX_PLATFORM_DATA_MCF_ESDHC_H__\n#define __LINUX_PLATFORM_DATA_MCF_ESDHC_H__\n\nenum cd_types {\n\tESDHC_CD_NONE,\t\t \n\tESDHC_CD_CONTROLLER,\t \n\tESDHC_CD_PERMANENT,\t \n};\n\nstruct mcf_esdhc_platform_data {\n\tint max_bus_width;\n\tint cd_type;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "coveragecpp.cpp",
+  "hash_id": "c7f95fbb4722d8ef128a0b625fcc52bad285cf98a7e7d584ae682121a35be8dc",
+  "original_prompt": "Ingested from sys_09_Anvil/source/ports/unix/coveragecpp.cpp",
+  "human_readable_source": "extern \"C\" {\n#include \"py/obj.h\"\n}\n\n#if defined(MICROPY_UNIX_COVERAGE)\n\n\nstatic mp_obj_t extra_cpp_coverage_impl() {\n    return mp_const_none;\n}\n\nextern \"C\" {\nmp_obj_t extra_cpp_coverage(void);\nmp_obj_t extra_cpp_coverage(void) {\n    return extra_cpp_coverage_impl();\n}\n\n\nextern const mp_obj_fun_builtin_fixed_t extra_cpp_coverage_obj = {{&mp_type_fun_builtin_0}, {extra_cpp_coverage}};\n\n}\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "libperf.pc.template",
+  "hash_id": "5890fc5196203d8f3db643712b27a09c38bb109791938899dd05c2446fbe8484",
+  "original_prompt": "Ingested from linux-6.6.14/tools/lib/perf/libperf.pc.template",
+  "human_readable_source": "# SPDX-License-Identifier: (LGPL-2.1 OR BSD-2-Clause)\n\nprefix=@PREFIX@\nlibdir=@LIBDIR@\nincludedir=${prefix}/include\n\nName: libperf\nDescription: perf library\nVersion: @VERSION@\nLibs: -L${libdir} -lperf\nCflags: -I${includedir}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

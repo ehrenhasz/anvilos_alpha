@@ -1,0 +1,9 @@
+{
+  "module_name": "readtokens0.c",
+  "hash_id": "3e41bb00f155e233d61be3ec5ce9d57e7fd38fb56a427d0c75e3d08d61c3c13f",
+  "original_prompt": "Ingested from coreutils-9.4/lib/readtokens0.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#include <stdlib.h>\n\n#include \"readtokens0.h\"\n\n#define obstack_chunk_alloc malloc\n#define obstack_chunk_free free\n\nvoid\nreadtokens0_init (struct Tokens *t)\n{\n  t->n_tok = 0;\n  t->tok = NULL;\n  t->tok_len = NULL;\n  obstack_init (&t->o_data);\n  obstack_init (&t->o_tok);\n  obstack_init (&t->o_tok_len);\n}\n\nvoid\nreadtokens0_free (struct Tokens *t)\n{\n  obstack_free (&t->o_data, NULL);\n  obstack_free (&t->o_tok, NULL);\n  obstack_free (&t->o_tok_len, NULL);\n}\n\n \nstatic void\nsave_token (struct Tokens *t)\n{\n   \n  size_t len = obstack_object_size (&t->o_data) - 1;\n  char const *s = obstack_finish (&t->o_data);\n  obstack_ptr_grow (&t->o_tok, s);\n  obstack_grow (&t->o_tok_len, &len, sizeof len);\n  t->n_tok++;\n}\n\n \nbool\nreadtokens0 (FILE *in, struct Tokens *t)\n{\n\n  while (1)\n    {\n      int c = fgetc (in);\n      if (c == EOF)\n        {\n          size_t len = obstack_object_size (&t->o_data);\n           \n          if (len)\n            {\n              obstack_1grow (&t->o_data, '\\0');\n              save_token (t);\n            }\n\n          break;\n        }\n\n      obstack_1grow (&t->o_data, c);\n      if (c == '\\0')\n        save_token (t);\n    }\n\n   \n  obstack_ptr_grow (&t->o_tok, NULL);\n\n  t->tok = obstack_finish (&t->o_tok);\n  t->tok_len = obstack_finish (&t->o_tok_len);\n  return ! ferror (in);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

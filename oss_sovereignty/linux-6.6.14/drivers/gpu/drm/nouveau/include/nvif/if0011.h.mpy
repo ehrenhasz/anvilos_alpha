@@ -1,0 +1,9 @@
+{
+  "module_name": "if0011.h",
+  "hash_id": "62ea42450bc42e53615aab9e3092bca4f8ad7edfa28bafb3dfd0510864a1cb5b",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/include/nvif/if0011.h",
+  "human_readable_source": " \n#ifndef __NVIF_IF0011_H__\n#define __NVIF_IF0011_H__\n\nunion nvif_conn_args {\n\tstruct nvif_conn_v0 {\n\t\t__u8 version;\n\t\t__u8 id;\t \n\t\t__u8 pad02[6];\n\t} v0;\n};\n\nunion nvif_conn_event_args {\n\tstruct nvif_conn_event_v0 {\n\t\t__u8 version;\n#define NVIF_CONN_EVENT_V0_PLUG   0x01\n#define NVIF_CONN_EVENT_V0_UNPLUG 0x02\n#define NVIF_CONN_EVENT_V0_IRQ    0x04\n\t\t__u8 types;\n\t\t__u8 pad02[6];\n\t} v0;\n};\n\n#define NVIF_CONN_V0_HPD_STATUS 0x00000000\n\nunion nvif_conn_hpd_status_args {\n\tstruct nvif_conn_hpd_status_v0 {\n\t\t__u8 version;\n\t\t__u8 support;\n\t\t__u8 present;\n\t\t__u8 pad03[5];\n\t} v0;\n};\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

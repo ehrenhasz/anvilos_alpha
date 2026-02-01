@@ -1,0 +1,9 @@
+{
+  "module_name": "ops-common.h",
+  "hash_id": "0dd89e4fca106b8a3b307c9ff82662939f220a6aa1804f019af9e4c5b2bd643d",
+  "original_prompt": "Ingested from linux-6.6.14/mm/damon/ops-common.h",
+  "human_readable_source": " \n \n\n#include <linux/damon.h>\n\nstruct folio *damon_get_folio(unsigned long pfn);\n\nvoid damon_ptep_mkold(pte_t *pte, struct vm_area_struct *vma, unsigned long addr);\nvoid damon_pmdp_mkold(pmd_t *pmd, struct vm_area_struct *vma, unsigned long addr);\n\nint damon_cold_score(struct damon_ctx *c, struct damon_region *r,\n\t\t\tstruct damos *s);\nint damon_hot_score(struct damon_ctx *c, struct damon_region *r,\n\t\t\tstruct damos *s);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

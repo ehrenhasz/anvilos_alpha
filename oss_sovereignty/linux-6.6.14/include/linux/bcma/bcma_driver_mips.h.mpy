@@ -1,0 +1,9 @@
+{
+  "module_name": "bcma_driver_mips.h",
+  "hash_id": "e22f7637dd230421b983917452c6852bd7511dd725730a3182d5ffaa04cabfd6",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/bcma/bcma_driver_mips.h",
+  "human_readable_source": " \n#ifndef LINUX_BCMA_DRIVER_MIPS_H_\n#define LINUX_BCMA_DRIVER_MIPS_H_\n\n#define BCMA_MIPS_IPSFLAG\t\t0x0F08\n \n#define  BCMA_MIPS_IPSFLAG_IRQ1\t\t0x0000003F\n#define  BCMA_MIPS_IPSFLAG_IRQ1_SHIFT\t0\n \n#define  BCMA_MIPS_IPSFLAG_IRQ2\t\t0x00003F00\n#define  BCMA_MIPS_IPSFLAG_IRQ2_SHIFT\t8\n \n#define  BCMA_MIPS_IPSFLAG_IRQ3\t\t0x003F0000\n#define  BCMA_MIPS_IPSFLAG_IRQ3_SHIFT\t16\n \n#define  BCMA_MIPS_IPSFLAG_IRQ4\t\t0x3F000000\n#define  BCMA_MIPS_IPSFLAG_IRQ4_SHIFT\t24\n\n \n#define BCMA_MIPS_MIPS74K_CORECTL\t0x0000\n#define BCMA_MIPS_MIPS74K_EXCEPTBASE\t0x0004\n#define BCMA_MIPS_MIPS74K_BIST\t\t0x000C\n#define BCMA_MIPS_MIPS74K_INTMASK_INT0\t0x0014\n#define BCMA_MIPS_MIPS74K_INTMASK(int) \\\n\t((int) * 4 + BCMA_MIPS_MIPS74K_INTMASK_INT0)\n#define BCMA_MIPS_MIPS74K_NMIMASK\t0x002C\n#define BCMA_MIPS_MIPS74K_GPIOSEL\t0x0040\n#define BCMA_MIPS_MIPS74K_GPIOOUT\t0x0044\n#define BCMA_MIPS_MIPS74K_GPIOEN\t0x0048\n#define BCMA_MIPS_MIPS74K_CLKCTLST\t0x01E0\n\n#define BCMA_MIPS_OOBSELINA74\t\t0x004\n#define BCMA_MIPS_OOBSELOUTA30\t\t0x100\n\nstruct bcma_device;\n\nstruct bcma_drv_mips {\n\tstruct bcma_device *core;\n\tu8 setup_done:1;\n\tu8 early_setup_done:1;\n};\n\nextern u32 bcma_cpu_clock(struct bcma_drv_mips *mcore);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

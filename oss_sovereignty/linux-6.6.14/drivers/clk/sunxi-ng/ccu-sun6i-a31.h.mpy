@@ -1,0 +1,9 @@
+{
+  "module_name": "ccu-sun6i-a31.h",
+  "hash_id": "b16983af21a5147c99534a8a28629b2c34f5eb7ad0dbb9444d86645180aaf081",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/clk/sunxi-ng/ccu-sun6i-a31.h",
+  "human_readable_source": " \n \n\n#ifndef _CCU_SUN6I_A31_H_\n#define _CCU_SUN6I_A31_H_\n\n#include <dt-bindings/clock/sun6i-a31-ccu.h>\n#include <dt-bindings/reset/sun6i-a31-ccu.h>\n\n#define CLK_PLL_CPU\t\t0\n#define CLK_PLL_AUDIO_BASE\t1\n#define CLK_PLL_AUDIO\t\t2\n#define CLK_PLL_AUDIO_2X\t3\n#define CLK_PLL_AUDIO_4X\t4\n#define CLK_PLL_AUDIO_8X\t5\n#define CLK_PLL_VIDEO0\t\t6\n\n \n\n#define CLK_PLL_VE\t\t8\n#define CLK_PLL_DDR\t\t9\n\n \n\n#define CLK_PLL_PERIPH_2X\t11\n#define CLK_PLL_VIDEO1\t\t12\n\n \n\n#define CLK_PLL_GPU\t\t14\n\n \n\n#define CLK_PLL9\t\t16\n#define CLK_PLL10\t\t17\n\n \n\n#define CLK_AXI\t\t\t19\n#define CLK_AHB1\t\t20\n#define CLK_APB1\t\t21\n#define CLK_APB2\t\t22\n\n \n\n \n\n \n\n#define CLK_MDFS\t\t107\n#define CLK_SDRAM0\t\t108\n#define CLK_SDRAM1\t\t109\n\n \n\n \n\n#define CLK_MBUS0\t\t141\n#define CLK_MBUS1\t\t142\n\n \n\n#define CLK_NUMBER\t\t(CLK_OUT_C + 1)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

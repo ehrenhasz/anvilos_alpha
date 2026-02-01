@@ -1,0 +1,9 @@
+{
+  "module_name": "kernel-automount.m4",
+  "hash_id": "5451910becd8a7c1905fdef863444238d276df8f1643fdaef331b003830b6579",
+  "original_prompt": "Ingested from zfs-2.2.2/config/kernel-automount.m4",
+  "human_readable_source": "dnl #\ndnl # 2.6.37 API change\ndnl # The dops->d_automount() dentry operation was added as a clean\ndnl # solution to handling automounts.  Prior to this cifs/nfs clients\ndnl # which required automount support would abuse the follow_link()\ndnl # operation on directories for this purpose.\ndnl #\nAC_DEFUN([ZFS_AC_KERNEL_SRC_AUTOMOUNT], [\n\tZFS_LINUX_TEST_SRC([dentry_operations_d_automount], [\n\t\t#include <linux/dcache.h>\n\t\tstruct vfsmount *d_automount(struct path *p) { return NULL; }\n\t\tstruct dentry_operations dops __attribute__ ((unused)) = {\n\t\t\t.d_automount = d_automount,\n\t\t};\n\t])\n])\n\nAC_DEFUN([ZFS_AC_KERNEL_AUTOMOUNT], [\n\tAC_MSG_CHECKING([whether dops->d_automount() exists])\n\tZFS_LINUX_TEST_RESULT([dentry_operations_d_automount], [\n\t\tAC_MSG_RESULT(yes)\n\t],[\n\t\tZFS_LINUX_TEST_ERROR([dops->d_automount()])\n\t])\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

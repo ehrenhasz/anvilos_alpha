@@ -1,0 +1,9 @@
+{
+  "module_name": "n_null.c",
+  "hash_id": "1a6492fb38fdfa67d75a5e7eaa716d990107b0053cd1d9426599a5a69b450879",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/tty/n_null.c",
+  "human_readable_source": "\n#include <linux/types.h>\n#include <linux/errno.h>\n#include <linux/tty.h>\n#include <linux/module.h>\n\n \n\nstatic ssize_t n_null_read(struct tty_struct *tty, struct file *file, u8 *buf,\n\t\t\t   size_t nr, void **cookie, unsigned long offset)\n{\n\treturn -EOPNOTSUPP;\n}\n\nstatic ssize_t n_null_write(struct tty_struct *tty, struct file *file,\n\t\t\t    const u8 *buf, size_t nr)\n{\n\treturn -EOPNOTSUPP;\n}\n\nstatic struct tty_ldisc_ops null_ldisc = {\n\t.owner\t\t=\tTHIS_MODULE,\n\t.num\t\t=\tN_NULL,\n\t.name\t\t=\t\"n_null\",\n\t.read\t\t=\tn_null_read,\n\t.write\t\t=\tn_null_write,\n};\n\nstatic int __init n_null_init(void)\n{\n\tBUG_ON(tty_register_ldisc(&null_ldisc));\n\treturn 0;\n}\n\nstatic void __exit n_null_exit(void)\n{\n\ttty_unregister_ldisc(&null_ldisc);\n}\n\nmodule_init(n_null_init);\nmodule_exit(n_null_exit);\n\nMODULE_LICENSE(\"GPL\");\nMODULE_AUTHOR(\"Alan Cox\");\nMODULE_ALIAS_LDISC(N_NULL);\nMODULE_DESCRIPTION(\"Null ldisc driver\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

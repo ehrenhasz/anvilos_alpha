@@ -1,0 +1,9 @@
+{
+  "module_name": "xdp_redirect_map.c",
+  "hash_id": "a1a005587395698ea6a1e9eab5a219e9a3171b94ac754317845371e2a915bc1f",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/xdp_redirect_map.c",
+  "human_readable_source": "\n\n#include <linux/bpf.h>\n#include <bpf/bpf_helpers.h>\n\nstruct {\n\t__uint(type, BPF_MAP_TYPE_DEVMAP);\n\t__uint(max_entries, 8);\n\t__uint(key_size, sizeof(int));\n\t__uint(value_size, sizeof(int));\n} tx_port SEC(\".maps\");\n\nSEC(\"redirect_map_0\")\nint xdp_redirect_map_0(struct xdp_md *xdp)\n{\n\treturn bpf_redirect_map(&tx_port, 0, 0);\n}\n\nSEC(\"redirect_map_1\")\nint xdp_redirect_map_1(struct xdp_md *xdp)\n{\n\treturn bpf_redirect_map(&tx_port, 1, 0);\n}\n\nSEC(\"redirect_map_2\")\nint xdp_redirect_map_2(struct xdp_md *xdp)\n{\n\treturn bpf_redirect_map(&tx_port, 2, 0);\n}\n\nchar _license[] SEC(\"license\") = \"GPL\";\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

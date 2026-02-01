@@ -1,0 +1,9 @@
+{
+  "module_name": "zmapfd.c",
+  "hash_id": "dbcae0e75426e2e566759e5d414445b55eb22afabe2b712d34c9c910f561f9c9",
+  "original_prompt": "Ingested from bash-5.2.21/lib/sh/zmapfd.c",
+  "human_readable_source": " \n\n \n\n#include <config.h>\n\n#include <sys/types.h>\n\n#if defined (HAVE_UNISTD_H)\n#  include <unistd.h>\n#endif\n\n#include <errno.h>\n\n#include \"bashansi.h\"\n#include \"command.h\"\n#include \"general.h\"\n\n#if !defined (errno)\nextern int errno;\n#endif\n\n#ifndef ZBUFSIZ\n#  define ZBUFSIZ 4096\n#endif\n\nextern ssize_t zread PARAMS((int, char *, size_t));\n\n \nint\nzmapfd (fd, ostr, fn)\n     int fd;\n     char **ostr;\n     char *fn;\n{\n  ssize_t nr;\n  int rval;\n  char lbuf[ZBUFSIZ];\n  char *result;\n  size_t rsize, rind;\n\n  rval = 0;\n  result = (char *)xmalloc (rsize = ZBUFSIZ);\n  rind = 0;\n\n  while (1)\n    {\n      nr = zread (fd, lbuf, sizeof (lbuf));\n      if (nr == 0)\n\t{\n\t  rval = rind;\n\t  break;\n\t}\n      else if (nr < 0)\n\t{\n\t  free (result);\n\t  if (ostr)\n\t    *ostr = (char *)NULL;\n\t  return -1;\n\t}\n\n      RESIZE_MALLOCED_BUFFER (result, rind, nr, rsize, ZBUFSIZ);\n      memcpy (result+rind, lbuf, nr);\n      rind += nr;\n    }\n\n  RESIZE_MALLOCED_BUFFER (result, rind, 1, rsize, 128);\n  result[rind] = '\\0';\n\n  if (ostr)\n    *ostr = result;\n  else\n    free (result);\n\n  return rval;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

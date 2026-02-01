@@ -1,0 +1,9 @@
+{
+  "module_name": "traps.h",
+  "hash_id": "93cbee5c8079bfe513ffe776af8848caa41be715d64c2d58dc31f019cbe6b60a",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/include/asm/traps.h",
+  "human_readable_source": " \n#ifndef _ASM_X86_TRAPS_H\n#define _ASM_X86_TRAPS_H\n\n#include <linux/context_tracking_state.h>\n#include <linux/kprobes.h>\n\n#include <asm/debugreg.h>\n#include <asm/idtentry.h>\n#include <asm/siginfo.h>\t\t\t \n#include <asm/trap_pf.h>\n\n#ifdef CONFIG_X86_64\nasmlinkage __visible notrace struct pt_regs *sync_regs(struct pt_regs *eregs);\nasmlinkage __visible notrace\nstruct pt_regs *fixup_bad_iret(struct pt_regs *bad_regs);\nvoid __init trap_init(void);\nasmlinkage __visible noinstr struct pt_regs *vc_switch_off_ist(struct pt_regs *eregs);\n#endif\n\nextern int ibt_selftest(void);\nextern int ibt_selftest_noendbr(void);\n\n#ifdef CONFIG_X86_F00F_BUG\n \nvoid handle_invalid_op(struct pt_regs *regs);\n#endif\n\nstatic inline int get_si_code(unsigned long condition)\n{\n\tif (condition & DR_STEP)\n\t\treturn TRAP_TRACE;\n\telse if (condition & (DR_TRAP0|DR_TRAP1|DR_TRAP2|DR_TRAP3))\n\t\treturn TRAP_HWBKPT;\n\telse\n\t\treturn TRAP_BRKPT;\n}\n\nextern int panic_on_unrecovered_nmi;\n\nvoid math_emulate(struct math_emu_info *);\n\nbool fault_in_kernel_space(unsigned long address);\n\n#ifdef CONFIG_VMAP_STACK\nvoid __noreturn handle_stack_overflow(struct pt_regs *regs,\n\t\t\t\t      unsigned long fault_address,\n\t\t\t\t      struct stack_info *info);\n#endif\n\nstatic inline void cond_local_irq_enable(struct pt_regs *regs)\n{\n\tif (regs->flags & X86_EFLAGS_IF)\n\t\tlocal_irq_enable();\n}\n\nstatic inline void cond_local_irq_disable(struct pt_regs *regs)\n{\n\tif (regs->flags & X86_EFLAGS_IF)\n\t\tlocal_irq_disable();\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

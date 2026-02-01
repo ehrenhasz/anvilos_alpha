@@ -1,0 +1,9 @@
+{
+  "module_name": "efclib.c",
+  "hash_id": "43866184bc13b4a3b92bc3c5fcf77d1a73037a93bc9b3ebadb066460cf990b18",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/scsi/elx/libefc/efclib.c",
+  "human_readable_source": "\n \n\n \n\n#include <linux/module.h>\n#include <linux/kernel.h>\n#include \"efc.h\"\n\nint efcport_init(struct efc *efc)\n{\n\tu32 rc = 0;\n\n\tspin_lock_init(&efc->lock);\n\tINIT_LIST_HEAD(&efc->vport_list);\n\tefc->hold_frames = false;\n\tspin_lock_init(&efc->pend_frames_lock);\n\tINIT_LIST_HEAD(&efc->pend_frames);\n\n\t \n\tefc->node_pool = mempool_create_kmalloc_pool(EFC_MAX_REMOTE_NODES,\n\t\t\t\t\t\t     sizeof(struct efc_node));\n\tif (!efc->node_pool) {\n\t\tefc_log_err(efc, \"Can't allocate node pool\\n\");\n\t\treturn -ENOMEM;\n\t}\n\n\tefc->node_dma_pool = dma_pool_create(\"node_dma_pool\", &efc->pci->dev,\n\t\t\t\t\t     NODE_SPARAMS_SIZE, 0, 0);\n\tif (!efc->node_dma_pool) {\n\t\tefc_log_err(efc, \"Can't allocate node dma pool\\n\");\n\t\tmempool_destroy(efc->node_pool);\n\t\treturn -ENOMEM;\n\t}\n\n\tefc->els_io_pool = mempool_create_kmalloc_pool(EFC_ELS_IO_POOL_SZ,\n\t\t\t\t\t\tsizeof(struct efc_els_io_req));\n\tif (!efc->els_io_pool) {\n\t\tefc_log_err(efc, \"Can't allocate els io pool\\n\");\n\t\treturn -ENOMEM;\n\t}\n\n\treturn rc;\n}\n\nstatic void\nefc_purge_pending(struct efc *efc)\n{\n\tstruct efc_hw_sequence *frame, *next;\n\tunsigned long flags = 0;\n\n\tspin_lock_irqsave(&efc->pend_frames_lock, flags);\n\n\tlist_for_each_entry_safe(frame, next, &efc->pend_frames, list_entry) {\n\t\tlist_del(&frame->list_entry);\n\t\tefc->tt.hw_seq_free(efc, frame);\n\t}\n\n\tspin_unlock_irqrestore(&efc->pend_frames_lock, flags);\n}\n\nvoid efcport_destroy(struct efc *efc)\n{\n\tefc_purge_pending(efc);\n\tmempool_destroy(efc->els_io_pool);\n\tmempool_destroy(efc->node_pool);\n\tdma_pool_destroy(efc->node_dma_pool);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

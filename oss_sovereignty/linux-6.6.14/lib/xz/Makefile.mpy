@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "1e89805e33c6b3f541a0a9b67a58813d3ead1a5d2bd3ac82c4f10a6ade063d3b",
+  "original_prompt": "Ingested from linux-6.6.14/lib/xz/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-$(CONFIG_XZ_DEC) += xz_dec.o\nxz_dec-y := xz_dec_syms.o xz_dec_stream.o xz_dec_lzma2.o\nxz_dec-$(CONFIG_XZ_DEC_BCJ) += xz_dec_bcj.o\n\nobj-$(CONFIG_XZ_DEC_TEST) += xz_dec_test.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

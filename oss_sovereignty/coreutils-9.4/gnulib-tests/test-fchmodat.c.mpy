@@ -1,0 +1,9 @@
+{
+  "module_name": "test-fchmodat.c",
+  "hash_id": "1d47ebd5c60f9c9850f8e790ccf0bf1c263aa273c0cbfd0056ee8ddf1c3733f4",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-fchmodat.c",
+  "human_readable_source": " \n  {\n    errno = 0;\n    ASSERT (fchmodat (-1, \"foo\", 0600, 0) == -1);\n    ASSERT (errno == EBADF);\n  }\n  {\n    close (99);\n    errno = 0;\n    ASSERT (fchmodat (99, \"foo\", 0600, 0) == -1);\n    ASSERT (errno == EBADF);\n  }\n\n   \n  {\n    struct stat statbuf;\n\n    unlink (BASE \"file\");\n    ASSERT (close (creat (BASE \"file\", 0600)) == 0);\n    ASSERT (fchmodat (AT_FDCWD, BASE \"file\", 0400, 0) == 0);\n    ASSERT (stat (BASE \"file\", &statbuf) >= 0);\n    ASSERT ((statbuf.st_mode & 0700) == 0400);\n\n    errno = 0;\n    ASSERT (fchmodat (AT_FDCWD, BASE \"file/\", 0600, 0) == -1);\n    ASSERT (errno == ENOTDIR);\n\n     \n    ASSERT (chmod (BASE \"file\", 0600) == 0);\n    ASSERT (unlink (BASE \"file\") == 0);\n  }\n\n   \n  {\n    struct stat statbuf;\n    rmdir (BASE \"dir\");\n    ASSERT (mkdir (BASE \"dir\", 0700) == 0);\n    ASSERT (fchmodat (AT_FDCWD, BASE \"dir\", 0500, 0) == 0);\n    ASSERT (stat (BASE \"dir\", &statbuf) >= 0);\n    ASSERT ((statbuf.st_mode & 0700) == 0500);\n    ASSERT (fchmodat (AT_FDCWD, BASE \"dir/\", 0700, 0) == 0);\n\n     \n    ASSERT (rmdir (BASE \"dir\") == 0);\n  }\n\n   \n  {\n    struct stat statbuf;\n    unlink (BASE \"file\");\n    ASSERT (close (creat (BASE \"file\", 0600)) == 0);\n    ASSERT (fchmodat (AT_FDCWD, BASE \"file\", 0400, AT_SYMLINK_NOFOLLOW) == 0);\n    ASSERT (stat (BASE \"file\", &statbuf) >= 0);\n    ASSERT ((statbuf.st_mode & 0700) == 0400);\n     \n    ASSERT (chmod (BASE \"file\", 0600) == 0);\n    ASSERT (unlink (BASE \"file\") == 0);\n  }\n\n  return 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

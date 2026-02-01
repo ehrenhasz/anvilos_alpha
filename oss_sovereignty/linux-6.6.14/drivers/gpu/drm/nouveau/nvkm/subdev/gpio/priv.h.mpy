@@ -1,0 +1,9 @@
+{
+  "module_name": "priv.h",
+  "hash_id": "83926a4b64d7488eda3485d6df1caa1d6eae93775f3f3b7e8a63a634654629ac",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/subdev/gpio/priv.h",
+  "human_readable_source": " \n#ifndef __NVKM_GPIO_PRIV_H__\n#define __NVKM_GPIO_PRIV_H__\n#define nvkm_gpio(p) container_of((p), struct nvkm_gpio, subdev)\n#include <subdev/gpio.h>\n\nstruct nvkm_gpio_func {\n\tint lines;\n\n\t \n\tvoid (*intr_stat)(struct nvkm_gpio *, u32 *, u32 *);\n\n\t \n\tvoid (*intr_mask)(struct nvkm_gpio *, u32, u32, u32);\n\n\t \n\tint  (*drive)(struct nvkm_gpio *, int line, int dir, int out);\n\n\t \n\tint  (*sense)(struct nvkm_gpio *, int line);\n\n\t \n\tvoid (*reset)(struct nvkm_gpio *, u8);\n};\n\nint nvkm_gpio_new_(const struct nvkm_gpio_func *, struct nvkm_device *, enum nvkm_subdev_type, int,\n\t\t   struct nvkm_gpio **);\n\nvoid nv50_gpio_reset(struct nvkm_gpio *, u8);\nint  nv50_gpio_drive(struct nvkm_gpio *, int, int, int);\nint  nv50_gpio_sense(struct nvkm_gpio *, int);\n\nvoid g94_gpio_intr_stat(struct nvkm_gpio *, u32 *, u32 *);\nvoid g94_gpio_intr_mask(struct nvkm_gpio *, u32, u32, u32);\n\nvoid gf119_gpio_reset(struct nvkm_gpio *, u8);\nint  gf119_gpio_drive(struct nvkm_gpio *, int, int, int);\nint  gf119_gpio_sense(struct nvkm_gpio *, int);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "gpiolib-cdev.h",
+  "hash_id": "f9f8856b807c14f86b100e7997aa80f0660db2839389e5498115375cd5009ecb",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpio/gpiolib-cdev.h",
+  "human_readable_source": " \n\n#ifndef GPIOLIB_CDEV_H\n#define GPIOLIB_CDEV_H\n\n#include <linux/types.h>\n\nstruct gpio_device;\n\nint gpiolib_cdev_register(struct gpio_device *gdev, dev_t devt);\nvoid gpiolib_cdev_unregister(struct gpio_device *gdev);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

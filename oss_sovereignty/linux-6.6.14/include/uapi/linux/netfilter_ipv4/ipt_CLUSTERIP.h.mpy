@@ -1,0 +1,9 @@
+{
+  "module_name": "ipt_CLUSTERIP.h",
+  "hash_id": "332aa16b11ac229c01c356186deb502ab463ce7c612614943da35ca998f0600e",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/netfilter_ipv4/ipt_CLUSTERIP.h",
+  "human_readable_source": " \n#ifndef _IPT_CLUSTERIP_H_target\n#define _IPT_CLUSTERIP_H_target\n\n#include <linux/types.h>\n#include <linux/if_ether.h>\n\nenum clusterip_hashmode {\n    CLUSTERIP_HASHMODE_SIP = 0,\n    CLUSTERIP_HASHMODE_SIP_SPT,\n    CLUSTERIP_HASHMODE_SIP_SPT_DPT,\n};\n\n#define CLUSTERIP_HASHMODE_MAX CLUSTERIP_HASHMODE_SIP_SPT_DPT\n\n#define CLUSTERIP_MAX_NODES 16\n\n#define CLUSTERIP_FLAG_NEW 0x00000001\n\nstruct clusterip_config;\n\nstruct ipt_clusterip_tgt_info {\n\n\t__u32 flags;\n\n\t \n\t__u8 clustermac[ETH_ALEN];\n\t__u16 num_total_nodes;\n\t__u16 num_local_nodes;\n\t__u16 local_nodes[CLUSTERIP_MAX_NODES];\n\t__u32 hash_mode;\n\t__u32 hash_initval;\n\n\t \n\tstruct clusterip_config *config;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

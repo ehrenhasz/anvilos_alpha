@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "01d0fca7c8b6021bbfa7a9c5ba47c787e18ae95480c69c224f60dd335edf966d",
+  "original_prompt": "Ingested from linux-6.6.14/fs/nilfs2/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig NILFS2_FS\n\ttristate \"NILFS2 file system support\"\n\tselect BUFFER_HEAD\n\tselect CRC32\n\tselect LEGACY_DIRECT_IO\n\thelp\n\t  NILFS2 is a log-structured file system (LFS) supporting continuous\n\t  snapshotting.  In addition to versioning capability of the entire\n\t  file system, users can even restore files mistakenly overwritten or\n\t  destroyed just a few seconds ago.  Since this file system can keep\n\t  consistency like conventional LFS, it achieves quick recovery after\n\t  system crashes.\n\n\t  NILFS2 creates a number of checkpoints every few seconds or per\n\t  synchronous write basis (unless there is no change).  Users can\n\t  select significant versions among continuously created checkpoints,\n\t  and can change them into snapshots which will be preserved for long\n\t  periods until they are changed back to checkpoints.  Each\n\t  snapshot is mountable as a read-only file system concurrently with\n\t  its writable mount, and this feature is convenient for online backup.\n\n\t  Some features including atime, extended attributes, and POSIX ACLs,\n\t  are not supported yet.\n\n\t  To compile this file system support as a module, choose M here: the\n\t  module will be called nilfs2.  If unsure, say N.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

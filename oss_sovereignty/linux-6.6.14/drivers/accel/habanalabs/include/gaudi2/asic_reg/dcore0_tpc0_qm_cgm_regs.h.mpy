@@ -1,0 +1,9 @@
+{
+  "module_name": "dcore0_tpc0_qm_cgm_regs.h",
+  "hash_id": "709ee9d9c070e31b5cc9f220cad53847301e1df4f12295224c5ca6b46bdbc1c1",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/accel/habanalabs/include/gaudi2/asic_reg/dcore0_tpc0_qm_cgm_regs.h",
+  "human_readable_source": " \n\n \n\n#ifndef ASIC_REG_DCORE0_TPC0_QM_CGM_REGS_H_\n#define ASIC_REG_DCORE0_TPC0_QM_CGM_REGS_H_\n\n \n\n#define mmDCORE0_TPC0_QM_CGM_CFG 0x400AD80\n\n#define mmDCORE0_TPC0_QM_CGM_STS 0x400AD84\n\n#define mmDCORE0_TPC0_QM_CGM_CFG1 0x400AD88\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

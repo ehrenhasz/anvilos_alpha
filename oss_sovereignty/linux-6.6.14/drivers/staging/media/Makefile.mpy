@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "8d44a77ac904e97ab1da0628ac43f03072be58d7165f9d5580820699ac261b18",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nobj-$(CONFIG_VIDEO_ATMEL_ISC_BASE)\t+= deprecated/atmel/\nobj-$(CONFIG_INTEL_ATOMISP)     += atomisp/\nobj-$(CONFIG_VIDEO_IMX_MEDIA)\t+= imx/\nobj-$(CONFIG_VIDEO_MAX96712)\t+= max96712/\nobj-$(CONFIG_VIDEO_MESON_VDEC)\t+= meson/vdec/\nobj-$(CONFIG_VIDEO_OMAP4)\t+= omap4iss/\nobj-$(CONFIG_VIDEO_ROCKCHIP_VDEC)\t+= rkvdec/\nobj-$(CONFIG_VIDEO_SUNXI)\t+= sunxi/\nobj-$(CONFIG_VIDEO_TEGRA)\t+= tegra-video/\nobj-$(CONFIG_VIDEO_IPU3_IMGU)\t+= ipu3/\nobj-$(CONFIG_DVB_AV7110)\t+= av7110/\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

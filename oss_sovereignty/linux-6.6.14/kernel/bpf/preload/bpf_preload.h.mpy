@@ -1,0 +1,9 @@
+{
+  "module_name": "bpf_preload.h",
+  "hash_id": "951c6d2f5cd7278e81b5d4e8253a57e9f76896e0ddb64ae0b515ced79566a3a4",
+  "original_prompt": "Ingested from linux-6.6.14/kernel/bpf/preload/bpf_preload.h",
+  "human_readable_source": " \n#ifndef _BPF_PRELOAD_H\n#define _BPF_PRELOAD_H\n\nstruct bpf_preload_info {\n\tchar link_name[16];\n\tstruct bpf_link *link;\n};\n\nstruct bpf_preload_ops {\n\tint (*preload)(struct bpf_preload_info *);\n\tstruct module *owner;\n};\nextern struct bpf_preload_ops *bpf_preload_ops;\n#define BPF_PRELOAD_LINKS 2\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

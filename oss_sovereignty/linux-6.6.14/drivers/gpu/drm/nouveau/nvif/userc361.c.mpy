@@ -1,0 +1,9 @@
+{
+  "module_name": "userc361.c",
+  "hash_id": "ea1d862f9e5e3f855af88eb6dcb264186552d5cf9640bd208faacebe08ef296f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvif/userc361.c",
+  "human_readable_source": " \n#include <nvif/user.h>\n\nstatic u64\nnvif_userc361_time(struct nvif_user *user)\n{\n\tu32 hi, lo;\n\n\tdo {\n\t\thi = nvif_rd32(&user->object, 0x084);\n\t\tlo = nvif_rd32(&user->object, 0x080);\n\t} while (hi != nvif_rd32(&user->object, 0x084));\n\n\treturn ((u64)hi << 32 | lo);\n}\n\nstatic void\nnvif_userc361_doorbell(struct nvif_user *user, u32 token)\n{\n\tnvif_wr32(&user->object, 0x90, token);\n}\n\nconst struct nvif_user_func\nnvif_userc361 = {\n\t.doorbell = nvif_userc361_doorbell,\n\t.time = nvif_userc361_time,\n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

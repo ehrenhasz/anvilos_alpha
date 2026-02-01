@@ -1,0 +1,9 @@
+{
+  "module_name": "config",
+  "hash_id": "c26bcaedd5d33d508cc9bea44d5b8fc9122e4037d1e54ed372820ad5d08e070e",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/mm/config",
+  "human_readable_source": "CONFIG_SYSVIPC=y\nCONFIG_USERFAULTFD=y\nCONFIG_TEST_VMALLOC=m\nCONFIG_DEVICE_PRIVATE=y\nCONFIG_TEST_HMM=m\nCONFIG_GUP_TEST=y\nCONFIG_TRANSPARENT_HUGEPAGE=y\nCONFIG_MEM_SOFT_DIRTY=y\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

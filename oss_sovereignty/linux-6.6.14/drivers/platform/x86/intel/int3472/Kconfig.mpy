@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "4da974e6892c298928bfd69d7cedb3713de736b8d684458cd7c11da8cba2877b",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/platform/x86/intel/int3472/Kconfig",
+  "human_readable_source": "config INTEL_SKL_INT3472\n\ttristate \"Intel SkyLake ACPI INT3472 Driver\"\n\tdepends on ACPI\n\tdepends on COMMON_CLK\n\tdepends on I2C\n\tdepends on GPIOLIB\n\tdepends on LEDS_CLASS\n\tdepends on REGULATOR\n\tselect MFD_CORE\n\tselect REGMAP_I2C\n\thelp\n\t  This driver adds power controller support for the Intel SkyCam\n\t  devices found on the Intel SkyLake platforms.\n\n\t  The INT3472 is a camera power controller, a logical device found on\n\t  Intel Skylake-based systems that can map to different hardware\n\t  devices depending on the platform. On machines designed for Chrome OS\n\t  it maps to a TPS68470 camera PMIC. On machines designed for Windows,\n\t  it maps to either a TP68470 camera PMIC, a uP6641Q sensor PMIC, or a\n\t  set of discrete GPIOs and power gates.\n\n\t  If your device was designed for Chrome OS, this driver will provide\n\t  an ACPI OpRegion, which must be available before any of the devices\n\t  using it are probed. For this reason, you should select Y if your\n\t  device was designed for ChromeOS. For the same reason the\n\t  I2C_DESIGNWARE_PLATFORM option must be set to Y too.\n\n\t  Say Y or M here if you have a SkyLake device designed for use\n\t  with Windows or ChromeOS. Say N here if you are not sure.\n\n\t  The module will be named \"intel-skl-int3472\".\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

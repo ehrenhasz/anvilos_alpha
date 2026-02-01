@@ -1,0 +1,9 @@
+{
+  "module_name": "@@__@@__extmod__modvfs.c.module",
+  "hash_id": "73bb08d66663793416881035eb32875fbed5cf834c6a51985e0333ead5c21b36",
+  "original_prompt": "Ingested from sys_09_Anvil/source/ports/unix/build-bicameral/genhdr/module/@@__@@__extmod__modvfs.c.module",
+  "human_readable_source": "MP_REGISTER_MODULE(MP_QSTR_vfs, mp_module_vfs);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

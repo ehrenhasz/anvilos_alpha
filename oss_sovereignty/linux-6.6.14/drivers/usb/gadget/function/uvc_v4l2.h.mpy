@@ -1,0 +1,9 @@
+{
+  "module_name": "uvc_v4l2.h",
+  "hash_id": "ec0e9c49a39b1363a2ae05a743c15550e73a921cb2b9892d9b46ccaac9434c7c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/usb/gadget/function/uvc_v4l2.h",
+  "human_readable_source": " \n \n\n#ifndef __UVC_V4L2_H__\n#define __UVC_V4L2_H__\n\nextern const struct v4l2_ioctl_ops uvc_v4l2_ioctl_ops;\nextern const struct v4l2_file_operations uvc_v4l2_fops;\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

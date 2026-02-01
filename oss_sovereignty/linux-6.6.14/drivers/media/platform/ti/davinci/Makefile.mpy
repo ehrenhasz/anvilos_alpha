@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "75d06b452f2b08fdedec7c191804074e5c38882354b3e7f50c635208e3499d30",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/platform/ti/davinci/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for the davinci video device drivers.\n#\n\n#VPIF Display driver\nobj-$(CONFIG_VIDEO_DAVINCI_VPIF_DISPLAY) += vpif.o vpif_display.o\n#VPIF Capture driver\nobj-$(CONFIG_VIDEO_DAVINCI_VPIF_CAPTURE) += vpif.o vpif_capture.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

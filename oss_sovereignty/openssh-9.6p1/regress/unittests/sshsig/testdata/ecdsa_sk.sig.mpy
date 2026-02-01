@@ -1,0 +1,9 @@
+{
+  "module_name": "ecdsa_sk.sig",
+  "hash_id": "2d1314ac6fab8fa56b82414f72f819ee2db48d9d34aec4ddd263768df803229e",
+  "original_prompt": "Ingested from openssh-9.6p1/regress/unittests/sshsig/testdata/ecdsa_sk.sig",
+  "human_readable_source": "-----BEGIN SSH SIGNATURE-----\nU1NIU0lHAAAAAQAAAH8AAAAic2stZWNkc2Etc2hhMi1uaXN0cDI1NkBvcGVuc3NoLmNvbQ\nAAAAhuaXN0cDI1NgAAAEEEoNVrmNFxPlXsTrKybBWLsclaHunkP6F5ss9qRBymcPZqMlno\nb/hbO6GVhadyVZjrcmykOnb31GWGrkBPzr+DwAAAAARzc2g6AAAACHVuaXR0ZXN0AAAAAA\nAAAAZzaGE1MTIAAAB3AAAAInNrLWVjZHNhLXNoYTItbmlzdHAyNTZAb3BlbnNzaC5jb20A\nAABIAAAAIHohGwyy8iKT3zwd1TYA9V/Ioo7h/3zCJUtyq/Qigt/HAAAAIGzidTwq7D/kFa\n7Xjcp/KkdbIs4MfQpfAW/0OciajlpzARI0Vng=\n-----END SSH SIGNATURE-----\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

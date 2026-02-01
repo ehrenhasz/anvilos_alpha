@@ -1,0 +1,9 @@
+{
+  "module_name": "test-libbabeltrace.c",
+  "hash_id": "35b1f1e62db4989731489cdcf521e7be88a0bbe7dcab161c55650155b205d61b",
+  "original_prompt": "Ingested from linux-6.6.14/tools/build/feature/test-libbabeltrace.c",
+  "human_readable_source": "\n\n#include <babeltrace/ctf-writer/writer.h>\n#include <babeltrace/ctf-ir/stream-class.h>\n\nint main(void)\n{\n\tbt_ctf_stream_class_get_packet_context_type((void *) 0);\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

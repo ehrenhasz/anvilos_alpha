@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "d1d446e90449262e25bca4729d8b41f95e9822368b5a224ab584e509e70df3c8",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/tc-testing/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\ninclude ../../../scripts/Makefile.include\n\ntop_srcdir = $(abspath ../../../..)\nAPIDIR := $(top_scrdir)/include/uapi\nTEST_GEN_FILES = action.o\n\ninclude ../lib.mk\n\nPROBE := $(shell $(LLC) -march=bpf -mcpu=probe -filetype=null /dev/null 2>&1)\n\nifeq ($(PROBE),)\n  CPU ?= probe\nelse\n  CPU ?= generic\nendif\n\nCLANG_SYS_INCLUDES := $(shell $(CLANG) -v -E - </dev/null 2>&1 \\\n\t| sed -n '/<...> search starts here:/,/End of search list./{ s| \\(/.*\\)|-idirafter \\1|p }')\n\nCLANG_FLAGS = -I. -I$(APIDIR) \\\n\t      $(CLANG_SYS_INCLUDES) \\\n\t      -Wno-compare-distinct-pointer-types\n\n$(OUTPUT)/%.o: %.c\n\t$(CLANG) $(CLANG_FLAGS) \\\n\t\t -O2 --target=bpf -emit-llvm -c $< -o - |      \\\n\t$(LLC) -march=bpf -mcpu=$(CPU) $(LLC_FLAGS) -filetype=obj -o $@\n\nTEST_PROGS += ./tdc.sh\nTEST_FILES := tdc*.py Tdc*.py plugins plugin-lib tc-tests\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

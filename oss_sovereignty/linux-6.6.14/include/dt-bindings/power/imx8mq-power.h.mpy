@@ -1,0 +1,9 @@
+{
+  "module_name": "imx8mq-power.h",
+  "hash_id": "c5f68a230e6ef0f5367f83d1ab6615ff88a374a5fc2372fb2a36d6810abc1f97",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/power/imx8mq-power.h",
+  "human_readable_source": " \n \n\n#ifndef __DT_BINDINGS_IMX8MQ_POWER_H__\n#define __DT_BINDINGS_IMX8MQ_POWER_H__\n\n#define IMX8M_POWER_DOMAIN_MIPI\t\t0\n#define IMX8M_POWER_DOMAIN_PCIE1\t1\n#define IMX8M_POWER_DOMAIN_USB_OTG1\t2\n#define IMX8M_POWER_DOMAIN_USB_OTG2\t3\n#define IMX8M_POWER_DOMAIN_DDR1\t\t4\n#define IMX8M_POWER_DOMAIN_GPU\t\t5\n#define IMX8M_POWER_DOMAIN_VPU\t\t6\n#define IMX8M_POWER_DOMAIN_DISP\t\t7\n#define IMX8M_POWER_DOMAIN_MIPI_CSI1\t8\n#define IMX8M_POWER_DOMAIN_MIPI_CSI2\t9\n#define IMX8M_POWER_DOMAIN_PCIE2\t10\n\n#define IMX8MQ_VPUBLK_PD_G1\t\t0\n#define IMX8MQ_VPUBLK_PD_G2\t\t1\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

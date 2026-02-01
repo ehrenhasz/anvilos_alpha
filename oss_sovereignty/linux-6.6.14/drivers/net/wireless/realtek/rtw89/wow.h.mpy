@@ -1,0 +1,9 @@
+{
+  "module_name": "wow.h",
+  "hash_id": "b6c10c555880021a201034ea65d651c3a3d702212d38f8d587b89e3e769e6032",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/realtek/rtw89/wow.h",
+  "human_readable_source": " \n \n\n#ifndef __RTW89_WOW_H__\n#define __RTW89_WOW_H__\n\nenum rtw89_wake_reason {\n\tRTW89_WOW_RSN_RX_PTK_REKEY = 0x1,\n\tRTW89_WOW_RSN_RX_GTK_REKEY = 0x2,\n\tRTW89_WOW_RSN_RX_DEAUTH = 0x8,\n\tRTW89_WOW_RSN_DISCONNECT = 0x10,\n\tRTW89_WOW_RSN_RX_MAGIC_PKT = 0x21,\n\tRTW89_WOW_RSN_RX_PATTERN_MATCH = 0x23,\n\tRTW89_WOW_RSN_RX_NLO = 0x55,\n};\n\nint rtw89_wow_suspend(struct rtw89_dev *rtwdev, struct cfg80211_wowlan *wowlan);\nint rtw89_wow_resume(struct rtw89_dev *rtwdev);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

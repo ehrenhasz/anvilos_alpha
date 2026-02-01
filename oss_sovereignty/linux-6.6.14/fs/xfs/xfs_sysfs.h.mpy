@@ -1,0 +1,9 @@
+{
+  "module_name": "xfs_sysfs.h",
+  "hash_id": "68f0f359b440c4f6d210074b80953694a69b9d11ad3f766ca4a5bc908ba60b57",
+  "original_prompt": "Ingested from linux-6.6.14/fs/xfs/xfs_sysfs.h",
+  "human_readable_source": "\n \n\n#ifndef __XFS_SYSFS_H__\n#define __XFS_SYSFS_H__\n\nextern const struct kobj_type xfs_mp_ktype;\t \nextern const struct kobj_type xfs_dbg_ktype;\t \nextern const struct kobj_type xfs_log_ktype;\t \nextern const struct kobj_type xfs_stats_ktype;\t \n\nstatic inline struct xfs_kobj *\nto_kobj(struct kobject *kobject)\n{\n\treturn container_of(kobject, struct xfs_kobj, kobject);\n}\n\nstatic inline void\nxfs_sysfs_release(struct kobject *kobject)\n{\n\tstruct xfs_kobj *kobj = to_kobj(kobject);\n\tcomplete(&kobj->complete);\n}\n\nstatic inline int\nxfs_sysfs_init(\n\tstruct xfs_kobj\t\t*kobj,\n\tconst struct kobj_type\t*ktype,\n\tstruct xfs_kobj\t\t*parent_kobj,\n\tconst char\t\t*name)\n{\n\tstruct kobject\t\t*parent;\n\tint err;\n\n\tparent = parent_kobj ? &parent_kobj->kobject : NULL;\n\tinit_completion(&kobj->complete);\n\terr = kobject_init_and_add(&kobj->kobject, ktype, parent, \"%s\", name);\n\tif (err)\n\t\tkobject_put(&kobj->kobject);\n\n\treturn err;\n}\n\nstatic inline void\nxfs_sysfs_del(\n\tstruct xfs_kobj\t*kobj)\n{\n\tkobject_del(&kobj->kobject);\n\tkobject_put(&kobj->kobject);\n\twait_for_completion(&kobj->complete);\n}\n\nint\txfs_error_sysfs_init(struct xfs_mount *mp);\nvoid\txfs_error_sysfs_del(struct xfs_mount *mp);\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

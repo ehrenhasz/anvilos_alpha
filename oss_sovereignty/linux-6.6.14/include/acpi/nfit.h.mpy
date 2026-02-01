@@ -1,0 +1,9 @@
+{
+  "module_name": "nfit.h",
+  "hash_id": "9673c6af81c28929b0852c16de8a15a38ce8a965dd22e792bf62250276fc561a",
+  "original_prompt": "Ingested from linux-6.6.14/include/acpi/nfit.h",
+  "human_readable_source": " \n\n#ifndef __ACPI_NFIT_H\n#define __ACPI_NFIT_H\n\n#if IS_ENABLED(CONFIG_ACPI_NFIT)\nint nfit_get_smbios_id(u32 device_handle, u16 *flags);\n#else\nstatic inline int nfit_get_smbios_id(u32 device_handle, u16 *flags)\n{\n\treturn -EOPNOTSUPP;\n}\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

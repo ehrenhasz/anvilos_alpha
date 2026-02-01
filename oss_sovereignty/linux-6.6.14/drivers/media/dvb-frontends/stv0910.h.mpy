@@ -1,0 +1,9 @@
+{
+  "module_name": "stv0910.h",
+  "hash_id": "f2502e47abc5d9916daa60b59e5cbeb4bab3a064939249bfe69a7e00f082591b",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/dvb-frontends/stv0910.h",
+  "human_readable_source": " \n \n\n#ifndef _STV0910_H_\n#define _STV0910_H_\n\n#include <linux/types.h>\n#include <linux/i2c.h>\n\nstruct stv0910_cfg {\n\tu32 clk;\n\tu8  adr;\n\tu8  parallel;\n\tu8  rptlvl;\n\tu8  single;\n\tu8  tsspeed;\n};\n\n#if IS_REACHABLE(CONFIG_DVB_STV0910)\n\nstruct dvb_frontend *stv0910_attach(struct i2c_adapter *i2c,\n\t\t\t\t    struct stv0910_cfg *cfg, int nr);\n\n#else\n\nstatic inline struct dvb_frontend *stv0910_attach(struct i2c_adapter *i2c,\n\t\t\t\t\t\t  struct stv0910_cfg *cfg,\n\t\t\t\t\t\t  int nr)\n{\n\tpr_warn(\"%s: driver disabled by Kconfig\\n\", __func__);\n\treturn NULL;\n}\n\n#endif  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

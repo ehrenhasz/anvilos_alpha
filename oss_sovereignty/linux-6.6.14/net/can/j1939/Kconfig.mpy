@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "24be40f3e91a6d56ad0a5e2470a99aa76a0747e478a819ab5b5f475ce29e840c",
+  "original_prompt": "Ingested from linux-6.6.14/net/can/j1939/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# SAE J1939 network layer core configuration\n#\n\nconfig CAN_J1939\n\ttristate \"SAE J1939\"\n\tdepends on CAN\n\thelp\n\t  SAE J1939\n\t  Say Y to have in-kernel support for j1939 socket type. This\n\t  allows communication according to SAE j1939.\n\t  The relevant parts in kernel are\n\t  SAE j1939-21 (datalink & transport protocol)\n\t  & SAE j1939-81 (network management).\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

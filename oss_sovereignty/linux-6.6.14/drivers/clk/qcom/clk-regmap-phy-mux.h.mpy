@@ -1,0 +1,9 @@
+{
+  "module_name": "clk-regmap-phy-mux.h",
+  "hash_id": "0a77eb3a0194175cfbb268677bb6540234867a9560dd6a915e9880e3cafc6be8",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/clk/qcom/clk-regmap-phy-mux.h",
+  "human_readable_source": " \n \n\n#ifndef __QCOM_CLK_REGMAP_PHY_MUX_H__\n#define __QCOM_CLK_REGMAP_PHY_MUX_H__\n\n#include \"clk-regmap.h\"\n\n \nstruct clk_regmap_phy_mux {\n\tu32\t\t\treg;\n\tstruct clk_regmap\tclkr;\n};\n\nextern const struct clk_ops clk_regmap_phy_mux_ops;\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

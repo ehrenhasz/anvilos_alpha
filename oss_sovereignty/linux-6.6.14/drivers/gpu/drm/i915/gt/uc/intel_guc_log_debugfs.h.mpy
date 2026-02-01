@@ -1,0 +1,9 @@
+{
+  "module_name": "intel_guc_log_debugfs.h",
+  "hash_id": "a5b5e80de10917a35f1d03024bfd217e1679f150f8043d62f12d0a17a87315e1",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/gt/uc/intel_guc_log_debugfs.h",
+  "human_readable_source": " \n \n\n#ifndef DEBUGFS_GUC_LOG_H\n#define DEBUGFS_GUC_LOG_H\n\nstruct intel_guc_log;\nstruct dentry;\n\nvoid intel_guc_log_debugfs_register(struct intel_guc_log *log,\n\t\t\t\t    struct dentry *root);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

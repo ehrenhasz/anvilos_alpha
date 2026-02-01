@@ -1,0 +1,9 @@
+{
+  "module_name": "mxgpu_nv.h",
+  "hash_id": "45ab3e93b8792997910fa36a69bcd33773c1eb02e71544b3d87580833abcb287",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/amdgpu/mxgpu_nv.h",
+  "human_readable_source": " \n\n#ifndef __MXGPU_NV_H__\n#define __MXGPU_NV_H__\n\n#define NV_MAILBOX_POLL_ACK_TIMEDOUT\t500\n#define NV_MAILBOX_POLL_MSG_TIMEDOUT\t6000\n#define NV_MAILBOX_POLL_FLR_TIMEDOUT\t5000\n#define NV_MAILBOX_POLL_MSG_REP_MAX\t11\n\nenum idh_request {\n\tIDH_REQ_GPU_INIT_ACCESS = 1,\n\tIDH_REL_GPU_INIT_ACCESS,\n\tIDH_REQ_GPU_FINI_ACCESS,\n\tIDH_REL_GPU_FINI_ACCESS,\n\tIDH_REQ_GPU_RESET_ACCESS,\n\tIDH_REQ_GPU_INIT_DATA,\n\n\tIDH_LOG_VF_ERROR\t= 200,\n\tIDH_READY_TO_RESET \t= 201,\n\tIDH_RAS_POISON\t= 202,\n};\n\nenum idh_event {\n\tIDH_CLR_MSG_BUF\t= 0,\n\tIDH_READY_TO_ACCESS_GPU,\n\tIDH_FLR_NOTIFICATION,\n\tIDH_FLR_NOTIFICATION_CMPL,\n\tIDH_SUCCESS,\n\tIDH_FAIL,\n\tIDH_QUERY_ALIVE,\n\tIDH_REQ_GPU_INIT_DATA_READY,\n\n\tIDH_TEXT_MESSAGE = 255,\n};\n\nextern const struct amdgpu_virt_ops xgpu_nv_virt_ops;\n\nvoid xgpu_nv_mailbox_set_irq_funcs(struct amdgpu_device *adev);\nint xgpu_nv_mailbox_add_irq_id(struct amdgpu_device *adev);\nint xgpu_nv_mailbox_get_irq(struct amdgpu_device *adev);\nvoid xgpu_nv_mailbox_put_irq(struct amdgpu_device *adev);\n\n#define mmMAILBOX_CONTROL 0xE5E\n\n#define NV_MAIBOX_CONTROL_TRN_OFFSET_BYTE (mmMAILBOX_CONTROL * 4)\n#define NV_MAIBOX_CONTROL_RCV_OFFSET_BYTE (NV_MAIBOX_CONTROL_TRN_OFFSET_BYTE + 1)\n\n#define mmMAILBOX_MSGBUF_TRN_DW0 0xE56\n#define mmMAILBOX_MSGBUF_TRN_DW1 0xE57\n#define mmMAILBOX_MSGBUF_TRN_DW2 0xE58\n#define mmMAILBOX_MSGBUF_TRN_DW3 0xE59\n\n#define mmMAILBOX_MSGBUF_RCV_DW0 0xE5A\n#define mmMAILBOX_MSGBUF_RCV_DW1 0xE5B\n#define mmMAILBOX_MSGBUF_RCV_DW2 0xE5C\n#define mmMAILBOX_MSGBUF_RCV_DW3 0xE5D\n\n#define mmMAILBOX_INT_CNTL 0xE5F\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

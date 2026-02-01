@@ -1,0 +1,9 @@
+{
+  "module_name": "ina2xx.h",
+  "hash_id": "ca3cf56c34884e9daf7bf2fd081526192f929978e71024d11b4a60bc05a4c496",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/platform_data/ina2xx.h",
+  "human_readable_source": " \n \n\n \nstruct ina2xx_platform_data {\n\tlong shunt_uohms;\n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

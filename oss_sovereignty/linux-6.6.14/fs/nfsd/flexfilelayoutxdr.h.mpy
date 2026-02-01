@@ -1,0 +1,9 @@
+{
+  "module_name": "flexfilelayoutxdr.h",
+  "hash_id": "878113e0036e99d684aefc964fece51527ebd77efe8c236e0f22ccceb38dfe06",
+  "original_prompt": "Ingested from linux-6.6.14/fs/nfsd/flexfilelayoutxdr.h",
+  "human_readable_source": " \n \n#ifndef _NFSD_FLEXFILELAYOUTXDR_H\n#define _NFSD_FLEXFILELAYOUTXDR_H 1\n\n#include <linux/inet.h>\n#include \"xdr4.h\"\n\n#define FF_FLAGS_NO_LAYOUTCOMMIT 1\n#define FF_FLAGS_NO_IO_THRU_MDS  2\n#define FF_FLAGS_NO_READ_IO      4\n\nstruct xdr_stream;\n\n#define FF_NETID_LEN\t\t(4)\n#define FF_ADDR_LEN\t\t(INET6_ADDRSTRLEN + 8)\nstruct pnfs_ff_netaddr {\n\tchar\t\t\t\tnetid[FF_NETID_LEN + 1];\n\tchar\t\t\t\taddr[FF_ADDR_LEN + 1];\n\tu32\t\t\t\tnetid_len;\n\tu32\t\t\t\taddr_len;\n};\n\nstruct pnfs_ff_device_addr {\n\tstruct pnfs_ff_netaddr\t\tnetaddr;\n\tu32\t\t\t\tversion;\n\tu32\t\t\t\tminor_version;\n\tu32\t\t\t\trsize;\n\tu32\t\t\t\twsize;\n\tbool\t\t\t\ttightly_coupled;\n};\n\nstruct pnfs_ff_layout {\n\tu32\t\t\t\tflags;\n\tu32\t\t\t\tstats_collect_hint;\n\tkuid_t\t\t\t\tuid;\n\tkgid_t\t\t\t\tgid;\n\tstruct nfsd4_deviceid\t\tdeviceid;\n\tstateid_t\t\t\tstateid;\n\tstruct nfs_fh\t\t\tfh;\n};\n\n__be32 nfsd4_ff_encode_getdeviceinfo(struct xdr_stream *xdr,\n\t\tstruct nfsd4_getdeviceinfo *gdp);\n__be32 nfsd4_ff_encode_layoutget(struct xdr_stream *xdr,\n\t\tstruct nfsd4_layoutget *lgp);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

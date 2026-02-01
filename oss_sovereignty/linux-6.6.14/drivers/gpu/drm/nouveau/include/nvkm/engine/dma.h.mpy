@@ -1,0 +1,9 @@
+{
+  "module_name": "dma.h",
+  "hash_id": "9d65e3383e4cb52c01891f11711c54f83a093b6d55718ea5ae6ef78d4ef1e23f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/include/nvkm/engine/dma.h",
+  "human_readable_source": " \n#ifndef __NVKM_DMA_H__\n#define __NVKM_DMA_H__\n#include <core/engine.h>\n#include <core/object.h>\nstruct nvkm_client;\n\nstruct nvkm_dmaobj {\n\tconst struct nvkm_dmaobj_func *func;\n\tstruct nvkm_dma *dma;\n\n\tstruct nvkm_object object;\n\tu32 target;\n\tu32 access;\n\tu64 start;\n\tu64 limit;\n};\n\nstruct nvkm_dma {\n\tconst struct nvkm_dma_func *func;\n\tstruct nvkm_engine engine;\n};\n\nstruct nvkm_dmaobj *nvkm_dmaobj_search(struct nvkm_client *, u64 object);\n\nint nv04_dma_new(struct nvkm_device *, enum nvkm_subdev_type, int inst, struct nvkm_dma **);\nint nv50_dma_new(struct nvkm_device *, enum nvkm_subdev_type, int inst, struct nvkm_dma **);\nint gf100_dma_new(struct nvkm_device *, enum nvkm_subdev_type, int inst, struct nvkm_dma **);\nint gf119_dma_new(struct nvkm_device *, enum nvkm_subdev_type, int inst, struct nvkm_dma **);\nint gv100_dma_new(struct nvkm_device *, enum nvkm_subdev_type, int inst, struct nvkm_dma **);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

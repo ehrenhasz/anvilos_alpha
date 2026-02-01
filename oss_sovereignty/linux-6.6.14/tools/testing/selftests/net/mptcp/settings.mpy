@@ -1,0 +1,9 @@
+{
+  "module_name": "settings",
+  "hash_id": "e8dcc15eeb47d2e5c9798602ef82b976274f0f9ff4a8cada9ac03dd084225fc8",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/net/mptcp/settings",
+  "human_readable_source": "timeout=1200\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

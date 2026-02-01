@@ -1,0 +1,9 @@
+{
+  "module_name": "unpack.h",
+  "hash_id": "1950a6a0cdf245edb3017828c77af4af5becfaf0a473000afc9d698a501539c4",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/include/nvif/unpack.h",
+  "human_readable_source": " \n#ifndef __NVIF_UNPACK_H__\n#define __NVIF_UNPACK_H__\n\n#define nvif_unvers(r,d,s,m) ({                                                \\\n\tvoid **_data = (d); __u32 *_size = (s); int _ret = (r);                \\\n\tif (_ret == -ENOSYS && *_size == sizeof(m)) {                          \\\n\t\t*_data = NULL;                                                 \\\n\t\t*_size = _ret = 0;                                             \\\n\t}                                                                      \\\n\t_ret;                                                                  \\\n})\n\n#define nvif_unpack(r,d,s,m,vl,vh,x) ({                                        \\\n\tvoid **_data = (d); __u32 *_size = (s);                                \\\n\tint _ret = (r), _vl = (vl), _vh = (vh);                                \\\n\tif (_ret == -ENOSYS && *_size >= sizeof(m) &&                          \\\n\t    (m).version >= _vl && (m).version <= _vh) {                        \\\n\t\t*_data = (__u8 *)*_data + sizeof(m);                           \\\n\t\t*_size = *_size - sizeof(m);                                   \\\n\t\tif (_ret = 0, !(x)) {                                          \\\n\t\t\t_ret = *_size ? -E2BIG : 0;                            \\\n\t\t\t*_data = NULL;                                         \\\n\t\t\t*_size = 0;                                            \\\n\t\t}                                                              \\\n\t}                                                                      \\\n\t_ret;                                                                  \\\n})\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

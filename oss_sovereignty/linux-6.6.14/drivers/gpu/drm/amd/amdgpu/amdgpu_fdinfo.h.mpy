@@ -1,0 +1,9 @@
+{
+  "module_name": "amdgpu_fdinfo.h",
+  "hash_id": "678466909202ac5f38ab28f04cddda045901c7ebb59b7c6a42110cb99b05b63b",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/amdgpu/amdgpu_fdinfo.h",
+  "human_readable_source": " \n#ifndef __AMDGPU_SMI_H__\n#define __AMDGPU_SMI_H__\n\n#include <linux/idr.h>\n#include <linux/kfifo.h>\n#include <linux/rbtree.h>\n#include <drm/gpu_scheduler.h>\n#include <drm/drm_file.h>\n#include <linux/sched/mm.h>\n\n#include \"amdgpu_sync.h\"\n#include \"amdgpu_ring.h\"\n#include \"amdgpu_ids.h\"\n\nuint32_t amdgpu_get_ip_count(struct amdgpu_device *adev, int id);\nvoid amdgpu_show_fdinfo(struct drm_printer *p, struct drm_file *file);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "mmap.h",
+  "hash_id": "3fc809abd76f53f931cf959a8d093c447d1f646a65c6a11c5e2f8f3f05cf5423",
+  "original_prompt": "Ingested from linux-6.6.14/tools/lib/perf/include/perf/mmap.h",
+  "human_readable_source": " \n#ifndef __LIBPERF_MMAP_H\n#define __LIBPERF_MMAP_H\n\n#include <perf/core.h>\n\nstruct perf_mmap;\nunion perf_event;\n\nLIBPERF_API void perf_mmap__consume(struct perf_mmap *map);\nLIBPERF_API int perf_mmap__read_init(struct perf_mmap *map);\nLIBPERF_API void perf_mmap__read_done(struct perf_mmap *map);\nLIBPERF_API union perf_event *perf_mmap__read_event(struct perf_mmap *map);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "extable.h",
+  "hash_id": "2b3adbd81c00e01816ec53b24b3f10ed7b4da5e85c3bc21c8569bfe45b229a72",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/extable.h",
+  "human_readable_source": " \n#ifndef _LINUX_EXTABLE_H\n#define _LINUX_EXTABLE_H\n\n#include <linux/stddef.h>\t \n#include <linux/types.h>\n\nstruct module;\nstruct exception_table_entry;\n\nconst struct exception_table_entry *\nsearch_extable(const struct exception_table_entry *base,\n\t       const size_t num,\n\t       unsigned long value);\nvoid sort_extable(struct exception_table_entry *start,\n\t\t  struct exception_table_entry *finish);\nvoid sort_main_extable(void);\nvoid trim_init_extable(struct module *m);\n\n \nconst struct exception_table_entry *search_exception_tables(unsigned long add);\nconst struct exception_table_entry *\nsearch_kernel_exception_table(unsigned long addr);\n\n#ifdef CONFIG_MODULES\n \nconst struct exception_table_entry *search_module_extables(unsigned long addr);\n#else\nstatic inline const struct exception_table_entry *\nsearch_module_extables(unsigned long addr)\n{\n\treturn NULL;\n}\n#endif  \n\n#ifdef CONFIG_BPF_JIT\nconst struct exception_table_entry *search_bpf_extables(unsigned long addr);\n#else\nstatic inline const struct exception_table_entry *\nsearch_bpf_extables(unsigned long addr)\n{\n\treturn NULL;\n}\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

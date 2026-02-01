@@ -1,0 +1,9 @@
+{
+  "module_name": "ksz_common.h",
+  "hash_id": "a4b797a8d4627c61ad6c2b58dc2c5c6670e1da2d8a7962503bbb4f3090303611",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/dsa/ksz_common.h",
+  "human_readable_source": " \n \n\n#ifndef _NET_DSA_KSZ_COMMON_H_\n#define _NET_DSA_KSZ_COMMON_H_\n\n#include <net/dsa.h>\n\n \n#define KSZ_TSTAMP_SEC_MASK  GENMASK(31, 30)\n#define KSZ_TSTAMP_NSEC_MASK GENMASK(29, 0)\n\nstatic inline ktime_t ksz_decode_tstamp(u32 tstamp)\n{\n\tu64 ns = FIELD_GET(KSZ_TSTAMP_SEC_MASK, tstamp) * NSEC_PER_SEC +\n\t\t FIELD_GET(KSZ_TSTAMP_NSEC_MASK, tstamp);\n\n\treturn ns_to_ktime(ns);\n}\n\nstruct ksz_deferred_xmit_work {\n\tstruct dsa_port *dp;\n\tstruct sk_buff *skb;\n\tstruct kthread_work work;\n};\n\nstruct ksz_tagger_data {\n\tvoid (*xmit_work_fn)(struct kthread_work *work);\n\tvoid (*hwtstamp_set_state)(struct dsa_switch *ds, bool on);\n};\n\nstruct ksz_skb_cb {\n\tstruct sk_buff *clone;\n\tunsigned int ptp_type;\n\tbool update_correction;\n\tu32 tstamp;\n};\n\n#define KSZ_SKB_CB(skb) \\\n\t((struct ksz_skb_cb *)((skb)->cb))\n\nstatic inline struct ksz_tagger_data *\nksz_tagger_data(struct dsa_switch *ds)\n{\n\treturn ds->tagger_data;\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

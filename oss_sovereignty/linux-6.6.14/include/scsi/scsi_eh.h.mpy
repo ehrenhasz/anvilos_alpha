@@ -1,0 +1,9 @@
+{
+  "module_name": "scsi_eh.h",
+  "hash_id": "1bd1db694a228be10aaec398f175050a8dbdb187f706ebd1ce0ee72e5cc064e8",
+  "original_prompt": "Ingested from linux-6.6.14/include/scsi/scsi_eh.h",
+  "human_readable_source": " \n#ifndef _SCSI_SCSI_EH_H\n#define _SCSI_SCSI_EH_H\n\n#include <linux/scatterlist.h>\n\n#include <scsi/scsi_cmnd.h>\n#include <scsi/scsi_common.h>\nstruct scsi_device;\nstruct Scsi_Host;\n\nextern void scsi_eh_finish_cmd(struct scsi_cmnd *scmd,\n\t\t\t       struct list_head *done_q);\nextern void scsi_eh_flush_done_q(struct list_head *done_q);\nextern void scsi_report_bus_reset(struct Scsi_Host *, int);\nextern void scsi_report_device_reset(struct Scsi_Host *, int, int);\nextern int scsi_block_when_processing_errors(struct scsi_device *);\nextern bool scsi_command_normalize_sense(const struct scsi_cmnd *cmd,\n\t\t\t\t\t struct scsi_sense_hdr *sshdr);\nextern enum scsi_disposition scsi_check_sense(struct scsi_cmnd *);\n\nstatic inline bool scsi_sense_is_deferred(const struct scsi_sense_hdr *sshdr)\n{\n\treturn ((sshdr->response_code >= 0x70) && (sshdr->response_code & 1));\n}\n\nextern bool scsi_get_sense_info_fld(const u8 *sense_buffer, int sb_len,\n\t\t\t\t    u64 *info_out);\n\nextern int scsi_ioctl_reset(struct scsi_device *, int __user *);\n\nstruct scsi_eh_save {\n\t \n\tint result;\n\tunsigned int resid_len;\n\tint eh_eflags;\n\tenum dma_data_direction data_direction;\n\tunsigned underflow;\n\tunsigned char cmd_len;\n\tunsigned char prot_op;\n\tunsigned char cmnd[32];\n\tstruct scsi_data_buffer sdb;\n\tstruct scatterlist sense_sgl;\n};\n\nextern void scsi_eh_prep_cmnd(struct scsi_cmnd *scmd,\n\t\tstruct scsi_eh_save *ses, unsigned char *cmnd,\n\t\tint cmnd_size, unsigned sense_bytes);\n\nextern void scsi_eh_restore_cmnd(struct scsi_cmnd* scmd,\n\t\tstruct scsi_eh_save *ses);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

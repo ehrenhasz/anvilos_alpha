@@ -1,0 +1,9 @@
+{
+  "module_name": "smb2glob.h",
+  "hash_id": "88480e4cb147c23ef6d6c1f2c6b67a70547553b023f064478c77e0fa37d9dbd1",
+  "original_prompt": "Ingested from linux-6.6.14/fs/smb/client/smb2glob.h",
+  "human_readable_source": " \n \n#ifndef _SMB2_GLOB_H\n#define _SMB2_GLOB_H\n\n \n\n \n#define SMB2_OP_SET_DELETE 1\n#define SMB2_OP_SET_INFO 2\n#define SMB2_OP_QUERY_INFO 3\n#define SMB2_OP_QUERY_DIR 4\n#define SMB2_OP_MKDIR 5\n#define SMB2_OP_RENAME 6\n#define SMB2_OP_DELETE 7\n#define SMB2_OP_HARDLINK 8\n#define SMB2_OP_SET_EOF 9\n#define SMB2_OP_RMDIR 10\n#define SMB2_OP_POSIX_QUERY_INFO 11\n\n \n#define CHAINED_REQUEST 1\n#define START_OF_CHAIN 2\n#define END_OF_CHAIN 4\n#define RELATED_REQUEST 8\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

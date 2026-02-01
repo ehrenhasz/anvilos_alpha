@@ -1,0 +1,9 @@
+{
+  "module_name": "delta-mem.c",
+  "hash_id": "d095fab251c6be9776347cefa13cf85c90d957725566caea1074ef96390d747b",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/platform/st/sti/delta/delta-mem.c",
+  "human_readable_source": "\n \n\n#include \"delta.h\"\n#include \"delta-mem.h\"\n\nint hw_alloc(struct delta_ctx *ctx, u32 size, const char *name,\n\t     struct delta_buf *buf)\n{\n\tstruct delta_dev *delta = ctx->dev;\n\tdma_addr_t dma_addr;\n\tvoid *addr;\n\tunsigned long attrs = DMA_ATTR_WRITE_COMBINE;\n\n\taddr = dma_alloc_attrs(delta->dev, size, &dma_addr,\n\t\t\t       GFP_KERNEL | __GFP_NOWARN, attrs);\n\tif (!addr) {\n\t\tdev_err(delta->dev,\n\t\t\t\"%s hw_alloc:dma_alloc_coherent failed for %s (size=%d)\\n\",\n\t\t\tctx->name, name, size);\n\t\tctx->sys_errors++;\n\t\treturn -ENOMEM;\n\t}\n\n\tbuf->size = size;\n\tbuf->paddr = dma_addr;\n\tbuf->vaddr = addr;\n\tbuf->name = name;\n\tbuf->attrs = attrs;\n\n\tdev_dbg(delta->dev,\n\t\t\"%s allocate %d bytes of HW memory @(virt=0x%p, phy=0x%pad): %s\\n\",\n\t\tctx->name, size, buf->vaddr, &buf->paddr, buf->name);\n\n\treturn 0;\n}\n\nvoid hw_free(struct delta_ctx *ctx, struct delta_buf *buf)\n{\n\tstruct delta_dev *delta = ctx->dev;\n\n\tdev_dbg(delta->dev,\n\t\t\"%s     free %d bytes of HW memory @(virt=0x%p, phy=0x%pad): %s\\n\",\n\t\tctx->name, buf->size, buf->vaddr, &buf->paddr, buf->name);\n\n\tdma_free_attrs(delta->dev, buf->size,\n\t\t       buf->vaddr, buf->paddr, buf->attrs);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

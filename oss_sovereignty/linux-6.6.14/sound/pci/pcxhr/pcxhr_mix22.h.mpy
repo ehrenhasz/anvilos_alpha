@@ -1,0 +1,9 @@
+{
+  "module_name": "pcxhr_mix22.h",
+  "hash_id": "9fb8bce2deffd55ec701c7a16cbb2ee6d71afb749509821253d2280ec3bc0a8e",
+  "original_prompt": "Ingested from linux-6.6.14/sound/pci/pcxhr/pcxhr_mix22.h",
+  "human_readable_source": " \n \n\n#ifndef __SOUND_PCXHR_MIX22_H\n#define __SOUND_PCXHR_MIX22_H\n\nstruct pcxhr_mgr;\n\nint hr222_sub_init(struct pcxhr_mgr *mgr);\nint hr222_sub_set_clock(struct pcxhr_mgr *mgr, unsigned int rate,\n\t\t\tint *changed);\nint hr222_get_external_clock(struct pcxhr_mgr *mgr,\n\t\t\t     enum pcxhr_clock_type clock_type,\n\t\t\t     int *sample_rate);\n\nint hr222_read_gpio(struct pcxhr_mgr *mgr, int is_gpi, int *value);\nint hr222_write_gpo(struct pcxhr_mgr *mgr, int value);\nint hr222_manage_timecode(struct pcxhr_mgr *mgr, int enable);\n\n#define HR222_LINE_PLAYBACK_LEVEL_MIN\t\t0\t \n#define HR222_LINE_PLAYBACK_ZERO_LEVEL\t\t51\t \n#define HR222_LINE_PLAYBACK_LEVEL_MAX\t\t99\t \n\n#define HR222_LINE_CAPTURE_LEVEL_MIN\t\t0\t \n#define HR222_LINE_CAPTURE_ZERO_LEVEL\t\t223\t \n#define HR222_LINE_CAPTURE_LEVEL_MAX\t\t255\t \n#define HR222_MICRO_CAPTURE_LEVEL_MIN\t\t0\t \n#define HR222_MICRO_CAPTURE_LEVEL_MAX\t\t210\t \n\nint hr222_update_analog_audio_level(struct snd_pcxhr *chip,\n\t\t\t\t    int is_capture,\n\t\t\t\t    int channel);\nint hr222_set_audio_source(struct snd_pcxhr *chip);\nint hr222_iec958_capture_byte(struct snd_pcxhr *chip, int aes_idx,\n\t\t\t      unsigned char *aes_bits);\nint hr222_iec958_update_byte(struct snd_pcxhr *chip, int aes_idx,\n\t\t\t     unsigned char aes_bits);\n\nint hr222_add_mic_controls(struct snd_pcxhr *chip);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

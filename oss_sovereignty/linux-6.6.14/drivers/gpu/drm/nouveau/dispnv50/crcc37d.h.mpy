@@ -1,0 +1,9 @@
+{
+  "module_name": "crcc37d.h",
+  "hash_id": "da0a27f768f8be3e6915fed4fbaa9903eb68ec6efb619d4a1102a74d7531971d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/dispnv50/crcc37d.h",
+  "human_readable_source": " \n\n#ifndef __CRCC37D_H__\n#define __CRCC37D_H__\n\n#include <linux/types.h>\n\n#include \"crc.h\"\n\n#define CRCC37D_MAX_ENTRIES 2047\n#define CRCC37D_FLIP_THRESHOLD (CRCC37D_MAX_ENTRIES - 30)\n\nstruct crcc37d_notifier {\n\tu32 status;\n\n\t \n\tu32:32;\n\tu32:32;\n\tu32:32;\n\tu32:32;\n\tu32:32;\n\tu32:32;\n\tu32:32;\n\n\tstruct crcc37d_entry {\n\t\tu32 status[2];\n\t\tu32:32;  \n\t\tu32 compositor_crc;\n\t\tu32 rg_crc;\n\t\tu32 output_crc[2];\n\t\tu32:32;  \n\t} entries[CRCC37D_MAX_ENTRIES];\n} __packed;\n\nint crcc37d_set_ctx(struct nv50_head *head, struct nv50_crc_notifier_ctx *ctx);\nu32 crcc37d_get_entry(struct nv50_head *head, struct nv50_crc_notifier_ctx *ctx,\n\t\t      enum nv50_crc_source source, int idx);\nbool crcc37d_ctx_finished(struct nv50_head *head, struct nv50_crc_notifier_ctx *ctx);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

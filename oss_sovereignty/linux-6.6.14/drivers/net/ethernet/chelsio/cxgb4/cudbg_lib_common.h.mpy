@@ -1,0 +1,9 @@
+{
+  "module_name": "cudbg_lib_common.h",
+  "hash_id": "aacce3f16ceb94195212728384422806f15d7805ef32547f1ebfc076a17216ea",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/chelsio/cxgb4/cudbg_lib_common.h",
+  "human_readable_source": " \n \n\n#ifndef __CUDBG_LIB_COMMON_H__\n#define __CUDBG_LIB_COMMON_H__\n\n#define CUDBG_SIGNATURE 67856866  \n\nenum cudbg_dump_type {\n\tCUDBG_DUMP_TYPE_MINI = 1,\n};\n\nenum cudbg_compression_type {\n\tCUDBG_COMPRESSION_NONE = 1,\n\tCUDBG_COMPRESSION_ZLIB,\n};\n\nstruct cudbg_hdr {\n\tu32 signature;\n\tu32 hdr_len;\n\tu16 major_ver;\n\tu16 minor_ver;\n\tu32 data_len;\n\tu32 hdr_flags;\n\tu16 max_entities;\n\tu8 chip_ver;\n\tu8 dump_type:3;\n\tu8 reserved1:1;\n\tu8 compress_type:4;\n\tu32 reserved[8];\n};\n\nstruct cudbg_entity_hdr {\n\tu32 entity_type;\n\tu32 start_offset;\n\tu32 size;\n\tint hdr_flags;\n\tu32 sys_warn;\n\tu32 sys_err;\n\tu8 num_pad;\n\tu8 flag;              \n\tu8 reserved1[2];\n\tu32 next_ext_offset;  \n\tu32 reserved[5];\n};\n\nstruct cudbg_ver_hdr {\n\tu32 signature;\n\tu16 revision;\n\tu16 size;\n};\n\nstruct cudbg_buffer {\n\tu32 size;\n\tu32 offset;\n\tchar *data;\n};\n\nstruct cudbg_error {\n\tint sys_err;\n\tint sys_warn;\n\tint app_err;\n};\n\n#define CDUMP_MAX_COMP_BUF_SIZE ((64 * 1024) - 1)\n#define CUDBG_CHUNK_SIZE ((CDUMP_MAX_COMP_BUF_SIZE / 1024) * 1024)\n\nint cudbg_get_buff(struct cudbg_init *pdbg_init,\n\t\t   struct cudbg_buffer *pdbg_buff, u32 size,\n\t\t   struct cudbg_buffer *pin_buff);\nvoid cudbg_put_buff(struct cudbg_init *pdbg_init,\n\t\t    struct cudbg_buffer *pin_buff);\nvoid cudbg_update_buff(struct cudbg_buffer *pin_buff,\n\t\t       struct cudbg_buffer *pout_buff);\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

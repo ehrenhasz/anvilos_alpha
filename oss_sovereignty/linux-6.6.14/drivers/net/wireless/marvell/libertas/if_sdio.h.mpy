@@ -1,0 +1,9 @@
+{
+  "module_name": "if_sdio.h",
+  "hash_id": "3fec03604197a8ec664d8f7246d3ea28a0ee14d287bcd4e7878474e5ee8c2522",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/marvell/libertas/if_sdio.h",
+  "human_readable_source": " \n \n\n#ifndef _LBS_IF_SDIO_H\n#define _LBS_IF_SDIO_H\n\n#define IF_SDIO_IOPORT\t\t0x00\n\n#define IF_SDIO_H_INT_MASK\t0x04\n#define   IF_SDIO_H_INT_OFLOW\t0x08\n#define   IF_SDIO_H_INT_UFLOW\t0x04\n#define   IF_SDIO_H_INT_DNLD\t0x02\n#define   IF_SDIO_H_INT_UPLD\t0x01\n\n#define IF_SDIO_H_INT_STATUS\t0x05\n#define IF_SDIO_H_INT_RSR\t0x06\n#define IF_SDIO_H_INT_STATUS2\t0x07\n\n#define IF_SDIO_RD_BASE\t\t0x10\n\n#define IF_SDIO_STATUS\t\t0x20\n#define   IF_SDIO_IO_RDY\t0x08\n#define   IF_SDIO_CIS_RDY\t0x04\n#define   IF_SDIO_UL_RDY\t0x02\n#define   IF_SDIO_DL_RDY\t0x01\n\n#define IF_SDIO_C_INT_MASK\t0x24\n#define IF_SDIO_C_INT_STATUS\t0x28\n#define IF_SDIO_C_INT_RSR\t0x2C\n\n#define IF_SDIO_SCRATCH\t\t0x34\n#define IF_SDIO_SCRATCH_OLD\t0x80fe\n#define IF_SDIO_FW_STATUS\t0x40\n#define   IF_SDIO_FIRMWARE_OK\t0xfedc\n\n#define IF_SDIO_RX_LEN\t\t0x42\n#define IF_SDIO_RX_UNIT\t\t0x43\n\n#define IF_SDIO_EVENT           0x80fc\n\n#define IF_SDIO_BLOCK_SIZE\t256\n#define CONFIGURATION_REG               0x03\n#define HOST_POWER_UP                   (0x1U << 1)\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

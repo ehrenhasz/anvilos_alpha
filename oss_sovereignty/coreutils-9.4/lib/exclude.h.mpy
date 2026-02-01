@@ -1,0 +1,9 @@
+{
+  "module_name": "exclude.h",
+  "hash_id": "f923d3721c7cbb31ea0ae27e7a6e4522fd68ffa6cb44d8346390515d849ed288",
+  "original_prompt": "Ingested from coreutils-9.4/lib/exclude.h",
+  "human_readable_source": " \n#if !_GL_CONFIG_H_INCLUDED\n #error \"Please include config.h first.\"\n#endif\n\n#include <stdio.h>\n\n \n\n \n\n \n#define EXCLUDE_ANCHORED (1 << 30)\n\n \n#define EXCLUDE_INCLUDE (1 << 29)\n\n \n#define EXCLUDE_WILDCARDS (1 << 28)\n\n \n#define EXCLUDE_REGEX     (1 << 27)\n\n \n#define EXCLUDE_ALLOC     (1 << 26)\n\nstruct exclude;\n\nbool fnmatch_pattern_has_wildcards (const char *, int) _GL_ATTRIBUTE_PURE;\n\nvoid free_exclude (struct exclude *)\n  _GL_ATTRIBUTE_NONNULL ((1));\nstruct exclude *new_exclude (void)\n  _GL_ATTRIBUTE_MALLOC _GL_ATTRIBUTE_RETURNS_NONNULL\n  _GL_ATTRIBUTE_DEALLOC (free_exclude, 1);\nvoid add_exclude (struct exclude *, char const *, int);\nint add_exclude_file (void (*) (struct exclude *, char const *, int),\n                      struct exclude *, char const *, int, char);\nint add_exclude_fp (void (*) (struct exclude *, char const *, int, void *),\n                    struct exclude *, FILE *, int, char, void *);\nbool excluded_file_name (struct exclude const *, char const *);\nvoid exclude_add_pattern_buffer (struct exclude *ex, char *buf);\nbool exclude_fnmatch (char const *, char const *, int);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

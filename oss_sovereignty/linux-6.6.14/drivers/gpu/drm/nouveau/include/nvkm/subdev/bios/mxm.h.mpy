@@ -1,0 +1,9 @@
+{
+  "module_name": "mxm.h",
+  "hash_id": "1ced5abf3545b093c757813c31a2c0663d201d149a6dfe2ea99ef49d5b72545c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/include/nvkm/subdev/bios/mxm.h",
+  "human_readable_source": " \n#ifndef __NVBIOS_MXM_H__\n#define __NVBIOS_MXM_H__\nu16 mxm_table(struct nvkm_bios *, u8 *ver, u8 *hdr);\nu8  mxm_sor_map(struct nvkm_bios *, u8 conn);\nu8  mxm_ddc_map(struct nvkm_bios *, u8 port);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "spi-s3c64xx.h",
+  "hash_id": "c61f091449256b464eca36743b18c8def9b0c38795c7c1e51b155e2b26da169d",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/platform_data/spi-s3c64xx.h",
+  "human_readable_source": " \n\n \n\n#ifndef __SPI_S3C64XX_H\n#define __SPI_S3C64XX_H\n\n#include <linux/dmaengine.h>\n\nstruct platform_device;\n\n \nstruct s3c64xx_spi_csinfo {\n\tu8 fb_delay;\n};\n\n \nstruct s3c64xx_spi_info {\n\tint src_clk_nr;\n\tint num_cs;\n\tbool no_cs;\n\tbool polling;\n\tint (*cfg_gpio)(void);\n};\n\n \nextern void s3c64xx_spi0_set_platdata(int src_clk_nr, int num_cs);\n\n \nextern int s3c64xx_spi0_cfg_gpio(void);\n\nextern struct s3c64xx_spi_info s3c64xx_spi0_pdata;\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

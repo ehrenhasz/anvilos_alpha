@@ -1,0 +1,9 @@
+{
+  "module_name": "input.h",
+  "hash_id": "5c0d853a574a8578c592db14e4919c215eaad15bf39b164fe50d6b8d10a859db",
+  "original_prompt": "Ingested from sys_09_Anvil/source/ports/unix/input.h",
+  "human_readable_source": "#ifndef MICROPY_INCLUDED_UNIX_INPUT_H\n#define MICROPY_INCLUDED_UNIX_INPUT_H\n\nchar *prompt(char *p);\nvoid prompt_read_history(void);\nvoid prompt_write_history(void);\n\n#endif \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

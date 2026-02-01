@@ -1,0 +1,9 @@
+{
+  "module_name": "tpa6130a2-plat.h",
+  "hash_id": "8f460e56d3ea6751fa51a504dbe85100986dc966a7c12b6a434b5b35898c5647",
+  "original_prompt": "Ingested from linux-6.6.14/include/sound/tpa6130a2-plat.h",
+  "human_readable_source": " \n \n\n#ifndef TPA6130A2_PLAT_H\n#define TPA6130A2_PLAT_H\n\nstruct tpa6130a2_platform_data {\n\tint power_gpio;\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

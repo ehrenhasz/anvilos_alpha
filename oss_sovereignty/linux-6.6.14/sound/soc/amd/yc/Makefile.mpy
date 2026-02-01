@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "bc4e335539cd3e8cb3f3e034e832360f6e8c3f6a9316ccc38ac34b61a58a1d63",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/amd/yc/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0+\n# Yellow Carp platform Support\nsnd-pci-acp6x-objs\t:= pci-acp6x.o\nsnd-acp6x-pdm-dma-objs\t:= acp6x-pdm-dma.o\nsnd-soc-acp6x-mach-objs := acp6x-mach.o\n\nobj-$(CONFIG_SND_SOC_AMD_ACP6x) += snd-pci-acp6x.o\nobj-$(CONFIG_SND_SOC_AMD_ACP6x) += snd-acp6x-pdm-dma.o\nobj-$(CONFIG_SND_SOC_AMD_YC_MACH)   += snd-soc-acp6x-mach.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

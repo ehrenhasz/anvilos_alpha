@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "265ffe53c339546a325af87dc372d0f113bd3b725b5bc72dd6b68c27f25b6810",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/iio/common/scmi_sensors/Kconfig",
+  "human_readable_source": "#\n# IIO over SCMI\n#\n# When adding new entries keep the list in alphabetical order\n\nmenu \"IIO SCMI Sensors\"\n\nconfig IIO_SCMI\n\ttristate \"IIO SCMI\"\n        depends on ARM_SCMI_PROTOCOL\n        select IIO_BUFFER\n        select IIO_KFIFO_BUF\n\thelp\n          Say yes here to build support for IIO SCMI Driver.\n          This provides ARM SCMI Protocol based IIO device.\n          This driver provides support for accelerometer and gyroscope\n          sensors available on SCMI based platforms.\nendmenu\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

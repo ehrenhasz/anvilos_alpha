@@ -1,0 +1,9 @@
+{
+  "module_name": "run.sh",
+  "hash_id": "e744152649b5dbe56980336c5548c9f86243357ee3e257804d3678d6d43689a8",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/sparc64/run.sh",
+  "human_readable_source": "#!/bin/sh\n\n(cd drivers; ./drivers_test.sh)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

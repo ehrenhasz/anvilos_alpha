@@ -1,0 +1,9 @@
+{
+  "module_name": "phy.h",
+  "hash_id": "2c9ec9247ae55d3379a6c6541626c205044f5ced0dd3c73f56a947e8ca8a4bfe",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/phy/phy.h",
+  "human_readable_source": " \n \n\n#ifndef _DT_BINDINGS_PHY\n#define _DT_BINDINGS_PHY\n\n#define PHY_NONE\t\t0\n#define PHY_TYPE_SATA\t\t1\n#define PHY_TYPE_PCIE\t\t2\n#define PHY_TYPE_USB2\t\t3\n#define PHY_TYPE_USB3\t\t4\n#define PHY_TYPE_UFS\t\t5\n#define PHY_TYPE_DP\t\t6\n#define PHY_TYPE_XPCS\t\t7\n#define PHY_TYPE_SGMII\t\t8\n#define PHY_TYPE_QSGMII\t\t9\n#define PHY_TYPE_DPHY\t\t10\n#define PHY_TYPE_CPHY\t\t11\n#define PHY_TYPE_USXGMII\t12\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

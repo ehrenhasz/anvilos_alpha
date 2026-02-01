@@ -1,0 +1,9 @@
+{
+  "module_name": "abx500.h",
+  "hash_id": "5f27e0ab02fb74a7909bf252ee32a524d9ee5777fbff997a9cd8b962e1a3836e",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/mfd/abx500.h",
+  "human_readable_source": " \n \n\n#include <linux/regulator/machine.h>\n\nstruct device;\n\n#ifndef MFD_ABX500_H\n#define MFD_ABX500_H\n\n \nstruct abx500_init_settings {\n\tu8 bank;\n\tu8 reg;\n\tu8 setting;\n};\n\nint abx500_set_register_interruptible(struct device *dev, u8 bank, u8 reg,\n\tu8 value);\nint abx500_get_register_interruptible(struct device *dev, u8 bank, u8 reg,\n\tu8 *value);\nint abx500_get_register_page_interruptible(struct device *dev, u8 bank,\n\tu8 first_reg, u8 *regvals, u8 numregs);\nint abx500_set_register_page_interruptible(struct device *dev, u8 bank,\n\tu8 first_reg, u8 *regvals, u8 numregs);\n \nint abx500_mask_and_set_register_interruptible(struct device *dev, u8 bank,\n\tu8 reg, u8 bitmask, u8 bitvalues);\nint abx500_get_chip_id(struct device *dev);\nint abx500_event_registers_startup_state_get(struct device *dev, u8 *event);\nint abx500_startup_irq_enabled(struct device *dev, unsigned int irq);\n\nstruct abx500_ops {\n\tint (*get_chip_id) (struct device *);\n\tint (*get_register) (struct device *, u8, u8, u8 *);\n\tint (*set_register) (struct device *, u8, u8, u8);\n\tint (*get_register_page) (struct device *, u8, u8, u8 *, u8);\n\tint (*set_register_page) (struct device *, u8, u8, u8 *, u8);\n\tint (*mask_and_set_register) (struct device *, u8, u8, u8, u8);\n\tint (*event_registers_startup_state_get) (struct device *, u8 *);\n\tint (*startup_irq_enabled) (struct device *, unsigned int);\n\tvoid (*dump_all_banks) (struct device *);\n};\n\nint abx500_register_ops(struct device *core_dev, struct abx500_ops *ops);\nvoid abx500_remove_ops(struct device *dev);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

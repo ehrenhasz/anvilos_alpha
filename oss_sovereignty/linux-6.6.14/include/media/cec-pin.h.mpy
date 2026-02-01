@@ -1,0 +1,9 @@
+{
+  "module_name": "cec-pin.h",
+  "hash_id": "3e495b81b3f62545aff198f0d2e4240672fdedc0b7a5bdb75497326b711b27e7",
+  "original_prompt": "Ingested from linux-6.6.14/include/media/cec-pin.h",
+  "human_readable_source": " \n \n\n#ifndef LINUX_CEC_PIN_H\n#define LINUX_CEC_PIN_H\n\n#include <linux/types.h>\n#include <media/cec.h>\n\n \nstruct cec_pin_ops {\n\tint  (*read)(struct cec_adapter *adap);\n\tvoid (*low)(struct cec_adapter *adap);\n\tvoid (*high)(struct cec_adapter *adap);\n\tbool (*enable_irq)(struct cec_adapter *adap);\n\tvoid (*disable_irq)(struct cec_adapter *adap);\n\tvoid (*free)(struct cec_adapter *adap);\n\tvoid (*status)(struct cec_adapter *adap, struct seq_file *file);\n\tint  (*read_hpd)(struct cec_adapter *adap);\n\tint  (*read_5v)(struct cec_adapter *adap);\n\n\t \n\tint (*received)(struct cec_adapter *adap, struct cec_msg *msg);\n};\n\n \nvoid cec_pin_changed(struct cec_adapter *adap, bool value);\n\n \nstruct cec_adapter *cec_pin_allocate_adapter(const struct cec_pin_ops *pin_ops,\n\t\t\t\t\tvoid *priv, const char *name, u32 caps);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

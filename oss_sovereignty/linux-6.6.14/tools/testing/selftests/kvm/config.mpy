@@ -1,0 +1,9 @@
+{
+  "module_name": "config",
+  "hash_id": "278e3d2c4b629c8364a50a5f9024aa970558e1db6ae74f014ba997ae81bbc6cb",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/kvm/config",
+  "human_readable_source": "CONFIG_KVM=y\nCONFIG_KVM_INTEL=y\nCONFIG_KVM_AMD=y\nCONFIG_USERFAULTFD=y\nCONFIG_IDLE_PAGE_TRACKING=y\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "9af6bfd01b627d28a86e110ec5e00428b37aec6c4a19280a745c5c22aee6ae87",
+  "original_prompt": "Ingested from linux-6.6.14/net/rds/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n\nconfig RDS\n\ttristate \"The Reliable Datagram Sockets Protocol\"\n\tdepends on INET\n\thelp\n\t  The RDS (Reliable Datagram Sockets) protocol provides reliable,\n\t  sequenced delivery of datagrams over Infiniband or TCP.\n\nconfig RDS_RDMA\n\ttristate \"RDS over Infiniband\"\n\tdepends on RDS && INFINIBAND && INFINIBAND_ADDR_TRANS\n\thelp\n\t  Allow RDS to use Infiniband as a transport.\n\t  This transport supports RDMA operations.\n\nconfig RDS_TCP\n\ttristate \"RDS over TCP\"\n\tdepends on RDS\n\tdepends on IPV6 || !IPV6\n\thelp\n\t  Allow RDS to use TCP as a transport.\n\t  This transport does not support RDMA operations.\n\nconfig RDS_DEBUG\n\tbool \"RDS debugging messages\"\n\tdepends on RDS\n\tdefault n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "openzfsonosx-1.9.3",
+  "hash_id": "219f533410077344bb81aa4a68d0d502b4f6d57f1538762f7fbf8306ee984b31",
+  "original_prompt": "Ingested from zfs-2.2.2/cmd/zpool/compatibility.d/openzfsonosx-1.9.3",
+  "human_readable_source": "# Features supported by OpenZFSonOSX 1.9.3\nallocation_classes\nasync_destroy\nbookmark_v2\nbookmarks\ndevice_removal\nedonr\nembedded_data\nempty_bpobj\nenabled_txg\nencryption\nextensible_dataset\nfilesystem_limits\nhole_birth\nlarge_blocks\nlarge_dnode\nlz4_compress\nmulti_vdev_crash_dump\nobsolete_counts\nproject_quota\nresilver_defer\nsha512\nskein\nspacemap_histogram\nspacemap_v2\nuserobj_accounting\nzpool_checkpoint\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

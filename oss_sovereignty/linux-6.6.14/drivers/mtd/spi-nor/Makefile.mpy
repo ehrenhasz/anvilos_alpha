@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "6690ebf579f2e29d9aee4251d5c5b9b1c14b7abc6845d0e390e059f7afa63593",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/mtd/spi-nor/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n\nspi-nor-objs\t\t\t:= core.o sfdp.o swp.o otp.o sysfs.o\nspi-nor-objs\t\t\t+= atmel.o\nspi-nor-objs\t\t\t+= catalyst.o\nspi-nor-objs\t\t\t+= eon.o\nspi-nor-objs\t\t\t+= esmt.o\nspi-nor-objs\t\t\t+= everspin.o\nspi-nor-objs\t\t\t+= fujitsu.o\nspi-nor-objs\t\t\t+= gigadevice.o\nspi-nor-objs\t\t\t+= intel.o\nspi-nor-objs\t\t\t+= issi.o\nspi-nor-objs\t\t\t+= macronix.o\nspi-nor-objs\t\t\t+= micron-st.o\nspi-nor-objs\t\t\t+= spansion.o\nspi-nor-objs\t\t\t+= sst.o\nspi-nor-objs\t\t\t+= winbond.o\nspi-nor-objs\t\t\t+= xilinx.o\nspi-nor-objs\t\t\t+= xmc.o\nspi-nor-$(CONFIG_DEBUG_FS)\t+= debugfs.o\nobj-$(CONFIG_MTD_SPI_NOR)\t+= spi-nor.o\n\nobj-$(CONFIG_MTD_SPI_NOR)\t+= controllers/\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

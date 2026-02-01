@@ -1,0 +1,9 @@
+{
+  "module_name": "tdc_config.py",
+  "hash_id": "e8951388b4f0a37d0a49e1be0842f6dcd4a76665fe9316b04fe3473c15633e7f",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/tc-testing/tdc_config.py",
+  "human_readable_source": "\"\"\"\n# SPDX-License-Identifier: GPL-2.0\ntdc_config.py - tdc user-specified values\n\nCopyright (C) 2017 Lucas Bates <lucasb@mojatatu.com>\n\"\"\"\n\n# Dictionary containing all values that can be substituted in executable\n# commands.\nNAMES = {\n          # Substitute your own tc path here\n          'TC': '/sbin/tc',\n          # Substitute your own ip path here\n          'IP': '/sbin/ip',\n          # Name of veth devices to be created for the namespace\n          'DEV0': 'v0p0',\n          'DEV1': 'v0p1',\n          'DEV2': '',\n          'DUMMY': 'dummy1',\n\t  'ETH': 'eth0',\n          'BATCH_FILE': './batch.txt',\n          'BATCH_DIR': 'tmp',\n          # Length of time in seconds to wait before terminating a command\n          'TIMEOUT': 24,\n          # Name of the namespace to use\n          'NS': 'tcut',\n          # Directory containing eBPF test programs\n          'EBPFDIR': './'\n        }\n\n\nENVIR = { }\n\n# put customizations in tdc_config_local.py\ntry:\n    from tdc_config_local import *\nexcept ImportError as ie:\n    pass\n\ntry:\n    NAMES.update(EXTRA_NAMES)\nexcept NameError as ne:\n    pass\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

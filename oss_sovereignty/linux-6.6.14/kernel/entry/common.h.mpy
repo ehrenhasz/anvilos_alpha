@@ -1,0 +1,9 @@
+{
+  "module_name": "common.h",
+  "hash_id": "146b5354e4444a938c8d033a901fdd6288d22cfa329a3157dad9b71168bc3121",
+  "original_prompt": "Ingested from linux-6.6.14/kernel/entry/common.h",
+  "human_readable_source": " \n#ifndef _COMMON_H\n#define _COMMON_H\n\nbool syscall_user_dispatch(struct pt_regs *regs);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

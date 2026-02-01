@@ -1,0 +1,9 @@
+{
+  "module_name": "test_rdonly_maps.c",
+  "hash_id": "06e4330c03899e3ffa48bb825053d2a60e1360b4851f561ded1e4f8d08cf4090",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/test_rdonly_maps.c",
+  "human_readable_source": "\n\n\n#include <linux/ptrace.h>\n#include <linux/bpf.h>\n#include <bpf/bpf_helpers.h>\n\nconst struct {\n\tunsigned a[4];\n\t \n\tchar _y;\n} rdonly_values = { .a = {2, 3, 4, 5} };\n\nstruct {\n\tunsigned did_run;\n\tunsigned iters;\n\tunsigned sum;\n} res = {};\n\nSEC(\"raw_tracepoint/sys_enter:skip_loop\")\nint skip_loop(struct pt_regs *ctx)\n{\n\t \n\tunsigned * volatile p = (void *)&rdonly_values.a;\n\tunsigned iters = 0, sum = 0;\n\n\t \n\twhile (*p & 1) {\n\t\titers++;\n\t\tsum += *p;\n\t\tp++;\n\t}\n\tres.did_run = 1;\n\tres.iters = iters;\n\tres.sum = sum;\n\treturn 0;\n}\n\nSEC(\"raw_tracepoint/sys_enter:part_loop\")\nint part_loop(struct pt_regs *ctx)\n{\n\t \n\tunsigned * volatile p = (void *)&rdonly_values.a;\n\tunsigned iters = 0, sum = 0;\n\n\t \n\twhile (*p < 5) {\n\t\titers++;\n\t\tsum += *p;\n\t\tp++;\n\t}\n\tres.did_run = 1;\n\tres.iters = iters;\n\tres.sum = sum;\n\treturn 0;\n}\n\nSEC(\"raw_tracepoint/sys_enter:full_loop\")\nint full_loop(struct pt_regs *ctx)\n{\n\t \n\tunsigned * volatile p = (void *)&rdonly_values.a;\n\tint i = sizeof(rdonly_values.a) / sizeof(rdonly_values.a[0]);\n\tunsigned iters = 0, sum = 0;\n\n\t \n\twhile (i > 0 ) {\n\t\titers++;\n\t\tsum += *p;\n\t\tp++;\n\t\ti--;\n\t}\n\tres.did_run = 1;\n\tres.iters = iters;\n\tres.sum = sum;\n\treturn 0;\n}\n\nchar _license[] SEC(\"license\") = \"GPL\";\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

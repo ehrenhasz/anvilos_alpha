@@ -1,0 +1,9 @@
+{
+  "module_name": "payload.ld",
+  "hash_id": "08e5b8b582a74d0eab3e398a83f8d4597856eeb173aba9b200bb219d32952be6",
+  "original_prompt": "Ingested from linux-6.6.14/samples/acrn/payload.ld",
+  "human_readable_source": "/* SPDX-License-Identifier: GPL-2.0 */\nSECTIONS\n{\n        .payload16 0 : {\n                guest16 = .;\n                guest16.o(.text)\n                guest16_end = .;\n        }\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

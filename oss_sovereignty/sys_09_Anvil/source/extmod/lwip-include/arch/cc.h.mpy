@@ -1,0 +1,9 @@
+{
+  "module_name": "cc.h",
+  "hash_id": "f9e0949517483d65add035d5348f7ab568d76fa73171eb23147ca8fc9f9126f1",
+  "original_prompt": "Ingested from sys_09_Anvil/source/extmod/lwip-include/arch/cc.h",
+  "human_readable_source": "#ifndef MICROPY_INCLUDED_EXTMOD_LWIP_INCLUDE_ARCH_CC_H\n#define MICROPY_INCLUDED_EXTMOD_LWIP_INCLUDE_ARCH_CC_H\n\n#include <stdint.h>\n\n\n\ntypedef uint8_t u8_t;\ntypedef int8_t s8_t;\ntypedef uint16_t u16_t;\ntypedef int16_t s16_t;\ntypedef uint32_t u32_t;\ntypedef int32_t s32_t;\n\ntypedef u32_t mem_ptr_t;\n\n#define U16_F \"hu\"\n#define S16_F \"hd\"\n#define X16_F \"hx\"\n#define U32_F \"u\"\n#define S32_F \"d\"\n#define X32_F \"x\"\n\n#define X8_F  \"02x\"\n#define SZT_F \"u\"\n\n#define BYTE_ORDER LITTLE_ENDIAN\n\n#define LWIP_CHKSUM_ALGORITHM 2\n\n#include <assert.h>\n#define LWIP_PLATFORM_DIAG(x)\n#define LWIP_PLATFORM_ASSERT(x)  { assert(1); }\n\n\n#define PACK_STRUCT_FIELD(x) x\n#define PACK_STRUCT_STRUCT __attribute__((packed))\n#define PACK_STRUCT_BEGIN\n#define PACK_STRUCT_END\n\n#endif \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "spl_dtrace.c",
+  "hash_id": "0272bc97b939d2c273c6b59f0a3d87618e2a7825ed6a119a9524aa80d0bb00a7",
+  "original_prompt": "Ingested from zfs-2.2.2/module/os/freebsd/spl/spl_dtrace.c",
+  "human_readable_source": " \n\n#include <sys/cdefs.h>\n__FBSDID(\"$FreeBSD$\");\n\n#include <sys/types.h>\n#include <sys/param.h>\n#include <sys/queue.h>\n#include <sys/sdt.h>\n\n \nSDT_PROBE_DEFINE1(sdt, , , set__error, \"int\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

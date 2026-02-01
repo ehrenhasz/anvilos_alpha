@@ -1,0 +1,9 @@
+{
+  "module_name": "pfuze100.h",
+  "hash_id": "8b6ae3879dda676fc34d69cabc451e66b7a7c45a8e907159bb565f21dba8c4db",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/regulator/pfuze100.h",
+  "human_readable_source": " \n \n#ifndef __LINUX_REG_PFUZE100_H\n#define __LINUX_REG_PFUZE100_H\n\n#define PFUZE100_SW1AB\t\t0\n#define PFUZE100_SW1C\t\t1\n#define PFUZE100_SW2\t\t2\n#define PFUZE100_SW3A\t\t3\n#define PFUZE100_SW3B\t\t4\n#define PFUZE100_SW4\t\t5\n#define PFUZE100_SWBST\t\t6\n#define PFUZE100_VSNVS\t\t7\n#define PFUZE100_VREFDDR\t8\n#define PFUZE100_VGEN1\t\t9\n#define PFUZE100_VGEN2\t\t10\n#define PFUZE100_VGEN3\t\t11\n#define PFUZE100_VGEN4\t\t12\n#define PFUZE100_VGEN5\t\t13\n#define PFUZE100_VGEN6\t\t14\n#define PFUZE100_COIN\t\t15\n#define PFUZE100_MAX_REGULATOR\t16\n\n#define PFUZE200_SW1AB\t\t0\n#define PFUZE200_SW2\t\t1\n#define PFUZE200_SW3A\t\t2\n#define PFUZE200_SW3B\t\t3\n#define PFUZE200_SWBST\t\t4\n#define PFUZE200_VSNVS\t\t5\n#define PFUZE200_VREFDDR\t6\n#define PFUZE200_VGEN1\t\t7\n#define PFUZE200_VGEN2\t\t8\n#define PFUZE200_VGEN3\t\t9\n#define PFUZE200_VGEN4\t\t10\n#define PFUZE200_VGEN5\t\t11\n#define PFUZE200_VGEN6\t\t12\n#define PFUZE200_COIN\t\t13\n\n#define PFUZE3000_SW1A\t\t0\n#define PFUZE3000_SW1B\t\t1\n#define PFUZE3000_SW2\t\t2\n#define PFUZE3000_SW3\t\t3\n#define PFUZE3000_SWBST\t\t4\n#define PFUZE3000_VSNVS\t\t5\n#define PFUZE3000_VREFDDR\t6\n#define PFUZE3000_VLDO1\t\t7\n#define PFUZE3000_VLDO2\t\t8\n#define PFUZE3000_VCCSD\t\t9\n#define PFUZE3000_V33\t\t10\n#define PFUZE3000_VLDO3\t\t11\n#define PFUZE3000_VLDO4\t\t12\n\n#define PFUZE3001_SW1\t\t0\n#define PFUZE3001_SW2\t\t1\n#define PFUZE3001_SW3\t\t2\n#define PFUZE3001_VSNVS\t\t3\n#define PFUZE3001_VLDO1\t\t4\n#define PFUZE3001_VLDO2\t\t5\n#define PFUZE3001_VCCSD\t\t6\n#define PFUZE3001_V33\t\t7\n#define PFUZE3001_VLDO3\t\t8\n#define PFUZE3001_VLDO4\t\t9\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "dce110_opp_v.c",
+  "hash_id": "55077079594a7883a9bb7e9f7588e1e28bcaabc81e75b3d38466181527da4ac4",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/dc/dce110/dce110_opp_v.c",
+  "human_readable_source": " \n\n#include \"dm_services.h\"\n\n \n#include \"dce/dce_11_0_d.h\"\n#include \"dce/dce_11_0_sh_mask.h\"\n\n#include \"dce/dce_opp.h\"\n#include \"dce110_opp_v.h\"\n\n \n \n \n\nstatic const struct opp_funcs funcs = {\n\t\t.opp_set_dyn_expansion = dce110_opp_set_dyn_expansion,\n\t\t.opp_destroy = dce110_opp_destroy,\n\t\t.opp_program_fmt = dce110_opp_program_fmt,\n\t\t.opp_program_bit_depth_reduction =\n\t\t\t\tdce110_opp_program_bit_depth_reduction\n};\n\nvoid dce110_opp_v_construct(struct dce110_opp *opp110,\n\tstruct dc_context *ctx)\n{\n\topp110->base.funcs = &funcs;\n\n\topp110->base.ctx = ctx;\n}\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

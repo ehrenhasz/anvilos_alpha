@@ -1,0 +1,9 @@
+{
+  "module_name": "checksum.h",
+  "hash_id": "9f75be8f918a87cfb95fc368119fd595676a8994045753036aa762eb18447911",
+  "original_prompt": "Ingested from linux-6.6.14/include/asm-generic/checksum.h",
+  "human_readable_source": " \n#ifndef __ASM_GENERIC_CHECKSUM_H\n#define __ASM_GENERIC_CHECKSUM_H\n\n \nextern __wsum csum_partial(const void *buff, int len, __wsum sum);\n\n#ifndef ip_fast_csum\n \nextern __sum16 ip_fast_csum(const void *iph, unsigned int ihl);\n#endif\n\n#ifndef csum_fold\n \nstatic inline __sum16 csum_fold(__wsum csum)\n{\n\tu32 sum = (__force u32)csum;\n\tsum = (sum & 0xffff) + (sum >> 16);\n\tsum = (sum & 0xffff) + (sum >> 16);\n\treturn (__force __sum16)~sum;\n}\n#endif\n\n#ifndef csum_tcpudp_nofold\n \nextern __wsum\ncsum_tcpudp_nofold(__be32 saddr, __be32 daddr, __u32 len,\n\t\t   __u8 proto, __wsum sum);\n#endif\n\n#ifndef csum_tcpudp_magic\nstatic inline __sum16\ncsum_tcpudp_magic(__be32 saddr, __be32 daddr, __u32 len,\n\t\t  __u8 proto, __wsum sum)\n{\n\treturn csum_fold(csum_tcpudp_nofold(saddr, daddr, len, proto, sum));\n}\n#endif\n\n \nextern __sum16 ip_compute_csum(const void *buff, int len);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

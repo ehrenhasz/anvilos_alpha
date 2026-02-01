@@ -1,0 +1,9 @@
+{
+  "module_name": "strtonum.c",
+  "hash_id": "a0baf3c1373709b533ff020bb9c1b5e59c7ba503a7225601fefb64d125cd2230",
+  "original_prompt": "Ingested from openssh-9.6p1/openbsd-compat/strtonum.c",
+  "human_readable_source": " \n\n \n\n \n\n#include \"includes.h\"\n\n#ifndef HAVE_STRTONUM\n#include <stdlib.h>\n#include <limits.h>\n#include <errno.h>\n\n#define INVALID\t\t1\n#define TOOSMALL\t2\n#define TOOLARGE\t3\n\nlong long\nstrtonum(const char *numstr, long long minval, long long maxval,\n    const char **errstrp)\n{\n\tlong long ll = 0;\n\tchar *ep;\n\tint error = 0;\n\tstruct errval {\n\t\tconst char *errstr;\n\t\tint err;\n\t} ev[4] = {\n\t\t{ NULL,\t\t0 },\n\t\t{ \"invalid\",\tEINVAL },\n\t\t{ \"too small\",\tERANGE },\n\t\t{ \"too large\",\tERANGE },\n\t};\n\n\tev[0].err = errno;\n\terrno = 0;\n\tif (minval > maxval)\n\t\terror = INVALID;\n\telse {\n\t\tll = strtoll(numstr, &ep, 10);\n\t\tif (numstr == ep || *ep != '\\0')\n\t\t\terror = INVALID;\n\t\telse if ((ll == LLONG_MIN && errno == ERANGE) || ll < minval)\n\t\t\terror = TOOSMALL;\n\t\telse if ((ll == LLONG_MAX && errno == ERANGE) || ll > maxval)\n\t\t\terror = TOOLARGE;\n\t}\n\tif (errstrp != NULL)\n\t\t*errstrp = ev[error].errstr;\n\terrno = ev[error].err;\n\tif (error)\n\t\tll = 0;\n\n\treturn (ll);\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "tw9910.h",
+  "hash_id": "129a11e2e2f60131db12213811d730c3156d4a9d2954baf53891c539e5a9788d",
+  "original_prompt": "Ingested from linux-6.6.14/include/media/i2c/tw9910.h",
+  "human_readable_source": " \n \n\n#ifndef __TW9910_H__\n#define __TW9910_H__\n\n \nenum tw9910_mpout_pin {\n\tTW9910_MPO_VLOSS,\n\tTW9910_MPO_HLOCK,\n\tTW9910_MPO_SLOCK,\n\tTW9910_MPO_VLOCK,\n\tTW9910_MPO_MONO,\n\tTW9910_MPO_DET50,\n\tTW9910_MPO_FIELD,\n\tTW9910_MPO_RTCO,\n};\n\n \nstruct tw9910_video_info {\n\tunsigned long\t\tbuswidth;\n\tenum tw9910_mpout_pin\tmpout;\n};\n\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

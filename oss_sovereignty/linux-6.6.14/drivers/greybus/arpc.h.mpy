@@ -1,0 +1,9 @@
+{
+  "module_name": "arpc.h",
+  "hash_id": "bad1d7a85c265210598f8bfff3c1b445e70719485c35768aed0092efe4db59be",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/greybus/arpc.h",
+  "human_readable_source": " \n \n\n#ifndef __ARPC_H\n#define __ARPC_H\n\n \n\nenum arpc_result {\n\tARPC_SUCCESS\t\t= 0x00,\n\tARPC_NO_MEMORY\t\t= 0x01,\n\tARPC_INVALID\t\t= 0x02,\n\tARPC_TIMEOUT\t\t= 0x03,\n\tARPC_UNKNOWN_ERROR\t= 0xff,\n};\n\nstruct arpc_request_message {\n\t__le16\tid;\t\t \n\t__le16\tsize;\t\t \n\t__u8\ttype;\t\t \n\t__u8\tdata[];\t \n} __packed;\n\nstruct arpc_response_message {\n\t__le16\tid;\t\t \n\t__u8\tresult;\t\t \n} __packed;\n\n \n#define ARPC_TYPE_CPORT_CONNECTED\t\t0x01\n#define ARPC_TYPE_CPORT_QUIESCE\t\t\t0x02\n#define ARPC_TYPE_CPORT_CLEAR\t\t\t0x03\n#define ARPC_TYPE_CPORT_FLUSH\t\t\t0x04\n#define ARPC_TYPE_CPORT_SHUTDOWN\t\t0x05\n\nstruct arpc_cport_connected_req {\n\t__le16 cport_id;\n} __packed;\n\nstruct arpc_cport_quiesce_req {\n\t__le16 cport_id;\n\t__le16 peer_space;\n\t__le16 timeout;\n} __packed;\n\nstruct arpc_cport_clear_req {\n\t__le16 cport_id;\n} __packed;\n\nstruct arpc_cport_flush_req {\n\t__le16 cport_id;\n} __packed;\n\nstruct arpc_cport_shutdown_req {\n\t__le16 cport_id;\n\t__le16 timeout;\n\t__u8 phase;\n} __packed;\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

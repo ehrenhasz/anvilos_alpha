@@ -1,0 +1,9 @@
+{
+  "module_name": "unlink-busy.m4",
+  "hash_id": "39a3d2696cdd9d6d4c71476956523c966fb3fc620a9860d08595d217cb4a3eaf",
+  "original_prompt": "Ingested from coreutils-9.4/m4/unlink-busy.m4",
+  "human_readable_source": "#serial 16\n\ndnl From J. David Anglin.\n\ndnl HPUX and other systems can't unlink shared text that is being executed.\n\n# Copyright (C) 2000-2001, 2004, 2007, 2009-2023 Free Software Foundation, Inc.\n# This file is free software; the Free Software Foundation\n# gives unlimited permission to copy and/or distribute it,\n# with or without modifications, as long as this notice is preserved.\n\nAC_DEFUN([gl_FUNC_UNLINK_BUSY_TEXT],\n[dnl\n  AC_CACHE_CHECK([whether a running program can be unlinked],\n    [gl_cv_func_unlink_busy_text],\n    [\n      AC_RUN_IFELSE(\n        [AC_LANG_SOURCE(\n           [AC_INCLUDES_DEFAULT\n            GL_MDA_DEFINES[\n            int\n            main (int argc, char **argv)\n            {\n              int result = 0;\n              if (argc == 0)\n                result |= 1;\n              else if (unlink (argv[0]) != 0)\n                result |= 2;\n              return result;\n            }]])],\n        [gl_cv_func_unlink_busy_text=yes],\n        [gl_cv_func_unlink_busy_text=no],\n        [case \"$host_os\" in\n                              # Guess no on native Windows.\n           mingw* | windows*) gl_cv_func_unlink_busy_text=\"guessing no\" ;;\n           *)                 gl_cv_func_unlink_busy_text=\"guessing no\" ;;\n         esac\n        ]\n      )\n    ]\n  )\n\n  case \"$gl_cv_func_unlink_busy_text\" in\n    *no) INSTALL=$ac_install_sh ;;\n  esac\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

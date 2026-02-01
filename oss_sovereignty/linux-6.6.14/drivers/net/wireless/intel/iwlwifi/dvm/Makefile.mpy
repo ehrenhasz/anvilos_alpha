@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "cfc10290ba4cd6e907958dfb36a323503e4eb872e913c3e5063a764217365c86",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/intel/iwlwifi/dvm/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n# DVM\nobj-$(CONFIG_IWLDVM)\t+= iwldvm.o\niwldvm-objs\t\t+= main.o rs.o mac80211.o ucode.o tx.o\niwldvm-objs\t\t+= lib.o calib.o tt.o sta.o rx.o\n\niwldvm-objs\t\t+= power.o\niwldvm-objs\t\t+= scan.o\niwldvm-objs\t\t+= rxon.o devices.o\n\niwldvm-$(CONFIG_IWLWIFI_LEDS) += led.o\niwldvm-$(CONFIG_IWLWIFI_DEBUGFS) += debugfs.o\n\nccflags-y += -I $(srctree)/$(src)/../\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

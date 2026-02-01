@@ -1,0 +1,9 @@
+{
+  "module_name": "zfs_vfsops.h",
+  "hash_id": "c2f8382df7edddda6540acc4cb2aa0fcc95367a75aa3e420d67eca825ddac36b",
+  "original_prompt": "Ingested from zfs-2.2.2/include/sys/zfs_vfsops.h",
+  "human_readable_source": " \n\n \n\n#ifndef _SYS_ZFS_VFSOPS_H\n#define\t_SYS_ZFS_VFSOPS_H\n\n#ifdef _KERNEL\n#include <sys/zfs_vfsops_os.h>\n#endif\n\nextern void zfsvfs_update_fromname(const char *, const char *);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

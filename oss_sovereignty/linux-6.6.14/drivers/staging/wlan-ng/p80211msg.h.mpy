@@ -1,0 +1,9 @@
+{
+  "module_name": "p80211msg.h",
+  "hash_id": "eebdbdbe01aa2395eb0b4b6129d19e0700cd284d552974f9bc70568e785ed1d8",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/wlan-ng/p80211msg.h",
+  "human_readable_source": " \n \n\n#ifndef _P80211MSG_H\n#define _P80211MSG_H\n\n#define WLAN_DEVNAMELEN_MAX\t16\n\nstruct p80211msg {\n\tu32 msgcode;\n\tu32 msglen;\n\tu8 devname[WLAN_DEVNAMELEN_MAX];\n} __packed;\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

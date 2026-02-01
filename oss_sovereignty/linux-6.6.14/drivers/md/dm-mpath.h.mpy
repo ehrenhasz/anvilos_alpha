@@ -1,0 +1,9 @@
+{
+  "module_name": "dm-mpath.h",
+  "hash_id": "6cb22b7f0d1257a8f6078c0ebba94bc8a42d6b27fb14bffb5223aa31914782d0",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/md/dm-mpath.h",
+  "human_readable_source": " \n \n\n#ifndef\tDM_MPATH_H\n#define\tDM_MPATH_H\n\nstruct dm_dev;\n\nstruct dm_path {\n\tstruct dm_dev *dev;\t \n\tvoid *pscontext;\t \n};\n\n \nvoid dm_pg_init_complete(struct dm_path *path, unsigned int err_flags);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "exception.json",
+  "hash_id": "5adbd8833fe67cda6a09a3985655a7a284108d1cbe68fb3e5871abf04f2aac63",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/pmu-events/arch/arm64/arm/cortex-a75/exception.json",
+  "human_readable_source": "[\n    {\n        \"ArchStdEvent\": \"EXC_TAKEN\"\n    },\n    {\n        \"ArchStdEvent\": \"EXC_UNDEF\"\n    },\n    {\n        \"ArchStdEvent\": \"EXC_HVC\"\n    },\n    {\n        \"PublicDescription\": \"Number of traps to hypervisor. This event counts the number of exception traps taken to EL2, excluding HVC instructions. This event is set every time that an exception is executed because of a decoded trap to the hypervisor. CCFAIL exceptions and traps caused by HVC instructions are excluded. This event is not counted when it is accessible from Non-secure EL0 or EL1\",\n        \"EventCode\": \"0xDC\",\n        \"EventName\": \"EXC_TRAP_HYP\",\n        \"BriefDescription\": \"Number of traps to hypervisor. This event counts the number of exception traps taken to EL2, excluding HVC instructions. This event is set every time that an exception is executed because of a decoded trap to the hypervisor. CCFAIL exceptions and traps caused by HVC instructions are excluded. This event is not counted when it is accessible from Non-secure EL0 or EL1\"\n    }\n]\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

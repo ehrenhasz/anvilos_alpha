@@ -1,0 +1,9 @@
+{
+  "module_name": "nv47.c",
+  "hash_id": "c2387ff69226914afff8a3cec952b84e3e49983db5c16f88b6efa7813134b03e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/subdev/fb/nv47.c",
+  "human_readable_source": " \n#include \"priv.h\"\n#include \"ram.h\"\n\nstatic const struct nvkm_fb_func\nnv47_fb = {\n\t.tags = nv20_fb_tags,\n\t.init = nv41_fb_init,\n\t.tile.regions = 15,\n\t.tile.init = nv30_fb_tile_init,\n\t.tile.comp = nv40_fb_tile_comp,\n\t.tile.fini = nv20_fb_tile_fini,\n\t.tile.prog = nv41_fb_tile_prog,\n\t.ram_new = nv41_ram_new,\n};\n\nint\nnv47_fb_new(struct nvkm_device *device, enum nvkm_subdev_type type, int inst, struct nvkm_fb **pfb)\n{\n\treturn nvkm_fb_new_(&nv47_fb, device, type, inst, pfb);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "ps.h",
+  "hash_id": "874c0ffdb6e08073112bb4ce687f293882cd3d5d9be50018693709d1db202a4f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/ti/wlcore/ps.h",
+  "human_readable_source": " \n \n\n#ifndef __PS_H__\n#define __PS_H__\n\n#include \"wlcore.h\"\n#include \"acx.h\"\n\nint wl1271_ps_set_mode(struct wl1271 *wl, struct wl12xx_vif *wlvif,\n\t\t       enum wl1271_cmd_ps_mode mode);\nvoid wl12xx_ps_link_start(struct wl1271 *wl, struct wl12xx_vif *wlvif,\n\t\t\t  u8 hlid, bool clean_queues);\nvoid wl12xx_ps_link_end(struct wl1271 *wl, struct wl12xx_vif *wlvif, u8 hlid);\n\n#define WL1271_PS_COMPLETE_TIMEOUT 500\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "cpu.c",
+  "hash_id": "913a9d6a428c0287ee3552bcfb44d20f24ed7f04168d68d37525fc8b8d8c5055",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/lib/cpu.c",
+  "human_readable_source": "\n#include <linux/types.h>\n#include <linux/export.h>\n#include <asm/cpu.h>\n\nunsigned int x86_family(unsigned int sig)\n{\n\tunsigned int x86;\n\n\tx86 = (sig >> 8) & 0xf;\n\n\tif (x86 == 0xf)\n\t\tx86 += (sig >> 20) & 0xff;\n\n\treturn x86;\n}\nEXPORT_SYMBOL_GPL(x86_family);\n\nunsigned int x86_model(unsigned int sig)\n{\n\tunsigned int fam, model;\n\n\tfam = x86_family(sig);\n\n\tmodel = (sig >> 4) & 0xf;\n\n\tif (fam >= 0x6)\n\t\tmodel += ((sig >> 16) & 0xf) << 4;\n\n\treturn model;\n}\nEXPORT_SYMBOL_GPL(x86_model);\n\nunsigned int x86_stepping(unsigned int sig)\n{\n\treturn sig & 0xf;\n}\nEXPORT_SYMBOL_GPL(x86_stepping);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

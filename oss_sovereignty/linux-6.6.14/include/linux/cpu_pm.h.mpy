@@ -1,0 +1,9 @@
+{
+  "module_name": "cpu_pm.h",
+  "hash_id": "345106f7351abf781962857a69584e103a59a1525bac7889e753aa0c030b9354",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/cpu_pm.h",
+  "human_readable_source": " \n \n\n#ifndef _LINUX_CPU_PM_H\n#define _LINUX_CPU_PM_H\n\n#include <linux/kernel.h>\n#include <linux/notifier.h>\n\n \n\n \nenum cpu_pm_event {\n\t \n\tCPU_PM_ENTER,\n\n\t \n\tCPU_PM_ENTER_FAILED,\n\n\t \n\tCPU_PM_EXIT,\n\n\t \n\tCPU_CLUSTER_PM_ENTER,\n\n\t \n\tCPU_CLUSTER_PM_ENTER_FAILED,\n\n\t \n\tCPU_CLUSTER_PM_EXIT,\n};\n\n#ifdef CONFIG_CPU_PM\nint cpu_pm_register_notifier(struct notifier_block *nb);\nint cpu_pm_unregister_notifier(struct notifier_block *nb);\nint cpu_pm_enter(void);\nint cpu_pm_exit(void);\nint cpu_cluster_pm_enter(void);\nint cpu_cluster_pm_exit(void);\n\n#else\n\nstatic inline int cpu_pm_register_notifier(struct notifier_block *nb)\n{\n\treturn 0;\n}\n\nstatic inline int cpu_pm_unregister_notifier(struct notifier_block *nb)\n{\n\treturn 0;\n}\n\nstatic inline int cpu_pm_enter(void)\n{\n\treturn 0;\n}\n\nstatic inline int cpu_pm_exit(void)\n{\n\treturn 0;\n}\n\nstatic inline int cpu_cluster_pm_enter(void)\n{\n\treturn 0;\n}\n\nstatic inline int cpu_cluster_pm_exit(void)\n{\n\treturn 0;\n}\n#endif\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

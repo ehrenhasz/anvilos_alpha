@@ -1,0 +1,9 @@
+{
+  "module_name": "param.h",
+  "hash_id": "5e8ba1549163d49e858ff15bc1c30780a725d645bba877a71582d655e1e5e9d2",
+  "original_prompt": "Ingested from zfs-2.2.2/include/os/linux/spl/sys/param.h",
+  "human_readable_source": " \n\n#ifndef _SPL_PARAM_H\n#define\t_SPL_PARAM_H\n\n#include <asm/page.h>\n\n \n#define\tptob(pages)\t\t\t((pages) << PAGE_SHIFT)\n#define\tbtop(bytes)\t\t\t((bytes) >> PAGE_SHIFT)\n\n#define\tMAXUID\t\t\t\tUINT32_MAX\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

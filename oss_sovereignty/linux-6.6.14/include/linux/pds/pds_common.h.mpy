@@ -1,0 +1,9 @@
+{
+  "module_name": "pds_common.h",
+  "hash_id": "ee3f4e483d39ba0697c3adc9ac4379df309f90f59b4dce93044dd9a51c511213",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/pds/pds_common.h",
+  "human_readable_source": " \n \n\n#ifndef _PDS_COMMON_H_\n#define _PDS_COMMON_H_\n\n#define PDS_CORE_DRV_NAME\t\t\t\"pds_core\"\n\n \n#define PDS_CORE_ADDR_LEN\t52\n#define PDS_CORE_ADDR_MASK\t(BIT_ULL(PDS_ADDR_LEN) - 1)\n#define PDS_PAGE_SIZE\t\t4096\n\nenum pds_core_driver_type {\n\tPDS_DRIVER_LINUX   = 1,\n\tPDS_DRIVER_WIN     = 2,\n\tPDS_DRIVER_DPDK    = 3,\n\tPDS_DRIVER_FREEBSD = 4,\n\tPDS_DRIVER_IPXE    = 5,\n\tPDS_DRIVER_ESXI    = 6,\n};\n\nenum pds_core_vif_types {\n\tPDS_DEV_TYPE_CORE\t= 0,\n\tPDS_DEV_TYPE_VDPA\t= 1,\n\tPDS_DEV_TYPE_VFIO\t= 2,\n\tPDS_DEV_TYPE_ETH\t= 3,\n\tPDS_DEV_TYPE_RDMA\t= 4,\n\tPDS_DEV_TYPE_LM\t\t= 5,\n\n\t \n\tPDS_DEV_TYPE_MAX\t= 16    \n};\n\n#define PDS_DEV_TYPE_CORE_STR\t\"Core\"\n#define PDS_DEV_TYPE_VDPA_STR\t\"vDPA\"\n#define PDS_DEV_TYPE_VFIO_STR\t\"vfio\"\n#define PDS_DEV_TYPE_ETH_STR\t\"Eth\"\n#define PDS_DEV_TYPE_RDMA_STR\t\"RDMA\"\n#define PDS_DEV_TYPE_LM_STR\t\"LM\"\n\n#define PDS_VDPA_DEV_NAME\tPDS_CORE_DRV_NAME \".\" PDS_DEV_TYPE_VDPA_STR\n#define PDS_VFIO_LM_DEV_NAME\tPDS_CORE_DRV_NAME \".\" PDS_DEV_TYPE_LM_STR \".\" PDS_DEV_TYPE_VFIO_STR\n\nstruct pdsc;\n\nint pdsc_register_notify(struct notifier_block *nb);\nvoid pdsc_unregister_notify(struct notifier_block *nb);\nvoid *pdsc_get_pf_struct(struct pci_dev *vf_pdev);\nint pds_client_register(struct pdsc *pf, char *devname);\nint pds_client_unregister(struct pdsc *pf, u16 client_id);\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

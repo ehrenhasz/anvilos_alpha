@@ -1,0 +1,9 @@
+{
+  "module_name": "install_latest_from_github.sh",
+  "hash_id": "d8df6bfef3b8c5f3ba516d390cacca1e53f01caee5574c373305e6b2e93bfc12",
+  "original_prompt": "Ingested from linux-6.6.14/tools/power/pm-graph/install_latest_from_github.sh",
+  "human_readable_source": "#!/bin/sh\n# SPDX-License-Identifier: GPL-2.0\n#\n# Script which clones and installs the latest pm-graph\n# from http://github.com/intel/pm-graph.git\n\nOUT=`mktemp -d 2>/dev/null`\nif [ -z \"$OUT\" -o ! -e $OUT ]; then\n\techo \"ERROR: mktemp failed to create folder\"\n\texit\nfi\n\ncleanup() {\n\tif [ -e \"$OUT\" ]; then\n\t\tcd $OUT\n\t\trm -rf pm-graph\n\t\tcd /tmp\n\t\trmdir $OUT\n\tfi\n}\n\ngit clone http://github.com/intel/pm-graph.git $OUT/pm-graph\nif [ ! -e \"$OUT/pm-graph/sleepgraph.py\" ]; then\n\techo \"ERROR: pm-graph github repo failed to clone\"\n\tcleanup\n\texit\nfi\n\ncd $OUT/pm-graph\necho \"INSTALLING PM-GRAPH\"\nsudo make install\nif [ $? -eq 0 ]; then\n\techo \"INSTALL SUCCESS\"\n\tsleepgraph -v\nelse\n\techo \"INSTALL FAILED\"\nfi\ncleanup\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

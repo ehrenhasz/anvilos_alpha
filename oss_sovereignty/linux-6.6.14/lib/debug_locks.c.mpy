@@ -1,0 +1,9 @@
+{
+  "module_name": "debug_locks.c",
+  "hash_id": "fe7f047066c7ff5882d3c15d3ab8071c8ce6119dd4a1ca107aaf8c4ba14fb99a",
+  "original_prompt": "Ingested from linux-6.6.14/lib/debug_locks.c",
+  "human_readable_source": "\n \n#include <linux/rwsem.h>\n#include <linux/mutex.h>\n#include <linux/export.h>\n#include <linux/spinlock.h>\n#include <linux/debug_locks.h>\n\n \nint debug_locks __read_mostly = 1;\nEXPORT_SYMBOL_GPL(debug_locks);\n\n \nint debug_locks_silent __read_mostly;\nEXPORT_SYMBOL_GPL(debug_locks_silent);\n\n \nint debug_locks_off(void)\n{\n\tif (debug_locks && __debug_locks_off()) {\n\t\tif (!debug_locks_silent) {\n\t\t\tconsole_verbose();\n\t\t\treturn 1;\n\t\t}\n\t}\n\treturn 0;\n}\nEXPORT_SYMBOL_GPL(debug_locks_off);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

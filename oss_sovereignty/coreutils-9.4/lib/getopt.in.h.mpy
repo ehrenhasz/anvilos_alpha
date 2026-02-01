@@ -1,0 +1,9 @@
+{
+  "module_name": "getopt.in.h",
+  "hash_id": "660eb639632d89fbca759fba484be77c2d812801e84a5130d9632425c1bf5cd2",
+  "original_prompt": "Ingested from coreutils-9.4/lib/getopt.in.h",
+  "human_readable_source": " \n#if @HAVE_GETOPT_H@\n# define _GL_SYSTEM_GETOPT\n# @INCLUDE_NEXT@ @NEXT_GETOPT_H@\n# undef _GL_SYSTEM_GETOPT\n#endif\n\n#define _@GUARD_PREFIX@_GETOPT_H 1\n\n \n#if defined __GETOPT_PREFIX\n# if !@HAVE_GETOPT_H@\n#  define __need_system_stdlib_h\n#  include <stdlib.h>\n#  undef __need_system_stdlib_h\n#  include <stdio.h>\n#  include <unistd.h>\n# endif\n#endif\n\n \n\n#include <getopt-cdefs.h>\n#include <getopt-pfx-core.h>\n#include <getopt-pfx-ext.h>\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

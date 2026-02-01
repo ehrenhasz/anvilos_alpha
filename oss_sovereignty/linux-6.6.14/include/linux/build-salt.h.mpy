@@ -1,0 +1,9 @@
+{
+  "module_name": "build-salt.h",
+  "hash_id": "ec488a5ffb1ae625c299f5569276f51c58ed940b48397251fc4de63d965e5a9f",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/build-salt.h",
+  "human_readable_source": "#ifndef __BUILD_SALT_H\n#define __BUILD_SALT_H\n\n#include <linux/elfnote.h>\n\n#define LINUX_ELFNOTE_BUILD_SALT       0x100\n\n#ifdef __ASSEMBLER__\n\n#define BUILD_SALT \\\n       ELFNOTE(Linux, LINUX_ELFNOTE_BUILD_SALT, .asciz CONFIG_BUILD_SALT)\n\n#else\n\n#define BUILD_SALT \\\n       ELFNOTE32(\"Linux\", LINUX_ELFNOTE_BUILD_SALT, CONFIG_BUILD_SALT)\n\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

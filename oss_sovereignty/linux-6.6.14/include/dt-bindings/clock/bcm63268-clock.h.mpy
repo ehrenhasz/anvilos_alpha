@@ -1,0 +1,9 @@
+{
+  "module_name": "bcm63268-clock.h",
+  "hash_id": "436338b6dad6ecf1de780f7692bce1a6982b5e9695681eff66f2c304a1fa443d",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/clock/bcm63268-clock.h",
+  "human_readable_source": " \n\n#ifndef __DT_BINDINGS_CLOCK_BCM63268_H\n#define __DT_BINDINGS_CLOCK_BCM63268_H\n\n#define BCM63268_CLK_DIS_GLESS\t0\n#define BCM63268_CLK_VDSL_QPROC\t1\n#define BCM63268_CLK_VDSL_AFE\t2\n#define BCM63268_CLK_VDSL\t3\n#define BCM63268_CLK_MIPS\t4\n#define BCM63268_CLK_WLAN_OCP\t5\n#define BCM63268_CLK_DECT\t6\n#define BCM63268_CLK_FAP0\t7\n#define BCM63268_CLK_FAP1\t8\n#define BCM63268_CLK_SAR\t9\n#define BCM63268_CLK_ROBOSW\t10\n#define BCM63268_CLK_PCM\t11\n#define BCM63268_CLK_USBD\t12\n#define BCM63268_CLK_USBH\t13\n#define BCM63268_CLK_IPSEC\t14\n#define BCM63268_CLK_SPI\t15\n#define BCM63268_CLK_HSSPI\t16\n#define BCM63268_CLK_PCIE\t17\n#define BCM63268_CLK_PHYMIPS\t18\n#define BCM63268_CLK_GMAC\t19\n#define BCM63268_CLK_NAND\t20\n#define BCM63268_CLK_TBUS\t27\n#define BCM63268_CLK_ROBOSW250\t31\n\n#define BCM63268_TCLK_EPHY1\t\t0\n#define BCM63268_TCLK_EPHY2\t\t1\n#define BCM63268_TCLK_EPHY3\t\t2\n#define BCM63268_TCLK_GPHY1\t\t3\n#define BCM63268_TCLK_DSL\t\t4\n#define BCM63268_TCLK_WAKEON_EPHY\t6\n#define BCM63268_TCLK_WAKEON_DSL\t7\n#define BCM63268_TCLK_FAP1\t\t11\n#define BCM63268_TCLK_FAP2\t\t15\n#define BCM63268_TCLK_UTO_50\t\t16\n#define BCM63268_TCLK_UTO_EXTIN\t\t17\n#define BCM63268_TCLK_USB_REF\t\t18\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

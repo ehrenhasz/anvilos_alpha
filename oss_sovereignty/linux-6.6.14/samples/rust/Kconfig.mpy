@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "969fe2600070648c90306dad444fb7210fd22e290e08be02cf2982656eca2efc",
+  "original_prompt": "Ingested from linux-6.6.14/samples/rust/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n\nmenuconfig SAMPLES_RUST\n\tbool \"Rust samples\"\n\tdepends on RUST\n\thelp\n\t  You can build sample Rust kernel code here.\n\n\t  If unsure, say N.\n\nif SAMPLES_RUST\n\nconfig SAMPLE_RUST_MINIMAL\n\ttristate \"Minimal\"\n\thelp\n\t  This option builds the Rust minimal module sample.\n\n\t  To compile this as a module, choose M here:\n\t  the module will be called rust_minimal.\n\n\t  If unsure, say N.\n\nconfig SAMPLE_RUST_PRINT\n\ttristate \"Printing macros\"\n\thelp\n\t  This option builds the Rust printing macros sample.\n\n\t  To compile this as a module, choose M here:\n\t  the module will be called rust_print.\n\n\t  If unsure, say N.\n\nconfig SAMPLE_RUST_HOSTPROGS\n\tbool \"Host programs\"\n\thelp\n\t  This option builds the Rust host program samples.\n\n\t  If unsure, say N.\n\nendif # SAMPLES_RUST\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "timegm.m4",
+  "hash_id": "8543ef91b9892ff7c6b710c6b6d519c1ac029095434caff480401e36e6e4717e",
+  "original_prompt": "Ingested from coreutils-9.4/m4/timegm.m4",
+  "human_readable_source": "# timegm.m4 serial 16\ndnl Copyright (C) 2003, 2007, 2009-2023 Free Software Foundation, Inc.\ndnl This file is free software; the Free Software Foundation\ndnl gives unlimited permission to copy and/or distribute it,\ndnl with or without modifications, as long as this notice is preserved.\n\nAC_DEFUN([gl_FUNC_TIMEGM],\n[\n  AC_REQUIRE([gl_TIME_H_DEFAULTS])\n  AC_REQUIRE([gl_FUNC_MKTIME_WORKS])\n  gl_CHECK_FUNCS_ANDROID([timegm], [[#include <time.h>]])\n  if test $ac_cv_func_timegm = yes; then\n    if test \"$gl_cv_func_working_mktime\" != yes; then\n      # Assume that timegm is buggy if mktime is.\n      REPLACE_TIMEGM=1\n    fi\n  else\n    HAVE_TIMEGM=0\n    case \"$gl_cv_onwards_func_timegm\" in\n      future*) REPLACE_TIMEGM=1 ;;\n    esac\n  fi\n])\n\n# Prerequisites of lib/timegm.c.\nAC_DEFUN([gl_PREREQ_TIMEGM], [\n  :\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

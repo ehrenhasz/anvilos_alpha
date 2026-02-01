@@ -1,0 +1,9 @@
+{
+  "module_name": "cpufeature.h",
+  "hash_id": "560f98dbf0988649b5899e4bb06ebc48f77575da04ab766aa0d92ebe6e8b4293",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/util/include/asm/cpufeature.h",
+  "human_readable_source": " \n\n#ifndef PERF_CPUFEATURE_H\n#define PERF_CPUFEATURE_H\n\n \n\n#define X86_FEATURE_REP_GOOD 0\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

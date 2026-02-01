@@ -1,0 +1,9 @@
+{
+  "module_name": "xhci-plat.h",
+  "hash_id": "d54157df6031e67d4116ac25f54841ca66bf8d91be78b94869066b08d09fce72",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/usb/host/xhci-plat.h",
+  "human_readable_source": " \n \n\n#ifndef _XHCI_PLAT_H\n#define _XHCI_PLAT_H\n\n#include \"xhci.h\"\t \n\nstruct xhci_plat_priv {\n\tconst char *firmware_name;\n\tunsigned long long quirks;\n\tvoid (*plat_start)(struct usb_hcd *);\n\tint (*init_quirk)(struct usb_hcd *);\n\tint (*suspend_quirk)(struct usb_hcd *);\n\tint (*resume_quirk)(struct usb_hcd *);\n};\n\n#define hcd_to_xhci_priv(h) ((struct xhci_plat_priv *)hcd_to_xhci(h)->priv)\n#define xhci_to_priv(x) ((struct xhci_plat_priv *)(x)->priv)\n\nint xhci_plat_probe(struct platform_device *pdev, struct device *sysdev,\n\t\t    const struct xhci_plat_priv *priv_match);\n\nvoid xhci_plat_remove(struct platform_device *dev);\nextern const struct dev_pm_ops xhci_plat_pm_ops;\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

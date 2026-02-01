@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "d2cff19cd6369ea5721b33afd293ac21989ca8b8e27459c2a4561aa75db9b8ca",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/usb/fotg210/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n\nconfig USB_FOTG210\n\ttristate \"Faraday FOTG210 USB2 Dual Role controller\"\n\tdepends on USB || USB_GADGET\n\tdepends on HAS_DMA && HAS_IOMEM\n\tdepends on ARCH_GEMINI || COMPILE_TEST\n\tdefault ARCH_GEMINI\n\tselect MFD_SYSCON\n\thelp\n\t  Faraday FOTG210 is a dual-mode USB controller that can act\n\t  in both host controller and peripheral controller mode.\n\nif USB_FOTG210\n\nconfig USB_FOTG210_HCD\n\tbool \"Faraday FOTG210 USB Host Controller support\"\n\tdepends on USB=y || USB=USB_FOTG210\n\thelp\n\t  Faraday FOTG210 is an OTG controller which can be configured as\n\t  an USB2.0 host. It is designed to meet USB2.0 EHCI specification\n\t  with minor modification.\n\n\t  To compile this driver as a module, choose M here: the\n\t  module will be called fotg210-hcd.\n\nconfig USB_FOTG210_UDC\n\tdepends on USB_GADGET=y || USB_GADGET=USB_FOTG210\n\tbool \"Faraday FOTG210 USB Peripheral Controller support\"\n\thelp\n\t   Faraday USB2.0 OTG controller which can be configured as\n\t   high speed or full speed USB device. This driver supports\n\t   Bulk Transfer so far.\n\n\t   Say \"y\" to link the driver statically, or \"m\" to build a\n\t   dynamically linked module called \"fotg210-udc\".\n\nendif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

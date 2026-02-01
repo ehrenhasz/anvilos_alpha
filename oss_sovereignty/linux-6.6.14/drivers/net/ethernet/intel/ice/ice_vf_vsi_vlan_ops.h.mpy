@@ -1,0 +1,9 @@
+{
+  "module_name": "ice_vf_vsi_vlan_ops.h",
+  "hash_id": "ae16f389fe13f28b3b8b704a6f5f6c65af0120759ff41a548060a44887b76bfb",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/intel/ice/ice_vf_vsi_vlan_ops.h",
+  "human_readable_source": " \n \n\n#ifndef _ICE_VF_VSI_VLAN_OPS_H_\n#define _ICE_VF_VSI_VLAN_OPS_H_\n\n#include \"ice_vsi_vlan_ops.h\"\n\nstruct ice_vsi;\n\nvoid ice_vf_vsi_cfg_dvm_legacy_vlan_mode(struct ice_vsi *vsi);\nvoid ice_vf_vsi_cfg_svm_legacy_vlan_mode(struct ice_vsi *vsi);\n\n#ifdef CONFIG_PCI_IOV\nvoid ice_vf_vsi_init_vlan_ops(struct ice_vsi *vsi);\nvoid ice_vf_vsi_enable_port_vlan(struct ice_vsi *vsi);\nvoid ice_vf_vsi_disable_port_vlan(struct ice_vsi *vsi);\n#else\nstatic inline void ice_vf_vsi_init_vlan_ops(struct ice_vsi *vsi) { }\nstatic inline void ice_vf_vsi_enable_port_vlan(struct ice_vsi *vsi) { }\nstatic inline void ice_vf_vsi_disable_port_vlan(struct ice_vsi *vsi) { }\n#endif  \n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "fpending.h",
+  "hash_id": "e783d69e6464ef0d3f71e0164f813c9213c18d77e3055497413ad755c4a7b38c",
+  "original_prompt": "Ingested from coreutils-9.4/lib/fpending.h",
+  "human_readable_source": " \n\n \n#if !_GL_CONFIG_H_INCLUDED\n #error \"Please include config.h first.\"\n#endif\n\n#include <stddef.h>\n#include <stdio.h>\n#if HAVE_STDIO_EXT_H\n# include <stdio_ext.h>\n#endif\n\n#if !HAVE_DECL___FPENDING\nsize_t __fpending (FILE *) _GL_ATTRIBUTE_PURE;\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

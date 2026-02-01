@@ -1,0 +1,9 @@
+{
+  "module_name": "nfp_xpb.h",
+  "hash_id": "7207d7ff1bf06f7a7bf9f4ccc89393c45230c9260fcff4cb5665ff99c913a2f2",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/netronome/nfp/nfpcore/nfp6000/nfp_xpb.h",
+  "human_readable_source": " \n \n\n \n\n#ifndef NFP6000_XPB_H\n#define NFP6000_XPB_H\n\n \n#define NFP_XPB_OVERLAY(island)  (((island) & 0x3f) << 24)\n\n#define NFP_XPB_ISLAND(island)   (NFP_XPB_OVERLAY(island) + 0x60000)\n\n#define NFP_XPB_ISLAND_of(offset) (((offset) >> 24) & 0x3F)\n\n \n#define NFP_XPB_DEVICE(island, slave, device) \\\n\t(NFP_XPB_OVERLAY(island) | \\\n\t (((slave) & 3) << 22) | \\\n\t (((device) & 0x3f) << 16))\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

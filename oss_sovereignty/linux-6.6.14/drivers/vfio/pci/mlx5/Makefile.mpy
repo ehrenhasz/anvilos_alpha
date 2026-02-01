@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "ee22191e02224c03733f221406625053bb5c07c141921f6b40dbe6de4180de2e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/vfio/pci/mlx5/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-$(CONFIG_MLX5_VFIO_PCI) += mlx5-vfio-pci.o\nmlx5-vfio-pci-y := main.o cmd.o\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

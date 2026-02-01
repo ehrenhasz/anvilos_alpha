@@ -1,0 +1,9 @@
+{
+  "module_name": "mc6821.h",
+  "hash_id": "2f517d12652d8d3e453e592fad722d5a00e6f1bd7fb727af72b204ffa415ef73",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/mc6821.h",
+  "human_readable_source": " \n#ifndef _MC6821_H_\n#define _MC6821_H_\n\n \n\n#ifndef PIA_REG_PADWIDTH\n#define PIA_REG_PADWIDTH 255\n#endif\n\nstruct pia {\n\tunion {\n\t\tvolatile u_char pra;\n\t\tvolatile u_char ddra;\n\t} ua;\n\tu_char pad1[PIA_REG_PADWIDTH];\n\tvolatile u_char cra;\n\tu_char pad2[PIA_REG_PADWIDTH];\n\tunion {\n\t\tvolatile u_char prb;\n\t\tvolatile u_char ddrb;\n\t} ub;\n\tu_char pad3[PIA_REG_PADWIDTH];\n\tvolatile u_char crb;\n\tu_char pad4[PIA_REG_PADWIDTH];\n};\n\n#define ppra ua.pra\n#define pddra ua.ddra\n#define pprb ub.prb\n#define pddrb ub.ddrb\n\n#define PIA_C1_ENABLE_IRQ (1<<0)\n#define PIA_C1_LOW_TO_HIGH (1<<1)\n#define PIA_DDR (1<<2)\n#define PIA_IRQ2 (1<<6)\n#define PIA_IRQ1 (1<<7)\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "@@__@@__py__objobject.c.compress",
+  "hash_id": "a877fa769fd558a7892404086376ef6fffa7368dfc1af494019bdbb3ec0e116a",
+  "original_prompt": "Ingested from sys_09_Anvil/source/ports/unix/build-bicameral/genhdr/compress/@@__@@__py__objobject.c.compress",
+  "human_readable_source": "arg must be user-type\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

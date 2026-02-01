@@ -1,0 +1,9 @@
+{
+  "module_name": "trace_kprobe_selftest.h",
+  "hash_id": "d4bca8277c266494ceea05a94b759fd5e6146cf72d8cb4f1276c2a617f970664",
+  "original_prompt": "Ingested from linux-6.6.14/kernel/trace/trace_kprobe_selftest.h",
+  "human_readable_source": "\n \nint kprobe_trace_selftest_target(int a1, int a2, int a3, int a4, int a5, int a6);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

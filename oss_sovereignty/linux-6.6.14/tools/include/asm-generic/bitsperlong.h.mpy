@@ -1,0 +1,9 @@
+{
+  "module_name": "bitsperlong.h",
+  "hash_id": "8aa759ca038422bc193c009be3d61e6044903dfab53af80bbd03664a88345fc6",
+  "original_prompt": "Ingested from linux-6.6.14/tools/include/asm-generic/bitsperlong.h",
+  "human_readable_source": " \n#ifndef __ASM_GENERIC_BITS_PER_LONG\n#define __ASM_GENERIC_BITS_PER_LONG\n\n#include <uapi/asm-generic/bitsperlong.h>\n\n#ifdef __SIZEOF_LONG__\n#define BITS_PER_LONG (__CHAR_BIT__ * __SIZEOF_LONG__)\n#else\n#define BITS_PER_LONG __WORDSIZE\n#endif\n\n#if BITS_PER_LONG != __BITS_PER_LONG\n#error Inconsistent word size. Check asm/bitsperlong.h\n#endif\n\n#ifndef BITS_PER_LONG_LONG\n#define BITS_PER_LONG_LONG 64\n#endif\n\n#define small_const_nbits(nbits) \\\n\t(__builtin_constant_p(nbits) && (nbits) <= BITS_PER_LONG && (nbits) > 0)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

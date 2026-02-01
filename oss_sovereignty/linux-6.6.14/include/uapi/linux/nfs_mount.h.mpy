@@ -1,0 +1,9 @@
+{
+  "module_name": "nfs_mount.h",
+  "hash_id": "0e3790eadf29ce52999a4552d6dfeb3b11d3220cd5309e0fdc968f05ec359790",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/nfs_mount.h",
+  "human_readable_source": " \n#ifndef _LINUX_NFS_MOUNT_H\n#define _LINUX_NFS_MOUNT_H\n\n \n#include <linux/in.h>\n#include <linux/nfs.h>\n#include <linux/nfs2.h>\n#include <linux/nfs3.h>\n\n \n#define NFS_MOUNT_VERSION\t6\n#define NFS_MAX_CONTEXT_LEN\t256\n\nstruct nfs_mount_data {\n\tint\t\tversion;\t\t \n\tint\t\tfd;\t\t\t \n\tstruct nfs2_fh\told_root;\t\t \n\tint\t\tflags;\t\t\t \n\tint\t\trsize;\t\t\t \n\tint\t\twsize;\t\t\t \n\tint\t\ttimeo;\t\t\t \n\tint\t\tretrans;\t\t \n\tint\t\tacregmin;\t\t \n\tint\t\tacregmax;\t\t \n\tint\t\tacdirmin;\t\t \n\tint\t\tacdirmax;\t\t \n\tstruct sockaddr_in addr;\t\t \n\tchar\t\thostname[NFS_MAXNAMLEN + 1];\t\t \n\tint\t\tnamlen;\t\t\t \n\tunsigned int\tbsize;\t\t\t \n\tstruct nfs3_fh\troot;\t\t\t \n\tint\t\tpseudoflavor;\t\t \n\tchar\t\tcontext[NFS_MAX_CONTEXT_LEN + 1];\t \n};\n\n \n\n#define NFS_MOUNT_SOFT\t\t0x0001\t \n#define NFS_MOUNT_INTR\t\t0x0002\t   \n#define NFS_MOUNT_SECURE\t0x0004\t \n#define NFS_MOUNT_POSIX\t\t0x0008\t \n#define NFS_MOUNT_NOCTO\t\t0x0010\t \n#define NFS_MOUNT_NOAC\t\t0x0020\t \n#define NFS_MOUNT_TCP\t\t0x0040\t \n#define NFS_MOUNT_VER3\t\t0x0080\t \n#define NFS_MOUNT_KERBEROS\t0x0100\t \n#define NFS_MOUNT_NONLM\t\t0x0200\t \n#define NFS_MOUNT_BROKEN_SUID\t0x0400\t \n#define NFS_MOUNT_NOACL\t\t0x0800\t \n#define NFS_MOUNT_STRICTLOCK\t0x1000\t \n#define NFS_MOUNT_SECFLAVOUR\t0x2000\t \n#define NFS_MOUNT_NORDIRPLUS\t0x4000\t \n#define NFS_MOUNT_UNSHARED\t0x8000\t \n#define NFS_MOUNT_FLAGMASK\t0xFFFF\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

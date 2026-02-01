@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "5170f412b90f6983f8d3f3047ec920d001634bc5575ca20ab67e4016622a1b60",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/pmdomain/apple/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-$(CONFIG_APPLE_PMGR_PWRSTATE)\t+= pmgr-pwrstate.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

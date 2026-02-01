@@ -1,0 +1,9 @@
+{
+  "module_name": "tracepoint.py",
+  "hash_id": "8b8ab06192c3aea96e519c2fab7f20d551be3b88df58f53ab08a5d6f713675d7",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/python/tracepoint.py",
+  "human_readable_source": "#! /usr/bin/env python\n# SPDX-License-Identifier: GPL-2.0\n# -*- python -*-\n# -*- coding: utf-8 -*-\n\nimport perf\n\nclass tracepoint(perf.evsel):\n    def __init__(self, sys, name):\n        config = perf.tracepoint(sys, name)\n        perf.evsel.__init__(self,\n                            type   = perf.TYPE_TRACEPOINT,\n                            config = config,\n                            freq = 0, sample_period = 1, wakeup_events = 1,\n                            sample_type = perf.SAMPLE_PERIOD | perf.SAMPLE_TID | perf.SAMPLE_CPU | perf.SAMPLE_RAW | perf.SAMPLE_TIME)\n\ndef main():\n    tp      = tracepoint(\"sched\", \"sched_switch\")\n    cpus    = perf.cpu_map()\n    threads = perf.thread_map(-1)\n\n    evlist = perf.evlist(cpus, threads)\n    evlist.add(tp)\n    evlist.open()\n    evlist.mmap()\n\n    while True:\n        evlist.poll(timeout = -1)\n        for cpu in cpus:\n            event = evlist.read_on_cpu(cpu)\n            if not event:\n                continue\n\n            if not isinstance(event, perf.sample_event):\n                continue\n\n            print(\"time %u prev_comm=%s prev_pid=%d prev_prio=%d prev_state=0x%x ==> next_comm=%s next_pid=%d next_prio=%d\" % (\n                   event.sample_time,\n                   event.prev_comm,\n                   event.prev_pid,\n                   event.prev_prio,\n                   event.prev_state,\n                   event.next_comm,\n                   event.next_pid,\n                   event.next_prio))\n\nif __name__ == '__main__':\n    main()\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

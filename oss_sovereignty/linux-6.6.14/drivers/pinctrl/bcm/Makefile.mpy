@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "5f2b993ab290c4bcdbc8a7932489338f88f2e861ef1101317bca8665f01fdebb",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/pinctrl/bcm/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n# Broadcom pinctrl support\n\nobj-$(CONFIG_PINCTRL_BCM281XX)\t\t+= pinctrl-bcm281xx.o\nobj-$(CONFIG_PINCTRL_BCM2835)\t\t+= pinctrl-bcm2835.o\nobj-$(CONFIG_PINCTRL_BCM4908)\t\t+= pinctrl-bcm4908.o\nobj-$(CONFIG_PINCTRL_BCM63XX)\t\t+= pinctrl-bcm63xx.o\nobj-$(CONFIG_PINCTRL_BCM6318)\t\t+= pinctrl-bcm6318.o\nobj-$(CONFIG_PINCTRL_BCM6328)\t\t+= pinctrl-bcm6328.o\nobj-$(CONFIG_PINCTRL_BCM6358)\t\t+= pinctrl-bcm6358.o\nobj-$(CONFIG_PINCTRL_BCM6362)\t\t+= pinctrl-bcm6362.o\nobj-$(CONFIG_PINCTRL_BCM6368)\t\t+= pinctrl-bcm6368.o\nobj-$(CONFIG_PINCTRL_BCM63268)\t\t+= pinctrl-bcm63268.o\nobj-$(CONFIG_PINCTRL_IPROC_GPIO)\t+= pinctrl-iproc-gpio.o\nobj-$(CONFIG_PINCTRL_CYGNUS_MUX)\t+= pinctrl-cygnus-mux.o\nobj-$(CONFIG_PINCTRL_NS)\t\t+= pinctrl-ns.o\nobj-$(CONFIG_PINCTRL_NSP_GPIO)\t\t+= pinctrl-nsp-gpio.o\nobj-$(CONFIG_PINCTRL_NS2_MUX)\t\t+= pinctrl-ns2-mux.o\nobj-$(CONFIG_PINCTRL_NSP_MUX)\t\t+= pinctrl-nsp-mux.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

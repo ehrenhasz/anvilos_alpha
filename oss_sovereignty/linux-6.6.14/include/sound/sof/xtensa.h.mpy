@@ -1,0 +1,9 @@
+{
+  "module_name": "xtensa.h",
+  "hash_id": "e54bb5070a8d9f9f6c699a70b73fed8119d0ad906c5cf909ac3a7dd2b8c8c04a",
+  "original_prompt": "Ingested from linux-6.6.14/include/sound/sof/xtensa.h",
+  "human_readable_source": " \n \n\n#ifndef __INCLUDE_SOUND_SOF_XTENSA_H__\n#define __INCLUDE_SOUND_SOF_XTENSA_H__\n\n#include <sound/sof/header.h>\n\n \n\n \nstruct sof_ipc_dsp_oops_xtensa {\n\tstruct sof_ipc_dsp_oops_arch_hdr arch_hdr;\n\tstruct sof_ipc_dsp_oops_plat_hdr plat_hdr;\n\tuint32_t exccause;\n\tuint32_t excvaddr;\n\tuint32_t ps;\n\tuint32_t epc1;\n\tuint32_t epc2;\n\tuint32_t epc3;\n\tuint32_t epc4;\n\tuint32_t epc5;\n\tuint32_t epc6;\n\tuint32_t epc7;\n\tuint32_t eps2;\n\tuint32_t eps3;\n\tuint32_t eps4;\n\tuint32_t eps5;\n\tuint32_t eps6;\n\tuint32_t eps7;\n\tuint32_t depc;\n\tuint32_t intenable;\n\tuint32_t interrupt;\n\tuint32_t sar;\n\tuint32_t debugcause;\n\tuint32_t windowbase;\n\tuint32_t windowstart;\n\tuint32_t excsave1;\n\tuint32_t ar[];\n}  __packed;\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

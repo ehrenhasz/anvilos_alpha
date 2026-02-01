@@ -1,0 +1,9 @@
+{
+  "module_name": "build.priv.h",
+  "hash_id": "e4af75be35c3d5ed603c14aa71de202c458214aa50930f7852edf1215b89464a",
+  "original_prompt": "Ingested from ncurses-6.4/ncurses/build.priv.h",
+  "human_readable_source": " \n\n \n\n \n\n#ifndef CURSES_PRIV_H\n#define CURSES_PRIV_H 1\n\n#include <ncurses_dll.h>\n\n#ifdef __cplusplus\nextern \"C\" {\n#endif\n\n#include <ncurses_cfg.h>\n\n#if USE_RCS_IDS\n#define MODULE_ID(id) static const char Ident[] = id;\n#else\n#define MODULE_ID(id)\t\t \n#endif\n\n#include <stdlib.h>\n#include <string.h>\n#include <sys/types.h>\n\n#include <assert.h>\n#include <stdio.h>\n\n#include <errno.h>\n\n#include <curses.h>\t\t \n\n \n#ifndef EXIT_SUCCESS\n#define EXIT_SUCCESS 0\n#endif\n\n#ifndef EXIT_FAILURE\n#define EXIT_FAILURE 1\n#endif\n\n#define FreeAndNull(p)   do { free(p); p = 0; } while (0)\n#define UChar(c)         ((unsigned char)(c))\n#define SIZEOF(v)        (sizeof(v) / sizeof(v[0]))\n\n#include <nc_alloc.h>\n#include <nc_string.h>\n\n \n#if BROKEN_LINKER || USE_REENTRANT\n#define NCURSES_ARRAY(name) \\\n\tNCURSES_WRAPPED_VAR(NCURSES_CONST char * const *, name)\n\n    NCURSES_ARRAY(boolnames);\n    NCURSES_ARRAY(boolfnames);\n    NCURSES_ARRAY(numnames);\n    NCURSES_ARRAY(numfnames);\n    NCURSES_ARRAY(strnames);\n    NCURSES_ARRAY(strfnames);\n#endif\n\n#if NO_LEAKS\n    NCURSES_EXPORT(void) _nc_names_leaks(void);\n#endif\n\n#ifdef __cplusplus\n}\n#endif\n#endif\t\t\t\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

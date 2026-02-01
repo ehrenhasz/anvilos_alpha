@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "da7d7c334b9d49d81c409265a104658ccc9df6394bbbecb6a6c466842147b0fc",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/clk/stm32/Makefile",
+  "human_readable_source": "obj-$(CONFIG_COMMON_CLK_STM32MP135)\t+= clk-stm32mp13.o clk-stm32-core.o reset-stm32.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

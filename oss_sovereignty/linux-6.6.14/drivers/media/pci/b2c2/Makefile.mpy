@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "bf84b3b6cf883ae009ed5f5380640c7dfdc7c36b673577e2cc087af63d534e7f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/pci/b2c2/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nifneq ($(CONFIG_DVB_B2C2_FLEXCOP_PCI),)\nb2c2-flexcop-pci-objs += flexcop-dma.o\nendif\n\nb2c2-flexcop-pci-objs += flexcop-pci.o\nobj-$(CONFIG_DVB_B2C2_FLEXCOP_PCI) += b2c2-flexcop-pci.o\n\nccflags-y += -I $(srctree)/drivers/media/common/b2c2/\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

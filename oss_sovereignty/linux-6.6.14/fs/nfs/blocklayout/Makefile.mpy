@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "faccfe1ce6708d2cd7af4796539a596f67dc0281ffd12f7555014de775e0b438",
+  "original_prompt": "Ingested from linux-6.6.14/fs/nfs/blocklayout/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Makefile for the pNFS block layout driver kernel module\n#\nobj-$(CONFIG_PNFS_BLOCK) += blocklayoutdriver.o\n\nblocklayoutdriver-y += blocklayout.o dev.o extent_tree.o rpc_pipefs.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

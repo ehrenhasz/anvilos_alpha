@@ -1,0 +1,9 @@
+{
+  "module_name": "vmci_handle_array.h",
+  "hash_id": "4a0b1840b62cce5499a349a52b389c16864285359726ec3b95387b6cc73a7535",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/misc/vmw_vmci/vmci_handle_array.h",
+  "human_readable_source": " \n \n\n#ifndef _VMCI_HANDLE_ARRAY_H_\n#define _VMCI_HANDLE_ARRAY_H_\n\n#include <linux/vmw_vmci_defs.h>\n#include <linux/limits.h>\n#include <linux/types.h>\n\nstruct vmci_handle_arr {\n\tu32 capacity;\n\tu32 max_capacity;\n\tu32 size;\n\tu32 pad;\n\tstruct vmci_handle entries[];\n};\n\n#define VMCI_HANDLE_ARRAY_HEADER_SIZE\t\t\t\t\\\n\toffsetof(struct vmci_handle_arr, entries)\n \n#define VMCI_HANDLE_ARRAY_DEFAULT_CAPACITY\t\t\t6\n \n#define VMCI_HANDLE_ARRAY_MAX_CAPACITY\t\t\t\t\\\n\t((U32_MAX - VMCI_HANDLE_ARRAY_HEADER_SIZE - 1) /\t\\\n\tsizeof(struct vmci_handle))\n\nstruct vmci_handle_arr *vmci_handle_arr_create(u32 capacity, u32 max_capacity);\nvoid vmci_handle_arr_destroy(struct vmci_handle_arr *array);\nint vmci_handle_arr_append_entry(struct vmci_handle_arr **array_ptr,\n\t\t\t\t struct vmci_handle handle);\nstruct vmci_handle vmci_handle_arr_remove_entry(struct vmci_handle_arr *array,\n\t\t\t\t\t\tstruct vmci_handle\n\t\t\t\t\t\tentry_handle);\nstruct vmci_handle vmci_handle_arr_remove_tail(struct vmci_handle_arr *array);\nstruct vmci_handle\nvmci_handle_arr_get_entry(const struct vmci_handle_arr *array, u32 index);\nbool vmci_handle_arr_has_entry(const struct vmci_handle_arr *array,\n\t\t\t       struct vmci_handle entry_handle);\nstruct vmci_handle *vmci_handle_arr_get_handles(struct vmci_handle_arr *array);\n\nstatic inline u32 vmci_handle_arr_get_size(\n\tconst struct vmci_handle_arr *array)\n{\n\treturn array->size;\n}\n\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "rcar_du_group.h",
+  "hash_id": "99f99dc4e2a32c0bb716bb85eeac9b84fc310d551d45256eedf3632388399008",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/renesas/rcar-du/rcar_du_group.h",
+  "human_readable_source": " \n \n\n#ifndef __RCAR_DU_GROUP_H__\n#define __RCAR_DU_GROUP_H__\n\n#include <linux/mutex.h>\n\n#include \"rcar_du_plane.h\"\n\nstruct rcar_du_device;\n\n \nstruct rcar_du_group {\n\tstruct rcar_du_device *dev;\n\tunsigned int mmio_offset;\n\tunsigned int index;\n\n\tunsigned int channels_mask;\n\tunsigned int cmms_mask;\n\tunsigned int num_crtcs;\n\tunsigned int use_count;\n\tunsigned int used_crtcs;\n\n\tstruct mutex lock;\n\tunsigned int dptsr_planes;\n\n\tunsigned int num_planes;\n\tstruct rcar_du_plane planes[RCAR_DU_NUM_KMS_PLANES];\n\tbool need_restart;\n};\n\nu32 rcar_du_group_read(struct rcar_du_group *rgrp, u32 reg);\nvoid rcar_du_group_write(struct rcar_du_group *rgrp, u32 reg, u32 data);\n\nint rcar_du_group_get(struct rcar_du_group *rgrp);\nvoid rcar_du_group_put(struct rcar_du_group *rgrp);\nvoid rcar_du_group_start_stop(struct rcar_du_group *rgrp, bool start);\nvoid rcar_du_group_restart(struct rcar_du_group *rgrp);\nint rcar_du_group_set_routing(struct rcar_du_group *rgrp);\n\nint rcar_du_set_dpad0_vsp1_routing(struct rcar_du_device *rcdu);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "freadptr.m4",
+  "hash_id": "568c63dedb28812764d3afc0c4718cdc4c4847fedf271e1bcdb55129e624819e",
+  "original_prompt": "Ingested from coreutils-9.4/m4/freadptr.m4",
+  "human_readable_source": "# freadptr.m4 serial 1\ndnl Copyright (C) 2012-2023 Free Software Foundation, Inc.\ndnl This file is free software; the Free Software Foundation\ndnl gives unlimited permission to copy and/or distribute it,\ndnl with or without modifications, as long as this notice is preserved.\n\nAC_DEFUN([gl_FUNC_FREADPTR],\n[\n  AC_CHECK_FUNCS_ONCE([__freadptr])\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

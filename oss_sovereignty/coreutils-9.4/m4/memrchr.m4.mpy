@@ -1,0 +1,9 @@
+{
+  "module_name": "memrchr.m4",
+  "hash_id": "6e3055af5945b811201b20757e7680ef31a8ae5a7fcf00bd5472e97918c58ca1",
+  "original_prompt": "Ingested from coreutils-9.4/m4/memrchr.m4",
+  "human_readable_source": "# memrchr.m4 serial 11\ndnl Copyright (C) 2002-2003, 2005-2007, 2009-2023 Free Software Foundation,\ndnl Inc.\ndnl This file is free software; the Free Software Foundation\ndnl gives unlimited permission to copy and/or distribute it,\ndnl with or without modifications, as long as this notice is preserved.\n\nAC_DEFUN([gl_FUNC_MEMRCHR],\n[\n  dnl Persuade glibc <string.h> to declare memrchr().\n  AC_REQUIRE([AC_USE_SYSTEM_EXTENSIONS])\n\n  AC_REQUIRE([gl_STRING_H_DEFAULTS])\n  AC_CHECK_DECLS_ONCE([memrchr])\n  if test $ac_cv_have_decl_memrchr = no; then\n    HAVE_DECL_MEMRCHR=0\n  fi\n\n  AC_CHECK_FUNCS([memrchr])\n])\n\n# Prerequisites of lib/memrchr.c.\nAC_DEFUN([gl_PREREQ_MEMRCHR], [:])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

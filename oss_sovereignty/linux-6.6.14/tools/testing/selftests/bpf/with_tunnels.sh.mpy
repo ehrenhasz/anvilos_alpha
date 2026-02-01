@@ -1,0 +1,9 @@
+{
+  "module_name": "with_tunnels.sh",
+  "hash_id": "fd9d95f7d08a45b589a0474c5598a8d5fd91a94953490a8551c44c240aac8550",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/with_tunnels.sh",
+  "human_readable_source": "#!/bin/bash\n# SPDX-License-Identifier: GPL-2.0\n#\n# setup tunnels for flow dissection test\n\nreadonly SUFFIX=\"test_$(mktemp -u XXXX)\"\nCONFIG=\"remote 127.0.0.2 local 127.0.0.1 dev lo\"\n\nsetup() {\n  ip link add \"ipip_${SUFFIX}\" type ipip ${CONFIG}\n  ip link add \"gre_${SUFFIX}\" type gre ${CONFIG}\n  ip link add \"sit_${SUFFIX}\" type sit ${CONFIG}\n\n  echo \"tunnels before test:\"\n  ip tunnel show\n\n  ip link set \"ipip_${SUFFIX}\" up\n  ip link set \"gre_${SUFFIX}\" up\n  ip link set \"sit_${SUFFIX}\" up\n}\n\n\ncleanup() {\n  ip tunnel del \"ipip_${SUFFIX}\"\n  ip tunnel del \"gre_${SUFFIX}\"\n  ip tunnel del \"sit_${SUFFIX}\"\n\n  echo \"tunnels after test:\"\n  ip tunnel show\n}\n\ntrap cleanup EXIT\n\nsetup\n\"$@\"\nexit \"$?\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

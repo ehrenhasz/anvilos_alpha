@@ -1,0 +1,9 @@
+{
+  "module_name": "dcn302_dccg.h",
+  "hash_id": "943292663dead78ab2e7d5975b712a2595b80c57d52a8bc7252799f52fdeb57e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/dc/dcn302/dcn302_dccg.h",
+  "human_readable_source": " \n\n#ifndef __DCN302_DCCG_H__\n#define __DCN302_DCCG_H__\n\n#include \"dcn30/dcn30_dccg.h\"\n\n\n#define DCCG_REG_LIST_DCN3_02() \\\n\tDCCG_COMMON_REG_LIST_DCN_BASE(),\\\n\tDCCG_SRII(DTO_PARAM, DPPCLK, 4)\n\n#define DCCG_MASK_SH_LIST_DCN3_02(mask_sh) \\\n\tDCCG_COMMON_MASK_SH_LIST_DCN_COMMON_BASE(mask_sh),\\\n\tDCCG_SFI(DPPCLK_DTO_CTRL, DTO_ENABLE, DPPCLK, 4, mask_sh),\\\n\tDCCG_SFI(DPPCLK_DTO_CTRL, DTO_DB_EN, DPPCLK, 4, mask_sh)\n\n#endif \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

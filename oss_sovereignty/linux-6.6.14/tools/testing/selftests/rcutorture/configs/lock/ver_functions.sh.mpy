@@ -1,0 +1,9 @@
+{
+  "module_name": "ver_functions.sh",
+  "hash_id": "cf645bc49bf45e0a1de2273bc347caafbd7912fef6c8a70a59a7f4a99ee7c749",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/rcutorture/configs/lock/ver_functions.sh",
+  "human_readable_source": "#!/bin/bash\n# SPDX-License-Identifier: GPL-2.0+\n#\n# Kernel-version-dependent shell functions for the rest of the scripts.\n#\n# Copyright (C) IBM Corporation, 2014\n#\n# Authors: Paul E. McKenney <paulmck@linux.ibm.com>\n\n# locktorture_param_onoff bootparam-string config-file\n#\n# Adds onoff locktorture module parameters to kernels having it.\nlocktorture_param_onoff () {\n\tif ! bootparam_hotplug_cpu \"$1\" && configfrag_hotplug_cpu \"$2\"\n\tthen\n\t\techo CPU-hotplug kernel, adding locktorture onoff. 1>&2\n\t\techo locktorture.onoff_interval=3 locktorture.onoff_holdoff=30\n\tfi\n}\n\n# per_version_boot_params bootparam-string config-file seconds\n#\n# Adds per-version torture-module parameters to kernels supporting them.\nper_version_boot_params () {\n\techo\t`locktorture_param_onoff \"$1\" \"$2\"` \\\n\t\tlocktorture.stat_interval=15 \\\n\t\tlocktorture.shutdown_secs=$3 \\\n\t\tlocktorture.verbose=1 \\\n\t\t$1\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "bcm63xx_pmb.h",
+  "hash_id": "ba157ece82f071ead7ab32650008204c3ce339abb5e2a1931ab41b444997feb2",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/reset/bcm63xx_pmb.h",
+  "human_readable_source": " \n \n#ifndef __BCM63XX_PMB_H\n#define __BCM63XX_PMB_H\n\n#include <linux/io.h>\n#include <linux/types.h>\n#include <linux/delay.h>\n#include <linux/err.h>\n\n \n#define PMB_CTRL\t\t0x00\n#define  PMC_PMBM_START\t\t(1 << 31)\n#define  PMC_PMBM_TIMEOUT\t(1 << 30)\n#define  PMC_PMBM_SLAVE_ERR\t(1 << 29)\n#define  PMC_PMBM_BUSY\t\t(1 << 28)\n#define  PMC_PMBM_READ\t\t(0 << 20)\n#define  PMC_PMBM_WRITE\t\t(1 << 20)\n#define PMB_WR_DATA\t\t0x04\n#define PMB_TIMEOUT\t\t0x08\n#define PMB_RD_DATA\t\t0x0C\n\n#define PMB_BUS_ID_SHIFT\t8\n\n \nstatic inline int __bpcm_do_op(void __iomem *master, unsigned int addr,\n\t\t\t       u32 off, u32 op)\n{\n\tunsigned int timeout = 1000;\n\tu32 cmd;\n\n\tcmd = (PMC_PMBM_START | op | (addr & 0xff) << 12 | off);\n\twritel(cmd, master + PMB_CTRL);\n\tdo {\n\t\tcmd = readl(master + PMB_CTRL);\n\t\tif (!(cmd & PMC_PMBM_START))\n\t\t\treturn 0;\n\n\t\tif (cmd & PMC_PMBM_SLAVE_ERR)\n\t\t\treturn -EIO;\n\n\t\tif (cmd & PMC_PMBM_TIMEOUT)\n\t\t\treturn -ETIMEDOUT;\n\n\t\tudelay(1);\n\t} while (timeout-- > 0);\n\n\treturn -ETIMEDOUT;\n}\n\nstatic inline int bpcm_rd(void __iomem *master, unsigned int addr,\n\t\t\t  u32 off, u32 *val)\n{\n\tint ret = 0;\n\n\tret = __bpcm_do_op(master, addr, off >> 2, PMC_PMBM_READ);\n\t*val = readl(master + PMB_RD_DATA);\n\n\treturn ret;\n}\n\nstatic inline int bpcm_wr(void __iomem *master, unsigned int addr,\n\t\t\t  u32 off, u32 val)\n{\n\tint ret = 0;\n\n\twritel(val, master + PMB_WR_DATA);\n\tret = __bpcm_do_op(master, addr, off >> 2, PMC_PMBM_WRITE);\n\n\treturn ret;\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

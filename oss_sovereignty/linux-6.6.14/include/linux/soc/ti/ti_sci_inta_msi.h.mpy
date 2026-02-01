@@ -1,0 +1,9 @@
+{
+  "module_name": "ti_sci_inta_msi.h",
+  "hash_id": "a97eae741bc367d5dc10b69f69bf5a81d8cda43c9077cf093501be06893405a5",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/soc/ti/ti_sci_inta_msi.h",
+  "human_readable_source": " \n \n\n#ifndef __INCLUDE_LINUX_TI_SCI_INTA_MSI_H\n#define __INCLUDE_LINUX_TI_SCI_INTA_MSI_H\n\n#include <linux/msi.h>\n#include <linux/soc/ti/ti_sci_protocol.h>\n\nstruct irq_domain\n*ti_sci_inta_msi_create_irq_domain(struct fwnode_handle *fwnode,\n\t\t\t\t   struct msi_domain_info *info,\n\t\t\t\t   struct irq_domain *parent);\nint ti_sci_inta_msi_domain_alloc_irqs(struct device *dev,\n\t\t\t\t      struct ti_sci_resource *res);\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

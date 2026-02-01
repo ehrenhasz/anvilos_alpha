@@ -1,0 +1,9 @@
+{
+  "module_name": "freenas-9.10.2",
+  "hash_id": "c654b9354d772f1d3ef3e9884cb59b7e92eb868f8288d643a55b0d170fb58b60",
+  "original_prompt": "Ingested from zfs-2.2.2/cmd/zpool/compatibility.d/freenas-9.10.2",
+  "human_readable_source": "# Features supported by FreeNAS 9.10.2\nasync_destroy\nbookmarks\nembedded_data\nempty_bpobj\nenabled_txg\nextensible_dataset\nfilesystem_limits\nhole_birth\nlarge_blocks\nlz4_compress\nmulti_vdev_crash_dump\nspacemap_histogram\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

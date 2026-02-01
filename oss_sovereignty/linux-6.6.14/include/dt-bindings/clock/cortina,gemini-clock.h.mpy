@@ -1,0 +1,9 @@
+{
+  "module_name": "cortina,gemini-clock.h",
+  "hash_id": "983b390d6671a81c74521772744ba33e720a5cba5e92d875235349ea011a29d7",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/clock/cortina,gemini-clock.h",
+  "human_readable_source": " \n#ifndef DT_BINDINGS_CORTINA_GEMINI_CLOCK_H\n#define DT_BINDINGS_CORTINA_GEMINI_CLOCK_H\n\n \n#define GEMINI_NUM_CLKS 20\n\n#define GEMINI_CLK_RTC 0\n#define GEMINI_CLK_AHB 1\n#define GEMINI_CLK_APB 2\n#define GEMINI_CLK_CPU 3\n#define GEMINI_CLK_PCI 4\n#define GEMINI_CLK_TVC 5\n#define GEMINI_CLK_UART 6\n#define GEMINI_CLK_GATES 7\n#define GEMINI_CLK_GATE_SECURITY 7\n#define GEMINI_CLK_GATE_GMAC0 8\n#define GEMINI_CLK_GATE_GMAC1 9\n#define GEMINI_CLK_GATE_SATA0 10\n#define GEMINI_CLK_GATE_SATA1 11\n#define GEMINI_CLK_GATE_USB0 12\n#define GEMINI_CLK_GATE_USB1 13\n#define GEMINI_CLK_GATE_IDE 14\n#define GEMINI_CLK_GATE_PCI 15\n#define GEMINI_CLK_GATE_DDR 16\n#define GEMINI_CLK_GATE_FLASH 17\n#define GEMINI_CLK_GATE_TVC 18\n#define GEMINI_CLK_GATE_BOOT 19\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

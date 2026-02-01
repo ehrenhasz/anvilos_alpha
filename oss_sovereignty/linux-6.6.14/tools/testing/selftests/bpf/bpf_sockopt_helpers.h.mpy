@@ -1,0 +1,9 @@
+{
+  "module_name": "bpf_sockopt_helpers.h",
+  "hash_id": "6473dd77198ee58d1be06f47a299ccc425d8a5baa553d044bca3062ffe627e82",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/bpf_sockopt_helpers.h",
+  "human_readable_source": " \n\n#include <sys/socket.h>\n#include <bpf/bpf_helpers.h>\n\nint get_set_sk_priority(void *ctx)\n{\n\tint prio;\n\n\t \n\n\tif (bpf_getsockopt(ctx, SOL_SOCKET, SO_PRIORITY, &prio, sizeof(prio)))\n\t\treturn 0;\n\tif (bpf_setsockopt(ctx, SOL_SOCKET, SO_PRIORITY, &prio, sizeof(prio)))\n\t\treturn 0;\n\n\treturn 1;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "test_time_tai.c",
+  "hash_id": "aa6d7fde1826d0652bfef327a77e8f26db95e917f9205aeb6a68d67b0d6c5f12",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/test_time_tai.c",
+  "human_readable_source": "\n \n\n#include <linux/bpf.h>\n#include <bpf/bpf_helpers.h>\n\nchar _license[] SEC(\"license\") = \"GPL\";\n\nSEC(\"tc\")\nint time_tai(struct __sk_buff *skb)\n{\n\t__u64 ts1, ts2;\n\n\t \n\tts1 = bpf_ktime_get_tai_ns();\n\tts2 = bpf_ktime_get_tai_ns();\n\n\t \n\tskb->tstamp = ts1;\n\tskb->cb[0] = ts2 & 0xffffffff;\n\tskb->cb[1] = ts2 >> 32;\n\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "sun7i-a20-ccu.h",
+  "hash_id": "1fd956834a63385b076c5b9092307a3aefef0906f3f085c72492072031493031",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/clock/sun7i-a20-ccu.h",
+  "human_readable_source": " \n\n#ifndef _DT_BINDINGS_CLK_SUN7I_A20_H_\n#define _DT_BINDINGS_CLK_SUN7I_A20_H_\n\n#include <dt-bindings/clock/sun4i-a10-ccu.h>\n\n#define CLK_MBUS\t\t166\n#define CLK_HDMI1_SLOW\t\t167\n#define CLK_HDMI1\t\t168\n#define CLK_OUT_A\t\t169\n#define CLK_OUT_B\t\t170\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

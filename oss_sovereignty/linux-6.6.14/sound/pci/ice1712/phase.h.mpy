@@ -1,0 +1,9 @@
+{
+  "module_name": "phase.h",
+  "hash_id": "3f1f0ae188e093bbd2a874c63b3e1b62c2379b5df60339d298d29399d97c1558",
+  "original_prompt": "Ingested from linux-6.6.14/sound/pci/ice1712/phase.h",
+  "human_readable_source": " \n#ifndef __SOUND_PHASE_H\n#define __SOUND_PHASE_H\n\n \n\n#define PHASE_DEVICE_DESC\t\"{Terratec,Phase 22},\"\\\n\t\t\t\t\"{Terratec,Phase 28},\"\\\n\t\t\t\t\"{Terrasoniq,TS22},\"\n\n#define VT1724_SUBDEVICE_PHASE22\t0x3b155011\n#define VT1724_SUBDEVICE_PHASE28\t0x3b154911\n#define VT1724_SUBDEVICE_TS22\t\t0x3b157b11\n\n \nextern struct snd_ice1712_card_info snd_vt1724_phase_cards[];\n\n \n#define PHASE28_SPI_MISO\t(1 << 21)\n#define PHASE28_WM_RESET\t(1 << 20)\n#define PHASE28_SPI_CLK\t\t(1 << 19)\n#define PHASE28_SPI_MOSI\t(1 << 18)\n#define PHASE28_WM_RW\t\t(1 << 17)\n#define PHASE28_AC97_RESET\t(1 << 16)\n#define PHASE28_DIGITAL_SEL1\t(1 << 15)\n#define PHASE28_HP_SEL\t\t(1 << 14)\n#define PHASE28_WM_CS\t\t(1 << 12)\n#define PHASE28_AC97_COMMIT\t(1 << 11)\n#define PHASE28_AC97_ADDR\t(1 << 10)\n#define PHASE28_AC97_DATA_LOW\t(1 << 9)\n#define PHASE28_AC97_DATA_HIGH\t(1 << 8)\n#define PHASE28_AC97_DATA_MASK\t0xFF\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

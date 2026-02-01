@@ -1,0 +1,9 @@
+{
+  "module_name": "error_report.h",
+  "hash_id": "7bf8d0727fb3f17888874e755eb45eddaa1cb688825b6bb4d42f098c466f27de",
+  "original_prompt": "Ingested from linux-6.6.14/include/trace/events/error_report.h",
+  "human_readable_source": " \n \n#undef TRACE_SYSTEM\n#define TRACE_SYSTEM error_report\n\n#if !defined(_TRACE_ERROR_REPORT_H) || defined(TRACE_HEADER_MULTI_READ)\n#define _TRACE_ERROR_REPORT_H\n\n#include <linux/tracepoint.h>\n\n#ifndef __ERROR_REPORT_DECLARE_TRACE_ENUMS_ONCE_ONLY\n#define __ERROR_REPORT_DECLARE_TRACE_ENUMS_ONCE_ONLY\n\nenum error_detector {\n\tERROR_DETECTOR_KFENCE,\n\tERROR_DETECTOR_KASAN,\n\tERROR_DETECTOR_WARN,\n};\n\n#endif  \n\n#define error_detector_list\t\t\t\\\n\tEM(ERROR_DETECTOR_KFENCE, \"kfence\")\t\\\n\tEM(ERROR_DETECTOR_KASAN, \"kasan\")\t\\\n\tEMe(ERROR_DETECTOR_WARN, \"warning\")\n \n\n#undef EM\n#undef EMe\n\n#define EM(a, b)\tTRACE_DEFINE_ENUM(a);\n#define EMe(a, b)\tTRACE_DEFINE_ENUM(a);\n\nerror_detector_list\n\n#undef EM\n#undef EMe\n\n#define EM(a, b) { a, b },\n#define EMe(a, b) { a, b }\n\n#define show_error_detector_list(val) \\\n\t__print_symbolic(val, error_detector_list)\n\nDECLARE_EVENT_CLASS(error_report_template,\n\t\t    TP_PROTO(enum error_detector error_detector, unsigned long id),\n\t\t    TP_ARGS(error_detector, id),\n\t\t    TP_STRUCT__entry(__field(enum error_detector, error_detector)\n\t\t\t\t\t     __field(unsigned long, id)),\n\t\t    TP_fast_assign(__entry->error_detector = error_detector;\n\t\t\t\t   __entry->id = id;),\n\t\t    TP_printk(\"[%s] %lx\",\n\t\t\t      show_error_detector_list(__entry->error_detector),\n\t\t\t      __entry->id));\n\n \nDEFINE_EVENT(error_report_template, error_report_end,\n\t     TP_PROTO(enum error_detector error_detector, unsigned long id),\n\t     TP_ARGS(error_detector, id));\n\n#endif  \n\n \n#include <trace/define_trace.h>\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

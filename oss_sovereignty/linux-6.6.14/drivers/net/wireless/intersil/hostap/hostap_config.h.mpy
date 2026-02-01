@@ -1,0 +1,9 @@
+{
+  "module_name": "hostap_config.h",
+  "hash_id": "6a89fca40cf62e3fe39e1ebf0a2d09d95ef87aa26277679601ceaa2a29c06ea7",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/intersil/hostap/hostap_config.h",
+  "human_readable_source": " \n#ifndef HOSTAP_CONFIG_H\n#define HOSTAP_CONFIG_H\n\n \n \n\n \n#define PRISM2_MAX_INTERRUPT_EVENTS 20\n\n \n#define PRISM2_DOWNLOAD_SUPPORT\n\n \n#if !defined(PRISM2_DOWNLOAD_SUPPORT) && defined(CONFIG_HOSTAP_FIRMWARE)\n#define PRISM2_DOWNLOAD_SUPPORT\n#endif\n\n \n#ifdef CONFIG_HOSTAP_FIRMWARE_NVRAM\n#define PRISM2_NON_VOLATILE_DOWNLOAD\n#endif\n\n \n \n\n \n\n \n \n\n \n \n\n \n \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

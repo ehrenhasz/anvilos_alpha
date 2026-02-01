@@ -1,0 +1,9 @@
+{
+  "module_name": "locking-selftest-mutex.h",
+  "hash_id": "58ce4d611824fd8666c9ca01cf7a73b27ce758bc97ba5a14109ba46dbf23df9e",
+  "original_prompt": "Ingested from linux-6.6.14/lib/locking-selftest-mutex.h",
+  "human_readable_source": " \n#undef LOCK\n#define LOCK\t\tML\n\n#undef UNLOCK\n#define UNLOCK\t\tMU\n\n#undef RLOCK\n#undef WLOCK\n\n#undef INIT\n#define INIT\t\tMI\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "tas2781-tlv.h",
+  "hash_id": "c722cc95aa5942aa664667231e7a689ae00c6290f6ee1f236b438b2da005161a",
+  "original_prompt": "Ingested from linux-6.6.14/include/sound/tas2781-tlv.h",
+  "human_readable_source": " \n\n\n\n\n\n\n\n\n\n\n\n\n\n#ifndef __TAS2781_TLV_H__\n#define __TAS2781_TLV_H__\n\nstatic const DECLARE_TLV_DB_SCALE(dvc_tlv, -10000, 100, 0);\nstatic const DECLARE_TLV_DB_SCALE(amp_vol_tlv, 1100, 50, 0);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

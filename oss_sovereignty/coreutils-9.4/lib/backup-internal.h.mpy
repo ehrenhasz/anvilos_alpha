@@ -1,0 +1,9 @@
+{
+  "module_name": "backup-internal.h",
+  "hash_id": "cd31f409da7b30521164e8251013fd359d8f7f1a149cd00fd09d3557e4d85a5f",
+  "original_prompt": "Ingested from coreutils-9.4/lib/backup-internal.h",
+  "human_readable_source": "/* Backup files.\n\n   Copyright (C) 2017-2023 Free Software Foundation, Inc.\n\n   This file is free software: you can redistribute it and/or modify\n   it under the terms of the GNU General Public License as published\n   by the Free Software Foundation, either version 3 of the License,\n   or (at your option) any later version.\n\n   This file is distributed in the hope that it will be useful,\n   but WITHOUT ANY WARRANTY; without even the implied warranty of\n   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n   GNU General Public License for more details.\n\n   You should have received a copy of the GNU General Public License\n   along with this program.  If not, see <https:\n\n#include \"backupfile.h\"\n#include <stdlib.h>\n\nextern char *backupfile_internal (int, char const *, enum backup_type, bool)\n  _GL_ATTRIBUTE_MALLOC _GL_ATTRIBUTE_DEALLOC_FREE;\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "test_kexec_load.sh",
+  "hash_id": "8acca01bc75c283a11107de0c00680cbc5bd25878e07e6210862d92656882828",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/kexec/test_kexec_load.sh",
+  "human_readable_source": "#!/bin/sh\n# SPDX-License-Identifier: GPL-2.0\n#\n# Prevent loading a kernel image via the kexec_load syscall when\n# signatures are required.  (Dependent on CONFIG_IMA_ARCH_POLICY.)\n\nTEST=\"$0\"\n. ./kexec_common_lib.sh\n\n# kexec requires root privileges\nrequire_root_privileges\n\n# get the kernel config\nget_kconfig\n\nkconfig_enabled \"CONFIG_KEXEC=y\" \"kexec_load is enabled\"\nif [ $? -eq 0 ]; then\n\tlog_skip \"kexec_load is not enabled\"\nfi\n\nkconfig_enabled \"CONFIG_IMA_APPRAISE=y\" \"IMA enabled\"\nima_appraise=$?\n\nkconfig_enabled \"CONFIG_IMA_ARCH_POLICY=y\" \\\n\t\"IMA architecture specific policy enabled\"\narch_policy=$?\n\nget_secureboot_mode\nsecureboot=$?\n\n# kexec_load should fail in secure boot mode and CONFIG_IMA_ARCH_POLICY enabled\nkexec --load $KERNEL_IMAGE > /dev/null 2>&1\nif [ $? -eq 0 ]; then\n\tkexec --unload\n\tif [ $secureboot -eq 1 ] && [ $arch_policy -eq 1 ]; then\n\t\tlog_fail \"kexec_load succeeded\"\n\telif [ $ima_appraise -eq 0 -o $arch_policy -eq 0 ]; then\n\t\tlog_info \"Either IMA or the IMA arch policy is not enabled\"\n\tfi\n\tlog_pass \"kexec_load succeeded\"\nelse\n\tif [ $secureboot -eq 1 ] && [ $arch_policy -eq 1 ] ; then\n\t\tlog_pass \"kexec_load failed\"\n\telse\n\t\tlog_fail \"kexec_load failed\"\n\tfi\nfi\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "8116e9d9be1026cd3e15f33fdbad00f4ecebe245c36ac33b57d5c2d56e22d17d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/atmel-hlcdc/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\natmel-hlcdc-dc-y := atmel_hlcdc_crtc.o \\\n\t\tatmel_hlcdc_dc.o \\\n\t\tatmel_hlcdc_output.o \\\n\t\tatmel_hlcdc_plane.o\n\nobj-$(CONFIG_DRM_ATMEL_HLCDC)\t+= atmel-hlcdc-dc.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

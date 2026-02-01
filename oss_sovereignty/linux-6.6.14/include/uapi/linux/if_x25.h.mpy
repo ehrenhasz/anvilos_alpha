@@ -1,0 +1,9 @@
+{
+  "module_name": "if_x25.h",
+  "hash_id": "f7f9c1c67f38e859d083b8b781ad1c7366f700b0fe020f9615935e20560b0230",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/if_x25.h",
+  "human_readable_source": " \n \n\n#ifndef _IF_X25_H\n#define _IF_X25_H\n\n#include <linux/types.h>\n\n \n#define X25_IFACE_DATA\t\t0x00\n#define X25_IFACE_CONNECT\t0x01\n#define X25_IFACE_DISCONNECT\t0x02\n#define X25_IFACE_PARAMS\t0x03\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

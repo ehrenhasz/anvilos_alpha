@@ -1,0 +1,9 @@
+{
+  "module_name": "os.h",
+  "hash_id": "fdfc36d090e74ad7b3ddb27dc42dac83339f158ae9d21eacaeb3b0c3367e6617",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/subdev/pmu/fuc/os.h",
+  "human_readable_source": " \n#ifndef __NVKM_PWR_OS_H__\n#define __NVKM_PWR_OS_H__\n\n \n#define PROC_KERN 0x52544e49\n#define PROC_IDLE 0x454c4449\n#define PROC_HOST 0x54534f48\n#define PROC_MEMX 0x584d454d\n#define PROC_PERF 0x46524550\n#define PROC_I2C_ 0x5f433249\n#define PROC_TEST 0x54534554\n\n \n#define KMSG_FIFO   0x00000000\n#define KMSG_ALARM  0x00000001\n\n \n#define MEMX_MSG_INFO 0\n#define MEMX_MSG_EXEC 1\n\n \n#define MEMX_INFO_DATA  0\n#define MEMX_INFO_TRAIN 1\n\n \n#define MEMX_ENTER  1\n#define MEMX_LEAVE  2\n#define MEMX_WR32   3\n#define MEMX_WAIT   4\n#define MEMX_DELAY  5\n#define MEMX_VBLANK 6\n#define MEMX_TRAIN  7\n\n \n#define I2C__MSG_RD08 0\n#define I2C__MSG_WR08 1\n\n#define I2C__MSG_DATA0_PORT 24:31\n#define I2C__MSG_DATA0_ADDR 14:23\n\n#define I2C__MSG_DATA0_RD08_PORT I2C__MSG_DATA0_PORT\n#define I2C__MSG_DATA0_RD08_ADDR I2C__MSG_DATA0_ADDR\n#define I2C__MSG_DATA0_RD08_REG 0:7\n#define I2C__MSG_DATA1_RD08_VAL 0:7\n\n#define I2C__MSG_DATA0_WR08_PORT I2C__MSG_DATA0_PORT\n#define I2C__MSG_DATA0_WR08_ADDR I2C__MSG_DATA0_ADDR\n#define I2C__MSG_DATA0_WR08_SYNC 8:8\n#define I2C__MSG_DATA0_WR08_REG 0:7\n#define I2C__MSG_DATA1_WR08_VAL 0:7\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

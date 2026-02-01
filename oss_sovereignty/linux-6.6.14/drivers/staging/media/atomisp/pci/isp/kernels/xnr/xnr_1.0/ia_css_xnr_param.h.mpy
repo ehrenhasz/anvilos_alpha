@@ -1,0 +1,9 @@
+{
+  "module_name": "ia_css_xnr_param.h",
+  "hash_id": "f4e2c3a8f04631839e02db4c820963ebba8a4cdba622ce9efd7c906bab648075",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/isp/kernels/xnr/xnr_1.0/ia_css_xnr_param.h",
+  "human_readable_source": " \n \n\n#ifndef __IA_CSS_XNR_PARAM_H\n#define __IA_CSS_XNR_PARAM_H\n\n#include \"type_support.h\"\n#include <system_global.h>\n\n#ifndef PIPE_GENERATION\n#define SH_CSS_ISP_XNR_TABLE_SIZE_LOG2       IA_CSS_VAMEM_2_XNR_TABLE_SIZE_LOG2\n#define SH_CSS_ISP_XNR_TABLE_SIZE            IA_CSS_VAMEM_2_XNR_TABLE_SIZE\n\n#else\n \n#define SH_CSS_ISP_XNR_TABLE_SIZE 0\n#endif\n\n \nstruct sh_css_isp_xnr_vamem_params {\n\tu16 xnr[SH_CSS_ISP_XNR_TABLE_SIZE];\n};\n\nstruct sh_css_isp_xnr_params {\n\t \n\tu16 threshold;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

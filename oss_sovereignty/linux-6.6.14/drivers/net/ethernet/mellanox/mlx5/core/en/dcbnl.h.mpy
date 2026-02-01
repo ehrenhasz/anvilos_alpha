@@ -1,0 +1,9 @@
+{
+  "module_name": "dcbnl.h",
+  "hash_id": "b859d276e1fe07d3128acb0a9a91a67ed79f45cbf9e8282c5645a65871659ab3",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/mellanox/mlx5/core/en/dcbnl.h",
+  "human_readable_source": " \n \n\n#ifndef __MLX5E_DCBNL_H__\n#define __MLX5E_DCBNL_H__\n\n#ifdef CONFIG_MLX5_CORE_EN_DCB\n\n#define MLX5E_MAX_PRIORITY (8)\n\nstruct mlx5e_cee_config {\n\t \n\tu8                         pg_bw_pct[CEE_DCBX_MAX_PGS];\n\tu8                         prio_to_pg_map[CEE_DCBX_MAX_PRIO];\n\tbool                       pfc_setting[CEE_DCBX_MAX_PRIO];\n\tbool                       pfc_enable;\n};\n\nstruct mlx5e_dcbx {\n\tenum mlx5_dcbx_oper_mode   mode;\n\tstruct mlx5e_cee_config    cee_cfg;  \n\tu8                         dscp_app_cnt;\n\n\t \n\tu8                         tc_tsa[IEEE_8021QAZ_MAX_TCS];\n\tu8                         cap;\n\n\t \n\tbool                       manual_buffer;\n\tu32                        cable_len;\n\tu32                        xoff;\n\tu16                        port_buff_cell_sz;\n};\n\n#define MLX5E_MAX_DSCP (64)\n\nstruct mlx5e_dcbx_dp {\n\tu8                         dscp2prio[MLX5E_MAX_DSCP];\n\tu8                         trust_state;\n};\n\nvoid mlx5e_dcbnl_build_netdev(struct net_device *netdev);\nvoid mlx5e_dcbnl_initialize(struct mlx5e_priv *priv);\nvoid mlx5e_dcbnl_init_app(struct mlx5e_priv *priv);\nvoid mlx5e_dcbnl_delete_app(struct mlx5e_priv *priv);\n#else\nstatic inline void mlx5e_dcbnl_build_netdev(struct net_device *netdev) {}\nstatic inline void mlx5e_dcbnl_initialize(struct mlx5e_priv *priv) {}\nstatic inline void mlx5e_dcbnl_init_app(struct mlx5e_priv *priv) {}\nstatic inline void mlx5e_dcbnl_delete_app(struct mlx5e_priv *priv) {}\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

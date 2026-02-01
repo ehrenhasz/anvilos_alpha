@@ -1,0 +1,9 @@
+{
+  "module_name": "intel_pmc_bxt.h",
+  "hash_id": "b2fe305bd20b873f52aad3099fd7103899255ebc82a3c1efa5a3a01283b02e29",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/mfd/intel_pmc_bxt.h",
+  "human_readable_source": " \n#ifndef MFD_INTEL_PMC_BXT_H\n#define MFD_INTEL_PMC_BXT_H\n\n \n#define PMC_GCR_PMC_CFG_REG\t\t0x08\n#define PMC_GCR_TELEM_DEEP_S0IX_REG\t0x78\n#define PMC_GCR_TELEM_SHLW_S0IX_REG\t0x80\n\n \n#define PMC_CFG_NO_REBOOT_EN\t\tBIT(4)\n\n \nstruct intel_pmc_dev {\n\tstruct device *dev;\n\tstruct intel_scu_ipc_dev *scu;\n\tvoid __iomem *gcr_mem_base;\n\tspinlock_t gcr_lock;\n\tstruct resource *telem_base;\n};\n\n#if IS_ENABLED(CONFIG_MFD_INTEL_PMC_BXT)\nint intel_pmc_gcr_read64(struct intel_pmc_dev *pmc, u32 offset, u64 *data);\nint intel_pmc_gcr_update(struct intel_pmc_dev *pmc, u32 offset, u32 mask, u32 val);\nint intel_pmc_s0ix_counter_read(struct intel_pmc_dev *pmc, u64 *data);\n#else\nstatic inline int intel_pmc_gcr_read64(struct intel_pmc_dev *pmc, u32 offset,\n\t\t\t\t       u64 *data)\n{\n\treturn -ENOTSUPP;\n}\n\nstatic inline int intel_pmc_gcr_update(struct intel_pmc_dev *pmc, u32 offset,\n\t\t\t\t       u32 mask, u32 val)\n{\n\treturn -ENOTSUPP;\n}\n\nstatic inline int intel_pmc_s0ix_counter_read(struct intel_pmc_dev *pmc, u64 *data)\n{\n\treturn -ENOTSUPP;\n}\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

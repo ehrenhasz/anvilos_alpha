@@ -1,0 +1,9 @@
+{
+  "module_name": "lnbh24.h",
+  "hash_id": "cf6abe01ff93d15d65c3d200f47f2ad3acf94026e69889bf5b250b6e0033cba7",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/dvb-frontends/lnbh24.h",
+  "human_readable_source": " \n \n\n#ifndef _LNBH24_H\n#define _LNBH24_H\n\n \n#define LNBH24_OLF\t0x01\n#define LNBH24_OTF\t0x02\n#define LNBH24_EN\t0x04\n#define LNBH24_VSEL\t0x08\n#define LNBH24_LLC\t0x10\n#define LNBH24_TEN\t0x20\n#define LNBH24_TTX\t0x40\n#define LNBH24_PCL\t0x80\n\n#include <linux/dvb/frontend.h>\n\n#if IS_REACHABLE(CONFIG_DVB_LNBP21)\n \nextern struct dvb_frontend *lnbh24_attach(struct dvb_frontend *fe,\n\t\t\t\tstruct i2c_adapter *i2c, u8 override_set,\n\t\t\t\tu8 override_clear, u8 i2c_addr);\n#else\nstatic inline struct dvb_frontend *lnbh24_attach(struct dvb_frontend *fe,\n\t\t\t\tstruct i2c_adapter *i2c, u8 override_set,\n\t\t\t\tu8 override_clear, u8 i2c_addr)\n{\n\tprintk(KERN_WARNING \"%s: driver disabled by Kconfig\\n\", __func__);\n\treturn NULL;\n}\n#endif\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "ipv6.h",
+  "hash_id": "79525ca8d72f2b103b4a6ee005cd21eaeb3b4198cafbf37a84d08f09a9655df4",
+  "original_prompt": "Ingested from linux-6.6.14/net/dccp/ipv6.h",
+  "human_readable_source": " \n#ifndef _DCCP_IPV6_H\n#define _DCCP_IPV6_H\n \n\n#include <linux/dccp.h>\n#include <linux/ipv6.h>\n\nstruct dccp6_sock {\n\tstruct dccp_sock  dccp;\n\tstruct ipv6_pinfo inet6;\n};\n\nstruct dccp6_request_sock {\n\tstruct dccp_request_sock  dccp;\n};\n\nstruct dccp6_timewait_sock {\n\tstruct inet_timewait_sock   inet;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

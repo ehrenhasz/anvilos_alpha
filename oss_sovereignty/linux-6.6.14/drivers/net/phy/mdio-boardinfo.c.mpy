@@ -1,0 +1,9 @@
+{
+  "module_name": "mdio-boardinfo.c",
+  "hash_id": "5de93178d305912a36c36b66d957dc77ff07a16fd7b5cdc02eb49064ca59d719",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/phy/mdio-boardinfo.c",
+  "human_readable_source": "\n \n\n#include <linux/kernel.h>\n#include <linux/slab.h>\n#include <linux/export.h>\n#include <linux/mutex.h>\n#include <linux/list.h>\n\n#include \"mdio-boardinfo.h\"\n\nstatic LIST_HEAD(mdio_board_list);\nstatic DEFINE_MUTEX(mdio_board_lock);\n\n \nvoid mdiobus_setup_mdiodev_from_board_info(struct mii_bus *bus,\n\t\t\t\t\t   int (*cb)\n\t\t\t\t\t   (struct mii_bus *bus,\n\t\t\t\t\t    struct mdio_board_info *bi))\n{\n\tstruct mdio_board_entry *be;\n\tstruct mdio_board_entry *tmp;\n\tstruct mdio_board_info *bi;\n\tint ret;\n\n\tmutex_lock(&mdio_board_lock);\n\tlist_for_each_entry_safe(be, tmp, &mdio_board_list, list) {\n\t\tbi = &be->board_info;\n\n\t\tif (strcmp(bus->id, bi->bus_id))\n\t\t\tcontinue;\n\n\t\tmutex_unlock(&mdio_board_lock);\n\t\tret = cb(bus, bi);\n\t\tmutex_lock(&mdio_board_lock);\n\t\tif (ret)\n\t\t\tcontinue;\n\n\t}\n\tmutex_unlock(&mdio_board_lock);\n}\nEXPORT_SYMBOL(mdiobus_setup_mdiodev_from_board_info);\n\n \nint mdiobus_register_board_info(const struct mdio_board_info *info,\n\t\t\t\tunsigned int n)\n{\n\tstruct mdio_board_entry *be;\n\tunsigned int i;\n\n\tbe = kcalloc(n, sizeof(*be), GFP_KERNEL);\n\tif (!be)\n\t\treturn -ENOMEM;\n\n\tfor (i = 0; i < n; i++, be++, info++) {\n\t\tmemcpy(&be->board_info, info, sizeof(*info));\n\t\tmutex_lock(&mdio_board_lock);\n\t\tlist_add_tail(&be->list, &mdio_board_list);\n\t\tmutex_unlock(&mdio_board_lock);\n\t}\n\n\treturn 0;\n}\nEXPORT_SYMBOL(mdiobus_register_board_info);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

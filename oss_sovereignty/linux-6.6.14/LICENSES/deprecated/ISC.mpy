@@ -1,0 +1,9 @@
+{
+  "module_name": "ISC",
+  "hash_id": "cbdf535b99a9f4cb208c5495c6dd9a1f84104d83c03f8f0d98ee7a0c43805388",
+  "original_prompt": "Ingested from linux-6.6.14/LICENSES/deprecated/ISC",
+  "human_readable_source": "Valid-License-Identifier: ISC\nSPDX-URL: https://spdx.org/licenses/ISC.html\nUsage-Guide:\n  To use the ISC License put the following SPDX tag/value pair into a\n  comment according to the placement guidelines in the licensing rules\n  documentation:\n    SPDX-License-Identifier: ISC\nLicense-Text:\n\nISC License\n\nCopyright (c) <year> <copyright holders>\n\nPermission to use, copy, modify, and/or distribute this software for any\npurpose with or without fee is hereby granted, provided that the above\ncopyright notice and this permission notice appear in all copies.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\" AND THE AUTHOR DISCLAIMS ALL WARRANTIES\nWITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF\nMERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY\nSPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES\nWHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION\nOF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN\nCONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

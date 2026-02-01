@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "9e88f9f84fd2b37d65553156e5813bd224027c0d1c35a432412303f044c4fad8",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/mctp/Makefile",
+  "human_readable_source": "obj-$(CONFIG_MCTP_SERIAL) += mctp-serial.o\nobj-$(CONFIG_MCTP_TRANSPORT_I2C) += mctp-i2c.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

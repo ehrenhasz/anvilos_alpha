@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "db785fdb73ba68f291015adaa246feda3ca0b29ff89a398af488d62d347dc90d",
+  "original_prompt": "Ingested from linux-6.6.14/net/iucv/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Makefile for IUCV\n#\n\nobj-$(CONFIG_IUCV)\t+= iucv.o\nobj-$(CONFIG_AFIUCV)\t+= af_iucv.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "7e7f999dfd06a796af245d9676b32212b59a29337b8f23b115571a9a868990b8",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ipa/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for the Qualcomm IPA driver.\n\nIPA_REG_VERSIONS\t:=\t3.1 3.5.1 4.2 4.5 4.7 4.9 4.11 5.0\n\n# Some IPA versions can reuse another set of GSI register definitions.\nGSI_REG_VERSIONS\t:=\t3.1 3.5.1 4.0 4.5 4.9 4.11 5.0\n\nIPA_DATA_VERSIONS\t:=\t3.1 3.5.1 4.2 4.5 4.7 4.9 4.11 5.0\n\nobj-$(CONFIG_QCOM_IPA)\t+=\tipa.o\n\nipa-y\t\t\t:=\tipa_main.o ipa_power.o ipa_reg.o ipa_mem.o \\\n\t\t\t\tipa_table.o ipa_interrupt.o gsi.o gsi_reg.o \\\n\t\t\t\tgsi_trans.o ipa_gsi.o ipa_smp2p.o ipa_uc.o \\\n\t\t\t\tipa_endpoint.o ipa_cmd.o ipa_modem.o \\\n\t\t\t\tipa_resource.o ipa_qmi.o ipa_qmi_msg.o \\\n\t\t\t\tipa_sysfs.o\n\nipa-y\t\t\t+=\t$(IPA_REG_VERSIONS:%=reg/ipa_reg-v%.o)\n\nipa-y\t\t\t+=\t$(GSI_REG_VERSIONS:%=reg/gsi_reg-v%.o)\n\nipa-y\t\t\t+=\t$(IPA_DATA_VERSIONS:%=data/ipa_data-v%.o)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

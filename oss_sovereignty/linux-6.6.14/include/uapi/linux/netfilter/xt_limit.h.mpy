@@ -1,0 +1,9 @@
+{
+  "module_name": "xt_limit.h",
+  "hash_id": "6db623d12f6c32850c937b7fa989c544a586cae229e002b70c252e5939473d0a",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/netfilter/xt_limit.h",
+  "human_readable_source": " \n#ifndef _XT_RATE_H\n#define _XT_RATE_H\n\n#include <linux/types.h>\n\n \n#define XT_LIMIT_SCALE 10000\n\nstruct xt_limit_priv;\n\n \nstruct xt_rateinfo {\n\t__u32 avg;     \n\t__u32 burst;   \n\n\t \n\tunsigned long prev;  \n\t__u32 credit;  \n\t__u32 credit_cap, cost;\n\n\tstruct xt_limit_priv *master;\n};\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "hugepage-shm.c",
+  "hash_id": "bbcada6399c180622108010295dd40836d0a0a880dfd3c21439b27ca6465cc6f",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/mm/hugepage-shm.c",
+  "human_readable_source": "\n \n\n#include <stdlib.h>\n#include <stdio.h>\n#include <sys/types.h>\n#include <sys/ipc.h>\n#include <sys/shm.h>\n#include <sys/mman.h>\n\n#define LENGTH (256UL*1024*1024)\n\n#define dprintf(x)  printf(x)\n\n \n#ifdef __ia64__\n#define ADDR (void *)(0x8000000000000000UL)\n#define SHMAT_FLAGS (SHM_RND)\n#else\n#define ADDR (void *)(0x0UL)\n#define SHMAT_FLAGS (0)\n#endif\n\nint main(void)\n{\n\tint shmid;\n\tunsigned long i;\n\tchar *shmaddr;\n\n\tshmid = shmget(2, LENGTH, SHM_HUGETLB | IPC_CREAT | SHM_R | SHM_W);\n\tif (shmid < 0) {\n\t\tperror(\"shmget\");\n\t\texit(1);\n\t}\n\tprintf(\"shmid: 0x%x\\n\", shmid);\n\n\tshmaddr = shmat(shmid, ADDR, SHMAT_FLAGS);\n\tif (shmaddr == (char *)-1) {\n\t\tperror(\"Shared memory attach failure\");\n\t\tshmctl(shmid, IPC_RMID, NULL);\n\t\texit(2);\n\t}\n\tprintf(\"shmaddr: %p\\n\", shmaddr);\n\n\tdprintf(\"Starting the writes:\\n\");\n\tfor (i = 0; i < LENGTH; i++) {\n\t\tshmaddr[i] = (char)(i);\n\t\tif (!(i % (1024 * 1024)))\n\t\t\tdprintf(\".\");\n\t}\n\tdprintf(\"\\n\");\n\n\tdprintf(\"Starting the Check...\");\n\tfor (i = 0; i < LENGTH; i++)\n\t\tif (shmaddr[i] != (char)i) {\n\t\t\tprintf(\"\\nIndex %lu mismatched\\n\", i);\n\t\t\texit(3);\n\t\t}\n\tdprintf(\"Done.\\n\");\n\n\tif (shmdt((const void *)shmaddr) != 0) {\n\t\tperror(\"Detach failure\");\n\t\tshmctl(shmid, IPC_RMID, NULL);\n\t\texit(4);\n\t}\n\n\tshmctl(shmid, IPC_RMID, NULL);\n\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

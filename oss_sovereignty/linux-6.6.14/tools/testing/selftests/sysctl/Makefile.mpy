@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "94539deec185c55dbd370ccc2e057a4e060d04960190361e6cc7b4c24828615e",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/sysctl/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n# Makefile for sysctl selftests.\n# Expects kernel.sysctl_writes_strict=1.\n\n# No binaries, but make sure arg-less \"make\" doesn't trigger \"run_tests\".\nall:\n\nTEST_PROGS := sysctl.sh\n\ninclude ../lib.mk\n\n# Nothing to clean up.\nclean:\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "aes_impl_aesni.c",
+  "hash_id": "c1866da5251ac03b93752228c1921615ceeb83616bcf12ee5b074cdbe1fa729a",
+  "original_prompt": "Ingested from zfs-2.2.2/module/icp/algs/aes/aes_impl_aesni.c",
+  "human_readable_source": " \n \n\n#if defined(__x86_64) && defined(HAVE_AES)\n\n#include <sys/simd.h>\n#include <sys/types.h>\n#include <sys/asm_linkage.h>\n\n \nextern ASMABI int rijndael_key_setup_enc_intel(uint32_t rk[],\n\tconst uint32_t cipherKey[], uint64_t keyBits);\nextern ASMABI int rijndael_key_setup_dec_intel(uint32_t rk[],\n\tconst uint32_t cipherKey[], uint64_t keyBits);\nextern ASMABI void aes_encrypt_intel(const uint32_t rk[], int Nr,\n\tconst uint32_t pt[4], uint32_t ct[4]);\nextern ASMABI void aes_decrypt_intel(const uint32_t rk[], int Nr,\n\tconst uint32_t ct[4], uint32_t pt[4]);\n\n\n#include <aes/aes_impl.h>\n\n \nstatic void\naes_aesni_generate(aes_key_t *key, const uint32_t *keyarr32, int keybits)\n{\n\tkfpu_begin();\n\tkey->nr = rijndael_key_setup_enc_intel(&(key->encr_ks.ks32[0]),\n\t    keyarr32, keybits);\n\tkey->nr = rijndael_key_setup_dec_intel(&(key->decr_ks.ks32[0]),\n\t    keyarr32, keybits);\n\tkfpu_end();\n}\n\n \nstatic void\naes_aesni_encrypt(const uint32_t rk[], int Nr, const uint32_t pt[4],\n    uint32_t ct[4])\n{\n\tkfpu_begin();\n\taes_encrypt_intel(rk, Nr, pt, ct);\n\tkfpu_end();\n}\n\n \nstatic void\naes_aesni_decrypt(const uint32_t rk[], int Nr, const uint32_t ct[4],\n    uint32_t pt[4])\n{\n\tkfpu_begin();\n\taes_decrypt_intel(rk, Nr, ct, pt);\n\tkfpu_end();\n}\n\nstatic boolean_t\naes_aesni_will_work(void)\n{\n\treturn (kfpu_allowed() && zfs_aes_available());\n}\n\nconst aes_impl_ops_t aes_aesni_impl = {\n\t.generate = &aes_aesni_generate,\n\t.encrypt = &aes_aesni_encrypt,\n\t.decrypt = &aes_aesni_decrypt,\n\t.is_supported = &aes_aesni_will_work,\n\t.needs_byteswap = B_FALSE,\n\t.name = \"aesni\"\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

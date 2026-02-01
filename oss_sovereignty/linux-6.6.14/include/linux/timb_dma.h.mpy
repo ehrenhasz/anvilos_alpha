@@ -1,0 +1,9 @@
+{
+  "module_name": "timb_dma.h",
+  "hash_id": "1f9e39cde547786c6b933775a4eac45afc29b9548552a4e1101824bd22182adb",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/timb_dma.h",
+  "human_readable_source": " \n \n\n \n\n#ifndef _LINUX_TIMB_DMA_H\n#define _LINUX_TIMB_DMA_H\n\n \nstruct timb_dma_platform_data_channel {\n\tbool rx;\n\tunsigned int bytes_per_line;\n\tunsigned int descriptors;\n\tunsigned int descriptor_elements;\n};\n\n \nstruct timb_dma_platform_data {\n\tunsigned nr_channels;\n\tstruct timb_dma_platform_data_channel channels[32];\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

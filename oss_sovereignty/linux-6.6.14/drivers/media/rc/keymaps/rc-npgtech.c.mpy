@@ -1,0 +1,9 @@
+{
+  "module_name": "rc-npgtech.c",
+  "hash_id": "5df9ce2e663df9fe721b546908d788d6080ca9a77da3bd6e1e8097742586b634",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/rc/keymaps/rc-npgtech.c",
+  "human_readable_source": "\n\n\n\n\n\n\n#include <media/rc-map.h>\n#include <linux/module.h>\n\nstatic struct rc_map_table npgtech[] = {\n\t{ 0x1d, KEY_SWITCHVIDEOMODE },\t \n\t{ 0x2a, KEY_FRONT },\n\n\t{ 0x3e, KEY_NUMERIC_1 },\n\t{ 0x02, KEY_NUMERIC_2 },\n\t{ 0x06, KEY_NUMERIC_3 },\n\t{ 0x0a, KEY_NUMERIC_4 },\n\t{ 0x0e, KEY_NUMERIC_5 },\n\t{ 0x12, KEY_NUMERIC_6 },\n\t{ 0x16, KEY_NUMERIC_7 },\n\t{ 0x1a, KEY_NUMERIC_8 },\n\t{ 0x1e, KEY_NUMERIC_9 },\n\t{ 0x3a, KEY_NUMERIC_0 },\n\t{ 0x22, KEY_NUMLOCK },\t\t \n\t{ 0x20, KEY_REFRESH },\n\n\t{ 0x03, KEY_BRIGHTNESSDOWN },\n\t{ 0x28, KEY_AUDIO },\n\t{ 0x3c, KEY_CHANNELUP },\n\t{ 0x3f, KEY_VOLUMEDOWN },\n\t{ 0x2e, KEY_MUTE },\n\t{ 0x3b, KEY_VOLUMEUP },\n\t{ 0x00, KEY_CHANNELDOWN },\n\t{ 0x07, KEY_BRIGHTNESSUP },\n\t{ 0x2c, KEY_TEXT },\n\n\t{ 0x37, KEY_RECORD },\n\t{ 0x17, KEY_PLAY },\n\t{ 0x13, KEY_PAUSE },\n\t{ 0x26, KEY_STOP },\n\t{ 0x18, KEY_FASTFORWARD },\n\t{ 0x14, KEY_REWIND },\n\t{ 0x33, KEY_ZOOM },\n\t{ 0x32, KEY_KEYBOARD },\n\t{ 0x30, KEY_GOTO },\t\t \n\t{ 0x36, KEY_MACRO },\t\t \n\t{ 0x0b, KEY_RADIO },\n\t{ 0x10, KEY_POWER },\n\n};\n\nstatic struct rc_map_list npgtech_map = {\n\t.map = {\n\t\t.scan     = npgtech,\n\t\t.size     = ARRAY_SIZE(npgtech),\n\t\t.rc_proto = RC_PROTO_UNKNOWN,\t \n\t\t.name     = RC_MAP_NPGTECH,\n\t}\n};\n\nstatic int __init init_rc_map_npgtech(void)\n{\n\treturn rc_map_register(&npgtech_map);\n}\n\nstatic void __exit exit_rc_map_npgtech(void)\n{\n\trc_map_unregister(&npgtech_map);\n}\n\nmodule_init(init_rc_map_npgtech)\nmodule_exit(exit_rc_map_npgtech)\n\nMODULE_LICENSE(\"GPL\");\nMODULE_AUTHOR(\"Mauro Carvalho Chehab\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

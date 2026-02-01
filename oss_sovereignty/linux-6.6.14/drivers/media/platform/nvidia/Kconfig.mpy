@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "ce8af4cfc56f2e8cb639ff521a0d3fed9385dc3f6d6afb6051980c4860905881",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/platform/nvidia/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n\ncomment \"NVidia media platform drivers\"\n\nsource \"drivers/media/platform/nvidia/tegra-vde/Kconfig\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

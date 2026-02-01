@@ -1,0 +1,9 @@
+{
+  "module_name": "powercap.h",
+  "hash_id": "8dcaabbc3faa86c0acca5af36b91706d9c4caef5e5d8df1152df1fcc62756e45",
+  "original_prompt": "Ingested from linux-6.6.14/tools/power/cpupower/lib/powercap.h",
+  "human_readable_source": " \n \n\n#ifndef __CPUPOWER_RAPL_H__\n#define __CPUPOWER_RAPL_H__\n\n#define PATH_TO_POWERCAP \"/sys/devices/virtual/powercap\"\n#define PATH_TO_RAPL \"/sys/devices/virtual/powercap/intel-rapl\"\n#define PATH_TO_RAPL_CLASS \"/sys/devices/virtual/powercap/intel-rapl\"\n\n#define POWERCAP_MAX_CHILD_ZONES 10\n#define POWERCAP_MAX_TREE_DEPTH 10\n\n#define MAX_LINE_LEN 4096\n#define SYSFS_PATH_MAX 255\n\n#include <stdint.h>\n\nstruct powercap_zone {\n\tchar name[MAX_LINE_LEN];\n\t \n\tchar sys_name[SYSFS_PATH_MAX];\n\tint tree_depth;\n\tstruct powercap_zone *parent;\n\tstruct powercap_zone *children[POWERCAP_MAX_CHILD_ZONES];\n\t \n\tuint32_t has_power_uw:1,\n\t\t has_energy_uj:1;\n\n};\n\nint powercap_walk_zones(struct powercap_zone *zone,\n\t\t\tint (*f)(struct powercap_zone *zone));\n\nstruct powercap_zone *powercap_init_zones(void);\nint powercap_get_enabled(int *mode);\nint powercap_set_enabled(int mode);\nint powercap_get_driver(char *driver, int buflen);\n\nint powercap_get_max_energy_range_uj(struct powercap_zone *zone, uint64_t *val);\nint powercap_get_energy_uj(struct powercap_zone *zone, uint64_t *val);\nint powercap_get_max_power_range_uw(struct powercap_zone *zone, uint64_t *val);\nint powercap_get_power_uw(struct powercap_zone *zone, uint64_t *val);\nint powercap_zone_get_enabled(struct powercap_zone *zone, int *mode);\nint powercap_zone_set_enabled(struct powercap_zone *zone, int mode);\n\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

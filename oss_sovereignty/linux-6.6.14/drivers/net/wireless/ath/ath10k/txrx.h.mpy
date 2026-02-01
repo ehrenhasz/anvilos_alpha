@@ -1,0 +1,9 @@
+{
+  "module_name": "txrx.h",
+  "hash_id": "92519e7b33b32d36e8747a2639b66f9639ac1fc42a219c84814403188d626add",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/ath/ath10k/txrx.h",
+  "human_readable_source": " \n \n#ifndef _TXRX_H_\n#define _TXRX_H_\n\n#include \"htt.h\"\n\nint ath10k_txrx_tx_unref(struct ath10k_htt *htt,\n\t\t\t const struct htt_tx_done *tx_done);\n\nstruct ath10k_peer *ath10k_peer_find(struct ath10k *ar, int vdev_id,\n\t\t\t\t     const u8 *addr);\nstruct ath10k_peer *ath10k_peer_find_by_id(struct ath10k *ar, int peer_id);\nint ath10k_wait_for_peer_created(struct ath10k *ar, int vdev_id,\n\t\t\t\t const u8 *addr);\nint ath10k_wait_for_peer_deleted(struct ath10k *ar, int vdev_id,\n\t\t\t\t const u8 *addr);\n\nvoid ath10k_peer_map_event(struct ath10k_htt *htt,\n\t\t\t   struct htt_peer_map_event *ev);\nvoid ath10k_peer_unmap_event(struct ath10k_htt *htt,\n\t\t\t     struct htt_peer_unmap_event *ev);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

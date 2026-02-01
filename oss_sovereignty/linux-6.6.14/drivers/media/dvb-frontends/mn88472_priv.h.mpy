@@ -1,0 +1,9 @@
+{
+  "module_name": "mn88472_priv.h",
+  "hash_id": "5177d8f2b4eb601238f824df8e5983706758b4648af6477dd507b313f92fa73b",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/dvb-frontends/mn88472_priv.h",
+  "human_readable_source": " \n \n\n#ifndef MN88472_PRIV_H\n#define MN88472_PRIV_H\n\n#include <media/dvb_frontend.h>\n#include <linux/int_log.h>\n#include \"mn88472.h\"\n#include <linux/firmware.h>\n#include <linux/regmap.h>\n\n#define MN88472_FIRMWARE \"dvb-demod-mn88472-02.fw\"\n\nstruct mn88472_dev {\n\tstruct i2c_client *client[3];\n\tstruct regmap *regmap[3];\n\tstruct dvb_frontend fe;\n\tu16 i2c_write_max;\n\tunsigned int clk;\n\tunsigned int active:1;\n\tunsigned int ts_mode:1;\n\tunsigned int ts_clk:1;\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "ia_css_circbuf_comm.h",
+  "hash_id": "6e9b8babc37a98f900b401bc8b804acbd0d9d4ce36107674bd9689f91b113fbc",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/base/circbuf/interface/ia_css_circbuf_comm.h",
+  "human_readable_source": " \n \n\n#ifndef _IA_CSS_CIRCBUF_COMM_H\n#define _IA_CSS_CIRCBUF_COMM_H\n\n#include <type_support.h>   \n\n#define IA_CSS_CIRCBUF_PADDING 1  \n\n \n \ntypedef struct ia_css_circbuf_desc_s ia_css_circbuf_desc_t;\nstruct ia_css_circbuf_desc_s {\n\tu8 size;\t \n\tu8 step;    \n\tu8 start;\t \n\tu8 end;\t \n};\n\n#define SIZE_OF_IA_CSS_CIRCBUF_DESC_S_STRUCT\t\t\t\t\\\n\t(4 * sizeof(uint8_t))\n\n \ntypedef struct ia_css_circbuf_elem_s ia_css_circbuf_elem_t;\nstruct ia_css_circbuf_elem_s {\n\tu32 val;\t \n};\n\n#define SIZE_OF_IA_CSS_CIRCBUF_ELEM_S_STRUCT\t\t\t\t\\\n\t(sizeof(uint32_t))\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "iommu-helper.c",
+  "hash_id": "9126c0756c21c5b1c9683b6b3ca10a647ed3d92868cb2d463249b7883f4ad446",
+  "original_prompt": "Ingested from linux-6.6.14/lib/iommu-helper.c",
+  "human_readable_source": "\n \n\n#include <linux/bitmap.h>\n#include <linux/iommu-helper.h>\n\nunsigned long iommu_area_alloc(unsigned long *map, unsigned long size,\n\t\t\t       unsigned long start, unsigned int nr,\n\t\t\t       unsigned long shift, unsigned long boundary_size,\n\t\t\t       unsigned long align_mask)\n{\n\tunsigned long index;\n\n\t \n\tsize -= 1;\nagain:\n\tindex = bitmap_find_next_zero_area(map, size, start, nr, align_mask);\n\tif (index < size) {\n\t\tif (iommu_is_span_boundary(index, nr, shift, boundary_size)) {\n\t\t\tstart = ALIGN(shift + index, boundary_size) - shift;\n\t\t\tgoto again;\n\t\t}\n\t\tbitmap_set(map, index, nr);\n\t\treturn index;\n\t}\n\treturn -1;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

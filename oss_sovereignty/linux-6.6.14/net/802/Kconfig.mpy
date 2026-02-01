@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "0891df6a1b8f330a266d4bff00397675265c0a6cf854a7ffbd3406d6b8bb6280",
+  "original_prompt": "Ingested from linux-6.6.14/net/802/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig STP\n\ttristate\n\tselect LLC\n\nconfig GARP\n\ttristate\n\tselect STP\n\nconfig MRP\n\ttristate\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

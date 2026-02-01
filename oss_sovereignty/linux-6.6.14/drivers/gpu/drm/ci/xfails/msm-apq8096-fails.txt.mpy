@@ -1,0 +1,9 @@
+{
+  "module_name": "msm-apq8096-fails.txt",
+  "hash_id": "18fff73e9a1f50ef26f310aafe5c6c96992f8347c37bd967c78842afd5e315f5",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/ci/xfails/msm-apq8096-fails.txt",
+  "human_readable_source": "kms_3d,Fail\nkms_addfb_basic@addfb25-bad-modifier,Fail\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

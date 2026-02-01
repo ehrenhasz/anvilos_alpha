@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "d3bec421785f9fe3d3a245c020a924a14709097fb0f1440fdcf85067f51f55c0",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/zydas/zd1211rw/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig ZD1211RW\n\ttristate \"ZyDAS ZD1211/ZD1211B USB-wireless support\"\n\tdepends on USB && MAC80211\n\tselect FW_LOADER\n\thelp\n\t  This is a driver for the ZyDAS ZD1211/ZD1211B wireless\n\t  chip, present in many USB-wireless adapters.\n\n\t  Device firmware is required alongside this driver. You can download\n\t  the firmware distribution from http://sf.net/projects/zd1211/files/\n\nconfig ZD1211RW_DEBUG\n\tbool \"ZyDAS ZD1211 debugging\"\n\tdepends on ZD1211RW\n\thelp\n\t  ZD1211 debugging messages. Choosing Y will result in additional debug\n\t  messages being saved to your kernel logs, which may help debug any\n\t  problems.\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

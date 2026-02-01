@@ -1,0 +1,9 @@
+{
+  "module_name": "elan-i2c-ids.h",
+  "hash_id": "3d4b971ce431a10e674cbe6415bef4ab195814e5c566d73bbb57a25ea45b641a",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/input/elan-i2c-ids.h",
+  "human_readable_source": " \n \n\n#ifndef __ELAN_I2C_IDS_H\n#define __ELAN_I2C_IDS_H\n\n#include <linux/mod_devicetable.h>\n\nstatic const struct acpi_device_id elan_acpi_id[] = {\n\t{ \"ELAN0000\", 0 },\n\t{ \"ELAN0100\", 0 },\n\t{ \"ELAN0600\", 0 },\n\t{ \"ELAN0601\", 0 },\n\t{ \"ELAN0602\", 0 },\n\t{ \"ELAN0603\", 0 },\n\t{ \"ELAN0604\", 0 },\n\t{ \"ELAN0605\", 0 },\n\t{ \"ELAN0606\", 0 },\n\t{ \"ELAN0607\", 0 },\n\t{ \"ELAN0608\", 0 },\n\t{ \"ELAN0609\", 0 },\n\t{ \"ELAN060B\", 0 },\n\t{ \"ELAN060C\", 0 },\n\t{ \"ELAN060F\", 0 },\n\t{ \"ELAN0610\", 0 },\n\t{ \"ELAN0611\", 0 },\n\t{ \"ELAN0612\", 0 },\n\t{ \"ELAN0615\", 0 },\n\t{ \"ELAN0616\", 0 },\n\t{ \"ELAN0617\", 0 },\n\t{ \"ELAN0618\", 0 },\n\t{ \"ELAN0619\", 0 },\n\t{ \"ELAN061A\", 0 },\n \n\t{ \"ELAN061C\", 0 },\n\t{ \"ELAN061D\", 0 },\n\t{ \"ELAN061E\", 0 },\n\t{ \"ELAN061F\", 0 },\n\t{ \"ELAN0620\", 0 },\n\t{ \"ELAN0621\", 0 },\n\t{ \"ELAN0622\", 0 },\n\t{ \"ELAN0623\", 0 },\n\t{ \"ELAN0624\", 0 },\n\t{ \"ELAN0625\", 0 },\n\t{ \"ELAN0626\", 0 },\n\t{ \"ELAN0627\", 0 },\n\t{ \"ELAN0628\", 0 },\n\t{ \"ELAN0629\", 0 },\n\t{ \"ELAN062A\", 0 },\n\t{ \"ELAN062B\", 0 },\n\t{ \"ELAN062C\", 0 },\n\t{ \"ELAN062D\", 0 },\n\t{ \"ELAN062E\", 0 },  \n\t{ \"ELAN062F\", 0 },  \n\t{ \"ELAN0631\", 0 },\n\t{ \"ELAN0632\", 0 },\n\t{ \"ELAN0633\", 0 },  \n\t{ \"ELAN0634\", 0 },  \n\t{ \"ELAN0635\", 0 },  \n\t{ \"ELAN0636\", 0 },  \n\t{ \"ELAN0637\", 0 },  \n\t{ \"ELAN1000\", 0 },\n\t{ }\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "lib_delch.c",
+  "hash_id": "59b98c4afc7411cf6b29f1bd8a3b24e7c168c60603fcfe4ae651b1a3035fa418",
+  "original_prompt": "Ingested from ncurses-6.4/ncurses/base/lib_delch.c",
+  "human_readable_source": " \n\n \n\n \n\n#include <curses.priv.h>\n\nMODULE_ID(\"$Id: lib_delch.c,v 1.14 2020/02/02 23:34:34 tom Exp $\")\n\nNCURSES_EXPORT(int)\nwdelch(WINDOW *win)\n{\n    int code = ERR;\n\n    T((T_CALLED(\"wdelch(%p)\"), (void *) win));\n\n    if (win) {\n\tNCURSES_CH_T blank = win->_nc_bkgd;\n\tstruct ldat *line = &(win->_line[win->_cury]);\n\tNCURSES_CH_T *end = &(line->text[win->_maxx]);\n\tNCURSES_CH_T *temp2 = &(line->text[win->_curx + 1]);\n\tNCURSES_CH_T *temp1 = temp2 - 1;\n\n\tCHANGED_TO_EOL(line, win->_curx, win->_maxx);\n\twhile (temp1 < end)\n\t    *temp1++ = *temp2++;\n\n\t*temp1 = blank;\n\n\t_nc_synchook(win);\n\tcode = OK;\n    }\n    returnCode(code);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

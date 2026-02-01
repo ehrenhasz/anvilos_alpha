@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "f0ab13990b07ed69f76be9eaa9d9c2535bae050792142e7108ba05a52b500550",
+  "original_prompt": "Ingested from linux-6.6.14/fs/notify/dnotify/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-$(CONFIG_DNOTIFY)\t\t+= dnotify.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

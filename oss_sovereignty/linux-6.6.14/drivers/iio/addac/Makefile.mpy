@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "a43dd251b9a7a2a5a6d824a4c7007aa13e1ac38e6e1b768590f99a7e601a6e4f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/iio/addac/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for industrial I/O ADDAC drivers\n#\n\n# When adding new entries keep the list in alphabetical order\nobj-$(CONFIG_AD74115) += ad74115.o\nobj-$(CONFIG_AD74413R) += ad74413r.o\nobj-$(CONFIG_STX104) += stx104.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

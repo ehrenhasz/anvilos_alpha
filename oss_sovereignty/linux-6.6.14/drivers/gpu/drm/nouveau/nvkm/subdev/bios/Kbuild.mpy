@@ -1,0 +1,9 @@
+{
+  "module_name": "Kbuild",
+  "hash_id": "9ab3020806e43a4321c9012afd5ebc7ac41df37caa34a7a6ddb8e92636771b12",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/subdev/bios/Kbuild",
+  "human_readable_source": "# SPDX-License-Identifier: MIT\nnvkm-y += nvkm/subdev/bios/base.o\nnvkm-y += nvkm/subdev/bios/bit.o\nnvkm-y += nvkm/subdev/bios/boost.o\nnvkm-y += nvkm/subdev/bios/conn.o\nnvkm-y += nvkm/subdev/bios/cstep.o\nnvkm-y += nvkm/subdev/bios/dcb.o\nnvkm-y += nvkm/subdev/bios/disp.o\nnvkm-y += nvkm/subdev/bios/dp.o\nnvkm-y += nvkm/subdev/bios/extdev.o\nnvkm-y += nvkm/subdev/bios/fan.o\nnvkm-y += nvkm/subdev/bios/gpio.o\nnvkm-y += nvkm/subdev/bios/i2c.o\nnvkm-y += nvkm/subdev/bios/iccsense.o\nnvkm-y += nvkm/subdev/bios/image.o\nnvkm-y += nvkm/subdev/bios/init.o\nnvkm-y += nvkm/subdev/bios/mxm.o\nnvkm-y += nvkm/subdev/bios/npde.o\nnvkm-y += nvkm/subdev/bios/pcir.o\nnvkm-y += nvkm/subdev/bios/perf.o\nnvkm-y += nvkm/subdev/bios/pll.o\nnvkm-y += nvkm/subdev/bios/pmu.o\nnvkm-y += nvkm/subdev/bios/power_budget.o\nnvkm-y += nvkm/subdev/bios/ramcfg.o\nnvkm-y += nvkm/subdev/bios/rammap.o\nnvkm-y += nvkm/subdev/bios/shadow.o\nnvkm-y += nvkm/subdev/bios/shadowacpi.o\nnvkm-y += nvkm/subdev/bios/shadowof.o\nnvkm-y += nvkm/subdev/bios/shadowpci.o\nnvkm-y += nvkm/subdev/bios/shadowramin.o\nnvkm-y += nvkm/subdev/bios/shadowrom.o\nnvkm-y += nvkm/subdev/bios/timing.o\nnvkm-y += nvkm/subdev/bios/therm.o\nnvkm-y += nvkm/subdev/bios/vmap.o\nnvkm-y += nvkm/subdev/bios/volt.o\nnvkm-y += nvkm/subdev/bios/vpstate.o\nnvkm-y += nvkm/subdev/bios/xpio.o\nnvkm-y += nvkm/subdev/bios/M0203.o\nnvkm-y += nvkm/subdev/bios/M0205.o\nnvkm-y += nvkm/subdev/bios/M0209.o\nnvkm-y += nvkm/subdev/bios/P0260.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

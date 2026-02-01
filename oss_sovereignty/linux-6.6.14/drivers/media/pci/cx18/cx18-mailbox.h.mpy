@@ -1,0 +1,9 @@
+{
+  "module_name": "cx18-mailbox.h",
+  "hash_id": "c269507fe0bd2a5ecf199bf098b543216dba55f688f64d2f482dffa74ce66ab1",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/pci/cx18/cx18-mailbox.h",
+  "human_readable_source": " \n \n\n#ifndef _CX18_MAILBOX_H_\n#define _CX18_MAILBOX_H_\n\n \n#define MAX_MB_ARGUMENTS 6\n \n#define CX2341X_MBOX_MAX_DATA 16\n\n#define MB_RESERVED_HANDLE_0 0\n#define MB_RESERVED_HANDLE_1 0xFFFFFFFF\n\n#define APU 0\n#define CPU 1\n#define EPU 2\n#define HPU 3\n\nstruct cx18;\n\n \nstruct cx18_mdl_ack {\n    u32 id;         \n    u32 data_used;  \n};\n\n \nstruct cx18_mailbox {\n     \n    u32       request;\n     \n    u32       ack;\n    u32       reserved[6];\n     \n    u32       cmd;\n     \n    u32       args[MAX_MB_ARGUMENTS];\n     \n    u32       error;\n};\n\nstruct cx18_stream;\n\nint cx18_api(struct cx18 *cx, u32 cmd, int args, u32 data[]);\nint cx18_vapi_result(struct cx18 *cx, u32 data[MAX_MB_ARGUMENTS], u32 cmd,\n\t\tint args, ...);\nint cx18_vapi(struct cx18 *cx, u32 cmd, int args, ...);\nint cx18_api_func(void *priv, u32 cmd, int in, int out,\n\t\tu32 data[CX2341X_MBOX_MAX_DATA]);\n\nvoid cx18_api_epu_cmd_irq(struct cx18 *cx, int rpu);\n\nvoid cx18_in_work_handler(struct work_struct *work);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

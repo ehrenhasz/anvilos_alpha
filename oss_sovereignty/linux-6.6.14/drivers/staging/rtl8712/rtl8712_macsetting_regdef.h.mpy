@@ -1,0 +1,9 @@
+{
+  "module_name": "rtl8712_macsetting_regdef.h",
+  "hash_id": "feab212f8a6fcda2720f2472f4c6962e4282a7a62c8d7d2c2b0bedab47d7cbe9",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/rtl8712/rtl8712_macsetting_regdef.h",
+  "human_readable_source": " \n \n#ifndef __RTL8712_MACSETTING_REGDEF_H__\n#define __RTL8712_MACSETTING_REGDEF_H__\n\n#define MACID\t\t\t\t(RTL8712_MACIDSETTING_ + 0x0000)\n#define BSSIDR\t\t\t\t(RTL8712_MACIDSETTING_ + 0x0008)\n#define HWVID\t\t\t\t(RTL8712_MACIDSETTING_ + 0x000E)\n#define MAR\t\t\t\t(RTL8712_MACIDSETTING_ + 0x0010)\n#define MBIDCANCONTENT\t\t\t(RTL8712_MACIDSETTING_ + 0x0018)\n#define MBIDCANCFG\t\t\t(RTL8712_MACIDSETTING_ + 0x0020)\n#define BUILDTIME\t\t\t(RTL8712_MACIDSETTING_ + 0x0024)\n#define BUILDUSER\t\t\t(RTL8712_MACIDSETTING_ + 0x0028)\n\n#endif  \n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

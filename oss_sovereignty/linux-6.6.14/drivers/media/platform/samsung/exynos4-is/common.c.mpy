@@ -1,0 +1,9 @@
+{
+  "module_name": "common.c",
+  "hash_id": "da34342e5cde097d56e075678278378571093de7d40fa286c0d51ec90f7d39c8",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/platform/samsung/exynos4-is/common.c",
+  "human_readable_source": "\n \n\n#include <linux/module.h>\n#include <media/drv-intf/exynos-fimc.h>\n#include \"common.h\"\n\n \nstruct v4l2_subdev *fimc_find_remote_sensor(struct media_entity *entity)\n{\n\tstruct media_pad *pad = &entity->pads[0];\n\tstruct v4l2_subdev *sd;\n\n\twhile (pad->flags & MEDIA_PAD_FL_SINK) {\n\t\t \n\t\tpad = media_pad_remote_pad_first(pad);\n\t\tif (!pad || !is_media_entity_v4l2_subdev(pad->entity))\n\t\t\tbreak;\n\n\t\tsd = media_entity_to_v4l2_subdev(pad->entity);\n\n\t\tif (sd->grp_id == GRP_ID_FIMC_IS_SENSOR ||\n\t\t    sd->grp_id == GRP_ID_SENSOR)\n\t\t\treturn sd;\n\t\t \n\t\tpad = &sd->entity.pads[0];\n\t}\n\treturn NULL;\n}\nEXPORT_SYMBOL(fimc_find_remote_sensor);\n\nvoid __fimc_vidioc_querycap(struct device *dev, struct v4l2_capability *cap)\n{\n\tstrscpy(cap->driver, dev->driver->name, sizeof(cap->driver));\n\tstrscpy(cap->card, dev->driver->name, sizeof(cap->card));\n}\nEXPORT_SYMBOL(__fimc_vidioc_querycap);\n\nMODULE_LICENSE(\"GPL\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

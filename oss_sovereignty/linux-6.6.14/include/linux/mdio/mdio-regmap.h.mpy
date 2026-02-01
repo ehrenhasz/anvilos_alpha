@@ -1,0 +1,9 @@
+{
+  "module_name": "mdio-regmap.h",
+  "hash_id": "3b770ecd8d159faed145797df931e8d85de546b60677e725089b9365f7cfa341",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/mdio/mdio-regmap.h",
+  "human_readable_source": " \n \n#ifndef MDIO_REGMAP_H\n#define MDIO_REGMAP_H\n\n#include <linux/phy.h>\n\nstruct device;\nstruct regmap;\n\nstruct mdio_regmap_config {\n\tstruct device *parent;\n\tstruct regmap *regmap;\n\tchar name[MII_BUS_ID_SIZE];\n\tu8 valid_addr;\n\tbool autoscan;\n};\n\nstruct mii_bus *devm_mdio_regmap_register(struct device *dev,\n\t\t\t\t\t  const struct mdio_regmap_config *config);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "@@__@@__py__modgc.c.qstr",
+  "hash_id": "0fa007528700cf6a161af6544235a5481513e37a7d392eb69900139df4e5e022",
+  "original_prompt": "Ingested from sys_09_Anvil/source/ports/unix/build-bicameral/genhdr/qstr/@@__@@__py__modgc.c.qstr",
+  "human_readable_source": "Q(__name__)\nQ(gc)\nQ(collect)\nQ(disable)\nQ(enable)\nQ(isenabled)\nQ(mem_free)\nQ(mem_alloc)\nQ(threshold)\nQ(gc)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

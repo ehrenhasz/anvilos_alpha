@@ -1,0 +1,9 @@
+{
+  "module_name": "leds.h",
+  "hash_id": "e9c5a74d303145d4f17dcc76e1ae185274c4378a7950b41f982006d82d2b1dba",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/realtek/rtl818x/rtl8187/leds.h",
+  "human_readable_source": " \n \n\n#ifndef RTL8187_LED_H\n#define RTL8187_LED_H\n\n#ifdef CONFIG_RTL8187_LEDS\n\n#define RTL8187_LED_MAX_NAME_LEN\t21\n\n#include <linux/leds.h>\n#include <linux/types.h>\n\nenum {\n\tLED_PIN_LED0,\n\tLED_PIN_LED1,\n\tLED_PIN_GPIO0,\n\tLED_PIN_HW\n};\n\nenum {\n\tEEPROM_CID_RSVD0 = 0x00,\n\tEEPROM_CID_RSVD1 = 0xFF,\n\tEEPROM_CID_ALPHA0 = 0x01,\n\tEEPROM_CID_SERCOMM_PS = 0x02,\n\tEEPROM_CID_HW = 0x03,\n\tEEPROM_CID_TOSHIBA = 0x04,\n\tEEPROM_CID_QMI = 0x07,\n\tEEPROM_CID_DELL = 0x08\n};\n\nstruct rtl8187_led {\n\tstruct ieee80211_hw *dev;\n\t \n\tstruct led_classdev led_dev;\n\t \n\tu8 ledpin;\n\t \n\tchar name[RTL8187_LED_MAX_NAME_LEN + 1];\n\t \n\tbool is_radio;\n};\n\nvoid rtl8187_leds_init(struct ieee80211_hw *dev, u16 code);\nvoid rtl8187_leds_exit(struct ieee80211_hw *dev);\n\n#endif  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

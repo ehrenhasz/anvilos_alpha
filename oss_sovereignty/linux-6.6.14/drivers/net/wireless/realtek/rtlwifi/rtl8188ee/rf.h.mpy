@@ -1,0 +1,9 @@
+{
+  "module_name": "rf.h",
+  "hash_id": "a17f1a0aa64a586f54f3b1e28e78351d6d286c8c8ce15e7598fb08c7b1f3443f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/realtek/rtlwifi/rtl8188ee/rf.h",
+  "human_readable_source": " \n \n\n#ifndef __RTL92C_RF_H__\n#define __RTL92C_RF_H__\n\n#define RF6052_MAX_TX_PWR\t\t0x3F\n\nvoid rtl88e_phy_rf6052_set_bandwidth(struct ieee80211_hw *hw,\n\t\t\t\t     u8 bandwidth);\nvoid rtl88e_phy_rf6052_set_cck_txpower(struct ieee80211_hw *hw,\n\t\t\t\t       u8 *ppowerlevel);\nvoid rtl88e_phy_rf6052_set_ofdm_txpower(struct ieee80211_hw *hw,\n\t\t\t\t\tu8 *ppowerlevel_ofdm,\n\t\t\t\t\tu8 *ppowerlevel_bw20,\n\t\t\t\t\tu8 *ppowerlevel_bw40,\n\t\t\t\t\tu8 channel);\nbool rtl88e_phy_rf6052_config(struct ieee80211_hw *hw);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

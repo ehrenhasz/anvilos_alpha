@@ -1,0 +1,9 @@
+{
+  "module_name": "vmmtu102.c",
+  "hash_id": "8cf859f46e7b7202b54da41f15ce66c9b6466f561aef5b27692b903438714031",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/subdev/mmu/vmmtu102.c",
+  "human_readable_source": " \n#include \"vmm.h\"\n\n#include <subdev/timer.h>\n\nstatic void\ntu102_vmm_flush(struct nvkm_vmm *vmm, int depth)\n{\n\tstruct nvkm_device *device = vmm->mmu->subdev.device;\n\tu32 type = (5   - depth) << 24;\n\n\ttype |= 0x00000001;  \n\tif (atomic_read(&vmm->engref[NVKM_SUBDEV_BAR]))\n\t\ttype |= 0x00000006;  \n\n\tmutex_lock(&vmm->mmu->mutex);\n\n\tnvkm_wr32(device, 0xb830a0, vmm->pd->pt[0]->addr >> 8);\n\tnvkm_wr32(device, 0xb830a4, 0x00000000);\n\tnvkm_wr32(device, 0x100e68, 0x00000000);\n\tnvkm_wr32(device, 0xb830b0, 0x80000000 | type);\n\n\tnvkm_msec(device, 2000,\n\t\tif (!(nvkm_rd32(device, 0xb830b0) & 0x80000000))\n\t\t\tbreak;\n\t);\n\n\tmutex_unlock(&vmm->mmu->mutex);\n}\n\nstatic const struct nvkm_vmm_func\ntu102_vmm = {\n\t.join = gv100_vmm_join,\n\t.part = gf100_vmm_part,\n\t.aper = gf100_vmm_aper,\n\t.valid = gp100_vmm_valid,\n\t.flush = tu102_vmm_flush,\n\t.mthd = gp100_vmm_mthd,\n\t.page = {\n\t\t{ 47, &gp100_vmm_desc_16[4], NVKM_VMM_PAGE_Sxxx },\n\t\t{ 38, &gp100_vmm_desc_16[3], NVKM_VMM_PAGE_Sxxx },\n\t\t{ 29, &gp100_vmm_desc_16[2], NVKM_VMM_PAGE_Sxxx },\n\t\t{ 21, &gp100_vmm_desc_16[1], NVKM_VMM_PAGE_SVxC },\n\t\t{ 16, &gp100_vmm_desc_16[0], NVKM_VMM_PAGE_SVxC },\n\t\t{ 12, &gp100_vmm_desc_12[0], NVKM_VMM_PAGE_SVHx },\n\t\t{}\n\t}\n};\n\nint\ntu102_vmm_new(struct nvkm_mmu *mmu, bool managed, u64 addr, u64 size,\n\t      void *argv, u32 argc, struct lock_class_key *key,\n\t      const char *name, struct nvkm_vmm **pvmm)\n{\n\treturn gp100_vmm_new_(&tu102_vmm, mmu, managed, addr, size,\n\t\t\t      argv, argc, key, name, pvmm);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

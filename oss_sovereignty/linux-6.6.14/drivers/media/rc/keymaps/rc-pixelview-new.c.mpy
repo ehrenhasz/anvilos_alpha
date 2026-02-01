@@ -1,0 +1,9 @@
+{
+  "module_name": "rc-pixelview-new.c",
+  "hash_id": "6761b1d396b61f3edd27fb49f3261035c697e9192cf4935abb27bb711c1d2a74",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/rc/keymaps/rc-pixelview-new.c",
+  "human_readable_source": "\n\n\n\n\n\n\n#include <media/rc-map.h>\n#include <linux/module.h>\n\n \n\nstatic struct rc_map_table pixelview_new[] = {\n\t{ 0x3c, KEY_TIME },\t\t \n\t{ 0x12, KEY_POWER },\n\n\t{ 0x3d, KEY_NUMERIC_1 },\n\t{ 0x38, KEY_NUMERIC_2 },\n\t{ 0x18, KEY_NUMERIC_3 },\n\t{ 0x35, KEY_NUMERIC_4 },\n\t{ 0x39, KEY_NUMERIC_5 },\n\t{ 0x15, KEY_NUMERIC_6 },\n\t{ 0x36, KEY_NUMERIC_7 },\n\t{ 0x3a, KEY_NUMERIC_8 },\n\t{ 0x1e, KEY_NUMERIC_9 },\n\t{ 0x3e, KEY_NUMERIC_0 },\n\n\t{ 0x1c, KEY_AGAIN },\t\t \n\t{ 0x3f, KEY_VIDEO },\t\t \n\t{ 0x1f, KEY_LAST },\t\t \n\t{ 0x1b, KEY_MUTE },\n\n\t{ 0x17, KEY_CHANNELDOWN },\n\t{ 0x16, KEY_CHANNELUP },\n\t{ 0x10, KEY_VOLUMEUP },\n\t{ 0x14, KEY_VOLUMEDOWN },\n\t{ 0x13, KEY_ZOOM },\n\n\t{ 0x19, KEY_CAMERA },\t\t \n\t{ 0x1a, KEY_SEARCH },\t\t \n\n\t{ 0x37, KEY_REWIND },\t\t \n\t{ 0x32, KEY_RECORD },\t\t \n\t{ 0x33, KEY_FORWARD },\t\t \n\t{ 0x11, KEY_STOP },\t\t \n\t{ 0x3b, KEY_PLAY },\t\t \n\t{ 0x30, KEY_PLAYPAUSE },\t \n\n\t{ 0x31, KEY_TV },\n\t{ 0x34, KEY_RADIO },\n};\n\nstatic struct rc_map_list pixelview_new_map = {\n\t.map = {\n\t\t.scan     = pixelview_new,\n\t\t.size     = ARRAY_SIZE(pixelview_new),\n\t\t.rc_proto = RC_PROTO_UNKNOWN,\t \n\t\t.name     = RC_MAP_PIXELVIEW_NEW,\n\t}\n};\n\nstatic int __init init_rc_map_pixelview_new(void)\n{\n\treturn rc_map_register(&pixelview_new_map);\n}\n\nstatic void __exit exit_rc_map_pixelview_new(void)\n{\n\trc_map_unregister(&pixelview_new_map);\n}\n\nmodule_init(init_rc_map_pixelview_new)\nmodule_exit(exit_rc_map_pixelview_new)\n\nMODULE_LICENSE(\"GPL\");\nMODULE_AUTHOR(\"Mauro Carvalho Chehab\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

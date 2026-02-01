@@ -1,0 +1,9 @@
+{
+  "module_name": "sig.h",
+  "hash_id": "4a99335968a1c8026e952a8dc6ed6766d7ece6826e6d0d22ceb0955a7aa488dd",
+  "original_prompt": "Ingested from linux-6.6.14/include/crypto/sig.h",
+  "human_readable_source": " \n \n#ifndef _CRYPTO_SIG_H\n#define _CRYPTO_SIG_H\n\n#include <linux/crypto.h>\n\n \nstruct crypto_sig {\n\tstruct crypto_tfm base;\n};\n\n \n\n \nstruct crypto_sig *crypto_alloc_sig(const char *alg_name, u32 type, u32 mask);\n\nstatic inline struct crypto_tfm *crypto_sig_tfm(struct crypto_sig *tfm)\n{\n\treturn &tfm->base;\n}\n\n \nstatic inline void crypto_free_sig(struct crypto_sig *tfm)\n{\n\tcrypto_destroy_tfm(tfm, crypto_sig_tfm(tfm));\n}\n\n \nint crypto_sig_maxsize(struct crypto_sig *tfm);\n\n \nint crypto_sig_sign(struct crypto_sig *tfm,\n\t\t    const void *src, unsigned int slen,\n\t\t    void *dst, unsigned int dlen);\n\n \nint crypto_sig_verify(struct crypto_sig *tfm,\n\t\t      const void *src, unsigned int slen,\n\t\t      const void *digest, unsigned int dlen);\n\n \nint crypto_sig_set_pubkey(struct crypto_sig *tfm,\n\t\t\t  const void *key, unsigned int keylen);\n\n \nint crypto_sig_set_privkey(struct crypto_sig *tfm,\n\t\t\t   const void *key, unsigned int keylen);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

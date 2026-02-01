@@ -1,0 +1,9 @@
+{
+  "module_name": "syscall.S",
+  "hash_id": "a1fbca324800d94a80663a04d3fb4131e0a59d9de5d9531e143bce549d0b0a78",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/arm64/bti/syscall.S",
+  "human_readable_source": " \n \n\n#include \"assembler.h\"\n\nstartfn syscall\n\tbti\tc\n\tmov\tw8, w0\n\tmov\tx0, x1\n\tmov\tx1, x2\n\tmov\tx2, x3\n\tmov\tx3, x4\n\tmov\tx4, x5\n\tmov\tx5, x6\n\tmov\tx6, x7\n\tsvc\t#0\n\tret\nendfn\n\nemit_aarch64_feature_1_and\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

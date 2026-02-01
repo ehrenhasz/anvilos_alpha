@@ -1,0 +1,9 @@
+{
+  "module_name": "acpi_io.h",
+  "hash_id": "d2a9b6cd1965dc1afde1ec8a3b4c3c990344f00d46421edba4e5b17e7d7601ec",
+  "original_prompt": "Ingested from linux-6.6.14/include/acpi/acpi_io.h",
+  "human_readable_source": " \n#ifndef _ACPI_IO_H_\n#define _ACPI_IO_H_\n\n#include <linux/io.h>\n\n#include <asm/acpi.h>\n\n#ifndef acpi_os_ioremap\nstatic inline void __iomem *acpi_os_ioremap(acpi_physical_address phys,\n\t\t\t\t\t    acpi_size size)\n{\n       return ioremap_cache(phys, size);\n}\n#endif\n\nextern bool acpi_permanent_mmap;\n\nvoid __iomem __ref\n*acpi_os_map_iomem(acpi_physical_address phys, acpi_size size);\nvoid __ref acpi_os_unmap_iomem(void __iomem *virt, acpi_size size);\nvoid __iomem *acpi_os_get_iomem(acpi_physical_address phys, unsigned int size);\n\nvoid __iomem *acpi_os_map_generic_address(struct acpi_generic_address *addr);\nvoid acpi_os_unmap_generic_address(struct acpi_generic_address *addr);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

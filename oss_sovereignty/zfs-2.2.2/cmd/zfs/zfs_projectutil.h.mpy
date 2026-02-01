@@ -1,0 +1,9 @@
+{
+  "module_name": "zfs_projectutil.h",
+  "hash_id": "7cf948d37c32c89c734e2ded521d644e5d4344e7d6b7c093b1413a0398c33989",
+  "original_prompt": "Ingested from zfs-2.2.2/cmd/zfs/zfs_projectutil.h",
+  "human_readable_source": " \n \n\n#ifndef\t_ZFS_PROJECTUTIL_H\n#define\t_ZFS_PROJECTUTIL_H\n\ntypedef enum {\n\tZFS_PROJECT_OP_DEFAULT\t= 0,\n\tZFS_PROJECT_OP_LIST\t= 1,\n\tZFS_PROJECT_OP_CHECK\t= 2,\n\tZFS_PROJECT_OP_CLEAR\t= 3,\n\tZFS_PROJECT_OP_SET\t= 4,\n} zfs_project_ops_t;\n\ntypedef struct zfs_project_control {\n\tuint64_t\t\tzpc_expected_projid;\n\tzfs_project_ops_t\tzpc_op;\n\tboolean_t\t\tzpc_dironly;\n\tboolean_t\t\tzpc_ignore_noent;\n\tboolean_t\t\tzpc_keep_projid;\n\tboolean_t\t\tzpc_newline;\n\tboolean_t\t\tzpc_recursive;\n\tboolean_t\t\tzpc_set_flag;\n} zfs_project_control_t;\n\nint zfs_project_handle(const char *name, zfs_project_control_t *zpc);\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

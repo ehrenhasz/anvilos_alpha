@@ -1,0 +1,9 @@
+{
+  "module_name": "TREE06.boot",
+  "hash_id": "9eafed7dacb17bc0c7cbc16782b063f034bad46bcdad7168eb9c1d7fca2ae042",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/rcutorture/configs/rcu/TREE06.boot",
+  "human_readable_source": "rcupdate.rcu_self_test=1\nrcutree.rcu_fanout_exact=1\nrcutree.gp_preinit_delay=3\nrcutree.gp_init_delay=3\nrcutree.gp_cleanup_delay=3\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "qcom,gsbi.h",
+  "hash_id": "4e1ad6628470d5fa7c96736af4b6fbb1e17c83baa1965562e24582fb452a5705",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/soc/qcom,gsbi.h",
+  "human_readable_source": " \n \n#ifndef __DT_BINDINGS_QCOM_GSBI_H\n#define __DT_BINDINGS_QCOM_GSBI_H\n\n#define GSBI_PROT_IDLE\t\t0\n#define GSBI_PROT_I2C_UIM\t1\n#define GSBI_PROT_I2C\t\t2\n#define GSBI_PROT_SPI\t\t3\n#define GSBI_PROT_UART_W_FC\t4\n#define GSBI_PROT_UIM\t\t5\n#define GSBI_PROT_I2C_UART\t6\n\n#define GSBI_CRCI_QUP\t\t0\n#define GSBI_CRCI_UART\t\t1\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

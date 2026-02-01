@@ -1,0 +1,9 @@
+{
+  "module_name": "sti_compositor.h",
+  "hash_id": "06f53df762f7e719dc24da4fae4c6515428f6901015051b12d5a84b0ef417c55",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/sti/sti_compositor.h",
+  "human_readable_source": " \n \n\n#ifndef _STI_COMPOSITOR_H_\n#define _STI_COMPOSITOR_H_\n\n#include <linux/clk.h>\n#include <linux/kernel.h>\n\n#include \"sti_mixer.h\"\n#include \"sti_plane.h\"\n\n#define WAIT_NEXT_VSYNC_MS      50  \n\n#define STI_MAX_MIXER 2\n#define STI_MAX_VID   1\n\nenum sti_compositor_subdev_type {\n\tSTI_MIXER_MAIN_SUBDEV,\n\tSTI_MIXER_AUX_SUBDEV,\n\tSTI_GPD_SUBDEV,\n\tSTI_VID_SUBDEV,\n\tSTI_CURSOR_SUBDEV,\n};\n\nstruct sti_compositor_subdev_descriptor {\n\tenum sti_compositor_subdev_type type;\n\tint id;\n\tunsigned int offset;\n};\n\n \n#define MAX_SUBDEV 9\nstruct sti_compositor_data {\n\tunsigned int nb_subdev;\n\tstruct sti_compositor_subdev_descriptor subdev_desc[MAX_SUBDEV];\n};\n\n \nstruct sti_compositor {\n\tstruct device *dev;\n\tvoid __iomem *regs;\n\tstruct sti_compositor_data data;\n\tstruct clk *clk_compo_main;\n\tstruct clk *clk_compo_aux;\n\tstruct clk *clk_pix_main;\n\tstruct clk *clk_pix_aux;\n\tstruct reset_control *rst_main;\n\tstruct reset_control *rst_aux;\n\tstruct sti_mixer *mixer[STI_MAX_MIXER];\n\tstruct sti_vid *vid[STI_MAX_VID];\n\tstruct sti_vtg *vtg[STI_MAX_MIXER];\n\tstruct notifier_block vtg_vblank_nb[STI_MAX_MIXER];\n};\n\nvoid sti_compositor_debugfs_init(struct sti_compositor *compo,\n\t\t\t\t struct drm_minor *minor);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

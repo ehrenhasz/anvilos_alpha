@@ -1,0 +1,9 @@
+{
+  "module_name": "debugfs_sta.h",
+  "hash_id": "e1fb36c658efcc90e65d2c2f3b201a6d9795be05c673231152f382a69701cf21",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/ath/ath11k/debugfs_sta.h",
+  "human_readable_source": " \n \n\n#ifndef _ATH11K_DEBUGFS_STA_H_\n#define _ATH11K_DEBUGFS_STA_H_\n\n#include <net/mac80211.h>\n\n#include \"core.h\"\n#include \"hal_tx.h\"\n\n#ifdef CONFIG_ATH11K_DEBUGFS\n\nvoid ath11k_debugfs_sta_op_add(struct ieee80211_hw *hw, struct ieee80211_vif *vif,\n\t\t\t       struct ieee80211_sta *sta, struct dentry *dir);\nvoid ath11k_debugfs_sta_add_tx_stats(struct ath11k_sta *arsta,\n\t\t\t\t     struct ath11k_per_peer_tx_stats *peer_stats,\n\t\t\t\t     u8 legacy_rate_idx);\nvoid ath11k_debugfs_sta_update_txcompl(struct ath11k *ar,\n\t\t\t\t       struct hal_tx_status *ts);\n\n#else  \n\n#define ath11k_debugfs_sta_op_add NULL\n\nstatic inline void\nath11k_debugfs_sta_add_tx_stats(struct ath11k_sta *arsta,\n\t\t\t\tstruct ath11k_per_peer_tx_stats *peer_stats,\n\t\t\t\tu8 legacy_rate_idx)\n{\n}\n\nstatic inline void ath11k_debugfs_sta_update_txcompl(struct ath11k *ar,\n\t\t\t\t\t\t     struct hal_tx_status *ts)\n{\n}\n\n#endif  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

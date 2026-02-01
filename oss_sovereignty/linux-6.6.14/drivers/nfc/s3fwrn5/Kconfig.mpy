@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "ce3e7ae84e614333f79b50fad0e9332ce8f92e4ad3f92f8729bcc0fa0786578a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/nfc/s3fwrn5/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig NFC_S3FWRN5\n\ttristate\n\tselect CRYPTO\n\tselect CRYPTO_HASH\n\thelp\n\t  Core driver for Samsung S3FWRN5 NFC chip. Contains core utilities\n\t  of chip. It's intended to be used by PHYs to avoid duplicating lots\n\t  of common code.\n\nconfig NFC_S3FWRN5_I2C\n\ttristate \"Samsung S3FWRN5 I2C support\"\n\tdepends on NFC_NCI && I2C\n\tselect NFC_S3FWRN5\n\tdefault n\n\thelp\n\t  This module adds support for an I2C interface to the S3FWRN5 chip.\n\t  Select this if your platform is using the I2C bus.\n\n\t  To compile this driver as a module, choose m here. The module will\n\t  be called s3fwrn5_i2c.ko.\n\t  Say N if unsure.\n\nconfig NFC_S3FWRN82_UART\n        tristate \"Samsung S3FWRN82 UART support\"\n        depends on NFC_NCI && SERIAL_DEV_BUS\n        select NFC_S3FWRN5\n        help\n          This module adds support for a UART interface to the S3FWRN82 chip.\n          Select this if your platform is using the UART bus.\n\n          To compile this driver as a module, choose m here. The module will\n          be called s3fwrn82_uart.ko.\n          Say N if unsure.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

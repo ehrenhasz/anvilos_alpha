@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "7dd13d69dd4bba8a9b1d0392164f6b81ea9fbb45dc652b0cde78e31421fe08ab",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/test-drivers/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n\nmenuconfig V4L_TEST_DRIVERS\n\tbool \"V4L test drivers\"\n\tdepends on VIDEO_DEV\n\nif V4L_TEST_DRIVERS\n\nconfig VIDEO_VIM2M\n\ttristate \"Virtual Memory-to-Memory Driver\"\n\tdepends on VIDEO_DEV\n\tselect VIDEOBUF2_VMALLOC\n\tselect V4L2_MEM2MEM_DEV\n\tselect MEDIA_CONTROLLER\n\tselect MEDIA_CONTROLLER_REQUEST_API\n\thelp\n\t  This is a virtual test device for the memory-to-memory driver\n\t  framework.\n\nsource \"drivers/media/test-drivers/vicodec/Kconfig\"\nsource \"drivers/media/test-drivers/vimc/Kconfig\"\nsource \"drivers/media/test-drivers/vivid/Kconfig\"\nsource \"drivers/media/test-drivers/visl/Kconfig\"\n\nendif #V4L_TEST_DRIVERS\n\nmenuconfig DVB_TEST_DRIVERS\n\tbool \"DVB test drivers\"\n\tdepends on DVB_CORE && MEDIA_SUPPORT && I2C\n\thelp\n\t  Enables DVB test drivers.\n\n\t  This enables the DVB test drivers. They are meant as an aid for\n\t  DVB device driver writers and developers working on userspace\n\t  media applications.\n\nif DVB_TEST_DRIVERS\n\nsource \"drivers/media/test-drivers/vidtv/Kconfig\"\n\nendif #DVB_TEST_DRIVERS\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

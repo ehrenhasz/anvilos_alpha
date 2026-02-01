@@ -1,0 +1,9 @@
+{
+  "module_name": "iwl-devtrace.c",
+  "hash_id": "0ac6976ab0827b38f70bbd76b91f710632a48e5be8eb777b28e69d67244cd0d7",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/intel/iwlwifi/iwl-devtrace.c",
+  "human_readable_source": "\n \n\n#include <linux/module.h>\n\n \n#ifndef __CHECKER__\n#include \"iwl-trans.h\"\n\n#define CREATE_TRACE_POINTS\n#ifdef CONFIG_CC_IS_GCC\n#pragma GCC diagnostic ignored \"-Wsuggest-attribute=format\"\n#endif\n#include \"iwl-devtrace.h\"\n\nEXPORT_TRACEPOINT_SYMBOL(iwlwifi_dev_ucode_event);\nEXPORT_TRACEPOINT_SYMBOL(iwlwifi_dev_ucode_cont_event);\nEXPORT_TRACEPOINT_SYMBOL(iwlwifi_dev_ucode_wrap_event);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

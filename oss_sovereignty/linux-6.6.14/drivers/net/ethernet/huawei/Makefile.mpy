@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "5908354a4f3089ef45e0aed90dd3aabd341f3d43277152a58373c2b68a958cfd",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/huawei/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Makefile for the Huawei device drivers.\n#\n\nobj-$(CONFIG_HINIC) += hinic/\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

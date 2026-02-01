@@ -1,0 +1,9 @@
+{
+  "module_name": "ptp_kvm.h",
+  "hash_id": "a9c1a3be5d0826bfc49e119c2253a557cb4470f2ed6fba80ad23a9f31d8d71a0",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/ptp_kvm.h",
+  "human_readable_source": " \n \n\n#ifndef _PTP_KVM_H_\n#define _PTP_KVM_H_\n\n#include <linux/types.h>\n\nstruct timespec64;\nstruct clocksource;\n\nint kvm_arch_ptp_init(void);\nvoid kvm_arch_ptp_exit(void);\nint kvm_arch_ptp_get_clock(struct timespec64 *ts);\nint kvm_arch_ptp_get_crosststamp(u64 *cycle,\n\t\tstruct timespec64 *tspec, struct clocksource **cs);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

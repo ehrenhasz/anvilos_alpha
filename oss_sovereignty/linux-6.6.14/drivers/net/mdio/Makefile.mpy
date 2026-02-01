@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "1d9bad2b1776a74d8a17692b33b28bc593b0c61adddfb422c49477f37dcfd03b",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/mdio/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n# Makefile for Linux MDIO bus drivers\n\nobj-$(CONFIG_ACPI_MDIO)\t\t+= acpi_mdio.o\nobj-$(CONFIG_FWNODE_MDIO)\t+= fwnode_mdio.o\nobj-$(CONFIG_OF_MDIO)\t\t+= of_mdio.o\n\nobj-$(CONFIG_MDIO_ASPEED)\t\t+= mdio-aspeed.o\nobj-$(CONFIG_MDIO_BCM_IPROC)\t\t+= mdio-bcm-iproc.o\nobj-$(CONFIG_MDIO_BCM_UNIMAC)\t\t+= mdio-bcm-unimac.o\nobj-$(CONFIG_MDIO_BITBANG)\t\t+= mdio-bitbang.o\nobj-$(CONFIG_MDIO_CAVIUM)\t\t+= mdio-cavium.o\nobj-$(CONFIG_MDIO_GPIO)\t\t\t+= mdio-gpio.o\nobj-$(CONFIG_MDIO_HISI_FEMAC)\t\t+= mdio-hisi-femac.o\nobj-$(CONFIG_MDIO_I2C)\t\t\t+= mdio-i2c.o\nobj-$(CONFIG_MDIO_IPQ4019)\t\t+= mdio-ipq4019.o\nobj-$(CONFIG_MDIO_IPQ8064)\t\t+= mdio-ipq8064.o\nobj-$(CONFIG_MDIO_MOXART)\t\t+= mdio-moxart.o\nobj-$(CONFIG_MDIO_MSCC_MIIM)\t\t+= mdio-mscc-miim.o\nobj-$(CONFIG_MDIO_MVUSB)\t\t+= mdio-mvusb.o\nobj-$(CONFIG_MDIO_OCTEON)\t\t+= mdio-octeon.o\nobj-$(CONFIG_MDIO_REGMAP)\t\t+= mdio-regmap.o\nobj-$(CONFIG_MDIO_SUN4I)\t\t+= mdio-sun4i.o\nobj-$(CONFIG_MDIO_THUNDER)\t\t+= mdio-thunder.o\nobj-$(CONFIG_MDIO_XGENE)\t\t+= mdio-xgene.o\n\nobj-$(CONFIG_MDIO_BUS_MUX)\t\t+= mdio-mux.o\nobj-$(CONFIG_MDIO_BUS_MUX_BCM6368)\t+= mdio-mux-bcm6368.o\nobj-$(CONFIG_MDIO_BUS_MUX_BCM_IPROC)\t+= mdio-mux-bcm-iproc.o\nobj-$(CONFIG_MDIO_BUS_MUX_GPIO)\t\t+= mdio-mux-gpio.o\nobj-$(CONFIG_MDIO_BUS_MUX_MESON_G12A)\t+= mdio-mux-meson-g12a.o\nobj-$(CONFIG_MDIO_BUS_MUX_MESON_GXL)\t+= mdio-mux-meson-gxl.o\nobj-$(CONFIG_MDIO_BUS_MUX_MMIOREG) \t+= mdio-mux-mmioreg.o\nobj-$(CONFIG_MDIO_BUS_MUX_MULTIPLEXER) \t+= mdio-mux-multiplexer.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

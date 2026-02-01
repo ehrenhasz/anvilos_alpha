@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "01101633fb1d7bd697dcff46d2b39290fc293587d052e4f7f943e4cfe50cf29b",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/crypto/cavium/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Makefile for Cavium crypto device drivers\n#\nobj-$(CONFIG_CRYPTO_DEV_CAVIUM_ZIP) += zip/\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

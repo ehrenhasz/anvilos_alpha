@@ -1,0 +1,9 @@
+{
+  "module_name": "thermometer.conf",
+  "hash_id": "3a5fc96639e654892b68ff7a6747237c0aecf2f23f26f7b164c8ce710eebb85c",
+  "original_prompt": "Ingested from linux-6.6.14/tools/thermal/thermometer/thermometer.conf",
+  "human_readable_source": "\nthermal-zones = (\n\t      {\tname = \"cpu[0-9]-thermal\";\n\t\tpolling = 100; }\n      )\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "arm64-stub.c",
+  "hash_id": "df270273cb26c2f1b3e8541d9df4b93135535bc42281bc46ba57a0c7f6d314a6",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/firmware/efi/libstub/arm64-stub.c",
+  "human_readable_source": "\n \n\n\n#include <linux/efi.h>\n#include <asm/efi.h>\n#include <asm/memory.h>\n#include <asm/sections.h>\n\n#include \"efistub.h\"\n\nefi_status_t handle_kernel_image(unsigned long *image_addr,\n\t\t\t\t unsigned long *image_size,\n\t\t\t\t unsigned long *reserve_addr,\n\t\t\t\t unsigned long *reserve_size,\n\t\t\t\t efi_loaded_image_t *image,\n\t\t\t\t efi_handle_t image_handle)\n{\n\tefi_status_t status;\n\tunsigned long kernel_size, kernel_codesize, kernel_memsize;\n\n\tif (image->image_base != _text) {\n\t\tefi_err(\"FIRMWARE BUG: efi_loaded_image_t::image_base has bogus value\\n\");\n\t\timage->image_base = _text;\n\t}\n\n\tif (!IS_ALIGNED((u64)_text, SEGMENT_ALIGN))\n\t\tefi_err(\"FIRMWARE BUG: kernel image not aligned on %dk boundary\\n\",\n\t\t\tSEGMENT_ALIGN >> 10);\n\n\tkernel_size = _edata - _text;\n\tkernel_codesize = __inittext_end - _text;\n\tkernel_memsize = kernel_size + (_end - _edata);\n\t*reserve_size = kernel_memsize;\n\t*image_addr = (unsigned long)_text;\n\n\tstatus = efi_kaslr_relocate_kernel(image_addr,\n\t\t\t\t\t   reserve_addr, reserve_size,\n\t\t\t\t\t   kernel_size, kernel_codesize,\n\t\t\t\t\t   kernel_memsize,\n\t\t\t\t\t   efi_kaslr_get_phys_seed(image_handle));\n\tif (status != EFI_SUCCESS)\n\t\treturn status;\n\n\treturn EFI_SUCCESS;\n}\n\nasmlinkage void primary_entry(void);\n\nunsigned long primary_entry_offset(void)\n{\n\t \n\treturn (char *)primary_entry - _text;\n}\n\nvoid efi_icache_sync(unsigned long start, unsigned long end)\n{\n\tcaches_clean_inval_pou(start, end);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

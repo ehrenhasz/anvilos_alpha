@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "594f6736bf064265ed4b04bbed27ebd7c260ae093b0408376d5f6b76d2f92180",
+  "original_prompt": "Ingested from linux-6.6.14/kernel/dma/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n\nobj-$(CONFIG_HAS_DMA)\t\t\t+= mapping.o direct.o\nobj-$(CONFIG_DMA_OPS)\t\t\t+= ops_helpers.o\nobj-$(CONFIG_DMA_OPS)\t\t\t+= dummy.o\nobj-$(CONFIG_DMA_CMA)\t\t\t+= contiguous.o\nobj-$(CONFIG_DMA_DECLARE_COHERENT)\t+= coherent.o\nobj-$(CONFIG_DMA_API_DEBUG)\t\t+= debug.o\nobj-$(CONFIG_SWIOTLB)\t\t\t+= swiotlb.o\nobj-$(CONFIG_DMA_COHERENT_POOL)\t\t+= pool.o\nobj-$(CONFIG_MMU)\t\t\t+= remap.o\nobj-$(CONFIG_DMA_MAP_BENCHMARK)\t\t+= map_benchmark.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

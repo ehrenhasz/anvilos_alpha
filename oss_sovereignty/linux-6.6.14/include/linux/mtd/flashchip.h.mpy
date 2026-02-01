@@ -1,0 +1,9 @@
+{
+  "module_name": "flashchip.h",
+  "hash_id": "bb0017b9a5322822032d61135e9337ea22a99f41830a2b670afd74bae3b1d9f6",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/mtd/flashchip.h",
+  "human_readable_source": " \n \n\n#ifndef __MTD_FLASHCHIP_H__\n#define __MTD_FLASHCHIP_H__\n\n \n#include <linux/sched.h>\n#include <linux/mutex.h>\n\ntypedef enum {\n\tFL_READY,\n\tFL_STATUS,\n\tFL_CFI_QUERY,\n\tFL_JEDEC_QUERY,\n\tFL_ERASING,\n\tFL_ERASE_SUSPENDING,\n\tFL_ERASE_SUSPENDED,\n\tFL_WRITING,\n\tFL_WRITING_TO_BUFFER,\n\tFL_OTP_WRITE,\n\tFL_WRITE_SUSPENDING,\n\tFL_WRITE_SUSPENDED,\n\tFL_PM_SUSPENDED,\n\tFL_SYNCING,\n\tFL_UNLOADING,\n\tFL_LOCKING,\n\tFL_UNLOCKING,\n\tFL_POINT,\n\tFL_XIP_WHILE_ERASING,\n\tFL_XIP_WHILE_WRITING,\n\tFL_SHUTDOWN,\n\t \n\tFL_READING,\n\tFL_CACHEDPRG,\n\t \n\tFL_RESETTING,\n\tFL_OTPING,\n\tFL_PREPARING_ERASE,\n\tFL_VERIFYING_ERASE,\n\n\tFL_UNKNOWN\n} flstate_t;\n\n\n\n \n\nstruct flchip {\n\tunsigned long start;  \n\t \n\t \n\tint ref_point_counter;\n\tflstate_t state;\n\tflstate_t oldstate;\n\n\tunsigned int write_suspended:1;\n\tunsigned int erase_suspended:1;\n\tunsigned long in_progress_block_addr;\n\tunsigned long in_progress_block_mask;\n\n\tstruct mutex mutex;\n\twait_queue_head_t wq;  \n\tint word_write_time;\n\tint buffer_write_time;\n\tint erase_time;\n\n\tint word_write_time_max;\n\tint buffer_write_time_max;\n\tint erase_time_max;\n\n\tvoid *priv;\n};\n\n \nstruct flchip_shared {\n\tstruct mutex lock;\n\tstruct flchip *writing;\n\tstruct flchip *erasing;\n};\n\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

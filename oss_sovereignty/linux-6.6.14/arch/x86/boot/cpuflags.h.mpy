@@ -1,0 +1,9 @@
+{
+  "module_name": "cpuflags.h",
+  "hash_id": "3eb062bd5af7108e3a360b39dbfd0bbb7a44035d4c356e5f7b6c3221c259d8bf",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/boot/cpuflags.h",
+  "human_readable_source": " \n#ifndef BOOT_CPUFLAGS_H\n#define BOOT_CPUFLAGS_H\n\n#include <asm/cpufeatures.h>\n#include <asm/processor-flags.h>\n\nstruct cpu_features {\n\tint level;\t\t \n\tint family;\t\t \n\tint model;\n\tu32 flags[NCAPINTS];\n};\n\nextern struct cpu_features cpu;\nextern u32 cpu_vendor[3];\n\nint has_eflag(unsigned long mask);\nvoid get_cpuflags(void);\nvoid cpuid_count(u32 id, u32 count, u32 *a, u32 *b, u32 *c, u32 *d);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "test_global_func10.c",
+  "hash_id": "a40e7d42ae574a795e6e9def3b911119d2b8fca2c7a00a7ea864cc1d62eb00ff",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/test_global_func10.c",
+  "human_readable_source": "\n#include <stddef.h>\n#include <linux/bpf.h>\n#include <bpf/bpf_helpers.h>\n#include \"bpf_misc.h\"\n\nstruct Small {\n\tlong x;\n};\n\nstruct Big {\n\tlong x;\n\tlong y;\n};\n\n__noinline int foo(const struct Big *big)\n{\n\tif (!big)\n\t\treturn 0;\n\n\treturn bpf_get_prandom_u32() < big->y;\n}\n\nSEC(\"cgroup_skb/ingress\")\n__failure __msg(\"invalid indirect access to stack\")\nint global_func10(struct __sk_buff *skb)\n{\n\tconst struct Small small = {.x = skb->len };\n\n\treturn foo((struct Big *)&small) ? 1 : 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

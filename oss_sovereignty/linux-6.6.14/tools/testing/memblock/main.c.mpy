@@ -1,0 +1,9 @@
+{
+  "module_name": "main.c",
+  "hash_id": "af5ce70778e38d5052e31cb5b570e78ed4927f79380667658e639f89f8760028",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/memblock/main.c",
+  "human_readable_source": "\n#include \"tests/basic_api.h\"\n#include \"tests/alloc_api.h\"\n#include \"tests/alloc_helpers_api.h\"\n#include \"tests/alloc_nid_api.h\"\n#include \"tests/alloc_exact_nid_api.h\"\n#include \"tests/common.h\"\n\nint main(int argc, char **argv)\n{\n\tparse_args(argc, argv);\n\tmemblock_basic_checks();\n\tmemblock_alloc_checks();\n\tmemblock_alloc_helpers_checks();\n\tmemblock_alloc_nid_checks();\n\tmemblock_alloc_exact_nid_checks();\n\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

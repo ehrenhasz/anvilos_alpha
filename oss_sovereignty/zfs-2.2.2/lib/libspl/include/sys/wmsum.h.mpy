@@ -1,0 +1,9 @@
+{
+  "module_name": "wmsum.h",
+  "hash_id": "d34c764afcfc8b4e04bf33b81b5e615314a6abc08c3652a2b6307a4900e1044e",
+  "original_prompt": "Ingested from zfs-2.2.2/lib/libspl/include/sys/wmsum.h",
+  "human_readable_source": " \n\n \n\n#ifndef\t_SYS_WMSUM_H\n#define\t_SYS_WMSUM_H\n\n#include <sys/aggsum.h>\n\n#ifdef\t__cplusplus\nextern \"C\" {\n#endif\n\n#define\twmsum_t\taggsum_t\n\nstatic inline void\nwmsum_init(wmsum_t *ws, uint64_t value)\n{\n\n\taggsum_init(ws, value);\n}\n\nstatic inline void\nwmsum_fini(wmsum_t *ws)\n{\n\n\taggsum_fini(ws);\n}\n\nstatic inline uint64_t\nwmsum_value(wmsum_t *ws)\n{\n\n\treturn (aggsum_value(ws));\n}\n\nstatic inline void\nwmsum_add(wmsum_t *ws, int64_t delta)\n{\n\n\taggsum_add(ws, delta);\n}\n\n#ifdef\t__cplusplus\n}\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

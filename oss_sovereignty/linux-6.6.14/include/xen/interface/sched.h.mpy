@@ -1,0 +1,9 @@
+{
+  "module_name": "sched.h",
+  "hash_id": "0311fd328fc3ef69e0ebfdca9f504a22df6172422aff52f1cc60920ab1e22c69",
+  "original_prompt": "Ingested from linux-6.6.14/include/xen/interface/sched.h",
+  "human_readable_source": " \n \n\n#ifndef __XEN_PUBLIC_SCHED_H__\n#define __XEN_PUBLIC_SCHED_H__\n\n#include <xen/interface/event_channel.h>\n\n \n\n \n\n \n#define SCHEDOP_yield       0\n\n \n#define SCHEDOP_block       1\n\n \n#define SCHEDOP_shutdown    2\n\n \n#define SCHEDOP_poll        3\n\n \n#define SCHEDOP_remote_shutdown        4\n\n \n#define SCHEDOP_shutdown_code 5\n\n \n#define SCHEDOP_watchdog    6\n\n \n#define SCHEDOP_pin_override 7\n\nstruct sched_shutdown {\n    unsigned int reason;  \n};\nDEFINE_GUEST_HANDLE_STRUCT(sched_shutdown);\n\nstruct sched_poll {\n    GUEST_HANDLE(evtchn_port_t) ports;\n    unsigned int nr_ports;\n    uint64_t timeout;\n};\nDEFINE_GUEST_HANDLE_STRUCT(sched_poll);\n\nstruct sched_remote_shutdown {\n    domid_t domain_id;          \n    unsigned int reason;        \n};\nDEFINE_GUEST_HANDLE_STRUCT(sched_remote_shutdown);\n\nstruct sched_watchdog {\n    uint32_t id;                 \n    uint32_t timeout;            \n};\nDEFINE_GUEST_HANDLE_STRUCT(sched_watchdog);\n\nstruct sched_pin_override {\n    int32_t pcpu;\n};\nDEFINE_GUEST_HANDLE_STRUCT(sched_pin_override);\n\n \n#define SHUTDOWN_poweroff   0   \n#define SHUTDOWN_reboot     1   \n#define SHUTDOWN_suspend    2   \n#define SHUTDOWN_crash      3   \n#define SHUTDOWN_watchdog   4   \n\n \n#define SHUTDOWN_soft_reset 5\n#define SHUTDOWN_MAX        5   \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

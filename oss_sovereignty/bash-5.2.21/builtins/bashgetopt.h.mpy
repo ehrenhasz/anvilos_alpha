@@ -1,0 +1,9 @@
+{
+  "module_name": "bashgetopt.h",
+  "hash_id": "439d19d71e1a2a056b5cbeafe987bfec6c63724f33c12f449ee94a445e057e4b",
+  "original_prompt": "Ingested from bash-5.2.21/builtins/bashgetopt.h",
+  "human_readable_source": " \n\n \n\n \n\n#if !defined (__BASH_GETOPT_H)\n#  define __BASH_GETOPT_H\n\n#include <stdc.h>\n\n#define GETOPT_EOF\t-1\n#define GETOPT_HELP\t-99\n\nextern char *list_optarg;\nextern int list_optflags;\n\nextern int list_optopt;\nextern int list_opttype;\n\nextern WORD_LIST *lcurrent;\nextern WORD_LIST *loptend;\n\nextern int internal_getopt PARAMS((WORD_LIST *, char *));\nextern void reset_internal_getopt PARAMS((void));\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

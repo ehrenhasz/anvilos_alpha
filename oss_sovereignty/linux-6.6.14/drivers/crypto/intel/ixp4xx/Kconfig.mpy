@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "061ed13898ead9fa7205bc7060ae0e86429fa6fbabb4cd74ad51c565df162755",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/crypto/intel/ixp4xx/Kconfig",
+  "human_readable_source": "config CRYPTO_DEV_IXP4XX\n\ttristate \"Driver for IXP4xx crypto hardware acceleration\"\n\tdepends on (ARCH_IXP4XX || COMPILE_TEST) && IXP4XX_QMGR && IXP4XX_NPE\n\tselect CRYPTO_AES\n\tselect CRYPTO_DES\n\tselect CRYPTO_ECB\n\tselect CRYPTO_CBC\n\tselect CRYPTO_CTR\n\tselect CRYPTO_LIB_DES\n\tselect CRYPTO_AEAD\n\tselect CRYPTO_AUTHENC\n\tselect CRYPTO_SKCIPHER\n\thelp\n\t  Driver for the IXP4xx NPE crypto engine.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

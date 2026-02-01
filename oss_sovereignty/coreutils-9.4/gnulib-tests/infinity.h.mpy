@@ -1,0 +1,9 @@
+{
+  "module_name": "infinity.h",
+  "hash_id": "566fd2f4fa2d11f3f532e26d63293aca0e8efef2b402806239346e4eaf004b4f",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/infinity.h",
+  "human_readable_source": " \n\n \n#if defined _MSC_VER || (defined __MVS__ && defined __IBMC__) || defined __PGI\nstatic float\nInfinityf ()\n{\n  static float zero = 0.0f;\n  return 1.0f / zero;\n}\n#else\n# define Infinityf() (1.0f / 0.0f)\n#endif\n\n\n \n\n \n#if defined _MSC_VER || (defined __MVS__ && defined __IBMC__) || defined __PGI\nstatic double\nInfinityd ()\n{\n  static double zero = 0.0;\n  return 1.0 / zero;\n}\n#else\n# define Infinityd() (1.0 / 0.0)\n#endif\n\n\n \n\n \n#if defined _MSC_VER || (defined __MVS__ && defined __IBMC__) || defined __PGI\nstatic long double\nInfinityl ()\n{\n  static long double zero = 0.0L;\n  return 1.0L / zero;\n}\n#else\n# define Infinityl() (1.0L / 0.0L)\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "adf_c3xxxvf_hw_data.h",
+  "hash_id": "6e15b05f96fbf70a9dcd4ce1e924fb885473378ba6d91c6d28010dbbd8dba0f8",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/crypto/intel/qat/qat_c3xxxvf/adf_c3xxxvf_hw_data.h",
+  "human_readable_source": " \n \n#ifndef ADF_C3XXXVF_HW_DATA_H_\n#define ADF_C3XXXVF_HW_DATA_H_\n\n#define ADF_C3XXXIOV_PMISC_BAR 1\n#define ADF_C3XXXIOV_ACCELERATORS_MASK 0x1\n#define ADF_C3XXXIOV_ACCELENGINES_MASK 0x1\n#define ADF_C3XXXIOV_MAX_ACCELERATORS 1\n#define ADF_C3XXXIOV_MAX_ACCELENGINES 1\n#define ADF_C3XXXIOV_RX_RINGS_OFFSET 8\n#define ADF_C3XXXIOV_TX_RINGS_MASK 0xFF\n#define ADF_C3XXXIOV_ETR_BAR 0\n#define ADF_C3XXXIOV_ETR_MAX_BANKS 1\n\nvoid adf_init_hw_data_c3xxxiov(struct adf_hw_device_data *hw_data);\nvoid adf_clean_hw_data_c3xxxiov(struct adf_hw_device_data *hw_data);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

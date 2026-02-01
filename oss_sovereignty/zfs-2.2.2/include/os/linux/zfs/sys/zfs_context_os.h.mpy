@@ -1,0 +1,9 @@
+{
+  "module_name": "zfs_context_os.h",
+  "hash_id": "dd7faceddbbd220700b553072ee42075d6c5b62752d7ccb0d9b4f36ecedfc1cb",
+  "original_prompt": "Ingested from zfs-2.2.2/include/os/linux/zfs/sys/zfs_context_os.h",
+  "human_readable_source": " \n\n#ifndef ZFS_CONTEXT_OS_H\n#define\tZFS_CONTEXT_OS_H\n\n#include <linux/dcache_compat.h>\n#include <linux/utsname_compat.h>\n#include <linux/compiler_compat.h>\n#include <linux/module.h>\n\n#if THREAD_SIZE >= 16384\n#define\tHAVE_LARGE_STACKS\t1\n#endif\n\n#if defined(CONFIG_UML)\n#undef setjmp\n#undef longjmp\n#endif\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

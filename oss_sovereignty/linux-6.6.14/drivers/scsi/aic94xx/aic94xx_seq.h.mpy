@@ -1,0 +1,9 @@
+{
+  "module_name": "aic94xx_seq.h",
+  "hash_id": "3cb6933cb4c0b328552bcc14c089a6c0173f51db73f3e7c4cd0aec1edfd4b50e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/scsi/aic94xx/aic94xx_seq.h",
+  "human_readable_source": " \n \n\n#ifndef _AIC94XX_SEQ_H_\n#define _AIC94XX_SEQ_H_\n\n#define CSEQ_NUM_VECS\t3\n#define LSEQ_NUM_VECS\t11\n\n#define SAS_RAZOR_SEQUENCER_FW_FILE \"aic94xx-seq.fw\"\n#define SAS_RAZOR_SEQUENCER_FW_MAJOR\t1\n\n \nstruct sequencer_file_header {\n\t \n\tu32\tcsum;\n\t \n\tu32\tmajor;\n\t \n\tu32\tminor;\n\t \n\tchar\tversion[16];\n\tu32\tcseq_table_offset;\n\tu32\tcseq_table_size;\n\tu32\tlseq_table_offset;\n\tu32\tlseq_table_size;\n\tu32\tcseq_code_offset;\n\tu32\tcseq_code_size;\n\tu32\tlseq_code_offset;\n\tu32\tlseq_code_size;\n\tu16\tmode2_task;\n\tu16\tcseq_idle_loop;\n\tu16\tlseq_idle_loop;\n} __attribute__((packed));\n\n#ifdef __KERNEL__\nint asd_init_seqs(struct asd_ha_struct *asd_ha);\nint asd_start_seqs(struct asd_ha_struct *asd_ha);\nint asd_release_firmware(void);\n\nvoid asd_update_port_links(struct asd_ha_struct *asd_ha, struct asd_phy *phy);\n#endif\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

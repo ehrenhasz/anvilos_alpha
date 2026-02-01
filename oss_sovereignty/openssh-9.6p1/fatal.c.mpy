@@ -1,0 +1,9 @@
+{
+  "module_name": "fatal.c",
+  "hash_id": "c659830a582d3f24eacb3f187d306631b3a26cae716fa418d560fbb0e1bb1bca",
+  "original_prompt": "Ingested from openssh-9.6p1/fatal.c",
+  "human_readable_source": " \n \n\n#include \"includes.h\"\n\n#include <sys/types.h>\n\n#include <stdarg.h>\n\n#include \"log.h\"\n\n \n\nvoid\nsshfatal(const char *file, const char *func, int line, int showfunc,\n    LogLevel level, const char *suffix, const char *fmt, ...)\n{\n\tva_list args;\n\n\tva_start(args, fmt);\n\tsshlogv(file, func, line, showfunc, level, suffix, fmt, args);\n\tva_end(args);\n\tcleanup_exit(255);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "fsck.zfs.in",
+  "hash_id": "91fe17c1476fc19ee4633d90fb5955cd4ab9e10474a245bc462ae6c565df99d5",
+  "original_prompt": "Ingested from zfs-2.2.2/cmd/fsck.zfs.in",
+  "human_readable_source": "#!/bin/sh\n#\n# fsck.zfs: A fsck helper to accommodate distributions that expect\n# to be able to execute a fsck on all filesystem types.\n#\n# This script simply bubbles up some already-known-about errors,\n# see fsck.zfs(8)\n#\n\nif [ $# -eq 0 ]; then\n\techo \"Usage: $0 [options] dataset\u2026\" >&2\n\texit 16\nfi\n\nret=0\nfor dataset; do\n\tcase \"$dataset\" in\n\t\t-*)\n\t\t\tcontinue\n\t\t\t;;\n\t\t*)\n\t\t\t;;\n\tesac\n\n\tpool=\"${dataset%%/*}\"\n\n\tcase \"$(@sbindir@/zpool list -Ho health \"$pool\")\" in\n\t\tDEGRADED)\n\t\t\tret=$(( ret | 4 ))\n\t\t\t;;\n\t\tFAULTED)\n\t\t\tawk '!/^([[:space:]]*#.*)?$/ && $1 == \"'\"$dataset\"'\" && $3 == \"zfs\" {exit 1}' /etc/fstab || \\\n\t\t\t\tret=$(( ret | 8 ))\n\t\t\t;;\n\t\t\"\")\n\t\t\t# Pool not found, error printed by zpool(8)\n\t\t\tret=$(( ret | 8 ))\n\t\t\t;;\n\t\t*)\n\t\t\t;;\n\tesac\ndone\n\nexit \"$ret\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

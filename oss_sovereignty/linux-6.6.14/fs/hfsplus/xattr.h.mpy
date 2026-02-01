@@ -1,0 +1,9 @@
+{
+  "module_name": "xattr.h",
+  "hash_id": "13dd736c5836593b6ff1f7241511865474fed351a882749ec7a637c602e04e35",
+  "original_prompt": "Ingested from linux-6.6.14/fs/hfsplus/xattr.h",
+  "human_readable_source": " \n \n\n#ifndef _LINUX_HFSPLUS_XATTR_H\n#define _LINUX_HFSPLUS_XATTR_H\n\n#include <linux/xattr.h>\n\nextern const struct xattr_handler hfsplus_xattr_osx_handler;\nextern const struct xattr_handler hfsplus_xattr_user_handler;\nextern const struct xattr_handler hfsplus_xattr_trusted_handler;\nextern const struct xattr_handler hfsplus_xattr_security_handler;\n\nextern const struct xattr_handler *hfsplus_xattr_handlers[];\n\nint __hfsplus_setxattr(struct inode *inode, const char *name,\n\t\t\tconst void *value, size_t size, int flags);\n\nint hfsplus_setxattr(struct inode *inode, const char *name,\n\t\t\t\t   const void *value, size_t size, int flags,\n\t\t\t\t   const char *prefix, size_t prefixlen);\n\nssize_t __hfsplus_getxattr(struct inode *inode, const char *name,\n\t\t\t   void *value, size_t size);\n\nssize_t hfsplus_getxattr(struct inode *inode, const char *name,\n\t\t\t void *value, size_t size,\n\t\t\t const char *prefix, size_t prefixlen);\n\nssize_t hfsplus_listxattr(struct dentry *dentry, char *buffer, size_t size);\n\nint hfsplus_init_security(struct inode *inode, struct inode *dir,\n\t\t\t\tconst struct qstr *qstr);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

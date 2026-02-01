@@ -1,0 +1,9 @@
+{
+  "module_name": "stat.h",
+  "hash_id": "f4398f7cf76b8dfe7fc08bd4b9b352fe0819eb45341f14e6e9da7085e4aa8885",
+  "original_prompt": "Ingested from zfs-2.2.2/include/os/linux/spl/sys/stat.h",
+  "human_readable_source": " \n\n#ifndef _SPL_STAT_H\n#define\t_SPL_STAT_H\n\n#include <linux/stat.h>\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

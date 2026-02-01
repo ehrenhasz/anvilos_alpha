@@ -1,0 +1,9 @@
+{
+  "module_name": "prog_array_init.c",
+  "hash_id": "9014421b2ee8c11d223fa65b1fbad11bf38247248ce959a6329a7262f3aa8531",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/prog_tests/prog_array_init.c",
+  "human_readable_source": " \n \n\n#include <test_progs.h>\n#include \"test_prog_array_init.skel.h\"\n\nvoid test_prog_array_init(void)\n{\n\tstruct test_prog_array_init *skel;\n\tint err;\n\n\tskel = test_prog_array_init__open();\n\tif (!ASSERT_OK_PTR(skel, \"could not open BPF object\"))\n\t\treturn;\n\n\tskel->rodata->my_pid = getpid();\n\n\terr = test_prog_array_init__load(skel);\n\tif (!ASSERT_OK(err, \"could not load BPF object\"))\n\t\tgoto cleanup;\n\n\tskel->links.entry = bpf_program__attach_raw_tracepoint(skel->progs.entry, \"sys_enter\");\n\tif (!ASSERT_OK_PTR(skel->links.entry, \"could not attach BPF program\"))\n\t\tgoto cleanup;\n\n\tusleep(1);\n\n\tASSERT_EQ(skel->bss->value, 42, \"unexpected value\");\n\ncleanup:\n\ttest_prog_array_init__destroy(skel);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

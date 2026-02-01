@@ -1,0 +1,9 @@
+{
+  "module_name": "@@__@@__py__modsys.c.qstr",
+  "hash_id": "cd3d941bafab133bfe5eff74fc2042faf8e4cb027fe7d969ac62861ae825ed67",
+  "original_prompt": "Ingested from sys_09_Anvil/source/ports/unix/build-bicameral/genhdr/qstr/@@__@@__py__modsys.c.qstr",
+  "human_readable_source": "Q(name)\nQ(version)\nQ(_machine)\nQ(_mpy)\nQ(micropython)\nQ(path)\nQ(__name__)\nQ(sys)\nQ(argv)\nQ(version)\nQ(version_info)\nQ(implementation)\nQ(platform)\nQ(byteorder)\nQ(little)\nQ(exit)\nQ(modules)\nQ(executable)\nQ(print_exception)\nQ(sys)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

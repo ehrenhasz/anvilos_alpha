@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "88fbff411ad888028284a383aaecbde8a24fad3a8a6e934779a0d4da65ec56f9",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/wlan-ng/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nconfig PRISM2_USB\n\ttristate \"Prism2.5/3 USB driver\"\n\tdepends on WLAN && USB && CFG80211\n\tselect WIRELESS_EXT\n\tselect WEXT_PRIV\n\tselect CRC32\n\thelp\n\t  This is the wlan-ng prism 2.5/3 USB driver for a wide range of\n\t  old USB wireless devices.\n\n\t  To compile this driver as a module, choose M here: the module\n\t  will be called prism2_usb.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

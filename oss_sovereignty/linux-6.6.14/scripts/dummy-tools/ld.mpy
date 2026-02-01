@@ -1,0 +1,9 @@
+{
+  "module_name": "ld",
+  "hash_id": "0ce50ae7c6a895e812f1ce246ccb88d3eef034ff87cc0908618de2b555ad3aee",
+  "original_prompt": "Ingested from linux-6.6.14/scripts/dummy-tools/ld",
+  "human_readable_source": "#!/bin/sh\n# SPDX-License-Identifier: GPL-2.0-only\n\n# Dummy script that always succeeds.\n\n# Check if the first parameter appears in the rest. Succeeds if found.\n# This helper is useful if a particular option was passed to this script.\n# Typically used like this:\n#   arg_contain <word-you-are-searching-for> \"$@\"\narg_contain ()\n{\n\tsearch=\"$1\"\n\tshift\n\n\twhile [ $# -gt 0 ]\n\tdo\n\t\tif [ \"$search\" = \"$1\" ]; then\n\t\t\treturn 0\n\t\tfi\n\t\tshift\n\tdone\n\n\treturn 1\n}\n\nif arg_contain --version \"$@\" || arg_contain -v \"$@\"; then\n\tprogname=$(basename $0)\n\techo \"GNU $progname (scripts/dummy-tools/$progname) 2.50\"\n\texit 0\nfi\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

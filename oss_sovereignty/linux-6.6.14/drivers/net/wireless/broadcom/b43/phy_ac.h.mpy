@@ -1,0 +1,9 @@
+{
+  "module_name": "phy_ac.h",
+  "hash_id": "6e61f14e497a684b1b64c9a53e57314c8d927d13eef1cb861db4c55bc4357853",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/broadcom/b43/phy_ac.h",
+  "human_readable_source": " \n#ifndef B43_PHY_AC_H_\n#define B43_PHY_AC_H_\n\n#include \"phy_common.h\"\n\n#define B43_PHY_AC_BBCFG\t\t\t0x001\n#define  B43_PHY_AC_BBCFG_RSTCCA\t\t0x4000\t \n#define B43_PHY_AC_BANDCTL\t\t\t0x003\t \n#define  B43_PHY_AC_BANDCTL_5GHZ\t\t0x0001\n#define B43_PHY_AC_TABLE_ID\t\t\t0x00d\n#define B43_PHY_AC_TABLE_OFFSET\t\t\t0x00e\n#define B43_PHY_AC_TABLE_DATA1\t\t\t0x00f\n#define B43_PHY_AC_TABLE_DATA2\t\t\t0x010\n#define B43_PHY_AC_TABLE_DATA3\t\t\t0x011\n#define B43_PHY_AC_CLASSCTL\t\t\t0x140\t \n#define  B43_PHY_AC_CLASSCTL_CCKEN\t\t0x0001\t \n#define  B43_PHY_AC_CLASSCTL_OFDMEN\t\t0x0002\t \n#define  B43_PHY_AC_CLASSCTL_WAITEDEN\t\t0x0004\t \n#define B43_PHY_AC_BW1A\t\t\t\t0x371\n#define B43_PHY_AC_BW2\t\t\t\t0x372\n#define B43_PHY_AC_BW3\t\t\t\t0x373\n#define B43_PHY_AC_BW4\t\t\t\t0x374\n#define B43_PHY_AC_BW5\t\t\t\t0x375\n#define B43_PHY_AC_BW6\t\t\t\t0x376\n#define B43_PHY_AC_RFCTL_CMD\t\t\t0x408\n#define B43_PHY_AC_C1_CLIP\t\t\t0x6d4\n#define  B43_PHY_AC_C1_CLIP_DIS\t\t\t0x4000\n#define B43_PHY_AC_C2_CLIP\t\t\t0x8d4\n#define  B43_PHY_AC_C2_CLIP_DIS\t\t\t0x4000\n#define B43_PHY_AC_C3_CLIP\t\t\t0xad4\n#define  B43_PHY_AC_C3_CLIP_DIS\t\t\t0x4000\n\nstruct b43_phy_ac {\n};\n\nextern const struct b43_phy_operations b43_phyops_ac;\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "ncsi-netlink.h",
+  "hash_id": "762c6e5153d9e96b770554f7e900b4e5918798d909d0e78b18857b541ab31d13",
+  "original_prompt": "Ingested from linux-6.6.14/net/ncsi/ncsi-netlink.h",
+  "human_readable_source": " \n \n\n#ifndef __NCSI_NETLINK_H__\n#define __NCSI_NETLINK_H__\n\n#include <linux/netdevice.h>\n\n#include \"internal.h\"\n\nint ncsi_send_netlink_rsp(struct ncsi_request *nr,\n\t\t\t  struct ncsi_package *np,\n\t\t\t  struct ncsi_channel *nc);\nint ncsi_send_netlink_timeout(struct ncsi_request *nr,\n\t\t\t      struct ncsi_package *np,\n\t\t\t      struct ncsi_channel *nc);\nint ncsi_send_netlink_err(struct net_device *dev,\n\t\t\t  u32 snd_seq,\n\t\t\t  u32 snd_portid,\n\t\t\t  const struct nlmsghdr *nlhdr,\n\t\t\t  int err);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

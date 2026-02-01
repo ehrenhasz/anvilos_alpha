@@ -1,0 +1,9 @@
+{
+  "module_name": "aosp.h",
+  "hash_id": "926d9588526eb310d2665a9205727585d134a23415c38aff8467db29d6825118",
+  "original_prompt": "Ingested from linux-6.6.14/net/bluetooth/aosp.h",
+  "human_readable_source": "\n \n\n#if IS_ENABLED(CONFIG_BT_AOSPEXT)\n\nvoid aosp_do_open(struct hci_dev *hdev);\nvoid aosp_do_close(struct hci_dev *hdev);\n\nbool aosp_has_quality_report(struct hci_dev *hdev);\nint aosp_set_quality_report(struct hci_dev *hdev, bool enable);\n\n#else\n\nstatic inline void aosp_do_open(struct hci_dev *hdev) {}\nstatic inline void aosp_do_close(struct hci_dev *hdev) {}\n\nstatic inline bool aosp_has_quality_report(struct hci_dev *hdev)\n{\n\treturn false;\n}\n\nstatic inline int aosp_set_quality_report(struct hci_dev *hdev, bool enable)\n{\n\treturn -EOPNOTSUPP;\n}\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

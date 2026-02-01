@@ -1,0 +1,9 @@
+{
+  "module_name": "purgatory.h",
+  "hash_id": "7e5e8fce5b87a395ce07e383c04a4c9dd0d67a0eb0987f7369c7ad52f836b32b",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/include/asm/purgatory.h",
+  "human_readable_source": " \n#ifndef _ASM_X86_PURGATORY_H\n#define _ASM_X86_PURGATORY_H\n\n#ifndef __ASSEMBLY__\n#include <linux/purgatory.h>\n\nextern void purgatory(void);\n#endif\t \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

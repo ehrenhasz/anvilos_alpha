@@ -1,0 +1,9 @@
+{
+  "module_name": "cs4265.h",
+  "hash_id": "6063139cbb593be1e33a209d15c9c65e3f6ceb71ed44f6691622037d9fc69abd",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/codecs/cs4265.h",
+  "human_readable_source": " \n \n\n#ifndef __CS4265_H__\n#define __CS4265_H__\n\n#define CS4265_CHIP_ID\t\t\t\t0x1\n#define CS4265_CHIP_ID_VAL\t\t\t0xD0\n#define CS4265_CHIP_ID_MASK\t\t\t0xF0\n#define CS4265_REV_ID_MASK\t\t\t0x0F\n\n#define CS4265_PWRCTL\t\t\t\t0x02\n#define CS4265_PWRCTL_PDN\t\t\t1\n\n#define CS4265_DAC_CTL\t\t\t\t0x3\n#define CS4265_DAC_CTL_MUTE\t\t\t(1 << 2)\n#define CS4265_DAC_CTL_DIF\t\t\t(3 << 4)\n\n#define CS4265_ADC_CTL\t\t\t\t0x4\n#define CS4265_ADC_MASTER\t\t\t1\n#define CS4265_ADC_DIF\t\t\t\t(1 << 4)\n#define CS4265_ADC_FM\t\t\t\t(3 << 6)\n\n#define CS4265_MCLK_FREQ\t\t\t0x5\n#define CS4265_MCLK_FREQ_MASK\t\t\t(7 << 4)\n\n#define CS4265_SIG_SEL\t\t\t\t0x6\n#define CS4265_SIG_SEL_LOOP\t\t\t(1 << 1)\n\n#define CS4265_CHB_PGA_CTL\t\t\t0x7\n#define CS4265_CHA_PGA_CTL\t\t\t0x8\n\n#define CS4265_ADC_CTL2\t\t\t\t0x9\n\n#define CS4265_DAC_CHA_VOL\t\t\t0xA\n#define CS4265_DAC_CHB_VOL\t\t\t0xB\n\n#define CS4265_DAC_CTL2\t\t\t\t0xC\n\n#define CS4265_INT_STATUS\t\t\t0xD\n#define CS4265_INT_MASK\t\t\t\t0xE\n#define CS4265_STATUS_MODE_MSB\t\t\t0xF\n#define CS4265_STATUS_MODE_LSB\t\t\t0x10\n\n#define CS4265_SPDIF_CTL1\t\t\t0x11\n\n#define CS4265_SPDIF_CTL2\t\t\t0x12\n#define CS4265_SPDIF_CTL2_MUTE\t\t\t(1 << 4)\n#define CS4265_SPDIF_CTL2_DIF\t\t\t(3 << 6)\n\n#define CS4265_C_DATA_BUFF\t\t\t0x13\n#define CS4265_MAX_REGISTER\t\t\t0x2A\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

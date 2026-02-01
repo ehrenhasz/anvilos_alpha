@@ -1,0 +1,9 @@
+{
+  "module_name": "x86_irq_vectors.sh",
+  "hash_id": "b2ce1559356c419de233b465bb5b0ef2614d5a5194eac78de2ac753b3901af40",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/trace/beauty/tracepoints/x86_irq_vectors.sh",
+  "human_readable_source": "#!/bin/sh\n# SPDX-License-Identifier: LGPL-2.1\n# (C) 2019, Arnaldo Carvalho de Melo <acme@redhat.com>\n\nif [ $# -ne 1 ] ; then\n\tarch_x86_header_dir=tools/arch/x86/include/asm/\nelse\n\tarch_x86_header_dir=$1\nfi\n\nx86_irq_vectors=${arch_x86_header_dir}/irq_vectors.h\n\n# FIRST_EXTERNAL_VECTOR is not that useful, find what is its number\n# and then replace whatever is using it and that is useful, which at\n# the time of writing of this script was: 0x20.\n\nfirst_external_regex='^#define[[:space:]]+FIRST_EXTERNAL_VECTOR[[:space:]]+(0x[[:xdigit:]]+)$'\nfirst_external_vector=$(grep -E ${first_external_regex} ${x86_irq_vectors} | sed -r \"s/${first_external_regex}/\\1/g\")\n\nprintf \"static const char *x86_irq_vectors[] = {\\n\"\nregex='^#define[[:space:]]+([[:alnum:]_]+)_VECTOR[[:space:]]+(0x[[:xdigit:]]+)$'\nsed -r \"s/FIRST_EXTERNAL_VECTOR/${first_external_vector}/g\" ${x86_irq_vectors} | \\\ngrep -E ${regex} | \\\n\tsed -r \"s/${regex}/\\2 \\1/g\" | sort -n | \\\n\txargs printf \"\\t[%s] = \\\"%s\\\",\\n\"\nprintf \"};\\n\\n\"\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

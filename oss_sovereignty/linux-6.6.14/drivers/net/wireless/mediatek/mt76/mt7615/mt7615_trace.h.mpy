@@ -1,0 +1,9 @@
+{
+  "module_name": "mt7615_trace.h",
+  "hash_id": "7e6f954813dede5157f781761395d058b43d669090808ac5c74dc1492c53d6e7",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/mediatek/mt76/mt7615/mt7615_trace.h",
+  "human_readable_source": " \n \n\n#if !defined(__MT7615_TRACE_H) || defined(TRACE_HEADER_MULTI_READ)\n#define __MT7615_TRACE_H\n\n#include <linux/tracepoint.h>\n#include \"mt7615.h\"\n\n#undef TRACE_SYSTEM\n#define TRACE_SYSTEM mt7615\n\n#define MAXNAME\t\t32\n#define DEV_ENTRY\t__array(char, wiphy_name, 32)\n#define DEV_ASSIGN\tstrscpy(__entry->wiphy_name,\t\\\n\t\t\t\twiphy_name(mt76_hw(dev)->wiphy), MAXNAME)\n#define DEV_PR_FMT\t\"%s\"\n#define DEV_PR_ARG\t__entry->wiphy_name\n\n#define TOKEN_ENTRY\t__field(u16, token)\n#define TOKEN_ASSIGN\t__entry->token = token\n#define TOKEN_PR_FMT\t\" %d\"\n#define TOKEN_PR_ARG\t__entry->token\n\nDECLARE_EVENT_CLASS(dev_token,\n\tTP_PROTO(struct mt7615_dev *dev, u16 token),\n\tTP_ARGS(dev, token),\n\tTP_STRUCT__entry(\n\t\tDEV_ENTRY\n\t\tTOKEN_ENTRY\n\t),\n\tTP_fast_assign(\n\t\tDEV_ASSIGN;\n\t\tTOKEN_ASSIGN;\n\t),\n\tTP_printk(\n\t\tDEV_PR_FMT TOKEN_PR_FMT,\n\t\tDEV_PR_ARG, TOKEN_PR_ARG\n\t)\n);\n\nDEFINE_EVENT(dev_token, mac_tx_free,\n\tTP_PROTO(struct mt7615_dev *dev, u16 token),\n\tTP_ARGS(dev, token)\n);\n\n#endif\n\n#undef TRACE_INCLUDE_PATH\n#define TRACE_INCLUDE_PATH .\n#undef TRACE_INCLUDE_FILE\n#define TRACE_INCLUDE_FILE mt7615_trace\n\n#include <trace/define_trace.h>\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

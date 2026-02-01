@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "620c429775816b80e31b9dc8414c6ba17d163b1dc2d32f6bbcae67fed79584eb",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/cec/platform/s5p/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-$(CONFIG_CEC_SAMSUNG_S5P)\t+= s5p-cec.o\ns5p-cec-y += s5p_cec.o exynos_hdmi_cecctrl.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

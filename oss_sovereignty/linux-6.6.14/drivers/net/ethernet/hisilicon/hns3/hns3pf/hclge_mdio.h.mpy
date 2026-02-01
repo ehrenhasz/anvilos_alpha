@@ -1,0 +1,9 @@
+{
+  "module_name": "hclge_mdio.h",
+  "hash_id": "1e0265c04dca627d59b0f6ba285da32385db150fa5331cb6d74e2fcad834b6d5",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_mdio.h",
+  "human_readable_source": " \n\n\n#ifndef __HCLGE_MDIO_H\n#define __HCLGE_MDIO_H\n\n#include \"hnae3.h\"\n\nstruct hclge_dev;\n\nint hclge_mac_mdio_config(struct hclge_dev *hdev);\nint hclge_mac_connect_phy(struct hnae3_handle *handle);\nvoid hclge_mac_disconnect_phy(struct hnae3_handle *handle);\nvoid hclge_mac_start_phy(struct hclge_dev *hdev);\nvoid hclge_mac_stop_phy(struct hclge_dev *hdev);\nu16 hclge_read_phy_reg(struct hclge_dev *hdev, u16 reg_addr);\nint hclge_write_phy_reg(struct hclge_dev *hdev, u16 reg_addr, u16 val);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "ipv6_route.h",
+  "hash_id": "cb9ca55793ffeae5e3406d444264bcd769069f8dd308fe86d9aaa597d24f0690",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/ipv6_route.h",
+  "human_readable_source": " \n \n\n#ifndef _UAPI_LINUX_IPV6_ROUTE_H\n#define _UAPI_LINUX_IPV6_ROUTE_H\n\n#include <linux/types.h>\n#include <linux/in6.h>\t\t\t \n\n#define RTF_DEFAULT\t0x00010000\t \n#define RTF_ALLONLINK\t0x00020000\t \n#define RTF_ADDRCONF\t0x00040000\t \n#define RTF_PREFIX_RT\t0x00080000\t \n#define RTF_ANYCAST\t0x00100000\t \n\n#define RTF_NONEXTHOP\t0x00200000\t \n#define RTF_EXPIRES\t0x00400000\n\n#define RTF_ROUTEINFO\t0x00800000\t \n\n#define RTF_CACHE\t0x01000000\t \n#define RTF_FLOW\t0x02000000\t \n#define RTF_POLICY\t0x04000000\t \n\n#define RTF_PREF(pref)\t((pref) << 27)\n#define RTF_PREF_MASK\t0x18000000\n\n#define RTF_PCPU\t0x40000000\t \n#define RTF_LOCAL\t0x80000000\n\n\nstruct in6_rtmsg {\n\tstruct in6_addr\t\trtmsg_dst;\n\tstruct in6_addr\t\trtmsg_src;\n\tstruct in6_addr\t\trtmsg_gateway;\n\t__u32\t\t\trtmsg_type;\n\t__u16\t\t\trtmsg_dst_len;\n\t__u16\t\t\trtmsg_src_len;\n\t__u32\t\t\trtmsg_metric;\n\tunsigned long\t\trtmsg_info;\n        __u32\t\t\trtmsg_flags;\n\tint\t\t\trtmsg_ifindex;\n};\n\n#define RTMSG_NEWDEVICE\t\t0x11\n#define RTMSG_DELDEVICE\t\t0x12\n#define RTMSG_NEWROUTE\t\t0x21\n#define RTMSG_DELROUTE\t\t0x22\n\n#define IP6_RT_PRIO_USER\t1024\n#define IP6_RT_PRIO_ADDRCONF\t256\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

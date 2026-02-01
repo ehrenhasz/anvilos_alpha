@@ -1,0 +1,9 @@
+{
+  "module_name": ".gitignore",
+  "hash_id": "f9855db0b0943e317e0e0229c685bfd6d57fb7b205126d833a93394f3facf9eb",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/cachestat/.gitignore",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\ntest_cachestat\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

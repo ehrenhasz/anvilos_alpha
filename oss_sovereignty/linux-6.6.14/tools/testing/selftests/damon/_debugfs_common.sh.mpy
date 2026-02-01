@@ -1,0 +1,9 @@
+{
+  "module_name": "_debugfs_common.sh",
+  "hash_id": "89c157a940b226acff1fcd541c4ebd964c7c586ae88f5a428321e96bf964eca2",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/damon/_debugfs_common.sh",
+  "human_readable_source": "#!/bin/bash\n# SPDX-License-Identifier: GPL-2.0\n\ntest_write_result() {\n\tfile=$1\n\tcontent=$2\n\torig_content=$3\n\texpect_reason=$4\n\texpected=$5\n\n\techo \"$content\" > \"$file\"\n\tif [ $? -ne \"$expected\" ]\n\tthen\n\t\techo \"writing $content to $file doesn't return $expected\"\n\t\techo \"expected because: $expect_reason\"\n\t\techo \"$orig_content\" > \"$file\"\n\t\texit 1\n\tfi\n}\n\ntest_write_succ() {\n\ttest_write_result \"$1\" \"$2\" \"$3\" \"$4\" 0\n}\n\ntest_write_fail() {\n\ttest_write_result \"$1\" \"$2\" \"$3\" \"$4\" 1\n}\n\ntest_content() {\n\tfile=$1\n\torig_content=$2\n\texpected=$3\n\texpect_reason=$4\n\n\tcontent=$(cat \"$file\")\n\tif [ \"$content\" != \"$expected\" ]\n\tthen\n\t\techo \"reading $file expected $expected but $content\"\n\t\techo \"expected because: $expect_reason\"\n\t\techo \"$orig_content\" > \"$file\"\n\t\texit 1\n\tfi\n}\n\nsource ./_chk_dependency.sh\n\ndamon_onoff=\"$DBGFS/monitor_on\"\nif [ $(cat \"$damon_onoff\") = \"on\" ]\nthen\n\techo \"monitoring is on\"\n\texit $ksft_skip\nfi\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

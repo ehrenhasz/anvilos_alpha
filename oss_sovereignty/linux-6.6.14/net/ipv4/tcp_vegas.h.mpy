@@ -1,0 +1,9 @@
+{
+  "module_name": "tcp_vegas.h",
+  "hash_id": "dc7327e199b94b7509c183bc11f6ff18170944580f5d0f7b1c330ec539d92e7e",
+  "original_prompt": "Ingested from linux-6.6.14/net/ipv4/tcp_vegas.h",
+  "human_readable_source": " \n \n#ifndef __TCP_VEGAS_H\n#define __TCP_VEGAS_H 1\n\n \nstruct vegas {\n\tu32\tbeg_snd_nxt;\t \n\tu32\tbeg_snd_una;\t \n\tu32\tbeg_snd_cwnd;\t \n\tu8\tdoing_vegas_now; \n\tu16\tcntRTT;\t\t \n\tu32\tminRTT;\t\t \n\tu32\tbaseRTT;\t \n};\n\nvoid tcp_vegas_init(struct sock *sk);\nvoid tcp_vegas_state(struct sock *sk, u8 ca_state);\nvoid tcp_vegas_pkts_acked(struct sock *sk, const struct ack_sample *sample);\nvoid tcp_vegas_cwnd_event(struct sock *sk, enum tcp_ca_event event);\nsize_t tcp_vegas_get_info(struct sock *sk, u32 ext, int *attr,\n\t\t\t  union tcp_cc_info *info);\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

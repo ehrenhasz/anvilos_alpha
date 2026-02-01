@@ -1,0 +1,9 @@
+{
+  "module_name": "imx8mm.h",
+  "hash_id": "4d198bfd2b848bda062037a06b8d6a0c1b0a49f6365f195de83adc5ccc8d2f86",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/interconnect/imx8mm.h",
+  "human_readable_source": " \n \n\n#ifndef __DT_BINDINGS_INTERCONNECT_IMX8MM_H\n#define __DT_BINDINGS_INTERCONNECT_IMX8MM_H\n\n#define IMX8MM_ICN_NOC\t\t1\n#define IMX8MM_ICS_DRAM\t\t2\n#define IMX8MM_ICS_OCRAM\t3\n#define IMX8MM_ICM_A53\t\t4\n\n#define IMX8MM_ICM_VPU_H1\t5\n#define IMX8MM_ICM_VPU_G1\t6\n#define IMX8MM_ICM_VPU_G2\t7\n#define IMX8MM_ICN_VIDEO\t8\n\n#define IMX8MM_ICM_GPU2D\t9\n#define IMX8MM_ICM_GPU3D\t10\n#define IMX8MM_ICN_GPU\t\t11\n\n#define IMX8MM_ICM_CSI\t\t12\n#define IMX8MM_ICM_LCDIF\t13\n#define IMX8MM_ICN_MIPI\t\t14\n\n#define IMX8MM_ICM_USB1\t\t15\n#define IMX8MM_ICM_USB2\t\t16\n#define IMX8MM_ICM_PCIE\t\t17\n#define IMX8MM_ICN_HSIO\t\t18\n\n#define IMX8MM_ICM_SDMA2\t19\n#define IMX8MM_ICM_SDMA3\t20\n#define IMX8MM_ICN_AUDIO\t21\n\n#define IMX8MM_ICN_ENET\t\t22\n#define IMX8MM_ICM_ENET\t\t23\n\n#define IMX8MM_ICN_MAIN\t\t24\n#define IMX8MM_ICM_NAND\t\t25\n#define IMX8MM_ICM_SDMA1\t26\n#define IMX8MM_ICM_USDHC1\t27\n#define IMX8MM_ICM_USDHC2\t28\n#define IMX8MM_ICM_USDHC3\t29\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

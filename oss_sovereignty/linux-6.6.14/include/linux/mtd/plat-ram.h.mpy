@@ -1,0 +1,9 @@
+{
+  "module_name": "plat-ram.h",
+  "hash_id": "a974de53da22cad765c158230ffb7960e53f29aaa4d9c852b73cccb4d5e48916",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/mtd/plat-ram.h",
+  "human_readable_source": " \n \n\n#ifndef __LINUX_MTD_PLATRAM_H\n#define __LINUX_MTD_PLATRAM_H __FILE__\n\n#define PLATRAM_RO (0)\n#define PLATRAM_RW (1)\n\nstruct platdata_mtd_ram {\n\tconst char\t\t*mapname;\n\tconst char * const      *map_probes;\n\tconst char * const      *probes;\n\tstruct mtd_partition\t*partitions;\n\tint\t\t\t nr_partitions;\n\tint\t\t\t bankwidth;\n\n\t \n\n\tvoid\t(*set_rw)(struct device *dev, int to);\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

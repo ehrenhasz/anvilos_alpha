@@ -1,0 +1,9 @@
+{
+  "module_name": "nfs_ssc.c",
+  "hash_id": "6b11b2bddd6c132eeec5138fa4c40cdb3558806c7c32183806ab1e7d0e0bfe06",
+  "original_prompt": "Ingested from linux-6.6.14/fs/nfs_common/nfs_ssc.c",
+  "human_readable_source": "\n \n\n#include <linux/module.h>\n#include <linux/fs.h>\n#include <linux/nfs_ssc.h>\n#include \"../nfs/nfs4_fs.h\"\n\n\nstruct nfs_ssc_client_ops_tbl nfs_ssc_client_tbl;\nEXPORT_SYMBOL_GPL(nfs_ssc_client_tbl);\n\n#ifdef CONFIG_NFS_V4_2\n \nvoid nfs42_ssc_register(const struct nfs4_ssc_client_ops *ops)\n{\n\tnfs_ssc_client_tbl.ssc_nfs4_ops = ops;\n}\nEXPORT_SYMBOL_GPL(nfs42_ssc_register);\n\n \nvoid nfs42_ssc_unregister(const struct nfs4_ssc_client_ops *ops)\n{\n\tif (nfs_ssc_client_tbl.ssc_nfs4_ops != ops)\n\t\treturn;\n\n\tnfs_ssc_client_tbl.ssc_nfs4_ops = NULL;\n}\nEXPORT_SYMBOL_GPL(nfs42_ssc_unregister);\n#endif  \n\n#ifdef CONFIG_NFS_V4_2\n \nvoid nfs_ssc_register(const struct nfs_ssc_client_ops *ops)\n{\n\tnfs_ssc_client_tbl.ssc_nfs_ops = ops;\n}\nEXPORT_SYMBOL_GPL(nfs_ssc_register);\n\n \nvoid nfs_ssc_unregister(const struct nfs_ssc_client_ops *ops)\n{\n\tif (nfs_ssc_client_tbl.ssc_nfs_ops != ops)\n\t\treturn;\n\tnfs_ssc_client_tbl.ssc_nfs_ops = NULL;\n}\nEXPORT_SYMBOL_GPL(nfs_ssc_unregister);\n\n#else\nvoid nfs_ssc_register(const struct nfs_ssc_client_ops *ops)\n{\n}\nEXPORT_SYMBOL_GPL(nfs_ssc_register);\n\nvoid nfs_ssc_unregister(const struct nfs_ssc_client_ops *ops)\n{\n}\nEXPORT_SYMBOL_GPL(nfs_ssc_unregister);\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

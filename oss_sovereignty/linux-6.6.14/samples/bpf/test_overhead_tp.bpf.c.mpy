@@ -1,0 +1,9 @@
+{
+  "module_name": "test_overhead_tp.bpf.c",
+  "hash_id": "358449dd749fc0ec9fa3fd0cf0b2d06b7ed1ea3bafa9eef766c46dbce68e2470",
+  "original_prompt": "Ingested from linux-6.6.14/samples/bpf/test_overhead_tp.bpf.c",
+  "human_readable_source": " \n#include \"vmlinux.h\"\n#include <bpf/bpf_helpers.h>\n\n \nSEC(\"tracepoint/task/task_rename\")\nint prog(struct trace_event_raw_task_rename *ctx)\n{\n\treturn 0;\n}\n\n \nSEC(\"tracepoint/fib/fib_table_lookup\")\nint prog2(struct trace_event_raw_fib_table_lookup *ctx)\n{\n\treturn 0;\n}\nchar _license[] SEC(\"license\") = \"GPL\";\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

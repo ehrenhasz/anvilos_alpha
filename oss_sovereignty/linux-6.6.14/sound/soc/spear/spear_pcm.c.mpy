@@ -1,0 +1,9 @@
+{
+  "module_name": "spear_pcm.c",
+  "hash_id": "22bc7d924ec1b4f52fd57a7f9edf1451721c3b3a3cbe1a0c9660151bcce37b26",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/spear/spear_pcm.c",
+  "human_readable_source": " \n\n#include <linux/module.h>\n#include <linux/dmaengine.h>\n#include <linux/platform_device.h>\n#include <sound/dmaengine_pcm.h>\n#include <sound/pcm.h>\n#include <sound/soc.h>\n#include <sound/spear_dma.h>\n#include \"spear_pcm.h\"\n\nstatic const struct snd_pcm_hardware spear_pcm_hardware = {\n\t.info = (SNDRV_PCM_INFO_INTERLEAVED | SNDRV_PCM_INFO_BLOCK_TRANSFER |\n\t\t SNDRV_PCM_INFO_MMAP | SNDRV_PCM_INFO_MMAP_VALID |\n\t\t SNDRV_PCM_INFO_PAUSE | SNDRV_PCM_INFO_RESUME),\n\t.buffer_bytes_max = 16 * 1024,  \n\t.period_bytes_min = 2 * 1024,  \n\t.period_bytes_max = 2 * 1024,  \n\t.periods_min = 1,  \n\t.periods_max = 8,  \n\t.fifo_size = 0,  \n};\n\nstatic const struct snd_dmaengine_pcm_config spear_dmaengine_pcm_config = {\n\t.pcm_hardware = &spear_pcm_hardware,\n\t.prealloc_buffer_size = 16 * 1024,\n};\n\nint devm_spear_pcm_platform_register(struct device *dev,\n\t\t\tstruct snd_dmaengine_pcm_config *config,\n\t\t\tbool (*filter)(struct dma_chan *chan, void *slave))\n{\n\t*config = spear_dmaengine_pcm_config;\n\tconfig->compat_filter_fn = filter;\n\n\treturn devm_snd_dmaengine_pcm_register(dev, config,\n\t\tSND_DMAENGINE_PCM_FLAG_NO_DT |\n\t\tSND_DMAENGINE_PCM_FLAG_COMPAT);\n}\nEXPORT_SYMBOL_GPL(devm_spear_pcm_platform_register);\n\nMODULE_AUTHOR(\"Rajeev Kumar <rajeevkumar.linux@gmail.com>\");\nMODULE_DESCRIPTION(\"SPEAr PCM DMA module\");\nMODULE_LICENSE(\"GPL\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

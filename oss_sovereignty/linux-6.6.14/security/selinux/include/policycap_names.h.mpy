@@ -1,0 +1,9 @@
+{
+  "module_name": "policycap_names.h",
+  "hash_id": "51dc6387ea99ee78ee79bf1616d51232470e9321c5925e8a5219139e65df3893",
+  "original_prompt": "Ingested from linux-6.6.14/security/selinux/include/policycap_names.h",
+  "human_readable_source": " \n#ifndef _SELINUX_POLICYCAP_NAMES_H_\n#define _SELINUX_POLICYCAP_NAMES_H_\n\n#include \"policycap.h\"\n\n \nconst char *const selinux_policycap_names[__POLICYDB_CAP_MAX] = {\n\t\"network_peer_controls\",\n\t\"open_perms\",\n\t\"extended_socket_class\",\n\t\"always_check_network\",\n\t\"cgroup_seclabel\",\n\t\"nnp_nosuid_transition\",\n\t\"genfs_seclabel_symlinks\",\n\t\"ioctl_skip_cloexec\",\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

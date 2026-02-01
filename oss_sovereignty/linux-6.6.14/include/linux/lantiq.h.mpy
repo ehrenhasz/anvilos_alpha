@@ -1,0 +1,9 @@
+{
+  "module_name": "lantiq.h",
+  "hash_id": "2d847c9a765c2d58509275e5948e3fd0ca27ba3c13bc833dcf422899ee37a0d2",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/lantiq.h",
+  "human_readable_source": " \n\n#ifndef __LINUX_LANTIQ_H\n#define __LINUX_LANTIQ_H\n\n#ifdef CONFIG_LANTIQ\n#include <lantiq_soc.h>\n#else\n\n#ifndef LTQ_EARLY_ASC\n#define LTQ_EARLY_ASC 0\n#endif\n\n#ifndef CPHYSADDR\n#define CPHYSADDR(a) 0\n#endif\n\nstatic inline struct clk *clk_get_fpi(void)\n{\n\treturn NULL;\n}\n#endif  \n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

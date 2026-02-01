@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "583288048af6665e279a97f115a69abdd5f5dfaf9baf075e2d872b495b945aa3",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/intel/catpt/Makefile",
+  "human_readable_source": "snd-soc-catpt-objs := device.o dsp.o loader.o ipc.o messages.o pcm.o sysfs.o\n\n# tell define_trace.h where to find the trace header\nCFLAGS_device.o := -I$(src)\n\nobj-$(CONFIG_SND_SOC_INTEL_CATPT) += snd-soc-catpt.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

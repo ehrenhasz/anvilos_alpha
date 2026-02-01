@@ -1,0 +1,9 @@
+{
+  "module_name": "fw-api.h",
+  "hash_id": "70076558a6e70db58472e0889e6d3ec08ddf3320988ad6c69793c9d1bd5c1223",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/intel/iwlwifi/mvm/fw-api.h",
+  "human_readable_source": " \n \n#ifndef __fw_api_h__\n#define __fw_api_h__\n\n#include \"fw/api/tdls.h\"\n#include \"fw/api/mac-cfg.h\"\n#include \"fw/api/offload.h\"\n#include \"fw/api/context.h\"\n#include \"fw/api/time-event.h\"\n#include \"fw/api/datapath.h\"\n#include \"fw/api/phy.h\"\n#include \"fw/api/config.h\"\n#include \"fw/api/system.h\"\n#include \"fw/api/alive.h\"\n#include \"fw/api/binding.h\"\n#include \"fw/api/cmdhdr.h\"\n#include \"fw/api/coex.h\"\n#include \"fw/api/commands.h\"\n#include \"fw/api/d3.h\"\n#include \"fw/api/filter.h\"\n#include \"fw/api/led.h\"\n#include \"fw/api/mac.h\"\n#include \"fw/api/nvm-reg.h\"\n#include \"fw/api/phy-ctxt.h\"\n#include \"fw/api/power.h\"\n#include \"fw/api/rs.h\"\n#include \"fw/api/rx.h\"\n#include \"fw/api/scan.h\"\n#include \"fw/api/sf.h\"\n#include \"fw/api/sta.h\"\n#include \"fw/api/stats.h\"\n#include \"fw/api/location.h\"\n#include \"fw/api/tx.h\"\n#include \"fw/api/rfi.h\"\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "memory.json",
+  "hash_id": "1eb35f3308d64158d966863dc2eed00a5406114d16ba1f6f42c0658cfff5cdd1",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/pmu-events/arch/arm64/arm/cortex-x2/memory.json",
+  "human_readable_source": "[\n    {\n        \"ArchStdEvent\": \"MEM_ACCESS\"\n    },\n    {\n        \"ArchStdEvent\": \"REMOTE_ACCESS\"\n    },\n    {\n        \"ArchStdEvent\": \"MEM_ACCESS_RD\"\n    },\n    {\n        \"ArchStdEvent\": \"MEM_ACCESS_WR\"\n    },\n    {\n        \"ArchStdEvent\": \"UNALIGNED_LD_SPEC\"\n    },\n    {\n        \"ArchStdEvent\": \"UNALIGNED_ST_SPEC\"\n    },\n    {\n        \"ArchStdEvent\": \"UNALIGNED_LDST_SPEC\"\n    },\n    {\n        \"ArchStdEvent\": \"LDST_ALIGN_LAT\"\n    },\n    {\n        \"ArchStdEvent\": \"LD_ALIGN_LAT\"\n    },\n    {\n        \"ArchStdEvent\": \"ST_ALIGN_LAT\"\n    },\n    {\n        \"ArchStdEvent\": \"MEM_ACCESS_CHECKED\"\n    },\n    {\n        \"ArchStdEvent\": \"MEM_ACCESS_CHECKED_RD\"\n    },\n    {\n        \"ArchStdEvent\": \"MEM_ACCESS_CHECKED_WR\"\n    }\n]\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

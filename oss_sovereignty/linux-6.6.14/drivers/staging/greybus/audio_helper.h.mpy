@@ -1,0 +1,9 @@
+{
+  "module_name": "audio_helper.h",
+  "hash_id": "5da8f3dd31e56e6b382b52ac4a9ccc897ab7422cd5638b73ec23f726dad70c1e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/greybus/audio_helper.h",
+  "human_readable_source": " \n \n\n#ifndef __LINUX_GBAUDIO_HELPER_H\n#define __LINUX_GBAUDIO_HELPER_H\n\nint gbaudio_dapm_link_component_dai_widgets(struct snd_soc_card *card,\n\t\t\t\t\t    struct snd_soc_dapm_context *dapm);\nint gbaudio_dapm_free_controls(struct snd_soc_dapm_context *dapm,\n\t\t\t       const struct snd_soc_dapm_widget *widget,\n\t\t\t       int num);\nint gbaudio_remove_component_controls(struct snd_soc_component *component,\n\t\t\t\t      const struct snd_kcontrol_new *controls,\n\t\t\t\t      unsigned int num_controls);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

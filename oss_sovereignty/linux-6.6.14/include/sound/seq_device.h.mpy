@@ -1,0 +1,9 @@
+{
+  "module_name": "seq_device.h",
+  "hash_id": "0bb1a8037b6c6b0cd0ac2df2eeac6a55cbcf5af36bb9a68b0c12751a4dbf6209",
+  "original_prompt": "Ingested from linux-6.6.14/include/sound/seq_device.h",
+  "human_readable_source": " \n#ifndef __SOUND_SEQ_DEVICE_H\n#define __SOUND_SEQ_DEVICE_H\n\n \n\n \n\nstruct snd_seq_device {\n\t \n\tstruct snd_card *card;\t \n\tint device;\t\t \n\tconst char *id;\t\t \n\tchar name[80];\t\t \n\tint argsize;\t\t \n\tvoid *driver_data;\t \n\tvoid *private_data;\t \n\tvoid (*private_free)(struct snd_seq_device *device);\n\tstruct device dev;\n};\n\n#define to_seq_dev(_dev) \\\n\tcontainer_of(_dev, struct snd_seq_device, dev)\n\n \n\n \nstruct snd_seq_driver {\n\tstruct device_driver driver;\n\tchar *id;\n\tint argsize;\n};\n\n#define to_seq_drv(_drv) \\\n\tcontainer_of(_drv, struct snd_seq_driver, driver)\n\n \n#ifdef CONFIG_MODULES\nvoid snd_seq_device_load_drivers(void);\n#else\n#define snd_seq_device_load_drivers()\n#endif\nint snd_seq_device_new(struct snd_card *card, int device, const char *id,\n\t\t       int argsize, struct snd_seq_device **result);\n\n#define SNDRV_SEQ_DEVICE_ARGPTR(dev) (void *)((char *)(dev) + sizeof(struct snd_seq_device))\n\nint __must_check __snd_seq_driver_register(struct snd_seq_driver *drv,\n\t\t\t\t\t   struct module *mod);\n#define snd_seq_driver_register(drv) \\\n\t__snd_seq_driver_register(drv, THIS_MODULE)\nvoid snd_seq_driver_unregister(struct snd_seq_driver *drv);\n\n#define module_snd_seq_driver(drv) \\\n\tmodule_driver(drv, snd_seq_driver_register, snd_seq_driver_unregister)\n\n \n#define SNDRV_SEQ_DEV_ID_MIDISYNTH\t\"seq-midi\"\n#define SNDRV_SEQ_DEV_ID_OPL3\t\t\"opl3-synth\"\n#define SNDRV_SEQ_DEV_ID_UMP\t\t\"seq-ump-client\"\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "a605adf6f6f98191cf05546fe653ffa8bd4e0da042bdaf86a133ba8e6cc75a48",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/pmdomain/imx/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-$(CONFIG_HAVE_IMX_GPC) += gpc.o\nobj-$(CONFIG_IMX_GPCV2_PM_DOMAINS) += gpcv2.o\nobj-$(CONFIG_IMX_SCU_PD) += scu-pd.o\nobj-$(CONFIG_IMX8M_BLK_CTRL) += imx8m-blk-ctrl.o\nobj-$(CONFIG_IMX8M_BLK_CTRL) += imx8mp-blk-ctrl.o\nobj-$(CONFIG_SOC_IMX9) += imx93-pd.o\nobj-$(CONFIG_IMX9_BLK_CTRL) += imx93-blk-ctrl.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

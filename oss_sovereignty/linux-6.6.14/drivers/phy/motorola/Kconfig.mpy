@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "4ef93ed540ab0240a31c478991d3994145fc83756fa18399bb51a4981fd350ec",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/phy/motorola/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Phy drivers for Motorola devices\n#\nconfig PHY_CPCAP_USB\n\ttristate \"CPCAP PMIC USB PHY driver\"\n\tdepends on USB_SUPPORT && IIO\n\tdepends on USB_MUSB_HDRC || USB_MUSB_HDRC=n\n\tselect GENERIC_PHY\n\tselect USB_PHY\n\thelp\n\t  Enable this for USB to work on Motorola phones and tablets\n\t  such as Droid 4.\n\nconfig PHY_MAPPHONE_MDM6600\n\ttristate \"Motorola Mapphone MDM6600 modem USB PHY driver\"\n\tdepends on OF && USB_SUPPORT && GPIOLIB\n\tselect GENERIC_PHY\n\thelp\n\t  Enable this for MDM6600 USB modem to work on Motorola phones\n\t  and tablets such as Droid 4.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

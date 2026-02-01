@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "eec731c1aba624813139721e523ce213358e57cf5218e1b7509e2fbc22079083",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/platform/ts5500/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-$(CONFIG_TS5500)\t+= ts5500.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

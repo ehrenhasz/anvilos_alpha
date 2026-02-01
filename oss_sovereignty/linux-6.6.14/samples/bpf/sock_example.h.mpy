@@ -1,0 +1,9 @@
+{
+  "module_name": "sock_example.h",
+  "hash_id": "dafca724f5a6cac590268ce05e8729f18390ea981cbe9f62336ee49185fe0d10",
+  "original_prompt": "Ingested from linux-6.6.14/samples/bpf/sock_example.h",
+  "human_readable_source": " \n#include <stdlib.h>\n#include <stdio.h>\n#include <linux/unistd.h>\n#include <unistd.h>\n#include <string.h>\n#include <errno.h>\n#include <linux/if_ether.h>\n#include <net/if.h>\n#include <linux/if_packet.h>\n#include <arpa/inet.h>\n\nstatic inline int open_raw_sock(const char *name)\n{\n\tstruct sockaddr_ll sll;\n\tint sock;\n\n\tsock = socket(PF_PACKET, SOCK_RAW | SOCK_NONBLOCK | SOCK_CLOEXEC, htons(ETH_P_ALL));\n\tif (sock < 0) {\n\t\tprintf(\"cannot create raw socket\\n\");\n\t\treturn -1;\n\t}\n\n\tmemset(&sll, 0, sizeof(sll));\n\tsll.sll_family = AF_PACKET;\n\tsll.sll_ifindex = if_nametoindex(name);\n\tsll.sll_protocol = htons(ETH_P_ALL);\n\tif (bind(sock, (struct sockaddr *)&sll, sizeof(sll)) < 0) {\n\t\tprintf(\"bind to %s: %s\\n\", name, strerror(errno));\n\t\tclose(sock);\n\t\treturn -1;\n\t}\n\n\treturn sock;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

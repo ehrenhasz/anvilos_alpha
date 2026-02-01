@@ -1,0 +1,9 @@
+{
+  "module_name": "rcar_du_encoder.h",
+  "hash_id": "23436049e821b3870a8ad79a06f34468b14db28991431893cfa7a2bbdf1e41bf",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/renesas/rcar-du/rcar_du_encoder.h",
+  "human_readable_source": " \n \n\n#ifndef __RCAR_DU_ENCODER_H__\n#define __RCAR_DU_ENCODER_H__\n\n#include <drm/drm_encoder.h>\n\nstruct rcar_du_device;\n\nstruct rcar_du_encoder {\n\tstruct drm_encoder base;\n\tenum rcar_du_output output;\n};\n\n#define to_rcar_encoder(e) \\\n\tcontainer_of(e, struct rcar_du_encoder, base)\n\nint rcar_du_encoder_init(struct rcar_du_device *rcdu,\n\t\t\t enum rcar_du_output output,\n\t\t\t struct device_node *enc_node);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

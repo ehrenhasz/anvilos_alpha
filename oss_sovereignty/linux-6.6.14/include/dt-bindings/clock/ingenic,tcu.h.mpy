@@ -1,0 +1,9 @@
+{
+  "module_name": "ingenic,tcu.h",
+  "hash_id": "2ef8de26f04aacb953d91ebf030a070e3c630b3632787aec19106dc624961b4c",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/clock/ingenic,tcu.h",
+  "human_readable_source": " \n \n\n#ifndef __DT_BINDINGS_CLOCK_INGENIC_TCU_H__\n#define __DT_BINDINGS_CLOCK_INGENIC_TCU_H__\n\n#define TCU_CLK_TIMER0\t0\n#define TCU_CLK_TIMER1\t1\n#define TCU_CLK_TIMER2\t2\n#define TCU_CLK_TIMER3\t3\n#define TCU_CLK_TIMER4\t4\n#define TCU_CLK_TIMER5\t5\n#define TCU_CLK_TIMER6\t6\n#define TCU_CLK_TIMER7\t7\n#define TCU_CLK_WDT\t8\n#define TCU_CLK_OST\t9\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

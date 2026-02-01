@@ -1,0 +1,9 @@
+{
+  "module_name": "emitnxtensawin.c",
+  "hash_id": "c4d918f8472a1144474fb682e0a25bbdf1642144a698788df84305b234037889",
+  "original_prompt": "Ingested from sys_09_Anvil/source/py/emitnxtensawin.c",
+  "human_readable_source": "\n\n#include \"py/mpconfig.h\"\n\n#if MICROPY_EMIT_XTENSAWIN\n\n\n#define GENERIC_ASM_API (1)\n#define GENERIC_ASM_API_WIN (1)\n#include \"py/asmxtensa.h\"\n\n\n#define NLR_BUF_IDX_LOCAL_1 (2 + 4) \n\n#define N_NLR_SETJMP (1)\n#define N_XTENSAWIN (1)\n#define EXPORT_FUN(name) emit_native_xtensawin_##name\n#include \"py/emitnative.c\"\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

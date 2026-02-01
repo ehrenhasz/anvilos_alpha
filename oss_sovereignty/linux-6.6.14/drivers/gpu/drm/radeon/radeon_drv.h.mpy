@@ -1,0 +1,9 @@
+{
+  "module_name": "radeon_drv.h",
+  "hash_id": "043d0f3a728d54acab797354f476e4d4e6b452c6bbaa2bfe8ee4d0949aedace5",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/radeon/radeon_drv.h",
+  "human_readable_source": " \n\n#ifndef __RADEON_DRV_H__\n#define __RADEON_DRV_H__\n\n#include <linux/firmware.h>\n#include <linux/platform_device.h>\n#include <drm/drm_legacy.h>\n\n#include \"radeon_family.h\"\n\n \n\n#define DRIVER_AUTHOR\t\t\"Gareth Hughes, Keith Whitwell, others.\"\n\n#define DRIVER_NAME\t\t\"radeon\"\n#define DRIVER_DESC\t\t\"ATI Radeon\"\n#define DRIVER_DATE\t\t\"20080528\"\n\n \n#define DRIVER_MAJOR\t\t1\n#define DRIVER_MINOR\t\t34\n#define DRIVER_PATCHLEVEL\t0\n\nlong radeon_drm_ioctl(struct file *filp,\n\t\t      unsigned int cmd, unsigned long arg);\n\nint radeon_driver_load_kms(struct drm_device *dev, unsigned long flags);\nvoid radeon_driver_unload_kms(struct drm_device *dev);\nint radeon_driver_open_kms(struct drm_device *dev, struct drm_file *file_priv);\nvoid radeon_driver_postclose_kms(struct drm_device *dev,\n\t\t\t\t struct drm_file *file_priv);\n\n \n#if defined(CONFIG_VGA_SWITCHEROO)\nvoid radeon_register_atpx_handler(void);\nvoid radeon_unregister_atpx_handler(void);\nbool radeon_has_atpx_dgpu_power_cntl(void);\nbool radeon_is_atpx_hybrid(void);\n#else\nstatic inline void radeon_register_atpx_handler(void) {}\nstatic inline void radeon_unregister_atpx_handler(void) {}\nstatic inline bool radeon_has_atpx_dgpu_power_cntl(void) { return false; }\nstatic inline bool radeon_is_atpx_hybrid(void) { return false; }\n#endif\n\n#endif\t\t\t\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

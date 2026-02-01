@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "0963c4ee1ccf0e41568f983c0f05773caf4859b07c39784f86e131ed5c9a8230",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/iio/imu/inv_mpu6050/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# inv-mpu6050 drivers for Invensense MPU devices and combos\n#\n\nconfig INV_MPU6050_IIO\n\ttristate\n\tselect IIO_BUFFER\n\tselect IIO_TRIGGERED_BUFFER\n\tselect IIO_INV_SENSORS_TIMESTAMP\n\nconfig INV_MPU6050_I2C\n\ttristate \"Invensense MPU6050 devices (I2C)\"\n\tdepends on I2C\n\tselect I2C_MUX\n\tselect INV_MPU6050_IIO\n\tselect REGMAP_I2C\n\thelp\n\t  This driver supports the Invensense MPU6050/9150,\n\t  MPU6500/6515/6880/9250/9255, ICM20608(D)/20609/20689, ICM20600/20602/20690\n\t  and IAM20680 motion tracking devices over I2C.\n\t  This driver can be built as a module. The module will be called\n\t  inv-mpu6050-i2c.\n\nconfig INV_MPU6050_SPI\n\ttristate \"Invensense MPU6050 devices (SPI)\"\n\tdepends on SPI_MASTER\n\tselect INV_MPU6050_IIO\n\tselect REGMAP_SPI\n\thelp\n\t  This driver supports the Invensense MPU6000,\n\t  MPU6500/6515/6880/9250/9255, ICM20608(D)/20609/20689, ICM20600/20602/20690\n\t  and IAM20680 motion tracking devices over SPI.\n\t  This driver can be built as a module. The module will be called\n\t  inv-mpu6050-spi.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

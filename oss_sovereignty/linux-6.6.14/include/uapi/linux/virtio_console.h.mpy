@@ -1,0 +1,9 @@
+{
+  "module_name": "virtio_console.h",
+  "hash_id": "bc5faf32b45aaf050edd3ca1667ea444ea8c740ad3bd3f16af1093dab75e2c55",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/virtio_console.h",
+  "human_readable_source": " \n#ifndef _UAPI_LINUX_VIRTIO_CONSOLE_H\n#define _UAPI_LINUX_VIRTIO_CONSOLE_H\n#include <linux/types.h>\n#include <linux/virtio_types.h>\n#include <linux/virtio_ids.h>\n#include <linux/virtio_config.h>\n\n \n#define VIRTIO_CONSOLE_F_SIZE\t0\t \n#define VIRTIO_CONSOLE_F_MULTIPORT 1\t \n#define VIRTIO_CONSOLE_F_EMERG_WRITE 2  \n\n#define VIRTIO_CONSOLE_BAD_ID\t\t(~(__u32)0)\n\nstruct virtio_console_config {\n\t \n\t__virtio16 cols;\n\t \n\t__virtio16 rows;\n\t \n\t__virtio32 max_nr_ports;\n\t \n\t__virtio32 emerg_wr;\n} __attribute__((packed));\n\n \nstruct virtio_console_control {\n\t__virtio32 id;\t\t \n\t__virtio16 event;\t \n\t__virtio16 value;\t \n};\n\n \n#define VIRTIO_CONSOLE_DEVICE_READY\t0\n#define VIRTIO_CONSOLE_PORT_ADD\t\t1\n#define VIRTIO_CONSOLE_PORT_REMOVE\t2\n#define VIRTIO_CONSOLE_PORT_READY\t3\n#define VIRTIO_CONSOLE_CONSOLE_PORT\t4\n#define VIRTIO_CONSOLE_RESIZE\t\t5\n#define VIRTIO_CONSOLE_PORT_OPEN\t6\n#define VIRTIO_CONSOLE_PORT_NAME\t7\n\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

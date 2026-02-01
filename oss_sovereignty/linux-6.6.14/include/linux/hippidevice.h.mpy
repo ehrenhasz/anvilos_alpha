@@ -1,0 +1,9 @@
+{
+  "module_name": "hippidevice.h",
+  "hash_id": "324069a4a898a1c53f0df8ba535695ef43b28dfedf3ba302346eb5e0fa0a4159",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/hippidevice.h",
+  "human_readable_source": " \n \n#ifndef _LINUX_HIPPIDEVICE_H\n#define _LINUX_HIPPIDEVICE_H\n\n#include <linux/if_hippi.h>\n\n#ifdef __KERNEL__\n\nstruct neigh_parms;\nstruct net_device;\nstruct sk_buff;\n\nstruct hippi_cb {\n\t__u32\tifield;\n};\n\n__be16 hippi_type_trans(struct sk_buff *skb, struct net_device *dev);\nint hippi_mac_addr(struct net_device *dev, void *p);\nint hippi_neigh_setup_dev(struct net_device *dev, struct neigh_parms *p);\nstruct net_device *alloc_hippi_dev(int sizeof_priv);\n#endif\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "delta-mjpeg.h",
+  "hash_id": "122b1fcf04ae145c3a0cdc15a55dc861c9248d60dd33c5db323c16c8c98c4157",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/platform/st/sti/delta/delta-mjpeg.h",
+  "human_readable_source": " \n \n\n#ifndef DELTA_MJPEG_H\n#define DELTA_MJPEG_H\n\n#include \"delta.h\"\n\nstruct mjpeg_component {\n\tunsigned int id; \n\tunsigned int h_sampling_factor;\n\tunsigned int v_sampling_factor;\n\tunsigned int quant_table_index;\n};\n\n#define MJPEG_MAX_COMPONENTS 5\n\nstruct mjpeg_header {\n\tunsigned int length;\n\tunsigned int sample_precision;\n\tunsigned int frame_width;\n\tunsigned int frame_height;\n\tunsigned int nb_of_components;\n\tstruct mjpeg_component components[MJPEG_MAX_COMPONENTS];\n};\n\nint delta_mjpeg_read_header(struct delta_ctx *pctx,\n\t\t\t    unsigned char *data, unsigned int size,\n\t\t\t    struct mjpeg_header *header,\n\t\t\t    unsigned int *data_offset);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

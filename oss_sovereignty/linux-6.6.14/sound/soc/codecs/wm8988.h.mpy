@@ -1,0 +1,9 @@
+{
+  "module_name": "wm8988.h",
+  "hash_id": "4a2a28007af4a3e38658af8900809b6c23da7734c8604f4ca2f965200d8c0388",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/codecs/wm8988.h",
+  "human_readable_source": " \n \n\n#ifndef _WM8988_H\n#define _WM8988_H\n\n \n\n#define WM8988_LINVOL    0x00\n#define WM8988_RINVOL    0x01\n#define WM8988_LOUT1V    0x02\n#define WM8988_ROUT1V    0x03\n#define WM8988_ADCDAC    0x05\n#define WM8988_IFACE     0x07\n#define WM8988_SRATE     0x08\n#define WM8988_LDAC      0x0a\n#define WM8988_RDAC      0x0b\n#define WM8988_BASS      0x0c\n#define WM8988_TREBLE    0x0d\n#define WM8988_RESET     0x0f\n#define WM8988_3D        0x10\n#define WM8988_ALC1      0x11\n#define WM8988_ALC2      0x12\n#define WM8988_ALC3      0x13\n#define WM8988_NGATE     0x14\n#define WM8988_LADC      0x15\n#define WM8988_RADC      0x16\n#define WM8988_ADCTL1    0x17\n#define WM8988_ADCTL2    0x18\n#define WM8988_PWR1      0x19\n#define WM8988_PWR2      0x1a\n#define WM8988_ADCTL3    0x1b\n#define WM8988_ADCIN     0x1f\n#define WM8988_LADCIN    0x20\n#define WM8988_RADCIN    0x21\n#define WM8988_LOUTM1    0x22\n#define WM8988_LOUTM2    0x23\n#define WM8988_ROUTM1    0x24\n#define WM8988_ROUTM2    0x25\n#define WM8988_LOUT2V    0x28\n#define WM8988_ROUT2V    0x29\n#define WM8988_LPPB      0x43\n#define WM8988_NUM_REG   0x44\n\n#define WM8988_SYSCLK\t0\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "gcc-x86_32-has-stack-protector.sh",
+  "hash_id": "acd733cf6cd3b6028d31db5b85b619cf03b38644d5ccb0b80e26900d22831d7c",
+  "original_prompt": "Ingested from linux-6.6.14/scripts/gcc-x86_32-has-stack-protector.sh",
+  "human_readable_source": "#!/bin/sh\n# SPDX-License-Identifier: GPL-2.0\n\n# This requires GCC 8.1 or better.  Specifically, we require\n# -mstack-protector-guard-reg, added by\n# https://gcc.gnu.org/bugzilla/show_bug.cgi?id=81708\n\necho \"int foo(void) { char X[200]; return 3; }\" | $* -S -x c -c -m32 -O0 -fstack-protector -mstack-protector-guard-reg=fs -mstack-protector-guard-symbol=__stack_chk_guard - -o - 2> /dev/null | grep -q \"%fs\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

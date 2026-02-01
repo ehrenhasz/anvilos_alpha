@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "d8b7c16010a5142d09786d1a15fd8cd21a6e6f23bcd972f8638c7f4e0578f164",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/microchip/lan966x/Kconfig",
+  "human_readable_source": "config LAN966X_SWITCH\n\ttristate \"Lan966x switch driver\"\n\tdepends on PTP_1588_CLOCK_OPTIONAL\n\tdepends on HAS_IOMEM\n\tdepends on OF\n\tdepends on NET_SWITCHDEV\n\tdepends on BRIDGE || BRIDGE=n\n\tselect PHYLINK\n\tselect PAGE_POOL\n\tselect VCAP\n\thelp\n\t  This driver supports the Lan966x network switch device.\n\nconfig LAN966X_DCB\n\tbool \"Data Center Bridging (DCB) support\"\n\tdepends on LAN966X_SWITCH && DCB\n\tdefault y\n\thelp\n\t  Say Y here if you want to use Data Center Bridging (DCB) in the\n\t  driver. This can be used to assign priority to traffic, based on\n\t  DSCP and PCP.\n\n\t  If unsure, set to Y.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

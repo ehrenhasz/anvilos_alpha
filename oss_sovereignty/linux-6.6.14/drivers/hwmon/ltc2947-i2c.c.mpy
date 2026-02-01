@@ -1,0 +1,9 @@
+{
+  "module_name": "ltc2947-i2c.c",
+  "hash_id": "04fe2f792ac477b713221db8478fc7602711bb4417fb88b0a446b2f19e0eb35c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/hwmon/ltc2947-i2c.c",
+  "human_readable_source": "\n \n#include <linux/i2c.h>\n#include <linux/module.h>\n#include <linux/regmap.h>\n\n#include \"ltc2947.h\"\n\nstatic const struct regmap_config ltc2947_regmap_config = {\n\t.reg_bits = 8,\n\t.val_bits = 8,\n};\n\nstatic int ltc2947_probe(struct i2c_client *i2c)\n{\n\tstruct regmap *map;\n\n\tmap = devm_regmap_init_i2c(i2c, &ltc2947_regmap_config);\n\tif (IS_ERR(map))\n\t\treturn PTR_ERR(map);\n\n\treturn ltc2947_core_probe(map, i2c->name);\n}\n\nstatic const struct i2c_device_id ltc2947_id[] = {\n\t{\"ltc2947\", 0},\n\t{}\n};\nMODULE_DEVICE_TABLE(i2c, ltc2947_id);\n\nstatic struct i2c_driver ltc2947_driver = {\n\t.driver = {\n\t\t.name = \"ltc2947\",\n\t\t.of_match_table = ltc2947_of_match,\n\t\t.pm = pm_sleep_ptr(&ltc2947_pm_ops),\n\t},\n\t.probe = ltc2947_probe,\n\t.id_table = ltc2947_id,\n};\nmodule_i2c_driver(ltc2947_driver);\n\nMODULE_AUTHOR(\"Nuno Sa <nuno.sa@analog.com>\");\nMODULE_DESCRIPTION(\"LTC2947 I2C power and energy monitor driver\");\nMODULE_LICENSE(\"GPL\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

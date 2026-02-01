@@ -1,0 +1,9 @@
+{
+  "module_name": "symlink.c",
+  "hash_id": "35f5c8294b68673320d03ef79a3cdcfddc54f36fda82c28b381e8cbde3d281fd",
+  "original_prompt": "Ingested from linux-6.6.14/fs/affs/symlink.c",
+  "human_readable_source": "\n \n\n#include \"affs.h\"\n\nstatic int affs_symlink_read_folio(struct file *file, struct folio *folio)\n{\n\tstruct buffer_head *bh;\n\tstruct inode *inode = folio->mapping->host;\n\tchar *link = folio_address(folio);\n\tstruct slink_front *lf;\n\tint\t\t\t i, j;\n\tchar\t\t\t c;\n\tchar\t\t\t lc;\n\n\tpr_debug(\"get_link(ino=%lu)\\n\", inode->i_ino);\n\n\tbh = affs_bread(inode->i_sb, inode->i_ino);\n\tif (!bh)\n\t\tgoto fail;\n\ti  = 0;\n\tj  = 0;\n\tlf = (struct slink_front *)bh->b_data;\n\tlc = 0;\n\n\tif (strchr(lf->symname,':')) {\t \n\t\tstruct affs_sb_info *sbi = AFFS_SB(inode->i_sb);\n\t\tchar *pf;\n\t\tspin_lock(&sbi->symlink_lock);\n\t\tpf = sbi->s_prefix ? sbi->s_prefix : \"/\";\n\t\twhile (i < 1023 && (c = pf[i]))\n\t\t\tlink[i++] = c;\n\t\tspin_unlock(&sbi->symlink_lock);\n\t\twhile (i < 1023 && lf->symname[j] != ':')\n\t\t\tlink[i++] = lf->symname[j++];\n\t\tif (i < 1023)\n\t\t\tlink[i++] = '/';\n\t\tj++;\n\t\tlc = '/';\n\t}\n\twhile (i < 1023 && (c = lf->symname[j])) {\n\t\tif (c == '/' && lc == '/' && i < 1020) {\t \n\t\t\tlink[i++] = '.';\n\t\t\tlink[i++] = '.';\n\t\t}\n\t\tlink[i++] = c;\n\t\tlc = c;\n\t\tj++;\n\t}\n\tlink[i] = '\\0';\n\taffs_brelse(bh);\n\tfolio_mark_uptodate(folio);\n\tfolio_unlock(folio);\n\treturn 0;\nfail:\n\tfolio_unlock(folio);\n\treturn -EIO;\n}\n\nconst struct address_space_operations affs_symlink_aops = {\n\t.read_folio\t= affs_symlink_read_folio,\n};\n\nconst struct inode_operations affs_symlink_inode_operations = {\n\t.get_link\t= page_get_link,\n\t.setattr\t= affs_notify_change,\n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

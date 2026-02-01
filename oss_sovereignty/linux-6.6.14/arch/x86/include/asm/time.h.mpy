@@ -1,0 +1,9 @@
+{
+  "module_name": "time.h",
+  "hash_id": "e5cd6191c99dcaacd8514639d94aed6c7cd2f859fd861a325e37bfeb0a29bf86",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/include/asm/time.h",
+  "human_readable_source": " \n#ifndef _ASM_X86_TIME_H\n#define _ASM_X86_TIME_H\n\n#include <linux/clocksource.h>\n#include <asm/mc146818rtc.h>\n\nextern void hpet_time_init(void);\nextern bool pit_timer_init(void);\nextern bool tsc_clocksource_watchdog_disabled(void);\n\nextern struct clock_event_device *global_clock_event;\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

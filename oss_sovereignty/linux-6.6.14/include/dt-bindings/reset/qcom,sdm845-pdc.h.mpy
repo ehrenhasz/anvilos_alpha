@@ -1,0 +1,9 @@
+{
+  "module_name": "qcom,sdm845-pdc.h",
+  "hash_id": "742b9ae7e4926499e6949643ac0951ae2510b4a3e6e8aeb7376f6d8ade5a9d3a",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/reset/qcom,sdm845-pdc.h",
+  "human_readable_source": " \n \n\n#ifndef _DT_BINDINGS_RESET_PDC_SDM_845_H\n#define _DT_BINDINGS_RESET_PDC_SDM_845_H\n\n#define PDC_APPS_SYNC_RESET\t0\n#define PDC_SP_SYNC_RESET\t1\n#define PDC_AUDIO_SYNC_RESET\t2\n#define PDC_SENSORS_SYNC_RESET\t3\n#define PDC_AOP_SYNC_RESET\t4\n#define PDC_DEBUG_SYNC_RESET\t5\n#define PDC_GPU_SYNC_RESET\t6\n#define PDC_DISPLAY_SYNC_RESET\t7\n#define PDC_COMPUTE_SYNC_RESET\t8\n#define PDC_MODEM_SYNC_RESET\t9\n#define PDC_WLAN_RF_SYNC_RESET\t10\n#define PDC_WPSS_SYNC_RESET\t11\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

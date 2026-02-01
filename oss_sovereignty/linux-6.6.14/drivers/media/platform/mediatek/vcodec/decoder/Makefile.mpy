@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "d0e5d1ce30fd97c59f07ba06429bb85327afdcdfaa3298a72d59fd46c0d421a7",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/platform/mediatek/vcodec/decoder/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n\nobj-$(CONFIG_VIDEO_MEDIATEK_VCODEC) += mtk-vcodec-dec.o \\\n\t\t\t\t       mtk-vcodec-dec-hw.o\n\nmtk-vcodec-dec-y := vdec/vdec_h264_if.o \\\n\t\tvdec/vdec_vp8_if.o \\\n\t\tvdec/vdec_vp8_req_if.o \\\n\t\tvdec/vdec_vp9_if.o \\\n\t\tvdec/vdec_vp9_req_lat_if.o \\\n\t\tvdec/vdec_av1_req_lat_if.o \\\n\t\tvdec/vdec_h264_req_if.o \\\n\t\tvdec/vdec_h264_req_common.o \\\n\t\tvdec/vdec_h264_req_multi_if.o \\\n\t\tvdec/vdec_hevc_req_multi_if.o \\\n\t\tmtk_vcodec_dec_drv.o \\\n\t\tvdec_drv_if.o \\\n\t\tvdec_vpu_if.o \\\n\t\tvdec_msg_queue.o \\\n\t\tmtk_vcodec_dec.o \\\n\t\tmtk_vcodec_dec_stateful.o \\\n\t\tmtk_vcodec_dec_stateless.o \\\n\t\tmtk_vcodec_dec_pm.o \\\n\nmtk-vcodec-dec-hw-y := mtk_vcodec_dec_hw.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

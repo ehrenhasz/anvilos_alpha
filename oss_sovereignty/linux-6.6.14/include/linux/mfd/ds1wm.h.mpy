@@ -1,0 +1,9 @@
+{
+  "module_name": "ds1wm.h",
+  "hash_id": "8347627b9419e3de2ac2cff5d5476ea1aa5e1282069b3fa9b9cde7b216008055",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/mfd/ds1wm.h",
+  "human_readable_source": " \n \n\nstruct ds1wm_driver_data {\n\tint active_high;\n\tint clock_rate;\n\t \n\tunsigned int reset_recover_delay;\n\n\t \n\tbool is_hw_big_endian;\n\n\t \n\tunsigned int bus_shift;\n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

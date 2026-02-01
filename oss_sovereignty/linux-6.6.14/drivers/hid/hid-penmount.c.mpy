@@ -1,0 +1,9 @@
+{
+  "module_name": "hid-penmount.c",
+  "hash_id": "ad61eca93607d96b3ddf8e33f1661425004228d89a88ee8d7b9c929ad86dc271",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/hid/hid-penmount.c",
+  "human_readable_source": "\n \n\n \n\n#include <linux/module.h>\n#include <linux/hid.h>\n#include \"hid-ids.h\"\n\nstatic int penmount_input_mapping(struct hid_device *hdev,\n\t\tstruct hid_input *hi, struct hid_field *field,\n\t\tstruct hid_usage *usage, unsigned long **bit, int *max)\n{\n\tif ((usage->hid & HID_USAGE_PAGE) == HID_UP_BUTTON) {\n\t\tif (((usage->hid - 1) & HID_USAGE) == 0) {\n\t\t\thid_map_usage(hi, usage, bit, max, EV_KEY, BTN_TOUCH);\n\t\t\treturn 1;\n\t\t} else {\n\t\t\treturn -1;\n\t\t}\n\t}\n\n\treturn 0;\n}\n\nstatic const struct hid_device_id penmount_devices[] = {\n\t{ HID_USB_DEVICE(USB_VENDOR_ID_PENMOUNT, USB_DEVICE_ID_PENMOUNT_6000) },\n\t{ }\n};\nMODULE_DEVICE_TABLE(hid, penmount_devices);\n\nstatic struct hid_driver penmount_driver = {\n\t.name = \"hid-penmount\",\n\t.id_table = penmount_devices,\n\t.input_mapping = penmount_input_mapping,\n};\n\nmodule_hid_driver(penmount_driver);\n\nMODULE_AUTHOR(\"Christian Gmeiner <christian.gmeiner@gmail.com>\");\nMODULE_DESCRIPTION(\"PenMount HID TouchScreen driver\");\nMODULE_LICENSE(\"GPL\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

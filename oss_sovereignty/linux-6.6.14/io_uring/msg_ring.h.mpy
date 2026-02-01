@@ -1,0 +1,9 @@
+{
+  "module_name": "msg_ring.h",
+  "hash_id": "4007d3803c9871d6d84efb456a16a3cda64858d19c3c0ffceff2b7a764bd0430",
+  "original_prompt": "Ingested from linux-6.6.14/io_uring/msg_ring.h",
+  "human_readable_source": "\n\nint io_msg_ring_prep(struct io_kiocb *req, const struct io_uring_sqe *sqe);\nint io_msg_ring(struct io_kiocb *req, unsigned int issue_flags);\nvoid io_msg_ring_cleanup(struct io_kiocb *req);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

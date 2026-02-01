@@ -1,0 +1,9 @@
+{
+  "module_name": "c32iscntrl.c",
+  "hash_id": "f3f2dee2ca19ab30a838024eaf6d48869146c5e635f8943c0205885ffd1e6823",
+  "original_prompt": "Ingested from coreutils-9.4/lib/c32iscntrl.c",
+  "human_readable_source": " \n#include <uchar.h>\n\n#define FUNC c32iscntrl\n#define WCHAR_FUNC iswcntrl\n#define UCS_FUNC uc_is_cntrl\n#include \"c32is-impl.h\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

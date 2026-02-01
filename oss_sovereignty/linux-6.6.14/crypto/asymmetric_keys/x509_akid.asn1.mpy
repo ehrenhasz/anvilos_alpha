@@ -1,0 +1,9 @@
+{
+  "module_name": "x509_akid.asn1",
+  "hash_id": "0239345acce69abf32ed3ad3b6c990ccf8de2681ce5e6e331c862fcf43101e9b",
+  "original_prompt": "Ingested from linux-6.6.14/crypto/asymmetric_keys/x509_akid.asn1",
+  "human_readable_source": "-- X.509 AuthorityKeyIdentifier\n-- rfc5280 section 4.2.1.1\n\nAuthorityKeyIdentifier ::= SEQUENCE {\n\tkeyIdentifier\t\t\t[0] IMPLICIT KeyIdentifier\t\tOPTIONAL,\n\tauthorityCertIssuer\t\t[1] IMPLICIT GeneralNames\t\tOPTIONAL,\n\tauthorityCertSerialNumber\t[2] IMPLICIT CertificateSerialNumber\tOPTIONAL\n\t}\n\nKeyIdentifier ::= OCTET STRING ({ x509_akid_note_kid })\n\nCertificateSerialNumber ::= INTEGER ({ x509_akid_note_serial })\n\nGeneralNames ::= SEQUENCE OF GeneralName\n\nGeneralName ::= CHOICE {\n\totherName\t\t\t[0] ANY,\n\trfc822Name\t\t\t[1] IA5String,\n\tdNSName\t\t\t\t[2] IA5String,\n\tx400Address\t\t\t[3] ANY,\n\tdirectoryName\t\t\t[4] Name ({ x509_akid_note_name }),\n\tediPartyName\t\t\t[5] ANY,\n\tuniformResourceIdentifier\t[6] IA5String,\n\tiPAddress\t\t\t[7] OCTET STRING,\n\tregisteredID\t\t\t[8] OBJECT IDENTIFIER\n\t}\n\nName ::= SEQUENCE OF RelativeDistinguishedName\n\nRelativeDistinguishedName ::= SET OF AttributeValueAssertion\n\nAttributeValueAssertion ::= SEQUENCE {\n\tattributeType\t\tOBJECT IDENTIFIER ({ x509_note_OID }),\n\tattributeValue\t\tANY ({ x509_extract_name_segment })\n\t}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

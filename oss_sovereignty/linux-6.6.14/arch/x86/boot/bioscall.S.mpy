@@ -1,0 +1,9 @@
+{
+  "module_name": "bioscall.S",
+  "hash_id": "c456abd377787fd2488507b7ebf6fb810facb98f696a9b0a3fb99a3cd4514076",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/boot/bioscall.S",
+  "human_readable_source": " \n \n\n \n\n\t.code16\n\t.section \".inittext\",\"ax\"\n\t.globl\tintcall\n\t.type\tintcall, @function\nintcall:\n\t \n\tcmpb\t%al, 3f\n\tje\t1f\n\tmovb\t%al, 3f\n\tjmp\t1f\t\t \n1:\n\t \n\tpushfl\n\tpushw\t%fs\n\tpushw\t%gs\n\tpushal\n\n\t \n\tsubw\t$44, %sp\n\tmovw\t%dx, %si\n\tmovw\t%sp, %di\n\tmovw\t$11, %cx\n\trep; movsl\n\n\t \n\tpopal\n\tpopw\t%gs\n\tpopw\t%fs\n\tpopw\t%es\n\tpopw\t%ds\n\tpopfl\n\n\t \n\t.byte\t0xcd\t\t \n3:\t.byte\t0\n\n\t \n\tpushfl\n\tpushw\t%ds\n\tpushw\t%es\n\tpushw\t%fs\n\tpushw\t%gs\n\tpushal\n\n\t \n\tcld\n\tmovzwl\t%sp, %esp\n\tmovw\t%cs, %ax\n\tmovw\t%ax, %ds\n\tmovw\t%ax, %es\n\n\t \n\tmovw\t68(%esp), %di\t \n\tandw\t%di, %di\n\tjz\t4f\n\tmovw\t%sp, %si\n\tmovw\t$11, %cx\n\trep; movsl\n4:\taddw\t$44, %sp\n\n\t \n\tpopal\n\tpopw\t%gs\n\tpopw\t%fs\n\tpopfl\n\tretl\n\t.size\tintcall, .-intcall\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

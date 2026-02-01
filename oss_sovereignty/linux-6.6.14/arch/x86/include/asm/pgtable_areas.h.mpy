@@ -1,0 +1,9 @@
+{
+  "module_name": "pgtable_areas.h",
+  "hash_id": "5f2019e75fc4e8ece45d7705a2a4ea9925a1c531f3088ba3be1d1014a182e70e",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/include/asm/pgtable_areas.h",
+  "human_readable_source": "#ifndef _ASM_X86_PGTABLE_AREAS_H\n#define _ASM_X86_PGTABLE_AREAS_H\n\n#ifdef CONFIG_X86_32\n# include <asm/pgtable_32_areas.h>\n#endif\n\n \n#define CPU_ENTRY_AREA_RO_IDT\t\tCPU_ENTRY_AREA_BASE\n#define CPU_ENTRY_AREA_PER_CPU\t\t(CPU_ENTRY_AREA_RO_IDT + PAGE_SIZE)\n\n#define CPU_ENTRY_AREA_RO_IDT_VADDR\t((void *)CPU_ENTRY_AREA_RO_IDT)\n\n#ifdef CONFIG_X86_32\n#define CPU_ENTRY_AREA_MAP_SIZE\t\t(CPU_ENTRY_AREA_PER_CPU +\t\t\\\n\t\t\t\t\t (CPU_ENTRY_AREA_SIZE * NR_CPUS) -\t\\\n\t\t\t\t\t CPU_ENTRY_AREA_BASE)\n#else\n#define CPU_ENTRY_AREA_MAP_SIZE\t\tP4D_SIZE\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

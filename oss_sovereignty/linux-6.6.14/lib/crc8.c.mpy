@@ -1,0 +1,9 @@
+{
+  "module_name": "crc8.c",
+  "hash_id": "407cff48b8a5d16fc4b04eecf05b565e90db0f6694416feeccac6fb58e815f89",
+  "original_prompt": "Ingested from linux-6.6.14/lib/crc8.c",
+  "human_readable_source": " \n\n#define pr_fmt(fmt)\t\tKBUILD_MODNAME \": \" fmt\n\n#include <linux/module.h>\n#include <linux/crc8.h>\n#include <linux/printk.h>\n\n \nvoid crc8_populate_msb(u8 table[CRC8_TABLE_SIZE], u8 polynomial)\n{\n\tint i, j;\n\tconst u8 msbit = 0x80;\n\tu8 t = msbit;\n\n\ttable[0] = 0;\n\n\tfor (i = 1; i < CRC8_TABLE_SIZE; i *= 2) {\n\t\tt = (t << 1) ^ (t & msbit ? polynomial : 0);\n\t\tfor (j = 0; j < i; j++)\n\t\t\ttable[i+j] = table[j] ^ t;\n\t}\n}\nEXPORT_SYMBOL(crc8_populate_msb);\n\n \nvoid crc8_populate_lsb(u8 table[CRC8_TABLE_SIZE], u8 polynomial)\n{\n\tint i, j;\n\tu8 t = 1;\n\n\ttable[0] = 0;\n\n\tfor (i = (CRC8_TABLE_SIZE >> 1); i; i >>= 1) {\n\t\tt = (t >> 1) ^ (t & 1 ? polynomial : 0);\n\t\tfor (j = 0; j < CRC8_TABLE_SIZE; j += 2*i)\n\t\t\ttable[i+j] = table[j] ^ t;\n\t}\n}\nEXPORT_SYMBOL(crc8_populate_lsb);\n\n \nu8 crc8(const u8 table[CRC8_TABLE_SIZE], const u8 *pdata, size_t nbytes, u8 crc)\n{\n\t \n\twhile (nbytes-- > 0)\n\t\tcrc = table[(crc ^ *pdata++) & 0xff];\n\n\treturn crc;\n}\nEXPORT_SYMBOL(crc8);\n\nMODULE_DESCRIPTION(\"CRC8 (by Williams, Ross N.) function\");\nMODULE_AUTHOR(\"Broadcom Corporation\");\nMODULE_LICENSE(\"Dual BSD/GPL\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

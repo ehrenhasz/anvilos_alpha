@@ -1,0 +1,9 @@
+{
+  "module_name": "scsi_iu.h",
+  "hash_id": "2ef49112ecf8c8c85c10d7359cccb25f80ad18002adbd177a4ddaba1ab0dcf8d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/scsi/aic7xxx/scsi_iu.h",
+  "human_readable_source": " \n#ifndef\t_SCSI_SCSI_IU_H\n#define _SCSI_SCSI_IU_H 1\n\nstruct scsi_status_iu_header\n{\n\tu_int8_t reserved[2];\n\tu_int8_t flags;\n#define\tSIU_SNSVALID 0x2\n#define\tSIU_RSPVALID 0x1\n\tu_int8_t status;\n\tu_int8_t sense_length[4];\n\tu_int8_t pkt_failures_length[4];\n\tu_int8_t pkt_failures[1];\n};\n\n#define SIU_PKTFAIL_OFFSET(siu) 12\n#define SIU_PKTFAIL_CODE(siu) (scsi_4btoul((siu)->pkt_failures) & 0xFF)\n#define\t\tSIU_PFC_NONE\t\t\t0\n#define\t\tSIU_PFC_CIU_FIELDS_INVALID\t2\n#define\t\tSIU_PFC_TMF_NOT_SUPPORTED\t4\n#define\t\tSIU_PFC_TMF_FAILED\t\t5\n#define\t\tSIU_PFC_INVALID_TYPE_CODE\t6\n#define\t\tSIU_PFC_ILLEGAL_REQUEST\t\t7\n#define SIU_SENSE_OFFSET(siu)\t\t\t\t\\\n    (12 + (((siu)->flags & SIU_RSPVALID)\t\t\\\n\t? scsi_4btoul((siu)->pkt_failures_length)\t\\\n\t: 0))\n\n#define\tSIU_TASKMGMT_NONE\t\t0x00\n#define\tSIU_TASKMGMT_ABORT_TASK\t\t0x01\n#define\tSIU_TASKMGMT_ABORT_TASK_SET\t0x02\n#define\tSIU_TASKMGMT_CLEAR_TASK_SET\t0x04\n#define\tSIU_TASKMGMT_LUN_RESET\t\t0x08\n#define\tSIU_TASKMGMT_TARGET_RESET\t0x20\n#define\tSIU_TASKMGMT_CLEAR_ACA\t\t0x40\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

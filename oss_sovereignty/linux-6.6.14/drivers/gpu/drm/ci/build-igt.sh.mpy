@@ -1,0 +1,9 @@
+{
+  "module_name": "build-igt.sh",
+  "hash_id": "f0d11b8dbf0b8027605fcb89b86258854614a1905fa7053509d73f48b590e66a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/ci/build-igt.sh",
+  "human_readable_source": "#!/bin/bash\n# SPDX-License-Identifier: MIT\n\nset -ex\n\ngit clone https://gitlab.freedesktop.org/drm/igt-gpu-tools.git --single-branch --no-checkout\ncd igt-gpu-tools\ngit checkout $IGT_VERSION\n\nif [[ \"$KERNEL_ARCH\" = \"arm\" ]]; then\n    . ../.gitlab-ci/container/create-cross-file.sh armhf\n    EXTRA_MESON_ARGS=\"--cross-file /cross_file-armhf.txt\"\nfi\n\nMESON_OPTIONS=\"-Doverlay=disabled                    \\\n               -Dchamelium=disabled                  \\\n               -Dvalgrind=disabled                   \\\n               -Dman=enabled                         \\\n               -Dtests=enabled                       \\\n               -Drunner=enabled                      \\\n               -Dlibunwind=enabled                   \\\n               -Dprefix=/igt\"\n\nmkdir -p /igt\nmeson build $MESON_OPTIONS $EXTRA_MESON_ARGS\nninja -C build -j${FDO_CI_CONCURRENT:-4} || ninja -C build -j 1\nninja -C build install\n\nmkdir -p artifacts/\ntar -cf artifacts/igt.tar /igt\n\n# Pass needed files to the test stage\nS3_ARTIFACT_NAME=\"igt.tar.gz\"\ngzip -c artifacts/igt.tar > ${S3_ARTIFACT_NAME}\nci-fairy s3cp --token-file \"${CI_JOB_JWT_FILE}\" ${S3_ARTIFACT_NAME} https://${PIPELINE_ARTIFACTS_BASE}/${KERNEL_ARCH}/${S3_ARTIFACT_NAME}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

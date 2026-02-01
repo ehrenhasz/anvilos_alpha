@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "2465cdee1ac6dc4ef3a9ba7efd22de2cd8b04867831941911c8b11b9a0827115",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/crypto/marvell/octeontx/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nobj-$(CONFIG_CRYPTO_DEV_OCTEONTX_CPT) += octeontx-cpt.o octeontx-cptvf.o\n\nocteontx-cpt-objs := otx_cptpf_main.o otx_cptpf_mbox.o otx_cptpf_ucode.o\nocteontx-cptvf-objs := otx_cptvf_main.o otx_cptvf_mbox.o otx_cptvf_reqmgr.o \\\n\t\t       otx_cptvf_algs.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

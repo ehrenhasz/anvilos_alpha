@@ -1,0 +1,9 @@
+{
+  "module_name": "i915-cml-skips.txt",
+  "hash_id": "e13f27556f609370714b9f592a65594a9534fe6a9ec82fd49b16ee313c0ed7f2",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/ci/xfails/i915-cml-skips.txt",
+  "human_readable_source": "# This is generating kernel oops with divide error\nkms_plane_scaling@invalid-parameters\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

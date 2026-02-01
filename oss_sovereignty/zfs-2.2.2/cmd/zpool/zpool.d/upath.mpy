@@ -1,0 +1,9 @@
+{
+  "module_name": "upath",
+  "hash_id": "7d1bb24d25464d3e538e253c081acd78fad40d4aed38b96016aaaf86fbcf50cf",
+  "original_prompt": "Ingested from zfs-2.2.2/cmd/zpool/zpool.d/upath",
+  "human_readable_source": "#!/bin/sh\nif [ \"$1\" = \"-h\" ] ; then\n\techo \"Show the underlying path for a device.\"\n\texit\nfi\n\n# shellcheck disable=SC2154\necho upath=\"$VDEV_UPATH\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

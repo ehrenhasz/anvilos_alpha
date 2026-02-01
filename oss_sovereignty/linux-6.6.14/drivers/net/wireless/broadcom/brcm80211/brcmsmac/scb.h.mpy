@@ -1,0 +1,9 @@
+{
+  "module_name": "scb.h",
+  "hash_id": "404ed72c1adbb7771fc051bdf22e4892de1bce5b63d0ee87ad1cfbe175c7665f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/broadcom/brcm80211/brcmsmac/scb.h",
+  "human_readable_source": " \n\n#ifndef _BRCM_SCB_H_\n#define _BRCM_SCB_H_\n\n#include <linux/if_ether.h>\n#include <brcmu_utils.h>\n#include <defs.h>\n#include \"types.h\"\n\n#define AMPDU_TX_BA_MAX_WSIZE\t64\t \n\n#define AMPDU_MAX_SCB_TID\tNUMPRIO\n\n \n#define SCB_WMECAP\t\t0x0040\n#define SCB_HTCAP\t\t0x10000\t \n#define SCB_IS40\t\t0x80000\t \n#define SCB_STBCCAP\t\t0x40000000\t \n\n#define SCB_MAGIC\t0xbeefcafe\n\n \nstruct scb_ampdu_tid_ini {\n\t \n\tu8 txretry[AMPDU_TX_BA_MAX_WSIZE];\n};\n\nstruct scb_ampdu {\n\tu8 max_pdu;\t\t \n\tu8 release;\t\t \n\tu32 max_rx_ampdu_bytes;\t \n\n\t \n\t \n\tstruct scb_ampdu_tid_ini ini[AMPDU_MAX_SCB_TID];\n};\n\n \nstruct scb {\n\tu32 magic;\n\tu32 flags;\t \n\tu16 seqctl[NUMPRIO];\t \n\tu16 seqnum[NUMPRIO]; \n\n\tstruct scb_ampdu scb_ampdu;\t \n};\n\n#endif\t\t\t\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

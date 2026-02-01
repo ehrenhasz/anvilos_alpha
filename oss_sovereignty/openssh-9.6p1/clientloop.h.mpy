@@ -1,0 +1,9 @@
+{
+  "module_name": "clientloop.h",
+  "hash_id": "a4a81af3ef730b61625013f3d756295ce2dd19e49e4aab92665af25b6886a98e",
+  "original_prompt": "Ingested from openssh-9.6p1/clientloop.h",
+  "human_readable_source": " \n\n \n \n\n#include <termios.h>\n\nstruct ssh;\n\n \nint\t client_loop(struct ssh *, int, int, int);\nint\t client_x11_get_proto(struct ssh *, const char *, const char *,\n\t    u_int, u_int, char **, char **);\nvoid\t client_global_request_reply_fwd(int, u_int32_t, void *);\nvoid\t client_session2_setup(struct ssh *, int, int, int,\n\t    const char *, struct termios *, int, struct sshbuf *, char **);\nchar\t *client_request_tun_fwd(struct ssh *, int, int, int,\n    channel_open_fn *, void *);\nvoid\t client_stop_mux(void);\n\n \nvoid\t*client_new_escape_filter_ctx(int);\nvoid\t client_filter_cleanup(struct ssh *, int, void *);\nint\t client_simple_escape_filter(struct ssh *, Channel *, char *, int);\n\n \ntypedef void global_confirm_cb(struct ssh *, int, u_int32_t, void *);\nvoid\t client_register_global_confirm(global_confirm_cb *, void *);\n\n \nenum confirm_action { CONFIRM_WARN = 0, CONFIRM_CLOSE, CONFIRM_TTY };\nvoid client_expect_confirm(struct ssh *, int, const char *,\n    enum confirm_action);\n\n \n#define SSHMUX_VER\t\t\t4\n\n \n#define SSHMUX_COMMAND_OPEN\t\t1\t \n#define SSHMUX_COMMAND_ALIVE_CHECK\t2\t \n#define SSHMUX_COMMAND_TERMINATE\t3\t \n#define SSHMUX_COMMAND_STDIO_FWD\t4\t \n#define SSHMUX_COMMAND_FORWARD\t\t5\t \n#define SSHMUX_COMMAND_STOP\t\t6\t \n#define SSHMUX_COMMAND_CANCEL_FWD\t7\t \n#define SSHMUX_COMMAND_PROXY\t\t8\t \n\nvoid\tmuxserver_listen(struct ssh *);\nint\tmuxclient(const char *);\nvoid\tmux_exit_message(struct ssh *, Channel *, int);\nvoid\tmux_tty_alloc_failed(struct ssh *ssh, Channel *);\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

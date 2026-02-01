@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "18f2191bb6b2c3eca73b25f8a49a0e5ee7918219858e5988f5f6473ab4113289",
+  "original_prompt": "Ingested from linux-6.6.14/net/nfc/hci/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Makefile for the Linux NFC HCI layer.\n#\n\nobj-$(CONFIG_NFC_HCI) += hci.o\n\nhci-y\t\t\t:= core.o hcp.o command.o llc.o llc_nop.o\nhci-$(CONFIG_NFC_SHDLC) += llc_shdlc.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

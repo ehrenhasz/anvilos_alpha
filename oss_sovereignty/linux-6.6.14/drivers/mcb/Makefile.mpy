@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "1e8e7dd34dae7daef03efd97fde41026203ff5b19462f0e2184ea99a09a10080",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/mcb/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n\nobj-$(CONFIG_MCB) += mcb.o\n\nmcb-y += mcb-core.o\nmcb-y += mcb-parse.o\n\nobj-$(CONFIG_MCB_PCI) += mcb-pci.o\nobj-$(CONFIG_MCB_LPC) += mcb-lpc.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "max_vcpuid_cap_test.c",
+  "hash_id": "057460a73d947d505c67f60d78af94a3686c374aadea0fd94397e369d9520bdc",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/kvm/x86_64/max_vcpuid_cap_test.c",
+  "human_readable_source": "\n \n\n#include \"kvm_util.h\"\n\n#define MAX_VCPU_ID\t2\n\nint main(int argc, char *argv[])\n{\n\tstruct kvm_vm *vm;\n\tint ret;\n\n\tvm = vm_create_barebones();\n\n\t \n\tret = vm_check_cap(vm, KVM_CAP_MAX_VCPU_ID);\n\n\t \n\tret = __vm_enable_cap(vm, KVM_CAP_MAX_VCPU_ID, ret + 1);\n\tTEST_ASSERT(ret < 0,\n\t\t    \"Setting KVM_CAP_MAX_VCPU_ID beyond KVM cap should fail\");\n\n\t \n\tvm_enable_cap(vm, KVM_CAP_MAX_VCPU_ID, MAX_VCPU_ID);\n\n\n\t \n\tret = __vm_enable_cap(vm, KVM_CAP_MAX_VCPU_ID, MAX_VCPU_ID + 1);\n\tTEST_ASSERT(ret < 0,\n\t\t    \"Setting KVM_CAP_MAX_VCPU_ID multiple times should fail\");\n\n\t \n\tret = __vm_ioctl(vm, KVM_CREATE_VCPU, (void *)MAX_VCPU_ID);\n\tTEST_ASSERT(ret < 0, \"Creating vCPU with ID > MAX_VCPU_ID should fail\");\n\n\tkvm_vm_free(vm);\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

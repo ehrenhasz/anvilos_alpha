@@ -1,0 +1,9 @@
+{
+  "module_name": "iwl-agn-hw.h",
+  "hash_id": "8acdfb7e6a77b616dfd830e7d2e6a8f8915e9b606627cf0336d0b103de4696d3",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/intel/iwlwifi/iwl-agn-hw.h",
+  "human_readable_source": " \n \n \n\n#ifndef __iwl_agn_hw_h__\n#define __iwl_agn_hw_h__\n\n#define IWLAGN_RTC_INST_LOWER_BOUND\t\t(0x000000)\n#define IWLAGN_RTC_INST_UPPER_BOUND\t\t(0x020000)\n\n#define IWLAGN_RTC_DATA_LOWER_BOUND\t\t(0x800000)\n#define IWLAGN_RTC_DATA_UPPER_BOUND\t\t(0x80C000)\n\n#define IWLAGN_RTC_INST_SIZE (IWLAGN_RTC_INST_UPPER_BOUND - \\\n\t\t\t\tIWLAGN_RTC_INST_LOWER_BOUND)\n#define IWLAGN_RTC_DATA_SIZE (IWLAGN_RTC_DATA_UPPER_BOUND - \\\n\t\t\t\tIWLAGN_RTC_DATA_LOWER_BOUND)\n\n#define IWL60_RTC_INST_LOWER_BOUND\t\t(0x000000)\n#define IWL60_RTC_INST_UPPER_BOUND\t\t(0x040000)\n#define IWL60_RTC_DATA_LOWER_BOUND\t\t(0x800000)\n#define IWL60_RTC_DATA_UPPER_BOUND\t\t(0x814000)\n#define IWL60_RTC_INST_SIZE \\\n\t(IWL60_RTC_INST_UPPER_BOUND - IWL60_RTC_INST_LOWER_BOUND)\n#define IWL60_RTC_DATA_SIZE \\\n\t(IWL60_RTC_DATA_UPPER_BOUND - IWL60_RTC_DATA_LOWER_BOUND)\n\n \n#define IWLAGN_RSSI_OFFSET\t44\n\n#define IWLAGN_DEFAULT_TX_RETRY\t\t\t15\n#define IWLAGN_MGMT_DFAULT_RETRY_LIMIT\t\t3\n#define IWLAGN_RTS_DFAULT_RETRY_LIMIT\t\t60\n#define IWLAGN_BAR_DFAULT_RETRY_LIMIT\t\t60\n#define IWLAGN_LOW_RETRY_LIMIT\t\t\t7\n\n \n#define IWLAGN_TX_POWER_TARGET_POWER_MIN\t(0)\t \n#define IWLAGN_TX_POWER_TARGET_POWER_MAX\t(16)\t \n\n \n#define IWLAGN_EEPROM_IMG_SIZE\t\t2048\n\n \n#define OTP_HIGH_IMAGE_SIZE_6x00        (6 * 512 * sizeof(u16))  \n#define OTP_HIGH_IMAGE_SIZE_1000        (0x200 * sizeof(u16))  \n#define OTP_MAX_LL_ITEMS_1000\t\t(3)\t \n#define OTP_MAX_LL_ITEMS_6x00\t\t(4)\t \n#define OTP_MAX_LL_ITEMS_6x50\t\t(7)\t \n#define OTP_MAX_LL_ITEMS_2x00\t\t(4)\t \n\n\n#define IWLAGN_NUM_QUEUES\t\t20\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

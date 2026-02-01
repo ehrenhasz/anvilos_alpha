@@ -1,0 +1,9 @@
+{
+  "module_name": "Build",
+  "hash_id": "7d4fa5823237de61cce1e38091310f90f5c2a5ff97143d3bb577dd72140ae300",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/util/arm-spe-decoder/Build",
+  "human_readable_source": "perf-$(CONFIG_AUXTRACE) += arm-spe-pkt-decoder.o arm-spe-decoder.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "mailcheck.h",
+  "hash_id": "35ad894351e5da65c98862566f51973effc9d7aba36b2f289e9a424d5517e4ba",
+  "original_prompt": "Ingested from bash-5.2.21/mailcheck.h",
+  "human_readable_source": " \n\n \n\n#if !defined (_MAILCHECK_H_)\n#define _MAILCHECK_H_\n\n \nextern int time_to_check_mail PARAMS((void));\nextern void reset_mail_timer PARAMS((void));\nextern void reset_mail_files PARAMS((void));\nextern void free_mail_files PARAMS((void));\nextern char *make_default_mailpath PARAMS((void));\nextern void remember_mail_dates PARAMS((void));\nextern void init_mail_dates PARAMS((void));\nextern void check_mail PARAMS((void));\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

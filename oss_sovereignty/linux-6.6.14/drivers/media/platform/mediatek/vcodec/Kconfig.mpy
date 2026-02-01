@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "ce24629e04c7c58731abe3697ee4e219a69358e94eb7308f74c79fe446ae7c75",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/platform/mediatek/vcodec/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig VIDEO_MEDIATEK_VCODEC_SCP\n\tbool\n\nconfig VIDEO_MEDIATEK_VCODEC_VPU\n\tbool\n\nconfig VIDEO_MEDIATEK_VCODEC\n\ttristate \"Mediatek Video Codec driver\"\n\tdepends on V4L_MEM2MEM_DRIVERS\n\tdepends on MTK_IOMMU || COMPILE_TEST\n\tdepends on VIDEO_DEV\n\tdepends on ARCH_MEDIATEK || COMPILE_TEST\n\tdepends on VIDEO_MEDIATEK_VPU || MTK_SCP\n\t# The two following lines ensure we have the same state (\"m\" or \"y\") as\n\t# our dependencies, to avoid missing symbols during link.\n\tdepends on VIDEO_MEDIATEK_VPU || !VIDEO_MEDIATEK_VPU\n\tdepends on MTK_SCP || !MTK_SCP\n\tdepends on MTK_SMI || (COMPILE_TEST && MTK_SMI=n)\n\tselect VIDEOBUF2_DMA_CONTIG\n\tselect V4L2_MEM2MEM_DEV\n\tselect VIDEO_MEDIATEK_VCODEC_VPU if VIDEO_MEDIATEK_VPU\n\tselect VIDEO_MEDIATEK_VCODEC_SCP if MTK_SCP\n\tselect V4L2_H264\n\tselect V4L2_VP9\n\tselect MEDIA_CONTROLLER\n\tselect MEDIA_CONTROLLER_REQUEST_API\n\thelp\n\t  Mediatek video codec driver provides HW capability to\n\t  encode and decode in a range of video formats on MT8173\n\t  and MT8183.\n\n\t  Note that support for MT8173 requires VIDEO_MEDIATEK_VPU to\n\t  also be selected. Support for MT8183 depends on MTK_SCP.\n\n\t  To compile this driver as modules, choose M here: the\n\t  modules will be called mtk-vcodec-dec and mtk-vcodec-enc.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

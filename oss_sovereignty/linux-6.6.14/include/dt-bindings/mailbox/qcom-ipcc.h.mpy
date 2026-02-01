@@ -1,0 +1,9 @@
+{
+  "module_name": "qcom-ipcc.h",
+  "hash_id": "6bf8d70dd5db83bdcf48be57473aaee13ee26641b0a6afdb9d67087875547e39",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/mailbox/qcom-ipcc.h",
+  "human_readable_source": " \n \n\n#ifndef __DT_BINDINGS_MAILBOX_IPCC_H\n#define __DT_BINDINGS_MAILBOX_IPCC_H\n\n \n#define IPCC_MPROC_SIGNAL_GLINK_QMP\t0\n#define IPCC_MPROC_SIGNAL_TZ\t\t1\n#define IPCC_MPROC_SIGNAL_SMP2P\t\t2\n#define IPCC_MPROC_SIGNAL_PING\t\t3\n\n \n#define IPCC_CLIENT_AOP\t\t\t0\n#define IPCC_CLIENT_TZ\t\t\t1\n#define IPCC_CLIENT_MPSS\t\t2\n#define IPCC_CLIENT_LPASS\t\t3\n#define IPCC_CLIENT_SLPI\t\t4\n#define IPCC_CLIENT_SDC\t\t\t5\n#define IPCC_CLIENT_CDSP\t\t6\n#define IPCC_CLIENT_NPU\t\t\t7\n#define IPCC_CLIENT_APSS\t\t8\n#define IPCC_CLIENT_GPU\t\t\t9\n#define IPCC_CLIENT_CVP\t\t\t10\n#define IPCC_CLIENT_CAM\t\t\t11\n#define IPCC_CLIENT_VPU\t\t\t12\n#define IPCC_CLIENT_PCIE0\t\t13\n#define IPCC_CLIENT_PCIE1\t\t14\n#define IPCC_CLIENT_PCIE2\t\t15\n#define IPCC_CLIENT_SPSS\t\t16\n#define IPCC_CLIENT_NSP1\t\t18\n#define IPCC_CLIENT_TME\t\t\t23\n#define IPCC_CLIENT_WPSS\t\t24\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "sbawe.c",
+  "hash_id": "36373ee72dfe323cca8ffd2d6c6a6205c3e395152256dd345d27f92f1e17c689",
+  "original_prompt": "Ingested from linux-6.6.14/sound/isa/sb/sbawe.c",
+  "human_readable_source": "#define SNDRV_SBAWE\n#include \"sb16.c\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

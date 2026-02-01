@@ -1,0 +1,9 @@
+{
+  "module_name": "nf_conntrack_h323_asn1.h",
+  "hash_id": "547f829145b0ed31ae04286e56aca5ad390e4ab18b433fc056d99639fd0071a2",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/netfilter/nf_conntrack_h323_asn1.h",
+  "human_readable_source": " \n \n\n#ifndef _NF_CONNTRACK_HELPER_H323_ASN1_H_\n#define _NF_CONNTRACK_HELPER_H323_ASN1_H_\n\n \n\n#include <linux/types.h>\n#include <linux/netfilter/nf_conntrack_h323_types.h>\n\ntypedef struct {\n\tenum {\n\t\tQ931_NationalEscape = 0x00,\n\t\tQ931_Alerting = 0x01,\n\t\tQ931_CallProceeding = 0x02,\n\t\tQ931_Connect = 0x07,\n\t\tQ931_ConnectAck = 0x0F,\n\t\tQ931_Progress = 0x03,\n\t\tQ931_Setup = 0x05,\n\t\tQ931_SetupAck = 0x0D,\n\t\tQ931_Resume = 0x26,\n\t\tQ931_ResumeAck = 0x2E,\n\t\tQ931_ResumeReject = 0x22,\n\t\tQ931_Suspend = 0x25,\n\t\tQ931_SuspendAck = 0x2D,\n\t\tQ931_SuspendReject = 0x21,\n\t\tQ931_UserInformation = 0x20,\n\t\tQ931_Disconnect = 0x45,\n\t\tQ931_Release = 0x4D,\n\t\tQ931_ReleaseComplete = 0x5A,\n\t\tQ931_Restart = 0x46,\n\t\tQ931_RestartAck = 0x4E,\n\t\tQ931_Segment = 0x60,\n\t\tQ931_CongestionCtrl = 0x79,\n\t\tQ931_Information = 0x7B,\n\t\tQ931_Notify = 0x6E,\n\t\tQ931_Status = 0x7D,\n\t\tQ931_StatusEnquiry = 0x75,\n\t\tQ931_Facility = 0x62\n\t} MessageType;\n\tH323_UserInformation UUIE;\n} Q931;\n\n \n\n#define H323_ERROR_NONE 0\t \n#define H323_ERROR_STOP 1\t \n#define H323_ERROR_BOUND -1\n#define H323_ERROR_RANGE -2\n\n\n \n\nint DecodeRasMessage(unsigned char *buf, size_t sz, RasMessage * ras);\nint DecodeQ931(unsigned char *buf, size_t sz, Q931 * q931);\nint DecodeMultimediaSystemControlMessage(unsigned char *buf, size_t sz,\n\t\t\t\t\t MultimediaSystemControlMessage *\n\t\t\t\t\t mscm);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

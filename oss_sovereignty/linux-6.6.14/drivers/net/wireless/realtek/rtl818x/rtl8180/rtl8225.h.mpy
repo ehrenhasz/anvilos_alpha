@@ -1,0 +1,9 @@
+{
+  "module_name": "rtl8225.h",
+  "hash_id": "52f681e9b7201a5286cfc24e0df9eedbd2cadb73e926881f760c75cb5c8f0366",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/realtek/rtl818x/rtl8180/rtl8225.h",
+  "human_readable_source": " \n#ifndef RTL8180_RTL8225_H\n#define RTL8180_RTL8225_H\n\n#define RTL8225_ANAPARAM_ON\t0xa0000b59\n#define RTL8225_ANAPARAM2_ON\t0x860dec11\n#define RTL8225_ANAPARAM_OFF\t0xa00beb59\n#define RTL8225_ANAPARAM2_OFF\t0x840dec11\n\nconst struct rtl818x_rf_ops * rtl8180_detect_rf(struct ieee80211_hw *);\n\nstatic inline void rtl8225_write_phy_ofdm(struct ieee80211_hw *dev,\n\t\t\t\t\t  u8 addr, u8 data)\n{\n\trtl8180_write_phy(dev, addr, data);\n}\n\nstatic inline void rtl8225_write_phy_cck(struct ieee80211_hw *dev,\n\t\t\t\t\t u8 addr, u8 data)\n{\n\trtl8180_write_phy(dev, addr, data | 0x10000);\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

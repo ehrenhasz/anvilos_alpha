@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "e140205f553914f2be4aadb8e4a0ad7e3a2ebd06ebf3078585fb400cdcf998fb",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/broadcom/genet/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-$(CONFIG_BCMGENET) += genet.o\ngenet-objs := bcmgenet.o bcmmii.o bcmgenet_wol.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "7a13a4a67c35a031d54f75ffc0b5efc60132845f4556d3cb70df388a4d55fca7",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/dec/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Digital Equipment Inc network device configuration\n#\n\nconfig NET_VENDOR_DEC\n\tbool \"Digital Equipment devices\"\n\tdefault y\n\tdepends on PCI || EISA || CARDBUS\n\thelp\n\t  If you have a network (Ethernet) card belonging to this class, say Y.\n\n\t  Note that the answer to this question doesn't directly affect the\n\t  kernel: saying N will just cause the configurator to skip all\n\t  the questions about DEC cards. If you say Y, you will be asked for\n\t  your specific card in the following questions.\n\nif NET_VENDOR_DEC\nsource \"drivers/net/ethernet/dec/tulip/Kconfig\"\nendif # NET_VENDOR_DEC\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

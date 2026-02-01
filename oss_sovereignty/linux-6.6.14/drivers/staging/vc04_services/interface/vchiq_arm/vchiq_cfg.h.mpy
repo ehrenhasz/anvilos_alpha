@@ -1,0 +1,9 @@
+{
+  "module_name": "vchiq_cfg.h",
+  "hash_id": "0d23fc9ee1d2b69de9f796d24e8993c23e95ce40e86fa055b361a5814636dd71",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/vc04_services/interface/vchiq_arm/vchiq_cfg.h",
+  "human_readable_source": " \n \n\n#ifndef VCHIQ_CFG_H\n#define VCHIQ_CFG_H\n\n#define VCHIQ_MAGIC              VCHIQ_MAKE_FOURCC('V', 'C', 'H', 'I')\n \n#define VCHIQ_VERSION            8\n \n#define VCHIQ_VERSION_MIN        3\n\n \n#define VCHIQ_VERSION_LIB_VERSION 7\n\n \n#define VCHIQ_VERSION_CLOSE_DELIVERED 7\n\n \n#define VCHIQ_VERSION_SYNCHRONOUS_MODE 8\n\n#define VCHIQ_MAX_STATES         1\n#define VCHIQ_MAX_SERVICES       4096\n#define VCHIQ_MAX_SLOTS          128\n#define VCHIQ_MAX_SLOTS_PER_SIDE 64\n\n#define VCHIQ_NUM_CURRENT_BULKS        32\n#define VCHIQ_NUM_SERVICE_BULKS        4\n\n#ifndef VCHIQ_ENABLE_DEBUG\n#define VCHIQ_ENABLE_DEBUG             1\n#endif\n\n#ifndef VCHIQ_ENABLE_STATS\n#define VCHIQ_ENABLE_STATS             1\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

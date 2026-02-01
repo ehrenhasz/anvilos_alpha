@@ -1,0 +1,9 @@
+{
+  "module_name": "nv46.c",
+  "hash_id": "93699e12f50d2dc63ef8bceb3a625063833fc345dd1b4788d00152a423527d10",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/subdev/pci/nv46.c",
+  "human_readable_source": " \n#include \"priv.h\"\n\n#include <core/pci.h>\n\n \nvoid\nnv46_pci_msi_rearm(struct nvkm_pci *pci)\n{\n\tstruct nvkm_device *device = pci->subdev.device;\n\tstruct pci_dev *pdev = device->func->pci(device)->pdev;\n\tpci_write_config_byte(pdev, 0x68, 0xff);\n}\n\nstatic const struct nvkm_pci_func\nnv46_pci_func = {\n\t.rd32 = nv40_pci_rd32,\n\t.wr08 = nv40_pci_wr08,\n\t.wr32 = nv40_pci_wr32,\n\t.msi_rearm = nv46_pci_msi_rearm,\n};\n\nint\nnv46_pci_new(struct nvkm_device *device, enum nvkm_subdev_type type, int inst,\n\t     struct nvkm_pci **ppci)\n{\n\treturn nvkm_pci_new_(&nv46_pci_func, device, type, inst, ppci);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

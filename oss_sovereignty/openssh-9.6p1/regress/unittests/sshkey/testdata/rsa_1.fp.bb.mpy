@@ -1,0 +1,9 @@
+{
+  "module_name": "rsa_1.fp.bb",
+  "hash_id": "5d48302cfddb64aa57c16798268e627274ba4baed2d496a8828b360f515cef76",
+  "original_prompt": "Ingested from openssh-9.6p1/regress/unittests/sshkey/testdata/rsa_1.fp.bb",
+  "human_readable_source": "xosis-fodod-votot-dibum-ryvac-rediz-naruf-votun-kevis-halis-gexux\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

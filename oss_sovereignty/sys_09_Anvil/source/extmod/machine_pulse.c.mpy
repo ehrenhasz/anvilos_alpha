@@ -1,0 +1,9 @@
+{
+  "module_name": "machine_pulse.c",
+  "hash_id": "2fc3b9ab3dc61b00fd7f7ac7937a7caa0c6d53dcfc08517017804b4c74cdb712",
+  "original_prompt": "Ingested from sys_09_Anvil/source/extmod/machine_pulse.c",
+  "human_readable_source": " \n\n#include \"py/runtime.h\"\n#include \"py/mperrno.h\"\n#include \"extmod/modmachine.h\"\n\n#if MICROPY_PY_MACHINE_PULSE\n\nMP_WEAK mp_uint_t machine_time_pulse_us(mp_hal_pin_obj_t pin, int pulse_level, mp_uint_t timeout_us) {\n    mp_uint_t start = mp_hal_ticks_us();\n    while (mp_hal_pin_read(pin) != pulse_level) {\n        if ((mp_uint_t)(mp_hal_ticks_us() - start) >= timeout_us) {\n            return (mp_uint_t)-2;\n        }\n    }\n    start = mp_hal_ticks_us();\n    while (mp_hal_pin_read(pin) == pulse_level) {\n        if ((mp_uint_t)(mp_hal_ticks_us() - start) >= timeout_us) {\n            return (mp_uint_t)-1;\n        }\n    }\n    return mp_hal_ticks_us() - start;\n}\n\nstatic mp_obj_t machine_time_pulse_us_(size_t n_args, const mp_obj_t *args) {\n    mp_hal_pin_obj_t pin = mp_hal_get_pin_obj(args[0]);\n    int level = 0;\n    if (mp_obj_is_true(args[1])) {\n        level = 1;\n    }\n    mp_uint_t timeout_us = 1000000;\n    if (n_args > 2) {\n        timeout_us = mp_obj_get_int(args[2]);\n    }\n    mp_uint_t us = machine_time_pulse_us(pin, level, timeout_us);\n    \n    return mp_obj_new_int(us);\n}\nMP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(machine_time_pulse_us_obj, 2, 3, machine_time_pulse_us_);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

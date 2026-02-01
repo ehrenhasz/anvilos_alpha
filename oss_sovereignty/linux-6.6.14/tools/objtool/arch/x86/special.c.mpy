@@ -1,0 +1,9 @@
+{
+  "module_name": "special.c",
+  "hash_id": "8ef04a804ab863eb0f7f6dacd667ec4ef4a11679f5aabd3049fed8aa7b606735",
+  "original_prompt": "Ingested from linux-6.6.14/tools/objtool/arch/x86/special.c",
+  "human_readable_source": "\n#include <string.h>\n\n#include <objtool/special.h>\n#include <objtool/builtin.h>\n\n#define X86_FEATURE_POPCNT (4 * 32 + 23)\n#define X86_FEATURE_SMAP   (9 * 32 + 20)\n\nvoid arch_handle_alternative(unsigned short feature, struct special_alt *alt)\n{\n\tswitch (feature) {\n\tcase X86_FEATURE_SMAP:\n\t\t \n\t\tif (opts.uaccess)\n\t\t\talt->skip_orig = true;\n\t\telse\n\t\t\talt->skip_alt = true;\n\t\tbreak;\n\tcase X86_FEATURE_POPCNT:\n\t\t \n\t\talt->skip_orig = true;\n\t\tbreak;\n\tdefault:\n\t\tbreak;\n\t}\n}\n\nbool arch_support_alt_relocation(struct special_alt *special_alt,\n\t\t\t\t struct instruction *insn,\n\t\t\t\t struct reloc *reloc)\n{\n\treturn true;\n}\n\n \nstruct reloc *arch_find_switch_table(struct objtool_file *file,\n\t\t\t\t    struct instruction *insn)\n{\n\tstruct reloc  *text_reloc, *rodata_reloc;\n\tstruct section *table_sec;\n\tunsigned long table_offset;\n\n\t \n\ttext_reloc = find_reloc_by_dest_range(file->elf, insn->sec,\n\t\t\t\t\t      insn->offset, insn->len);\n\tif (!text_reloc || text_reloc->sym->type != STT_SECTION ||\n\t    !text_reloc->sym->sec->rodata)\n\t\treturn NULL;\n\n\ttable_offset = reloc_addend(text_reloc);\n\ttable_sec = text_reloc->sym->sec;\n\n\tif (reloc_type(text_reloc) == R_X86_64_PC32)\n\t\ttable_offset += 4;\n\n\t \n\tif (find_symbol_containing(table_sec, table_offset) &&\n\t    strcmp(table_sec->name, C_JUMP_TABLE_SECTION))\n\t\treturn NULL;\n\n\t \n\trodata_reloc = find_reloc_by_dest(file->elf, table_sec, table_offset);\n\tif (!rodata_reloc)\n\t\treturn NULL;\n\n\t \n\tif (reloc_type(text_reloc) == R_X86_64_PC32)\n\t\tfile->ignore_unreachables = true;\n\n\treturn rodata_reloc;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

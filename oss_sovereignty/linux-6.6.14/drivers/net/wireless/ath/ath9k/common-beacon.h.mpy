@@ -1,0 +1,9 @@
+{
+  "module_name": "common-beacon.h",
+  "hash_id": "05171ce7e0b33d461abcf0cb84ddf97c7cd193d7345f8490192e386020ddb6ee",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/ath/ath9k/common-beacon.h",
+  "human_readable_source": " \n\nstruct ath_beacon_config;\n\nint ath9k_cmn_beacon_config_sta(struct ath_hw *ah,\n\t\t\t\tstruct ath_beacon_config *conf,\n\t\t\t\tstruct ath9k_beacon_state *bs);\nvoid ath9k_cmn_beacon_config_adhoc(struct ath_hw *ah,\n\t\t\t\t   struct ath_beacon_config *conf);\nvoid ath9k_cmn_beacon_config_ap(struct ath_hw *ah,\n\t\t\t\tstruct ath_beacon_config *conf,\n\t\t\t\tunsigned int bc_buf);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

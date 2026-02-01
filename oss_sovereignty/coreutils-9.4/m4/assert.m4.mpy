@@ -1,0 +1,9 @@
+{
+  "module_name": "assert.m4",
+  "hash_id": "a279b0f6c310271b9a93c6faae530aa569110471711fddea0da2cbc0c698ef53",
+  "original_prompt": "Ingested from coreutils-9.4/m4/assert.m4",
+  "human_readable_source": "#serial 8\n\n# Copyright (C) 1998-1999, 2001, 2004, 2008-2023 Free Software Foundation, Inc.\n# This file is free software; the Free Software Foundation\n# gives unlimited permission to copy and/or distribute it,\n# with or without modifications, as long as this notice is preserved.\n\ndnl based on code from Eleftherios Gkioulekas\ndnl Autoconf 2.60 provides AC_HEADER_ASSERT for the same purpose, but\ndnl it has broken semantics for --enable-assert until 2.64.\nAC_DEFUN([gl_ASSERT],\n[\n  AC_MSG_CHECKING([whether to enable assertions])\n  AC_ARG_ENABLE([assert],\n    [AS_HELP_STRING([[--disable-assert]], [turn off assertions])],\n    [AS_IF([test \"x$enableval\" = xno],\n      [AC_DEFINE([NDEBUG], [1],\n        [Define to 1 if assertions should be disabled.])],\n      [test \"x$enableval\" != xyes],\n      [AC_MSG_WARN([invalid argument supplied to --enable-assert])\n      enable_assert=yes])],\n    [enable_assert=yes])\n  AC_MSG_RESULT([$enable_assert])\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

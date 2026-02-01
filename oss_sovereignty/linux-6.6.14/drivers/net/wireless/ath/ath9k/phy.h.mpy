@@ -1,0 +1,9 @@
+{
+  "module_name": "phy.h",
+  "hash_id": "e6289227d59ef8a2d7cc67938dd1e261cd3672be3a9371a9cd0ef05efabd93bf",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/ath/ath9k/phy.h",
+  "human_readable_source": " \n\n#ifndef PHY_H\n#define PHY_H\n\n#define CHANSEL_DIV\t\t15\n#define CHANSEL_2G(_freq)\t(((_freq) * 0x10000) / CHANSEL_DIV)\n#define CHANSEL_5G(_freq)\t(((_freq) * 0x8000) / CHANSEL_DIV)\n\n#define AR_PHY_BASE     0x9800\n#define AR_PHY(_n)      (AR_PHY_BASE + ((_n)<<2))\n\n#define AR_PHY_TX_PWRCTRL_TX_GAIN_TAB_MAX   0x0007E000\n#define AR_PHY_TX_PWRCTRL_TX_GAIN_TAB_MAX_S 13\n#define AR_PHY_TX_GAIN_CLC       0x0000001E\n#define AR_PHY_TX_GAIN_CLC_S     1\n#define AR_PHY_TX_GAIN           0x0007F000\n#define AR_PHY_TX_GAIN_S         12\n\n#define AR_PHY_CLC_TBL1      0xa35c\n#define AR_PHY_CLC_I0        0x07ff0000\n#define AR_PHY_CLC_I0_S      16\n#define AR_PHY_CLC_Q0        0x0000ffd0\n#define AR_PHY_CLC_Q0_S      5\n\n#define ANTSWAP_AB 0x0001\n#define REDUCE_CHAIN_0 0x00000050\n#define REDUCE_CHAIN_1 0x00000051\n#define AR_PHY_CHIP_ID 0x9818\n\n#define\tAR_PHY_TIMING11_SPUR_FREQ_SD\t\t0x3FF00000\n#define\tAR_PHY_TIMING11_SPUR_FREQ_SD_S\t\t20\n\n#define AR_PHY_PLL_CONTROL 0x16180\n#define AR_PHY_PLL_MODE 0x16184\n\nenum ath9k_ant_div_comb_lna_conf {\n\tATH_ANT_DIV_COMB_LNA1_MINUS_LNA2,\n\tATH_ANT_DIV_COMB_LNA2,\n\tATH_ANT_DIV_COMB_LNA1,\n\tATH_ANT_DIV_COMB_LNA1_PLUS_LNA2,\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

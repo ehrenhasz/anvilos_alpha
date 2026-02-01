@@ -1,0 +1,9 @@
+{
+  "module_name": "ia_css_fixedbds_types.h",
+  "hash_id": "d247ae8563da6f4f049b269961efbc60c661a9bd5bd9b171eef5bc0c1b5b04ec",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/isp/kernels/fixedbds/fixedbds_1.0/ia_css_fixedbds_types.h",
+  "human_readable_source": " \n \n\n#ifndef __IA_CSS_FIXEDBDS_TYPES_H\n#define __IA_CSS_FIXEDBDS_TYPES_H\n\nstruct sh_css_bds_factor {\n\tunsigned int numerator;\n\tunsigned int denominator;\n\tunsigned int bds_factor;\n};\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

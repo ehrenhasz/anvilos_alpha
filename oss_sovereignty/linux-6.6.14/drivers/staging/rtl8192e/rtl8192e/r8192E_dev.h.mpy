@@ -1,0 +1,9 @@
+{
+  "module_name": "r8192E_dev.h",
+  "hash_id": "9c0b06e2c048ce60ea4f17e5fb38fffa00b8a114ee8c7d6c65eefc627b0f0d5f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/rtl8192e/rtl8192e/r8192E_dev.h",
+  "human_readable_source": " \n \n#ifndef _RTL8192E_H\n#define _RTL8192E_H\n\n#include \"r8190P_def.h\"\n\nbool rtl92e_is_halfn_supported_by_ap(struct net_device *dev);\nbool rtl92e_get_nmode_support_by_sec(struct net_device *dev);\nbool rtl92e_is_tx_stuck(struct net_device *dev);\nbool rtl92e_is_rx_stuck(struct net_device *dev);\nvoid rtl92e_ack_irq(struct net_device *dev, u32 *p_inta);\nvoid rtl92e_enable_rx(struct net_device *dev);\nvoid rtl92e_enable_tx(struct net_device *dev);\nvoid rtl92e_enable_irq(struct net_device *dev);\nvoid rtl92e_disable_irq(struct net_device *dev);\nvoid rtl92e_init_variables(struct net_device  *dev);\nvoid rtl92e_start_beacon(struct net_device *dev);\nvoid rtl92e_set_reg(struct net_device *dev, u8 variable, u8 *val);\nvoid rtl92e_get_eeprom_size(struct net_device *dev);\nbool rtl92e_start_adapter(struct net_device *dev);\nvoid rtl92e_link_change(struct net_device *dev);\nvoid rtl92e_set_monitor_mode(struct net_device *dev, bool bAllowAllDA,\n\t\t\t     bool WriteIntoReg);\nvoid  rtl92e_fill_tx_desc(struct net_device *dev, struct tx_desc *pdesc,\n\t\t\t  struct cb_desc *cb_desc, struct sk_buff *skb);\nvoid  rtl92e_fill_tx_cmd_desc(struct net_device *dev, struct tx_desc_cmd *entry,\n\t\t\t      struct cb_desc *cb_desc, struct sk_buff *skb);\nbool rtl92e_get_rx_stats(struct net_device *dev, struct rtllib_rx_stats *stats,\n\t\t\t struct rx_desc *pdesc, struct sk_buff *skb);\nvoid rtl92e_stop_adapter(struct net_device *dev, bool reset);\nvoid rtl92e_update_ratr_table(struct net_device *dev);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

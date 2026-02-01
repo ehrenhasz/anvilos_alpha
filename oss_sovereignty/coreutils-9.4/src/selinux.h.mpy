@@ -1,0 +1,9 @@
+{
+  "module_name": "selinux.h",
+  "hash_id": "58f04700abe96bdd540292e9f7631c76c76fa9d2a3bd44f14c9f8fa7651caee9",
+  "original_prompt": "Ingested from coreutils-9.4/src/selinux.h",
+  "human_readable_source": " \n\n#ifndef COREUTILS_SELINUX_H\n# define COREUTILS_SELINUX_H\n\nstruct selabel_handle;\n\n \nstatic inline bool\nignorable_ctx_err (int err)\n{\n  return err == ENOTSUP || err == ENODATA;\n}\n\n# if HAVE_SELINUX_LABEL_H\n\nextern bool\nrestorecon (struct selabel_handle *selabel_handle,\n            char const *path, bool recurse);\nextern int\ndefaultcon (struct selabel_handle *selabel_handle,\n            char const *path, mode_t mode);\n\n# else\n\nstatic inline bool\nrestorecon (struct selabel_handle *selabel_handle,\n            char const *path, bool recurse)\n{ errno = ENOTSUP; return false; }\n\nstatic inline int\ndefaultcon (struct selabel_handle *selabel_handle,\n            char const *path, mode_t mode)\n{ errno = ENOTSUP; return -1; }\n\n# endif\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

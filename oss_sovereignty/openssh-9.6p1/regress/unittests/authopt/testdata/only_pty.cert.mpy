@@ -1,0 +1,9 @@
+{
+  "module_name": "only_pty.cert",
+  "hash_id": "274955f0a3fe7137ee65e3f34fb6227b8f0e2c456e20823f644c08fc8b79d508",
+  "original_prompt": "Ingested from openssh-9.6p1/regress/unittests/authopt/testdata/only_pty.cert",
+  "human_readable_source": "ssh-ed25519-cert-v01@openssh.com AAAAIHNzaC1lZDI1NTE5LWNlcnQtdjAxQG9wZW5zc2guY29tAAAAILvocWYto5Lg7P46YLbe7U4/b2h9Lr5rWqMZ4Cj4ra7RAAAAICeF4LbtRqwIRhewXifa5PKpbSU9P/K8CzeVYj8J/iBoAAAAAAAAAAEAAAABAAAABHVzZXIAAAAIAAAABHVzZXIAAAAANouDYAAAAAA4a2VgAAAAAAAAABIAAAAKcGVybWl0LXB0eQAAAAAAAAAAAAAAMwAAAAtzc2gtZWQyNTUxOQAAACAoVYLMLNBOH1SSgemFuDBprzpDXop6ufRSOo6vtD4mTwAAAFMAAAALc3NoLWVkMjU1MTkAAABASv2xQvp+Y6E8dCf5pzg3MZaan5bl1ToYXNcmQ3ysGrk9Djkcu8m3TytDpF471KmUejxy/iF4xjs9CDpk7h+SBQ== user key\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

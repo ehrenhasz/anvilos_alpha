@@ -1,0 +1,9 @@
+{
+  "module_name": "@@__@@__py__qstr.c.compress",
+  "hash_id": "79f517a48e9d222d55fb40805db40a8d95b27d30b92e83a3352ca53a31cc4817",
+  "original_prompt": "Ingested from sys_09_Anvil/source/ports/unix/build-bicameral/genhdr/compress/@@__@@__py__qstr.c.compress",
+  "human_readable_source": "name too long\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "63639194b0d21e19da85bdf3dd698ab7f24744da3d3f126b71635a52c0536597",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/clk/meson/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n# Amlogic clock drivers\n\nobj-$(CONFIG_COMMON_CLK_MESON_CLKC_UTILS) += meson-clkc-utils.o\nobj-$(CONFIG_COMMON_CLK_MESON_AO_CLKC) += meson-aoclk.o\nobj-$(CONFIG_COMMON_CLK_MESON_CPU_DYNDIV) += clk-cpu-dyndiv.o\nobj-$(CONFIG_COMMON_CLK_MESON_DUALDIV) += clk-dualdiv.o\nobj-$(CONFIG_COMMON_CLK_MESON_EE_CLKC) += meson-eeclk.o\nobj-$(CONFIG_COMMON_CLK_MESON_MPLL) += clk-mpll.o\nobj-$(CONFIG_COMMON_CLK_MESON_PHASE) += clk-phase.o\nobj-$(CONFIG_COMMON_CLK_MESON_PLL) += clk-pll.o\nobj-$(CONFIG_COMMON_CLK_MESON_REGMAP) += clk-regmap.o\nobj-$(CONFIG_COMMON_CLK_MESON_SCLK_DIV) += sclk-div.o\nobj-$(CONFIG_COMMON_CLK_MESON_VID_PLL_DIV) += vid-pll-div.o\n\n# Amlogic Clock controllers\n\nobj-$(CONFIG_COMMON_CLK_AXG) += axg.o axg-aoclk.o\nobj-$(CONFIG_COMMON_CLK_AXG_AUDIO) += axg-audio.o\nobj-$(CONFIG_COMMON_CLK_A1_PLL) += a1-pll.o\nobj-$(CONFIG_COMMON_CLK_A1_PERIPHERALS) += a1-peripherals.o\nobj-$(CONFIG_COMMON_CLK_GXBB) += gxbb.o gxbb-aoclk.o\nobj-$(CONFIG_COMMON_CLK_G12A) += g12a.o g12a-aoclk.o\nobj-$(CONFIG_COMMON_CLK_MESON8B) += meson8b.o meson8-ddr.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

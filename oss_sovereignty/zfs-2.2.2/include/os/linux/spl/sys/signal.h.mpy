@@ -1,0 +1,9 @@
+{
+  "module_name": "signal.h",
+  "hash_id": "f29fb2da0b8d27c9e9997990f281caa4dd4aa51f88d823b36a9952422a6712c8",
+  "original_prompt": "Ingested from zfs-2.2.2/include/os/linux/spl/sys/signal.h",
+  "human_readable_source": " \n\n#ifndef _SPL_SIGNAL_H\n#define\t_SPL_SIGNAL_H\n\n#include <linux/sched.h>\n\n#ifdef HAVE_SCHED_SIGNAL_HEADER\n#include <linux/sched/signal.h>\n#endif\n\n#define\tFORREAL\t\t0\t \n#define\tJUSTLOOKING\t1\t \n\nextern int issig(int why);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

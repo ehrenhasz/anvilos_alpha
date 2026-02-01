@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "7477476af7e21c816fc2e7795bc56c13528cebacf2a89b98e9289a8706ebc327",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/firmware/meson/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Amlogic Secure Monitor driver\n#\nconfig MESON_SM\n\ttristate \"Amlogic Secure Monitor driver\"\n\tdepends on ARCH_MESON || COMPILE_TEST\n\tdefault y\n\tdepends on ARM64_4K_PAGES\n\thelp\n\t  Say y here to enable the Amlogic secure monitor driver\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

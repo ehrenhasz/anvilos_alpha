@@ -1,0 +1,9 @@
+{
+  "module_name": "kfunc_call_destructive.c",
+  "hash_id": "86dfe60ab6606a0c197853f2c76823c8a84b0f4dddb98508b5b7ea5586538760",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/kfunc_call_destructive.c",
+  "human_readable_source": "\n#include <vmlinux.h>\n#include <bpf/bpf_helpers.h>\n#include \"../bpf_testmod/bpf_testmod_kfunc.h\"\n\nSEC(\"tc\")\nint kfunc_destructive_test(void)\n{\n\tbpf_kfunc_call_test_destructive();\n\treturn 0;\n}\n\nchar _license[] SEC(\"license\") = \"GPL\";\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

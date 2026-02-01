@@ -1,0 +1,9 @@
+{
+  "module_name": "chacha.h",
+  "hash_id": "48f02bc907761f2d59ace4604fe7a56ce64456cdd51182256d70e01f46e7a201",
+  "original_prompt": "Ingested from openssh-9.6p1/chacha.h",
+  "human_readable_source": " \n\n \n\n#ifndef CHACHA_H\n#define CHACHA_H\n\n#include <sys/types.h>\n#include <stdlib.h>\n\nstruct chacha_ctx {\n\tu_int input[16];\n};\n\n#define CHACHA_MINKEYLEN\t16\n#define CHACHA_NONCELEN\t\t8\n#define CHACHA_CTRLEN\t\t8\n#define CHACHA_STATELEN\t\t(CHACHA_NONCELEN+CHACHA_CTRLEN)\n#define CHACHA_BLOCKLEN\t\t64\n\nvoid chacha_keysetup(struct chacha_ctx *x, const u_char *k, u_int kbits)\n    __attribute__((__bounded__(__minbytes__, 2, CHACHA_MINKEYLEN)));\nvoid chacha_ivsetup(struct chacha_ctx *x, const u_char *iv, const u_char *ctr)\n    __attribute__((__bounded__(__minbytes__, 2, CHACHA_NONCELEN)))\n    __attribute__((__bounded__(__minbytes__, 3, CHACHA_CTRLEN)));\nvoid chacha_encrypt_bytes(struct chacha_ctx *x, const u_char *m,\n    u_char *c, u_int bytes)\n    __attribute__((__bounded__(__buffer__, 2, 4)))\n    __attribute__((__bounded__(__buffer__, 3, 4)));\n\n#endif\t \n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

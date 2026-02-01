@@ -1,0 +1,9 @@
+{
+  "module_name": ".gitignore",
+  "hash_id": "58d485bf2e486a0aa13a0d07db9fb60e7e4f8d34487f9ee9586860d454ba426c",
+  "original_prompt": "Ingested from linux-6.6.14/samples/nitro_enclaves/.gitignore",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n/ne_ioctl_sample\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

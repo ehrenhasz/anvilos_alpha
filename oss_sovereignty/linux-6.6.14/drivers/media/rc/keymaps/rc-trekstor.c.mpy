@@ -1,0 +1,9 @@
+{
+  "module_name": "rc-trekstor.c",
+  "hash_id": "4faa9078e6309f8e243576efb75f655a19d5fb841e71e55f4d3c0a49bef2f941",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/rc/keymaps/rc-trekstor.c",
+  "human_readable_source": "\n \n\n#include <media/rc-map.h>\n#include <linux/module.h>\n\n \n \nstatic struct rc_map_table trekstor[] = {\n\t{ 0x0084, KEY_NUMERIC_0 },\n\t{ 0x0085, KEY_MUTE },             \n\t{ 0x0086, KEY_HOMEPAGE },         \n\t{ 0x0087, KEY_UP },               \n\t{ 0x0088, KEY_OK },               \n\t{ 0x0089, KEY_RIGHT },            \n\t{ 0x008a, KEY_FASTFORWARD },      \n\t{ 0x008b, KEY_VOLUMEUP },         \n\t{ 0x008c, KEY_DOWN },             \n\t{ 0x008d, KEY_PLAY },             \n\t{ 0x008e, KEY_STOP },             \n\t{ 0x008f, KEY_EPG },              \n\t{ 0x0090, KEY_NUMERIC_7 },\n\t{ 0x0091, KEY_NUMERIC_4 },\n\t{ 0x0092, KEY_NUMERIC_1 },\n\t{ 0x0093, KEY_CHANNELDOWN },      \n\t{ 0x0094, KEY_NUMERIC_8 },\n\t{ 0x0095, KEY_NUMERIC_5 },\n\t{ 0x0096, KEY_NUMERIC_2 },\n\t{ 0x0097, KEY_CHANNELUP },        \n\t{ 0x0098, KEY_NUMERIC_9 },\n\t{ 0x0099, KEY_NUMERIC_6 },\n\t{ 0x009a, KEY_NUMERIC_3 },\n\t{ 0x009b, KEY_VOLUMEDOWN },       \n\t{ 0x009c, KEY_TV },               \n\t{ 0x009d, KEY_RECORD },           \n\t{ 0x009e, KEY_REWIND },           \n\t{ 0x009f, KEY_LEFT },             \n};\n\nstatic struct rc_map_list trekstor_map = {\n\t.map = {\n\t\t.scan     = trekstor,\n\t\t.size     = ARRAY_SIZE(trekstor),\n\t\t.rc_proto = RC_PROTO_NEC,\n\t\t.name     = RC_MAP_TREKSTOR,\n\t}\n};\n\nstatic int __init init_rc_map_trekstor(void)\n{\n\treturn rc_map_register(&trekstor_map);\n}\n\nstatic void __exit exit_rc_map_trekstor(void)\n{\n\trc_map_unregister(&trekstor_map);\n}\n\nmodule_init(init_rc_map_trekstor)\nmodule_exit(exit_rc_map_trekstor)\n\nMODULE_LICENSE(\"GPL\");\nMODULE_AUTHOR(\"Antti Palosaari <crope@iki.fi>\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

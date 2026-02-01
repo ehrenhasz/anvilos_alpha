@@ -1,0 +1,9 @@
+{
+  "module_name": "bpf_iter_vma_offset.c",
+  "hash_id": "1aaad9cf2b37255e2f249a2e602fadde2aef3c0760a5ed8eacb4ed00fff4b8fc",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/bpf_iter_vma_offset.c",
+  "human_readable_source": "\n \n#include \"bpf_iter.h\"\n#include <bpf/bpf_helpers.h>\n\nchar _license[] SEC(\"license\") = \"GPL\";\n\n__u32 unique_tgid_cnt = 0;\nuintptr_t address = 0;\nuintptr_t offset = 0;\n__u32 last_tgid = 0;\n__u32 pid = 0;\n__u32 page_shift = 0;\n\nSEC(\"iter/task_vma\")\nint get_vma_offset(struct bpf_iter__task_vma *ctx)\n{\n\tstruct vm_area_struct *vma = ctx->vma;\n\tstruct seq_file *seq = ctx->meta->seq;\n\tstruct task_struct *task = ctx->task;\n\n\tif (task == NULL || vma == NULL)\n\t\treturn 0;\n\n\tif (last_tgid != task->tgid)\n\t\tunique_tgid_cnt++;\n\tlast_tgid = task->tgid;\n\n\tif (task->tgid != pid)\n\t\treturn 0;\n\n\tif (vma->vm_start <= address && vma->vm_end > address) {\n\t\toffset = address - vma->vm_start + (vma->vm_pgoff << page_shift);\n\t\tBPF_SEQ_PRINTF(seq, \"OK\\n\");\n\t}\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

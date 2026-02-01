@@ -1,0 +1,9 @@
+{
+  "module_name": "rza.h",
+  "hash_id": "0ecbf22713b7c593ea2a43f752fb99e4f0b7ad6d87c2562ac9a3bd826187d394",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/usb/renesas_usbhs/rza.h",
+  "human_readable_source": " \n#include \"common.h\"\n\nextern const struct renesas_usbhs_platform_info usbhs_rza1_plat_info;\nextern const struct renesas_usbhs_platform_info usbhs_rza2_plat_info;\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "ia_css_de.host.h",
+  "hash_id": "9dbd805e60a5fd7b629c2db6dd6eb8e7ede475e7511186a8a85aab5986042cf7",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/isp/kernels/de/de_1.0/ia_css_de.host.h",
+  "human_readable_source": " \n \n\n#ifndef __IA_CSS_DE_HOST_H\n#define __IA_CSS_DE_HOST_H\n\n#include \"ia_css_de_types.h\"\n#include \"ia_css_de_param.h\"\n\nextern const struct ia_css_de_config default_de_config;\n\nvoid\nia_css_de_encode(\n    struct sh_css_isp_de_params *to,\n    const struct ia_css_de_config *from,\n    unsigned int size);\n\nvoid\nia_css_de_dump(\n    const struct sh_css_isp_de_params *de,\n    unsigned int level);\n\nvoid\nia_css_de_debug_dtrace(\n    const struct ia_css_de_config *config,\n    unsigned int level);\n\nvoid\nia_css_init_de_state(\n    void  * state,\n    size_t size);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "a4311be0751b82d39c67ad26d956c8fb17a5d642e9ee5e28b385f5560dc1f4be",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/thermal/st/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-$(CONFIG_ST_THERMAL)\t\t:= st_thermal.o\nobj-$(CONFIG_ST_THERMAL_MEMMAP)\t\t+= st_thermal_memmap.o\nobj-$(CONFIG_STM32_THERMAL)\t\t+= stm_thermal.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "rsmu_core.c",
+  "hash_id": "b9a17b53723e7fe57bcfbf87cd30a93dfbe70270736ebb7bc1e463ec88a0b79e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/mfd/rsmu_core.c",
+  "human_readable_source": "\n \n\n#include <linux/init.h>\n#include <linux/kernel.h>\n#include <linux/mfd/core.h>\n#include <linux/mfd/rsmu.h>\n#include <linux/module.h>\n#include <linux/of.h>\n#include <linux/regmap.h>\n#include <linux/slab.h>\n\n#include \"rsmu.h\"\n\nenum {\n\tRSMU_PHC = 0,\n\tRSMU_CDEV = 1,\n\tRSMU_N_DEVS = 2,\n};\n\nstatic struct mfd_cell rsmu_cm_devs[] = {\n\t[RSMU_PHC] = {\n\t\t.name = \"8a3400x-phc\",\n\t},\n\t[RSMU_CDEV] = {\n\t\t.name = \"8a3400x-cdev\",\n\t},\n};\n\nstatic struct mfd_cell rsmu_sabre_devs[] = {\n\t[RSMU_PHC] = {\n\t\t.name = \"82p33x1x-phc\",\n\t},\n\t[RSMU_CDEV] = {\n\t\t.name = \"82p33x1x-cdev\",\n\t},\n};\n\nstatic struct mfd_cell rsmu_sl_devs[] = {\n\t[RSMU_PHC] = {\n\t\t.name = \"8v19n85x-phc\",\n\t},\n\t[RSMU_CDEV] = {\n\t\t.name = \"8v19n85x-cdev\",\n\t},\n};\n\nint rsmu_core_init(struct rsmu_ddata *rsmu)\n{\n\tstruct mfd_cell *cells;\n\tint ret;\n\n\tswitch (rsmu->type) {\n\tcase RSMU_CM:\n\t\tcells = rsmu_cm_devs;\n\t\tbreak;\n\tcase RSMU_SABRE:\n\t\tcells = rsmu_sabre_devs;\n\t\tbreak;\n\tcase RSMU_SL:\n\t\tcells = rsmu_sl_devs;\n\t\tbreak;\n\tdefault:\n\t\tdev_err(rsmu->dev, \"Unsupported RSMU device type: %d\\n\", rsmu->type);\n\t\treturn -ENODEV;\n\t}\n\n\tmutex_init(&rsmu->lock);\n\n\tret = devm_mfd_add_devices(rsmu->dev, PLATFORM_DEVID_AUTO, cells,\n\t\t\t\t   RSMU_N_DEVS, NULL, 0, NULL);\n\tif (ret < 0)\n\t\tdev_err(rsmu->dev, \"Failed to register sub-devices: %d\\n\", ret);\n\n\treturn ret;\n}\n\nvoid rsmu_core_exit(struct rsmu_ddata *rsmu)\n{\n\tmutex_destroy(&rsmu->lock);\n}\n\nMODULE_DESCRIPTION(\"Renesas SMU core driver\");\nMODULE_LICENSE(\"GPL\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

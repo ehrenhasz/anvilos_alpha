@@ -1,0 +1,9 @@
+{
+  "module_name": "intel_wm_types.h",
+  "hash_id": "1295f4fdffbf7bcbb414591187c3f2c08145ffb74d4d62aa33b4a62ecb2df6b2",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/display/intel_wm_types.h",
+  "human_readable_source": " \n \n\n#ifndef __INTEL_WM_TYPES_H__\n#define __INTEL_WM_TYPES_H__\n\n#include <linux/types.h>\n\n#include \"intel_display_limits.h\"\n\nenum intel_ddb_partitioning {\n\tINTEL_DDB_PART_1_2,\n\tINTEL_DDB_PART_5_6,  \n};\n\nstruct ilk_wm_values {\n\tu32 wm_pipe[3];\n\tu32 wm_lp[3];\n\tu32 wm_lp_spr[3];\n\tbool enable_fbc_wm;\n\tenum intel_ddb_partitioning partitioning;\n};\n\nstruct g4x_pipe_wm {\n\tu16 plane[I915_MAX_PLANES];\n\tu16 fbc;\n};\n\nstruct g4x_sr_wm {\n\tu16 plane;\n\tu16 cursor;\n\tu16 fbc;\n};\n\nstruct vlv_wm_ddl_values {\n\tu8 plane[I915_MAX_PLANES];\n};\n\nstruct vlv_wm_values {\n\tstruct g4x_pipe_wm pipe[3];\n\tstruct g4x_sr_wm sr;\n\tstruct vlv_wm_ddl_values ddl[3];\n\tu8 level;\n\tbool cxsr;\n};\n\nstruct g4x_wm_values {\n\tstruct g4x_pipe_wm pipe[2];\n\tstruct g4x_sr_wm sr;\n\tstruct g4x_sr_wm hpll;\n\tbool cxsr;\n\tbool hpll_en;\n\tbool fbc_en;\n};\n\nstruct skl_ddb_entry {\n\tu16 start, end;\t \n};\n\nstatic inline u16 skl_ddb_entry_size(const struct skl_ddb_entry *entry)\n{\n\treturn entry->end - entry->start;\n}\n\nstatic inline bool skl_ddb_entry_equal(const struct skl_ddb_entry *e1,\n\t\t\t\t       const struct skl_ddb_entry *e2)\n{\n\tif (e1->start == e2->start && e1->end == e2->end)\n\t\treturn true;\n\n\treturn false;\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

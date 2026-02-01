@@ -1,0 +1,9 @@
+{
+  "module_name": "blk-cgroup-fc-appid.c",
+  "hash_id": "1e6c4eb03ef2e208c3b194f220fb359226c3238b9cac8846a6bc88f0197edbff",
+  "original_prompt": "Ingested from linux-6.6.14/block/blk-cgroup-fc-appid.c",
+  "human_readable_source": "\n\n#include \"blk-cgroup.h\"\n\n \nint blkcg_set_fc_appid(char *app_id, u64 cgrp_id, size_t app_id_len)\n{\n\tstruct cgroup *cgrp;\n\tstruct cgroup_subsys_state *css;\n\tstruct blkcg *blkcg;\n\tint ret  = 0;\n\n\tif (app_id_len > FC_APPID_LEN)\n\t\treturn -EINVAL;\n\n\tcgrp = cgroup_get_from_id(cgrp_id);\n\tif (IS_ERR(cgrp))\n\t\treturn PTR_ERR(cgrp);\n\tcss = cgroup_get_e_css(cgrp, &io_cgrp_subsys);\n\tif (!css) {\n\t\tret = -ENOENT;\n\t\tgoto out_cgrp_put;\n\t}\n\tblkcg = css_to_blkcg(css);\n\t \n\tstrscpy(blkcg->fc_app_id, app_id, app_id_len);\n\tcss_put(css);\nout_cgrp_put:\n\tcgroup_put(cgrp);\n\treturn ret;\n}\nEXPORT_SYMBOL_GPL(blkcg_set_fc_appid);\n\n \nchar *blkcg_get_fc_appid(struct bio *bio)\n{\n\tif (!bio->bi_blkg || bio->bi_blkg->blkcg->fc_app_id[0] == '\\0')\n\t\treturn NULL;\n\treturn bio->bi_blkg->blkcg->fc_app_id;\n}\nEXPORT_SYMBOL_GPL(blkcg_get_fc_appid);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

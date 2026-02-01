@@ -1,0 +1,9 @@
+{
+  "module_name": "evtchn.h",
+  "hash_id": "9593854f39fcee8852271bad98914ecf368443abe251faf1f7c005d17642561a",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/xen/evtchn.h",
+  "human_readable_source": " \n \n\n#ifndef __LINUX_PUBLIC_EVTCHN_H__\n#define __LINUX_PUBLIC_EVTCHN_H__\n\n \n#define IOCTL_EVTCHN_BIND_VIRQ\t\t\t\t\\\n\t_IOC(_IOC_NONE, 'E', 0, sizeof(struct ioctl_evtchn_bind_virq))\nstruct ioctl_evtchn_bind_virq {\n\tunsigned int virq;\n};\n\n \n#define IOCTL_EVTCHN_BIND_INTERDOMAIN\t\t\t\\\n\t_IOC(_IOC_NONE, 'E', 1, sizeof(struct ioctl_evtchn_bind_interdomain))\nstruct ioctl_evtchn_bind_interdomain {\n\tunsigned int remote_domain, remote_port;\n};\n\n \n#define IOCTL_EVTCHN_BIND_UNBOUND_PORT\t\t\t\\\n\t_IOC(_IOC_NONE, 'E', 2, sizeof(struct ioctl_evtchn_bind_unbound_port))\nstruct ioctl_evtchn_bind_unbound_port {\n\tunsigned int remote_domain;\n};\n\n \n#define IOCTL_EVTCHN_UNBIND\t\t\t\t\\\n\t_IOC(_IOC_NONE, 'E', 3, sizeof(struct ioctl_evtchn_unbind))\nstruct ioctl_evtchn_unbind {\n\tunsigned int port;\n};\n\n \n#define IOCTL_EVTCHN_NOTIFY\t\t\t\t\\\n\t_IOC(_IOC_NONE, 'E', 4, sizeof(struct ioctl_evtchn_notify))\nstruct ioctl_evtchn_notify {\n\tunsigned int port;\n};\n\n \n#define IOCTL_EVTCHN_RESET\t\t\t\t\\\n\t_IOC(_IOC_NONE, 'E', 5, 0)\n\n \n#define IOCTL_EVTCHN_RESTRICT_DOMID\t\t\t\\\n\t_IOC(_IOC_NONE, 'E', 6, sizeof(struct ioctl_evtchn_restrict_domid))\nstruct ioctl_evtchn_restrict_domid {\n\tdomid_t domid;\n};\n\n \n#define IOCTL_EVTCHN_BIND_STATIC\t\t\t\\\n\t_IOC(_IOC_NONE, 'E', 7, sizeof(struct ioctl_evtchn_bind))\nstruct ioctl_evtchn_bind {\n\tunsigned int port;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

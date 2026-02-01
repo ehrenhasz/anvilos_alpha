@@ -1,0 +1,9 @@
+{
+  "module_name": "unsetenv.c",
+  "hash_id": "d507500331894cf431fa78b09c2bc8dcfa5fd219aa3583892fee38303724e798",
+  "original_prompt": "Ingested from coreutils-9.4/lib/unsetenv.c",
+  "human_readable_source": " \n#define _GL_ARG_NONNULL(params)\n\n#include <config.h>\n\n \n#include <stdlib.h>\n\n#include <errno.h>\n#if !_LIBC\n# define __set_errno(ev) ((errno) = (ev))\n#endif\n\n#include <string.h>\n#include <unistd.h>\n\n#if !_LIBC\n# define __environ      environ\n#endif\n\n#if _LIBC\n \n# include <bits/libc-lock.h>\n__libc_lock_define_initialized (static, envlock)\n# define LOCK   __libc_lock_lock (envlock)\n# define UNLOCK __libc_lock_unlock (envlock)\n#else\n# define LOCK\n# define UNLOCK\n#endif\n\n \n#ifdef _LIBC\n# define unsetenv __unsetenv\n#endif\n\n#if _LIBC || !HAVE_UNSETENV\n\nint\nunsetenv (const char *name)\n{\n  size_t len;\n  char **ep;\n\n  if (name == NULL || *name == '\\0' || strchr (name, '=') != NULL)\n    {\n      __set_errno (EINVAL);\n      return -1;\n    }\n\n  len = strlen (name);\n\n  LOCK;\n\n  ep = __environ;\n  while (*ep != NULL)\n    if (!strncmp (*ep, name, len) && (*ep)[len] == '=')\n      {\n         \n        char **dp = ep;\n\n        do\n          dp[0] = dp[1];\n        while (*dp++);\n         \n      }\n    else\n      ++ep;\n\n  UNLOCK;\n\n  return 0;\n}\n\n#ifdef _LIBC\n# undef unsetenv\nweak_alias (__unsetenv, unsetenv)\n#endif\n\n#else  \n\n# undef unsetenv\n# if !HAVE_DECL_UNSETENV\n#  if VOID_UNSETENV\nextern void unsetenv (const char *);\n#  else\nextern int unsetenv (const char *);\n#  endif\n# endif\n\n \nint\nrpl_unsetenv (const char *name)\n{\n  int result = 0;\n  if (!name || !*name || strchr (name, '='))\n    {\n      errno = EINVAL;\n      return -1;\n    }\n  while (getenv (name))\n# if !VOID_UNSETENV\n    result =\n# endif\n      unsetenv (name);\n  return result;\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

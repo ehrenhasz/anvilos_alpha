@@ -1,0 +1,9 @@
+{
+  "module_name": "vivid-rds-gen.h",
+  "hash_id": "9c0a309621c4f995f08321caf6a3c0b348d4904ae90262d22ab102f3e4a2f548",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/test-drivers/vivid/vivid-rds-gen.h",
+  "human_readable_source": " \n \n\n#ifndef _VIVID_RDS_GEN_H_\n#define _VIVID_RDS_GEN_H_\n\n \n#define VIVID_RDS_GEN_GROUPS 57\n#define VIVID_RDS_GEN_BLKS_PER_GRP 4\n#define VIVID_RDS_GEN_BLOCKS (VIVID_RDS_GEN_BLKS_PER_GRP * VIVID_RDS_GEN_GROUPS)\n#define VIVID_RDS_NSEC_PER_BLK (u32)(5ull * NSEC_PER_SEC / VIVID_RDS_GEN_BLOCKS)\n\nstruct vivid_rds_gen {\n\tstruct v4l2_rds_data\tdata[VIVID_RDS_GEN_BLOCKS];\n\tbool\t\t\tuse_rbds;\n\tu16\t\t\tpicode;\n\tu8\t\t\tpty;\n\tbool\t\t\tmono_stereo;\n\tbool\t\t\tart_head;\n\tbool\t\t\tcompressed;\n\tbool\t\t\tdyn_pty;\n\tbool\t\t\tta;\n\tbool\t\t\ttp;\n\tbool\t\t\tms;\n\tchar\t\t\tpsname[8 + 1];\n\tchar\t\t\tradiotext[64 + 1];\n};\n\nvoid vivid_rds_gen_fill(struct vivid_rds_gen *rds, unsigned freq,\n\t\t    bool use_alternate);\nvoid vivid_rds_generate(struct vivid_rds_gen *rds);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "sys_ioctl.in.h",
+  "hash_id": "16d2931612ee78a685a7607d86c2ab243d7e0fdc9fa2467c58f2149484231887",
+  "original_prompt": "Ingested from coreutils-9.4/lib/sys_ioctl.in.h",
+  "human_readable_source": " \n#if @HAVE_SYS_IOCTL_H@\n# @INCLUDE_NEXT@ @NEXT_SYS_IOCTL_H@\n#endif\n\n#ifndef _@GUARD_PREFIX@_SYS_IOCTL_H\n#define _@GUARD_PREFIX@_SYS_IOCTL_H\n\n \n#if !_GL_CONFIG_H_INCLUDED\n #error \"Please include config.h first.\"\n#endif\n\n \n#ifndef __GLIBC__\n# include <unistd.h>\n#endif\n\n \n\n \n\n\n \n\n#if @GNULIB_IOCTL@\n# if @REPLACE_IOCTL@\n#  if !(defined __cplusplus && defined GNULIB_NAMESPACE)\n#   undef ioctl\n#   define ioctl rpl_ioctl\n#  endif\n_GL_FUNCDECL_RPL (ioctl, int,\n                  (int fd, int request, ...  ));\n_GL_CXXALIAS_RPL (ioctl, int,\n                  (int fd, int request, ...  ));\n# else\n#  if @SYS_IOCTL_H_HAVE_WINSOCK2_H@ || 1\n_GL_FUNCDECL_SYS (ioctl, int,\n                  (int fd, int request, ...  ));\n#  endif\n_GL_CXXALIAS_SYS (ioctl, int,\n                  (int fd, int request, ...  ));\n# endif\n# if __GLIBC__ >= 2\n_GL_CXXALIASWARN (ioctl);\n# endif\n#elif @SYS_IOCTL_H_HAVE_WINSOCK2_H_AND_USE_SOCKETS@\n# undef ioctl\n# define ioctl ioctl_used_without_requesting_gnulib_module_ioctl\n#elif defined GNULIB_POSIXCHECK\n# undef ioctl\n# if HAVE_RAW_DECL_IOCTL\n_GL_WARN_ON_USE (ioctl, \"ioctl does not portably work on sockets - \"\n                 \"use gnulib module ioctl for portability\");\n# endif\n#endif\n\n\n#endif  \n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

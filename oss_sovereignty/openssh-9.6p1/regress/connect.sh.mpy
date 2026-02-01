@@ -1,0 +1,9 @@
+{
+  "module_name": "connect.sh",
+  "hash_id": "bf7e8fec08b790c0ed753a1c24e83a226052cf9775db1bfc493630d13e915db3",
+  "original_prompt": "Ingested from openssh-9.6p1/regress/connect.sh",
+  "human_readable_source": "#\t$OpenBSD: connect.sh,v 1.8 2020/01/25 02:57:53 dtucker Exp $\n#\tPlaced in the Public Domain.\n\ntid=\"simple connect\"\n\nstart_sshd\n\ntrace \"direct connect\"\n${SSH} -F $OBJ/ssh_config somehost true\nif [ $? -ne 0 ]; then\n\tfail \"ssh direct connect failed\"\nfi\n\ntrace \"proxy connect\"\n${SSH} -F $OBJ/ssh_config -o \"proxycommand $NC %h %p\" somehost true\nif [ $? -ne 0 ]; then\n\tfail \"ssh proxycommand connect failed\"\nfi\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

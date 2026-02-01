@@ -1,0 +1,9 @@
+{
+  "module_name": "sun8i_ui_scaler.h",
+  "hash_id": "2400f2a021e44282eb26c12e534a546e9916e384056d7eaa6af8ba6d3f105841",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/sun4i/sun8i_ui_scaler.h",
+  "human_readable_source": " \n\n#ifndef _SUN8I_UI_SCALER_H_\n#define _SUN8I_UI_SCALER_H_\n\n#include \"sun8i_mixer.h\"\n\n#define DE2_UI_SCALER_UNIT_SIZE 0x10000\n#define DE3_UI_SCALER_UNIT_SIZE 0x08000\n\n \n#define SUN8I_UI_SCALER_SCALE_MIN\t\t1\n#define SUN8I_UI_SCALER_SCALE_MAX\t\t((1UL << 20) - 1)\n\n#define SUN8I_UI_SCALER_SCALE_FRAC\t\t20\n#define SUN8I_UI_SCALER_PHASE_FRAC\t\t20\n#define SUN8I_UI_SCALER_COEFF_COUNT\t\t16\n#define SUN8I_UI_SCALER_SIZE(w, h)\t\t(((h) - 1) << 16 | ((w) - 1))\n\n#define SUN8I_SCALER_GSU_CTRL(base)\t\t((base) + 0x0)\n#define SUN8I_SCALER_GSU_OUTSIZE(base)\t\t((base) + 0x40)\n#define SUN8I_SCALER_GSU_INSIZE(base)\t\t((base) + 0x80)\n#define SUN8I_SCALER_GSU_HSTEP(base)\t\t((base) + 0x88)\n#define SUN8I_SCALER_GSU_VSTEP(base)\t\t((base) + 0x8c)\n#define SUN8I_SCALER_GSU_HPHASE(base)\t\t((base) + 0x90)\n#define SUN8I_SCALER_GSU_VPHASE(base)\t\t((base) + 0x98)\n#define SUN8I_SCALER_GSU_HCOEFF(base, index)\t((base) + 0x200 + 0x4 * (index))\n\n#define SUN8I_SCALER_GSU_CTRL_EN\t\tBIT(0)\n#define SUN8I_SCALER_GSU_CTRL_COEFF_RDY\t\tBIT(4)\n\nvoid sun8i_ui_scaler_enable(struct sun8i_mixer *mixer, int layer, bool enable);\nvoid sun8i_ui_scaler_setup(struct sun8i_mixer *mixer, int layer,\n\t\t\t   u32 src_w, u32 src_h, u32 dst_w, u32 dst_h,\n\t\t\t   u32 hscale, u32 vscale, u32 hphase, u32 vphase);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

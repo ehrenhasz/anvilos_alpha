@@ -1,0 +1,9 @@
+{
+  "module_name": "act_meta_skbprio.c",
+  "hash_id": "fda2b05b413071eb954fbdc21cb27e552a1ab8fb84bdc266f796c230b53e44ea",
+  "original_prompt": "Ingested from linux-6.6.14/net/sched/act_meta_skbprio.c",
+  "human_readable_source": "\n \n\n#include <linux/types.h>\n#include <linux/kernel.h>\n#include <linux/string.h>\n#include <linux/errno.h>\n#include <linux/skbuff.h>\n#include <linux/rtnetlink.h>\n#include <linux/module.h>\n#include <linux/init.h>\n#include <net/netlink.h>\n#include <net/pkt_sched.h>\n#include <uapi/linux/tc_act/tc_ife.h>\n#include <net/tc_act/tc_ife.h>\n\nstatic int skbprio_check(struct sk_buff *skb, struct tcf_meta_info *e)\n{\n\treturn ife_check_meta_u32(skb->priority, e);\n}\n\nstatic int skbprio_encode(struct sk_buff *skb, void *skbdata,\n\t\t\t  struct tcf_meta_info *e)\n{\n\tu32 ifeprio = skb->priority;  \n\n\treturn ife_encode_meta_u32(ifeprio, skbdata, e);\n}\n\nstatic int skbprio_decode(struct sk_buff *skb, void *data, u16 len)\n{\n\tu32 ifeprio = *(u32 *)data;\n\n\tskb->priority = ntohl(ifeprio);\n\treturn 0;\n}\n\nstatic struct tcf_meta_ops ife_prio_ops = {\n\t.metaid = IFE_META_PRIO,\n\t.metatype = NLA_U32,\n\t.name = \"skbprio\",\n\t.synopsis = \"skb prio metadata\",\n\t.check_presence = skbprio_check,\n\t.encode = skbprio_encode,\n\t.decode = skbprio_decode,\n\t.get = ife_get_meta_u32,\n\t.alloc = ife_alloc_meta_u32,\n\t.owner = THIS_MODULE,\n};\n\nstatic int __init ifeprio_init_module(void)\n{\n\treturn register_ife_op(&ife_prio_ops);\n}\n\nstatic void __exit ifeprio_cleanup_module(void)\n{\n\tunregister_ife_op(&ife_prio_ops);\n}\n\nmodule_init(ifeprio_init_module);\nmodule_exit(ifeprio_cleanup_module);\n\nMODULE_AUTHOR(\"Jamal Hadi Salim(2015)\");\nMODULE_DESCRIPTION(\"Inter-FE skb prio metadata action\");\nMODULE_LICENSE(\"GPL\");\nMODULE_ALIAS_IFE_META(\"skbprio\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

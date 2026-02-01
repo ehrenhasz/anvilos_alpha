@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "5532d4004b49eaf831270ed779b9dfb92313961c3201a7ccb2cd6f835a8c208d",
+  "original_prompt": "Ingested from linux-6.6.14/mm/kmsan/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for KernelMemorySanitizer (KMSAN).\n#\n#\nobj-y := core.o instrumentation.o init.o hooks.o report.o shadow.o\n\nKMSAN_SANITIZE := n\nKCOV_INSTRUMENT := n\nUBSAN_SANITIZE := n\n\n# Disable instrumentation of KMSAN runtime with other tools.\nCC_FLAGS_KMSAN_RUNTIME := -fno-stack-protector\nCC_FLAGS_KMSAN_RUNTIME += $(call cc-option,-fno-conserve-stack)\nCC_FLAGS_KMSAN_RUNTIME += -DDISABLE_BRANCH_PROFILING\n\n# Disable ftrace to avoid recursion.\nCFLAGS_REMOVE_core.o = $(CC_FLAGS_FTRACE)\nCFLAGS_REMOVE_hooks.o = $(CC_FLAGS_FTRACE)\nCFLAGS_REMOVE_init.o = $(CC_FLAGS_FTRACE)\nCFLAGS_REMOVE_instrumentation.o = $(CC_FLAGS_FTRACE)\nCFLAGS_REMOVE_report.o = $(CC_FLAGS_FTRACE)\nCFLAGS_REMOVE_shadow.o = $(CC_FLAGS_FTRACE)\n\nCFLAGS_core.o := $(CC_FLAGS_KMSAN_RUNTIME)\nCFLAGS_hooks.o := $(CC_FLAGS_KMSAN_RUNTIME)\nCFLAGS_init.o := $(CC_FLAGS_KMSAN_RUNTIME)\nCFLAGS_instrumentation.o := $(CC_FLAGS_KMSAN_RUNTIME)\nCFLAGS_report.o := $(CC_FLAGS_KMSAN_RUNTIME)\nCFLAGS_shadow.o := $(CC_FLAGS_KMSAN_RUNTIME)\n\nobj-$(CONFIG_KMSAN_KUNIT_TEST) += kmsan_test.o\nKMSAN_SANITIZE_kmsan_test.o := y\nCFLAGS_kmsan_test.o += $(call cc-disable-warning, uninitialized)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

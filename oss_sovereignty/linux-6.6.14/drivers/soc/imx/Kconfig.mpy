@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "01f2077fc027b671e4d79f2780f00deb61d992991e6e0b14e6b2f02e6a7ce829",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/soc/imx/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nmenu \"i.MX SoC drivers\"\n\nconfig IMX_GPCV2_PM_DOMAINS\n\tbool \"i.MX GPCv2 PM domains\"\n\tdepends on ARCH_MXC || (COMPILE_TEST && OF)\n\tdepends on PM\n\tselect PM_GENERIC_DOMAINS\n\tselect REGMAP_MMIO\n\tdefault y if SOC_IMX7D\n\nconfig SOC_IMX8M\n\ttristate \"i.MX8M SoC family support\"\n\tdepends on ARCH_MXC || COMPILE_TEST\n\tdefault ARCH_MXC && ARM64\n\tselect SOC_BUS\n\tselect ARM_GIC_V3 if ARCH_MXC && ARCH_MULTI_V7\n\thelp\n\t  If you say yes here you get support for the NXP i.MX8M family\n\t  support, it will provide the SoC info like SoC family,\n\t  ID and revision etc.\n\nconfig SOC_IMX9\n\ttristate \"i.MX9 SoC family support\"\n\tdepends on ARCH_MXC || COMPILE_TEST\n\tdefault ARCH_MXC && ARM64\n\tselect SOC_BUS\n\thelp\n\t  If you say yes here, you get support for the NXP i.MX9 family\n\nconfig IMX8M_BLK_CTRL\n\tbool\n\tdefault SOC_IMX8M && IMX_GPCV2_PM_DOMAINS\n\tdepends on PM_GENERIC_DOMAINS\n\tdepends on COMMON_CLK\n\nconfig IMX9_BLK_CTRL\n\tbool\n\tdefault SOC_IMX9 && IMX_GPCV2_PM_DOMAINS\n\tdepends on PM_GENERIC_DOMAINS\n\nendmenu\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

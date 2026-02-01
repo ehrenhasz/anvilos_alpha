@@ -1,0 +1,9 @@
+{
+  "module_name": "asm.h",
+  "hash_id": "c100467cbf483c749f2eb69d9b0d814c1a99dc26770083f44c95a4950e8dc083",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/soc/marvell/octeontx2/asm.h",
+  "human_readable_source": " \n\n#ifndef __SOC_OTX2_ASM_H\n#define __SOC_OTX2_ASM_H\n\n#include <linux/types.h>\n#if defined(CONFIG_ARM64)\n \n#define otx2_lmt_flush(ioaddr)                          \\\n({                                                      \\\n\tu64 result = 0;                                 \\\n\t__asm__ volatile(\".cpu  generic+lse\\n\"          \\\n\t\t\t \"ldeor xzr, %x[rf], [%[rs]]\"   \\\n\t\t\t : [rf]\"=r\" (result)            \\\n\t\t\t : [rs]\"r\" (ioaddr));           \\\n\t(result);                                       \\\n})\n \n#define cn10k_lmt_flush(val, addr)\t\t\t\\\n({\t\t\t\t\t\t\t\\\n\t__asm__ volatile(\".cpu  generic+lse\\n\"\t\t\\\n\t\t\t \"steorl %x[rf],[%[rs]]\"\t\t\\\n\t\t\t : [rf] \"+r\"(val)\t\t\\\n\t\t\t : [rs] \"r\"(addr));\t\t\\\n})\n\nstatic inline u64 otx2_atomic64_fetch_add(u64 incr, u64 *ptr)\n{\n\tu64 result;\n\n\tasm volatile (\".cpu  generic+lse\\n\"\n\t\t      \"ldadda %x[i], %x[r], [%[b]]\"\n\t\t      : [r] \"=r\" (result), \"+m\" (*ptr)\n\t\t      : [i] \"r\" (incr), [b] \"r\" (ptr)\n\t\t      : \"memory\");\n\treturn result;\n}\n\n#else\n#define otx2_lmt_flush(ioaddr)          ({ 0; })\n#define cn10k_lmt_flush(val, addr)\t({ addr = val; })\n#define otx2_atomic64_fetch_add(incr, ptr)\t({ incr; })\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

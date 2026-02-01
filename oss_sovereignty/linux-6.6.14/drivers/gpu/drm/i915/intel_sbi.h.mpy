@@ -1,0 +1,9 @@
+{
+  "module_name": "intel_sbi.h",
+  "hash_id": "d8124d87206007c3e3a8eadb21dd65c40086a4aa6d4c443f437ba98b803b5822",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/intel_sbi.h",
+  "human_readable_source": " \n \n\n#ifndef _INTEL_SBI_H_\n#define _INTEL_SBI_H_\n\n#include <linux/types.h>\n\nstruct drm_i915_private;\n\nenum intel_sbi_destination {\n\tSBI_ICLK,\n\tSBI_MPHY,\n};\n\nu32 intel_sbi_read(struct drm_i915_private *i915, u16 reg,\n\t\t   enum intel_sbi_destination destination);\nvoid intel_sbi_write(struct drm_i915_private *i915, u16 reg, u32 value,\n\t\t     enum intel_sbi_destination destination);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

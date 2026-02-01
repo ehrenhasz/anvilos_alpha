@@ -1,0 +1,9 @@
+{
+  "module_name": "mpconfigvariant.h",
+  "hash_id": "3638ec0b3a7d244d94f686db4b1963aaeaae1339c5d65d6ac5e9a5416310b116",
+  "original_prompt": "Ingested from sys_09_Anvil/source/ports/unix/variants/bicameral/mpconfigvariant.h",
+  "human_readable_source": "#ifndef MICROPY_INCLUDED_PORTS_UNIX_VARIANTS_BICAMERAL_MPCONFIGVARIANT_H\n#define MICROPY_INCLUDED_PORTS_UNIX_VARIANTS_BICAMERAL_MPCONFIGVARIANT_H\n\n#define MICROPY_ENABLE_COMPILER     (0)\n#define MICROPY_PY_BUILTINS_COMPILE (0)\n#define MICROPY_PY_BUILTINS_EXECFILE (0)\n#define MICROPY_PY_BUILTINS_EVAL_EXEC (0)\n#define MICROPY_PY_MICROPYTHON_MEM_INFO (0)\n#define MICROPY_PY_NETWORK          (0)\n#define MICROPY_PY_SOCKET           (0)\n#define MICROPY_PERSISTENT_CODE_LOAD (1)\n\n\n#define MICROPY_ENABLE_GC (1)\n#define MICROPY_ENABLE_FINALISER (1)\n#define MICROPY_STACKLESS (0)\n\n#define MICROPY_HELPER_REPL (1)\n#define MICROPY_READLINE_HISTORY_SIZE (0)\n\n\n#define MICROPY_KBD_EXCEPTION (1)\n\n\n#define MICROPY_PY_OS (1)\n#define MICROPY_PY_SYS (1)\n\n#endif",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

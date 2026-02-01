@@ -1,0 +1,9 @@
+{
+  "module_name": "musb_trace.c",
+  "hash_id": "155585a7b9789016987035074c4943d8915de38f03332886b423266ba1d1dac8",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/usb/musb/musb_trace.c",
+  "human_readable_source": "\n \n\n#define CREATE_TRACE_POINTS\n#include \"musb_trace.h\"\n\nvoid musb_dbg(struct musb *musb, const char *fmt, ...)\n{\n\tstruct va_format vaf;\n\tva_list args;\n\n\tva_start(args, fmt);\n\tvaf.fmt = fmt;\n\tvaf.va = &args;\n\n\ttrace_musb_log(musb, &vaf);\n\n\tva_end(args);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

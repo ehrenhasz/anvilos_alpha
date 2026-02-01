@@ -1,0 +1,9 @@
+{
+  "module_name": "tegra210-car.h",
+  "hash_id": "63e2044a871ec467e3cb5461fcf537ebe35eba63f91688700a62820e029d01ef",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/reset/tegra210-car.h",
+  "human_readable_source": " \n \n\n#ifndef _DT_BINDINGS_RESET_TEGRA210_CAR_H\n#define _DT_BINDINGS_RESET_TEGRA210_CAR_H\n\n#define TEGRA210_RESET(x)\t\t(7 * 32 + (x))\n#define TEGRA210_RST_DFLL_DVCO\t\tTEGRA210_RESET(0)\n#define TEGRA210_RST_ADSP\t\tTEGRA210_RESET(1)\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

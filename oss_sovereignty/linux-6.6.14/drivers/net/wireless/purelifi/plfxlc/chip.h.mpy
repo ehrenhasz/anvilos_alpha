@@ -1,0 +1,9 @@
+{
+  "module_name": "chip.h",
+  "hash_id": "8a423d82bd9ea67a0b0bec9178fc6e2914d94f7240dc8790675e7aea71ca45f6",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/purelifi/plfxlc/chip.h",
+  "human_readable_source": " \n \n\n#ifndef PLFXLC_CHIP_H\n#define PLFXLC_CHIP_H\n\n#include <net/mac80211.h>\n\n#include \"usb.h\"\n\nenum unit_type {\n\tSTA = 0,\n\tAP = 1,\n};\n\nenum {\n\tPLFXLC_RADIO_OFF = 0,\n\tPLFXLC_RADIO_ON = 1,\n};\n\nstruct plfxlc_chip {\n\tstruct plfxlc_usb usb;\n\tstruct mutex mutex;  \n\tenum unit_type unit_type;\n\tu16 link_led;\n\tu8 beacon_set;\n\tu16 beacon_interval;\n};\n\nstruct plfxlc_mc_hash {\n\tu32 low;\n\tu32 high;\n};\n\n#define plfxlc_chip_dev(chip) (&(chip)->usb.intf->dev)\n\nvoid plfxlc_chip_init(struct plfxlc_chip *chip,\n\t\t      struct ieee80211_hw *hw,\n\t\t      struct usb_interface *intf);\n\nvoid plfxlc_chip_release(struct plfxlc_chip *chip);\n\nvoid plfxlc_chip_disable_rxtx(struct plfxlc_chip *chip);\n\nint plfxlc_chip_init_hw(struct plfxlc_chip *chip);\n\nint plfxlc_chip_enable_rxtx(struct plfxlc_chip *chip);\n\nint plfxlc_chip_set_rate(struct plfxlc_chip *chip, u8 rate);\n\nint plfxlc_set_beacon_interval(struct plfxlc_chip *chip, u16 interval,\n\t\t\t       u8 dtim_period, int type);\n\nint plfxlc_chip_switch_radio(struct plfxlc_chip *chip, u16 value);\n\nstatic inline struct plfxlc_chip *plfxlc_usb_to_chip(struct plfxlc_usb\n\t\t\t\t\t\t\t *usb)\n{\n\treturn container_of(usb, struct plfxlc_chip, usb);\n}\n\nstatic inline void plfxlc_mc_add_all(struct plfxlc_mc_hash *hash)\n{\n\thash->low  = 0xffffffff;\n\thash->high = 0xffffffff;\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

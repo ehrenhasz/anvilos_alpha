@@ -1,0 +1,9 @@
+{
+  "module_name": "eeprom.h",
+  "hash_id": "dc4d8af5a1f70180ad69bd10cf65e06e65b42e6d30c935b0b333f019341e04ab",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/spi/eeprom.h",
+  "human_readable_source": " \n#ifndef __LINUX_SPI_EEPROM_H\n#define __LINUX_SPI_EEPROM_H\n\n#include <linux/memory.h>\n\n \nstruct spi_eeprom {\n\tu32\t\tbyte_len;\n\tchar\t\tname[10];\n\tu32\t\tpage_size;\t\t \n\tu16\t\tflags;\n#define\tEE_ADDR1\t0x0001\t\t\t \n#define\tEE_ADDR2\t0x0002\t\t\t \n#define\tEE_ADDR3\t0x0004\t\t\t \n#define\tEE_READONLY\t0x0008\t\t\t \n\n\t \n#define EE_INSTR_BIT3_IS_ADDR\t0x0010\n\n\tvoid *context;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

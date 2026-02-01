@@ -1,0 +1,9 @@
+{
+  "module_name": "stall.json",
+  "hash_id": "0fed72994dc0c58b29516014c8ee2203f6a93567580338a9d6e940564595c8e9",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/pmu-events/arch/arm64/arm/neoverse-n1/stall.json",
+  "human_readable_source": "[\n    {\n        \"ArchStdEvent\": \"STALL_FRONTEND\",\n        \"PublicDescription\": \"Counts cycles when frontend could not send any micro-operations to the rename stage because of frontend resource stalls caused by fetch memory latency or branch prediction flow stalls. All the frontend slots were empty during the cycle when this event counts.\"\n    },\n    {\n        \"ArchStdEvent\": \"STALL_BACKEND\",\n        \"PublicDescription\": \"Counts cycles whenever the rename unit is unable to send any micro-operations to the backend of the pipeline because of backend resource constraints. Backend resource constraints can include issue stage fullness, execution stage fullness, or other internal pipeline resource fullness. All the backend slots were empty during the cycle when this event counts.\"\n    }\n]\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

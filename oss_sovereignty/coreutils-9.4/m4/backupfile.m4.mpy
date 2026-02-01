@@ -1,0 +1,9 @@
+{
+  "module_name": "backupfile.m4",
+  "hash_id": "76f5f37937a411cba0a832b4906c8328b4598e8d73b5bbd904b48baeb7c0d627",
+  "original_prompt": "Ingested from coreutils-9.4/m4/backupfile.m4",
+  "human_readable_source": "# backupfile.m4 serial 14\ndnl Copyright (C) 2002-2006, 2009-2023 Free Software Foundation, Inc.\ndnl This file is free software; the Free Software Foundation\ndnl gives unlimited permission to copy and/or distribute it,\ndnl with or without modifications, as long as this notice is preserved.\n\ndnl Prerequisites of lib/backupfile.c.\nAC_DEFUN([gl_BACKUPFILE],\n[\n  AC_REQUIRE([gl_CHECK_TYPE_STRUCT_DIRENT_D_INO])\n  AC_REQUIRE([AC_SYS_LONG_FILE_NAMES])\n  AC_CHECK_FUNCS_ONCE([pathconf])\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

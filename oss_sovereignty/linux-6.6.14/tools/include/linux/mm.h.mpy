@@ -1,0 +1,9 @@
+{
+  "module_name": "mm.h",
+  "hash_id": "09d3717cf8ccd907030761fdce5054d48c12d0a4fb05d52f8db64d21ba856027",
+  "original_prompt": "Ingested from linux-6.6.14/tools/include/linux/mm.h",
+  "human_readable_source": " \n#ifndef _TOOLS_LINUX_MM_H\n#define _TOOLS_LINUX_MM_H\n\n#include <linux/mmzone.h>\n#include <uapi/linux/const.h>\n\n#define PAGE_SHIFT\t\t12\n#define PAGE_SIZE\t\t(_AC(1, UL) << PAGE_SHIFT)\n#define PAGE_MASK\t\t(~(PAGE_SIZE - 1))\n\n#define PHYS_ADDR_MAX\t(~(phys_addr_t)0)\n\n#define ALIGN(x, a)\t\t\t__ALIGN_KERNEL((x), (a))\n#define ALIGN_DOWN(x, a)\t\t__ALIGN_KERNEL((x) - ((a) - 1), (a))\n\n#define PAGE_ALIGN(addr) ALIGN(addr, PAGE_SIZE)\n\n#define __va(x) ((void *)((unsigned long)(x)))\n#define __pa(x) ((unsigned long)(x))\n\n#define pfn_to_page(pfn) ((void *)((pfn) * PAGE_SIZE))\n\n#define phys_to_virt phys_to_virt\nstatic inline void *phys_to_virt(unsigned long address)\n{\n\treturn __va(address);\n}\n\nvoid reserve_bootmem_region(phys_addr_t start, phys_addr_t end, int nid);\n\nstatic inline void totalram_pages_inc(void)\n{\n}\n\nstatic inline void totalram_pages_add(long count)\n{\n}\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

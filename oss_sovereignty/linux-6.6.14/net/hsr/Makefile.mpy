@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "e94637e16e5ed1fd0efbc638c898b117e27bb456f297c77b8b9d7411c5904bd1",
+  "original_prompt": "Ingested from linux-6.6.14/net/hsr/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Makefile for HSR\n#\n\nobj-$(CONFIG_HSR)\t+= hsr.o\n\nhsr-y\t\t\t:= hsr_main.o hsr_framereg.o hsr_device.o \\\n\t\t\t   hsr_netlink.o hsr_slave.o hsr_forward.o\nhsr-$(CONFIG_DEBUG_FS) += hsr_debugfs.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

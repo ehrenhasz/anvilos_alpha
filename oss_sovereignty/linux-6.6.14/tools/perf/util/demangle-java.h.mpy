@@ -1,0 +1,9 @@
+{
+  "module_name": "demangle-java.h",
+  "hash_id": "118a90bab37fa8dd5ce9ef7449c38fc4ca42878116272a72d419e57067f8324f",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/util/demangle-java.h",
+  "human_readable_source": " \n#ifndef __PERF_DEMANGLE_JAVA\n#define __PERF_DEMANGLE_JAVA 1\n \n#define JAVA_DEMANGLE_NORET\t0x1  \n\nchar * java_demangle_sym(const char *str, int flags);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

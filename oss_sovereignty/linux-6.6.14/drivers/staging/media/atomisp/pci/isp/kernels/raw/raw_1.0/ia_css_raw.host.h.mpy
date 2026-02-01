@@ -1,0 +1,9 @@
+{
+  "module_name": "ia_css_raw.host.h",
+  "hash_id": "c2e464198c30f1ba70948f453059ea2b6ba7eb35312a0427af82a3d33772591c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/isp/kernels/raw/raw_1.0/ia_css_raw.host.h",
+  "human_readable_source": " \n \n\n#ifndef __IA_CSS_RAW_HOST_H\n#define __IA_CSS_RAW_HOST_H\n\n#include \"ia_css_binary.h\"\n\n#include \"ia_css_raw_types.h\"\n#include \"ia_css_raw_param.h\"\n\nint ia_css_raw_config(struct sh_css_isp_raw_isp_config      *to,\n\t\t      const struct ia_css_raw_configuration *from,\n\t\t      unsigned int size);\n\nint ia_css_raw_configure(const struct sh_css_sp_pipeline *pipe,\n\t\t\t const struct ia_css_binary     *binary,\n\t\t\t const struct ia_css_frame_info *in_info,\n\t\t\t const struct ia_css_frame_info *internal_info,\n\t\t\t bool two_ppc,\n\t\t\t bool deinterleaved);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "vmlinux.c",
+  "hash_id": "6a5f43decd236ec3fcbbb3e1042609d1410e60dc8ef535f8996292a33f494e14",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/prog_tests/vmlinux.c",
+  "human_readable_source": "\n \n\n#include <test_progs.h>\n#include <time.h>\n#include \"test_vmlinux.skel.h\"\n\n#define MY_TV_NSEC 1337\n\nstatic void nsleep()\n{\n\tstruct timespec ts = { .tv_nsec = MY_TV_NSEC };\n\n\t(void)syscall(__NR_nanosleep, &ts, NULL);\n}\n\nvoid test_vmlinux(void)\n{\n\tint duration = 0, err;\n\tstruct test_vmlinux* skel;\n\tstruct test_vmlinux__bss *bss;\n\n\tskel = test_vmlinux__open_and_load();\n\tif (CHECK(!skel, \"skel_open\", \"failed to open skeleton\\n\"))\n\t\treturn;\n\tbss = skel->bss;\n\n\terr = test_vmlinux__attach(skel);\n\tif (CHECK(err, \"skel_attach\", \"skeleton attach failed: %d\\n\", err))\n\t\tgoto cleanup;\n\n\t \n\tnsleep();\n\n\tCHECK(!bss->tp_called, \"tp\", \"not called\\n\");\n\tCHECK(!bss->raw_tp_called, \"raw_tp\", \"not called\\n\");\n\tCHECK(!bss->tp_btf_called, \"tp_btf\", \"not called\\n\");\n\tCHECK(!bss->kprobe_called, \"kprobe\", \"not called\\n\");\n\tCHECK(!bss->fentry_called, \"fentry\", \"not called\\n\");\n\ncleanup:\n\ttest_vmlinux__destroy(skel);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

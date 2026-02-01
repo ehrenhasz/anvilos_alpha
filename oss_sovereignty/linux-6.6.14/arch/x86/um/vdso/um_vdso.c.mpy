@@ -1,0 +1,9 @@
+{
+  "module_name": "um_vdso.c",
+  "hash_id": "abce21f6f6929497fc357d143a03cf993acffc712b1722cb71da20f4c989aa75",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/um/vdso/um_vdso.c",
+  "human_readable_source": "\n \n\n\n \n#define DISABLE_BRANCH_PROFILING\n\n#include <linux/time.h>\n#include <linux/getcpu.h>\n#include <asm/unistd.h>\n\nint __vdso_clock_gettime(clockid_t clock, struct __kernel_old_timespec *ts)\n{\n\tlong ret;\n\n\tasm(\"syscall\"\n\t\t: \"=a\" (ret)\n\t\t: \"0\" (__NR_clock_gettime), \"D\" (clock), \"S\" (ts)\n\t\t: \"rcx\", \"r11\", \"memory\");\n\n\treturn ret;\n}\nint clock_gettime(clockid_t, struct __kernel_old_timespec *)\n\t__attribute__((weak, alias(\"__vdso_clock_gettime\")));\n\nint __vdso_gettimeofday(struct __kernel_old_timeval *tv, struct timezone *tz)\n{\n\tlong ret;\n\n\tasm(\"syscall\"\n\t\t: \"=a\" (ret)\n\t\t: \"0\" (__NR_gettimeofday), \"D\" (tv), \"S\" (tz)\n\t\t: \"rcx\", \"r11\", \"memory\");\n\n\treturn ret;\n}\nint gettimeofday(struct __kernel_old_timeval *, struct timezone *)\n\t__attribute__((weak, alias(\"__vdso_gettimeofday\")));\n\n__kernel_old_time_t __vdso_time(__kernel_old_time_t *t)\n{\n\tlong secs;\n\n\tasm volatile(\"syscall\"\n\t\t: \"=a\" (secs)\n\t\t: \"0\" (__NR_time), \"D\" (t) : \"cc\", \"r11\", \"cx\", \"memory\");\n\n\treturn secs;\n}\n__kernel_old_time_t time(__kernel_old_time_t *t) __attribute__((weak, alias(\"__vdso_time\")));\n\nlong\n__vdso_getcpu(unsigned *cpu, unsigned *node, struct getcpu_cache *unused)\n{\n\t \n\n\tif (cpu)\n\t\t*cpu = 0;\n\tif (node)\n\t\t*node = 0;\n\n\treturn 0;\n}\n\nlong getcpu(unsigned *cpu, unsigned *node, struct getcpu_cache *tcache)\n\t__attribute__((weak, alias(\"__vdso_getcpu\")));\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

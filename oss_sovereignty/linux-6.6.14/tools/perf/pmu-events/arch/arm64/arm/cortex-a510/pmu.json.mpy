@@ -1,0 +1,9 @@
+{
+  "module_name": "pmu.json",
+  "hash_id": "1c4ee574e18efebfeb33cd557731fbcee8a2b782bf66389eecb9f9d1b83836d2",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/pmu-events/arch/arm64/arm/cortex-a510/pmu.json",
+  "human_readable_source": "[\n    {\n        \"ArchStdEvent\": \"PMU_OVFS\"\n    },\n    {\n        \"ArchStdEvent\": \"PMU_HOVFS\"\n    }\n]\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

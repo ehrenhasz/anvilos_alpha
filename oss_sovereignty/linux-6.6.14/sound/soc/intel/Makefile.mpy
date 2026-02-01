@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "62b0e80a2623d28894cceda254399cd039cb34c55fb271da522dc3ee43f3d1e0",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/intel/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n# Core support\nobj-$(CONFIG_SND_SOC) += common/\n\n# Platform Support\nobj-$(CONFIG_SND_SST_ATOM_HIFI2_PLATFORM) += atom/\nobj-$(CONFIG_SND_SOC_INTEL_CATPT) += catpt/\nobj-$(CONFIG_SND_SOC_INTEL_SKYLAKE_COMMON) += skylake/\nobj-$(CONFIG_SND_SOC_INTEL_KEEMBAY) += keembay/\nobj-$(CONFIG_SND_SOC_INTEL_AVS) += avs/\n\n# Machine support\nobj-$(CONFIG_SND_SOC) += boards/\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

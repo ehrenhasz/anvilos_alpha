@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "c75826e2c2418f32c9fdf2f118e43970dd1a4390a421aef2ced7f53f5909388d",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/mount/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n# Makefile for mount selftests.\nCFLAGS = -Wall \\\n         -O2\n\nTEST_PROGS := run_unprivileged_remount.sh run_nosymfollow.sh\nTEST_GEN_FILES := unprivileged-remount-test nosymfollow-test\n\ninclude ../lib.mk\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

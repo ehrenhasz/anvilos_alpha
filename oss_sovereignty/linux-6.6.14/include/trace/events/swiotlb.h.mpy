@@ -1,0 +1,9 @@
+{
+  "module_name": "swiotlb.h",
+  "hash_id": "db698f91bad5e7ca0f4625c58cf42ceaf45b99908bcbc2d0c169d714fdc1f31c",
+  "original_prompt": "Ingested from linux-6.6.14/include/trace/events/swiotlb.h",
+  "human_readable_source": " \n#undef TRACE_SYSTEM\n#define TRACE_SYSTEM swiotlb\n\n#if !defined(_TRACE_SWIOTLB_H) || defined(TRACE_HEADER_MULTI_READ)\n#define _TRACE_SWIOTLB_H\n\n#include <linux/tracepoint.h>\n\nTRACE_EVENT(swiotlb_bounced,\n\tTP_PROTO(struct device *dev, dma_addr_t dev_addr, size_t size),\n\tTP_ARGS(dev, dev_addr, size),\n\n\tTP_STRUCT__entry(\n\t\t__string(dev_name, dev_name(dev))\n\t\t__field(u64, dma_mask)\n\t\t__field(dma_addr_t, dev_addr)\n\t\t__field(size_t, size)\n\t\t__field(bool, force)\n\t),\n\n\tTP_fast_assign(\n\t\t__assign_str(dev_name, dev_name(dev));\n\t\t__entry->dma_mask = (dev->dma_mask ? *dev->dma_mask : 0);\n\t\t__entry->dev_addr = dev_addr;\n\t\t__entry->size = size;\n\t\t__entry->force = is_swiotlb_force_bounce(dev);\n\t),\n\n\tTP_printk(\"dev_name: %s dma_mask=%llx dev_addr=%llx size=%zu %s\",\n\t\t__get_str(dev_name),\n\t\t__entry->dma_mask,\n\t\t(unsigned long long)__entry->dev_addr,\n\t\t__entry->size,\n\t\t__entry->force ? \"FORCE\" : \"NORMAL\")\n);\n\n#endif  \n\n \n#include <trace/define_trace.h>\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "dc_sink.c",
+  "hash_id": "6ebb592e38392a55fdf2dd3c23590ecc8f595308d228eae917a24afb48c2c138",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/dc/core/dc_sink.c",
+  "human_readable_source": " \n\n#include \"dm_services.h\"\n#include \"dm_helpers.h\"\n#include \"core_types.h\"\n\n \n\nstatic bool dc_sink_construct(struct dc_sink *sink, const struct dc_sink_init_data *init_params)\n{\n\n\tstruct dc_link *link = init_params->link;\n\n\tif (!link)\n\t\treturn false;\n\n\tsink->sink_signal = init_params->sink_signal;\n\tsink->link = link;\n\tsink->ctx = link->ctx;\n\tsink->dongle_max_pix_clk = init_params->dongle_max_pix_clk;\n\tsink->converter_disable_audio = init_params->converter_disable_audio;\n\tsink->dc_container_id = NULL;\n\tsink->sink_id = init_params->link->ctx->dc_sink_id_count;\n\t\n\t\n\tinit_params->link->ctx->dc_sink_id_count++;\n\n\treturn true;\n}\n\n \n\nvoid dc_sink_retain(struct dc_sink *sink)\n{\n\tkref_get(&sink->refcount);\n}\n\nstatic void dc_sink_free(struct kref *kref)\n{\n\tstruct dc_sink *sink = container_of(kref, struct dc_sink, refcount);\n\tkfree(sink->dc_container_id);\n\tkfree(sink);\n}\n\nvoid dc_sink_release(struct dc_sink *sink)\n{\n\tkref_put(&sink->refcount, dc_sink_free);\n}\n\nstruct dc_sink *dc_sink_create(const struct dc_sink_init_data *init_params)\n{\n\tstruct dc_sink *sink = kzalloc(sizeof(*sink), GFP_KERNEL);\n\n\tif (NULL == sink)\n\t\tgoto alloc_fail;\n\n\tif (false == dc_sink_construct(sink, init_params))\n\t\tgoto construct_fail;\n\n\tkref_init(&sink->refcount);\n\n\treturn sink;\n\nconstruct_fail:\n\tkfree(sink);\n\nalloc_fail:\n\treturn NULL;\n}\n\n \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

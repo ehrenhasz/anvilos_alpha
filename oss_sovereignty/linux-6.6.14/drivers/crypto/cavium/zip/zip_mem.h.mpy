@@ -1,0 +1,9 @@
+{
+  "module_name": "zip_mem.h",
+  "hash_id": "c580980cd9f7e79ce20fefa85d471b2183623445b8451b27ee7d5ccf10a14a23",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/crypto/cavium/zip/zip_mem.h",
+  "human_readable_source": " \n\n#ifndef __ZIP_MEM_H__\n#define __ZIP_MEM_H__\n\n \nvoid zip_cmd_qbuf_free(struct zip_device *zip, int q);\n\n \nint zip_cmd_qbuf_alloc(struct zip_device *zip, int q);\n\n \nu8 *zip_data_buf_alloc(u64 size);\n\n \nvoid zip_data_buf_free(u8 *ptr, u64 size);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "aaf71a7822f152db523f9544a1e37e5696ed930012d27b6786145c879bce74c4",
+  "original_prompt": "Ingested from linux-6.6.14/tools/net/ynl/lib/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n\nCC=gcc\nCFLAGS=-std=gnu11 -O2 -W -Wall -Wextra -Wno-unused-parameter -Wshadow\nifeq (\"$(DEBUG)\",\"1\")\n  CFLAGS += -g -fsanitize=address -fsanitize=leak -static-libasan\nendif\n\nSRCS=$(wildcard *.c)\nOBJS=$(patsubst %.c,%.o,${SRCS})\n\ninclude $(wildcard *.d)\n\nall: ynl.a\n\nynl.a: $(OBJS)\n\tar rcs $@ $(OBJS)\nclean:\n\trm -f *.o *.d *~\n\nhardclean: clean\n\trm -f *.a\n\n%.o: %.c\n\t$(COMPILE.c) -MMD -c -o $@ $<\n\n.PHONY: all clean\n.DEFAULT_GOAL=all\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

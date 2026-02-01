@@ -1,0 +1,9 @@
+{
+  "module_name": "xonar_dg.h",
+  "hash_id": "aa87693c3f8c4f581baaeada371126a6a61462ab86319a5bc9c9ea26b82012db",
+  "original_prompt": "Ingested from linux-6.6.14/sound/pci/oxygen/xonar_dg.h",
+  "human_readable_source": " \n#ifndef XONAR_DG_H_INCLUDED\n#define XONAR_DG_H_INCLUDED\n\n#include \"oxygen.h\"\n\n#define GPIO_MAGIC\t\t0x0008\n#define GPIO_HP_DETECT\t\t0x0010\n#define GPIO_INPUT_ROUTE\t0x0060\n#define GPIO_HP_REAR\t\t0x0080\n#define GPIO_OUTPUT_ENABLE\t0x0100\n\n#define CAPTURE_SRC_MIC\t\t0\n#define CAPTURE_SRC_FP_MIC\t1\n#define CAPTURE_SRC_LINE\t2\n#define CAPTURE_SRC_AUX\t\t3\n\n#define PLAYBACK_DST_HP\t\t0\n#define PLAYBACK_DST_HP_FP\t1\n#define PLAYBACK_DST_MULTICH\t2\n\nenum cs4245_shadow_operation {\n\tCS4245_SAVE_TO_SHADOW,\n\tCS4245_LOAD_FROM_SHADOW\n};\n\nstruct dg {\n\t \n\tunsigned char cs4245_shadow[17];\n\t \n\tunsigned char output_sel;\n\t \n\tchar input_vol[4][2];\n\t \n\tunsigned char input_sel;\n};\n\n \nint cs4245_write_spi(struct oxygen *chip, u8 reg);\nint cs4245_read_spi(struct oxygen *chip, u8 reg);\nint cs4245_shadow_control(struct oxygen *chip, enum cs4245_shadow_operation op);\nvoid dg_init(struct oxygen *chip);\nvoid set_cs4245_dac_params(struct oxygen *chip,\n\t\t\t\t  struct snd_pcm_hw_params *params);\nvoid set_cs4245_adc_params(struct oxygen *chip,\n\t\t\t\t  struct snd_pcm_hw_params *params);\nunsigned int adjust_dg_dac_routing(struct oxygen *chip,\n\t\t\t\t\t  unsigned int play_routing);\nvoid dump_cs4245_registers(struct oxygen *chip,\n\t\t\t\tstruct snd_info_buffer *buffer);\nvoid dg_suspend(struct oxygen *chip);\nvoid dg_resume(struct oxygen *chip);\nvoid dg_cleanup(struct oxygen *chip);\n\nextern const struct oxygen_model model_xonar_dg;\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

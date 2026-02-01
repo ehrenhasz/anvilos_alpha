@@ -1,0 +1,9 @@
+{
+  "module_name": "libata-transport.h",
+  "hash_id": "01e77ddee0df4c06ba8c9ef1a67721a3e2236b2082e54503f2b84479a99c5ae9",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/ata/libata-transport.h",
+  "human_readable_source": " \n#ifndef _LIBATA_TRANSPORT_H\n#define _LIBATA_TRANSPORT_H\n\n\nextern struct scsi_transport_template *ata_scsi_transport_template;\n\nint ata_tlink_add(struct ata_link *link);\nvoid ata_tlink_delete(struct ata_link *link);\n\nint ata_tport_add(struct device *parent, struct ata_port *ap);\nvoid ata_tport_delete(struct ata_port *ap);\n\nstruct scsi_transport_template *ata_attach_transport(void);\nvoid ata_release_transport(struct scsi_transport_template *t);\n\n__init int libata_transport_init(void);\nvoid __exit libata_transport_exit(void);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

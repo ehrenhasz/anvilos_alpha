@@ -1,0 +1,9 @@
+{
+  "module_name": "test-cpy.h",
+  "hash_id": "a2928fdf2b1a468b435e5e86de196815e4f90867885f134e8e3219ecbb642ff9",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/unistr/test-cpy.h",
+  "human_readable_source": " \n\nint\nmain ()\n{\n   \n  {\n    static const UNIT src[] = { 'c', 'l', 'i', 'm', 'a', 't', 'e' };\n    size_t n;\n\n    for (n = 0; n <= SIZEOF (src); n++)\n      {\n        UNIT dest[1 + SIZEOF (src) + 1] =\n          { MAGIC, MAGIC, MAGIC, MAGIC, MAGIC, MAGIC, MAGIC, MAGIC, MAGIC };\n        UNIT *ret;\n        size_t i;\n\n        ret = U_CPY (dest + 1, src, n);\n        ASSERT (ret == dest + 1);\n        ASSERT (dest[0] == MAGIC);\n        for (i = 0; i < n; i++)\n          ASSERT (dest[1 + i] == src[i]);\n        ASSERT (dest[1 + n] == MAGIC);\n      }\n  }\n\n  return 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

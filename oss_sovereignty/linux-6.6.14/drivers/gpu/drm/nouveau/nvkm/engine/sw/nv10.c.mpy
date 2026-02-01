@@ -1,0 +1,9 @@
+{
+  "module_name": "nv10.c",
+  "hash_id": "d8bc4e62e285cc609cdcd0fdc4b392385973444967a8d0bbc4e6115e7d1aafb4",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/engine/sw/nv10.c",
+  "human_readable_source": " \n#include \"priv.h\"\n#include \"chan.h\"\n#include \"nvsw.h\"\n\n#include <nvif/class.h>\n\n \n\nstatic const struct nvkm_sw_chan_func\nnv10_sw_chan = {\n};\n\nstatic int\nnv10_sw_chan_new(struct nvkm_sw *sw, struct nvkm_chan *fifo,\n\t\t const struct nvkm_oclass *oclass, struct nvkm_object **pobject)\n{\n\tstruct nvkm_sw_chan *chan;\n\n\tif (!(chan = kzalloc(sizeof(*chan), GFP_KERNEL)))\n\t\treturn -ENOMEM;\n\t*pobject = &chan->object;\n\n\treturn nvkm_sw_chan_ctor(&nv10_sw_chan, sw, fifo, oclass, chan);\n}\n\n \n\nstatic const struct nvkm_sw_func\nnv10_sw = {\n\t.chan_new = nv10_sw_chan_new,\n\t.sclass = {\n\t\t{ nvkm_nvsw_new, { -1, -1, NVIF_CLASS_SW_NV10 } },\n\t\t{}\n\t}\n};\n\nint\nnv10_sw_new(struct nvkm_device *device, enum nvkm_subdev_type type, int inst, struct nvkm_sw **psw)\n{\n\treturn nvkm_sw_new_(&nv10_sw, device, type, inst, psw);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "pxa-clock.h",
+  "hash_id": "7e82f22fff40d1473ed149965f52592ccac636af025e9711a8c1f7f410cc1e05",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/clock/pxa-clock.h",
+  "human_readable_source": " \n \n\n#ifndef __DT_BINDINGS_CLOCK_PXA2XX_H__\n#define __DT_BINDINGS_CLOCK_PXA2XX_H__\n\n#define CLK_NONE 0\n#define CLK_1WIRE 1\n#define CLK_AC97 2\n#define CLK_AC97CONF 3\n#define CLK_ASSP 4\n#define CLK_BOOT 5\n#define CLK_BTUART 6\n#define CLK_CAMERA 7\n#define CLK_CIR 8\n#define CLK_CORE 9\n#define CLK_DMC 10\n#define CLK_FFUART 11\n#define CLK_FICP 12\n#define CLK_GPIO 13\n#define CLK_HSIO2 14\n#define CLK_HWUART 15\n#define CLK_I2C 16\n#define CLK_I2S 17\n#define CLK_IM 18\n#define CLK_INC 19\n#define CLK_ISC 20\n#define CLK_KEYPAD 21\n#define CLK_LCD 22\n#define CLK_MEMC 23\n#define CLK_MEMSTK 24\n#define CLK_MINI_IM 25\n#define CLK_MINI_LCD 26\n#define CLK_MMC 27\n#define CLK_MMC1 28\n#define CLK_MMC2 29\n#define CLK_MMC3 30\n#define CLK_MSL 31\n#define CLK_MSL0 32\n#define CLK_MVED 33\n#define CLK_NAND 34\n#define CLK_NSSP 35\n#define CLK_OSTIMER 36\n#define CLK_PWM0 37\n#define CLK_PWM1 38\n#define CLK_PWM2 39\n#define CLK_PWM3 40\n#define CLK_PWRI2C 41\n#define CLK_PXA300_GCU 42\n#define CLK_PXA320_GCU 43\n#define CLK_SMC 44\n#define CLK_SSP 45\n#define CLK_SSP1 46\n#define CLK_SSP2 47\n#define CLK_SSP3 48\n#define CLK_SSP4 49\n#define CLK_STUART 50\n#define CLK_TOUCH 51\n#define CLK_TPM 52\n#define CLK_UDC 53\n#define CLK_USB 54\n#define CLK_USB2 55\n#define CLK_USBH 56\n#define CLK_USBHOST 57\n#define CLK_USIM 58\n#define CLK_USIM1 59\n#define CLK_USMI0 60\n#define CLK_OSC32k768 61\n#define CLK_MAX 62\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

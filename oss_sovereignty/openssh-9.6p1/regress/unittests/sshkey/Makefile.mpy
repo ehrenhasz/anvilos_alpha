@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "48c1513c076edba2be576b2ec7008171d56562aaaab44ef8d09cb91da283d1a0",
+  "original_prompt": "Ingested from openssh-9.6p1/regress/unittests/sshkey/Makefile",
+  "human_readable_source": "#\t$OpenBSD: Makefile,v 1.12 2023/01/15 23:35:10 djm Exp $\n\nPROG=test_sshkey\nSRCS=tests.c test_sshkey.c test_file.c test_fuzz.c common.c\n\n# From usr.bin/ssh\nSRCS+=sshbuf-getput-basic.c sshbuf-getput-crypto.c sshbuf-misc.c sshbuf.c\nSRCS+=sshbuf-io.c atomicio.c sshkey.c authfile.c cipher.c log.c ssh-rsa.c\nSRCS+=ssh-dss.c ssh-ecdsa.c ssh-ed25519.c mac.c umac.c umac128.c hmac.c misc.c\nSRCS+=ssherr.c uidswap.c cleanup.c xmalloc.c match.c krl.c fatal.c\nSRCS+=addr.c addrmatch.c bitmap.c\nSRCS+=ed25519.c hash.c\nSRCS+=cipher-chachapoly.c chacha.c poly1305.c ssh-ecdsa-sk.c ssh-sk.c\nSRCS+=ssh-ed25519-sk.c sk-usbhid.c\n\nSRCS+=digest-openssl.c\n#SRCS+=digest-libc.c\nSRCS+=utf8.c\n\nREGRESS_TARGETS=run-regress-${PROG}\n\nrun-regress-${PROG}: ${PROG}\n\tenv ${TEST_ENV} ./${PROG} ${UNITTEST_ARGS} -d ${.CURDIR}/testdata\n\n.include <bsd.regress.mk>\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

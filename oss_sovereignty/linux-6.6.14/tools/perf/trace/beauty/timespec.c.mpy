@@ -1,0 +1,9 @@
+{
+  "module_name": "timespec.c",
+  "hash_id": "816c015a1548775611f6ef8de2688e2ed6f2eff4e8866f7514495a48af1fef3b",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/trace/beauty/timespec.c",
+  "human_readable_source": "\n\n\n#include \"trace/beauty/beauty.h\"\n#include <inttypes.h>\n#include <time.h>\n\nstatic size_t syscall_arg__scnprintf_augmented_timespec(struct syscall_arg *arg, char *bf, size_t size)\n{\n\tstruct timespec *ts = (struct timespec *)arg->augmented.args;\n\n\treturn scnprintf(bf, size, \"{ .tv_sec: %\" PRIu64 \", .tv_nsec: %\" PRIu64 \" }\", ts->tv_sec, ts->tv_nsec);\n}\n\nsize_t syscall_arg__scnprintf_timespec(char *bf, size_t size, struct syscall_arg *arg)\n{\n\tif (arg->augmented.args)\n\t\treturn syscall_arg__scnprintf_augmented_timespec(arg, bf, size);\n\n\treturn scnprintf(bf, size, \"%#lx\", arg->val);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

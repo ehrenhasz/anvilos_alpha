@@ -1,0 +1,9 @@
+{
+  "module_name": "byteorder.h",
+  "hash_id": "41b2f9f08f6f0ae6d1155acafdaf78adf8e208cd824a9e32776b88b81782e0c8",
+  "original_prompt": "Ingested from zfs-2.2.2/include/os/linux/spl/sys/byteorder.h",
+  "human_readable_source": " \n\n#ifndef _SPL_BYTEORDER_H\n#define\t_SPL_BYTEORDER_H\n\n#include <asm/byteorder.h>\n\n#if defined(__BIG_ENDIAN) && !defined(_ZFS_BIG_ENDIAN)\n#define\t_ZFS_BIG_ENDIAN\n#endif\n\n#if defined(__LITTLE_ENDIAN) && !defined(_ZFS_LITTLE_ENDIAN)\n#define\t_ZFS_LITTLE_ENDIAN\n#endif\n\n#include <sys/isa_defs.h>\n\n#ifdef __COVERITY__\n \n\n#define\tBSWAP_8(x)\t((x) & 0xff)\n#define\tBSWAP_16(x)\t((x) & 0xffff)\n#define\tBSWAP_32(x)\t((x) & 0xffffffff)\n#define\tBSWAP_64(x)\t(x)\n\n#else  \n\n#define\tBSWAP_8(x)\t((x) & 0xff)\n#define\tBSWAP_16(x)\t((BSWAP_8(x) << 8) | BSWAP_8((x) >> 8))\n#define\tBSWAP_32(x)\t((BSWAP_16(x) << 16) | BSWAP_16((x) >> 16))\n#define\tBSWAP_64(x)\t((BSWAP_32(x) << 32) | BSWAP_32((x) >> 32))\n\n#endif  \n\n#define\tLE_16(x)\tcpu_to_le16(x)\n#define\tLE_32(x)\tcpu_to_le32(x)\n#define\tLE_64(x)\tcpu_to_le64(x)\n#define\tBE_16(x)\tcpu_to_be16(x)\n#define\tBE_32(x)\tcpu_to_be32(x)\n#define\tBE_64(x)\tcpu_to_be64(x)\n\n#define\tBE_IN8(xa) \\\n\t*((uint8_t *)(xa))\n\n#define\tBE_IN16(xa) \\\n\t(((uint16_t)BE_IN8(xa) << 8) | BE_IN8((uint8_t *)(xa)+1))\n\n#define\tBE_IN32(xa) \\\n\t(((uint32_t)BE_IN16(xa) << 16) | BE_IN16((uint8_t *)(xa)+2))\n\n#ifdef _ZFS_BIG_ENDIAN\nstatic __inline__ uint64_t\nhtonll(uint64_t n)\n{\n\treturn (n);\n}\n\nstatic __inline__ uint64_t\nntohll(uint64_t n)\n{\n\treturn (n);\n}\n#else\nstatic __inline__ uint64_t\nhtonll(uint64_t n)\n{\n\treturn ((((uint64_t)htonl(n)) << 32) + htonl(n >> 32));\n}\n\nstatic __inline__ uint64_t\nntohll(uint64_t n)\n{\n\treturn ((((uint64_t)ntohl(n)) << 32) + ntohl(n >> 32));\n}\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

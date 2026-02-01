@@ -1,0 +1,9 @@
+{
+  "module_name": "nv10.h",
+  "hash_id": "b59c4e3872cea8f25918efbf42102a943b3aa41f7e3ec2b5d3cf1dcd2147bc5c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/engine/gr/nv10.h",
+  "human_readable_source": " \n#ifndef __NV10_GR_H__\n#define __NV10_GR_H__\n#include \"priv.h\"\n\nint nv10_gr_new_(const struct nvkm_gr_func *, struct nvkm_device *, enum nvkm_subdev_type, int,\n\t\t struct nvkm_gr **);\nint nv10_gr_init(struct nvkm_gr *);\nvoid nv10_gr_intr(struct nvkm_gr *);\nvoid nv10_gr_tile(struct nvkm_gr *, int, struct nvkm_fb_tile *);\n\nint nv10_gr_chan_new(struct nvkm_gr *, struct nvkm_chan *,\n\t\t     const struct nvkm_oclass *, struct nvkm_object **);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

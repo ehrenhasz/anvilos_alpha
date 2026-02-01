@@ -1,0 +1,9 @@
+{
+  "module_name": "ia_css_gc2_types.h",
+  "hash_id": "2924c570113a72076bff3fb9a19c0e00e7ce25ea47aaf323906c62a05771b8cb",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/isp/kernels/gc/gc_2/ia_css_gc2_types.h",
+  "human_readable_source": " \n \n\n#ifndef __IA_CSS_GC2_TYPES_H\n#define __IA_CSS_GC2_TYPES_H\n\n#include \"isp/kernels/ctc/ctc_1.0/ia_css_ctc_types.h\"   \n\n \n\n \n\n \n#define IA_CSS_VAMEM_1_RGB_GAMMA_TABLE_SIZE_LOG2 8\n#define IA_CSS_VAMEM_1_RGB_GAMMA_TABLE_SIZE      BIT(IA_CSS_VAMEM_1_RGB_GAMMA_TABLE_SIZE_LOG2)\n\n \n#define IA_CSS_VAMEM_2_RGB_GAMMA_TABLE_SIZE_LOG2    8\n#define IA_CSS_VAMEM_2_RGB_GAMMA_TABLE_SIZE     ((1U << IA_CSS_VAMEM_2_RGB_GAMMA_TABLE_SIZE_LOG2) + 1)\n\n \nunion ia_css_rgb_gamma_data {\n\tu16 vamem_1[IA_CSS_VAMEM_1_RGB_GAMMA_TABLE_SIZE];\n\t \n\tu16 vamem_2[IA_CSS_VAMEM_2_RGB_GAMMA_TABLE_SIZE];\n\t \n};\n\nstruct ia_css_rgb_gamma_table {\n\tenum ia_css_vamem_type vamem_type;\n\tunion ia_css_rgb_gamma_data data;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

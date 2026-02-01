@@ -1,0 +1,9 @@
+{
+  "module_name": "atmppp.h",
+  "hash_id": "7b6d3b0d43ec7d85a7db6ac20cec99fdd94ac21fdc64f9186c981c9446e4a38a",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/atmppp.h",
+  "human_readable_source": " \n \n\n \n\n#ifndef _LINUX_ATMPPP_H\n#define _LINUX_ATMPPP_H\n\n#include <linux/atm.h>\n\n#define PPPOATM_ENCAPS_AUTODETECT\t(0)\n#define PPPOATM_ENCAPS_VC\t\t(1)\n#define PPPOATM_ENCAPS_LLC\t\t(2)\n\n \nstruct atm_backend_ppp {\n\tatm_backend_t\tbackend_num;\t \n\tint\t\tencaps;\t\t \n};\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

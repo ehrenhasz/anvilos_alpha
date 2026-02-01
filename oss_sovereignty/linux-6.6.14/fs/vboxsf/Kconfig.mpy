@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "cedd3b51e344d4fe1a2cc3a4dae3a0a51f7490e7081ba3385a54f978e89229e8",
+  "original_prompt": "Ingested from linux-6.6.14/fs/vboxsf/Kconfig",
+  "human_readable_source": "config VBOXSF_FS\n\ttristate \"VirtualBox guest shared folder (vboxsf) support\"\n\tdepends on X86 && VBOXGUEST\n\tselect NLS\n\thelp\n\t  VirtualBox hosts can share folders with guests, this driver\n\t  implements the Linux-guest side of this allowing folders exported\n\t  by the host to be mounted under Linux.\n\n\t  If you want to use shared folders in VirtualBox guests, answer Y or M.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

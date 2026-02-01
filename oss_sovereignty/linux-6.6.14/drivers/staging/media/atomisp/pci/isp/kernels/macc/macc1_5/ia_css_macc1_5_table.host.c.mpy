@@ -1,0 +1,9 @@
+{
+  "module_name": "ia_css_macc1_5_table.host.c",
+  "hash_id": "f2c6e83c7fc88fb3a8379cf8f6c5c972977e643456bfec82a8ad0de7e5cb8513",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/isp/kernels/macc/macc1_5/ia_css_macc1_5_table.host.c",
+  "human_readable_source": "\n \n\n#include \"system_global.h\"\n#include \"ia_css_types.h\"\n#include \"ia_css_macc1_5_table.host.h\"\n\n \nconst struct ia_css_macc1_5_table default_macc1_5_table = {\n\t{\n\t\t4096, 0, 0, 4096, 4096, 0, 0, 4096,\n\t\t4096, 0, 0, 4096, 4096, 0, 0, 4096,\n\t\t4096, 0, 0, 4096, 4096, 0, 0, 4096,\n\t\t4096, 0, 0, 4096, 4096, 0, 0, 4096,\n\t\t4096, 0, 0, 4096, 4096, 0, 0, 4096,\n\t\t4096, 0, 0, 4096, 4096, 0, 0, 4096,\n\t\t4096, 0, 0, 4096, 4096, 0, 0, 4096,\n\t\t4096, 0, 0, 4096, 4096, 0, 0, 4096\n\t}\n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

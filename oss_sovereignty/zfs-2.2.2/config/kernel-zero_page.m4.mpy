@@ -1,0 +1,9 @@
+{
+  "module_name": "kernel-zero_page.m4",
+  "hash_id": "9f13e484085760f53ea0d567c058b924beef024fc2033b09b9c755599b537e01",
+  "original_prompt": "Ingested from zfs-2.2.2/config/kernel-zero_page.m4",
+  "human_readable_source": "dnl #\ndnl # ZERO_PAGE() is an alias for emtpy_zero_page. On certain architectures\ndnl # this is a GPL exported variable.\ndnl #\n\ndnl #\ndnl # Checking if ZERO_PAGE is exported GPL-only\ndnl #\nAC_DEFUN([ZFS_AC_KERNEL_SRC_ZERO_PAGE], [\n\tZFS_LINUX_TEST_SRC([zero_page], [\n\t\t#include <asm/pgtable.h>\n\t], [\n\t\tstruct page *p __attribute__ ((unused));\n\t\tp = ZERO_PAGE(0);\n\t], [], [ZFS_META_LICENSE])\n])\n\nAC_DEFUN([ZFS_AC_KERNEL_ZERO_PAGE], [\n\tAC_MSG_CHECKING([whether ZERO_PAGE() is GPL-only])\n\tZFS_LINUX_TEST_RESULT([zero_page_license], [\n\t\tAC_MSG_RESULT(no)\n\t], [\n\t\tAC_MSG_RESULT(yes)\n\t\tAC_DEFINE(HAVE_ZERO_PAGE_GPL_ONLY, 1,\n\t\t    [ZERO_PAGE() is GPL-only])\n\t])\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "tui.h",
+  "hash_id": "bd04c1e7d6b4da79188e243af5bd4e6d95421e094e65a18c46a647f78538920b",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/ui/tui/tui.h",
+  "human_readable_source": " \n#ifndef _PERF_TUI_H_\n#define _PERF_TUI_H_ 1\n\nvoid tui_progress__init(void);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

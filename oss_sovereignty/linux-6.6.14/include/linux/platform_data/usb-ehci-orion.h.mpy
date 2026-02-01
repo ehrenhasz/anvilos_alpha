@@ -1,0 +1,9 @@
+{
+  "module_name": "usb-ehci-orion.h",
+  "hash_id": "d21a27947bb2bea344daa0b6a8f41d97fcbe1aa6fbb07b19cb9963f1207de4f2",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/platform_data/usb-ehci-orion.h",
+  "human_readable_source": " \n\n#ifndef __USB_EHCI_ORION_H\n#define __USB_EHCI_ORION_H\n\n#include <linux/mbus.h>\n\nenum orion_ehci_phy_ver {\n\tEHCI_PHY_ORION,\n\tEHCI_PHY_DD,\n\tEHCI_PHY_KW,\n\tEHCI_PHY_NA,\n};\n\nstruct orion_ehci_data {\n\tenum orion_ehci_phy_ver phy_version;\n};\n\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

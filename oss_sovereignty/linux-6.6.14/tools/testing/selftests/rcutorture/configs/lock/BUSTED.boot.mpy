@@ -1,0 +1,9 @@
+{
+  "module_name": "BUSTED.boot",
+  "hash_id": "3232f384f1b9150e7fc3d3b31c8bfc6627183f33c568245f8fb02fa8527c89d5",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/rcutorture/configs/lock/BUSTED.boot",
+  "human_readable_source": "locktorture.torture_type=lock_busted\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

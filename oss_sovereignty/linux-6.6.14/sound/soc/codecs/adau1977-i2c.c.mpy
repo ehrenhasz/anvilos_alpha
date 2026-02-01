@@ -1,0 +1,9 @@
+{
+  "module_name": "adau1977-i2c.c",
+  "hash_id": "360d38ac301be7fbbad464f55c234548857c8692c2da4bfdb4045123215e3746",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/codecs/adau1977-i2c.c",
+  "human_readable_source": "\n \n\n#include <linux/i2c.h>\n#include <linux/mod_devicetable.h>\n#include <linux/module.h>\n#include <linux/regmap.h>\n#include <sound/soc.h>\n\n#include \"adau1977.h\"\n\nstatic const struct i2c_device_id adau1977_i2c_ids[];\n\nstatic int adau1977_i2c_probe(struct i2c_client *client)\n{\n\tstruct regmap_config config;\n\tconst struct i2c_device_id *id = i2c_match_id(adau1977_i2c_ids, client);\n\n\tconfig = adau1977_regmap_config;\n\tconfig.val_bits = 8;\n\tconfig.reg_bits = 8;\n\n\treturn adau1977_probe(&client->dev,\n\t\tdevm_regmap_init_i2c(client, &config),\n\t\tid->driver_data, NULL);\n}\n\nstatic const struct i2c_device_id adau1977_i2c_ids[] = {\n\t{ \"adau1977\", ADAU1977 },\n\t{ \"adau1978\", ADAU1978 },\n\t{ \"adau1979\", ADAU1978 },\n\t{ }\n};\nMODULE_DEVICE_TABLE(i2c, adau1977_i2c_ids);\n\nstatic struct i2c_driver adau1977_i2c_driver = {\n\t.driver = {\n\t\t.name = \"adau1977\",\n\t},\n\t.probe = adau1977_i2c_probe,\n\t.id_table = adau1977_i2c_ids,\n};\nmodule_i2c_driver(adau1977_i2c_driver);\n\nMODULE_DESCRIPTION(\"ASoC ADAU1977/ADAU1978/ADAU1979 driver\");\nMODULE_AUTHOR(\"Lars-Peter Clausen <lars@metafoo.de>\");\nMODULE_LICENSE(\"GPL\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

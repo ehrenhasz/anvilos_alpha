@@ -1,0 +1,9 @@
+{
+  "module_name": "sof_sdw_hdmi.c",
+  "hash_id": "a5dd46da732e6c9e1397eab73f4c651b6bb8513ce34c8ad66b4ac24eb99be5cc",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/intel/boards/sof_sdw_hdmi.c",
+  "human_readable_source": "\n\n\n \n\n#include <linux/device.h>\n#include <linux/errno.h>\n#include <linux/kernel.h>\n#include <linux/list.h>\n#include <sound/soc.h>\n#include <sound/soc-acpi.h>\n#include <sound/jack.h>\n#include \"sof_sdw_common.h\"\n#include \"hda_dsp_common.h\"\n\nstruct hdmi_pcm {\n\tstruct list_head head;\n\tstruct snd_soc_dai *codec_dai;\n\tint device;\n};\n\nint sof_sdw_hdmi_init(struct snd_soc_pcm_runtime *rtd)\n{\n\tstruct mc_private *ctx = snd_soc_card_get_drvdata(rtd->card);\n\tstruct snd_soc_dai *dai = asoc_rtd_to_codec(rtd, 0);\n\tstruct hdmi_pcm *pcm;\n\n\tpcm = devm_kzalloc(rtd->card->dev, sizeof(*pcm), GFP_KERNEL);\n\tif (!pcm)\n\t\treturn -ENOMEM;\n\n\t \n\tpcm->device = rtd->dai_link->id;\n\tpcm->codec_dai = dai;\n\n\tlist_add_tail(&pcm->head, &ctx->hdmi_pcm_list);\n\n\treturn 0;\n}\n\n#define NAME_SIZE\t32\nint sof_sdw_hdmi_card_late_probe(struct snd_soc_card *card)\n{\n\tstruct mc_private *ctx = snd_soc_card_get_drvdata(card);\n\tstruct hdmi_pcm *pcm;\n\tstruct snd_soc_component *component = NULL;\n\n\tif (!ctx->idisp_codec)\n\t\treturn 0;\n\n\tif (list_empty(&ctx->hdmi_pcm_list))\n\t\treturn -EINVAL;\n\n\tpcm = list_first_entry(&ctx->hdmi_pcm_list, struct hdmi_pcm,\n\t\t\t       head);\n\tcomponent = pcm->codec_dai->component;\n\n\treturn hda_dsp_hdmi_build_controls(card, component);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

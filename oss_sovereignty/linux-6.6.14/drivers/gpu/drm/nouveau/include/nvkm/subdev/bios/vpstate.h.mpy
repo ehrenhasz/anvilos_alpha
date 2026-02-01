@@ -1,0 +1,9 @@
+{
+  "module_name": "vpstate.h",
+  "hash_id": "78262d36d28e33a37dff0c44feed2c16130b194b8fc976f3b0614091dbfb1f0a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/include/nvkm/subdev/bios/vpstate.h",
+  "human_readable_source": " \n#ifndef __NVBIOS_VPSTATE_H__\n#define __NVBIOS_VPSTATE_H__\nstruct nvbios_vpstate_header {\n\tu32 offset;\n\n\tu8 version;\n\tu8 hlen;\n\tu8 ecount;\n\tu8 elen;\n\tu8 scount;\n\tu8 slen;\n\n\tu8 base_id;\n\tu8 boost_id;\n\tu8 tdp_id;\n};\nstruct nvbios_vpstate_entry {\n\tu8  pstate;\n\tu16 clock_mhz;\n};\nint nvbios_vpstate_parse(struct nvkm_bios *, struct nvbios_vpstate_header *);\nint nvbios_vpstate_entry(struct nvkm_bios *, struct nvbios_vpstate_header *,\n\t\t\t u8 idx, struct nvbios_vpstate_entry *);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

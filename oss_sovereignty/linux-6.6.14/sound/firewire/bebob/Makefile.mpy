@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "ef85ab33566ccc58eeed9f1e4ee443422fbbf6add3295353fd7aa135a8dbeb42",
+  "original_prompt": "Ingested from linux-6.6.14/sound/firewire/bebob/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nsnd-bebob-objs := bebob_command.o bebob_stream.o bebob_proc.o bebob_midi.o \\\n\t\t  bebob_pcm.o bebob_hwdep.o bebob_terratec.o \\\n\t\t  bebob_yamaha_terratec.o bebob_focusrite.o bebob_maudio.o \\\n\t\t  bebob.o\nobj-$(CONFIG_SND_BEBOB) += snd-bebob.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

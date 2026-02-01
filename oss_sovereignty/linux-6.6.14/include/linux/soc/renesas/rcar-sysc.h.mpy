@@ -1,0 +1,9 @@
+{
+  "module_name": "rcar-sysc.h",
+  "hash_id": "9fbae73edacdec3df4367b3cbb5aec091a7caa24b9081460886463bd6c0ac5b5",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/soc/renesas/rcar-sysc.h",
+  "human_readable_source": " \n#ifndef __LINUX_SOC_RENESAS_RCAR_SYSC_H__\n#define __LINUX_SOC_RENESAS_RCAR_SYSC_H__\n\nint rcar_sysc_power_down_cpu(unsigned int cpu);\nint rcar_sysc_power_up_cpu(unsigned int cpu);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

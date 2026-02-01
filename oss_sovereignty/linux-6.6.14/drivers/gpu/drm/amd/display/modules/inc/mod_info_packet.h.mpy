@@ -1,0 +1,9 @@
+{
+  "module_name": "mod_info_packet.h",
+  "hash_id": "4b47e5cbd958e0b82f44cd3225a91bbeb4b559e30eec80c560899fb989fdf41a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/modules/inc/mod_info_packet.h",
+  "human_readable_source": " \n\n#ifndef MOD_INFO_PACKET_H_\n#define MOD_INFO_PACKET_H_\n\n#include \"dm_services.h\"\n#include \"mod_shared.h\"\n\nstruct dc_stream_state;\nstruct dc_info_packet;\nstruct mod_vrr_params;\n\nvoid mod_build_vsc_infopacket(const struct dc_stream_state *stream,\n\t\tstruct dc_info_packet *info_packet,\n\t\tenum dc_color_space cs,\n\t\tenum color_transfer_func tf);\n\nvoid mod_build_hf_vsif_infopacket(const struct dc_stream_state *stream,\n\t\tstruct dc_info_packet *info_packet);\n\nenum adaptive_sync_type {\n\tADAPTIVE_SYNC_TYPE_NONE                  = 0,\n\tADAPTIVE_SYNC_TYPE_DP                    = 1,\n\tFREESYNC_TYPE_PCON_IN_WHITELIST          = 2,\n\tFREESYNC_TYPE_PCON_NOT_IN_WHITELIST      = 3,\n\tADAPTIVE_SYNC_TYPE_EDP                   = 4,\n};\n\nenum adaptive_sync_sdp_version {\n\tAS_SDP_VER_0 = 0x0,\n\tAS_SDP_VER_1 = 0x1,\n\tAS_SDP_VER_2 = 0x2,\n};\n\n#define AS_DP_SDP_LENGTH (9)\n\nstruct frame_duration_op {\n\tbool          support;\n\tunsigned char frame_duration_hex;\n};\n\nstruct AS_Df_params {\n\tbool   supportMode;\n\tstruct frame_duration_op increase;\n\tstruct frame_duration_op decrease;\n};\n\nvoid mod_build_adaptive_sync_infopacket(const struct dc_stream_state *stream,\n\t\tenum adaptive_sync_type asType, const struct AS_Df_params *param,\n\t\tstruct dc_info_packet *info_packet);\n\nvoid mod_build_adaptive_sync_infopacket_v2(const struct dc_stream_state *stream,\n\t\tconst struct AS_Df_params *param, struct dc_info_packet *info_packet);\n\nvoid mod_build_adaptive_sync_infopacket_v1(struct dc_info_packet *info_packet);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "watchdog.h",
+  "hash_id": "8224bdaafb3517d77fa35c1e3b767867ed46a4717aedba411fe0ae5a41b4301e",
+  "original_prompt": "Ingested from linux-6.6.14/include/trace/events/watchdog.h",
+  "human_readable_source": " \n#undef TRACE_SYSTEM\n#define TRACE_SYSTEM watchdog\n\n#if !defined(_TRACE_WATCHDOG_H) || defined(TRACE_HEADER_MULTI_READ)\n#define _TRACE_WATCHDOG_H\n\n#include <linux/watchdog.h>\n#include <linux/tracepoint.h>\n\nDECLARE_EVENT_CLASS(watchdog_template,\n\n\tTP_PROTO(struct watchdog_device *wdd, int err),\n\n\tTP_ARGS(wdd, err),\n\n\tTP_STRUCT__entry(\n\t\t__field(int, id)\n\t\t__field(int, err)\n\t),\n\n\tTP_fast_assign(\n\t\t__entry->id = wdd->id;\n\t\t__entry->err = err;\n\t),\n\n\tTP_printk(\"watchdog%d err=%d\", __entry->id, __entry->err)\n);\n\nDEFINE_EVENT(watchdog_template, watchdog_start,\n\tTP_PROTO(struct watchdog_device *wdd, int err),\n\tTP_ARGS(wdd, err));\n\nDEFINE_EVENT(watchdog_template, watchdog_ping,\n\tTP_PROTO(struct watchdog_device *wdd, int err),\n\tTP_ARGS(wdd, err));\n\nDEFINE_EVENT(watchdog_template, watchdog_stop,\n\tTP_PROTO(struct watchdog_device *wdd, int err),\n\tTP_ARGS(wdd, err));\n\nTRACE_EVENT(watchdog_set_timeout,\n\n\tTP_PROTO(struct watchdog_device *wdd, unsigned int timeout, int err),\n\n\tTP_ARGS(wdd, timeout, err),\n\n\tTP_STRUCT__entry(\n\t\t__field(int, id)\n\t\t__field(unsigned int, timeout)\n\t\t__field(int, err)\n\t),\n\n\tTP_fast_assign(\n\t\t__entry->id = wdd->id;\n\t\t__entry->timeout = timeout;\n\t\t__entry->err = err;\n\t),\n\n\tTP_printk(\"watchdog%d timeout=%u err=%d\", __entry->id, __entry->timeout, __entry->err)\n);\n\n#endif  \n\n \n#include <trace/define_trace.h>\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

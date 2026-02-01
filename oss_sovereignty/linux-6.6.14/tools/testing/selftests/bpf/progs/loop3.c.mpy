@@ -1,0 +1,9 @@
+{
+  "module_name": "loop3.c",
+  "hash_id": "bd7ee6c0fb9fd72af59aa0c182aea15a2f7a18e1139997d0188416a20246563f",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/loop3.c",
+  "human_readable_source": "\n\n#include <linux/sched.h>\n#include <linux/ptrace.h>\n#include <stdint.h>\n#include <stddef.h>\n#include <stdbool.h>\n#include <linux/bpf.h>\n#include <bpf/bpf_helpers.h>\n#include <bpf/bpf_tracing.h>\n\nchar _license[] SEC(\"license\") = \"GPL\";\n\nSEC(\"raw_tracepoint/consume_skb\")\nint while_true(struct pt_regs *ctx)\n{\n\tvolatile __u64 i = 0, sum = 0;\n\tdo {\n\t\ti++;\n\t\tsum += PT_REGS_RC(ctx);\n\t} while (i < 0x100000000ULL);\n\treturn sum;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

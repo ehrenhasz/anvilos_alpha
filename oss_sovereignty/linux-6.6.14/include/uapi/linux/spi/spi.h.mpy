@@ -1,0 +1,9 @@
+{
+  "module_name": "spi.h",
+  "hash_id": "d65efeb91949c97c2e839c714bd1b0120cd8e52b0827b1b089549b3648f7d208",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/spi/spi.h",
+  "human_readable_source": " \n#ifndef _UAPI_SPI_H\n#define _UAPI_SPI_H\n\n#include <linux/const.h>\n\n#define\tSPI_CPHA\t\t_BITUL(0)\t \n#define\tSPI_CPOL\t\t_BITUL(1)\t \n\n#define\tSPI_MODE_0\t\t(0|0)\t\t \n#define\tSPI_MODE_1\t\t(0|SPI_CPHA)\n#define\tSPI_MODE_2\t\t(SPI_CPOL|0)\n#define\tSPI_MODE_3\t\t(SPI_CPOL|SPI_CPHA)\n#define\tSPI_MODE_X_MASK\t\t(SPI_CPOL|SPI_CPHA)\n\n#define\tSPI_CS_HIGH\t\t_BITUL(2)\t \n#define\tSPI_LSB_FIRST\t\t_BITUL(3)\t \n#define\tSPI_3WIRE\t\t_BITUL(4)\t \n#define\tSPI_LOOP\t\t_BITUL(5)\t \n#define\tSPI_NO_CS\t\t_BITUL(6)\t \n#define\tSPI_READY\t\t_BITUL(7)\t \n#define\tSPI_TX_DUAL\t\t_BITUL(8)\t \n#define\tSPI_TX_QUAD\t\t_BITUL(9)\t \n#define\tSPI_RX_DUAL\t\t_BITUL(10)\t \n#define\tSPI_RX_QUAD\t\t_BITUL(11)\t \n#define\tSPI_CS_WORD\t\t_BITUL(12)\t \n#define\tSPI_TX_OCTAL\t\t_BITUL(13)\t \n#define\tSPI_RX_OCTAL\t\t_BITUL(14)\t \n#define\tSPI_3WIRE_HIZ\t\t_BITUL(15)\t \n#define\tSPI_RX_CPHA_FLIP\t_BITUL(16)\t \n#define SPI_MOSI_IDLE_LOW\t_BITUL(17)\t \n\n \n#define SPI_MODE_USER_MASK\t(_BITUL(18) - 1)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

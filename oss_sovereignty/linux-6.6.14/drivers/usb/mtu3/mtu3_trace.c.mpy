@@ -1,0 +1,9 @@
+{
+  "module_name": "mtu3_trace.c",
+  "hash_id": "bd51260fab71314b5bd13e5fd09b5752e86ab1fae4c468cf9c3c1f36c0e61cc6",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/usb/mtu3/mtu3_trace.c",
+  "human_readable_source": "\n \n\n#define CREATE_TRACE_POINTS\n#include \"mtu3_debug.h\"\n#include \"mtu3_trace.h\"\n\nvoid mtu3_dbg_trace(struct device *dev, const char *fmt, ...)\n{\n\tstruct va_format vaf;\n\tva_list args;\n\n\tva_start(args, fmt);\n\tvaf.fmt = fmt;\n\tvaf.va = &args;\n\ttrace_mtu3_log(dev, &vaf);\n\tva_end(args);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

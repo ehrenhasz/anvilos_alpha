@@ -1,0 +1,9 @@
+{
+  "module_name": "simd.h",
+  "hash_id": "567e69a13801eef101f0c4cb1a642f18d58ade54396db04ce283bc90d2e7eecd",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/include/asm/simd.h",
+  "human_readable_source": " \n\n#include <asm/fpu/api.h>\n\n \nstatic __must_check inline bool may_use_simd(void)\n{\n\treturn irq_fpu_usable();\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

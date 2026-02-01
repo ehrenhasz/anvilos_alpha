@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "51979a3fb844ef742ffd12c1c8948726dd33666941680b07b3a3be1c14520f60",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/dma/qcom/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nobj-$(CONFIG_QCOM_ADM) += qcom_adm.o\nobj-$(CONFIG_QCOM_BAM_DMA) += bam_dma.o\nobj-$(CONFIG_QCOM_GPI_DMA) += gpi.o\nobj-$(CONFIG_QCOM_HIDMA_MGMT) += hdma_mgmt.o\nhdma_mgmt-objs\t := hidma_mgmt.o hidma_mgmt_sys.o\nobj-$(CONFIG_QCOM_HIDMA) +=  hdma.o\nhdma-objs        := hidma_ll.o hidma.o hidma_dbg.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

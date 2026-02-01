@@ -1,0 +1,9 @@
+{
+  "module_name": "fan.h",
+  "hash_id": "9536ae0ef9ebf2d233b407a6d028900083a38d7d30f89ef0c1e32e78071ef70b",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/acpi/fan.h",
+  "human_readable_source": " \n\n \n\n#ifndef _ACPI_FAN_H_\n#define _ACPI_FAN_H_\n\n#define ACPI_FAN_DEVICE_IDS\t\\\n\t{\"INT3404\", },   \\\n\t{\"INTC1044\", },   \\\n\t{\"INTC1048\", },   \\\n\t{\"INTC1063\", },   \\\n\t{\"INTC10A2\", },   \\\n\t{\"PNP0C0B\", }  \n\n#define ACPI_FPS_NAME_LEN\t20\n\nstruct acpi_fan_fps {\n\tu64 control;\n\tu64 trip_point;\n\tu64 speed;\n\tu64 noise_level;\n\tu64 power;\n\tchar name[ACPI_FPS_NAME_LEN];\n\tstruct device_attribute dev_attr;\n};\n\nstruct acpi_fan_fif {\n\tu8 revision;\n\tu8 fine_grain_ctrl;\n\tu8 step_size;\n\tu8 low_speed_notification;\n};\n\nstruct acpi_fan_fst {\n\tu64 revision;\n\tu64 control;\n\tu64 speed;\n};\n\nstruct acpi_fan {\n\tbool acpi4;\n\tstruct acpi_fan_fif fif;\n\tstruct acpi_fan_fps *fps;\n\tint fps_count;\n\tstruct thermal_cooling_device *cdev;\n\tstruct device_attribute fst_speed;\n\tstruct device_attribute fine_grain_control;\n};\n\nint acpi_fan_get_fst(struct acpi_device *device, struct acpi_fan_fst *fst);\nint acpi_fan_create_attributes(struct acpi_device *device);\nvoid acpi_fan_delete_attributes(struct acpi_device *device);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

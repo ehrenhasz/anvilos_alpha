@@ -1,0 +1,9 @@
+{
+  "module_name": "lib_inwstr.c",
+  "hash_id": "ea06ef0b5c423022ebab123bf320b591801c54e1d41cc1526599726943888325",
+  "original_prompt": "Ingested from ncurses-6.4/ncurses/widechar/lib_inwstr.c",
+  "human_readable_source": " \n\n \n\n \n\n#include <curses.priv.h>\n\nMODULE_ID(\"$Id: lib_inwstr.c,v 1.9 2020/02/02 23:34:34 tom Exp $\")\n\nNCURSES_EXPORT(int)\nwinnwstr(WINDOW *win, wchar_t *wstr, int n)\n{\n    int count = 0;\n    cchar_t *text;\n\n    T((T_CALLED(\"winnwstr(%p,%p,%d)\"), (void *) win, (void *) wstr, n));\n    if (wstr != 0) {\n\tif (win) {\n\t    int row, col;\n\t    int last = 0;\n\t    bool done = FALSE;\n\n\t    getyx(win, row, col);\n\n\t    text = win->_line[row].text;\n\t    while (count < n && !done && count != ERR) {\n\n\t\tif (!isWidecExt(text[col])) {\n\t\t    int inx;\n\t\t    wchar_t wch;\n\n\t\t    for (inx = 0; (inx < CCHARW_MAX)\n\t\t\t && ((wch = text[col].chars[inx]) != 0);\n\t\t\t ++inx) {\n\t\t\tif (count + 1 > n) {\n\t\t\t    done = TRUE;\n\t\t\t    if (last == 0) {\n\t\t\t\tcount = ERR;\t \n\t\t\t    } else {\n\t\t\t\tcount = last;\t \n\t\t\t    }\n\t\t\t    break;\n\t\t\t}\n\t\t\twstr[count++] = wch;\n\t\t    }\n\t\t}\n\t\tlast = count;\n\t\tif (++col > win->_maxx) {\n\t\t    break;\n\t\t}\n\t    }\n\t}\n\tif (count > 0) {\n\t    wstr[count] = '\\0';\n\t    T((\"winnwstr returns %s\", _nc_viswbuf(wstr)));\n\t}\n    }\n    returnCode(count);\n}\n\n \nNCURSES_EXPORT(int)\nwinwstr(WINDOW *win, wchar_t *wstr)\n{\n    int result = OK;\n\n    T((T_CALLED(\"winwstr(%p,%p)\"), (void *) win, (void *) wstr));\n    if (win == 0) {\n\tresult = ERR;\n    } else if (winnwstr(win, wstr,\n\t\t\tCCHARW_MAX * (win->_maxx - win->_curx + 1)) == ERR) {\n\tresult = ERR;\n    }\n    returnCode(result);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

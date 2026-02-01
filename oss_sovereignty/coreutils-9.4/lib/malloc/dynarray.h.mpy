@@ -1,0 +1,9 @@
+{
+  "module_name": "dynarray.h",
+  "hash_id": "83965e1d53bcda782c947697b2417c61880b30c55c54e236efa565f50e424931",
+  "original_prompt": "Ingested from coreutils-9.4/lib/malloc/dynarray.h",
+  "human_readable_source": " \n\n#ifndef _DYNARRAY_H\n#define _DYNARRAY_H\n\n#include <stddef.h>\n#include <string.h>\n\nstruct dynarray_header\n{\n  size_t used;\n  size_t allocated;\n  void *array;\n};\n\n \nstatic inline size_t\n__dynarray_error_marker (void)\n{\n  return -1;\n}\n\n \nstatic inline bool\n__dynarray_error (struct dynarray_header *list)\n{\n  return list->allocated == __dynarray_error_marker ();\n}\n\n \nbool __libc_dynarray_emplace_enlarge (struct dynarray_header *,\n                                      void *scratch, size_t element_size);\n\n \nbool __libc_dynarray_resize (struct dynarray_header *, size_t size,\n                             void *scratch, size_t element_size);\n\n \nbool __libc_dynarray_resize_clear (struct dynarray_header *, size_t size,\n                                   void *scratch, size_t element_size);\n\n \nstruct dynarray_finalize_result\n{\n  void *array;\n  size_t length;\n};\n\n \nbool __libc_dynarray_finalize (struct dynarray_header *list, void *scratch,\n                               size_t element_size,\n                               struct dynarray_finalize_result *result);\n\n\n \n_Noreturn void __libc_dynarray_at_failure (size_t size, size_t index);\n\n#ifndef _ISOMAC\nlibc_hidden_proto (__libc_dynarray_emplace_enlarge)\nlibc_hidden_proto (__libc_dynarray_resize)\nlibc_hidden_proto (__libc_dynarray_resize_clear)\nlibc_hidden_proto (__libc_dynarray_finalize)\nlibc_hidden_proto (__libc_dynarray_at_failure)\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

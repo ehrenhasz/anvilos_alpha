@@ -1,0 +1,9 @@
+{
+  "module_name": "fdopen.c",
+  "hash_id": "a331e4ff8cda12be4c373c624c79e64b252e5e63572ddd7d34e416442165d364",
+  "original_prompt": "Ingested from coreutils-9.4/lib/fdopen.c",
+  "human_readable_source": " \n#include <stdio.h>\n\n#include <errno.h>\n\n#if HAVE_MSVC_INVALID_PARAMETER_HANDLER\n# include \"msvc-inval.h\"\n#endif\n\n#undef fdopen\n\n#if defined _WIN32 && !defined __CYGWIN__\n# if HAVE_MSVC_INVALID_PARAMETER_HANDLER\nstatic FILE *\nfdopen_nothrow (int fd, const char *mode)\n{\n  FILE *result;\n\n  TRY_MSVC_INVAL\n    {\n      result = _fdopen (fd, mode);\n    }\n  CATCH_MSVC_INVAL\n    {\n      result = NULL;\n    }\n  DONE_MSVC_INVAL;\n\n  return result;\n}\n# else\n#  define fdopen_nothrow _fdopen\n# endif\n#else\n# define fdopen_nothrow fdopen\n#endif\n\nFILE *\nrpl_fdopen (int fd, const char *mode)\n{\n  int saved_errno = errno;\n  FILE *fp;\n\n  errno = 0;\n  fp = fdopen_nothrow (fd, mode);\n  if (fp == NULL)\n    {\n      if (errno == 0)\n        errno = EBADF;\n    }\n  else\n    errno = saved_errno;\n\n  return fp;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "sys_socket.c",
+  "hash_id": "350212f550914da40c1ea5674298ee21e72fd4bf0fed76795cedae7c1d2d5d3b",
+  "original_prompt": "Ingested from coreutils-9.4/lib/sys_socket.c",
+  "human_readable_source": "/* Inline functions for <sys/socket.h>.\n\n   Copyright (C) 2012-2023 Free Software Foundation, Inc.\n\n   This file is free software: you can redistribute it and/or modify\n   it under the terms of the GNU Lesser General Public License as\n   published by the Free Software Foundation; either version 2.1 of the\n   License, or (at your option) any later version.\n\n   This file is distributed in the hope that it will be useful,\n   but WITHOUT ANY WARRANTY; without even the implied warranty of\n   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n   GNU Lesser General Public License for more details.\n\n   You should have received a copy of the GNU Lesser General Public License\n   along with this program.  If not, see <https:\n\n#include <config.h>\n\n#define _GL_SYS_SOCKET_INLINE _GL_EXTERN_INLINE\n#include \"sys/socket.h\"\ntypedef int dummy;\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "535e796586ef5fc317f6bd00c422017262f4f70b1fe05a98ab5cdce93b589b4a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/clk/sunxi/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for sunxi specific clk\n#\n\nobj-$(CONFIG_CLK_SUNXI) += clk-factors.o\n\nobj-$(CONFIG_CLK_SUNXI_CLOCKS) += clk-sunxi.o\nobj-$(CONFIG_CLK_SUNXI_CLOCKS) += clk-a10-codec.o\nobj-$(CONFIG_CLK_SUNXI_CLOCKS) += clk-a10-hosc.o\nobj-$(CONFIG_CLK_SUNXI_CLOCKS) += clk-a10-mod1.o\nobj-$(CONFIG_CLK_SUNXI_CLOCKS) += clk-a10-pll2.o\nobj-$(CONFIG_CLK_SUNXI_CLOCKS) += clk-a10-ve.o\nobj-$(CONFIG_CLK_SUNXI_CLOCKS) += clk-a20-gmac.o\nobj-$(CONFIG_CLK_SUNXI_CLOCKS) += clk-mod0.o\nobj-$(CONFIG_CLK_SUNXI_CLOCKS) += clk-simple-gates.o\nobj-$(CONFIG_CLK_SUNXI_CLOCKS) += clk-sun4i-display.o\nobj-$(CONFIG_CLK_SUNXI_CLOCKS) += clk-sun4i-pll3.o\nobj-$(CONFIG_CLK_SUNXI_CLOCKS) += clk-sun4i-tcon-ch1.o\nobj-$(CONFIG_CLK_SUNXI_CLOCKS) += clk-sun8i-bus-gates.o\nobj-$(CONFIG_CLK_SUNXI_CLOCKS) += clk-sun8i-mbus.o\nobj-$(CONFIG_CLK_SUNXI_CLOCKS) += clk-sun9i-core.o\nobj-$(CONFIG_CLK_SUNXI_CLOCKS) += clk-sun9i-mmc.o\nobj-$(CONFIG_CLK_SUNXI_CLOCKS) += clk-usb.o\n\nobj-$(CONFIG_CLK_SUNXI_CLOCKS) += clk-sun8i-apb0.o\nobj-$(CONFIG_CLK_SUNXI_CLOCKS) += clk-sun9i-cpus.o\n\nobj-$(CONFIG_CLK_SUNXI_PRCM_SUN6I)\t+= clk-sun6i-apb0.o\nobj-$(CONFIG_CLK_SUNXI_PRCM_SUN6I)\t+= clk-sun6i-apb0-gates.o\nobj-$(CONFIG_CLK_SUNXI_PRCM_SUN6I)\t+= clk-sun6i-ar100.o\n\nobj-$(CONFIG_CLK_SUNXI_PRCM_SUN8I)\t+= clk-sun8i-apb0.o\nobj-$(CONFIG_CLK_SUNXI_PRCM_SUN8I)\t+= clk-sun6i-apb0-gates.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

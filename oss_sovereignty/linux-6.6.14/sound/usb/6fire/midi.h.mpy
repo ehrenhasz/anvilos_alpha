@@ -1,0 +1,9 @@
+{
+  "module_name": "midi.h",
+  "hash_id": "39b0018064d2ca25116ec61dd978e4c1ce4d2080787021ad0f5e48d282b55c38",
+  "original_prompt": "Ingested from linux-6.6.14/sound/usb/6fire/midi.h",
+  "human_readable_source": " \n \n\n#ifndef USB6FIRE_MIDI_H\n#define USB6FIRE_MIDI_H\n\n#include \"common.h\"\n\nstruct midi_runtime {\n\tstruct sfire_chip *chip;\n\tstruct snd_rawmidi *instance;\n\n\tstruct snd_rawmidi_substream *in;\n\tchar in_active;\n\n\tspinlock_t in_lock;\n\tspinlock_t out_lock;\n\tstruct snd_rawmidi_substream *out;\n\tstruct urb out_urb;\n\tu8 out_serial;  \n\tu8 *out_buffer;\n\tint buffer_offset;\n\n\tvoid (*in_received)(struct midi_runtime *rt, u8 *data, int length);\n};\n\nint usb6fire_midi_init(struct sfire_chip *chip);\nvoid usb6fire_midi_abort(struct sfire_chip *chip);\nvoid usb6fire_midi_destroy(struct sfire_chip *chip);\n#endif  \n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

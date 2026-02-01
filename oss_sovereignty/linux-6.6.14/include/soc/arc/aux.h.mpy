@@ -1,0 +1,9 @@
+{
+  "module_name": "aux.h",
+  "hash_id": "0bae5d4825a56ced8c6d885a49f759108db017eb885d3dfda1fd767b6619a105",
+  "original_prompt": "Ingested from linux-6.6.14/include/soc/arc/aux.h",
+  "human_readable_source": " \n \n\n#ifndef __SOC_ARC_AUX_H__\n#define __SOC_ARC_AUX_H__\n\n#ifdef CONFIG_ARC\n\n#define read_aux_reg(r)\t\t__builtin_arc_lr(r)\n\n \n#define write_aux_reg(r, v)\t__builtin_arc_sr((unsigned int)(v), r)\n\n#else\t \n\nstatic inline int read_aux_reg(u32 r)\n{\n\treturn 0;\n}\n\n \nstatic inline void write_aux_reg(u32 r, u32 v)\n{\n\t;\n}\n\n#endif\n\n#define READ_BCR(reg, into)\t\t\t\t\\\n{\t\t\t\t\t\t\t\\\n\tunsigned int tmp;\t\t\t\t\\\n\ttmp = read_aux_reg(reg);\t\t\t\\\n\tif (sizeof(tmp) == sizeof(into)) {\t\t\\\n\t\tinto = *((typeof(into) *)&tmp);\t\t\\\n\t} else {\t\t\t\t\t\\\n\t\textern void bogus_undefined(void);\t\\\n\t\tbogus_undefined();\t\t\t\\\n\t}\t\t\t\t\t\t\\\n}\n\n#define WRITE_AUX(reg, into)\t\t\t\t\\\n{\t\t\t\t\t\t\t\\\n\tunsigned int tmp;\t\t\t\t\\\n\tif (sizeof(tmp) == sizeof(into)) {\t\t\\\n\t\ttmp = (*(unsigned int *)&(into));\t\\\n\t\twrite_aux_reg(reg, tmp);\t\t\\\n\t} else  {\t\t\t\t\t\\\n\t\textern void bogus_undefined(void);\t\\\n\t\tbogus_undefined();\t\t\t\\\n\t}\t\t\t\t\t\t\\\n}\n\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

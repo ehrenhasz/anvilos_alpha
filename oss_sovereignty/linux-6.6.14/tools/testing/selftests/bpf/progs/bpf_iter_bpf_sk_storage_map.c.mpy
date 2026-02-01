@@ -1,0 +1,9 @@
+{
+  "module_name": "bpf_iter_bpf_sk_storage_map.c",
+  "hash_id": "04cd37ff3e1df854d0dc6897a8c1e6ec9cc606ef477d96836e8b442c66769bf3",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/bpf_iter_bpf_sk_storage_map.c",
+  "human_readable_source": "\n \n#include \"bpf_iter.h\"\n#include \"bpf_tracing_net.h\"\n#include <bpf/bpf_helpers.h>\n#include <bpf/bpf_tracing.h>\n\nchar _license[] SEC(\"license\") = \"GPL\";\n\nstruct {\n\t__uint(type, BPF_MAP_TYPE_SK_STORAGE);\n\t__uint(map_flags, BPF_F_NO_PREALLOC);\n\t__type(key, int);\n\t__type(value, int);\n} sk_stg_map SEC(\".maps\");\n\n__u32 val_sum = 0;\n__u32 ipv6_sk_count = 0;\n__u32 to_add_val = 0;\n\nSEC(\"iter/bpf_sk_storage_map\")\nint rw_bpf_sk_storage_map(struct bpf_iter__bpf_sk_storage_map *ctx)\n{\n\tstruct sock *sk = ctx->sk;\n\t__u32 *val = ctx->value;\n\n\tif (sk == NULL || val == NULL)\n\t\treturn 0;\n\n\tif (sk->sk_family == AF_INET6)\n\t\tipv6_sk_count++;\n\n\tval_sum += *val;\n\n\t*val += to_add_val;\n\n\treturn 0;\n}\n\nSEC(\"iter/bpf_sk_storage_map\")\nint oob_write_bpf_sk_storage_map(struct bpf_iter__bpf_sk_storage_map *ctx)\n{\n\tstruct sock *sk = ctx->sk;\n\t__u32 *val = ctx->value;\n\n\tif (sk == NULL || val == NULL)\n\t\treturn 0;\n\n\t*(val + 1) = 0xdeadbeef;\n\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

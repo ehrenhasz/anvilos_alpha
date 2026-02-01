@@ -1,0 +1,9 @@
+{
+  "module_name": "unistd-safer.h",
+  "hash_id": "72ba548a02f5e22fd676a94d3f67f3c199b761c78d804dccbb725f1d9e976d49",
+  "original_prompt": "Ingested from coreutils-9.4/lib/unistd-safer.h",
+  "human_readable_source": " \n\nint dup_safer (int);\nint fd_safer (int);\nint pipe_safer (int[2]);\n\n#if GNULIB_FD_SAFER_FLAG\nint dup_safer_flag (int, int);\nint fd_safer_flag (int, int);\n#endif\n\n#if GNULIB_PIPE2_SAFER\nint pipe2_safer (int[2], int);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "8021954e206626582f6b8f5ebc976c8394135fa1c9a8ad7fa9a9c8d56c86a15b",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/marvell/octeontx2/af/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for Marvell's RVU Admin Function driver\n#\n\nccflags-y += -I$(src)\nobj-$(CONFIG_OCTEONTX2_MBOX) += rvu_mbox.o\nobj-$(CONFIG_OCTEONTX2_AF) += rvu_af.o\n\nrvu_mbox-y := mbox.o rvu_trace.o\nrvu_af-y := cgx.o rvu.o rvu_cgx.o rvu_npa.o rvu_nix.o \\\n\t\t  rvu_reg.o rvu_npc.o rvu_debugfs.o ptp.o rvu_npc_fs.o \\\n\t\t  rvu_cpt.o rvu_devlink.o rpm.o rvu_cn10k.o rvu_switch.o \\\n\t\t  rvu_sdp.o rvu_npc_hash.o mcs.o mcs_rvu_if.o mcs_cnf10kb.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

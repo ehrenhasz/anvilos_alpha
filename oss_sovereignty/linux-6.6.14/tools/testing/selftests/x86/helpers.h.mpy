@@ -1,0 +1,9 @@
+{
+  "module_name": "helpers.h",
+  "hash_id": "9f5a1399490e30aa385a72144e8aa471b75b6efb12cdc927a0a4c40559e8955a",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/x86/helpers.h",
+  "human_readable_source": "\n#ifndef __SELFTESTS_X86_HELPERS_H\n#define __SELFTESTS_X86_HELPERS_H\n\n#include <asm/processor-flags.h>\n\nstatic inline unsigned long get_eflags(void)\n{\n#ifdef __x86_64__\n\treturn __builtin_ia32_readeflags_u64();\n#else\n\treturn __builtin_ia32_readeflags_u32();\n#endif\n}\n\nstatic inline void set_eflags(unsigned long eflags)\n{\n#ifdef __x86_64__\n\t__builtin_ia32_writeeflags_u64(eflags);\n#else\n\t__builtin_ia32_writeeflags_u32(eflags);\n#endif\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

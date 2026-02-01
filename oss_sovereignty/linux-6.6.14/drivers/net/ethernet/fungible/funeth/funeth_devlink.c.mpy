@@ -1,0 +1,9 @@
+{
+  "module_name": "funeth_devlink.c",
+  "hash_id": "3a9694eba7732377781819f18a39cb21e7d74d6ace995d1cb5eb619cb4b7732d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/fungible/funeth/funeth_devlink.c",
+  "human_readable_source": "\n\n#include \"funeth.h\"\n#include \"funeth_devlink.h\"\n\nstatic const struct devlink_ops fun_dl_ops = {\n};\n\nstruct devlink *fun_devlink_alloc(struct device *dev)\n{\n\treturn devlink_alloc(&fun_dl_ops, sizeof(struct fun_ethdev), dev);\n}\n\nvoid fun_devlink_free(struct devlink *devlink)\n{\n\tdevlink_free(devlink);\n}\n\nvoid fun_devlink_register(struct devlink *devlink)\n{\n\tdevlink_register(devlink);\n}\n\nvoid fun_devlink_unregister(struct devlink *devlink)\n{\n\tdevlink_unregister(devlink);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

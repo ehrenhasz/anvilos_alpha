@@ -1,0 +1,9 @@
+{
+  "module_name": "ivtv-fileops.h",
+  "hash_id": "c58f9ccd40ae652656b8565993316c9a0f6ba7f9529a32a159a578df3a2f0ffa",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/pci/ivtv/ivtv-fileops.h",
+  "human_readable_source": " \n \n\n#ifndef IVTV_FILEOPS_H\n#define IVTV_FILEOPS_H\n\n \nint ivtv_v4l2_open(struct file *filp);\nssize_t ivtv_v4l2_read(struct file *filp, char __user *buf, size_t count,\n\t\t      loff_t * pos);\nssize_t ivtv_v4l2_write(struct file *filp, const char __user *buf, size_t count,\n\t\t       loff_t * pos);\nint ivtv_v4l2_close(struct file *filp);\n__poll_t ivtv_v4l2_enc_poll(struct file *filp, poll_table * wait);\n__poll_t ivtv_v4l2_dec_poll(struct file *filp, poll_table * wait);\nint ivtv_start_capture(struct ivtv_open_id *id);\nvoid ivtv_stop_capture(struct ivtv_open_id *id, int gop_end);\nint ivtv_start_decoding(struct ivtv_open_id *id, int speed);\nvoid ivtv_mute(struct ivtv *itv);\nvoid ivtv_unmute(struct ivtv *itv);\n\n \n \nint ivtv_claim_stream(struct ivtv_open_id *id, int type);\nvoid ivtv_release_stream(struct ivtv_stream *s);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

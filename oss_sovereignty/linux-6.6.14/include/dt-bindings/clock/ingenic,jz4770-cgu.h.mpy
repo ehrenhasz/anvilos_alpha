@@ -1,0 +1,9 @@
+{
+  "module_name": "ingenic,jz4770-cgu.h",
+  "hash_id": "aa9aa6fdf4ab48d68a46e6a277fb6b26dfefdc80c34a8b7a86f806f003961803",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/clock/ingenic,jz4770-cgu.h",
+  "human_readable_source": " \n \n\n#ifndef __DT_BINDINGS_CLOCK_JZ4770_CGU_H__\n#define __DT_BINDINGS_CLOCK_JZ4770_CGU_H__\n\n#define JZ4770_CLK_EXT\t\t0\n#define JZ4770_CLK_OSC32K\t1\n#define JZ4770_CLK_PLL0\t\t2\n#define JZ4770_CLK_PLL1\t\t3\n#define JZ4770_CLK_CCLK\t\t4\n#define JZ4770_CLK_H0CLK\t5\n#define JZ4770_CLK_H1CLK\t6\n#define JZ4770_CLK_H2CLK\t7\n#define JZ4770_CLK_C1CLK\t8\n#define JZ4770_CLK_PCLK\t\t9\n#define JZ4770_CLK_MMC0_MUX\t10\n#define JZ4770_CLK_MMC0\t\t11\n#define JZ4770_CLK_MMC1_MUX\t12\n#define JZ4770_CLK_MMC1\t\t13\n#define JZ4770_CLK_MMC2_MUX\t14\n#define JZ4770_CLK_MMC2\t\t15\n#define JZ4770_CLK_CIM\t\t16\n#define JZ4770_CLK_UHC\t\t17\n#define JZ4770_CLK_GPU\t\t18\n#define JZ4770_CLK_BCH\t\t19\n#define JZ4770_CLK_LPCLK_MUX\t20\n#define JZ4770_CLK_GPS\t\t21\n#define JZ4770_CLK_SSI_MUX\t22\n#define JZ4770_CLK_PCM_MUX\t23\n#define JZ4770_CLK_I2S\t\t24\n#define JZ4770_CLK_OTG\t\t25\n#define JZ4770_CLK_SSI0\t\t26\n#define JZ4770_CLK_SSI1\t\t27\n#define JZ4770_CLK_SSI2\t\t28\n#define JZ4770_CLK_PCM0\t\t29\n#define JZ4770_CLK_PCM1\t\t30\n#define JZ4770_CLK_DMA\t\t31\n#define JZ4770_CLK_I2C0\t\t32\n#define JZ4770_CLK_I2C1\t\t33\n#define JZ4770_CLK_I2C2\t\t34\n#define JZ4770_CLK_UART0\t35\n#define JZ4770_CLK_UART1\t36\n#define JZ4770_CLK_UART2\t37\n#define JZ4770_CLK_UART3\t38\n#define JZ4770_CLK_IPU\t\t39\n#define JZ4770_CLK_ADC\t\t40\n#define JZ4770_CLK_AIC\t\t41\n#define JZ4770_CLK_AUX\t\t42\n#define JZ4770_CLK_VPU\t\t43\n#define JZ4770_CLK_UHC_PHY\t44\n#define JZ4770_CLK_OTG_PHY\t45\n#define JZ4770_CLK_EXT512\t46\n#define JZ4770_CLK_RTC\t\t47\n#define JZ4770_CLK_BDMA\t\t48\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

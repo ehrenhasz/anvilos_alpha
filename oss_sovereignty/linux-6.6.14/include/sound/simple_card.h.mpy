@@ -1,0 +1,9 @@
+{
+  "module_name": "simple_card.h",
+  "hash_id": "11ef6ad430e834a68d6274760fb0d5486f0e39a538442bcbfd3f502a403c15b0",
+  "original_prompt": "Ingested from linux-6.6.14/include/sound/simple_card.h",
+  "human_readable_source": " \n\n#ifndef __SIMPLE_CARD_H\n#define __SIMPLE_CARD_H\n\n#include <sound/soc.h>\n#include <sound/simple_card_utils.h>\n\nstruct asoc_simple_card_info {\n\tconst char *name;\n\tconst char *card;\n\tconst char *codec;\n\tconst char *platform;\n\n\tunsigned int daifmt;\n\tstruct asoc_simple_dai cpu_dai;\n\tstruct asoc_simple_dai codec_dai;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

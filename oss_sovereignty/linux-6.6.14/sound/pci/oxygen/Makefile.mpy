@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "8016d88528dc066eb50e0b2cb06061227a765dac2b42bc7d38b2204296a0b9d6",
+  "original_prompt": "Ingested from linux-6.6.14/sound/pci/oxygen/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nsnd-oxygen-lib-objs := oxygen_io.o oxygen_lib.o oxygen_mixer.o oxygen_pcm.o\nsnd-oxygen-objs := oxygen.o xonar_dg_mixer.o xonar_dg.o\nsnd-se6x-objs := se6x.o\nsnd-virtuoso-objs := virtuoso.o xonar_lib.o \\\n\txonar_pcm179x.o xonar_cs43xx.o xonar_wm87x6.o xonar_hdmi.o\n\nobj-$(CONFIG_SND_OXYGEN_LIB) += snd-oxygen-lib.o\nobj-$(CONFIG_SND_OXYGEN) += snd-oxygen.o\nobj-$(CONFIG_SND_SE6X) += snd-se6x.o\nobj-$(CONFIG_SND_VIRTUOSO) += snd-virtuoso.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

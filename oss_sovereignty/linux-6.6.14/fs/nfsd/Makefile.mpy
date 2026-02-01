@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "e36d1e9e7577255995e3da0a8a1b76153d71b449a7b4ccda8cc4076fd044d78a",
+  "original_prompt": "Ingested from linux-6.6.14/fs/nfsd/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for the Linux nfs server\n#\n\nccflags-y += -I$(src)\t\t\t# needed for trace events\n\nobj-$(CONFIG_NFSD)\t+= nfsd.o\n\n# this one should be compiled first, as the tracing macros can easily blow up\nnfsd-y\t\t\t+= trace.o\n\nnfsd-y \t\t\t+= nfssvc.o nfsctl.o nfsfh.o vfs.o \\\n\t\t\t   export.o auth.o lockd.o nfscache.o \\\n\t\t\t   stats.o filecache.o nfs3proc.o nfs3xdr.o\nnfsd-$(CONFIG_NFSD_V2) += nfsproc.o nfsxdr.o\nnfsd-$(CONFIG_NFSD_V2_ACL) += nfs2acl.o\nnfsd-$(CONFIG_NFSD_V3_ACL) += nfs3acl.o\nnfsd-$(CONFIG_NFSD_V4)\t+= nfs4proc.o nfs4xdr.o nfs4state.o nfs4idmap.o \\\n\t\t\t   nfs4acl.o nfs4callback.o nfs4recover.o\nnfsd-$(CONFIG_NFSD_PNFS) += nfs4layouts.o\nnfsd-$(CONFIG_NFSD_BLOCKLAYOUT) += blocklayout.o blocklayoutxdr.o\nnfsd-$(CONFIG_NFSD_SCSILAYOUT) += blocklayout.o blocklayoutxdr.o\nnfsd-$(CONFIG_NFSD_FLEXFILELAYOUT) += flexfilelayout.o flexfilelayoutxdr.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

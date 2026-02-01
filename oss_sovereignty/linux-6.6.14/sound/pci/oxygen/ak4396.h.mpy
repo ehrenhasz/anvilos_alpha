@@ -1,0 +1,9 @@
+{
+  "module_name": "ak4396.h",
+  "hash_id": "d7e2cb4957f49ddce9a8cc7f5897776cac6194c56564d82e8b087eabf434ce88",
+  "original_prompt": "Ingested from linux-6.6.14/sound/pci/oxygen/ak4396.h",
+  "human_readable_source": " \n#ifndef AK4396_H_INCLUDED\n#define AK4396_H_INCLUDED\n\n#define AK4396_WRITE\t\t0x2000\n\n#define AK4396_CONTROL_1\t0\n#define AK4396_CONTROL_2\t1\n#define AK4396_CONTROL_3\t2\n#define AK4396_LCH_ATT\t\t3\n#define AK4396_RCH_ATT\t\t4\n\n \n#define AK4396_RSTN\t\t0x01\n#define AK4396_DIF_MASK\t\t0x0e\n#define AK4396_DIF_16_LSB\t0x00\n#define AK4396_DIF_20_LSB\t0x02\n#define AK4396_DIF_24_MSB\t0x04\n#define AK4396_DIF_24_I2S\t0x06\n#define AK4396_DIF_24_LSB\t0x08\n#define AK4396_ACKS\t\t0x80\n \n#define AK4396_SMUTE\t\t0x01\n#define AK4396_DEM_MASK\t\t0x06\n#define AK4396_DEM_441\t\t0x00\n#define AK4396_DEM_OFF\t\t0x02\n#define AK4396_DEM_48\t\t0x04\n#define AK4396_DEM_32\t\t0x06\n#define AK4396_DFS_MASK\t\t0x18\n#define AK4396_DFS_NORMAL\t0x00\n#define AK4396_DFS_DOUBLE\t0x08\n#define AK4396_DFS_QUAD\t\t0x10\n#define AK4396_SLOW\t\t0x20\n#define AK4396_DZFM\t\t0x40\n#define AK4396_DZFE\t\t0x80\n \n#define AK4396_DZFB\t\t0x04\n#define AK4396_DCKB\t\t0x10\n#define AK4396_DCKS\t\t0x20\n#define AK4396_DSDM\t\t0x40\n#define AK4396_D_P_MASK\t\t0x80\n#define AK4396_PCM\t\t0x00\n#define AK4396_DSD\t\t0x80\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

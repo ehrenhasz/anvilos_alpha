@@ -1,0 +1,9 @@
+{
+  "module_name": "unusual_freecom.h",
+  "hash_id": "109c3475d9d73b552be5db5ec8da4d4a89bf7e88d02bbefc3f5de8154a0b7ead",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/usb/storage/unusual_freecom.h",
+  "human_readable_source": " \n \n\n#if defined(CONFIG_USB_STORAGE_FREECOM) || \\\n\t\tdefined(CONFIG_USB_STORAGE_FREECOM_MODULE)\n\nUNUSUAL_DEV(  0x07ab, 0xfc01, 0x0000, 0x9999,\n\t\t\"Freecom\",\n\t\t\"USB-IDE\",\n\t\tUSB_SC_QIC, USB_PR_FREECOM, init_freecom, 0),\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

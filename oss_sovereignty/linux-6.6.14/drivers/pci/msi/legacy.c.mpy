@@ -1,0 +1,9 @@
+{
+  "module_name": "legacy.c",
+  "hash_id": "cd7cf12e63c2a9faefd95354d83a610e8990ddabb04553d44a8030645521fad4",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/pci/msi/legacy.c",
+  "human_readable_source": "\n \n#include \"msi.h\"\n\n \nint __weak arch_setup_msi_irq(struct pci_dev *dev, struct msi_desc *desc)\n{\n\treturn -EINVAL;\n}\n\nvoid __weak arch_teardown_msi_irq(unsigned int irq)\n{\n}\n\nint __weak arch_setup_msi_irqs(struct pci_dev *dev, int nvec, int type)\n{\n\tstruct msi_desc *desc;\n\tint ret;\n\n\t \n\tif (type == PCI_CAP_ID_MSI && nvec > 1)\n\t\treturn 1;\n\n\tmsi_for_each_desc(desc, &dev->dev, MSI_DESC_NOTASSOCIATED) {\n\t\tret = arch_setup_msi_irq(dev, desc);\n\t\tif (ret)\n\t\t\treturn ret < 0 ? ret : -ENOSPC;\n\t}\n\n\treturn 0;\n}\n\nvoid __weak arch_teardown_msi_irqs(struct pci_dev *dev)\n{\n\tstruct msi_desc *desc;\n\tint i;\n\n\tmsi_for_each_desc(desc, &dev->dev, MSI_DESC_ASSOCIATED) {\n\t\tfor (i = 0; i < desc->nvec_used; i++)\n\t\t\tarch_teardown_msi_irq(desc->irq + i);\n\t}\n}\n\nstatic int pci_msi_setup_check_result(struct pci_dev *dev, int type, int ret)\n{\n\tstruct msi_desc *desc;\n\tint avail = 0;\n\n\tif (type != PCI_CAP_ID_MSIX || ret >= 0)\n\t\treturn ret;\n\n\t \n\tmsi_for_each_desc(desc, &dev->dev, MSI_DESC_ASSOCIATED)\n\t\tavail++;\n\n\treturn avail ? avail : ret;\n}\n\nint pci_msi_legacy_setup_msi_irqs(struct pci_dev *dev, int nvec, int type)\n{\n\tint ret = arch_setup_msi_irqs(dev, nvec, type);\n\n\tret = pci_msi_setup_check_result(dev, type, ret);\n\tif (!ret)\n\t\tret = msi_device_populate_sysfs(&dev->dev);\n\treturn ret;\n}\n\nvoid pci_msi_legacy_teardown_msi_irqs(struct pci_dev *dev)\n{\n\tmsi_device_destroy_sysfs(&dev->dev);\n\tarch_teardown_msi_irqs(dev);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

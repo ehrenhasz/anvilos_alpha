@@ -1,0 +1,9 @@
+{
+  "module_name": "vip.h",
+  "hash_id": "b74086b86a784a63027cb0677385b3b7201864f4b93eef173b530ad7e1329536",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/tegra-video/vip.h",
+  "human_readable_source": " \n \n\n#ifndef __TEGRA_VIP_H__\n#define __TEGRA_VIP_H__\n\n#include <media/media-entity.h>\n#include <media/v4l2-async.h>\n#include <media/v4l2-subdev.h>\n\nenum {\n\tTEGRA_VIP_PAD_SINK,\n\tTEGRA_VIP_PAD_SOURCE,\n\tTEGRA_VIP_PADS_NUM,\n};\n\nstruct tegra_vip;\n\n \nstruct tegra_vip_channel {\n\tstruct v4l2_subdev subdev;\n\tstruct media_pad pads[TEGRA_VIP_PADS_NUM];\n\tstruct device_node *of_node;\n};\n\n \nstruct tegra_vip_ops {\n\tint (*vip_start_streaming)(struct tegra_vip_channel *vip_chan);\n};\n\n \nstruct tegra_vip_soc {\n\tconst struct tegra_vip_ops *ops;\n};\n\n \nstruct tegra_vip {\n\tstruct device *dev;\n\tstruct host1x_client client;\n\tconst struct tegra_vip_soc *soc;\n\tstruct tegra_vip_channel chan;\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

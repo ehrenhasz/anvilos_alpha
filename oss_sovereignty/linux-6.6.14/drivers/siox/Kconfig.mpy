@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "f792c856f8818c6fecb8167e668ba85a0b627966e6ce1410b8259e1e3fe15b22",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/siox/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nmenuconfig SIOX\n\ttristate \"Eckelmann SIOX Support\"\n\thelp\n\t  SIOX stands for Serial Input Output eXtension and is a synchronous\n\t  bus system invented by Eckelmann AG. It is used in their control and\n\t  remote monitoring systems for commercial and industrial refrigeration\n\t  to drive additional I/O units.\n\n\t  Unless you know better, it is probably safe to say \"no\" here.\n\nif SIOX\n\nconfig SIOX_BUS_GPIO\n\ttristate \"SIOX GPIO bus driver\"\n\thelp\n\t  SIOX bus driver that controls the four bus lines using GPIOs.\n\nendif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

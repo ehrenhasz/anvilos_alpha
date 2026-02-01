@@ -1,0 +1,9 @@
+{
+  "module_name": "pismo.h",
+  "hash_id": "1c73afec44753f35bccbe6e2d7d2130e366f4ce92d30e81097772518566930b7",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/mtd/pismo.h",
+  "human_readable_source": " \n \n#ifndef __LINUX_MTD_PISMO_H\n#define __LINUX_MTD_PISMO_H\n\nstruct pismo_pdata {\n\tvoid\t\t\t(*set_vpp)(void *, int);\n\tvoid\t\t\t*vpp_data;\n\tphys_addr_t\t\tcs_addrs[5];\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

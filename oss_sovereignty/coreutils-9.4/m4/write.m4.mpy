@@ -1,0 +1,9 @@
+{
+  "module_name": "write.m4",
+  "hash_id": "db36f2732b630237e641aaf0fac05741dfeb2a4ef2dfa954d17bdedf9d475c2e",
+  "original_prompt": "Ingested from coreutils-9.4/m4/write.m4",
+  "human_readable_source": "# write.m4 serial 6\ndnl Copyright (C) 2008-2023 Free Software Foundation, Inc.\ndnl This file is free software; the Free Software Foundation\ndnl gives unlimited permission to copy and/or distribute it,\ndnl with or without modifications, as long as this notice is preserved.\n\nAC_DEFUN([gl_FUNC_WRITE],\n[\n  AC_REQUIRE([gl_UNISTD_H_DEFAULTS])\n  m4_ifdef([gl_MSVC_INVAL], [\n    AC_REQUIRE([gl_MSVC_INVAL])\n    if test $HAVE_MSVC_INVALID_PARAMETER_HANDLER = 1; then\n      REPLACE_WRITE=1\n    fi\n  ])\n  dnl This ifdef is just an optimization, to avoid performing a configure\n  dnl check whose result is not used. It does not make the test of\n  dnl GNULIB_UNISTD_H_SIGPIPE or GNULIB_SIGPIPE redundant.\n  m4_ifdef([gl_SIGNAL_SIGPIPE], [\n    gl_SIGNAL_SIGPIPE\n    if test $gl_cv_header_signal_h_SIGPIPE != yes; then\n      REPLACE_WRITE=1\n    fi\n  ])\n  m4_ifdef([gl_NONBLOCKING_IO], [\n    gl_NONBLOCKING_IO\n    if test $gl_cv_have_nonblocking != yes; then\n      REPLACE_WRITE=1\n    fi\n  ])\n])\n\n# Prerequisites of lib/write.c.\nAC_DEFUN([gl_PREREQ_WRITE], [:])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

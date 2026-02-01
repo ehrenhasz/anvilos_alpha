@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "5c5f1e0a677945c58c68009533d36e53db3c94fb75398e28b0a1b6ffa81ef446",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/aquantia/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# aQuantia device configuration\n#\n\nconfig NET_VENDOR_AQUANTIA\n\tbool \"aQuantia devices\"\n\tdefault y\n\thelp\n\t  Set this to y if you have an Ethernet network cards that uses the aQuantia\n\t  AQC107/AQC108 chipset.\n\n\t  This option does not build any drivers; it causes the aQuantia\n\t  drivers that can be built to appear in the list of Ethernet drivers.\n\n\nif NET_VENDOR_AQUANTIA\n\nconfig AQTION\n\ttristate \"aQuantia AQtion(tm) Support\"\n\tdepends on PCI\n\tdepends on MACSEC || MACSEC=n\n\thelp\n\t  This enables the support for the aQuantia AQtion(tm) Ethernet card.\n\nendif # NET_VENDOR_AQUANTIA\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

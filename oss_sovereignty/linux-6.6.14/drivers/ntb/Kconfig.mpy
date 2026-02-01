@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "85b0ad9e6de0ba78535979b6db9921154f9c4606ae804fa5384a2b6176218f95",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/ntb/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nmenuconfig NTB\n\ttristate \"Non-Transparent Bridge support\"\n\tdepends on PCI\n\thelp\n\t The PCI-E Non-transparent bridge hardware is a point-to-point PCI-E bus\n\t connecting 2 systems.  When configured, writes to the device's PCI\n\t mapped memory will be mirrored to a buffer on the remote system.  The\n\t ntb Linux driver uses this point-to-point communication as a method to\n\t transfer data from one system to the other.\n\n\t If unsure, say N.\n\nif NTB\n\nconfig NTB_MSI\n\tbool \"MSI Interrupt Support\"\n\tdepends on PCI_MSI\n\thelp\n\t Support using MSI interrupt forwarding instead of (or in addition to)\n\t hardware doorbells. MSI interrupts typically offer lower latency\n\t than doorbells and more MSI interrupts can be made available to\n\t clients. However this requires an extra memory window and support\n\t in the hardware driver for creating the MSI interrupts.\n\n\t If unsure, say N.\nsource \"drivers/ntb/hw/Kconfig\"\n\nsource \"drivers/ntb/test/Kconfig\"\n\nconfig NTB_TRANSPORT\n\ttristate \"NTB Transport Client\"\n\thelp\n\t This is a transport driver that enables connected systems to exchange\n\t messages over the ntb hardware.  The transport exposes a queue pair api\n\t to client drivers.\n\n\t If unsure, say N.\n\nendif # NTB\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

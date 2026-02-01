@@ -1,0 +1,9 @@
+{
+  "module_name": "driver.h",
+  "hash_id": "65d16c51939c0c11fbdad34bcf97eeab928b10779bdf7ea4c45f9edf4d2a3c50",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/mux/driver.h",
+  "human_readable_source": " \n \n\n#ifndef _LINUX_MUX_DRIVER_H\n#define _LINUX_MUX_DRIVER_H\n\n#include <dt-bindings/mux/mux.h>\n#include <linux/device.h>\n#include <linux/ktime.h>\n#include <linux/semaphore.h>\n\nstruct mux_chip;\nstruct mux_control;\n\n \nstruct mux_control_ops {\n\tint (*set)(struct mux_control *mux, int state);\n};\n\n \nstruct mux_control {\n\tstruct semaphore lock;  \n\n\tstruct mux_chip *chip;\n\tint cached_state;\n\n\tunsigned int states;\n\tint idle_state;\n\n\tktime_t last_change;\n};\n\n \nstruct mux_chip {\n\tunsigned int controllers;\n\tstruct mux_control *mux;\n\tstruct device dev;\n\tint id;\n\n\tconst struct mux_control_ops *ops;\n};\n\n#define to_mux_chip(x) container_of((x), struct mux_chip, dev)\n\n \nstatic inline void *mux_chip_priv(struct mux_chip *mux_chip)\n{\n\treturn &mux_chip->mux[mux_chip->controllers];\n}\n\nstruct mux_chip *mux_chip_alloc(struct device *dev,\n\t\t\t\tunsigned int controllers, size_t sizeof_priv);\nint mux_chip_register(struct mux_chip *mux_chip);\nvoid mux_chip_unregister(struct mux_chip *mux_chip);\nvoid mux_chip_free(struct mux_chip *mux_chip);\n\nstruct mux_chip *devm_mux_chip_alloc(struct device *dev,\n\t\t\t\t     unsigned int controllers,\n\t\t\t\t     size_t sizeof_priv);\nint devm_mux_chip_register(struct device *dev, struct mux_chip *mux_chip);\n\n \nstatic inline unsigned int mux_control_get_index(struct mux_control *mux)\n{\n\treturn mux - mux->chip->mux;\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "early_ioremap.h",
+  "hash_id": "27fc24f3f32459a38ccd30980cf25bcba32be0c9107c93c660ace42aa7a2cc8c",
+  "original_prompt": "Ingested from linux-6.6.14/include/asm-generic/early_ioremap.h",
+  "human_readable_source": " \n#ifndef _ASM_EARLY_IOREMAP_H_\n#define _ASM_EARLY_IOREMAP_H_\n\n#include <linux/types.h>\n\n \nextern void __iomem *early_ioremap(resource_size_t phys_addr,\n\t\t\t\t   unsigned long size);\nextern void *early_memremap(resource_size_t phys_addr,\n\t\t\t    unsigned long size);\nextern void *early_memremap_ro(resource_size_t phys_addr,\n\t\t\t       unsigned long size);\nextern void *early_memremap_prot(resource_size_t phys_addr,\n\t\t\t\t unsigned long size, unsigned long prot_val);\nextern void early_iounmap(void __iomem *addr, unsigned long size);\nextern void early_memunmap(void *addr, unsigned long size);\n\n#if defined(CONFIG_GENERIC_EARLY_IOREMAP) && defined(CONFIG_MMU)\n \nextern void early_ioremap_init(void);\n\n \nextern void early_ioremap_setup(void);\n\n \nextern void early_ioremap_reset(void);\n\n \nextern void copy_from_early_mem(void *dest, phys_addr_t src,\n\t\t\t\tunsigned long size);\n\n#else\nstatic inline void early_ioremap_init(void) { }\nstatic inline void early_ioremap_setup(void) { }\nstatic inline void early_ioremap_reset(void) { }\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

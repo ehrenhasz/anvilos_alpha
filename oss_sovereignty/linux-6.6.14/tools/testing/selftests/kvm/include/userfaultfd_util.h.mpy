@@ -1,0 +1,9 @@
+{
+  "module_name": "userfaultfd_util.h",
+  "hash_id": "58798798eb54d47d3fd83d5cd592366badd3e931bc4d813f17109f356fe85553",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/kvm/include/userfaultfd_util.h",
+  "human_readable_source": " \n \n\n#define _GNU_SOURCE  \n\n#include <inttypes.h>\n#include <time.h>\n#include <pthread.h>\n#include <linux/userfaultfd.h>\n\n#include \"test_util.h\"\n\ntypedef int (*uffd_handler_t)(int uffd_mode, int uffd, struct uffd_msg *msg);\n\nstruct uffd_desc {\n\tint uffd_mode;\n\tint uffd;\n\tint pipefds[2];\n\tuseconds_t delay;\n\tuffd_handler_t handler;\n\tpthread_t thread;\n};\n\nstruct uffd_desc *uffd_setup_demand_paging(int uffd_mode, useconds_t delay,\n\t\t\t\t\t   void *hva, uint64_t len,\n\t\t\t\t\t   uffd_handler_t handler);\n\nvoid uffd_stop_demand_paging(struct uffd_desc *uffd);\n\n#ifdef PRINT_PER_PAGE_UPDATES\n#define PER_PAGE_DEBUG(...) printf(__VA_ARGS__)\n#else\n#define PER_PAGE_DEBUG(...) _no_printf(__VA_ARGS__)\n#endif\n\n#ifdef PRINT_PER_VCPU_UPDATES\n#define PER_VCPU_DEBUG(...) printf(__VA_ARGS__)\n#else\n#define PER_VCPU_DEBUG(...) _no_printf(__VA_ARGS__)\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

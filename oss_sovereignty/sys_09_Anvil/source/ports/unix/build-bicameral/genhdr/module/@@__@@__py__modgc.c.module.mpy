@@ -1,0 +1,9 @@
+{
+  "module_name": "@@__@@__py__modgc.c.module",
+  "hash_id": "a16aa37abb4cd31cc9dcc342a9b6655c9c6abb6cd8d947fa7295590f2231eb6c",
+  "original_prompt": "Ingested from sys_09_Anvil/source/ports/unix/build-bicameral/genhdr/module/@@__@@__py__modgc.c.module",
+  "human_readable_source": "MP_REGISTER_MODULE(MP_QSTR_gc, mp_module_gc);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

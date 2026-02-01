@@ -1,0 +1,9 @@
+{
+  "module_name": "dsl_destroy.h",
+  "hash_id": "1eb963aa78a85af50d2634cd910dc5d62aa6b0ae2414df7c3ac0c994c1eea061",
+  "original_prompt": "Ingested from zfs-2.2.2/include/sys/dsl_destroy.h",
+  "human_readable_source": " \n \n\n#ifndef\t_SYS_DSL_DESTROY_H\n#define\t_SYS_DSL_DESTROY_H\n\n#ifdef\t__cplusplus\nextern \"C\" {\n#endif\n\nstruct nvlist;\nstruct dsl_dataset;\nstruct dsl_pool;\nstruct dmu_tx;\n\nint dsl_destroy_snapshots_nvl(struct nvlist *, boolean_t,\n    struct nvlist *);\nint dsl_destroy_snapshot(const char *, boolean_t);\nint dsl_destroy_head(const char *);\nint dsl_destroy_head_check_impl(struct dsl_dataset *, int);\nvoid dsl_destroy_head_sync_impl(struct dsl_dataset *, struct dmu_tx *);\nint dsl_destroy_inconsistent(const char *, void *);\nint dsl_destroy_snapshot_check_impl(struct dsl_dataset *, boolean_t);\nvoid dsl_destroy_snapshot_sync_impl(struct dsl_dataset *,\n    boolean_t, struct dmu_tx *);\nvoid dsl_dir_remove_clones_key(dsl_dir_t *, uint64_t, dmu_tx_t *);\n\ntypedef struct dsl_destroy_snapshot_arg {\n\tconst char *ddsa_name;\n\tboolean_t ddsa_defer;\n} dsl_destroy_snapshot_arg_t;\n\nint dsl_destroy_snapshot_check(void *, dmu_tx_t *);\nvoid dsl_destroy_snapshot_sync(void *, dmu_tx_t *);\n\ntypedef struct dsl_destroy_head_arg {\n\tconst char *ddha_name;\n} dsl_destroy_head_arg_t;\n\nint dsl_destroy_head_check(void *, dmu_tx_t *);\nvoid dsl_destroy_head_sync(void *, dmu_tx_t *);\n\n#ifdef\t__cplusplus\n}\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

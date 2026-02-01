@@ -1,0 +1,9 @@
+{
+  "module_name": "vdev_id.conf.multipath.example",
+  "hash_id": "7c5b8d22dff2589e84b793d22c197c986a5b903520fc44a472214ec0837f07ce",
+  "original_prompt": "Ingested from zfs-2.2.2/etc/zfs/vdev_id.conf.multipath.example",
+  "human_readable_source": "multipath yes\n\n#       PCI_ID  HBA PORT  CHANNEL NAME\nchannel 85:00.0 1         A\nchannel 85:00.0 0         B\nchannel 86:00.0 1         A\nchannel 86:00.0 0         B\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

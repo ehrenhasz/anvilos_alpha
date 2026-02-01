@@ -1,0 +1,9 @@
+{
+  "module_name": "if_rmnet.h",
+  "hash_id": "40150645cbe1f6079a788e4c2089e5aad898526cf869974db491c79337d8db8a",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/if_rmnet.h",
+  "human_readable_source": " \n\n#ifndef _LINUX_IF_RMNET_H_\n#define _LINUX_IF_RMNET_H_\n\n#include <linux/types.h>\n\nstruct rmnet_map_header {\n\tu8 flags;\t\t\t \n\tu8 mux_id;\n\t__be16 pkt_len;\t\t\t \n}  __aligned(1);\n\n \n#define MAP_PAD_LEN_MASK\t\tGENMASK(5, 0)\n#define MAP_NEXT_HEADER_FLAG\t\tBIT(6)\n#define MAP_CMD_FLAG\t\t\tBIT(7)\n\nstruct rmnet_map_dl_csum_trailer {\n\tu8 reserved1;\n\tu8 flags;\t\t\t \n\t__be16 csum_start_offset;\n\t__be16 csum_length;\n\t__sum16 csum_value;\n} __aligned(1);\n\n \n#define MAP_CSUM_DL_VALID_FLAG\t\tBIT(0)\n\nstruct rmnet_map_ul_csum_header {\n\t__be16 csum_start_offset;\n\t__be16 csum_info;\t\t \n} __aligned(1);\n\n \n#define MAP_CSUM_UL_OFFSET_MASK\t\tGENMASK(13, 0)\n#define MAP_CSUM_UL_UDP_FLAG\t\tBIT(14)\n#define MAP_CSUM_UL_ENABLED_FLAG\tBIT(15)\n\n \nstruct rmnet_map_v5_csum_header {\n\tu8 header_info;\n\tu8 csum_info;\n\t__be16 reserved;\n} __aligned(1);\n\n \n\n#define MAPV5_HDRINFO_NXT_HDR_FLAG\tBIT(0)\n#define MAPV5_HDRINFO_HDR_TYPE_FMASK\tGENMASK(7, 1)\n#define MAPV5_CSUMINFO_VALID_FLAG\tBIT(7)\n\n#define RMNET_MAP_HEADER_TYPE_CSUM_OFFLOAD 2\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

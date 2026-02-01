@@ -1,0 +1,9 @@
+{
+  "module_name": "vdec_platform.h",
+  "hash_id": "691d07d5ca9e7bb17e94d1953470f8b9b6e0d92878325926e0364b77970b0165",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/meson/vdec/vdec_platform.h",
+  "human_readable_source": " \n \n\n#ifndef __MESON_VDEC_PLATFORM_H_\n#define __MESON_VDEC_PLATFORM_H_\n\n#include \"vdec.h\"\n\nstruct amvdec_format;\n\nenum vdec_revision {\n\tVDEC_REVISION_GXBB,\n\tVDEC_REVISION_GXL,\n\tVDEC_REVISION_GXM,\n\tVDEC_REVISION_G12A,\n\tVDEC_REVISION_SM1,\n};\n\nstruct vdec_platform {\n\tconst struct amvdec_format *formats;\n\tconst u32 num_formats;\n\tenum vdec_revision revision;\n};\n\nextern const struct vdec_platform vdec_platform_gxbb;\nextern const struct vdec_platform vdec_platform_gxm;\nextern const struct vdec_platform vdec_platform_gxl;\nextern const struct vdec_platform vdec_platform_g12a;\nextern const struct vdec_platform vdec_platform_sm1;\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "drop.h",
+  "hash_id": "8a95fa27fb1bf1fe01463c8b080757f853f81a262e47a387996fa9a3d200e90b",
+  "original_prompt": "Ingested from linux-6.6.14/net/mac80211/drop.h",
+  "human_readable_source": " \n \n\n#ifndef MAC80211_DROP_H\n#define MAC80211_DROP_H\n#include <net/dropreason.h>\n\ntypedef unsigned int __bitwise ieee80211_rx_result;\n\n#define MAC80211_DROP_REASONS_MONITOR(R)\t\\\n\tR(RX_DROP_M_UNEXPECTED_4ADDR_FRAME)\t\\\n\tR(RX_DROP_M_BAD_BCN_KEYIDX)\t\t\\\n\tR(RX_DROP_M_BAD_MGMT_KEYIDX)\t\t\\\n \n\n#define MAC80211_DROP_REASONS_UNUSABLE(R)\t\\\n\tR(RX_DROP_U_MIC_FAIL)\t\t\t\\\n\tR(RX_DROP_U_REPLAY)\t\t\t\\\n\tR(RX_DROP_U_BAD_MMIE)\t\t\t\\\n \n\n \nenum ___mac80211_drop_reason {\n \n\t___RX_CONTINUE\t= SKB_CONSUMED,\n\n \n\t___RX_QUEUED\t= SKB_NOT_DROPPED_YET,\n\n#define ENUM(x) ___ ## x,\n\t___RX_DROP_MONITOR = SKB_DROP_REASON_SUBSYS_MAC80211_MONITOR <<\n\t\tSKB_DROP_REASON_SUBSYS_SHIFT,\n\tMAC80211_DROP_REASONS_MONITOR(ENUM)\n\n\t___RX_DROP_UNUSABLE = SKB_DROP_REASON_SUBSYS_MAC80211_UNUSABLE <<\n\t\tSKB_DROP_REASON_SUBSYS_SHIFT,\n\tMAC80211_DROP_REASONS_UNUSABLE(ENUM)\n#undef ENUM\n};\n\nenum mac80211_drop_reason {\n\tRX_CONTINUE\t = (__force ieee80211_rx_result)___RX_CONTINUE,\n\tRX_QUEUED\t = (__force ieee80211_rx_result)___RX_QUEUED,\n\tRX_DROP_MONITOR\t = (__force ieee80211_rx_result)___RX_DROP_MONITOR,\n\tRX_DROP_UNUSABLE = (__force ieee80211_rx_result)___RX_DROP_UNUSABLE,\n#define DEF(x) x = (__force ieee80211_rx_result)___ ## x,\n\tMAC80211_DROP_REASONS_MONITOR(DEF)\n\tMAC80211_DROP_REASONS_UNUSABLE(DEF)\n#undef DEF\n};\n\n#define RX_RES_IS_UNUSABLE(result)\t\\\n\t(((__force u32)(result) & SKB_DROP_REASON_SUBSYS_MASK) == ___RX_DROP_UNUSABLE)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

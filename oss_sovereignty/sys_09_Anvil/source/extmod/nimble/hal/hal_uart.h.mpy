@@ -1,0 +1,9 @@
+{
+  "module_name": "hal_uart.h",
+  "hash_id": "b58720fcee637088e40a6d42ec7c3772afff04dca184bcde797aa7d6147b529a",
+  "original_prompt": "Ingested from sys_09_Anvil/source/extmod/nimble/hal/hal_uart.h",
+  "human_readable_source": " \n\n#ifndef MICROPY_INCLUDED_EXTMOD_NIMBLE_HAL_HAL_UART_H\n#define MICROPY_INCLUDED_EXTMOD_NIMBLE_HAL_HAL_UART_H\n\n#include <stdint.h>\n\n#define SYSINIT_PANIC_ASSERT_MSG(cond, msg)\n\n#define HAL_UART_PARITY_NONE (0)\n\ntypedef int (*hal_uart_tx_cb_t)(void *arg);\ntypedef int (*hal_uart_rx_cb_t)(void *arg, uint8_t data);\n\n\nint hal_uart_init_cbs(uint32_t port, hal_uart_tx_cb_t tx_cb, void *tx_arg, hal_uart_rx_cb_t rx_cb, void *rx_arg);\nint hal_uart_config(uint32_t port, uint32_t baud, uint32_t bits, uint32_t stop, uint32_t parity, uint32_t flow);\nvoid hal_uart_start_tx(uint32_t port);\nint hal_uart_close(uint32_t port);\n\n\nvoid mp_bluetooth_nimble_hci_uart_process(bool run_events);\n\n#endif \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

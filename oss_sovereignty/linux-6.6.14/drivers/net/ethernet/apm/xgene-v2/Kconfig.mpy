@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "5131f14ef3c2cadfb37febf2751d94831e103ed0c5b711d79b3f396ffe2abd70",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/apm/xgene-v2/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig NET_XGENE_V2\n\ttristate \"APM X-Gene SoC Ethernet-v2 Driver\"\n\tdepends on ARCH_XGENE || COMPILE_TEST\n\thelp\n\t  This is the Ethernet driver for the on-chip ethernet interface\n\t  which uses a linked list of DMA descriptor architecture (v2) for\n\t  APM X-Gene SoCs.\n\n\t  To compile this driver as a module, choose M here. This module will\n\t  be called xgene-enet-v2.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

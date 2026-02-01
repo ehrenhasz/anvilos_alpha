@@ -1,0 +1,9 @@
+{
+  "module_name": "cfg.h",
+  "hash_id": "2de4a198c75d7ca94f4f162bbf79287cce324b1d16e2f23c6e2b1383c1d11e0a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/intersil/orinoco/cfg.h",
+  "human_readable_source": " \n#ifndef ORINOCO_CFG_H\n#define ORINOCO_CFG_H\n\n#include <net/cfg80211.h>\n\nextern const struct cfg80211_ops orinoco_cfg_ops;\n\nvoid orinoco_wiphy_init(struct wiphy *wiphy);\nint orinoco_wiphy_register(struct wiphy *wiphy);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

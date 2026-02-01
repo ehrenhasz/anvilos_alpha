@@ -1,0 +1,9 @@
+{
+  "module_name": "cgskip.txt",
+  "hash_id": "6d92b3faf69bce4eada3e529b8ce142057a63485eaef4022cef1acd23b2792e1",
+  "original_prompt": "Ingested from linux-6.6.14/tools/power/pm-graph/config/cgskip.txt",
+  "human_readable_source": "# -----------------------------------------------\n# CallGraph function skip list\n#\n# This file contains a list of functions which are\n# meant to be skipped in the callgraph trace. It reduces\n# the callgraph html file size by treating these functions\n# as leaves with no child calls. It can be editted by\n# adding or removing function symbol names.\n#\n# The sleepgraph tool automatically pulls this file in when\n# it is found in the config folder. It can be ignored if\n# the tool is called with \"-cgskip off\".\n# -----------------------------------------------\n\n# low level scheduling and timing\nup\ndown_timeout\nmutex_lock\ndown_read\ncomplete_all\nschedule_timeout\nwake_up_process\nmsleep\n__udelay\nktime_get\n\n# console calls\nprintk\ndev_printk\n__dev_printk\nconsole_unlock\n\n# memory handling\n__kmalloc\n__kmalloc_track_caller\nkmem_cache_alloc\nkmem_cache_alloc_trace\nkmem_cache_free\nkstrdup\nkstrdup_const\nkmalloc_slab\nnew_slab\n__slab_alloc\n__slab_free\nraw_pci_read\npci_read\nalloc_pages_current\n\n# debugfs and sysfs setup\ndebugfs_remove_recursive\ndebugfs_create_dir\ndebugfs_create_files\ndebugfs_create_dir\ndebugfs_get_inode\nsysfs_add_file_mode_ns\nsysfs_add_file\nsysfs_create_dir_ns\nsysfs_create_link\nsysfs_create_group\nsysfs_create_groups\nsysfs_create_bin_file\ndpm_sysfs_add\nsysfs_create_file_ns\nsysfs_merge_group\nsysfs_add_link_to_group\nsysfs_create_link_sd\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

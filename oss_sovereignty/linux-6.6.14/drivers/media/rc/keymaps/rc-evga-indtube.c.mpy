@@ -1,0 +1,9 @@
+{
+  "module_name": "rc-evga-indtube.c",
+  "hash_id": "d001a549e6ab77e37cd4ff6a87d56c90d5329649a63b611ff03f47060734ac41",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/rc/keymaps/rc-evga-indtube.c",
+  "human_readable_source": "\n\n\n\n\n\n\n#include <media/rc-map.h>\n#include <linux/module.h>\n\n \n\nstatic struct rc_map_table evga_indtube[] = {\n\t{ 0x12, KEY_POWER},\n\t{ 0x02, KEY_MODE},\t \n\t{ 0x14, KEY_MUTE},\n\t{ 0x1a, KEY_CHANNELUP},\n\t{ 0x16, KEY_TV2},\t \n\t{ 0x1d, KEY_VOLUMEUP},\n\t{ 0x05, KEY_CHANNELDOWN},\n\t{ 0x0f, KEY_PLAYPAUSE},\n\t{ 0x19, KEY_VOLUMEDOWN},\n\t{ 0x1c, KEY_REWIND},\n\t{ 0x0d, KEY_RECORD},\n\t{ 0x18, KEY_FORWARD},\n\t{ 0x1e, KEY_PREVIOUS},\n\t{ 0x1b, KEY_STOP},\n\t{ 0x1f, KEY_NEXT},\n\t{ 0x13, KEY_CAMERA},\n};\n\nstatic struct rc_map_list evga_indtube_map = {\n\t.map = {\n\t\t.scan     = evga_indtube,\n\t\t.size     = ARRAY_SIZE(evga_indtube),\n\t\t.rc_proto = RC_PROTO_UNKNOWN,\t \n\t\t.name     = RC_MAP_EVGA_INDTUBE,\n\t}\n};\n\nstatic int __init init_rc_map_evga_indtube(void)\n{\n\treturn rc_map_register(&evga_indtube_map);\n}\n\nstatic void __exit exit_rc_map_evga_indtube(void)\n{\n\trc_map_unregister(&evga_indtube_map);\n}\n\nmodule_init(init_rc_map_evga_indtube)\nmodule_exit(exit_rc_map_evga_indtube)\n\nMODULE_LICENSE(\"GPL\");\nMODULE_AUTHOR(\"Mauro Carvalho Chehab\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

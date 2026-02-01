@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "c7174903ec08745ac46682347f56249f5fb610fc065af754c10bd1b682d501e5",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/i2c/adv748x/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nadv748x-objs\t:= \\\n\t\tadv748x-afe.o \\\n\t\tadv748x-core.o \\\n\t\tadv748x-csi2.o \\\n\t\tadv748x-hdmi.o\n\nobj-$(CONFIG_VIDEO_ADV748X)\t+= adv748x.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

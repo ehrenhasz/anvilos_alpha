@@ -1,0 +1,9 @@
+{
+  "module_name": "test_subprogs_extable.c",
+  "hash_id": "9d05098c2584534e9bd44ef2d592a958b87db369c54dedd59410d8cecd39c224",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/test_subprogs_extable.c",
+  "human_readable_source": "\n\n#include \"vmlinux.h\"\n#include <bpf/bpf_helpers.h>\n#include <bpf/bpf_tracing.h>\n\nstruct {\n\t__uint(type, BPF_MAP_TYPE_ARRAY);\n\t__uint(max_entries, 8);\n\t__type(key, __u32);\n\t__type(value, __u64);\n} test_array SEC(\".maps\");\n\nunsigned int triggered;\n\nstatic __u64 test_cb(struct bpf_map *map, __u32 *key, __u64 *val, void *data)\n{\n\treturn 1;\n}\n\nSEC(\"fexit/bpf_testmod_return_ptr\")\nint BPF_PROG(handle_fexit_ret_subprogs, int arg, struct file *ret)\n{\n\t*(volatile long *)ret;\n\t*(volatile int *)&ret->f_mode;\n\tbpf_for_each_map_elem(&test_array, test_cb, NULL, 0);\n\ttriggered++;\n\treturn 0;\n}\n\nSEC(\"fexit/bpf_testmod_return_ptr\")\nint BPF_PROG(handle_fexit_ret_subprogs2, int arg, struct file *ret)\n{\n\t*(volatile long *)ret;\n\t*(volatile int *)&ret->f_mode;\n\tbpf_for_each_map_elem(&test_array, test_cb, NULL, 0);\n\ttriggered++;\n\treturn 0;\n}\n\nSEC(\"fexit/bpf_testmod_return_ptr\")\nint BPF_PROG(handle_fexit_ret_subprogs3, int arg, struct file *ret)\n{\n\t*(volatile long *)ret;\n\t*(volatile int *)&ret->f_mode;\n\tbpf_for_each_map_elem(&test_array, test_cb, NULL, 0);\n\ttriggered++;\n\treturn 0;\n}\n\nchar _license[] SEC(\"license\") = \"GPL\";\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

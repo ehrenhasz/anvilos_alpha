@@ -1,0 +1,9 @@
+{
+  "module_name": "nsfs.h",
+  "hash_id": "8b8193fc65cb0487783d2695ad3fc2f3ec058134dafafb6920ac1471627e5689",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/nsfs.h",
+  "human_readable_source": " \n#ifndef __LINUX_NSFS_H\n#define __LINUX_NSFS_H\n\n#include <linux/ioctl.h>\n\n#define NSIO\t0xb7\n\n \n#define NS_GET_USERNS\t\t_IO(NSIO, 0x1)\n \n#define NS_GET_PARENT\t\t_IO(NSIO, 0x2)\n \n#define NS_GET_NSTYPE\t\t_IO(NSIO, 0x3)\n \n#define NS_GET_OWNER_UID\t_IO(NSIO, 0x4)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

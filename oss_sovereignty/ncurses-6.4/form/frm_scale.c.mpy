@@ -1,0 +1,9 @@
+{
+  "module_name": "frm_scale.c",
+  "hash_id": "48d556e15b005682d1167f3ebff360a539d8791e7baeca1b5cb0b80f5ad16973",
+  "original_prompt": "Ingested from ncurses-6.4/form/frm_scale.c",
+  "human_readable_source": " \n\n \n\n#include \"form.priv.h\"\n\nMODULE_ID(\"$Id: frm_scale.c,v 1.13 2021/06/17 21:20:30 tom Exp $\")\n\n \nFORM_EXPORT(int)\nscale_form(const FORM *form, int *rows, int *cols)\n{\n  T((T_CALLED(\"scale_form(%p,%p,%p)\"),\n     (const void *)form,\n     (void *)rows,\n     (void *)cols));\n\n  if (!form)\n    RETURN(E_BAD_ARGUMENT);\n\n  if (!(form->field))\n    RETURN(E_NOT_CONNECTED);\n\n  if (rows)\n    *rows = form->rows;\n  if (cols)\n    *cols = form->cols;\n\n  RETURN(E_OK);\n}\n\n \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

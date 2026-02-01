@@ -1,0 +1,9 @@
+{
+  "module_name": "input_formatter_private.h",
+  "hash_id": "3384da97d8cd4918ad20947627c13911778ad1d0792c5e971e4618c9150cb1d6",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/hive_isp_css_common/host/input_formatter_private.h",
+  "human_readable_source": " \n \n\n#ifndef __INPUT_FORMATTER_PRIVATE_H_INCLUDED__\n#define __INPUT_FORMATTER_PRIVATE_H_INCLUDED__\n\n#include \"input_formatter_public.h\"\n\n#include \"device_access.h\"\n\n#include \"assert_support.h\"\n\nSTORAGE_CLASS_INPUT_FORMATTER_C void input_formatter_reg_store(\n    const input_formatter_ID_t\t\tID,\n    const hrt_address\t\t\treg_addr,\n    const hrt_data\t\t\t\tvalue)\n{\n\tassert(ID < N_INPUT_FORMATTER_ID);\n\tassert(INPUT_FORMATTER_BASE[ID] != (hrt_address)-1);\n\tassert((reg_addr % sizeof(hrt_data)) == 0);\n\tia_css_device_store_uint32(INPUT_FORMATTER_BASE[ID] + reg_addr, value);\n\treturn;\n}\n\nSTORAGE_CLASS_INPUT_FORMATTER_C hrt_data input_formatter_reg_load(\n    const input_formatter_ID_t\tID,\n    const unsigned int\t\t\treg_addr)\n{\n\tassert(ID < N_INPUT_FORMATTER_ID);\n\tassert(INPUT_FORMATTER_BASE[ID] != (hrt_address)-1);\n\tassert((reg_addr % sizeof(hrt_data)) == 0);\n\treturn ia_css_device_load_uint32(INPUT_FORMATTER_BASE[ID] + reg_addr);\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

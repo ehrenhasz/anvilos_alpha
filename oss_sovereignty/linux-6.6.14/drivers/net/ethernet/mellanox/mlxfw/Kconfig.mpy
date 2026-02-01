@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "cd121cb84ea483ebd135f7c3bd379d0f6f99575550ddf36bef2c256d82ad6c15",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/mellanox/mlxfw/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Mellanox firmware flash library configuration\n#\n\nconfig MLXFW\n\ttristate \"Mellanox Technologies firmware flash module\"\n\thelp\n\t  This driver supports Mellanox Technologies Firmware\n\t  flashing common logic.\n\n\t  To compile this driver as a module, choose M here: the\n\t  module will be called mlxfw.\n\tselect XZ_DEC\n\tselect NET_DEVLINK\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

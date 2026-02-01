@@ -1,0 +1,9 @@
+{
+  "module_name": "reset-starfive-jh71x0.h",
+  "hash_id": "f8eca83a6e9de221d6efff1b8d8aaeda15f9694c8cce705e4ac890193fd80ece",
+  "original_prompt": "Ingested from linux-6.6.14/include/soc/starfive/reset-starfive-jh71x0.h",
+  "human_readable_source": " \n#ifndef __SOC_STARFIVE_RESET_JH71X0_H\n#define __SOC_STARFIVE_RESET_JH71X0_H\n\n#include <linux/auxiliary_bus.h>\n#include <linux/compiler_types.h>\n#include <linux/container_of.h>\n\nstruct jh71x0_reset_adev {\n\tvoid __iomem *base;\n\tstruct auxiliary_device adev;\n};\n\n#define to_jh71x0_reset_adev(_adev) \\\n\tcontainer_of((_adev), struct jh71x0_reset_adev, adev)\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

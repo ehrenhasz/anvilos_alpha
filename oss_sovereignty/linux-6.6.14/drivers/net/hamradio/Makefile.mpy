@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "5b11e25bc12c7afb17c2d543779e67ffec63a3895c2c16c774e1cafb288c7be6",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/hamradio/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for the Linux AX.25 and HFMODEM device drivers.\n#\n#\n# 19971130 \tMoved the amateur radio related network drivers from \n#\t\tdrivers/net/ to drivers/hamradio for easier maintenance.\n#               Joerg Reuter DL1BKE <jreuter@yaina.de>\n#\n# 20000806\tRewritten to use lists instead of if-statements.\n#\t\tChristoph Hellwig <hch@infradead.org>\n#\n\nobj-$(CONFIG_SCC)\t\t+= scc.o\nobj-$(CONFIG_MKISS)\t\t+= mkiss.o\nobj-$(CONFIG_6PACK)\t\t+= 6pack.o\nobj-$(CONFIG_YAM)\t\t+= yam.o\nobj-$(CONFIG_BPQETHER)\t\t+= bpqether.o\nobj-$(CONFIG_BAYCOM_SER_FDX)\t+= baycom_ser_fdx.o\thdlcdrv.o\nobj-$(CONFIG_BAYCOM_SER_HDX)\t+= baycom_ser_hdx.o\thdlcdrv.o\nobj-$(CONFIG_BAYCOM_PAR)\t+= baycom_par.o\t\thdlcdrv.o\nobj-$(CONFIG_BAYCOM_EPP)\t+= baycom_epp.o\t\thdlcdrv.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

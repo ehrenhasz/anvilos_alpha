@@ -1,0 +1,9 @@
+{
+  "module_name": "pipe_util.c",
+  "hash_id": "14686402dff9a7f137304d27837508ff1d023b831151cf03bf10b162c4ba576f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/camera/pipe/src/pipe_util.c",
+  "human_readable_source": "\n \n\n#include \"ia_css_pipe_util.h\"\n#include \"ia_css_frame_public.h\"\n#include \"ia_css_pipe.h\"\n#include \"ia_css_util.h\"\n#include \"assert_support.h\"\n\nunsigned int ia_css_pipe_util_pipe_input_format_bpp(\n    const struct ia_css_pipe *const pipe)\n{\n\tassert(pipe);\n\tassert(pipe->stream);\n\n\treturn ia_css_util_input_format_bpp(pipe->stream->config.input_config.format,\n\t\t\t\t\t    pipe->stream->config.pixels_per_clock == 2);\n}\n\nvoid ia_css_pipe_util_create_output_frames(\n    struct ia_css_frame *frames[])\n{\n\tunsigned int i;\n\n\tassert(frames);\n\tfor (i = 0; i < IA_CSS_BINARY_MAX_OUTPUT_PORTS; i++) {\n\t\tframes[i] = NULL;\n\t}\n}\n\nvoid ia_css_pipe_util_set_output_frames(\n    struct ia_css_frame *frames[],\n    unsigned int idx,\n    struct ia_css_frame *frame)\n{\n\tassert(idx < IA_CSS_BINARY_MAX_OUTPUT_PORTS);\n\n\tframes[idx] = frame;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

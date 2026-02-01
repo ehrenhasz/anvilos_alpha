@@ -1,0 +1,9 @@
+{
+  "module_name": "cl006e.h",
+  "hash_id": "0b0341359ceb383719078410f6cb04392f6334d1629f5e5aa7e1e0668755802f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/include/nvhw/class/cl006e.h",
+  "human_readable_source": " \n#ifndef _cl006e_h_\n#define _cl006e_h_\n\n \n#define NV06E_SET_OBJECT                                           (0x00000000)\n#define NV06E_REFERENCE                                            (0x00000048)\n#define NV06E_SET_REFERENCE                                        (0x00000050)\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

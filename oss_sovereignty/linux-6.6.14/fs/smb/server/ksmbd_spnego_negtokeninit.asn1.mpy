@@ -1,0 +1,9 @@
+{
+  "module_name": "ksmbd_spnego_negtokeninit.asn1",
+  "hash_id": "beef6ac2c21f7848740534161972caf6e0b966ac508bb3924d874d3887ba79fc",
+  "original_prompt": "Ingested from linux-6.6.14/fs/smb/server/ksmbd_spnego_negtokeninit.asn1",
+  "human_readable_source": "GSSAPI ::=\n\t[APPLICATION 0] IMPLICIT SEQUENCE {\n\t\tthisMech\n\t\t\tOBJECT IDENTIFIER ({ksmbd_gssapi_this_mech}),\n\t\tnegotiationToken\n\t\t\tNegotiationToken\n\t}\n\nMechType ::= OBJECT IDENTIFIER ({ksmbd_neg_token_init_mech_type})\n\nMechTypeList ::= SEQUENCE OF MechType\n\nNegTokenInit ::=\n\tSEQUENCE {\n\t\tmechTypes\n\t\t\t[0] MechTypeList,\n\t\treqFlags\n\t\t\t[1] BIT STRING OPTIONAL,\n\t\tmechToken\n\t\t\t[2] OCTET STRING OPTIONAL ({ksmbd_neg_token_init_mech_token}),\n\t\tmechListMIC\n\t\t\t[3] OCTET STRING OPTIONAL\n\t}\n\nNegotiationToken ::=\n\tCHOICE {\n\t\tnegTokenInit\n\t\t\t[0] NegTokenInit,\n\t\tnegTokenTarg\n\t\t\t[1] ANY\n\t}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

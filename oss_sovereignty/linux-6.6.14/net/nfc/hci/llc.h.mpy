@@ -1,0 +1,9 @@
+{
+  "module_name": "llc.h",
+  "hash_id": "75067f39d52134c5345ce09711a8b6aa03828da8c884731b5c62905ace840778",
+  "original_prompt": "Ingested from linux-6.6.14/net/nfc/hci/llc.h",
+  "human_readable_source": " \n \n\n#ifndef __LOCAL_LLC_H_\n#define __LOCAL_LLC_H_\n\n#include <net/nfc/hci.h>\n#include <net/nfc/llc.h>\n#include <linux/skbuff.h>\n\nstruct nfc_llc_ops {\n\tvoid *(*init) (struct nfc_hci_dev *hdev, xmit_to_drv_t xmit_to_drv,\n\t\t       rcv_to_hci_t rcv_to_hci, int tx_headroom,\n\t\t       int tx_tailroom, int *rx_headroom, int *rx_tailroom,\n\t\t       llc_failure_t llc_failure);\n\tvoid (*deinit) (struct nfc_llc *llc);\n\tint (*start) (struct nfc_llc *llc);\n\tint (*stop) (struct nfc_llc *llc);\n\tvoid (*rcv_from_drv) (struct nfc_llc *llc, struct sk_buff *skb);\n\tint (*xmit_from_hci) (struct nfc_llc *llc, struct sk_buff *skb);\n};\n\nstruct nfc_llc_engine {\n\tconst char *name;\n\tconst struct nfc_llc_ops *ops;\n\tstruct list_head entry;\n};\n\nstruct nfc_llc {\n\tvoid *data;\n\tconst struct nfc_llc_ops *ops;\n\tint rx_headroom;\n\tint rx_tailroom;\n};\n\nvoid *nfc_llc_get_data(struct nfc_llc *llc);\n\nint nfc_llc_register(const char *name, const struct nfc_llc_ops *ops);\nvoid nfc_llc_unregister(const char *name);\n\nint nfc_llc_nop_register(void);\n\n#if defined(CONFIG_NFC_SHDLC)\nint nfc_llc_shdlc_register(void);\n#else\nstatic inline int nfc_llc_shdlc_register(void)\n{\n\treturn 0;\n}\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

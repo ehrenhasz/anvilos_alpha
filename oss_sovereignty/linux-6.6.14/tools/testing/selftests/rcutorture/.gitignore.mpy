@@ -1,0 +1,9 @@
+{
+  "module_name": ".gitignore",
+  "hash_id": "9a855ff1984acdf6decd976e39319396ae19f8a87e88affd3ee458c7d362706c",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/rcutorture/.gitignore",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\ninitrd\nb[0-9]*\nres\n*.swp\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

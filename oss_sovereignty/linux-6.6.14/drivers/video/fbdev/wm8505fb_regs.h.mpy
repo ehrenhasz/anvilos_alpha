@@ -1,0 +1,9 @@
+{
+  "module_name": "wm8505fb_regs.h",
+  "hash_id": "1a53863f3ce552d17ec5712dc8091df4d125bbd3e78b1690de3d562dc3d5965d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/video/fbdev/wm8505fb_regs.h",
+  "human_readable_source": " \n \n\n#ifndef _WM8505FB_REGS_H\n#define _WM8505FB_REGS_H\n\n \n#define WMT_GOVR_COLORSPACE\t0x1e4\n \n#define WMT_GOVR_COLORSPACE1\t 0x30\n\n#define WMT_GOVR_CONTRAST\t0x1b8\n#define WMT_GOVR_BRGHTNESS\t0x1bc  \n\n \n#define WMT_GOVR_FBADDR\t\t 0x90\n#define WMT_GOVR_FBADDR1\t 0x94  \n\n \n#define WMT_GOVR_XPAN\t\t 0xa4\n#define WMT_GOVR_YPAN\t\t 0xa0\n\n#define WMT_GOVR_XRES\t\t 0x98\n#define WMT_GOVR_XRES_VIRTUAL\t 0x9c\n\n#define WMT_GOVR_MIF_ENABLE\t 0x80\n#define WMT_GOVR_FHI\t\t 0xa8\n#define WMT_GOVR_REG_UPDATE\t 0xe4\n\n \n#define WMT_GOVR_DVO_SET\t0x148\n\n \n#define WMT_GOVR_TG\t\t0x100\n\n \n#define WMT_GOVR_TIMING_H_ALL\t0x108\n#define WMT_GOVR_TIMING_V_ALL\t0x10c\n#define WMT_GOVR_TIMING_V_START\t0x110\n#define WMT_GOVR_TIMING_V_END\t0x114\n#define WMT_GOVR_TIMING_H_START\t0x118\n#define WMT_GOVR_TIMING_H_END\t0x11c\n#define WMT_GOVR_TIMING_V_SYNC\t0x128\n#define WMT_GOVR_TIMING_H_SYNC\t0x12c\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

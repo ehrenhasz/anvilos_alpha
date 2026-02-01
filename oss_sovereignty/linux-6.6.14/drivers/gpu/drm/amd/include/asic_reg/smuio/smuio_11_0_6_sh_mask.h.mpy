@@ -1,0 +1,9 @@
+{
+  "module_name": "smuio_11_0_6_sh_mask.h",
+  "hash_id": "ea8745ab8969e19bdaf1e81fa4a99f223d368adfa1f9b7e10be74276c9982a79",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/include/asic_reg/smuio/smuio_11_0_6_sh_mask.h",
+  "human_readable_source": " \n#ifndef _smuio_11_0_6_SH_MASK_HEADER\n#define _smuio_11_0_6_SH_MASK_HEADER\n\n\n\n#define CGTT_ROM_CLK_CTRL0__ON_DELAY__SHIFT                                                                   0x0\n#define CGTT_ROM_CLK_CTRL0__OFF_HYSTERESIS__SHIFT                                                             0x4\n#define CGTT_ROM_CLK_CTRL0__SOFT_OVERRIDE1__SHIFT                                                             0x1e\n#define CGTT_ROM_CLK_CTRL0__SOFT_OVERRIDE0__SHIFT                                                             0x1f\n#define CGTT_ROM_CLK_CTRL0__ON_DELAY_MASK                                                                     0x0000000FL\n#define CGTT_ROM_CLK_CTRL0__OFF_HYSTERESIS_MASK                                                               0x00000FF0L\n#define CGTT_ROM_CLK_CTRL0__SOFT_OVERRIDE1_MASK                                                               0x40000000L\n#define CGTT_ROM_CLK_CTRL0__SOFT_OVERRIDE0_MASK                                                               0x80000000L\n\n#define ROM_INDEX__ROM_INDEX__SHIFT                                                                           0x0\n#define ROM_INDEX__ROM_INDEX_MASK                                                                             0x01FFFFFFL\n\n#define ROM_DATA__ROM_DATA__SHIFT                                                                             0x0\n#define ROM_DATA__ROM_DATA_MASK                                                                               0xFFFFFFFFL\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

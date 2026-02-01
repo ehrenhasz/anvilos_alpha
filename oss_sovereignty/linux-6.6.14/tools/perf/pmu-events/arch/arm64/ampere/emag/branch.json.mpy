@@ -1,0 +1,9 @@
+{
+  "module_name": "branch.json",
+  "hash_id": "623c3f3130c29b4f32fad235f357426078c43b6fc4905204c2db8738aca3cc41",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/pmu-events/arch/arm64/ampere/emag/branch.json",
+  "human_readable_source": "[\n    {\n        \"ArchStdEvent\": \"BR_IMMED_SPEC\"\n    },\n    {\n        \"ArchStdEvent\": \"BR_RETURN_SPEC\"\n    },\n    {\n        \"ArchStdEvent\": \"BR_INDIRECT_SPEC\"\n    },\n    {\n        \"ArchStdEvent\": \"BR_MIS_PRED\",\n        \"BriefDescription\": \"Branch mispredicted\"\n    },\n    {\n        \"ArchStdEvent\": \"BR_PRED\",\n        \"BriefDescription\": \"Predictable branch\"\n    }\n]\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

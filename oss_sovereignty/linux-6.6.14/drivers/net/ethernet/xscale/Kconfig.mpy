@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "9f2a755907a4c80d00948656678adf0a30890bcfe1864965799e874075baf9da",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/xscale/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Intel XScale IXP device configuration\n#\n\nconfig NET_VENDOR_XSCALE\n\tbool \"Intel XScale IXP devices\"\n\tdefault y\n\tdepends on NET_VENDOR_INTEL && (ARM && ARCH_IXP4XX && \\\n\t\t   IXP4XX_NPE && IXP4XX_QMGR)\n\thelp\n\t  If you have a network (Ethernet) card belonging to this class, say Y.\n\n\t  Note that the answer to this question does not directly affect the\n\t  kernel: saying N will just cause the configurator to skip all\n\t  the questions about XScale IXP devices. If you say Y, you will be\n\t  asked for your specific card in the following questions.\n\nif NET_VENDOR_XSCALE\n\nconfig IXP4XX_ETH\n\ttristate \"Intel IXP4xx Ethernet support\"\n\tdepends on ARM && ARCH_IXP4XX && IXP4XX_NPE && IXP4XX_QMGR && OF\n\tselect PHYLIB\n\tselect OF_MDIO\n\tselect NET_PTP_CLASSIFY\n\thelp\n\t  Say Y here if you want to use built-in Ethernet ports\n\t  on IXP4xx processor.\n\nconfig PTP_1588_CLOCK_IXP46X\n\tbool \"Intel IXP46x as PTP clock\"\n\tdepends on IXP4XX_ETH\n\tdepends on PTP_1588_CLOCK=y || PTP_1588_CLOCK=IXP4XX_ETH\n\tdefault y\n\thelp\n\t  This driver adds support for using the IXP46X as a PTP\n\t  clock. This clock is only useful if your PTP programs are\n\t  getting hardware time stamps on the PTP Ethernet packets\n\t  using the SO_TIMESTAMPING API.\n\n\t  To compile this driver as a module, choose M here: the module\n\t  will be called ptp_ixp46x.\n\nendif # NET_VENDOR_XSCALE\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "optee_trace.h",
+  "hash_id": "195d58cee6a92b5fb3bb7ad00dfda524f93373825b801e157066e21c6d9ad485",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/tee/optee/optee_trace.h",
+  "human_readable_source": " \n \n\n#undef TRACE_SYSTEM\n#define TRACE_SYSTEM optee\n\n#if !defined(_TRACE_OPTEE_H) || defined(TRACE_HEADER_MULTI_READ)\n#define _TRACE_OPTEE_H\n\n#include <linux/arm-smccc.h>\n#include <linux/tracepoint.h>\n#include \"optee_private.h\"\n\nTRACE_EVENT(optee_invoke_fn_begin,\n\tTP_PROTO(struct optee_rpc_param *param),\n\tTP_ARGS(param),\n\n\tTP_STRUCT__entry(\n\t\t__field(void *, param)\n\t\t__array(u32, args, 8)\n\t),\n\n\tTP_fast_assign(\n\t\t__entry->param = param;\n\t\tBUILD_BUG_ON(sizeof(*param) < sizeof(__entry->args));\n\t\tmemcpy(__entry->args, param, sizeof(__entry->args));\n\t),\n\n\tTP_printk(\"param=%p (%x, %x, %x, %x, %x, %x, %x, %x)\", __entry->param,\n\t\t  __entry->args[0], __entry->args[1], __entry->args[2],\n\t\t  __entry->args[3], __entry->args[4], __entry->args[5],\n\t\t  __entry->args[6], __entry->args[7])\n);\n\nTRACE_EVENT(optee_invoke_fn_end,\n\tTP_PROTO(struct optee_rpc_param *param, struct arm_smccc_res *res),\n\tTP_ARGS(param, res),\n\n\tTP_STRUCT__entry(\n\t\t__field(void *, param)\n\t\t__array(unsigned long, rets, 4)\n\t),\n\n\tTP_fast_assign(\n\t\t__entry->param = param;\n\t\tBUILD_BUG_ON(sizeof(*res) < sizeof(__entry->rets));\n\t\tmemcpy(__entry->rets, res, sizeof(__entry->rets));\n\t),\n\n\tTP_printk(\"param=%p ret (%lx, %lx, %lx, %lx)\", __entry->param,\n\t\t  __entry->rets[0], __entry->rets[1], __entry->rets[2],\n\t\t  __entry->rets[3])\n);\n#endif  \n\n#undef TRACE_INCLUDE_PATH\n#define TRACE_INCLUDE_PATH .\n#undef TRACE_INCLUDE_FILE\n#define TRACE_INCLUDE_FILE optee_trace\n\n \n#include <trace/define_trace.h>\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

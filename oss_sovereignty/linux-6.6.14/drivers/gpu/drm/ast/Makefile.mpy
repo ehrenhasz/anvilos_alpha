@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "3f86215d50db77dd769bd80a8ae7d97344c74ba70c2a839cff7ae942be2b1499",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/ast/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Makefile for the drm device driver.  This driver provides support for the\n# Direct Rendering Infrastructure (DRI) in XFree86 4.1.0 and higher.\n\nast-y := ast_drv.o ast_i2c.o ast_main.o ast_mm.o ast_mode.o ast_post.o ast_dp501.o ast_dp.o\n\nobj-$(CONFIG_DRM_AST) := ast.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

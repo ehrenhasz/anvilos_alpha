@@ -1,0 +1,9 @@
+{
+  "module_name": "timed_controller_defs.h",
+  "hash_id": "8a2eed934db84a52bb9de93ebe1912204cb8b115eb3449547e448e8337a04dd2",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/timed_controller_defs.h",
+  "human_readable_source": " \n \n\n#ifndef _timed_controller_defs_h\n#define _timed_controller_defs_h\n\n#define _HRT_TIMED_CONTROLLER_CMD_REG_IDX 0\n\n#define _HRT_TIMED_CONTROLLER_REG_ALIGN 4\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

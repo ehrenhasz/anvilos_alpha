@@ -1,0 +1,9 @@
+{
+  "module_name": "toshiba,tmpv770x.h",
+  "hash_id": "d6567146b5ac01249e551a3fe88d7d323a20626fd20877d99811dab7975bf48e",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/reset/toshiba,tmpv770x.h",
+  "human_readable_source": " \n\n#ifndef _DT_BINDINGS_RESET_TOSHIBA_TMPV770X_H_\n#define _DT_BINDINGS_RESET_TOSHIBA_TMPV770X_H_\n\n \n#define TMPV770X_RESET_PIETHER_2P5M\t0\n#define TMPV770X_RESET_PIETHER_25M\t1\n#define TMPV770X_RESET_PIETHER_50M\t2\n#define TMPV770X_RESET_PIETHER_125M\t3\n#define TMPV770X_RESET_HOX\t\t4\n#define TMPV770X_RESET_PCIE_MSTR\t5\n#define TMPV770X_RESET_PCIE_AUX\t\t6\n#define TMPV770X_RESET_PIINTC\t\t7\n#define TMPV770X_RESET_PIETHER_BUS\t8\n#define TMPV770X_RESET_PISPI0\t\t9\n#define TMPV770X_RESET_PISPI1\t\t10\n#define TMPV770X_RESET_PISPI2\t\t11\n#define TMPV770X_RESET_PISPI3\t\t12\n#define TMPV770X_RESET_PISPI4\t\t13\n#define TMPV770X_RESET_PISPI5\t\t14\n#define TMPV770X_RESET_PISPI6\t\t15\n#define TMPV770X_RESET_PIUART0\t\t16\n#define TMPV770X_RESET_PIUART1\t\t17\n#define TMPV770X_RESET_PIUART2\t\t18\n#define TMPV770X_RESET_PIUART3\t\t19\n#define TMPV770X_RESET_PII2C0\t\t20\n#define TMPV770X_RESET_PII2C1\t\t21\n#define TMPV770X_RESET_PII2C2\t\t22\n#define TMPV770X_RESET_PII2C3\t\t23\n#define TMPV770X_RESET_PII2C4\t\t24\n#define TMPV770X_RESET_PII2C5\t\t25\n#define TMPV770X_RESET_PII2C6\t\t26\n#define TMPV770X_RESET_PII2C7\t\t27\n#define TMPV770X_RESET_PII2C8\t\t28\n#define TMPV770X_RESET_PIPCMIF\t\t29\n#define TMPV770X_RESET_PICKMON\t\t30\n#define TMPV770X_RESET_SBUSCLK\t\t31\n#define TMPV770X_NR_RESET\t\t32\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

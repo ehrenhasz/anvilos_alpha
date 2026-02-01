@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "52a9a52af9b9b244ef556761849ddc91c61b7c66696a1a6c9937ddd3067bc0b7",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/video/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n\nobj-$(CONFIG_APERTURE_HELPERS)    += aperture.o\nobj-$(CONFIG_STI_CORE)            += sticore.o\nobj-$(CONFIG_VGASTATE)            += vgastate.o\nobj-$(CONFIG_VIDEO_CMDLINE)       += cmdline.o\nobj-$(CONFIG_VIDEO_NOMODESET)     += nomodeset.o\nobj-$(CONFIG_HDMI)                += hdmi.o\n\nobj-$(CONFIG_VT)\t\t  += console/\nobj-$(CONFIG_FB_STI)\t\t  += console/\nobj-$(CONFIG_LOGO)\t\t  += logo/\nobj-y\t\t\t\t  += backlight/\n\nobj-y\t\t\t\t  += fbdev/\n\nobj-$(CONFIG_VIDEOMODE_HELPERS) += display_timing.o videomode.o\nifeq ($(CONFIG_OF),y)\nobj-$(CONFIG_VIDEOMODE_HELPERS) += of_display_timing.o of_videomode.o\nendif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

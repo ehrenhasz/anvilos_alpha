@@ -1,0 +1,9 @@
+{
+  "module_name": "config-h.m4",
+  "hash_id": "ed8cdba8d5dfc76fed1e071714105b5e38eb378b97b15c38ab3a26ea48e34fa0",
+  "original_prompt": "Ingested from coreutils-9.4/m4/config-h.m4",
+  "human_readable_source": "# Say that -DHAVE_CONFIG_H is not needed.\n\ndnl Copyright (C) 2006, 2009-2023 Free Software Foundation, Inc.\ndnl This file is free software; the Free Software Foundation\ndnl gives unlimited permission to copy and/or distribute it,\ndnl with or without modifications, as long as this notice is preserved.\n\ndnl Written by Paul Eggert.\n\n# This package's source files all include config.h unconditionally,\n# so there's no need to pass -DHAVE_CONFIG_H to the compiler.\nAC_DEFUN([gl_CONFIG_H],\n  [AC_CONFIG_COMMANDS_PRE([test \"X$DEFS\" = X-DHAVE_CONFIG_H && DEFS=])])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

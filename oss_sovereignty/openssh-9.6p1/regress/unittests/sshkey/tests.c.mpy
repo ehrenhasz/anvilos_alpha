@@ -1,0 +1,9 @@
+{
+  "module_name": "tests.c",
+  "hash_id": "0e50b9681b7b7a6591a5c86ac34bf879be22bff7110fbc398211f47f03857458",
+  "original_prompt": "Ingested from openssh-9.6p1/regress/unittests/sshkey/tests.c",
+  "human_readable_source": " \n \n\n#include \"includes.h\"\n\n#include \"../test_helper/test_helper.h\"\n\nvoid sshkey_tests(void);\nvoid sshkey_file_tests(void);\nvoid sshkey_fuzz_tests(void);\n\nvoid\ntests(void)\n{\n\tsshkey_tests();\n\tsshkey_file_tests();\n\tsshkey_fuzz_tests();\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

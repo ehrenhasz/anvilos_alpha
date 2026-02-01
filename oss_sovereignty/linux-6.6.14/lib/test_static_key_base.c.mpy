@@ -1,0 +1,9 @@
+{
+  "module_name": "test_static_key_base.c",
+  "hash_id": "4970f9652a40ebbafa4121170d173e58fb7665e5d6f62967e9de810adbcc9400",
+  "original_prompt": "Ingested from linux-6.6.14/lib/test_static_key_base.c",
+  "human_readable_source": "\n \n\n#include <linux/module.h>\n#include <linux/jump_label.h>\n\n \nstruct static_key base_old_true_key = STATIC_KEY_INIT_TRUE;\nEXPORT_SYMBOL_GPL(base_old_true_key);\nstruct static_key base_inv_old_true_key = STATIC_KEY_INIT_TRUE;\nEXPORT_SYMBOL_GPL(base_inv_old_true_key);\nstruct static_key base_old_false_key = STATIC_KEY_INIT_FALSE;\nEXPORT_SYMBOL_GPL(base_old_false_key);\nstruct static_key base_inv_old_false_key = STATIC_KEY_INIT_FALSE;\nEXPORT_SYMBOL_GPL(base_inv_old_false_key);\n\n \nDEFINE_STATIC_KEY_TRUE(base_true_key);\nEXPORT_SYMBOL_GPL(base_true_key);\nDEFINE_STATIC_KEY_TRUE(base_inv_true_key);\nEXPORT_SYMBOL_GPL(base_inv_true_key);\nDEFINE_STATIC_KEY_FALSE(base_false_key);\nEXPORT_SYMBOL_GPL(base_false_key);\nDEFINE_STATIC_KEY_FALSE(base_inv_false_key);\nEXPORT_SYMBOL_GPL(base_inv_false_key);\n\nstatic void invert_key(struct static_key *key)\n{\n\tif (static_key_enabled(key))\n\t\tstatic_key_disable(key);\n\telse\n\t\tstatic_key_enable(key);\n}\n\nstatic int __init test_static_key_base_init(void)\n{\n\tinvert_key(&base_inv_old_true_key);\n\tinvert_key(&base_inv_old_false_key);\n\tinvert_key(&base_inv_true_key.key);\n\tinvert_key(&base_inv_false_key.key);\n\n\treturn 0;\n}\n\nstatic void __exit test_static_key_base_exit(void)\n{\n}\n\nmodule_init(test_static_key_base_init);\nmodule_exit(test_static_key_base_exit);\n\nMODULE_AUTHOR(\"Jason Baron <jbaron@akamai.com>\");\nMODULE_LICENSE(\"GPL\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

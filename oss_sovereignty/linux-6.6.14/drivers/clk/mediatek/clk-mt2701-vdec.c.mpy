@@ -1,0 +1,9 @@
+{
+  "module_name": "clk-mt2701-vdec.c",
+  "hash_id": "d534d0b5fff7931f4da0f7de309975c54651082380acdeee5afc83fd006a44f5",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/clk/mediatek/clk-mt2701-vdec.c",
+  "human_readable_source": "\n \n\n#include <linux/clk-provider.h>\n#include <linux/platform_device.h>\n\n#include \"clk-mtk.h\"\n#include \"clk-gate.h\"\n\n#include <dt-bindings/clock/mt2701-clk.h>\n\nstatic const struct mtk_gate_regs vdec0_cg_regs = {\n\t.set_ofs = 0x0000,\n\t.clr_ofs = 0x0004,\n\t.sta_ofs = 0x0000,\n};\n\nstatic const struct mtk_gate_regs vdec1_cg_regs = {\n\t.set_ofs = 0x0008,\n\t.clr_ofs = 0x000c,\n\t.sta_ofs = 0x0008,\n};\n\n#define GATE_VDEC0(_id, _name, _parent, _shift)\t\t\t\t\\\n\tGATE_MTK(_id, _name, _parent, &vdec0_cg_regs, _shift, &mtk_clk_gate_ops_setclr_inv)\n\n#define GATE_VDEC1(_id, _name, _parent, _shift)\t\t\t\t\\\n\tGATE_MTK(_id, _name, _parent, &vdec1_cg_regs, _shift, &mtk_clk_gate_ops_setclr_inv)\n\nstatic const struct mtk_gate vdec_clks[] = {\n\tGATE_VDEC0(CLK_VDEC_CKGEN, \"vdec_cken\", \"vdec_sel\", 0),\n\tGATE_VDEC1(CLK_VDEC_LARB, \"vdec_larb_cken\", \"mm_sel\", 0),\n};\n\nstatic const struct mtk_clk_desc vdec_desc = {\n\t.clks = vdec_clks,\n\t.num_clks = ARRAY_SIZE(vdec_clks),\n};\n\nstatic const struct of_device_id of_match_clk_mt2701_vdec[] = {\n\t{\n\t\t.compatible = \"mediatek,mt2701-vdecsys\",\n\t\t.data = &vdec_desc,\n\t}, {\n\t\t \n\t}\n};\nMODULE_DEVICE_TABLE(of, of_match_clk_mt2701_vdec);\n\nstatic struct platform_driver clk_mt2701_vdec_drv = {\n\t.probe = mtk_clk_simple_probe,\n\t.remove_new = mtk_clk_simple_remove,\n\t.driver = {\n\t\t.name = \"clk-mt2701-vdec\",\n\t\t.of_match_table = of_match_clk_mt2701_vdec,\n\t},\n};\nmodule_platform_driver(clk_mt2701_vdec_drv);\nMODULE_LICENSE(\"GPL\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

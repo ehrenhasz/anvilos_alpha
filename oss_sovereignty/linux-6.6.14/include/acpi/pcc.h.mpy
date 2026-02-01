@@ -1,0 +1,9 @@
+{
+  "module_name": "pcc.h",
+  "hash_id": "aa7db61942e0ba3f00ec0632965acf76c0193a9b3a2d5cf6d19817f00c93c87d",
+  "original_prompt": "Ingested from linux-6.6.14/include/acpi/pcc.h",
+  "human_readable_source": " \n \n\n#ifndef _PCC_H\n#define _PCC_H\n\n#include <linux/mailbox_controller.h>\n#include <linux/mailbox_client.h>\n\nstruct pcc_mbox_chan {\n\tstruct mbox_chan *mchan;\n\tu64 shmem_base_addr;\n\tu64 shmem_size;\n\tu32 latency;\n\tu32 max_access_rate;\n\tu16 min_turnaround_time;\n};\n\n#define MAX_PCC_SUBSPACES\t256\n#ifdef CONFIG_PCC\nextern struct pcc_mbox_chan *\npcc_mbox_request_channel(struct mbox_client *cl, int subspace_id);\nextern void pcc_mbox_free_channel(struct pcc_mbox_chan *chan);\n#else\nstatic inline struct pcc_mbox_chan *\npcc_mbox_request_channel(struct mbox_client *cl, int subspace_id)\n{\n\treturn ERR_PTR(-ENODEV);\n}\nstatic inline void pcc_mbox_free_channel(struct pcc_mbox_chan *chan) { }\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

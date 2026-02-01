@@ -1,0 +1,9 @@
+{
+  "module_name": "samsung-i2s.h",
+  "hash_id": "7d4f80c94a61620a5dafdaff00e41bca4b0ec3a56888e33bd3d2db2d224b9292",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/sound/samsung-i2s.h",
+  "human_readable_source": " \n#ifndef _DT_BINDINGS_SAMSUNG_I2S_H\n#define _DT_BINDINGS_SAMSUNG_I2S_H\n\n#define CLK_I2S_CDCLK\t\t0  \n\n#define CLK_I2S_RCLK_SRC\t1  \n\n#define CLK_I2S_RCLK_PSR\t2  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "cgroup_getset_retval_getsockopt.c",
+  "hash_id": "dc70f2d5970b828b4fd04dde165a3fb12a219fb42ea2ec67c44615099646ffa6",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/cgroup_getset_retval_getsockopt.c",
+  "human_readable_source": "\n\n \n\n#include <errno.h>\n#include <linux/bpf.h>\n#include <bpf/bpf_helpers.h>\n\n__u32 invocations = 0;\n__u32 assertion_error = 0;\n__u32 retval_value = 0;\n__u32 ctx_retval_value = 0;\n__u32 page_size = 0;\n\nSEC(\"cgroup/getsockopt\")\nint get_retval(struct bpf_sockopt *ctx)\n{\n\tretval_value = bpf_get_retval();\n\tctx_retval_value = ctx->retval;\n\t__sync_fetch_and_add(&invocations, 1);\n\n\t \n\tif (ctx->optlen > page_size)\n\t\tctx->optlen = 0;\n\n\treturn 1;\n}\n\nSEC(\"cgroup/getsockopt\")\nint set_eisconn(struct bpf_sockopt *ctx)\n{\n\t__sync_fetch_and_add(&invocations, 1);\n\n\tif (bpf_set_retval(-EISCONN))\n\t\tassertion_error = 1;\n\n\t \n\tif (ctx->optlen > page_size)\n\t\tctx->optlen = 0;\n\n\treturn 1;\n}\n\nSEC(\"cgroup/getsockopt\")\nint clear_retval(struct bpf_sockopt *ctx)\n{\n\t__sync_fetch_and_add(&invocations, 1);\n\n\tctx->retval = 0;\n\n\t \n\tif (ctx->optlen > page_size)\n\t\tctx->optlen = 0;\n\n\treturn 1;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

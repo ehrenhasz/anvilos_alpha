@@ -1,0 +1,9 @@
+{
+  "module_name": "sun9i-a80-usb.h",
+  "hash_id": "2344665edcae28851930b84dda7d8f2cc566b5198f47bd8a907435a960a5c524",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/reset/sun9i-a80-usb.h",
+  "human_readable_source": " \n\n#ifndef _DT_BINDINGS_RESET_SUN9I_A80_USB_H_\n#define _DT_BINDINGS_RESET_SUN9I_A80_USB_H_\n\n#define RST_USB0_HCI\t0\n#define RST_USB1_HCI\t1\n#define RST_USB2_HCI\t2\n\n#define RST_USB0_PHY\t3\n#define RST_USB1_HSIC\t4\n#define RST_USB1_PHY\t5\n#define RST_USB2_HSIC\t6\n#define RST_USB2_PHY\t7\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

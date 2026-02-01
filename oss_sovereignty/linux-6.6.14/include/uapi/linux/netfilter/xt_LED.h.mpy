@@ -1,0 +1,9 @@
+{
+  "module_name": "xt_LED.h",
+  "hash_id": "09408cc0ff5da414032f4b67d733ebb725291d38511c81d3f5bd1163292ad6b8",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/netfilter/xt_LED.h",
+  "human_readable_source": " \n#ifndef _XT_LED_H\n#define _XT_LED_H\n\n#include <linux/types.h>\n\nstruct xt_led_info {\n\tchar id[27];         \n\t__u8 always_blink;   \n\t__u32 delay;         \n\n\t \n\tvoid *internal_data __attribute__((aligned(8)));\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

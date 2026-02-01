@@ -1,0 +1,9 @@
+{
+  "module_name": "dc_vm_helper.c",
+  "hash_id": "64cf3fb1c54dc1e7ae2fa0a1b58ed287b3fd106358c8533e6b26142269ab5e98",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/dc/core/dc_vm_helper.c",
+  "human_readable_source": " \n\n#include \"vm_helper.h\"\n#include \"dc.h\"\n\nvoid vm_helper_mark_vmid_used(struct vm_helper *vm_helper, unsigned int pos, uint8_t hubp_idx)\n{\n\tstruct vmid_usage vmids = vm_helper->hubp_vmid_usage[hubp_idx];\n\n\tvmids.vmid_usage[0] = vmids.vmid_usage[1];\n\tvmids.vmid_usage[1] = 1 << pos;\n}\n\nint dc_setup_system_context(struct dc *dc, struct dc_phy_addr_space_config *pa_config)\n{\n\tint num_vmids = 0;\n\n\t \n\tif (dc->hwss.init_sys_ctx) {\n\t\tnum_vmids = dc->hwss.init_sys_ctx(dc->hwseq, dc, pa_config);\n\n\t\t \n\t\tmemcpy(&dc->vm_pa_config, pa_config, sizeof(struct dc_phy_addr_space_config));\n\t\tdc->vm_pa_config.valid = true;\n\t\tdc_z10_save_init(dc);\n\t}\n\n\treturn num_vmids;\n}\n\nvoid dc_setup_vm_context(struct dc *dc, struct dc_virtual_addr_space_config *va_config, int vmid)\n{\n\tdc->hwss.init_vm_ctx(dc->hwseq, dc, va_config, vmid);\n}\n\nint dc_get_vmid_use_vector(struct dc *dc)\n{\n\tint i;\n\tint in_use = 0;\n\n\tfor (i = 0; i < MAX_HUBP; i++)\n\t\tin_use |= dc->vm_helper->hubp_vmid_usage[i].vmid_usage[0]\n\t\t\t| dc->vm_helper->hubp_vmid_usage[i].vmid_usage[1];\n\treturn in_use;\n}\n\nvoid vm_helper_init(struct vm_helper *vm_helper, unsigned int num_vmid)\n{\n\tvm_helper->num_vmid = num_vmid;\n\n\tmemset(vm_helper->hubp_vmid_usage, 0, sizeof(vm_helper->hubp_vmid_usage[0]) * MAX_HUBP);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

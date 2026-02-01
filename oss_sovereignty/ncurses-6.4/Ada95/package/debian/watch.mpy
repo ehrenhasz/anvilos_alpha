@@ -1,0 +1,9 @@
+{
+  "module_name": "watch",
+  "hash_id": "0474bccaaa1f398e4861e795ca531ab694c7cdbfe91ba4edc820ab53071fd1e9",
+  "original_prompt": "Ingested from ncurses-6.4/Ada95/package/debian/watch",
+  "human_readable_source": "version=3\n\nopts=passive ftp://ftp.invisible-island.net/AdaCurses/AdaCurses-([\\d.]+)\\.tgz \\\n debian  uupdate\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

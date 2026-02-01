@@ -1,0 +1,9 @@
+{
+  "module_name": "boot.h",
+  "hash_id": "d6488baaed0628a86a4980fd19c24a8ef7e503e9297c0073888dd3d3774bea57",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/ti/wlcore/boot.h",
+  "human_readable_source": " \n \n\n#ifndef __BOOT_H__\n#define __BOOT_H__\n\n#include \"wlcore.h\"\n\nint wlcore_boot_upload_firmware(struct wl1271 *wl);\nint wlcore_boot_upload_nvs(struct wl1271 *wl);\nint wlcore_boot_run_firmware(struct wl1271 *wl);\n\n#define WL1271_NO_SUBBANDS 8\n#define WL1271_NO_POWER_LEVELS 4\n#define WL1271_FW_VERSION_MAX_LEN 20\n\nstruct wl1271_static_data {\n\tu8 mac_address[ETH_ALEN];\n\tu8 padding[2];\n\tu8 fw_version[WL1271_FW_VERSION_MAX_LEN];\n\tu32 hw_version;\n\tu8 tx_power_table[WL1271_NO_SUBBANDS][WL1271_NO_POWER_LEVELS];\n\tu8 priv[];\n};\n\n \n#define INIT_LOOP 20000\n\n \n#define INIT_LOOP_DELAY 50\n\n#define WU_COUNTER_PAUSE_VAL 0x3FF\n#define WELP_ARM_COMMAND_VAL 0x4\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

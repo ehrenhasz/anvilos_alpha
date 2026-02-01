@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "94e46d107dee50e2d92d19761ee459786b3155f7760d94c45faf7dca7783e743",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/pci/sta2x11/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig STA2X11_VIP\n\ttristate \"STA2X11 VIP Video For Linux\"\n\tdepends on PCI && VIDEO_DEV && I2C\n\tdepends on STA2X11 || COMPILE_TEST\n\tselect GPIOLIB if MEDIA_SUBDRV_AUTOSELECT\n\tselect VIDEO_ADV7180 if MEDIA_SUBDRV_AUTOSELECT\n\tselect VIDEOBUF2_DMA_CONTIG\n\tselect MEDIA_CONTROLLER\n\tselect VIDEO_V4L2_SUBDEV_API\n\thelp\n\t  Say Y for support for STA2X11 VIP (Video Input Port) capture\n\t  device.\n\n\t  To compile this driver as a module, choose M here: the\n\t  module will be called sta2x11_vip.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "nv40.c",
+  "hash_id": "02275d7894767769124d5fc3f6b234580289db19b263ab3471ac04370d934d58",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/engine/mpeg/nv40.c",
+  "human_readable_source": " \n#include \"nv31.h\"\n\n#include <subdev/instmem.h>\n\n#include <nvif/class.h>\n\nbool\nnv40_mpeg_mthd_dma(struct nvkm_device *device, u32 mthd, u32 data)\n{\n\tstruct nvkm_instmem *imem = device->imem;\n\tstruct nv31_mpeg *mpeg = nv31_mpeg(device->mpeg);\n\tstruct nvkm_subdev *subdev = &mpeg->engine.subdev;\n\tu32 inst = data << 4;\n\tu32 dma0 = nvkm_instmem_rd32(imem, inst + 0);\n\tu32 dma1 = nvkm_instmem_rd32(imem, inst + 4);\n\tu32 dma2 = nvkm_instmem_rd32(imem, inst + 8);\n\tu32 base = (dma2 & 0xfffff000) | (dma0 >> 20);\n\tu32 size = dma1 + 1;\n\n\t \n\tif (!(dma0 & 0x00002000)) {\n\t\tnvkm_error(subdev, \"inst %08x dma0 %08x dma1 %08x dma2 %08x\\n\",\n\t\t\t   inst, dma0, dma1, dma2);\n\t\treturn false;\n\t}\n\n\tif (mthd == 0x0190) {\n\t\t \n\t\tnvkm_mask(device, 0x00b300, 0x00030000, (dma0 & 0x00030000));\n\t\tnvkm_wr32(device, 0x00b334, base);\n\t\tnvkm_wr32(device, 0x00b324, size);\n\t} else\n\tif (mthd == 0x01a0) {\n\t\t \n\t\tnvkm_mask(device, 0x00b300, 0x000c0000, (dma0 & 0x00030000) << 2);\n\t\tnvkm_wr32(device, 0x00b360, base);\n\t\tnvkm_wr32(device, 0x00b364, size);\n\t} else {\n\t\t \n\t\tif (dma0 & 0x00030000)\n\t\t\treturn false;\n\n\t\tnvkm_wr32(device, 0x00b370, base);\n\t\tnvkm_wr32(device, 0x00b374, size);\n\t}\n\n\treturn true;\n}\n\nstatic const struct nv31_mpeg_func\nnv40_mpeg = {\n\t.mthd_dma = nv40_mpeg_mthd_dma,\n};\n\nint\nnv40_mpeg_new(struct nvkm_device *device, enum nvkm_subdev_type type, int inst,\n\t      struct nvkm_engine **pmpeg)\n{\n\treturn nv31_mpeg_new_(&nv40_mpeg, device, type, inst, pmpeg);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

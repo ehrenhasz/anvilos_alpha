@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "4996090d1cd44af93381d5d1c0e953493d8248a5d9a860b825dcb7bead72e8e4",
+  "original_prompt": "Ingested from linux-6.6.14/sound/spi/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n# Makefile for SPI drivers\n\nsnd-at73c213-objs\t\t:= at73c213.o\n\nobj-$(CONFIG_SND_AT73C213)\t+= snd-at73c213.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

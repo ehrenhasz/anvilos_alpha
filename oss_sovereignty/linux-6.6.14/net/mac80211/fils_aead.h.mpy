@@ -1,0 +1,9 @@
+{
+  "module_name": "fils_aead.h",
+  "hash_id": "5b7a71eae1abd6c56a68d8a3ea2660d00cf0bc5390e376f7186a4c9859157f59",
+  "original_prompt": "Ingested from linux-6.6.14/net/mac80211/fils_aead.h",
+  "human_readable_source": " \n \n\n#ifndef FILS_AEAD_H\n#define FILS_AEAD_H\n\nint fils_encrypt_assoc_req(struct sk_buff *skb,\n\t\t\t   struct ieee80211_mgd_assoc_data *assoc_data);\nint fils_decrypt_assoc_resp(struct ieee80211_sub_if_data *sdata,\n\t\t\t    u8 *frame, size_t *frame_len,\n\t\t\t    struct ieee80211_mgd_assoc_data *assoc_data);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

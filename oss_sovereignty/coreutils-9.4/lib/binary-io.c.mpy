@@ -1,0 +1,9 @@
+{
+  "module_name": "binary-io.c",
+  "hash_id": "ca9ac77527583347575301a35001fa4daf8fad21fb948a44a26effb726f7e0ef",
+  "original_prompt": "Ingested from coreutils-9.4/lib/binary-io.c",
+  "human_readable_source": " \n    return O_TEXT;\n  else\n    return __gl_setmode (fd, mode);\n}\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

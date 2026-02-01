@@ -1,0 +1,9 @@
+{
+  "module_name": "pvrusb2-cs53l32a.c",
+  "hash_id": "31000b72f6d714b791beab5646eac05c8df5ae4bfaa965d64a241f5c71cdb2cf",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/usb/pvrusb2/pvrusb2-cs53l32a.c",
+  "human_readable_source": "\n \n\n \n\n#include \"pvrusb2-cs53l32a.h\"\n\n\n#include \"pvrusb2-hdw-internal.h\"\n#include \"pvrusb2-debug.h\"\n#include <linux/videodev2.h>\n#include <media/v4l2-common.h>\n#include <linux/errno.h>\n\nstruct routing_scheme {\n\tconst int *def;\n\tunsigned int cnt;\n};\n\n\nstatic const int routing_scheme1[] = {\n\t[PVR2_CVAL_INPUT_TV] = 2,   \n\t[PVR2_CVAL_INPUT_RADIO] = 2,\n\t[PVR2_CVAL_INPUT_COMPOSITE] = 0,\n\t[PVR2_CVAL_INPUT_SVIDEO] =  0,\n};\n\nstatic const struct routing_scheme routing_def1 = {\n\t.def = routing_scheme1,\n\t.cnt = ARRAY_SIZE(routing_scheme1),\n};\n\nstatic const struct routing_scheme *routing_schemes[] = {\n\t[PVR2_ROUTING_SCHEME_ONAIR] = &routing_def1,\n};\n\n\nvoid pvr2_cs53l32a_subdev_update(struct pvr2_hdw *hdw, struct v4l2_subdev *sd)\n{\n\tif (hdw->input_dirty || hdw->force_dirty) {\n\t\tconst struct routing_scheme *sp;\n\t\tunsigned int sid = hdw->hdw_desc->signal_routing_scheme;\n\t\tu32 input;\n\t\tpvr2_trace(PVR2_TRACE_CHIPS, \"subdev v4l2 set_input(%d)\",\n\t\t\t   hdw->input_val);\n\t\tsp = (sid < ARRAY_SIZE(routing_schemes)) ?\n\t\t\trouting_schemes[sid] : NULL;\n\t\tif ((sp == NULL) ||\n\t\t    (hdw->input_val < 0) ||\n\t\t    (hdw->input_val >= sp->cnt)) {\n\t\t\tpvr2_trace(PVR2_TRACE_ERROR_LEGS,\n\t\t\t\t   \"*** WARNING *** subdev v4l2 set_input: Invalid routing scheme (%u) and/or input (%d)\",\n\t\t\t\t   sid, hdw->input_val);\n\t\t\treturn;\n\t\t}\n\t\tinput = sp->def[hdw->input_val];\n\t\tsd->ops->audio->s_routing(sd, input, 0, 0);\n\t}\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

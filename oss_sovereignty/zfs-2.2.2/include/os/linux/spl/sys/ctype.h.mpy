@@ -1,0 +1,9 @@
+{
+  "module_name": "ctype.h",
+  "hash_id": "5c12637cc52c4802bd619316985efb2dcb08fc23cf40a7b657f8acabe9d6f8e9",
+  "original_prompt": "Ingested from zfs-2.2.2/include/os/linux/spl/sys/ctype.h",
+  "human_readable_source": " \n\n#ifndef _SPL_CTYPE_H\n#define\t_SPL_CTYPE_H\n\n#include <linux/ctype.h>\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

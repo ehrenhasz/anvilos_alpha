@@ -1,0 +1,9 @@
+{
+  "module_name": "logic_iomem.h",
+  "hash_id": "c34bbd28acd31829c16a73eb31e0a6543eacefe2516187f39e61652aefc0fc21",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/logic_iomem.h",
+  "human_readable_source": " \n \n#ifndef __LOGIC_IOMEM_H\n#define __LOGIC_IOMEM_H\n#include <linux/types.h>\n#include <linux/ioport.h>\n\n \nstruct logic_iomem_ops {\n\tunsigned long (*read)(void *priv, unsigned int offset, int size);\n\tvoid (*write)(void *priv, unsigned int offset, int size,\n\t\t      unsigned long val);\n\n\tvoid (*set)(void *priv, unsigned int offset, u8 value, int size);\n\tvoid (*copy_from)(void *priv, void *buffer, unsigned int offset,\n\t\t\t  int size);\n\tvoid (*copy_to)(void *priv, unsigned int offset, const void *buffer,\n\t\t\tint size);\n\n\tvoid (*unmap)(void *priv);\n};\n\n \nstruct logic_iomem_region_ops {\n\tlong (*map)(unsigned long offset, size_t size,\n\t\t    const struct logic_iomem_ops **ops,\n\t\t    void **priv);\n};\n\n \nint logic_iomem_add_region(struct resource *resource,\n\t\t\t   const struct logic_iomem_region_ops *ops);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

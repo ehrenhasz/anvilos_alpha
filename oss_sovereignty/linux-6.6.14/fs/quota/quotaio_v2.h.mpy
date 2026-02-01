@@ -1,0 +1,9 @@
+{
+  "module_name": "quotaio_v2.h",
+  "hash_id": "ca81a99a1376e0017617f78cc07a3d31834f26a0979a07aeda81d01a21dc3ad1",
+  "original_prompt": "Ingested from linux-6.6.14/fs/quota/quotaio_v2.h",
+  "human_readable_source": " \n \n\n#ifndef _LINUX_QUOTAIO_V2_H\n#define _LINUX_QUOTAIO_V2_H\n\n#include <linux/types.h>\n#include <linux/quota.h>\n\n \n#define V2_INITQMAGICS {\\\n\t0xd9c01f11,\t \\\n\t0xd9c01927,\t \\\n\t0xd9c03f14,\t \\\n}\n\n#define V2_INITQVERSIONS {\\\n\t1,\t\t \\\n\t1,\t\t \\\n\t1,\t\t \\\n}\n\n \nstruct v2_disk_dqheader {\n\t__le32 dqh_magic;\t \n\t__le32 dqh_version;\t \n};\n\n \nstruct v2r0_disk_dqblk {\n\t__le32 dqb_id;\t\t \n\t__le32 dqb_ihardlimit;\t \n\t__le32 dqb_isoftlimit;\t \n\t__le32 dqb_curinodes;\t \n\t__le32 dqb_bhardlimit;\t \n\t__le32 dqb_bsoftlimit;\t \n\t__le64 dqb_curspace;\t \n\t__le64 dqb_btime;\t \n\t__le64 dqb_itime;\t \n};\n\nstruct v2r1_disk_dqblk {\n\t__le32 dqb_id;\t\t \n\t__le32 dqb_pad;\n\t__le64 dqb_ihardlimit;\t \n\t__le64 dqb_isoftlimit;\t \n\t__le64 dqb_curinodes;\t \n\t__le64 dqb_bhardlimit;\t \n\t__le64 dqb_bsoftlimit;\t \n\t__le64 dqb_curspace;\t \n\t__le64 dqb_btime;\t \n\t__le64 dqb_itime;\t \n};\n\n \nstruct v2_disk_dqinfo {\n\t__le32 dqi_bgrace;\t \n\t__le32 dqi_igrace;\t \n\t__le32 dqi_flags;\t \n\t__le32 dqi_blocks;\t \n\t__le32 dqi_free_blk;\t \n\t__le32 dqi_free_entry;\t \n};\n\n#define V2_DQINFOOFF\tsizeof(struct v2_disk_dqheader)\t \n#define V2_DQBLKSIZE_BITS 10\t\t\t\t \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

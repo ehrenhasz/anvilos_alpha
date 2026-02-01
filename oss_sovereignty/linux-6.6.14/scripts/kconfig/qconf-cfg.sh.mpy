@@ -1,0 +1,9 @@
+{
+  "module_name": "qconf-cfg.sh",
+  "hash_id": "1c13b856cb7f648979118852afc821cbfd26d0562c50457dc7cefdd50087e344",
+  "original_prompt": "Ingested from linux-6.6.14/scripts/kconfig/qconf-cfg.sh",
+  "human_readable_source": "#!/bin/sh\n# SPDX-License-Identifier: GPL-2.0\n\ncflags=$1\nlibs=$2\nbin=$3\n\nPKG5=\"Qt5Core Qt5Gui Qt5Widgets\"\nPKG6=\"Qt6Core Qt6Gui Qt6Widgets\"\n\nif [ -z \"$(command -v ${HOSTPKG_CONFIG})\" ]; then\n\techo >&2 \"*\"\n\techo >&2 \"* 'make xconfig' requires '${HOSTPKG_CONFIG}'. Please install it.\"\n\techo >&2 \"*\"\n\texit 1\nfi\n\nif ${HOSTPKG_CONFIG} --exists $PKG6; then\n\t${HOSTPKG_CONFIG} --cflags ${PKG6} > ${cflags}\n\t# Qt6 requires C++17.\n\techo -std=c++17 >> ${cflags}\n\t${HOSTPKG_CONFIG} --libs ${PKG6} > ${libs}\n\t${HOSTPKG_CONFIG} --variable=libexecdir Qt6Core > ${bin}\n\texit 0\nfi\n\nif ${HOSTPKG_CONFIG} --exists $PKG5; then\n\t${HOSTPKG_CONFIG} --cflags ${PKG5} > ${cflags}\n\t${HOSTPKG_CONFIG} --libs ${PKG5} > ${libs}\n\t${HOSTPKG_CONFIG} --variable=host_bins Qt5Core > ${bin}\n\texit 0\nfi\n\necho >&2 \"*\"\necho >&2 \"* Could not find Qt6 or Qt5 via ${HOSTPKG_CONFIG}.\"\necho >&2 \"* Please install Qt6 or Qt5 and make sure it's in PKG_CONFIG_PATH\"\necho >&2 \"* You need $PKG6 for Qt6\"\necho >&2 \"* You need $PKG5 for Qt5\"\necho >&2 \"*\"\nexit 1\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

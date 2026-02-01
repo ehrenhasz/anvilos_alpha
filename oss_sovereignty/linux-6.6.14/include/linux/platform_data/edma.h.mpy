@@ -1,0 +1,9 @@
+{
+  "module_name": "edma.h",
+  "hash_id": "1a4bfff0732a0a7b92036393597117110034f54d1ac59a0662b352d2a82c30c2",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/platform_data/edma.h",
+  "human_readable_source": " \n \n\n \n\n#ifndef EDMA_H_\n#define EDMA_H_\n\nenum dma_event_q {\n\tEVENTQ_0 = 0,\n\tEVENTQ_1 = 1,\n\tEVENTQ_2 = 2,\n\tEVENTQ_3 = 3,\n\tEVENTQ_DEFAULT = -1\n};\n\n#define EDMA_CTLR_CHAN(ctlr, chan)\t(((ctlr) << 16) | (chan))\n#define EDMA_CTLR(i)\t\t\t((i) >> 16)\n#define EDMA_CHAN_SLOT(i)\t\t((i) & 0xffff)\n\n#define EDMA_FILTER_PARAM(ctlr, chan)\t((int[]) { EDMA_CTLR_CHAN(ctlr, chan) })\n\nstruct edma_rsv_info {\n\n\tconst s16\t(*rsv_chans)[2];\n\tconst s16\t(*rsv_slots)[2];\n};\n\nstruct dma_slave_map;\n\n \nstruct edma_soc_info {\n\t \n\tenum dma_event_q\tdefault_queue;\n\n\t \n\tstruct edma_rsv_info\t*rsv;\n\n\t \n\ts32\t\t\t*memcpy_channels;\n\n\ts8\t(*queue_priority_mapping)[2];\n\tconst s16\t(*xbar_chans)[2];\n\n\tconst struct dma_slave_map *slave_map;\n\tint slavecnt;\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

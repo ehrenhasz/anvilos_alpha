@@ -1,0 +1,9 @@
+{
+  "module_name": "wm8711.h",
+  "hash_id": "79d38fd5cb1509006eb4ab2c651d363887321591ae76a3d01e5bf9b2b7983cb0",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/codecs/wm8711.h",
+  "human_readable_source": " \n \n\n#ifndef _WM8711_H\n#define _WM8711_H\n\n \n\n#define WM8711_LOUT1V   0x02\n#define WM8711_ROUT1V   0x03\n#define WM8711_APANA    0x04\n#define WM8711_APDIGI   0x05\n#define WM8711_PWR      0x06\n#define WM8711_IFACE    0x07\n#define WM8711_SRATE    0x08\n#define WM8711_ACTIVE   0x09\n#define WM8711_RESET\t0x0f\n\n#define WM8711_CACHEREGNUM \t8\n\n#define WM8711_SYSCLK\t0\n#define WM8711_DAI\t\t0\n\nstruct wm8711_setup_data {\n\tunsigned short i2c_address;\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

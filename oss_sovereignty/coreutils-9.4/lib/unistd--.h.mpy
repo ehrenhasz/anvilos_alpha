@@ -1,0 +1,9 @@
+{
+  "module_name": "unistd--.h",
+  "hash_id": "036a599687bc8ffff8dcbb57217bef03cb2d6bd2c57df55b1fbb137f2d6c9a0d",
+  "original_prompt": "Ingested from coreutils-9.4/lib/unistd--.h",
+  "human_readable_source": " \n\n#include <unistd.h>\n#include \"unistd-safer.h\"\n\n#undef dup\n#define dup dup_safer\n\n#undef pipe\n#define pipe pipe_safer\n\n#if GNULIB_PIPE2_SAFER\n# undef pipe2\n# define pipe2 pipe2_safer\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

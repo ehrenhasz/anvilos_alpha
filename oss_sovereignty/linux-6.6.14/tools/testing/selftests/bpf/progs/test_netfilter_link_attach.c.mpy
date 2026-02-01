@@ -1,0 +1,9 @@
+{
+  "module_name": "test_netfilter_link_attach.c",
+  "hash_id": "5d19a312cacfcb2d059ec0eee3778551944d1abe91396541c1d756566c985141",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/test_netfilter_link_attach.c",
+  "human_readable_source": "\n\n#include \"vmlinux.h\"\n#include <bpf/bpf_helpers.h>\n\n#define NF_ACCEPT 1\n\nSEC(\"netfilter\")\nint nf_link_attach_test(struct bpf_nf_ctx *ctx)\n{\n\treturn NF_ACCEPT;\n}\n\nchar _license[] SEC(\"license\") = \"GPL\";\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "altera_sgdma.h",
+  "hash_id": "ec4c36eab17bb63e1c55bbad9c10d4dbc1a7faa52d7673ccc14f1c28f1067dea",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/altera/altera_sgdma.h",
+  "human_readable_source": " \n \n\n#ifndef __ALTERA_SGDMA_H__\n#define __ALTERA_SGDMA_H__\n\nvoid sgdma_reset(struct altera_tse_private *);\nvoid sgdma_enable_txirq(struct altera_tse_private *);\nvoid sgdma_enable_rxirq(struct altera_tse_private *);\nvoid sgdma_disable_rxirq(struct altera_tse_private *);\nvoid sgdma_disable_txirq(struct altera_tse_private *);\nvoid sgdma_clear_rxirq(struct altera_tse_private *);\nvoid sgdma_clear_txirq(struct altera_tse_private *);\nint sgdma_tx_buffer(struct altera_tse_private *priv, struct tse_buffer *);\nu32 sgdma_tx_completions(struct altera_tse_private *);\nvoid sgdma_add_rx_desc(struct altera_tse_private *priv, struct tse_buffer *);\nvoid sgdma_status(struct altera_tse_private *);\nu32 sgdma_rx_status(struct altera_tse_private *);\nint sgdma_initialize(struct altera_tse_private *);\nvoid sgdma_uninitialize(struct altera_tse_private *);\nvoid sgdma_start_rxdma(struct altera_tse_private *);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

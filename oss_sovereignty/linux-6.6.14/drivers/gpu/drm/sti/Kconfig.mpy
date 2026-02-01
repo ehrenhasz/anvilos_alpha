@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "1ac0a0bd8d93aa182d5bd367de1cbf83c8132ec0bfbdc3c7b3d1a227afd1a9e1",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/sti/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig DRM_STI\n\ttristate \"DRM Support for STMicroelectronics SoC stiH4xx Series\"\n\tdepends on OF && DRM && ARCH_STI\n\tselect RESET_CONTROLLER\n\tselect DRM_KMS_HELPER\n\tselect DRM_GEM_DMA_HELPER\n\tselect DRM_PANEL\n\tselect FW_LOADER\n\tselect SND_SOC_HDMI_CODEC if SND_SOC\n\thelp\n\t  Choose this option to enable DRM on STM stiH4xx chipset\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

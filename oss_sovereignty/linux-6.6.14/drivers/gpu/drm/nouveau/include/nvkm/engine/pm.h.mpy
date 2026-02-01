@@ -1,0 +1,9 @@
+{
+  "module_name": "pm.h",
+  "hash_id": "28f36b703d5f378d0b60c66bff61394b648c945340eddaa7d23f4d4c17f424a7",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/include/nvkm/engine/pm.h",
+  "human_readable_source": " \n#ifndef __NVKM_PM_H__\n#define __NVKM_PM_H__\n#include <core/engine.h>\n\nstruct nvkm_pm {\n\tconst struct nvkm_pm_func *func;\n\tstruct nvkm_engine engine;\n\n\tstruct {\n\t\tspinlock_t lock;\n\t\tstruct nvkm_object *object;\n\t} client;\n\n\tstruct list_head domains;\n\tstruct list_head sources;\n\tu32 sequence;\n};\n\nint nv40_pm_new(struct nvkm_device *, enum nvkm_subdev_type, int inst, struct nvkm_pm **);\nint nv50_pm_new(struct nvkm_device *, enum nvkm_subdev_type, int inst, struct nvkm_pm **);\nint g84_pm_new(struct nvkm_device *, enum nvkm_subdev_type, int inst, struct nvkm_pm **);\nint gt200_pm_new(struct nvkm_device *, enum nvkm_subdev_type, int inst, struct nvkm_pm **);\nint gt215_pm_new(struct nvkm_device *, enum nvkm_subdev_type, int inst, struct nvkm_pm **);\nint gf100_pm_new(struct nvkm_device *, enum nvkm_subdev_type, int inst, struct nvkm_pm **);\nint gf108_pm_new(struct nvkm_device *, enum nvkm_subdev_type, int inst, struct nvkm_pm **);\nint gf117_pm_new(struct nvkm_device *, enum nvkm_subdev_type, int inst, struct nvkm_pm **);\nint gk104_pm_new(struct nvkm_device *, enum nvkm_subdev_type, int inst, struct nvkm_pm **);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

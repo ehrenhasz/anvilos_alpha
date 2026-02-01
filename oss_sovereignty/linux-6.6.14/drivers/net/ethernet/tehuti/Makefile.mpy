@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "142a6a549ebcec35dc9cea20261ab8580f66380c11572269aae510a7616d2644",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/tehuti/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Makefile for the Tehuti network device drivers.\n#\n\nobj-$(CONFIG_TEHUTI) += tehuti.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

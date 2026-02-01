@@ -1,0 +1,9 @@
+{
+  "module_name": "qat_compression.h",
+  "hash_id": "3bf62dbccbf61c4c922dccde8d91ef3f47df626a9d02c49defc92dbc0e3f8947",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/crypto/intel/qat/qat_common/qat_compression.h",
+  "human_readable_source": " \n \n#ifndef _QAT_COMPRESSION_H_\n#define _QAT_COMPRESSION_H_\n\n#include <linux/list.h>\n#include <linux/types.h>\n#include \"adf_accel_devices.h\"\n#include \"qat_algs_send.h\"\n\n#define QAT_COMP_MAX_SKID 4096\n\nstruct qat_compression_instance {\n\tstruct adf_etr_ring_data *dc_tx;\n\tstruct adf_etr_ring_data *dc_rx;\n\tstruct adf_accel_dev *accel_dev;\n\tstruct list_head list;\n\tunsigned long state;\n\tint id;\n\tatomic_t refctr;\n\tstruct qat_instance_backlog backlog;\n\tstruct adf_dc_data *dc_data;\n\tvoid (*build_deflate_ctx)(void *ctx);\n};\n\nstatic inline bool adf_hw_dev_has_compression(struct adf_accel_dev *accel_dev)\n{\n\tstruct adf_hw_device_data *hw_device = accel_dev->hw_device;\n\tu32 mask = ~hw_device->accel_capabilities_mask;\n\n\tif (mask & ADF_ACCEL_CAPABILITIES_COMPRESSION)\n\t\treturn false;\n\n\treturn true;\n}\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

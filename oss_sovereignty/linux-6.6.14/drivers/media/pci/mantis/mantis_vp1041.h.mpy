@@ -1,0 +1,9 @@
+{
+  "module_name": "mantis_vp1041.h",
+  "hash_id": "0726cd4cd3ba4343fc357617b31fed645fd05eaee3dd23422cebdb9aa68e7651",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/pci/mantis/mantis_vp1041.h",
+  "human_readable_source": " \n \n\n#ifndef __MANTIS_VP1041_H\n#define __MANTIS_VP1041_H\n\n#include \"mantis_common.h\"\n\n#define MANTIS_VP_1041_DVB_S2\t0x0031\n#define SKYSTAR_HD2_10\t\t0x0001\n#define SKYSTAR_HD2_20\t\t0x0003\n#define CINERGY_S2_PCI_HD\t0x1179\n\nextern struct mantis_hwconfig vp1041_config;\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

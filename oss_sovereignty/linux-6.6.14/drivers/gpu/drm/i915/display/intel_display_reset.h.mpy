@@ -1,0 +1,9 @@
+{
+  "module_name": "intel_display_reset.h",
+  "hash_id": "d46ffe84e295a532bbe56a8dc7897f92de6d618364a11b4cace90227c56dca57",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/display/intel_display_reset.h",
+  "human_readable_source": " \n \n\n#ifndef __INTEL_RESET_H__\n#define __INTEL_RESET_H__\n\nstruct drm_i915_private;\n\nvoid intel_display_reset_prepare(struct drm_i915_private *i915);\nvoid intel_display_reset_finish(struct drm_i915_private *i915);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

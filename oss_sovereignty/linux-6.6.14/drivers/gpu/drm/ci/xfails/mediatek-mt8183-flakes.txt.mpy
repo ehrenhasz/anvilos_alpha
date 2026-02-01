@@ -1,0 +1,9 @@
+{
+  "module_name": "mediatek-mt8183-flakes.txt",
+  "hash_id": "5186d62406ad3e531d808f043825c22ab545975d5abc464ed3ecf5a05b887d5c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/ci/xfails/mediatek-mt8183-flakes.txt",
+  "human_readable_source": "core_setmaster_vs_auth\nkms_bw@linear-tiling-1-displays-1920x1080p\nkms_bw@linear-tiling-1-displays-3840x2160p\nkms_bw@linear-tiling-3-displays-1920x1080p\nkms_cursor_legacy@cursor-vs-flip-atomic\nkms_plane_scaling@invalid-num-scalers\nkms_plane_scaling@planes-upscale-20x20\nkms_plane_scaling@planes-upscale-20x20-downscale-factor-0-5\nkms_plane_scaling@upscale-with-modifier-20x20\nkms_plane_scaling@upscale-with-pixel-format-20x20\nkms_prop_blob@invalid-set-prop-any\nkms_properties@get_properties-sanity-atomic\nkms_properties@plane-properties-atomic\nkms_properties@plane-properties-legacy",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "i915-whl-flakes.txt",
+  "hash_id": "4a1ec25fe92cfa77ea339e4d8fcd4b11a094a95496a5e65942af5e240db78acc",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/ci/xfails/i915-whl-flakes.txt",
+  "human_readable_source": "kms_flip@flip-vs-suspend\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

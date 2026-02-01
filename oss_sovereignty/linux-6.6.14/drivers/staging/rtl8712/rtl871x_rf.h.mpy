@@ -1,0 +1,9 @@
+{
+  "module_name": "rtl871x_rf.h",
+  "hash_id": "1142a74691452708f2599aed0a4deb69d428910149a8da20899771d770b4bbb2",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/rtl8712/rtl871x_rf.h",
+  "human_readable_source": " \n \n#ifndef\t__RTL871X_RF_H_\n#define __RTL871X_RF_H_\n\n#include \"rtl871x_cmd.h\"\n#include \"rtl871x_mp_phy_regdef.h\"\n\n#define OFDM_PHY\t\t1\n#define MIXED_PHY\t\t2\n#define CCK_PHY\t\t3\n#define NumRates\t(13)\n#define RTL8711_RF_MAX_SENS 6\n#define RTL8711_RF_DEF_SENS 4\n#define NUM_CHANNELS\t15\n\nstruct\tregulatory_class {\n\tu32\tstarting_freq;\t\t \n\tu8\tchannel_set[NUM_CHANNELS];\n\tu8\tchannel_cck_power[NUM_CHANNELS];  \n\tu8\tchannel_ofdm_power[NUM_CHANNELS]; \n\tu8\ttxpower_limit;\t\t \n\tu8\tchannel_spacing;\t \n\tu8\tmodem;\n};\n\nenum\t_REG_PREAMBLE_MODE {\n\tPREAMBLE_LONG\t= 1,\n\tPREAMBLE_AUTO\t= 2,\n\tPREAMBLE_SHORT\t= 3,\n};\n\nenum {\n\tRTL8712_RFC_1T = 0x10,\n\tRTL8712_RFC_2T = 0x20,\n\tRTL8712_RFC_1R = 0x01,\n\tRTL8712_RFC_2R = 0x02,\n\tRTL8712_RFC_1T1R = 0x11,\n\tRTL8712_RFC_1T2R = 0x12,\n\tRTL8712_RFC_TURBO = 0x92,\n\tRTL8712_RFC_2T2R = 0x22\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

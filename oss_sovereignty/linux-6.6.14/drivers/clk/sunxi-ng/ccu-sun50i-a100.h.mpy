@@ -1,0 +1,9 @@
+{
+  "module_name": "ccu-sun50i-a100.h",
+  "hash_id": "ec1642492a4398f4c110053f86d62176a4b80a27f0af3eb4397a7ffb274beeb0",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/clk/sunxi-ng/ccu-sun50i-a100.h",
+  "human_readable_source": " \n \n\n#ifndef _CCU_SUN50I_A100_H_\n#define _CCU_SUN50I_A100_H_\n\n#include <dt-bindings/clock/sun50i-a100-ccu.h>\n#include <dt-bindings/reset/sun50i-a100-ccu.h>\n\n#define CLK_OSC12M\t\t0\n#define CLK_PLL_CPUX\t\t1\n#define CLK_PLL_DDR0\t\t2\n\n \n\n#define CLK_PLL_PERIPH0_2X\t4\n#define CLK_PLL_PERIPH1\t\t5\n#define CLK_PLL_PERIPH1_2X\t6\n#define CLK_PLL_GPU\t\t7\n#define CLK_PLL_VIDEO0\t\t8\n#define CLK_PLL_VIDEO0_2X\t9\n#define CLK_PLL_VIDEO0_4X\t10\n#define CLK_PLL_VIDEO1\t\t11\n#define CLK_PLL_VIDEO1_2X\t12\n#define CLK_PLL_VIDEO1_4X\t13\n#define CLK_PLL_VIDEO2\t\t14\n#define CLK_PLL_VIDEO2_2X\t15\n#define CLK_PLL_VIDEO2_4X\t16\n#define CLK_PLL_VIDEO3\t\t17\n#define CLK_PLL_VIDEO3_2X\t18\n#define CLK_PLL_VIDEO3_4X\t19\n#define CLK_PLL_VE\t\t20\n#define CLK_PLL_COM\t\t21\n#define CLK_PLL_COM_AUDIO\t22\n#define CLK_PLL_AUDIO\t\t23\n\n \n\n#define CLK_AXI\t\t\t25\n#define CLK_CPUX_APB\t\t26\n#define CLK_PSI_AHB1_AHB2\t27\n#define CLK_AHB3\t\t28\n\n \n\n#define CLK_APB2\t\t30\n\n \n\n#define CLK_BUS_DRAM\t\t58\n\n#define CLK_NUMBER\t\t(CLK_CSI_ISP + 1)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

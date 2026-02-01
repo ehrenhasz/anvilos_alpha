@@ -1,0 +1,9 @@
+{
+  "module_name": "i2c-pca-platform.h",
+  "hash_id": "192ccf11c74650d001f5d3f3a6636ce3396935edd649319495c3c27fef3195ad",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/platform_data/i2c-pca-platform.h",
+  "human_readable_source": " \n#ifndef I2C_PCA9564_PLATFORM_H\n#define I2C_PCA9564_PLATFORM_H\n\nstruct i2c_pca9564_pf_platform_data {\n\tint i2c_clock_speed;\t \n\tint timeout;\t\t \n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "userio.h",
+  "hash_id": "e014d72dd71469751f0df566ba6106cc9e186d6fc1c6e066435215119a257bad",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/userio.h",
+  "human_readable_source": " \n \n\n#ifndef _USERIO_H\n#define _USERIO_H\n\n#include <linux/types.h>\n\nenum userio_cmd_type {\n\tUSERIO_CMD_REGISTER = 0,\n\tUSERIO_CMD_SET_PORT_TYPE = 1,\n\tUSERIO_CMD_SEND_INTERRUPT = 2\n};\n\n \nstruct userio_cmd {\n\t__u8 type;\n\t__u8 data;\n} __attribute__((__packed__));\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

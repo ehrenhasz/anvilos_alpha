@@ -1,0 +1,9 @@
+{
+  "module_name": "ahci-remap.h",
+  "hash_id": "047955988e87cd5f41d4634e1874636aa85dc997ddd2e39a7cdbb7c4fee26a08",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/ahci-remap.h",
+  "human_readable_source": " \n#ifndef _LINUX_AHCI_REMAP_H\n#define _LINUX_AHCI_REMAP_H\n\n#include <linux/sizes.h>\n\n#define AHCI_VSCAP\t\t0xa4\n#define AHCI_REMAP_CAP\t\t0x800\n\n \n#define AHCI_REMAP_N_DCC\t0x880\n\n \n#define AHCI_REMAP_N_OFFSET\tSZ_16K\n#define AHCI_REMAP_N_SIZE\tSZ_16K\n\n#define AHCI_MAX_REMAP\t\t3\n\nstatic inline unsigned int ahci_remap_dcc(int i)\n{\n\treturn AHCI_REMAP_N_DCC + i * 0x80;\n}\n\nstatic inline unsigned int ahci_remap_base(int i)\n{\n\treturn AHCI_REMAP_N_OFFSET + i * AHCI_REMAP_N_SIZE;\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

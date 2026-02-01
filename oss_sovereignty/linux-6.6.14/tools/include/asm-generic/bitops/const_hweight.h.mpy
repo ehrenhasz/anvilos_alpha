@@ -1,0 +1,9 @@
+{
+  "module_name": "const_hweight.h",
+  "hash_id": "c9a0b119b10e6c8dde13a7ffc3be55e6cf89ddb117b559f5d719859d3c7c9638",
+  "original_prompt": "Ingested from linux-6.6.14/tools/include/asm-generic/bitops/const_hweight.h",
+  "human_readable_source": " \n#ifndef _ASM_GENERIC_BITOPS_CONST_HWEIGHT_H_\n#define _ASM_GENERIC_BITOPS_CONST_HWEIGHT_H_\n\n \n#define __const_hweight8(w)\t\t\\\n\t((unsigned int)\t\t\t\\\n\t ((!!((w) & (1ULL << 0))) +\t\\\n\t  (!!((w) & (1ULL << 1))) +\t\\\n\t  (!!((w) & (1ULL << 2))) +\t\\\n\t  (!!((w) & (1ULL << 3))) +\t\\\n\t  (!!((w) & (1ULL << 4))) +\t\\\n\t  (!!((w) & (1ULL << 5))) +\t\\\n\t  (!!((w) & (1ULL << 6))) +\t\\\n\t  (!!((w) & (1ULL << 7)))))\n\n#define __const_hweight16(w) (__const_hweight8(w)  + __const_hweight8((w)  >> 8 ))\n#define __const_hweight32(w) (__const_hweight16(w) + __const_hweight16((w) >> 16))\n#define __const_hweight64(w) (__const_hweight32(w) + __const_hweight32((w) >> 32))\n\n \n#define hweight8(w)  (__builtin_constant_p(w) ? __const_hweight8(w)  : __arch_hweight8(w))\n#define hweight16(w) (__builtin_constant_p(w) ? __const_hweight16(w) : __arch_hweight16(w))\n#define hweight32(w) (__builtin_constant_p(w) ? __const_hweight32(w) : __arch_hweight32(w))\n#define hweight64(w) (__builtin_constant_p(w) ? __const_hweight64(w) : __arch_hweight64(w))\n\n \n#define HWEIGHT8(w)  (BUILD_BUG_ON_ZERO(!__builtin_constant_p(w)) + __const_hweight8(w))\n#define HWEIGHT16(w) (BUILD_BUG_ON_ZERO(!__builtin_constant_p(w)) + __const_hweight16(w))\n#define HWEIGHT32(w) (BUILD_BUG_ON_ZERO(!__builtin_constant_p(w)) + __const_hweight32(w))\n#define HWEIGHT64(w) (BUILD_BUG_ON_ZERO(!__builtin_constant_p(w)) + __const_hweight64(w))\n\n \n#define HWEIGHT(w)   HWEIGHT64((u64)w)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

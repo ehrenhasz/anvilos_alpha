@@ -1,0 +1,9 @@
+{
+  "module_name": "sh_css_host_data.c",
+  "hash_id": "5bac251814d4c1bbc9370bb4b9748e685683039fad751a24c96311f84da4f3bc",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/sh_css_host_data.c",
+  "human_readable_source": "\n \n\n#include <linux/slab.h>\n#include <ia_css_host_data.h>\n#include <sh_css_internal.h>\n\nstruct ia_css_host_data *ia_css_host_data_allocate(size_t size)\n{\n\tstruct ia_css_host_data *me;\n\n\tme =  kmalloc(sizeof(struct ia_css_host_data), GFP_KERNEL);\n\tif (!me)\n\t\treturn NULL;\n\tme->size = (uint32_t)size;\n\tme->address = kvmalloc(size, GFP_KERNEL);\n\tif (!me->address) {\n\t\tkfree(me);\n\t\treturn NULL;\n\t}\n\treturn me;\n}\n\nvoid ia_css_host_data_free(struct ia_css_host_data *me)\n{\n\tif (me) {\n\t\tkvfree(me->address);\n\t\tme->address = NULL;\n\t\tkfree(me);\n\t}\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

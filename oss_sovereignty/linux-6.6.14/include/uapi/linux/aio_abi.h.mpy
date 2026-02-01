@@ -1,0 +1,9 @@
+{
+  "module_name": "aio_abi.h",
+  "hash_id": "2ac39eb38ed4bca39a2f7a32aee765d17134bf9fc53d47ef8c0d274d5503ec38",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/aio_abi.h",
+  "human_readable_source": " \n#ifndef __LINUX__AIO_ABI_H\n#define __LINUX__AIO_ABI_H\n\n#include <linux/types.h>\n#include <linux/fs.h>\n#include <asm/byteorder.h>\n\ntypedef __kernel_ulong_t aio_context_t;\n\nenum {\n\tIOCB_CMD_PREAD = 0,\n\tIOCB_CMD_PWRITE = 1,\n\tIOCB_CMD_FSYNC = 2,\n\tIOCB_CMD_FDSYNC = 3,\n\t \n\tIOCB_CMD_POLL = 5,\n\tIOCB_CMD_NOOP = 6,\n\tIOCB_CMD_PREADV = 7,\n\tIOCB_CMD_PWRITEV = 8,\n};\n\n \n#define IOCB_FLAG_RESFD\t\t(1 << 0)\n#define IOCB_FLAG_IOPRIO\t(1 << 1)\n\n \nstruct io_event {\n\t__u64\t\tdata;\t\t \n\t__u64\t\tobj;\t\t \n\t__s64\t\tres;\t\t \n\t__s64\t\tres2;\t\t \n};\n\n \n\nstruct iocb {\n\t \n\t__u64\taio_data;\t \n\n#if defined(__BYTE_ORDER) ? __BYTE_ORDER == __LITTLE_ENDIAN : defined(__LITTLE_ENDIAN)\n\t__u32\taio_key;\t \n\t__kernel_rwf_t aio_rw_flags;\t \n#elif defined(__BYTE_ORDER) ? __BYTE_ORDER == __BIG_ENDIAN : defined(__BIG_ENDIAN)\n\t__kernel_rwf_t aio_rw_flags;\t \n\t__u32\taio_key;\t \n#else\n#error edit for your odd byteorder.\n#endif\n\n\t \n\t__u16\taio_lio_opcode;\t \n\t__s16\taio_reqprio;\n\t__u32\taio_fildes;\n\n\t__u64\taio_buf;\n\t__u64\taio_nbytes;\n\t__s64\taio_offset;\n\n\t \n\t__u64\taio_reserved2;\t \n\n\t \n\t__u32\taio_flags;\n\n\t \n\t__u32\taio_resfd;\n};  \n\n#undef IFBIG\n#undef IFLITTLE\n\n#endif  \n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

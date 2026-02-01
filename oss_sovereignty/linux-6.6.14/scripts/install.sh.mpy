@@ -1,0 +1,9 @@
+{
+  "module_name": "install.sh",
+  "hash_id": "b8f97a4fc0a024b49a55abb4df0c90e452cf13ec5feb0488c9a5c386667581c6",
+  "original_prompt": "Ingested from linux-6.6.14/scripts/install.sh",
+  "human_readable_source": "#!/bin/sh\n# SPDX-License-Identifier: GPL-2.0-only\n#\n# Copyright (C) 1995 by Linus Torvalds\n#\n# Adapted from code in arch/i386/boot/Makefile by H. Peter Anvin\n# Common code factored out by Masahiro Yamada\n\nset -e\n\n# Make sure the files actually exist\nfor file in \"${KBUILD_IMAGE}\" System.map\ndo\n\tif [ ! -f \"${file}\" ]; then\n\t\techo >&2\n\t\techo >&2 \" *** Missing file: ${file}\"\n\t\techo >&2 ' *** You need to run \"make\" before \"make install\".'\n\t\techo >&2\n\t\texit 1\n\tfi\ndone\n\n# User/arch may have a custom install script\nfor file in \"${HOME}/bin/${INSTALLKERNEL}\"\t\t\\\n\t    \"/sbin/${INSTALLKERNEL}\"\t\t\t\\\n\t    \"${srctree}/arch/${SRCARCH}/install.sh\"\t\\\n\t    \"${srctree}/arch/${SRCARCH}/boot/install.sh\"\ndo\n\tif [ ! -x \"${file}\" ]; then\n\t\tcontinue\n\tfi\n\n\t# installkernel(8) says the parameters are like follows:\n\t#\n\t#   installkernel version zImage System.map [directory]\n\texec \"${file}\" \"${KERNELRELEASE}\" \"${KBUILD_IMAGE}\" System.map \"${INSTALL_PATH}\"\ndone\n\necho \"No install script found\" >&2\nexit 1\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

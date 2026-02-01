@@ -1,0 +1,9 @@
+{
+  "module_name": "debugfs.h",
+  "hash_id": "ed4b222244e71b126d05e9ae1de4326cb2f8f8bb1e5fdcfabb248fd5529aaf80",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/crypto/caam/debugfs.h",
+  "human_readable_source": " \n \n\n#ifndef CAAM_DEBUGFS_H\n#define CAAM_DEBUGFS_H\n\nstruct dentry;\nstruct caam_drv_private;\nstruct caam_perfmon;\n\n#ifdef CONFIG_DEBUG_FS\nvoid caam_debugfs_init(struct caam_drv_private *ctrlpriv,\n\t\t       struct caam_perfmon __force *perfmon, struct dentry *root);\n#else\nstatic inline void caam_debugfs_init(struct caam_drv_private *ctrlpriv,\n\t\t\t\t     struct caam_perfmon __force *perfmon,\n\t\t\t\t     struct dentry *root)\n{}\n#endif\n\n#if defined(CONFIG_DEBUG_FS) && defined(CONFIG_CAAM_QI)\nvoid caam_debugfs_qi_congested(void);\nvoid caam_debugfs_qi_init(struct caam_drv_private *ctrlpriv);\n#else\nstatic inline void caam_debugfs_qi_congested(void) {}\nstatic inline void caam_debugfs_qi_init(struct caam_drv_private *ctrlpriv) {}\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

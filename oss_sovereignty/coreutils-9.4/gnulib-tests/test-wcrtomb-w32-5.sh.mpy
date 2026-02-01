@@ -1,0 +1,9 @@
+{
+  "module_name": "test-wcrtomb-w32-5.sh",
+  "hash_id": "3e4f8bbc92f179d91e6f3cdba9552831b22d5e5f471bd5a0c36c5b6085ec993a",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-wcrtomb-w32-5.sh",
+  "human_readable_source": "#!/bin/sh\n\n# Test a CP932 locale.\n${CHECKER} ./test-wcrtomb-w32${EXEEXT} Japanese_Japan 932\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

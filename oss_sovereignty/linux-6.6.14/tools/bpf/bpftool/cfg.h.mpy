@@ -1,0 +1,9 @@
+{
+  "module_name": "cfg.h",
+  "hash_id": "0449ee974a4b4b8a19bd0df783cf7091df3ee23740c21ed95ab65ce812bf5f72",
+  "original_prompt": "Ingested from linux-6.6.14/tools/bpf/bpftool/cfg.h",
+  "human_readable_source": " \n \n\n#ifndef __BPF_TOOL_CFG_H\n#define __BPF_TOOL_CFG_H\n\n#include \"xlated_dumper.h\"\n\nvoid dump_xlated_cfg(struct dump_data *dd, void *buf, unsigned int len,\n\t\t     bool opcodes, bool linum);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "e72a0aa53547e3fc93003afd62cef9ab355a9e1b8ceed6a9480b346ab744bb34",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/ks7010/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nconfig KS7010\n\ttristate \"KeyStream KS7010 SDIO support\"\n\tdepends on MMC && WIRELESS\n\tselect WIRELESS_EXT\n\tselect WEXT_PRIV\n\tselect FW_LOADER\n\tselect CRYPTO\n\tselect CRYPTO_HASH\n\tselect CRYPTO_MICHAEL_MIC\n\thelp\n\t  This is a driver for KeyStream KS7010 based SDIO WIFI cards. It is\n\t  found on at least later Spectec SDW-821 (FCC-ID \"S2Y-WLAN-11G-K\" only,\n\t  sadly not FCC-ID \"S2Y-WLAN-11B-G\") and Spectec SDW-823 microSD cards.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

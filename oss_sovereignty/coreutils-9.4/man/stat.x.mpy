@@ -1,0 +1,9 @@
+{
+  "module_name": "stat.x",
+  "hash_id": "da01cb60d9c60e29388f48b10911a12ec0c989e93266a63e5bfd8c8ad2a5d44b",
+  "original_prompt": "Ingested from coreutils-9.4/man/stat.x",
+  "human_readable_source": "[NAME]\nstat \\- display file or file system status\n[DESCRIPTION]\n.\\\" Add any additional description here\n[SEE ALSO]\nstat(2), statfs(2), statx(2)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

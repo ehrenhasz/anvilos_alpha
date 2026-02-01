@@ -1,0 +1,9 @@
+{
+  "module_name": "vega20_smumgr.h",
+  "hash_id": "ccbd355bcb24fd9aad68eb4acd57a7c6f20a46b93323ee8cd38ba5516176e714",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/pm/powerplay/smumgr/vega20_smumgr.h",
+  "human_readable_source": " \n#ifndef _VEGA20_SMUMANAGER_H_\n#define _VEGA20_SMUMANAGER_H_\n\n#include \"hwmgr.h\"\n#include \"smu11_driver_if.h\"\n\nstruct smu_table_entry {\n\tuint32_t version;\n\tuint32_t size;\n\tuint64_t mc_addr;\n\tvoid *table;\n\tstruct amdgpu_bo *handle;\n};\n\nstruct smu_table_array {\n\tstruct smu_table_entry entry[TABLE_COUNT];\n};\n\nstruct vega20_smumgr {\n\tstruct smu_table_array            smu_tables;\n};\n\n#define SMU_FEATURES_LOW_MASK        0x00000000FFFFFFFF\n#define SMU_FEATURES_LOW_SHIFT       0\n#define SMU_FEATURES_HIGH_MASK       0xFFFFFFFF00000000\n#define SMU_FEATURES_HIGH_SHIFT      32\n\nint vega20_enable_smc_features(struct pp_hwmgr *hwmgr,\n\t\tbool enable, uint64_t feature_mask);\nint vega20_get_enabled_smc_features(struct pp_hwmgr *hwmgr,\n\t\tuint64_t *features_enabled);\nint vega20_set_activity_monitor_coeff(struct pp_hwmgr *hwmgr,\n\t\tuint8_t *table, uint16_t workload_type);\nint vega20_get_activity_monitor_coeff(struct pp_hwmgr *hwmgr,\n\t\tuint8_t *table, uint16_t workload_type);\nint vega20_set_pptable_driver_address(struct pp_hwmgr *hwmgr);\n\nbool vega20_is_smc_ram_running(struct pp_hwmgr *hwmgr);\n\n#endif\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

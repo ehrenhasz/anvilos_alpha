@@ -1,0 +1,9 @@
+{
+  "module_name": "test-libbfd-buildid.c",
+  "hash_id": "2b6903f7ed7efd07a5723039b24fc4d74b0bcbc13429035096c0b6fcb999aa5c",
+  "original_prompt": "Ingested from linux-6.6.14/tools/build/feature/test-libbfd-buildid.c",
+  "human_readable_source": "\n#include <bfd.h>\n\nint main(void)\n{\n\tbfd *abfd = bfd_openr(\"Pedro\", 0);\n\treturn abfd && (!abfd->build_id || abfd->build_id->size > 0x506564726f);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

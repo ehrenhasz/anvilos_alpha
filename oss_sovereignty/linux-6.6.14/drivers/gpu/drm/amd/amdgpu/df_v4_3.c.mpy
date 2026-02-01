@@ -1,0 +1,9 @@
+{
+  "module_name": "df_v4_3.c",
+  "hash_id": "b00678029e975f145dd234dfdaa8c6fb4f481efe153106491f244da2ee446d82",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/amdgpu/df_v4_3.c",
+  "human_readable_source": " \n#include \"amdgpu.h\"\n#include \"df_v4_3.h\"\n\n#include \"df/df_4_3_offset.h\"\n#include \"df/df_4_3_sh_mask.h\"\n\nstatic bool df_v4_3_query_ras_poison_mode(struct amdgpu_device *adev)\n{\n\tuint32_t hw_assert_msklo, hw_assert_mskhi;\n\tuint32_t v0, v1, v28, v31;\n\n\thw_assert_msklo = RREG32_SOC15(DF, 0,\n\t\t\t\tregDF_CS_UMC_AON0_HardwareAssertMaskLow);\n\thw_assert_mskhi = RREG32_SOC15(DF, 0,\n\t\t\t\tregDF_NCS_PG0_HardwareAssertMaskHigh);\n\n\tv0 = REG_GET_FIELD(hw_assert_msklo,\n\t\tDF_CS_UMC_AON0_HardwareAssertMaskLow, HWAssertMsk0);\n\tv1 = REG_GET_FIELD(hw_assert_msklo,\n\t\tDF_CS_UMC_AON0_HardwareAssertMaskLow, HWAssertMsk1);\n\tv28 = REG_GET_FIELD(hw_assert_mskhi,\n\t\tDF_NCS_PG0_HardwareAssertMaskHigh, HWAssertMsk28);\n\tv31 = REG_GET_FIELD(hw_assert_mskhi,\n\t\tDF_NCS_PG0_HardwareAssertMaskHigh, HWAssertMsk31);\n\n\tif (v0 && v1 && v28 && v31)\n\t\treturn true;\n\telse if (!v0 && !v1 && !v28 && !v31)\n\t\treturn false;\n\telse {\n\t\tdev_warn(adev->dev, \"DF poison setting is inconsistent(%d:%d:%d:%d)!\\n\",\n\t\t\t\tv0, v1, v28, v31);\n\t\treturn false;\n\t}\n}\n\nconst struct amdgpu_df_funcs df_v4_3_funcs = {\n\t.query_ras_poison_mode = df_v4_3_query_ras_poison_mode,\n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

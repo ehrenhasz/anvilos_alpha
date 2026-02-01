@@ -1,0 +1,9 @@
+{
+  "module_name": "init_ohci1394_dma.h",
+  "hash_id": "16420e5dacc64df1276157012084ba82c896b9dad64751c087006c9d4e99e339",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/init_ohci1394_dma.h",
+  "human_readable_source": " \n#ifdef CONFIG_PROVIDE_OHCI1394_DMA_INIT\nextern int __initdata init_ohci1394_dma_early;\nextern void __init init_ohci1394_dma_on_all_controllers(void);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

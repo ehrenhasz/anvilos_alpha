@@ -1,0 +1,9 @@
+{
+  "module_name": "omap3isp.h",
+  "hash_id": "2be3f29e8af61db0fff79519fbe39b55bddd969da94a523988c8632d095248b4",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/platform/ti/omap3isp/omap3isp.h",
+  "human_readable_source": " \n \n\n#ifndef __OMAP3ISP_H__\n#define __OMAP3ISP_H__\n\nenum isp_interface_type {\n\tISP_INTERFACE_PARALLEL,\n\tISP_INTERFACE_CSI2A_PHY2,\n\tISP_INTERFACE_CCP2B_PHY1,\n\tISP_INTERFACE_CCP2B_PHY2,\n\tISP_INTERFACE_CSI2C_PHY1,\n};\n\n \nstruct isp_parallel_cfg {\n\tunsigned int data_lane_shift:3;\n\tunsigned int clk_pol:1;\n\tunsigned int hs_pol:1;\n\tunsigned int vs_pol:1;\n\tunsigned int fld_pol:1;\n\tunsigned int data_pol:1;\n\tunsigned int bt656:1;\n};\n\nenum {\n\tISP_CCP2_PHY_DATA_CLOCK = 0,\n\tISP_CCP2_PHY_DATA_STROBE = 1,\n};\n\nenum {\n\tISP_CCP2_MODE_MIPI = 0,\n\tISP_CCP2_MODE_CCP2 = 1,\n};\n\n \nstruct isp_csiphy_lane {\n\tu8 pos;\n\tu8 pol;\n};\n\n#define ISP_CSIPHY1_NUM_DATA_LANES\t1\n#define ISP_CSIPHY2_NUM_DATA_LANES\t2\n\n \nstruct isp_csiphy_lanes_cfg {\n\tstruct isp_csiphy_lane data[ISP_CSIPHY2_NUM_DATA_LANES];\n\tstruct isp_csiphy_lane clk;\n};\n\n \nstruct isp_ccp2_cfg {\n\tunsigned int strobe_clk_pol:1;\n\tunsigned int crc:1;\n\tunsigned int ccp2_mode:1;\n\tunsigned int phy_layer:1;\n\tunsigned int vpclk_div:2;\n\tunsigned int vp_clk_pol:1;\n\tstruct isp_csiphy_lanes_cfg lanecfg;\n};\n\n \nstruct isp_csi2_cfg {\n\tunsigned crc:1;\n\tstruct isp_csiphy_lanes_cfg lanecfg;\n\tu8 num_data_lanes;\n};\n\nstruct isp_bus_cfg {\n\tenum isp_interface_type interface;\n\tunion {\n\t\tstruct isp_parallel_cfg parallel;\n\t\tstruct isp_ccp2_cfg ccp2;\n\t\tstruct isp_csi2_cfg csi2;\n\t} bus;  \n};\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

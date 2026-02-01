@@ -1,0 +1,9 @@
+{
+  "module_name": "dummy_st_ops_fail.c",
+  "hash_id": "0dfd2444065e33ec872c96744ebfacb26ef685984382a81612afcaa98233a3f4",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/dummy_st_ops_fail.c",
+  "human_readable_source": "\n \n\n#include \"vmlinux.h\"\n#include <bpf/bpf_helpers.h>\n#include <bpf/bpf_tracing.h>\n\n#include \"bpf_misc.h\"\n\nchar _license[] SEC(\"license\") = \"GPL\";\n\nSEC(\"struct_ops.s/test_2\")\n__failure __msg(\"attach to unsupported member test_2 of struct bpf_dummy_ops\")\nint BPF_PROG(test_unsupported_field_sleepable,\n\t     struct bpf_dummy_ops_state *state, int a1, unsigned short a2,\n\t     char a3, unsigned long a4)\n{\n\t \n\treturn 0;\n}\n\nSEC(\".struct_ops\")\nstruct bpf_dummy_ops dummy_1 = {\n\t.test_1 = NULL,\n\t.test_2 = (void *)test_unsupported_field_sleepable,\n\t.test_sleepable = (void *)NULL,\n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

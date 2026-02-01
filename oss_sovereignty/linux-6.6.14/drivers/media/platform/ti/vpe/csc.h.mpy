@@ -1,0 +1,9 @@
+{
+  "module_name": "csc.h",
+  "hash_id": "69a54ebf66dcdc73501e51e28a667c9d9845987517b9b560784b0c2c2469adf8",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/platform/ti/vpe/csc.h",
+  "human_readable_source": " \n \n#ifndef TI_CSC_H\n#define TI_CSC_H\n\n \n#define CSC_CSC00\t\t0x00\n#define CSC_A0_MASK\t\t0x1fff\n#define CSC_A0_SHIFT\t\t0\n#define CSC_B0_MASK\t\t0x1fff\n#define CSC_B0_SHIFT\t\t16\n\n#define CSC_CSC01\t\t0x04\n#define CSC_C0_MASK\t\t0x1fff\n#define CSC_C0_SHIFT\t\t0\n#define CSC_A1_MASK\t\t0x1fff\n#define CSC_A1_SHIFT\t\t16\n\n#define CSC_CSC02\t\t0x08\n#define CSC_B1_MASK\t\t0x1fff\n#define CSC_B1_SHIFT\t\t0\n#define CSC_C1_MASK\t\t0x1fff\n#define CSC_C1_SHIFT\t\t16\n\n#define CSC_CSC03\t\t0x0c\n#define CSC_A2_MASK\t\t0x1fff\n#define CSC_A2_SHIFT\t\t0\n#define CSC_B2_MASK\t\t0x1fff\n#define CSC_B2_SHIFT\t\t16\n\n#define CSC_CSC04\t\t0x10\n#define CSC_C2_MASK\t\t0x1fff\n#define CSC_C2_SHIFT\t\t0\n#define CSC_D0_MASK\t\t0x0fff\n#define CSC_D0_SHIFT\t\t16\n\n#define CSC_CSC05\t\t0x14\n#define CSC_D1_MASK\t\t0x0fff\n#define CSC_D1_SHIFT\t\t0\n#define CSC_D2_MASK\t\t0x0fff\n#define CSC_D2_SHIFT\t\t16\n\n#define CSC_BYPASS\t\t(1 << 28)\n\nstruct csc_data {\n\tvoid __iomem\t\t*base;\n\tstruct resource\t\t*res;\n\n\tstruct platform_device\t*pdev;\n};\n\nvoid csc_dump_regs(struct csc_data *csc);\nvoid csc_set_coeff_bypass(struct csc_data *csc, u32 *csc_reg5);\nvoid csc_set_coeff(struct csc_data *csc, u32 *csc_reg0,\n\t\t   struct v4l2_format *src_fmt, struct v4l2_format *dst_fmt);\n\nstruct csc_data *csc_create(struct platform_device *pdev, const char *res_name);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

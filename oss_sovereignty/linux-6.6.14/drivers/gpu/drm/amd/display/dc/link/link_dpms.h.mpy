@@ -1,0 +1,9 @@
+{
+  "module_name": "link_dpms.h",
+  "hash_id": "cb5a991a81ce01b10342ba1c77e818bfb1e47a2e329970e61646acd85129f9c0",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/dc/link/link_dpms.h",
+  "human_readable_source": " \n\n#ifndef __DC_LINK_DPMS_H__\n#define __DC_LINK_DPMS_H__\n\n#include \"link.h\"\nvoid link_set_dpms_on(\n\t\tstruct dc_state *state,\n\t\tstruct pipe_ctx *pipe_ctx);\nvoid link_set_dpms_off(struct pipe_ctx *pipe_ctx);\nvoid link_resume(struct dc_link *link);\nvoid link_blank_all_dp_displays(struct dc *dc);\nvoid link_blank_all_edp_displays(struct dc *dc);\nvoid link_blank_dp_stream(struct dc_link *link, bool hw_init);\nvoid link_set_all_streams_dpms_off_for_link(struct dc_link *link);\nvoid link_get_master_pipes_with_dpms_on(const struct dc_link *link,\n\t\tstruct dc_state *state,\n\t\tuint8_t *count,\n\t\tstruct pipe_ctx *pipes[MAX_PIPES]);\nenum dc_status link_increase_mst_payload(struct pipe_ctx *pipe_ctx, uint32_t req_pbn);\nenum dc_status link_reduce_mst_payload(struct pipe_ctx *pipe_ctx, uint32_t req_pbn);\nbool link_set_dsc_pps_packet(struct pipe_ctx *pipe_ctx,\n\t\tbool enable, bool immediate_update);\nstruct fixed31_32 link_calculate_sst_avg_time_slots_per_mtp(\n\t\tconst struct dc_stream_state *stream,\n\t\tconst struct dc_link *link);\nvoid link_set_dsc_on_stream(struct pipe_ctx *pipe_ctx, bool enable);\nbool link_set_dsc_enable(struct pipe_ctx *pipe_ctx, bool enable);\nbool link_update_dsc_config(struct pipe_ctx *pipe_ctx);\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

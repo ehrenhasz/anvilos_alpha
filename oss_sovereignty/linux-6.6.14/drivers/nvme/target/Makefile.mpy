@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "0bedd65151dc830bae9874391610c7311fc44e78e6a49bd88f0617bf55ec2606",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/nvme/target/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n\nccflags-y\t\t\t\t+= -I$(src)\n\nobj-$(CONFIG_NVME_TARGET)\t\t+= nvmet.o\nobj-$(CONFIG_NVME_TARGET_LOOP)\t\t+= nvme-loop.o\nobj-$(CONFIG_NVME_TARGET_RDMA)\t\t+= nvmet-rdma.o\nobj-$(CONFIG_NVME_TARGET_FC)\t\t+= nvmet-fc.o\nobj-$(CONFIG_NVME_TARGET_FCLOOP)\t+= nvme-fcloop.o\nobj-$(CONFIG_NVME_TARGET_TCP)\t\t+= nvmet-tcp.o\n\nnvmet-y\t\t+= core.o configfs.o admin-cmd.o fabrics-cmd.o \\\n\t\t\tdiscovery.o io-cmd-file.o io-cmd-bdev.o\nnvmet-$(CONFIG_NVME_TARGET_PASSTHRU)\t+= passthru.o\nnvmet-$(CONFIG_BLK_DEV_ZONED)\t\t+= zns.o\nnvmet-$(CONFIG_NVME_TARGET_AUTH)\t+= fabrics-cmd-auth.o auth.o\nnvme-loop-y\t+= loop.o\nnvmet-rdma-y\t+= rdma.o\nnvmet-fc-y\t+= fc.o\nnvme-fcloop-y\t+= fcloop.o\nnvmet-tcp-y\t+= tcp.o\nnvmet-$(CONFIG_TRACING)\t+= trace.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

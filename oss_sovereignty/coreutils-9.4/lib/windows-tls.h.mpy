@@ -1,0 +1,9 @@
+{
+  "module_name": "windows-tls.h",
+  "hash_id": "7b218c84d8c2c091869f6a8fb0b75d993fc22986af64e626b2139e0936268f10",
+  "original_prompt": "Ingested from coreutils-9.4/lib/windows-tls.h",
+  "human_readable_source": " \n\n#ifndef _WINDOWS_TLS_H\n#define _WINDOWS_TLS_H\n\n#define WIN32_LEAN_AND_MEAN   \n#include <windows.h>\n\ntypedef DWORD glwthread_tls_key_t;\n\n#ifdef __cplusplus\nextern \"C\" {\n#endif\n\nextern int glwthread_tls_key_create (glwthread_tls_key_t *keyp, void (*destructor) (void *));\nextern void *glwthread_tls_get (glwthread_tls_key_t key);\nextern int glwthread_tls_set (glwthread_tls_key_t key, void *value);\nextern int glwthread_tls_key_delete (glwthread_tls_key_t key);\nextern void glwthread_tls_process_destructors (void);\n#define GLWTHREAD_DESTRUCTOR_ITERATIONS 4\n\n#ifdef __cplusplus\n}\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "@@__py__objstr.c.qstr",
+  "hash_id": "5162359e43288007931fe9e2bb033bdb5540d025830e680df861242474103109",
+  "original_prompt": "Ingested from sys_09_Anvil/source/mpy-cross/build/genhdr/qstr/@@__py__objstr.c.qstr",
+  "human_readable_source": "Q(utf_hyphen_8)\nQ(utf_hyphen_8)\nQ(append)\nQ(extend)\nQ(decode)\nQ(find)\nQ(rfind)\nQ(index)\nQ(rindex)\nQ(join)\nQ(split)\nQ(rsplit)\nQ(startswith)\nQ(endswith)\nQ(strip)\nQ(lstrip)\nQ(rstrip)\nQ(format)\nQ(replace)\nQ(count)\nQ(lower)\nQ(upper)\nQ(isspace)\nQ(isalpha)\nQ(isdigit)\nQ(isupper)\nQ(islower)\nQ(encode)\nQ(bytes)\nQ(str)\nQ(bytes)\nQ(str)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

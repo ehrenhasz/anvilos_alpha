@@ -1,0 +1,9 @@
+{
+  "module_name": "symlink.c",
+  "hash_id": "07d0064b9e5cc66bb16456c985d275336250d554e83b3feec1109003a9b485b3",
+  "original_prompt": "Ingested from linux-6.6.14/fs/ocfs2/symlink.c",
+  "human_readable_source": " \n\n#include <linux/fs.h>\n#include <linux/types.h>\n#include <linux/slab.h>\n#include <linux/pagemap.h>\n#include <linux/namei.h>\n\n#include <cluster/masklog.h>\n\n#include \"ocfs2.h\"\n\n#include \"alloc.h\"\n#include \"file.h\"\n#include \"inode.h\"\n#include \"journal.h\"\n#include \"symlink.h\"\n#include \"xattr.h\"\n\n#include \"buffer_head_io.h\"\n\n\nstatic int ocfs2_fast_symlink_read_folio(struct file *f, struct folio *folio)\n{\n\tstruct page *page = &folio->page;\n\tstruct inode *inode = page->mapping->host;\n\tstruct buffer_head *bh = NULL;\n\tint status = ocfs2_read_inode_block(inode, &bh);\n\tstruct ocfs2_dinode *fe;\n\tconst char *link;\n\tvoid *kaddr;\n\tsize_t len;\n\n\tif (status < 0) {\n\t\tmlog_errno(status);\n\t\treturn status;\n\t}\n\n\tfe = (struct ocfs2_dinode *) bh->b_data;\n\tlink = (char *) fe->id2.i_symlink;\n\t \n\tlen = strnlen(link, ocfs2_fast_symlink_chars(inode->i_sb));\n\tkaddr = kmap_atomic(page);\n\tmemcpy(kaddr, link, len + 1);\n\tkunmap_atomic(kaddr);\n\tSetPageUptodate(page);\n\tunlock_page(page);\n\tbrelse(bh);\n\treturn 0;\n}\n\nconst struct address_space_operations ocfs2_fast_symlink_aops = {\n\t.read_folio\t\t= ocfs2_fast_symlink_read_folio,\n};\n\nconst struct inode_operations ocfs2_symlink_inode_operations = {\n\t.get_link\t= page_get_link,\n\t.getattr\t= ocfs2_getattr,\n\t.setattr\t= ocfs2_setattr,\n\t.listxattr\t= ocfs2_listxattr,\n\t.fiemap\t\t= ocfs2_fiemap,\n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "pkru.h",
+  "hash_id": "9b88624e75038af5da520875f91ead4af2d199c946566718d1d12df23ac1d11b",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/include/asm/pkru.h",
+  "human_readable_source": " \n#ifndef _ASM_X86_PKRU_H\n#define _ASM_X86_PKRU_H\n\n#include <asm/cpufeature.h>\n\n#define PKRU_AD_BIT 0x1u\n#define PKRU_WD_BIT 0x2u\n#define PKRU_BITS_PER_PKEY 2\n\n#ifdef CONFIG_X86_INTEL_MEMORY_PROTECTION_KEYS\nextern u32 init_pkru_value;\n#define pkru_get_init_value()\tREAD_ONCE(init_pkru_value)\n#else\n#define init_pkru_value\t0\n#define pkru_get_init_value()\t0\n#endif\n\nstatic inline bool __pkru_allows_read(u32 pkru, u16 pkey)\n{\n\tint pkru_pkey_bits = pkey * PKRU_BITS_PER_PKEY;\n\treturn !(pkru & (PKRU_AD_BIT << pkru_pkey_bits));\n}\n\nstatic inline bool __pkru_allows_write(u32 pkru, u16 pkey)\n{\n\tint pkru_pkey_bits = pkey * PKRU_BITS_PER_PKEY;\n\t \n\treturn !(pkru & ((PKRU_AD_BIT|PKRU_WD_BIT) << pkru_pkey_bits));\n}\n\nstatic inline u32 read_pkru(void)\n{\n\tif (cpu_feature_enabled(X86_FEATURE_OSPKE))\n\t\treturn rdpkru();\n\treturn 0;\n}\n\nstatic inline void write_pkru(u32 pkru)\n{\n\tif (!cpu_feature_enabled(X86_FEATURE_OSPKE))\n\t\treturn;\n\t \n\tif (pkru != rdpkru())\n\t\twrpkru(pkru);\n}\n\nstatic inline void pkru_write_default(void)\n{\n\tif (!cpu_feature_enabled(X86_FEATURE_OSPKE))\n\t\treturn;\n\n\twrpkru(pkru_get_init_value());\n}\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

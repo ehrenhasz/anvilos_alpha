@@ -1,0 +1,9 @@
+{
+  "module_name": "lpfc_version.h",
+  "hash_id": "6f701bbdb4f57ae18ecc1c6f60436c4bbc1ea211be221375d36385da2ba420cd",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/scsi/lpfc/lpfc_version.h",
+  "human_readable_source": " \n\n#define LPFC_DRIVER_VERSION \"14.2.0.14\"\n#define LPFC_DRIVER_NAME\t\t\"lpfc\"\n\n \n#define LPFC_SP_DRIVER_HANDLER_NAME\t\"lpfc:sp\"\n#define LPFC_FP_DRIVER_HANDLER_NAME\t\"lpfc:fp\"\n\n \n#define LPFC_DRIVER_HANDLER_NAME\t\"lpfc:\"\n\n#define LPFC_MODULE_DESC \"Emulex LightPulse Fibre Channel SCSI driver \" \\\n\t\tLPFC_DRIVER_VERSION\n#define LPFC_COPYRIGHT \"Copyright (C) 2017-2023 Broadcom. All Rights \" \\\n\t\t\"Reserved. The term \\\"Broadcom\\\" refers to Broadcom Inc. \" \\\n\t\t\"and/or its subsidiaries.\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

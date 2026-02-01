@@ -1,0 +1,9 @@
+{
+  "module_name": "pv88060-regulator.h",
+  "hash_id": "19a1ad039b86402aaf7413aea3fa62c3e15d4d87dd1cedce7b27cdc90b936c2a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/regulator/pv88060-regulator.h",
+  "human_readable_source": " \n \n\n#ifndef __PV88060_REGISTERS_H__\n#define __PV88060_REGISTERS_H__\n\n \n#define\tPV88060_REG_EVENT_A\t\t\t0x04\n#define\tPV88060_REG_MASK_A\t\t\t0x08\n#define\tPV88060_REG_MASK_B\t\t\t0x09\n#define\tPV88060_REG_MASK_C\t\t\t0x0A\n\n \n#define\tPV88060_REG_BUCK1_CONF0\t\t\t0x1B\n#define\tPV88060_REG_BUCK1_CONF1\t\t\t0x1C\n#define\tPV88060_REG_LDO1_CONF\t\t\t0x1D\n#define\tPV88060_REG_LDO2_CONF\t\t\t0x1E\n#define\tPV88060_REG_LDO3_CONF\t\t\t0x1F\n#define\tPV88060_REG_LDO4_CONF\t\t\t0x20\n#define\tPV88060_REG_LDO5_CONF\t\t\t0x21\n#define\tPV88060_REG_LDO6_CONF\t\t\t0x22\n#define\tPV88060_REG_LDO7_CONF\t\t\t0x23\n\n#define\tPV88060_REG_SW1_CONF\t\t\t0x3B\n#define\tPV88060_REG_SW2_CONF\t\t\t0x3C\n#define\tPV88060_REG_SW3_CONF\t\t\t0x3D\n#define\tPV88060_REG_SW4_CONF\t\t\t0x3E\n#define\tPV88060_REG_SW5_CONF\t\t\t0x3F\n#define\tPV88060_REG_SW6_CONF\t\t\t0x40\n\n \n#define\tPV88060_E_VDD_FLT\t\t\t0x01\n#define\tPV88060_E_OVER_TEMP\t\t\t0x02\n\n \n#define\tPV88060_M_VDD_FLT\t\t\t0x01\n#define\tPV88060_M_OVER_TEMP\t\t\t0x02\n\n \n#define\tPV88060_BUCK_EN\t\t\t0x80\n#define PV88060_VBUCK_MASK\t\t\t0x7F\n \n#define\tPV88060_LDO_EN\t\t\t0x40\n#define PV88060_VLDO_MASK\t\t\t0x3F\n \n#define\tPV88060_SW_EN\t\t\t0x80\n\n \n#define\tPV88060_BUCK_ILIM_SHIFT\t\t\t2\n#define\tPV88060_BUCK_ILIM_MASK\t\t\t0x0C\n#define\tPV88060_BUCK_MODE_SHIFT\t\t\t0\n#define\tPV88060_BUCK_MODE_MASK\t\t\t0x03\n#define\tPV88060_BUCK_MODE_SLEEP\t\t\t0x00\n#define\tPV88060_BUCK_MODE_AUTO\t\t\t0x01\n#define\tPV88060_BUCK_MODE_SYNC\t\t\t0x02\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "exynos_drm_fb.h",
+  "hash_id": "4438c1bab4b91a46dc6a483ada58d9f264b7809fcf491a00960d5d74986d7fb1",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/exynos/exynos_drm_fb.h",
+  "human_readable_source": " \n \n\n#ifndef _EXYNOS_DRM_FB_H_\n#define _EXYNOS_DRM_FB_H_\n\n#include \"exynos_drm_gem.h\"\n\nstruct drm_framebuffer *\nexynos_drm_framebuffer_init(struct drm_device *dev,\n\t\t\t    const struct drm_mode_fb_cmd2 *mode_cmd,\n\t\t\t    struct exynos_drm_gem **exynos_gem,\n\t\t\t    int count);\n\ndma_addr_t exynos_drm_fb_dma_addr(struct drm_framebuffer *fb, int index);\n\nvoid exynos_drm_mode_config_init(struct drm_device *dev);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "mtk_rpmsg.h",
+  "hash_id": "d7ca412c27d4617977d585ff8efbd00690944ff8aab96e8e104b655a8154f677",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/rpmsg/mtk_rpmsg.h",
+  "human_readable_source": " \n \n\n#ifndef __LINUX_RPMSG_MTK_RPMSG_H\n#define __LINUX_RPMSG_MTK_RPMSG_H\n\n#include <linux/platform_device.h>\n#include <linux/remoteproc.h>\n\ntypedef void (*ipi_handler_t)(void *data, unsigned int len, void *priv);\n\n \nstruct mtk_rpmsg_info {\n\tint (*register_ipi)(struct platform_device *pdev, u32 id,\n\t\t\t    ipi_handler_t handler, void *priv);\n\tvoid (*unregister_ipi)(struct platform_device *pdev, u32 id);\n\tint (*send_ipi)(struct platform_device *pdev, u32 id,\n\t\t\tvoid *buf, unsigned int len, unsigned int wait);\n\tint ns_ipi_id;\n};\n\nstruct rproc_subdev *\nmtk_rpmsg_create_rproc_subdev(struct platform_device *pdev,\n\t\t\t      struct mtk_rpmsg_info *info);\n\nvoid mtk_rpmsg_destroy_rproc_subdev(struct rproc_subdev *subdev);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

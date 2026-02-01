@@ -1,0 +1,9 @@
+{
+  "module_name": "mpthread.h",
+  "hash_id": "6a47c3b693152819e5babac2b44d631fde4e24e01af7350de32e4e26b3f5cfe7",
+  "original_prompt": "Ingested from sys_09_Anvil/source/py/mpthread.h",
+  "human_readable_source": " \n#ifndef MICROPY_INCLUDED_PY_MPTHREAD_H\n#define MICROPY_INCLUDED_PY_MPTHREAD_H\n\n#include \"py/mpconfig.h\"\n\n#if MICROPY_PY_THREAD\n\nstruct _mp_state_thread_t;\n\n#ifdef MICROPY_MPTHREADPORT_H\n#include MICROPY_MPTHREADPORT_H\n#else\n#include <mpthreadport.h>\n#endif\n\nstruct _mp_state_thread_t *mp_thread_get_state(void);\nvoid mp_thread_set_state(struct _mp_state_thread_t *state);\nmp_uint_t mp_thread_create(void *(*entry)(void *), void *arg, size_t *stack_size);\nmp_uint_t mp_thread_get_id(void);\nvoid mp_thread_start(void);\nvoid mp_thread_finish(void);\nvoid mp_thread_mutex_init(mp_thread_mutex_t *mutex);\nint mp_thread_mutex_lock(mp_thread_mutex_t *mutex, int wait);\nvoid mp_thread_mutex_unlock(mp_thread_mutex_t *mutex);\n\n#endif \n\n#if MICROPY_PY_THREAD && MICROPY_PY_THREAD_GIL\n#include \"py/mpstate.h\"\n#define MP_THREAD_GIL_ENTER() mp_thread_mutex_lock(&MP_STATE_VM(gil_mutex), 1)\n#define MP_THREAD_GIL_EXIT() mp_thread_mutex_unlock(&MP_STATE_VM(gil_mutex))\n#else\n#define MP_THREAD_GIL_ENTER()\n#define MP_THREAD_GIL_EXIT()\n#endif\n\n#endif \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

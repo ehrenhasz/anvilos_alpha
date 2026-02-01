@@ -1,0 +1,9 @@
+{
+  "module_name": "nf_conntrack_tftp.h",
+  "hash_id": "b396690ce592a3b3a11b56597449be2316c04bb32dd850ecddd24debc2e1481e",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/netfilter/nf_conntrack_tftp.h",
+  "human_readable_source": " \n#ifndef _NF_CONNTRACK_TFTP_H\n#define _NF_CONNTRACK_TFTP_H\n\n#define TFTP_PORT 69\n\n#include <linux/netfilter.h>\n#include <linux/skbuff.h>\n#include <linux/types.h>\n#include <net/netfilter/nf_conntrack_expect.h>\n\nstruct tftphdr {\n\t__be16 opcode;\n};\n\n#define TFTP_OPCODE_READ\t1\n#define TFTP_OPCODE_WRITE\t2\n#define TFTP_OPCODE_DATA\t3\n#define TFTP_OPCODE_ACK\t\t4\n#define TFTP_OPCODE_ERROR\t5\n\nextern unsigned int (*nf_nat_tftp_hook)(struct sk_buff *skb,\n\t\t\t\t        enum ip_conntrack_info ctinfo,\n\t\t\t\t        struct nf_conntrack_expect *exp);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "prestera_counter.h",
+  "hash_id": "ff5adba84bcaf6737347f367b1ea71382f866522e5f6eed2c436f05525064969",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/marvell/prestera/prestera_counter.h",
+  "human_readable_source": " \n \n\n#ifndef _PRESTERA_COUNTER_H_\n#define _PRESTERA_COUNTER_H_\n\n#include <linux/types.h>\n\nstruct prestera_counter_stats {\n\tu64 packets;\n\tu64 bytes;\n};\n\nstruct prestera_switch;\nstruct prestera_counter;\nstruct prestera_counter_block;\n\nint prestera_counter_init(struct prestera_switch *sw);\nvoid prestera_counter_fini(struct prestera_switch *sw);\n\nint prestera_counter_get(struct prestera_counter *counter, u32 client,\n\t\t\t struct prestera_counter_block **block,\n\t\t\t u32 *counter_id);\nvoid prestera_counter_put(struct prestera_counter *counter,\n\t\t\t  struct prestera_counter_block *block, u32 counter_id);\nint prestera_counter_stats_get(struct prestera_counter *counter,\n\t\t\t       struct prestera_counter_block *block,\n\t\t\t       u32 counter_id, u64 *packets, u64 *bytes);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

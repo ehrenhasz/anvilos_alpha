@@ -1,0 +1,9 @@
+{
+  "module_name": "i2c-algo-pcf.h",
+  "hash_id": "4b635e8d9418ed7d8b4c11b320768943c76db2d554d98234b18c15801790ae8b",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/i2c-algo-pcf.h",
+  "human_readable_source": " \n \n \n \n \n \n\n \n\n#ifndef _LINUX_I2C_ALGO_PCF_H\n#define _LINUX_I2C_ALGO_PCF_H\n\nstruct i2c_algo_pcf_data {\n\tvoid *data;\t\t \n\tvoid (*setpcf) (void *data, int ctl, int val);\n\tint  (*getpcf) (void *data, int ctl);\n\tint  (*getown) (void *data);\n\tint  (*getclock) (void *data);\n\tvoid (*waitforpin) (void *data);\n\n\tvoid (*xfer_begin) (void *data);\n\tvoid (*xfer_end) (void *data);\n\n\t \n\tunsigned long lab_mdelay;\n};\n\nint i2c_pcf_add_bus(struct i2c_adapter *);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

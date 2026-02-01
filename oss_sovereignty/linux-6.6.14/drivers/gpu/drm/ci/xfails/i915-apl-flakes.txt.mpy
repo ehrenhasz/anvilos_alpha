@@ -1,0 +1,9 @@
+{
+  "module_name": "i915-apl-flakes.txt",
+  "hash_id": "cb5630209f9221dacffa8334d766629afe98c7380aacab969b077bbaa8784892",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/ci/xfails/i915-apl-flakes.txt",
+  "human_readable_source": "kms_frontbuffer_tracking@fbc-tiling-linear\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

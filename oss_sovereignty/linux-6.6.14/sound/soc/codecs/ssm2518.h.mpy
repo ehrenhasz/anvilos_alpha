@@ -1,0 +1,9 @@
+{
+  "module_name": "ssm2518.h",
+  "hash_id": "c2ce56487a666f89d1574bdaae2d4c31481f35b414782e23570fdb94e16cb20b",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/codecs/ssm2518.h",
+  "human_readable_source": " \n \n\n#ifndef __SND_SOC_CODECS_SSM2518_H__\n#define __SND_SOC_CODECS_SSM2518_H__\n\n#define SSM2518_SYSCLK 0\n\nenum ssm2518_sysclk_src {\n\tSSM2518_SYSCLK_SRC_MCLK = 0,\n\tSSM2518_SYSCLK_SRC_BCLK = 1,\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

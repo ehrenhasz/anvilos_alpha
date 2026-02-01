@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "8e76222676fcf08a8a582bc77819df2af65142c41593c59618cdb9fb0715b9fb",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/platform/samsung/s3c-camif/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig VIDEO_S3C_CAMIF\n\ttristate \"Samsung 3C64XX SoC Camera Interface driver\"\n\tdepends on V4L_PLATFORM_DRIVERS\n\tdepends on VIDEO_DEV && I2C && PM\n\tdepends on ARCH_S3C64XX || COMPILE_TEST\n\tselect MEDIA_CONTROLLER\n\tselect VIDEO_V4L2_SUBDEV_API\n\tselect VIDEOBUF2_DMA_CONTIG\n\thelp\n\t  This is a v4l2 driver for s3c64xx SoC series camera host interface\n\t  (CAMIF).\n\n\t  To compile this driver as a module, choose M here: the module\n\t  will be called s3c-camif.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

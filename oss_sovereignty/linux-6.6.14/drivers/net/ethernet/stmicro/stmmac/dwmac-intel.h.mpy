@@ -1,0 +1,9 @@
+{
+  "module_name": "dwmac-intel.h",
+  "hash_id": "66045e2e95d72d08d04dea9702b420a83e666c35f55d75828c0d114bea311584",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.h",
+  "human_readable_source": " \n \n\n#ifndef __DWMAC_INTEL_H__\n#define __DWMAC_INTEL_H__\n\n#define POLL_DELAY_US 8\n\n \n#define SERDES_GCR\t0x0\t \n#define SERDES_GSR0\t0x5\t \n#define SERDES_GCR0\t0xb\t \n\n \n#define SERDES_PLL_CLK\t\tBIT(0)\t\t \n#define SERDES_PHY_RX_CLK\tBIT(1)\t\t \n#define SERDES_RST\t\tBIT(2)\t\t \n#define SERDES_PWR_ST_MASK\tGENMASK(6, 4)\t \n#define SERDES_RATE_MASK\tGENMASK(9, 8)\n#define SERDES_PCLK_MASK\tGENMASK(14, 12)\t \n#define SERDES_LINK_MODE_MASK\tGENMASK(2, 1)\n#define SERDES_LINK_MODE_SHIFT\t1\n#define SERDES_PWR_ST_SHIFT\t4\n#define SERDES_PWR_ST_P0\t0x0\n#define SERDES_PWR_ST_P3\t0x3\n#define SERDES_LINK_MODE_2G5\t0x3\n#define SERSED_LINK_MODE_1G\t0x2\n#define SERDES_PCLK_37p5MHZ\t0x0\n#define SERDES_PCLK_70MHZ\t0x1\n#define SERDES_RATE_PCIE_GEN1\t0x0\n#define SERDES_RATE_PCIE_GEN2\t0x1\n#define SERDES_RATE_PCIE_SHIFT\t8\n#define SERDES_PCLK_SHIFT\t12\n\n#define INTEL_MGBE_ADHOC_ADDR\t0x15\n#define INTEL_MGBE_XPCS_ADDR\t0x16\n\n \n#define ART_CPUID_LEAF\t\t0x15\n#define EHL_PSE_ART_MHZ\t\t19200000\n\n \n#define PSE_PTP_CLK_FREQ_MASK\t\t(GMAC_GPO0 | GMAC_GPO3)\n#define PSE_PTP_CLK_FREQ_19_2MHZ\t(GMAC_GPO0)\n#define PSE_PTP_CLK_FREQ_200MHZ\t\t(GMAC_GPO0 | GMAC_GPO3)\n#define PSE_PTP_CLK_FREQ_256MHZ\t\t(0)\n#define PCH_PTP_CLK_FREQ_MASK\t\t(GMAC_GPO0)\n#define PCH_PTP_CLK_FREQ_19_2MHZ\t(GMAC_GPO0)\n#define PCH_PTP_CLK_FREQ_200MHZ\t\t(0)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

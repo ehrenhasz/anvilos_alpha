@@ -1,0 +1,9 @@
+{
+  "module_name": "ucode_loader.h",
+  "hash_id": "e9df3619eb3bb07c78c5c8c5368974da1ad36b5d6aa9908f01c55867a05cd01b",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/broadcom/brcm80211/brcmsmac/ucode_loader.h",
+  "human_readable_source": " \n#ifndef\t_BRCM_UCODE_H_\n#define\t_BRCM_UCODE_H_\n\n#include \"types.h\"\t\t \n\n#define MIN_FW_SIZE 40000\t \n#define MAX_FW_SIZE 150000\n\n#define UCODE_LOADER_API_VER 0\n\nstruct d11init;\n\nstruct brcms_ucode {\n\tstruct d11init *d11lcn0bsinitvals24;\n\tstruct d11init *d11lcn0initvals24;\n\tstruct d11init *d11lcn1bsinitvals24;\n\tstruct d11init *d11lcn1initvals24;\n\tstruct d11init *d11lcn2bsinitvals24;\n\tstruct d11init *d11lcn2initvals24;\n\tstruct d11init *d11n0absinitvals16;\n\tstruct d11init *d11n0bsinitvals16;\n\tstruct d11init *d11n0initvals16;\n\t__le32 *bcm43xx_16_mimo;\n\tsize_t bcm43xx_16_mimosz;\n\t__le32 *bcm43xx_24_lcn;\n\tsize_t bcm43xx_24_lcnsz;\n\tu32 *bcm43xx_bommajor;\n\tu32 *bcm43xx_bomminor;\n};\n\nint brcms_ucode_data_init(struct brcms_info *wl, struct brcms_ucode *ucode);\n\nvoid brcms_ucode_data_free(struct brcms_ucode *ucode);\n\nint brcms_ucode_init_buf(struct brcms_info *wl, void **pbuf, unsigned int idx);\nint brcms_ucode_init_uint(struct brcms_info *wl, size_t *n_bytes,\n\t\t\t  unsigned int idx);\nvoid brcms_ucode_free_buf(void *);\nint  brcms_check_firmwares(struct brcms_info *wl);\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "xmit_osdep.h",
+  "hash_id": "f756adfc2388611c56a6c763dbff322dba206c7ad4c08511189f58d74f31a671",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/rtl8712/xmit_osdep.h",
+  "human_readable_source": " \n \n#ifndef __XMIT_OSDEP_H_\n#define __XMIT_OSDEP_H_\n\n#include \"osdep_service.h\"\n#include \"drv_types.h\"\n\nstruct pkt_file {\n\t_pkt\t*pkt;\n\tu32\tpkt_len;\t  \n\t_buffer\t*cur_buffer;\n\tu8\t*buf_start;\n\tu8\t*cur_addr;\n\tu32\tbuf_len;\n};\n\n#define NR_XMITFRAME\t256\n\nstruct xmit_priv;\nstruct pkt_attrib;\nstruct sta_xmit_priv;\nstruct xmit_frame;\nstruct xmit_buf;\n\nnetdev_tx_t r8712_xmit_entry(_pkt *pkt, struct  net_device *pnetdev);\nvoid r8712_SetFilter(struct work_struct *work);\nint r8712_xmit_resource_alloc(struct _adapter *padapter,\n\t\t\t      struct xmit_buf *pxmitbuf);\nvoid r8712_xmit_resource_free(struct _adapter *padapter,\n\t\t\t      struct xmit_buf *pxmitbuf);\n\nvoid r8712_set_qos(struct pkt_file *ppktfile,\n\t\t   struct pkt_attrib *pattrib);\nvoid _r8712_open_pktfile(_pkt *pktptr, struct pkt_file *pfile);\nuint _r8712_pktfile_read(struct pkt_file *pfile, u8 *rmem, uint rlen);\nsint r8712_endofpktfile(struct pkt_file *pfile);\nvoid r8712_xmit_complete(struct _adapter *padapter,\n\t\t\t struct xmit_frame *pxframe);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

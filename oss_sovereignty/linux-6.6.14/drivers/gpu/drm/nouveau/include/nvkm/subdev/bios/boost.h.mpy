@@ -1,0 +1,9 @@
+{
+  "module_name": "boost.h",
+  "hash_id": "f45c18718166c751d44e2917bdaa2521dde9ba23a4ac88df05402e2a73eaa008",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/include/nvkm/subdev/bios/boost.h",
+  "human_readable_source": " \n#ifndef __NVBIOS_BOOST_H__\n#define __NVBIOS_BOOST_H__\nu32 nvbios_boostTe(struct nvkm_bios *, u8 *, u8 *, u8 *, u8 *, u8 *, u8 *);\n\nstruct nvbios_boostE {\n\tu8  pstate;\n\tu32 min;\n\tu32 max;\n};\n\nu32 nvbios_boostEe(struct nvkm_bios *, int idx, u8 *, u8 *, u8 *, u8 *);\nu32 nvbios_boostEp(struct nvkm_bios *, int idx, u8 *, u8 *, u8 *, u8 *,\n\t\t   struct nvbios_boostE *);\nu32 nvbios_boostEm(struct nvkm_bios *, u8, u8 *, u8 *, u8 *, u8 *,\n\t\t   struct nvbios_boostE *);\n\nstruct nvbios_boostS {\n\tu8  domain;\n\tu8  percent;\n\tu32 min;\n\tu32 max;\n};\n\nu32 nvbios_boostSe(struct nvkm_bios *, int, u32, u8 *, u8 *, u8, u8);\nu32 nvbios_boostSp(struct nvkm_bios *, int, u32, u8 *, u8 *, u8, u8,\n\t\t   struct nvbios_boostS *);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

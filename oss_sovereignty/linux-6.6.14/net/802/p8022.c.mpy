@@ -1,0 +1,9 @@
+{
+  "module_name": "p8022.c",
+  "hash_id": "79118ba1e18da9b25788cc2f885131c1756dbd18a6a74eb2616a2fc764709086",
+  "original_prompt": "Ingested from linux-6.6.14/net/802/p8022.c",
+  "human_readable_source": "\n \n#include <linux/module.h>\n#include <linux/netdevice.h>\n#include <linux/skbuff.h>\n#include <linux/slab.h>\n#include <net/datalink.h>\n#include <linux/mm.h>\n#include <linux/in.h>\n#include <linux/init.h>\n#include <net/llc.h>\n#include <net/p8022.h>\n\nstatic int p8022_request(struct datalink_proto *dl, struct sk_buff *skb,\n\t\t\t const unsigned char *dest)\n{\n\tllc_build_and_send_ui_pkt(dl->sap, skb, dest, dl->sap->laddr.lsap);\n\treturn 0;\n}\n\nstruct datalink_proto *register_8022_client(unsigned char type,\n\t\t\t\t\t    int (*func)(struct sk_buff *skb,\n\t\t\t\t\t\t\tstruct net_device *dev,\n\t\t\t\t\t\t\tstruct packet_type *pt,\n\t\t\t\t\t\t\tstruct net_device *orig_dev))\n{\n\tstruct datalink_proto *proto;\n\n\tproto = kmalloc(sizeof(*proto), GFP_ATOMIC);\n\tif (proto) {\n\t\tproto->type[0]\t\t= type;\n\t\tproto->header_length\t= 3;\n\t\tproto->request\t\t= p8022_request;\n\t\tproto->sap = llc_sap_open(type, func);\n\t\tif (!proto->sap) {\n\t\t\tkfree(proto);\n\t\t\tproto = NULL;\n\t\t}\n\t}\n\treturn proto;\n}\n\nvoid unregister_8022_client(struct datalink_proto *proto)\n{\n\tllc_sap_put(proto->sap);\n\tkfree(proto);\n}\n\nEXPORT_SYMBOL(register_8022_client);\nEXPORT_SYMBOL(unregister_8022_client);\n\nMODULE_LICENSE(\"GPL\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

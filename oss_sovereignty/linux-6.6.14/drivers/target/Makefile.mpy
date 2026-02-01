@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "fdbcaf92ca8053aa6403eab78b46ac2fecd2649649703d1b87706db75ef7d91a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/target/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n\ntarget_core_mod-y\t\t:= target_core_configfs.o \\\n\t\t\t\t   target_core_device.o \\\n\t\t\t\t   target_core_fabric_configfs.o \\\n\t\t\t\t   target_core_fabric_lib.o \\\n\t\t\t\t   target_core_hba.o \\\n\t\t\t\t   target_core_pr.o \\\n\t\t\t\t   target_core_alua.o \\\n\t\t\t\t   target_core_tmr.o \\\n\t\t\t\t   target_core_tpg.o \\\n\t\t\t\t   target_core_transport.o \\\n\t\t\t\t   target_core_sbc.o \\\n\t\t\t\t   target_core_spc.o \\\n\t\t\t\t   target_core_ua.o \\\n\t\t\t\t   target_core_rd.o \\\n\t\t\t\t   target_core_stat.o \\\n\t\t\t\t   target_core_xcopy.o\n\nobj-$(CONFIG_TARGET_CORE)\t+= target_core_mod.o\n\n# Subsystem modules\nobj-$(CONFIG_TCM_IBLOCK)\t+= target_core_iblock.o\nobj-$(CONFIG_TCM_FILEIO)\t+= target_core_file.o\nobj-$(CONFIG_TCM_PSCSI)\t\t+= target_core_pscsi.o\nobj-$(CONFIG_TCM_USER2)\t\t+= target_core_user.o\n\n# Fabric modules\nobj-$(CONFIG_LOOPBACK_TARGET)\t+= loopback/\nobj-$(CONFIG_TCM_FC)\t\t+= tcm_fc/\nobj-$(CONFIG_ISCSI_TARGET)\t+= iscsi/\nobj-$(CONFIG_SBP_TARGET)\t+= sbp/\nobj-$(CONFIG_REMOTE_TARGET)\t+= tcm_remote/\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

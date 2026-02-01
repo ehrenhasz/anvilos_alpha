@@ -1,0 +1,9 @@
+{
+  "module_name": "blkptr.h",
+  "hash_id": "be1879572036e3a01f1d2373a83e0945325a8c828a4fbb34b14a0537d557901b",
+  "original_prompt": "Ingested from zfs-2.2.2/include/sys/blkptr.h",
+  "human_readable_source": " \n\n \n\n#ifndef _SYS_BLKPTR_H\n#define\t_SYS_BLKPTR_H\n\n#include <sys/spa.h>\n#include <sys/zio.h>\n\n#ifdef\t__cplusplus\nextern \"C\" {\n#endif\n\nvoid encode_embedded_bp_compressed(blkptr_t *, void *,\n    enum zio_compress, int, int);\nvoid decode_embedded_bp_compressed(const blkptr_t *, void *);\nint decode_embedded_bp(const blkptr_t *, void *, int);\n\n#ifdef\t__cplusplus\n}\n#endif\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

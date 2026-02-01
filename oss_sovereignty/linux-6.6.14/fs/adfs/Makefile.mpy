@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "4a0d6af4fe47b87f556bcca67fc127fc0d67cb82a5800531e7106902b97dd5f1",
+  "original_prompt": "Ingested from linux-6.6.14/fs/adfs/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Makefile for the linux adfs filesystem routines.\n#\n\nobj-$(CONFIG_ADFS_FS) += adfs.o\n\nadfs-objs := dir.o dir_f.o dir_fplus.o file.o inode.o map.o super.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

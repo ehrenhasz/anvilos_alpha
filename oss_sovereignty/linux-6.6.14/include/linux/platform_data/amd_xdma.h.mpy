@@ -1,0 +1,9 @@
+{
+  "module_name": "amd_xdma.h",
+  "hash_id": "f382d622789ee58487f200f1140d320b9f60bac39da26891c58ba14c1a58e5ca",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/platform_data/amd_xdma.h",
+  "human_readable_source": " \n \n\n#ifndef _PLATDATA_AMD_XDMA_H\n#define _PLATDATA_AMD_XDMA_H\n\n#include <linux/dmaengine.h>\n\n \nstruct xdma_chan_info {\n\tenum dma_transfer_direction dir;\n};\n\n#define XDMA_FILTER_PARAM(chan_info)\t((void *)(chan_info))\n\nstruct dma_slave_map;\n\n \nstruct xdma_platdata {\n\tu32 max_dma_channels;\n\tu32 device_map_cnt;\n\tstruct dma_slave_map *device_map;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

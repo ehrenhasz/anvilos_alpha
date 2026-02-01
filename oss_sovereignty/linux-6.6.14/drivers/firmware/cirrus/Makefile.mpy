@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "e9784a9b01c0564d4421f8384dcc2d997ad4c1b2c500b53b1096866f602823aa",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/firmware/cirrus/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\nobj-$(CONFIG_FW_CS_DSP)\t\t+= cs_dsp.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

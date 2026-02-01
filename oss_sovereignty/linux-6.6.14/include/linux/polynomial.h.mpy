@@ -1,0 +1,9 @@
+{
+  "module_name": "polynomial.h",
+  "hash_id": "5e86418d3615158a20e1b6e0174da6eef985688a788082d875c8e4ac71482503",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/polynomial.h",
+  "human_readable_source": " \n \n\n#ifndef _POLYNOMIAL_H\n#define _POLYNOMIAL_H\n\n \nstruct polynomial_term {\n\tunsigned int deg;\n\tlong coef;\n\tlong divider;\n\tlong divider_leftover;\n};\n\n \nstruct polynomial {\n\tlong total_divider;\n\tstruct polynomial_term terms[];\n};\n\nlong polynomial_calc(const struct polynomial *poly, long data);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

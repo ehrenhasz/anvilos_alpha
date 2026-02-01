@@ -1,0 +1,9 @@
+{
+  "module_name": "md5.h",
+  "hash_id": "ac69b37d1fdc95497105c0089bb27ae067a4c989ea2720e8ca5f78fd6c6c11c1",
+  "original_prompt": "Ingested from openssh-9.6p1/openbsd-compat/md5.h",
+  "human_readable_source": " \n\n \n\n#ifndef _MD5_H_\n#define _MD5_H_\n\n#ifndef WITH_OPENSSL\n\n#define\tMD5_BLOCK_LENGTH\t\t64\n#define\tMD5_DIGEST_LENGTH\t\t16\n#define\tMD5_DIGEST_STRING_LENGTH\t(MD5_DIGEST_LENGTH * 2 + 1)\n\ntypedef struct MD5Context {\n\tu_int32_t state[4];\t\t\t \n\tu_int64_t count;\t\t\t \n\tu_int8_t buffer[MD5_BLOCK_LENGTH];\t \n} MD5_CTX;\n\nvoid\t MD5Init(MD5_CTX *);\nvoid\t MD5Update(MD5_CTX *, const u_int8_t *, size_t)\n\t\t__attribute__((__bounded__(__string__,2,3)));\nvoid\t MD5Pad(MD5_CTX *);\nvoid\t MD5Final(u_int8_t [MD5_DIGEST_LENGTH], MD5_CTX *)\n\t\t__attribute__((__bounded__(__minbytes__,1,MD5_DIGEST_LENGTH)));\nvoid\t MD5Transform(u_int32_t [4], const u_int8_t [MD5_BLOCK_LENGTH])\n\t\t__attribute__((__bounded__(__minbytes__,1,4)))\n\t\t__attribute__((__bounded__(__minbytes__,2,MD5_BLOCK_LENGTH)));\nchar\t*MD5End(MD5_CTX *, char *)\n\t\t__attribute__((__bounded__(__minbytes__,2,MD5_DIGEST_STRING_LENGTH)));\nchar\t*MD5File(const char *, char *)\n\t\t__attribute__((__bounded__(__minbytes__,2,MD5_DIGEST_STRING_LENGTH)));\nchar\t*MD5FileChunk(const char *, char *, off_t, off_t)\n\t\t__attribute__((__bounded__(__minbytes__,2,MD5_DIGEST_STRING_LENGTH)));\nchar\t*MD5Data(const u_int8_t *, size_t, char *)\n\t\t__attribute__((__bounded__(__string__,1,2)))\n\t\t__attribute__((__bounded__(__minbytes__,3,MD5_DIGEST_STRING_LENGTH)));\n\n#endif  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

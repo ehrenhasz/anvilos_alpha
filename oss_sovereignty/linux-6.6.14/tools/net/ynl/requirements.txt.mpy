@@ -1,0 +1,9 @@
+{
+  "module_name": "requirements.txt",
+  "hash_id": "596da01693c9a3a28f2bdc37e61b95ef8857812286bbc00e97f0d03e7ec77844",
+  "original_prompt": "Ingested from linux-6.6.14/tools/net/ynl/requirements.txt",
+  "human_readable_source": "jsonschema==4.*\nPyYAML==6.*\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

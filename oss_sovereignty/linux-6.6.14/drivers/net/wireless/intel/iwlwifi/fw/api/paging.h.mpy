@@ -1,0 +1,9 @@
+{
+  "module_name": "paging.h",
+  "hash_id": "b4b74629b4e31d7919e860131b658ab3db3ba3722b8fa7e1baba2649ea5c8537",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/intel/iwlwifi/fw/api/paging.h",
+  "human_readable_source": " \n \n#ifndef __iwl_fw_api_paging_h__\n#define __iwl_fw_api_paging_h__\n\n#define NUM_OF_FW_PAGING_BLOCKS\t33  \n\n \nstruct iwl_fw_paging_cmd {\n\t__le32 flags;\n\t__le32 block_size;\n\t__le32 block_num;\n\t__le32 device_phy_addr[NUM_OF_FW_PAGING_BLOCKS];\n} __packed;  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

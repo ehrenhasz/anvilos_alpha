@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "615f02591acb0bdf32384b067f893a3090cfbd3e656765858a64644e0f62d465",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/acpi/numa/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-$(CONFIG_ACPI_NUMA) += srat.o\nobj-$(CONFIG_ACPI_HMAT) += hmat.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

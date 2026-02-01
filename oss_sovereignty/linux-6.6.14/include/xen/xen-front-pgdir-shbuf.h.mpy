@@ -1,0 +1,9 @@
+{
+  "module_name": "xen-front-pgdir-shbuf.h",
+  "hash_id": "6556d3f82c43b3670c02d0dc3969110586446d3bd317f607f2372ce35becce64",
+  "original_prompt": "Ingested from linux-6.6.14/include/xen/xen-front-pgdir-shbuf.h",
+  "human_readable_source": " \n\n \n\n#ifndef __XEN_FRONT_PGDIR_SHBUF_H_\n#define __XEN_FRONT_PGDIR_SHBUF_H_\n\n#include <linux/kernel.h>\n\n#include <xen/grant_table.h>\n\nstruct xen_front_pgdir_shbuf_ops;\n\nstruct xen_front_pgdir_shbuf {\n\t \n\tint num_grefs;\n\tgrant_ref_t *grefs;\n\t \n\tu8 *directory;\n\n\t \n\tint num_pages;\n\t \n\tstruct page **pages;\n\n\tstruct xenbus_device *xb_dev;\n\n\t \n\tconst struct xen_front_pgdir_shbuf_ops *ops;\n\n\t \n\tgrant_handle_t *backend_map_handles;\n};\n\nstruct xen_front_pgdir_shbuf_cfg {\n\tstruct xenbus_device *xb_dev;\n\n\t \n\tint num_pages;\n\t \n\tstruct page **pages;\n\n\t \n\tstruct xen_front_pgdir_shbuf *pgdir;\n\t \n\tint be_alloc;\n};\n\nint xen_front_pgdir_shbuf_alloc(struct xen_front_pgdir_shbuf_cfg *cfg);\n\ngrant_ref_t\nxen_front_pgdir_shbuf_get_dir_start(struct xen_front_pgdir_shbuf *buf);\n\nint xen_front_pgdir_shbuf_map(struct xen_front_pgdir_shbuf *buf);\n\nint xen_front_pgdir_shbuf_unmap(struct xen_front_pgdir_shbuf *buf);\n\nvoid xen_front_pgdir_shbuf_free(struct xen_front_pgdir_shbuf *buf);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

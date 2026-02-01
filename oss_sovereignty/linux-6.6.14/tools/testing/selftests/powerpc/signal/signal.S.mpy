@@ -1,0 +1,9 @@
+{
+  "module_name": "signal.S",
+  "hash_id": "3efb814223ae05ba5358ddb3d9f4d90b8ed0b00869a2e3cc2a8797e5393d2d7d",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/powerpc/signal/signal.S",
+  "human_readable_source": " \n \n\n#include \"basic_asm.h\"\n\n \nFUNC_START(signal_self)\n\tli\tr0,37  \n\t \n\t \n\tsc\n\tbc\t4,3,1f\n\tsubfze\tr3,r3\n1:\tblr\nFUNC_END(signal_self)\n\n \nFUNC_START(tm_signal_self)\n\tPUSH_BASIC_STACK(8)\n\tstd\tr5,STACK_FRAME_PARAM(0)(sp)  \n\ttbegin.\n\tbeq\t1f\n\ttsuspend.\n\tli\tr0,37  \n\t \n\t \n\tsc\n\tld\tr5,STACK_FRAME_PARAM(0)(sp)  \n\tbc\t4,3,2f\n\tsubfze\tr3,r3\n2:\tstd\tr3,0(r5)\n\ttabort. 0\n\ttresume.  \n\t \n\tli\tr3,1\n\tPOP_BASIC_STACK(8)\n\tblr\n1:\tli\tr3,0\n\tPOP_BASIC_STACK(8)\n\tblr\nFUNC_END(tm_signal_self)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "2c3e781f8838559d2f3922813eea46dcc4328bd3dd19eb2fb90f8e949f552db3",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/accel/qaic/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Qualcomm Cloud AI accelerators driver\n#\n\nconfig DRM_ACCEL_QAIC\n\ttristate \"Qualcomm Cloud AI accelerators\"\n\tdepends on DRM_ACCEL\n\tdepends on PCI && HAS_IOMEM\n\tdepends on MHI_BUS\n\tdepends on MMU\n\tselect CRC32\n\thelp\n\t  Enables driver for Qualcomm's Cloud AI accelerator PCIe cards that are\n\t  designed to accelerate Deep Learning inference workloads.\n\n\t  The driver manages the PCIe devices and provides an IOCTL interface\n\t  for users to submit workloads to the devices.\n\n\t  If unsure, say N.\n\n\t  To compile this driver as a module, choose M here: the\n\t  module will be called qaic.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

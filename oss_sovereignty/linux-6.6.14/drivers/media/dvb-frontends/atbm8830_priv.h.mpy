@@ -1,0 +1,9 @@
+{
+  "module_name": "atbm8830_priv.h",
+  "hash_id": "4d9503de8e36006444ac711d5bd263f4a0ff7d97d031f693925a2f19667143ef",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/dvb-frontends/atbm8830_priv.h",
+  "human_readable_source": " \n \n\n#ifndef __ATBM8830_PRIV_H\n#define __ATBM8830_PRIV_H\n\nstruct atbm_state {\n\tstruct i2c_adapter *i2c;\n\t \n\tconst struct atbm8830_config *config;\n\tstruct dvb_frontend frontend;\n};\n\n#define REG_CHIP_ID\t0x0000\n#define REG_TUNER_BASEBAND\t0x0001\n#define REG_DEMOD_RUN\t0x0004\n#define REG_DSP_RESET\t0x0005\n#define REG_RAM_RESET\t0x0006\n#define REG_ADC_RESET\t0x0007\n#define REG_TSPORT_RESET\t0x0008\n#define REG_BLKERR_POL\t0x000C\n#define REG_I2C_GATE\t0x0103\n#define REG_TS_SAMPLE_EDGE\t0x0301\n#define REG_TS_PKT_LEN_204\t0x0302\n#define REG_TS_PKT_LEN_AUTO\t0x0303\n#define REG_TS_SERIAL\t0x0305\n#define REG_TS_CLK_FREERUN\t0x0306\n#define REG_TS_VALID_MODE\t0x0307\n#define REG_TS_CLK_MODE\t0x030B  \n\n#define REG_TS_ERRBIT_USE\t0x030C\n#define REG_LOCK_STATUS\t0x030D\n#define REG_ADC_CONFIG\t0x0602\n#define REG_CARRIER_OFFSET\t0x0827  \n#define REG_DETECTED_PN_MODE\t0x082D\n#define REG_READ_LATCH\t0x084D\n#define REG_IF_FREQ\t0x0A00  \n#define REG_OSC_CLK\t0x0A03  \n#define REG_BYPASS_CCI\t0x0A06\n#define REG_ANALOG_LUMA_DETECTED\t0x0A25\n#define REG_ANALOG_AUDIO_DETECTED\t0x0A26\n#define REG_ANALOG_CHROMA_DETECTED\t0x0A39\n#define REG_FRAME_ERR_CNT\t0x0B04\n#define REG_USE_EXT_ADC\t0x0C00\n#define REG_SWAP_I_Q\t0x0C01\n#define REG_TPS_MANUAL\t0x0D01\n#define REG_TPS_CONFIG\t0x0D02\n#define REG_BYPASS_DEINTERLEAVER\t0x0E00\n#define REG_AGC_TARGET\t0x1003  \n#define REG_AGC_MIN\t0x1020\n#define REG_AGC_MAX\t0x1023\n#define REG_AGC_LOCK\t0x1027\n#define REG_AGC_PWM_VAL\t0x1028  \n#define REG_AGC_HOLD_LOOP\t0x1031\n\n#endif\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

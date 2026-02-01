@@ -1,0 +1,9 @@
+{
+  "module_name": "mt8195-audsys-clk.h",
+  "hash_id": "9f92f1f9d01567f64d0123bf61f455266c2e6c5f2b0a1f2ef20a3190d424cf22",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/mediatek/mt8195/mt8195-audsys-clk.h",
+  "human_readable_source": " \n \n\n#ifndef _MT8195_AUDSYS_CLK_H_\n#define _MT8195_AUDSYS_CLK_H_\n\nint mt8195_audsys_clk_register(struct mtk_base_afe *afe);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

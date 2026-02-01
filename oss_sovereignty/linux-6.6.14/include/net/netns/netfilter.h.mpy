@@ -1,0 +1,9 @@
+{
+  "module_name": "netfilter.h",
+  "hash_id": "3c39058c685cb31011aca7b2be58078ea517d6dfa5d99a7eb1fcfee0229ba87b",
+  "original_prompt": "Ingested from linux-6.6.14/include/net/netns/netfilter.h",
+  "human_readable_source": " \n#ifndef __NETNS_NETFILTER_H\n#define __NETNS_NETFILTER_H\n\n#include <linux/netfilter_defs.h>\n\nstruct proc_dir_entry;\nstruct nf_logger;\nstruct nf_queue_handler;\n\nstruct netns_nf {\n#if defined CONFIG_PROC_FS\n\tstruct proc_dir_entry *proc_netfilter;\n#endif\n\tconst struct nf_logger __rcu *nf_loggers[NFPROTO_NUMPROTO];\n#ifdef CONFIG_SYSCTL\n\tstruct ctl_table_header *nf_log_dir_header;\n#endif\n\tstruct nf_hook_entries __rcu *hooks_ipv4[NF_INET_NUMHOOKS];\n\tstruct nf_hook_entries __rcu *hooks_ipv6[NF_INET_NUMHOOKS];\n#ifdef CONFIG_NETFILTER_FAMILY_ARP\n\tstruct nf_hook_entries __rcu *hooks_arp[NF_ARP_NUMHOOKS];\n#endif\n#ifdef CONFIG_NETFILTER_FAMILY_BRIDGE\n\tstruct nf_hook_entries __rcu *hooks_bridge[NF_INET_NUMHOOKS];\n#endif\n#if IS_ENABLED(CONFIG_NF_DEFRAG_IPV4)\n\tunsigned int defrag_ipv4_users;\n#endif\n#if IS_ENABLED(CONFIG_NF_DEFRAG_IPV6)\n\tunsigned int defrag_ipv6_users;\n#endif\n};\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

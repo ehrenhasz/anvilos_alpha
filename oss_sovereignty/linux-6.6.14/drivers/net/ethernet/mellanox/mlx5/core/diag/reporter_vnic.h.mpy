@@ -1,0 +1,9 @@
+{
+  "module_name": "reporter_vnic.h",
+  "hash_id": "a5740f85a755662d181df41bb41ea3692a81c35b73632a4a2ad803352acdd400",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/mellanox/mlx5/core/diag/reporter_vnic.h",
+  "human_readable_source": " \n#ifndef __MLX5_REPORTER_VNIC_H\n#define __MLX5_REPORTER_VNIC_H\n\n#include \"mlx5_core.h\"\n\nvoid mlx5_reporter_vnic_create(struct mlx5_core_dev *dev);\nvoid mlx5_reporter_vnic_destroy(struct mlx5_core_dev *dev);\n\nint mlx5_reporter_vnic_diagnose_counters(struct mlx5_core_dev *dev,\n\t\t\t\t\t struct devlink_fmsg *fmsg,\n\t\t\t\t\t u16 vport_num, bool other_vport);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

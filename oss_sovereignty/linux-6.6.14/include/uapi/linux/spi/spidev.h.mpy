@@ -1,0 +1,9 @@
+{
+  "module_name": "spidev.h",
+  "hash_id": "6f36dc0a5fd5371d868c6a3546f1892034a78863ec81fad04fc8718b07b83f76",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/spi/spidev.h",
+  "human_readable_source": " \n \n\n#ifndef SPIDEV_H\n#define SPIDEV_H\n\n#include <linux/types.h>\n#include <linux/ioctl.h>\n#include <linux/spi/spi.h>\n\n \n\n#define SPI_IOC_MAGIC\t\t\t'k'\n\n \nstruct spi_ioc_transfer {\n\t__u64\t\ttx_buf;\n\t__u64\t\trx_buf;\n\n\t__u32\t\tlen;\n\t__u32\t\tspeed_hz;\n\n\t__u16\t\tdelay_usecs;\n\t__u8\t\tbits_per_word;\n\t__u8\t\tcs_change;\n\t__u8\t\ttx_nbits;\n\t__u8\t\trx_nbits;\n\t__u8\t\tword_delay_usecs;\n\t__u8\t\tpad;\n\n\t \n};\n\n \n#define SPI_MSGSIZE(N) \\\n\t((((N)*(sizeof (struct spi_ioc_transfer))) < (1 << _IOC_SIZEBITS)) \\\n\t\t? ((N)*(sizeof (struct spi_ioc_transfer))) : 0)\n#define SPI_IOC_MESSAGE(N) _IOW(SPI_IOC_MAGIC, 0, char[SPI_MSGSIZE(N)])\n\n\n \n#define SPI_IOC_RD_MODE\t\t\t_IOR(SPI_IOC_MAGIC, 1, __u8)\n#define SPI_IOC_WR_MODE\t\t\t_IOW(SPI_IOC_MAGIC, 1, __u8)\n\n \n#define SPI_IOC_RD_LSB_FIRST\t\t_IOR(SPI_IOC_MAGIC, 2, __u8)\n#define SPI_IOC_WR_LSB_FIRST\t\t_IOW(SPI_IOC_MAGIC, 2, __u8)\n\n \n#define SPI_IOC_RD_BITS_PER_WORD\t_IOR(SPI_IOC_MAGIC, 3, __u8)\n#define SPI_IOC_WR_BITS_PER_WORD\t_IOW(SPI_IOC_MAGIC, 3, __u8)\n\n \n#define SPI_IOC_RD_MAX_SPEED_HZ\t\t_IOR(SPI_IOC_MAGIC, 4, __u32)\n#define SPI_IOC_WR_MAX_SPEED_HZ\t\t_IOW(SPI_IOC_MAGIC, 4, __u32)\n\n \n#define SPI_IOC_RD_MODE32\t\t_IOR(SPI_IOC_MAGIC, 5, __u32)\n#define SPI_IOC_WR_MODE32\t\t_IOW(SPI_IOC_MAGIC, 5, __u32)\n\n\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

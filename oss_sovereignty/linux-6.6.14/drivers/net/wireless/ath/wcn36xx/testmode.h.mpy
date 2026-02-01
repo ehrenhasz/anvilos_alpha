@@ -1,0 +1,9 @@
+{
+  "module_name": "testmode.h",
+  "hash_id": "c5804ab86437615991a91ae3279ed8401d8f30c0181a0e175db7e3fef7668a4b",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/ath/wcn36xx/testmode.h",
+  "human_readable_source": " \n\n#include \"wcn36xx.h\"\n\nstruct ftm_rsp_msg {\n\tu16 msg_id;\n\tu16 msg_body_length;\n\tu32 resp_status;\n\tu8 msg_response[];\n} __packed;\n\n \nstruct ftm_payload {\n\tu16 ftm_cmd_type;\n\tstruct ftm_rsp_msg ftm_cmd_msg;\n} __packed;\n\n#define MSG_GET_BUILD_RELEASE_NUMBER 0x32A2\n\n#ifdef CONFIG_NL80211_TESTMODE\nint wcn36xx_tm_cmd(struct ieee80211_hw *hw, struct ieee80211_vif *vif,\n\t\t   void *data, int len);\n\n#else\nstatic inline int wcn36xx_tm_cmd(struct ieee80211_hw *hw,\n\t\t\t\t struct ieee80211_vif *vif,\n\t\t\t\tvoid *data, int len)\n{\n\treturn 0;\n}\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

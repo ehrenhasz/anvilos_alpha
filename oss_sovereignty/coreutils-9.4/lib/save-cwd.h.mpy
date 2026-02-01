@@ -1,0 +1,9 @@
+{
+  "module_name": "save-cwd.h",
+  "hash_id": "14983d779862dd3c3b0faa686a8016c22a40ba5ff0831f61336c5cef4ecc55fa",
+  "original_prompt": "Ingested from coreutils-9.4/lib/save-cwd.h",
+  "human_readable_source": " \n\n#ifndef SAVE_CWD_H\n# define SAVE_CWD_H 1\n\nstruct saved_cwd\n  {\n    int desc;\n    char *name;\n  };\n\nint save_cwd (struct saved_cwd *cwd);\nint restore_cwd (const struct saved_cwd *cwd);\nvoid free_cwd (struct saved_cwd *cwd);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

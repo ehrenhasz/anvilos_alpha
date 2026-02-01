@@ -1,0 +1,9 @@
+{
+  "module_name": "k210-sysctl.h",
+  "hash_id": "a48ef0120afb40cf47efe362546a5a6cdd0d20c181a906c5a895c810887ef8ca",
+  "original_prompt": "Ingested from linux-6.6.14/include/soc/canaan/k210-sysctl.h",
+  "human_readable_source": " \n \n#ifndef K210_SYSCTL_H\n#define K210_SYSCTL_H\n\n \n#define K210_SYSCTL_GIT_ID\t0x00  \n#define K210_SYSCTL_UART_BAUD\t0x04  \n#define K210_SYSCTL_PLL0\t0x08  \n#define K210_SYSCTL_PLL1\t0x0C  \n#define K210_SYSCTL_PLL2\t0x10  \n#define K210_SYSCTL_PLL_LOCK\t0x18  \n#define K210_SYSCTL_ROM_ERROR\t0x1C  \n#define K210_SYSCTL_SEL0\t0x20  \n#define K210_SYSCTL_SEL1\t0x24  \n#define K210_SYSCTL_EN_CENT\t0x28  \n#define K210_SYSCTL_EN_PERI\t0x2C  \n#define K210_SYSCTL_SOFT_RESET\t0x30  \n#define K210_SYSCTL_PERI_RESET\t0x34  \n#define K210_SYSCTL_THR0\t0x38  \n#define K210_SYSCTL_THR1\t0x3C  \n#define K210_SYSCTL_THR2\t0x40  \n#define K210_SYSCTL_THR3\t0x44  \n#define K210_SYSCTL_THR4\t0x48  \n#define K210_SYSCTL_THR5\t0x4C  \n#define K210_SYSCTL_THR6\t0x50  \n#define K210_SYSCTL_MISC\t0x54  \n#define K210_SYSCTL_PERI\t0x58  \n#define K210_SYSCTL_SPI_SLEEP\t0x5C  \n#define K210_SYSCTL_RESET_STAT\t0x60  \n#define K210_SYSCTL_DMA_SEL0\t0x64  \n#define K210_SYSCTL_DMA_SEL1\t0x68  \n#define K210_SYSCTL_POWER_SEL\t0x6C  \n\nvoid k210_clk_early_init(void __iomem *regs);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

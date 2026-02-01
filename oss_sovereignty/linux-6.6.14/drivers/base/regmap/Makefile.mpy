@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "4589294f6213df893fbdffff44d066d655b465221a8b2b88df440946bad18c69",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/base/regmap/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n# For include/trace/define_trace.h to include trace.h\nCFLAGS_regmap.o := -I$(src)\n\nobj-$(CONFIG_REGMAP) += regmap.o regcache.o\nobj-$(CONFIG_REGMAP) += regcache-rbtree.o regcache-flat.o regcache-maple.o\nobj-$(CONFIG_DEBUG_FS) += regmap-debugfs.o\nobj-$(CONFIG_REGMAP_KUNIT) += regmap-kunit.o\nobj-$(CONFIG_REGMAP_AC97) += regmap-ac97.o\nobj-$(CONFIG_REGMAP_I2C) += regmap-i2c.o\nobj-$(CONFIG_REGMAP_RAM) += regmap-ram.o regmap-raw-ram.o\nobj-$(CONFIG_REGMAP_SLIMBUS) += regmap-slimbus.o\nobj-$(CONFIG_REGMAP_SPI) += regmap-spi.o\nobj-$(CONFIG_REGMAP_SPMI) += regmap-spmi.o\nobj-$(CONFIG_REGMAP_MMIO) += regmap-mmio.o\nobj-$(CONFIG_REGMAP_IRQ) += regmap-irq.o\nobj-$(CONFIG_REGMAP_W1) += regmap-w1.o\nobj-$(CONFIG_REGMAP_SOUNDWIRE) += regmap-sdw.o\nobj-$(CONFIG_REGMAP_SOUNDWIRE_MBQ) += regmap-sdw-mbq.o\nobj-$(CONFIG_REGMAP_SCCB) += regmap-sccb.o\nobj-$(CONFIG_REGMAP_I3C) += regmap-i3c.o\nobj-$(CONFIG_REGMAP_SPI_AVMM) += regmap-spi-avmm.o\nobj-$(CONFIG_REGMAP_MDIO) += regmap-mdio.o\nobj-$(CONFIG_REGMAP_FSI) += regmap-fsi.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

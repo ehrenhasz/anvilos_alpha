@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "3097f49aba14a2cf6f8377cd359dbbbcbbfcbe7ed225fd2a5569a80e4670dc48",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/vdpa/alibaba/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nobj-$(CONFIG_ALIBABA_ENI_VDPA) += eni_vdpa.o\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

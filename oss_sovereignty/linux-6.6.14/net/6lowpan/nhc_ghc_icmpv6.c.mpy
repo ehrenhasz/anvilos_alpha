@@ -1,0 +1,9 @@
+{
+  "module_name": "nhc_ghc_icmpv6.c",
+  "hash_id": "bdc8825bad870444895754a3414296e28d670872c798f4a24df5795df0fa5c6f",
+  "original_prompt": "Ingested from linux-6.6.14/net/6lowpan/nhc_ghc_icmpv6.c",
+  "human_readable_source": "\n \n\n#include \"nhc.h\"\n\n#define LOWPAN_GHC_ICMPV6_ID_0\t\t0xdf\n#define LOWPAN_GHC_ICMPV6_MASK_0\t0xff\n\nLOWPAN_NHC(ghc_icmpv6, \"RFC7400 ICMPv6\", NEXTHDR_ICMP, 0,\n\t   LOWPAN_GHC_ICMPV6_ID_0, LOWPAN_GHC_ICMPV6_MASK_0, NULL, NULL);\n\nmodule_lowpan_nhc(ghc_icmpv6);\nMODULE_DESCRIPTION(\"6LoWPAN generic header ICMPv6 compression\");\nMODULE_LICENSE(\"GPL\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

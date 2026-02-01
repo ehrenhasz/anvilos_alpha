@@ -1,0 +1,9 @@
+{
+  "module_name": "iscsi_tcp.h",
+  "hash_id": "469c1478cbf0ec2af19133cc2e6f7c0dee920e4add4029cb8e78b57e47f278ca",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/scsi/iscsi_tcp.h",
+  "human_readable_source": " \n \n\n#ifndef ISCSI_SW_TCP_H\n#define ISCSI_SW_TCP_H\n\n#include <scsi/libiscsi.h>\n#include <scsi/libiscsi_tcp.h>\n\nstruct socket;\nstruct iscsi_tcp_conn;\n\n \nstruct iscsi_sw_tcp_send {\n\tstruct iscsi_hdr\t*hdr;\n\tstruct iscsi_segment\tsegment;\n\tstruct iscsi_segment\tdata_segment;\n};\n\nstruct iscsi_sw_tcp_conn {\n\tstruct socket\t\t*sock;\n\t \n\tstruct mutex\t\tsock_lock;\n\n\tstruct work_struct\trecvwork;\n\tbool\t\t\tqueue_recv;\n\n\tstruct iscsi_sw_tcp_send out;\n\t \n\tvoid\t\t\t(*old_data_ready)(struct sock *);\n\tvoid\t\t\t(*old_state_change)(struct sock *);\n\tvoid\t\t\t(*old_write_space)(struct sock *);\n\n\t \n\tstruct ahash_request\t*tx_hash;\t \n\tstruct ahash_request\t*rx_hash;\t \n\n\t \n\tuint32_t\t\tsendpage_failures_cnt;\n\tuint32_t\t\tdiscontiguous_hdr_cnt;\n};\n\nstruct iscsi_sw_tcp_host {\n\tstruct iscsi_session\t*session;\n};\n\nstruct iscsi_sw_tcp_hdrbuf {\n\tstruct iscsi_hdr\thdrbuf;\n\tchar\t\t\thdrextbuf[ISCSI_MAX_AHS_SIZE +\n\t\t                                  ISCSI_DIGEST_SIZE];\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

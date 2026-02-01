@@ -1,0 +1,9 @@
+{
+  "module_name": "cx18-i2c.h",
+  "hash_id": "0e50c56b24d23e1a0bc2c3329d214842cf47628f41115eeaf6dc9b270c29e3c2",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/pci/cx18/cx18-i2c.h",
+  "human_readable_source": " \n \n\nint cx18_i2c_register(struct cx18 *cx, unsigned idx);\nstruct v4l2_subdev *cx18_find_hw(struct cx18 *cx, u32 hw);\n\n \nint init_cx18_i2c(struct cx18 *cx);\nvoid exit_cx18_i2c(struct cx18 *cx);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

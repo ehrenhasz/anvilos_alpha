@@ -1,0 +1,9 @@
+{
+  "module_name": "inotify.h",
+  "hash_id": "c788f3827d74f83dad2242980d02eed396a0b8273817ba74892e86920a1c1221",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/inotify.h",
+  "human_readable_source": " \n \n\n#ifndef _UAPI_LINUX_INOTIFY_H\n#define _UAPI_LINUX_INOTIFY_H\n\n \n#include <linux/fcntl.h>\n#include <linux/types.h>\n\n \nstruct inotify_event {\n\t__s32\t\twd;\t\t \n\t__u32\t\tmask;\t\t \n\t__u32\t\tcookie;\t\t \n\t__u32\t\tlen;\t\t \n\tchar\t\tname[];\t \n};\n\n \n#define IN_ACCESS\t\t0x00000001\t \n#define IN_MODIFY\t\t0x00000002\t \n#define IN_ATTRIB\t\t0x00000004\t \n#define IN_CLOSE_WRITE\t\t0x00000008\t \n#define IN_CLOSE_NOWRITE\t0x00000010\t \n#define IN_OPEN\t\t\t0x00000020\t \n#define IN_MOVED_FROM\t\t0x00000040\t \n#define IN_MOVED_TO\t\t0x00000080\t \n#define IN_CREATE\t\t0x00000100\t \n#define IN_DELETE\t\t0x00000200\t \n#define IN_DELETE_SELF\t\t0x00000400\t \n#define IN_MOVE_SELF\t\t0x00000800\t \n\n \n#define IN_UNMOUNT\t\t0x00002000\t \n#define IN_Q_OVERFLOW\t\t0x00004000\t \n#define IN_IGNORED\t\t0x00008000\t \n\n \n#define IN_CLOSE\t\t(IN_CLOSE_WRITE | IN_CLOSE_NOWRITE)  \n#define IN_MOVE\t\t\t(IN_MOVED_FROM | IN_MOVED_TO)  \n\n \n#define IN_ONLYDIR\t\t0x01000000\t \n#define IN_DONT_FOLLOW\t\t0x02000000\t \n#define IN_EXCL_UNLINK\t\t0x04000000\t \n#define IN_MASK_CREATE\t\t0x10000000\t \n#define IN_MASK_ADD\t\t0x20000000\t \n#define IN_ISDIR\t\t0x40000000\t \n#define IN_ONESHOT\t\t0x80000000\t \n\n \n#define IN_ALL_EVENTS\t(IN_ACCESS | IN_MODIFY | IN_ATTRIB | IN_CLOSE_WRITE | \\\n\t\t\t IN_CLOSE_NOWRITE | IN_OPEN | IN_MOVED_FROM | \\\n\t\t\t IN_MOVED_TO | IN_DELETE | IN_CREATE | IN_DELETE_SELF | \\\n\t\t\t IN_MOVE_SELF)\n\n \n#define IN_CLOEXEC O_CLOEXEC\n#define IN_NONBLOCK O_NONBLOCK\n\n \n#define INOTIFY_IOC_SETNEXTWD\t_IOW('I', 0, __s32)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

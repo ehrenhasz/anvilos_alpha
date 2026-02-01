@@ -1,0 +1,9 @@
+{
+  "module_name": "sched_policy.h",
+  "hash_id": "c1e6a17b2e9b349832418c1edbda51e1db94206ebcb965eded4098734bd63c6a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/gvt/sched_policy.h",
+  "human_readable_source": " \n\n#ifndef __GVT_SCHED_POLICY__\n#define __GVT_SCHED_POLICY__\n\nstruct intel_gvt;\nstruct intel_vgpu;\n\nstruct intel_gvt_sched_policy_ops {\n\tint (*init)(struct intel_gvt *gvt);\n\tvoid (*clean)(struct intel_gvt *gvt);\n\tint (*init_vgpu)(struct intel_vgpu *vgpu);\n\tvoid (*clean_vgpu)(struct intel_vgpu *vgpu);\n\tvoid (*start_schedule)(struct intel_vgpu *vgpu);\n\tvoid (*stop_schedule)(struct intel_vgpu *vgpu);\n};\n\nvoid intel_gvt_schedule(struct intel_gvt *gvt);\n\nint intel_gvt_init_sched_policy(struct intel_gvt *gvt);\n\nvoid intel_gvt_clean_sched_policy(struct intel_gvt *gvt);\n\nint intel_vgpu_init_sched_policy(struct intel_vgpu *vgpu);\n\nvoid intel_vgpu_clean_sched_policy(struct intel_vgpu *vgpu);\n\nvoid intel_vgpu_start_schedule(struct intel_vgpu *vgpu);\n\nvoid intel_vgpu_stop_schedule(struct intel_vgpu *vgpu);\n\nvoid intel_gvt_kick_schedule(struct intel_gvt *gvt);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

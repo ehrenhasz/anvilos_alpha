@@ -1,0 +1,9 @@
+{
+  "module_name": "vhost_iotlb.h",
+  "hash_id": "62aa940bb270cf282cab90155676ebe8cf66337801ced18696bd2188319e951c",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/vhost_iotlb.h",
+  "human_readable_source": " \n#ifndef _LINUX_VHOST_IOTLB_H\n#define _LINUX_VHOST_IOTLB_H\n\n#include <linux/interval_tree_generic.h>\n\nstruct vhost_iotlb_map {\n\tstruct rb_node rb;\n\tstruct list_head link;\n\tu64 start;\n\tu64 last;\n\tu64 size;\n\tu64 addr;\n#define VHOST_MAP_RO 0x1\n#define VHOST_MAP_WO 0x2\n#define VHOST_MAP_RW 0x3\n\tu32 perm;\n\tu32 flags_padding;\n\tu64 __subtree_last;\n\tvoid *opaque;\n};\n\n#define VHOST_IOTLB_FLAG_RETIRE 0x1\n\nstruct vhost_iotlb {\n\tstruct rb_root_cached root;\n\tstruct list_head list;\n\tunsigned int limit;\n\tunsigned int nmaps;\n\tunsigned int flags;\n};\n\nint vhost_iotlb_add_range_ctx(struct vhost_iotlb *iotlb, u64 start, u64 last,\n\t\t\t      u64 addr, unsigned int perm, void *opaque);\nint vhost_iotlb_add_range(struct vhost_iotlb *iotlb, u64 start, u64 last,\n\t\t\t  u64 addr, unsigned int perm);\nvoid vhost_iotlb_del_range(struct vhost_iotlb *iotlb, u64 start, u64 last);\n\nvoid vhost_iotlb_init(struct vhost_iotlb *iotlb, unsigned int limit,\n\t\t      unsigned int flags);\nstruct vhost_iotlb *vhost_iotlb_alloc(unsigned int limit, unsigned int flags);\nvoid vhost_iotlb_free(struct vhost_iotlb *iotlb);\nvoid vhost_iotlb_reset(struct vhost_iotlb *iotlb);\n\nstruct vhost_iotlb_map *\nvhost_iotlb_itree_first(struct vhost_iotlb *iotlb, u64 start, u64 last);\nstruct vhost_iotlb_map *\nvhost_iotlb_itree_next(struct vhost_iotlb_map *map, u64 start, u64 last);\n\nvoid vhost_iotlb_map_free(struct vhost_iotlb *iotlb,\n\t\t\t  struct vhost_iotlb_map *map);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

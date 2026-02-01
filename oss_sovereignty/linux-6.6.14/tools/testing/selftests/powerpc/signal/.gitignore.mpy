@@ -1,0 +1,9 @@
+{
+  "module_name": ".gitignore",
+  "hash_id": "5f79553783ea7f39c44b27a3cab2b309053974c254ea9804fd0e188fbdba0be7",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/powerpc/signal/.gitignore",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nsignal\nsignal_tm\nsigfuz\nsigreturn_vdso\nsig_sc_double_restart\nsigreturn_kernel\nsigreturn_unaligned\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

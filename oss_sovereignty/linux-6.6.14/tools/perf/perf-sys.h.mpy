@@ -1,0 +1,9 @@
+{
+  "module_name": "perf-sys.h",
+  "hash_id": "723f51c6e61aebad2f92b1458b69b9f50a89f21ff1fd7c2948a05af2bcd552d6",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/perf-sys.h",
+  "human_readable_source": " \n#ifndef _PERF_SYS_H\n#define _PERF_SYS_H\n\n#include <unistd.h>\n#include <sys/types.h>\n#include <sys/syscall.h>\n#include <linux/compiler.h>\n\nstruct perf_event_attr;\n\nstatic inline int\nsys_perf_event_open(struct perf_event_attr *attr,\n\t\t      pid_t pid, int cpu, int group_fd,\n\t\t      unsigned long flags)\n{\n\treturn syscall(__NR_perf_event_open, attr, pid, cpu,\n\t\t       group_fd, flags);\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "lib_scrreg.c",
+  "hash_id": "b4b4e56eeb0716fd681fa7bd07911f438aa43a816f4d54057751a1709fe85976",
+  "original_prompt": "Ingested from ncurses-6.4/ncurses/base/lib_scrreg.c",
+  "human_readable_source": " \n\n \n\n \n\n#include <curses.priv.h>\n\nMODULE_ID(\"$Id: lib_scrreg.c,v 1.12 2020/02/02 23:34:34 tom Exp $\")\n\nNCURSES_EXPORT(int)\nwsetscrreg(WINDOW *win, int top, int bottom)\n{\n    T((T_CALLED(\"wsetscrreg(%p,%d,%d)\"), (void *) win, top, bottom));\n\n    if (win &&\n\ttop >= 0 && top <= win->_maxy &&\n\tbottom >= 0 && bottom <= win->_maxy &&\n\tbottom > top) {\n\twin->_regtop = (NCURSES_SIZE_T) top;\n\twin->_regbottom = (NCURSES_SIZE_T) bottom;\n\n\treturnCode(OK);\n    } else\n\treturnCode(ERR);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

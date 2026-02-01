@@ -1,0 +1,9 @@
+{
+  "module_name": "calib.h",
+  "hash_id": "229b990e3ec58bb5f28bb96cd9febf7a755c2744cd13e8e55469c3654c79bf45",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/intel/iwlwifi/dvm/calib.h",
+  "human_readable_source": " \n \n#ifndef __iwl_calib_h__\n#define __iwl_calib_h__\n\n#include \"dev.h\"\n#include \"commands.h\"\n\nvoid iwl_chain_noise_calibration(struct iwl_priv *priv);\nvoid iwl_sensitivity_calibration(struct iwl_priv *priv);\n\nvoid iwl_init_sensitivity(struct iwl_priv *priv);\nvoid iwl_reset_run_time_calib(struct iwl_priv *priv);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

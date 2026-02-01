@@ -1,0 +1,9 @@
+{
+  "module_name": "cmd-db.h",
+  "hash_id": "e07cf040a31acc384166f1684590528fbb520226770f0e06b3fe3b63e6e3df9f",
+  "original_prompt": "Ingested from linux-6.6.14/include/soc/qcom/cmd-db.h",
+  "human_readable_source": " \n \n\n#ifndef __QCOM_COMMAND_DB_H__\n#define __QCOM_COMMAND_DB_H__\n\n#include <linux/err.h>\n\nenum cmd_db_hw_type {\n\tCMD_DB_HW_INVALID = 0,\n\tCMD_DB_HW_MIN     = 3,\n\tCMD_DB_HW_ARC     = CMD_DB_HW_MIN,\n\tCMD_DB_HW_VRM     = 4,\n\tCMD_DB_HW_BCM     = 5,\n\tCMD_DB_HW_MAX     = CMD_DB_HW_BCM,\n\tCMD_DB_HW_ALL     = 0xff,\n};\n\n#if IS_ENABLED(CONFIG_QCOM_COMMAND_DB)\nu32 cmd_db_read_addr(const char *resource_id);\n\nconst void *cmd_db_read_aux_data(const char *resource_id, size_t *len);\n\nenum cmd_db_hw_type cmd_db_read_slave_id(const char *resource_id);\n\nint cmd_db_ready(void);\n#else\nstatic inline u32 cmd_db_read_addr(const char *resource_id)\n{ return 0; }\n\nstatic inline const void *cmd_db_read_aux_data(const char *resource_id, size_t *len)\n{ return ERR_PTR(-ENODEV); }\n\nstatic inline enum cmd_db_hw_type cmd_db_read_slave_id(const char *resource_id)\n{ return -ENODEV; }\n\nstatic inline int cmd_db_ready(void)\n{ return -ENODEV; }\n#endif  \n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

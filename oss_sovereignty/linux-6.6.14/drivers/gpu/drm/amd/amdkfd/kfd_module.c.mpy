@@ -1,0 +1,9 @@
+{
+  "module_name": "kfd_module.c",
+  "hash_id": "31be82d010ed45347335b028ef0b054da7e1713c7e50e7c41b0343225b76cb00",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/amdkfd/kfd_module.c",
+  "human_readable_source": "\n \n\n#include <linux/sched.h>\n#include <linux/device.h>\n#include \"kfd_priv.h\"\n#include \"amdgpu_amdkfd.h\"\n\nstatic int kfd_init(void)\n{\n\tint err;\n\n\t \n\tif ((sched_policy < KFD_SCHED_POLICY_HWS) ||\n\t\t(sched_policy > KFD_SCHED_POLICY_NO_HWS)) {\n\t\tpr_err(\"sched_policy has invalid value\\n\");\n\t\treturn -EINVAL;\n\t}\n\n\t \n\tif ((max_num_of_queues_per_device < 1) ||\n\t\t(max_num_of_queues_per_device >\n\t\t\tKFD_MAX_NUM_OF_QUEUES_PER_DEVICE)) {\n\t\tpr_err(\"max_num_of_queues_per_device must be between 1 to KFD_MAX_NUM_OF_QUEUES_PER_DEVICE\\n\");\n\t\treturn -EINVAL;\n\t}\n\n\terr = kfd_chardev_init();\n\tif (err < 0)\n\t\tgoto err_ioctl;\n\n\terr = kfd_topology_init();\n\tif (err < 0)\n\t\tgoto err_topology;\n\n\terr = kfd_process_create_wq();\n\tif (err < 0)\n\t\tgoto err_create_wq;\n\n\t \n\tkfd_procfs_init();\n\n\tkfd_debugfs_init();\n\n\treturn 0;\n\nerr_create_wq:\n\tkfd_topology_shutdown();\nerr_topology:\n\tkfd_chardev_exit();\nerr_ioctl:\n\tpr_err(\"KFD is disabled due to module initialization failure\\n\");\n\treturn err;\n}\n\nstatic void kfd_exit(void)\n{\n\tkfd_cleanup_processes();\n\tkfd_debugfs_fini();\n\tkfd_process_destroy_wq();\n\tkfd_procfs_shutdown();\n\tkfd_topology_shutdown();\n\tkfd_chardev_exit();\n}\n\nint kgd2kfd_init(void)\n{\n\treturn kfd_init();\n}\n\nvoid kgd2kfd_exit(void)\n{\n\tkfd_exit();\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "48570462b7c53841b900da628988c68e16b7f8ee6a7b57558ecd1be2ff12acfb",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/slimbus/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# SLIMbus driver configuration\n#\nmenuconfig SLIMBUS\n\ttristate \"SLIMbus support\"\n\thelp\n\t  SLIMbus is standard interface between System-on-Chip and audio codec,\n\t  and other peripheral components in typical embedded systems.\n\n\t  If unsure, choose N.\n\nif SLIMBUS\n\n# SLIMbus controllers\nconfig SLIM_QCOM_CTRL\n\ttristate \"Qualcomm SLIMbus Manager Component\"\n\tdepends on HAS_IOMEM\n\thelp\n\t  Select driver if Qualcomm's SLIMbus Manager Component is\n\t  programmed using Linux kernel.\n\nconfig SLIM_QCOM_NGD_CTRL\n\ttristate \"Qualcomm SLIMbus Satellite Non-Generic Device Component\"\n\tdepends on HAS_IOMEM && DMA_ENGINE && NET\n\tdepends on QCOM_RPROC_COMMON || (COMPILE_TEST && !QCOM_RPROC_COMMON)\n\tdepends on ARCH_QCOM || COMPILE_TEST\n\tselect QCOM_QMI_HELPERS\n\tselect QCOM_PDR_HELPERS\n\thelp\n\t  Select driver if Qualcomm's SLIMbus Satellite Non-Generic Device\n\t  Component is programmed using Linux kernel.\n\t  This is light-weight slimbus controller driver responsible for\n\t  communicating with slave HW directly over the bus using messaging\n\t  interface, and communicating with master component residing on ADSP\n\t  for bandwidth and data-channel management.\nendif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

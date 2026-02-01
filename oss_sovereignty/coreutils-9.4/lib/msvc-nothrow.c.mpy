@@ -1,0 +1,9 @@
+{
+  "module_name": "msvc-nothrow.c",
+  "hash_id": "3010573c33bfa20640cd1bab8d46baa473ec206d5f4316e27b65f4ea2e92c702",
+  "original_prompt": "Ingested from coreutils-9.4/lib/msvc-nothrow.c",
+  "human_readable_source": " \n#include \"msvc-nothrow.h\"\n\n \n#define WIN32_LEAN_AND_MEAN\n#include <windows.h>\n\n#if HAVE_MSVC_INVALID_PARAMETER_HANDLER\n# include \"msvc-inval.h\"\n#endif\n\n#undef _get_osfhandle\n\n#if HAVE_MSVC_INVALID_PARAMETER_HANDLER\nintptr_t\n_gl_nothrow_get_osfhandle (int fd)\n{\n  intptr_t result;\n\n  TRY_MSVC_INVAL\n    {\n      result = _get_osfhandle (fd);\n    }\n  CATCH_MSVC_INVAL\n    {\n      result = (intptr_t) INVALID_HANDLE_VALUE;\n    }\n  DONE_MSVC_INVAL;\n\n  return result;\n}\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

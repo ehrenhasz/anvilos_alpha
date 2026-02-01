@@ -1,0 +1,9 @@
+{
+  "module_name": "TREE04.boot",
+  "hash_id": "b8224a6d55d56d4e91b0205c934befa34c05021c3d4d6ca711cf146bd41f72c4",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/rcutorture/configs/rcu/TREE04.boot",
+  "human_readable_source": "rcutree.rcu_fanout_leaf=4 nohz_full=1-N\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

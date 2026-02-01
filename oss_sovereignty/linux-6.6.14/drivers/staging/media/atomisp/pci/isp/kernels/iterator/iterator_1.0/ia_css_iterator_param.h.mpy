@@ -1,0 +1,9 @@
+{
+  "module_name": "ia_css_iterator_param.h",
+  "hash_id": "5fed228b441064778f75c9d9526a5cde17b24ba0ea807b320d6020bce472158b",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/isp/kernels/iterator/iterator_1.0/ia_css_iterator_param.h",
+  "human_readable_source": " \n \n\n#ifndef __IA_CSS_ITERATOR_PARAM_H\n#define __IA_CSS_ITERATOR_PARAM_H\n\n#include \"ia_css_types.h\"  \n#include \"ia_css_frame_public.h\"  \n#include \"ia_css_frame_comm.h\"  \n\nstruct ia_css_iterator_configuration {\n\tconst struct ia_css_frame_info *input_info;\n\tconst struct ia_css_frame_info *internal_info;\n\tconst struct ia_css_frame_info *output_info;\n\tconst struct ia_css_frame_info *vf_info;\n\tconst struct ia_css_resolution *dvs_envelope;\n};\n\nstruct sh_css_isp_iterator_isp_config {\n\tstruct ia_css_frame_sp_info input_info;\n\tstruct ia_css_frame_sp_info internal_info;\n\tstruct ia_css_frame_sp_info output_info;\n\tstruct ia_css_frame_sp_info vf_info;\n\tstruct ia_css_sp_resolution dvs_envelope;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

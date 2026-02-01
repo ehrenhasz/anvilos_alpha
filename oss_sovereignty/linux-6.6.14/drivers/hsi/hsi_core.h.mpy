@@ -1,0 +1,9 @@
+{
+  "module_name": "hsi_core.h",
+  "hash_id": "792ab58807081a9a87fd6dab63b00144ac3298b32c8f186f2972674af338e92c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/hsi/hsi_core.h",
+  "human_readable_source": " \n \n\n#ifndef __LINUX_HSI_CORE_H__\n#define __LINUX_HSI_CORE_H__\n\n#include <linux/hsi/hsi.h>\n\nstruct hsi_cl_info {\n\tstruct list_head\tlist;\n\tstruct hsi_board_info\tinfo;\n};\n\nextern struct list_head hsi_board_list;\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

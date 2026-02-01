@@ -1,0 +1,9 @@
+{
+  "module_name": "lib.h",
+  "hash_id": "cbf5504e1be62d5207689b668fbd6954cb8ef3ad97904a3668bd33bc6814ba55",
+  "original_prompt": "Ingested from linux-6.6.14/tools/lib/perf/include/internal/lib.h",
+  "human_readable_source": " \n#ifndef __LIBPERF_INTERNAL_LIB_H\n#define __LIBPERF_INTERNAL_LIB_H\n\n#include <sys/types.h>\n\nextern unsigned int page_size;\n\nssize_t readn(int fd, void *buf, size_t n);\nssize_t writen(int fd, const void *buf, size_t n);\n\nssize_t preadn(int fd, void *buf, size_t n, off_t offs);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

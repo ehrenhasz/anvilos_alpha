@@ -1,0 +1,9 @@
+{
+  "module_name": "btcx-risc.h",
+  "hash_id": "b339a5f15d9929aeed4bbe3b2333995245b31b8e255f326d7c0b9d00a50c90e7",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/pci/bt8xx/btcx-risc.h",
+  "human_readable_source": " \nstruct btcx_riscmem {\n\tunsigned int   size;\n\t__le32         *cpu;\n\t__le32         *jmp;\n\tdma_addr_t     dma;\n};\n\nstruct btcx_skiplist {\n\tint start;\n\tint end;\n};\n\nint  btcx_riscmem_alloc(struct pci_dev *pci,\n\t\t\tstruct btcx_riscmem *risc,\n\t\t\tunsigned int size);\nvoid btcx_riscmem_free(struct pci_dev *pci,\n\t\t       struct btcx_riscmem *risc);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

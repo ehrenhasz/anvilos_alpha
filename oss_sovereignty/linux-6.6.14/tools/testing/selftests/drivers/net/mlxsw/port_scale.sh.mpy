@@ -1,0 +1,9 @@
+{
+  "module_name": "port_scale.sh",
+  "hash_id": "4f65bef33f67a843e8da8203fd55da9943265b970d6d8fa017416bd63b671692",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/drivers/net/mlxsw/port_scale.sh",
+  "human_readable_source": "#!/bin/bash\n# SPDX-License-Identifier: GPL-2.0\n\n# Test for physical ports resource. The test splits each splittable port\n# to its width and checks that eventually the number of physical ports equals\n# the maximum number of physical ports.\n\nPORT_NUM_NETIFS=0\n\ndeclare -a unsplit\n\nport_setup_prepare()\n{\n\t:\n}\n\nport_cleanup()\n{\n\tpre_cleanup\n\n\tfor port in \"${unsplit[@]}\"; do\n\t\tdevlink port unsplit $port\n\t\tcheck_err $? \"Did not unsplit $netdev\"\n\tdone\n\tunsplit=()\n}\n\nsplit_all_ports()\n{\n\tlocal should_fail=$1; shift\n\n\t# Loop over the splittable netdevs and create tuples of netdev along\n\t# with its width. For example:\n\t# '$netdev1 $count1 $netdev2 $count2...', when:\n\t# $netdev1-2 are splittable netdevs in the device, and\n\t# $count1-2 are the netdevs width respectively.\n\twhile read netdev count <<<$(\n\t\tdevlink -j port show |\n\t\tjq -r '.[][] | select(.splittable==true) | \"\\(.netdev) \\(.lanes)\"'\n\t\t)\n\t\t[[ ! -z $netdev ]]\n\tdo\n\t\tdevlink port split $netdev count $count\n\t\tcheck_err $? \"Did not split $netdev into $count\"\n\t\tunsplit+=( \"${netdev}s0\" )\n\tdone\n}\n\nport_test()\n{\n\tlocal max_ports=$1; shift\n\tlocal should_fail=$1; shift\n\n\tsplit_all_ports $should_fail\n\n\tocc=$(devlink -j resource show $DEVLINK_DEV \\\n\t      | jq '.[][][] | select(.name==\"physical_ports\") |.[\"occ\"]')\n\n\t[[ $occ -eq $max_ports ]]\n\tcheck_err_fail $should_fail $? \"Attempt to create $max_ports ports (actual result $occ)\"\n\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

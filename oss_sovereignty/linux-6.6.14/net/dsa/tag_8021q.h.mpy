@@ -1,0 +1,9 @@
+{
+  "module_name": "tag_8021q.h",
+  "hash_id": "27eae0bd35c70cc102a8e2dc18e20dcda8d30556b26eda55787663f4ee1ee93b",
+  "original_prompt": "Ingested from linux-6.6.14/net/dsa/tag_8021q.h",
+  "human_readable_source": " \n\n#ifndef __DSA_TAG_8021Q_H\n#define __DSA_TAG_8021Q_H\n\n#include <net/dsa.h>\n\n#include \"switch.h\"\n\nstruct sk_buff;\nstruct net_device;\n\nstruct sk_buff *dsa_8021q_xmit(struct sk_buff *skb, struct net_device *netdev,\n\t\t\t       u16 tpid, u16 tci);\n\nvoid dsa_8021q_rcv(struct sk_buff *skb, int *source_port, int *switch_id,\n\t\t   int *vbid);\n\nstruct net_device *dsa_tag_8021q_find_port_by_vbid(struct net_device *master,\n\t\t\t\t\t\t   int vbid);\n\nint dsa_switch_tag_8021q_vlan_add(struct dsa_switch *ds,\n\t\t\t\t  struct dsa_notifier_tag_8021q_vlan_info *info);\nint dsa_switch_tag_8021q_vlan_del(struct dsa_switch *ds,\n\t\t\t\t  struct dsa_notifier_tag_8021q_vlan_info *info);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

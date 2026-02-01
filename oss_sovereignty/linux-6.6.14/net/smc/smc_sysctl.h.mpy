@@ -1,0 +1,9 @@
+{
+  "module_name": "smc_sysctl.h",
+  "hash_id": "7f3dc8a3dcf5c92121372613e26020935da390b498060f175259bdb557bc0a4a",
+  "original_prompt": "Ingested from linux-6.6.14/net/smc/smc_sysctl.h",
+  "human_readable_source": " \n \n\n#ifndef _SMC_SYSCTL_H\n#define _SMC_SYSCTL_H\n\n#ifdef CONFIG_SYSCTL\n\nint __net_init smc_sysctl_net_init(struct net *net);\nvoid __net_exit smc_sysctl_net_exit(struct net *net);\n\n#else\n\nstatic inline int smc_sysctl_net_init(struct net *net)\n{\n\tnet->smc.sysctl_autocorking_size = SMC_AUTOCORKING_DEFAULT_SIZE;\n\treturn 0;\n}\n\nstatic inline void smc_sysctl_net_exit(struct net *net) { }\n\n#endif  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

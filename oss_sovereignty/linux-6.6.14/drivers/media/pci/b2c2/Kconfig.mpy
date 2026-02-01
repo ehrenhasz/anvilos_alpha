@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "cac1831b43ba1c0081b19ec8d8f61bc04a075907ca866b2ac451091d36c609c6",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/pci/b2c2/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig DVB_B2C2_FLEXCOP_PCI\n\ttristate \"Technisat/B2C2 Air/Sky/Cable2PC PCI\"\n\tdepends on DVB_CORE && I2C\n\thelp\n\t  Support for the Air/Sky/CableStar2 PCI card (DVB/ATSC) by Technisat/B2C2.\n\n\t  Say Y if you own such a device and want to use it.\n\nconfig DVB_B2C2_FLEXCOP_PCI_DEBUG\n\tbool \"Enable debug for the B2C2 FlexCop drivers\"\n\tdepends on DVB_B2C2_FLEXCOP_PCI\n\tselect DVB_B2C2_FLEXCOP_DEBUG\n\thelp\n\t  Say Y if you want to enable the module option to control debug messages\n\t  of all B2C2 FlexCop drivers.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

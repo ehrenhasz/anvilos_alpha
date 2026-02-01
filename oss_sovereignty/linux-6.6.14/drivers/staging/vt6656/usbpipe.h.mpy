@@ -1,0 +1,9 @@
+{
+  "module_name": "usbpipe.h",
+  "hash_id": "3248a30abb4f64d435fc5046bab152ca093a088272ec5435340ad9f524c19caa",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/vt6656/usbpipe.h",
+  "human_readable_source": " \n \n\n#ifndef __USBPIPE_H__\n#define __USBPIPE_H__\n\n#include \"device.h\"\n\nstruct vnt_interrupt_data {\n\tu8 tsr0;\n\tu8 pkt0;\n\tu16 time0;\n\tu8 tsr1;\n\tu8 pkt1;\n\tu16 time1;\n\tu8 tsr2;\n\tu8 pkt2;\n\tu16 time2;\n\tu8 tsr3;\n\tu8 pkt3;\n\tu16 time3;\n\t__le64 tsf;\n\tu8 isr0;\n\tu8 isr1;\n\tu8 rts_success;\n\tu8 rts_fail;\n\tu8 ack_fail;\n\tu8 fcs_err;\n\tu8 sw[2];\n} __packed;\n\nstruct vnt_tx_usb_header {\n\tu8 type;\n\tu8 pkt_no;\n\t__le16 tx_byte_count;\n} __packed;\n\n#define VNT_REG_BLOCK_SIZE\t64\n\nint vnt_control_out(struct vnt_private *priv, u8 request, u16 value,\n\t\t    u16 index, u16 length, const u8 *buffer);\nint vnt_control_in(struct vnt_private *priv, u8 request, u16 value,\n\t\t   u16 index, u16 length,  u8 *buffer);\n\nint vnt_control_out_u8(struct vnt_private *priv, u8 reg, u8 ref_off, u8 data);\nint vnt_control_in_u8(struct vnt_private *priv, u8 reg, u8 reg_off, u8 *data);\n\nint vnt_control_out_blocks(struct vnt_private *priv,\n\t\t\t   u16 block, u8 reg, u16 len, const u8 *data);\n\nint vnt_start_interrupt_urb(struct vnt_private *priv);\nint vnt_submit_rx_urb(struct vnt_private *priv, struct vnt_rcb *rcb);\nint vnt_tx_context(struct vnt_private *priv,\n\t\t   struct vnt_usb_send_context *context,\n\t\t   struct sk_buff *skb);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

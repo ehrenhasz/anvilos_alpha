@@ -1,0 +1,9 @@
+{
+  "module_name": "acpi_cppc.c",
+  "hash_id": "26f03e9bc5a77f1897a8018b6073c96f45af259d99f675f5717ee41cac29785e",
+  "original_prompt": "Ingested from linux-6.6.14/tools/power/cpupower/lib/acpi_cppc.c",
+  "human_readable_source": "\n\n#include <stdio.h>\n#include <errno.h>\n#include <stdlib.h>\n#include <string.h>\n#include <sys/types.h>\n#include <sys/stat.h>\n#include <fcntl.h>\n#include <unistd.h>\n\n#include \"cpupower_intern.h\"\n#include \"acpi_cppc.h\"\n\n \n\nstatic int acpi_cppc_read_file(unsigned int cpu, const char *fname,\n\t\t\t       char *buf, size_t buflen)\n{\n\tchar path[SYSFS_PATH_MAX];\n\n\tsnprintf(path, sizeof(path), PATH_TO_CPU \"cpu%u/acpi_cppc/%s\",\n\t\t cpu, fname);\n\treturn cpupower_read_sysfs(path, buf, buflen);\n}\n\nstatic const char * const acpi_cppc_value_files[] = {\n\t[HIGHEST_PERF] = \"highest_perf\",\n\t[LOWEST_PERF] = \"lowest_perf\",\n\t[NOMINAL_PERF] = \"nominal_perf\",\n\t[LOWEST_NONLINEAR_PERF] = \"lowest_nonlinear_perf\",\n\t[LOWEST_FREQ] = \"lowest_freq\",\n\t[NOMINAL_FREQ] = \"nominal_freq\",\n\t[REFERENCE_PERF] = \"reference_perf\",\n\t[WRAPAROUND_TIME] = \"wraparound_time\"\n};\n\nunsigned long acpi_cppc_get_data(unsigned int cpu, enum acpi_cppc_value which)\n{\n\tunsigned long long value;\n\tunsigned int len;\n\tchar linebuf[MAX_LINE_LEN];\n\tchar *endp;\n\n\tif (which >= MAX_CPPC_VALUE_FILES)\n\t\treturn 0;\n\n\tlen = acpi_cppc_read_file(cpu, acpi_cppc_value_files[which],\n\t\t\t\t  linebuf, sizeof(linebuf));\n\tif (len == 0)\n\t\treturn 0;\n\n\tvalue = strtoull(linebuf, &endp, 0);\n\n\tif (endp == linebuf || errno == ERANGE)\n\t\treturn 0;\n\n\treturn value;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "ipt_TTL.h",
+  "hash_id": "f930e66c9f5c42d364e6e329a62c07d3737c4f9d3b457ccd2b1e861b1dbc8b43",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/netfilter_ipv4/ipt_TTL.h",
+  "human_readable_source": " \n \n\n#ifndef _IPT_TTL_H\n#define _IPT_TTL_H\n\n#include <linux/types.h>\n\nenum {\n\tIPT_TTL_SET = 0,\n\tIPT_TTL_INC,\n\tIPT_TTL_DEC\n};\n\n#define IPT_TTL_MAXMODE\tIPT_TTL_DEC\n\nstruct ipt_TTL_info {\n\t__u8\tmode;\n\t__u8\tttl;\n};\n\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

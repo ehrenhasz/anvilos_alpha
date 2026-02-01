@@ -1,0 +1,9 @@
+{
+  "module_name": "coresight-pmu.h",
+  "hash_id": "0b91d8c71c71d0cb0b439f2715ae347769076fd4a4c0948f47493ff043d4106d",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/coresight-pmu.h",
+  "human_readable_source": " \n \n\n#ifndef _LINUX_CORESIGHT_PMU_H\n#define _LINUX_CORESIGHT_PMU_H\n\n#include <linux/bits.h>\n\n#define CORESIGHT_ETM_PMU_NAME \"cs_etm\"\n\n \n#define CORESIGHT_LEGACY_CPU_TRACE_ID(cpu)  (0x10 + (cpu * 2))\n\n \n#define ETM_OPT_BRANCH_BROADCAST 8\n#define ETM_OPT_CYCACC\t\t12\n#define ETM_OPT_CTXTID\t\t14\n#define ETM_OPT_CTXTID2\t\t15\n#define ETM_OPT_TS\t\t28\n#define ETM_OPT_RETSTK\t\t29\n\n \n#define ETM4_CFG_BIT_BB         3\n#define ETM4_CFG_BIT_CYCACC\t4\n#define ETM4_CFG_BIT_CTXTID\t6\n#define ETM4_CFG_BIT_VMID\t7\n#define ETM4_CFG_BIT_TS\t\t11\n#define ETM4_CFG_BIT_RETSTK\t12\n#define ETM4_CFG_BIT_VMID_OPT\t15\n\n \n#define CS_AUX_HW_ID_TRACE_ID_MASK\tGENMASK_ULL(7, 0)\n#define CS_AUX_HW_ID_VERSION_MASK\tGENMASK_ULL(63, 60)\n\n#define CS_AUX_HW_ID_CURR_VERSION 0\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

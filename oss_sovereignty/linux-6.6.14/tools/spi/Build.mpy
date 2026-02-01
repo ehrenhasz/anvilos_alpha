@@ -1,0 +1,9 @@
+{
+  "module_name": "Build",
+  "hash_id": "01c668c3829fba7a03ef12b604085df35ddeada444aaf6ddfc3f0cc9b18a599f",
+  "original_prompt": "Ingested from linux-6.6.14/tools/spi/Build",
+  "human_readable_source": "spidev_test-y += spidev_test.o\nspidev_fdx-y += spidev_fdx.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

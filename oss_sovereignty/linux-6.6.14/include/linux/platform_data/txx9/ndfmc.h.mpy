@@ -1,0 +1,9 @@
+{
+  "module_name": "ndfmc.h",
+  "hash_id": "10983832cc9c12d217416fa15557a30e186c0d4a26ddf3285cc25178cabd1e92",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/platform_data/txx9/ndfmc.h",
+  "human_readable_source": " \n \n#ifndef __TXX9_NDFMC_H\n#define __TXX9_NDFMC_H\n\n#define NDFMC_PLAT_FLAG_USE_BSPRT\t0x01\n#define NDFMC_PLAT_FLAG_NO_RSTR\t\t0x02\n#define NDFMC_PLAT_FLAG_HOLDADD\t\t0x04\n#define NDFMC_PLAT_FLAG_DUMMYWRITE\t0x08\n\nstruct txx9ndfmc_platform_data {\n\tunsigned int shift;\n\tunsigned int gbus_clock;\n\tunsigned int hold;\t\t \n\tunsigned int spw;\t\t \n\tunsigned int flags;\n\tunsigned char ch_mask;\t\t \n\tunsigned char wp_mask;\t\t \n\tunsigned char wide_mask;\t \n};\n\nvoid txx9_ndfmc_init(unsigned long baseaddr,\n\t\t     const struct txx9ndfmc_platform_data *plat_data);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

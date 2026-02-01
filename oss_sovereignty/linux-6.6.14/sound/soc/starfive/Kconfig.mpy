@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "b4a740f2f25a4923b7588ba3538e8a606d771d3369a3e5df925e3122cb92d252",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/starfive/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig SND_SOC_STARFIVE\n\ttristate \"Audio support for StarFive SoC\"\n\tdepends on COMPILE_TEST || ARCH_STARFIVE\n\thelp\n\t  Say Y or M if you want to add support for codecs attached to\n\t  the Starfive SoCs' Audio interfaces. You will also need to\n\t  select the audio interfaces to support below.\n\nconfig SND_SOC_JH7110_TDM\n\ttristate \"JH7110 TDM device driver\"\n\tdepends on HAVE_CLK && SND_SOC_STARFIVE\n\tselect SND_SOC_GENERIC_DMAENGINE_PCM\n\thelp\n\t  Say Y or M if you want to add support for StarFive TDM driver.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "c117df9c2a8c2bf38a8be6adce562e4cd29fe48df303dbadc009df77d9809b91",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/pci/tw5864/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\ntw5864-objs := tw5864-core.o tw5864-video.o tw5864-h264.o tw5864-util.o\n\nobj-$(CONFIG_VIDEO_TW5864) += tw5864.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

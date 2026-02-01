@@ -1,0 +1,9 @@
+{
+  "module_name": "cache.json",
+  "hash_id": "9333ea04fa4b05a68ef4f1483d2527a255f28eb8067df97997378100a233dca3",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/pmu-events/arch/arm64/arm/cortex-a53/cache.json",
+  "human_readable_source": "[\n  {\n        \"EventCode\": \"0xC2\",\n        \"EventName\": \"PREFETCH_LINEFILL\",\n        \"BriefDescription\": \"Linefill because of prefetch\"\n  },\n  {\n        \"EventCode\": \"0xC3\",\n        \"EventName\": \"PREFETCH_LINEFILL_DROP\",\n        \"BriefDescription\": \"Instruction Cache Throttle occurred\"\n  },\n  {\n        \"EventCode\": \"0xC4\",\n        \"EventName\": \"READ_ALLOC_ENTER\",\n        \"BriefDescription\": \"Entering read allocate mode\"\n  },\n  {\n        \"EventCode\": \"0xC5\",\n        \"EventName\": \"READ_ALLOC\",\n        \"BriefDescription\": \"Read allocate mode\"\n  },\n  {\n        \"EventCode\": \"0xC8\",\n        \"EventName\": \"EXT_SNOOP\",\n        \"BriefDescription\": \"SCU Snooped data from another CPU for this CPU\"\n  }\n]\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

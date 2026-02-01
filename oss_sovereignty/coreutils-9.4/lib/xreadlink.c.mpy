@@ -1,0 +1,9 @@
+{
+  "module_name": "xreadlink.c",
+  "hash_id": "bb77a56406a3262895a531878dfbeaaa870eecdad897616d25998d5cf5918381",
+  "original_prompt": "Ingested from coreutils-9.4/lib/xreadlink.c",
+  "human_readable_source": " \n\n \n\n#include <config.h>\n\n \n#include \"xreadlink.h\"\n\n#include <errno.h>\n\n#include \"areadlink.h\"\n#include \"xalloc.h\"\n\n \n\nchar *\nxreadlink (char const *filename)\n{\n  char *result = areadlink (filename);\n  if (result == NULL && errno == ENOMEM)\n    xalloc_die ();\n  return result;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

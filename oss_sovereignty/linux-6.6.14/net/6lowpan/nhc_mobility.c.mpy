@@ -1,0 +1,9 @@
+{
+  "module_name": "nhc_mobility.c",
+  "hash_id": "67585d32ae1242c7e43bf39b5f9ff4f55d19741e65d483cad1ea1ea363727082",
+  "original_prompt": "Ingested from linux-6.6.14/net/6lowpan/nhc_mobility.c",
+  "human_readable_source": "\n \n\n#include \"nhc.h\"\n\n#define LOWPAN_NHC_MOBILITY_ID_0\t0xe8\n#define LOWPAN_NHC_MOBILITY_MASK_0\t0xfe\n\nLOWPAN_NHC(nhc_mobility, \"RFC6282 Mobility\", NEXTHDR_MOBILITY, 0,\n\t   LOWPAN_NHC_MOBILITY_ID_0, LOWPAN_NHC_MOBILITY_MASK_0, NULL, NULL);\n\nmodule_lowpan_nhc(nhc_mobility);\nMODULE_DESCRIPTION(\"6LoWPAN next header RFC6282 Mobility compression\");\nMODULE_LICENSE(\"GPL\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

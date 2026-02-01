@@ -1,0 +1,9 @@
+{
+  "module_name": "perf-hooks.h",
+  "hash_id": "bd8fbedc8cdd1f3571d0bd918c2ce3668d1360a1dcab223b603a23bdc8a32626",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/util/perf-hooks.h",
+  "human_readable_source": " \n#ifndef PERF_UTIL_PERF_HOOKS_H\n#define PERF_UTIL_PERF_HOOKS_H\n\n#ifdef __cplusplus\nextern \"C\" {\n#endif\n\ntypedef void (*perf_hook_func_t)(void *ctx);\nstruct perf_hook_desc {\n\tconst char * const hook_name;\n\tperf_hook_func_t * const p_hook_func;\n\tvoid *hook_ctx;\n};\n\nextern void perf_hooks__invoke(const struct perf_hook_desc *);\nextern void perf_hooks__recover(void);\n\n#define PERF_HOOK(name)\t\t\t\t\t\\\nextern struct perf_hook_desc __perf_hook_desc_##name;\t\\\nstatic inline void perf_hooks__invoke_##name(void)\t\\\n{ \t\t\t\t\t\t\t\\\n\tperf_hooks__invoke(&__perf_hook_desc_##name);\t\\\n}\n\n#include \"perf-hooks-list.h\"\n#undef PERF_HOOK\n\nextern int\nperf_hooks__set_hook(const char *hook_name,\n\t\t     perf_hook_func_t hook_func,\n\t\t     void *hook_ctx);\n\nextern perf_hook_func_t\nperf_hooks__get_hook(const char *hook_name);\n\n#ifdef __cplusplus\n}\n#endif\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

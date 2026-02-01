@@ -1,0 +1,9 @@
+{
+  "module_name": "build_policy.c",
+  "hash_id": "3da6299c4e627ad6a28011a27bca73972f0a205e3702c4d3acb6f37c630f96fc",
+  "original_prompt": "Ingested from linux-6.6.14/kernel/sched/build_policy.c",
+  "human_readable_source": "\n \n\n \n#include <linux/sched/clock.h>\n#include <linux/sched/cputime.h>\n#include <linux/sched/hotplug.h>\n#include <linux/sched/posix-timers.h>\n#include <linux/sched/rt.h>\n\n#include <linux/cpuidle.h>\n#include <linux/jiffies.h>\n#include <linux/livepatch.h>\n#include <linux/psi.h>\n#include <linux/seqlock_api.h>\n#include <linux/slab.h>\n#include <linux/suspend.h>\n#include <linux/tsacct_kern.h>\n#include <linux/vtime.h>\n\n#include <uapi/linux/sched/types.h>\n\n#include \"sched.h\"\n#include \"smp.h\"\n\n#include \"autogroup.h\"\n#include \"stats.h\"\n#include \"pelt.h\"\n\n \n\n#include \"idle.c\"\n\n#include \"rt.c\"\n\n#ifdef CONFIG_SMP\n# include \"cpudeadline.c\"\n# include \"pelt.c\"\n#endif\n\n#include \"cputime.c\"\n#include \"deadline.c\"\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

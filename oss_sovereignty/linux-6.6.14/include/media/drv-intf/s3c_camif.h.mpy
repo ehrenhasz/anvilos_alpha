@@ -1,0 +1,9 @@
+{
+  "module_name": "s3c_camif.h",
+  "hash_id": "ff35e00e4facf97aba44bf0cf460953b131c6da5f55646506b4457b391a5c5c7",
+  "original_prompt": "Ingested from linux-6.6.14/include/media/drv-intf/s3c_camif.h",
+  "human_readable_source": " \n \n\n#ifndef MEDIA_S3C_CAMIF_\n#define MEDIA_S3C_CAMIF_\n\n#include <linux/i2c.h>\n#include <media/v4l2-mediabus.h>\n\n \nstruct s3c_camif_sensor_info {\n\tstruct i2c_board_info i2c_board_info;\n\tunsigned long clock_frequency;\n\tenum v4l2_mbus_type mbus_type;\n\tu16 i2c_bus_num;\n\tu16 flags;\n\tu8 use_field;\n};\n\nstruct s3c_camif_plat_data {\n\tstruct s3c_camif_sensor_info sensor;\n\tint (*gpio_get)(void);\n\tint (*gpio_put)(void);\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

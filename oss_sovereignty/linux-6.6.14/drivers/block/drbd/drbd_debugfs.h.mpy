@@ -1,0 +1,9 @@
+{
+  "module_name": "drbd_debugfs.h",
+  "hash_id": "6f2dcde242cbaec4c93d8563e60c9c59edfe169c49de5a2bf412c7f8a06a9662",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/block/drbd/drbd_debugfs.h",
+  "human_readable_source": " \n#include <linux/kernel.h>\n#include <linux/module.h>\n#include <linux/debugfs.h>\n\n#include \"drbd_int.h\"\n\n#ifdef CONFIG_DEBUG_FS\nvoid __init drbd_debugfs_init(void);\nvoid drbd_debugfs_cleanup(void);\n\nvoid drbd_debugfs_resource_add(struct drbd_resource *resource);\nvoid drbd_debugfs_resource_cleanup(struct drbd_resource *resource);\n\nvoid drbd_debugfs_connection_add(struct drbd_connection *connection);\nvoid drbd_debugfs_connection_cleanup(struct drbd_connection *connection);\n\nvoid drbd_debugfs_device_add(struct drbd_device *device);\nvoid drbd_debugfs_device_cleanup(struct drbd_device *device);\n\nvoid drbd_debugfs_peer_device_add(struct drbd_peer_device *peer_device);\nvoid drbd_debugfs_peer_device_cleanup(struct drbd_peer_device *peer_device);\n#else\n\nstatic inline void __init drbd_debugfs_init(void) { }\nstatic inline void drbd_debugfs_cleanup(void) { }\n\nstatic inline void drbd_debugfs_resource_add(struct drbd_resource *resource) { }\nstatic inline void drbd_debugfs_resource_cleanup(struct drbd_resource *resource) { }\n\nstatic inline void drbd_debugfs_connection_add(struct drbd_connection *connection) { }\nstatic inline void drbd_debugfs_connection_cleanup(struct drbd_connection *connection) { }\n\nstatic inline void drbd_debugfs_device_add(struct drbd_device *device) { }\nstatic inline void drbd_debugfs_device_cleanup(struct drbd_device *device) { }\n\nstatic inline void drbd_debugfs_peer_device_add(struct drbd_peer_device *peer_device) { }\nstatic inline void drbd_debugfs_peer_device_cleanup(struct drbd_peer_device *peer_device) { }\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

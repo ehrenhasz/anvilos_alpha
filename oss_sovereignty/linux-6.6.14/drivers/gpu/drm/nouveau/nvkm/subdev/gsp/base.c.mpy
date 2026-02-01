@@ -1,0 +1,9 @@
+{
+  "module_name": "base.c",
+  "hash_id": "e94259491f595539f80d8435417d18a2f29ddeb711f4015668d2a8750ab4659f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/subdev/gsp/base.c",
+  "human_readable_source": " \n#include \"priv.h\"\n#include <core/falcon.h>\n#include <core/firmware.h>\n#include <subdev/acr.h>\n#include <subdev/top.h>\n\nstatic void *\nnvkm_gsp_dtor(struct nvkm_subdev *subdev)\n{\n\tstruct nvkm_gsp *gsp = nvkm_gsp(subdev);\n\tnvkm_falcon_dtor(&gsp->falcon);\n\treturn gsp;\n}\n\nstatic const struct nvkm_subdev_func\nnvkm_gsp = {\n\t.dtor = nvkm_gsp_dtor,\n};\n\nint\nnvkm_gsp_new_(const struct nvkm_gsp_fwif *fwif, struct nvkm_device *device,\n\t      enum nvkm_subdev_type type, int inst, struct nvkm_gsp **pgsp)\n{\n\tstruct nvkm_gsp *gsp;\n\n\tif (!(gsp = *pgsp = kzalloc(sizeof(*gsp), GFP_KERNEL)))\n\t\treturn -ENOMEM;\n\n\tnvkm_subdev_ctor(&nvkm_gsp, device, type, inst, &gsp->subdev);\n\n\tfwif = nvkm_firmware_load(&gsp->subdev, fwif, \"Gsp\", gsp);\n\tif (IS_ERR(fwif))\n\t\treturn PTR_ERR(fwif);\n\n\tgsp->func = fwif->func;\n\n\treturn nvkm_falcon_ctor(gsp->func->flcn, &gsp->subdev, gsp->subdev.name, 0, &gsp->falcon);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

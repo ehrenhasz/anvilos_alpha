@@ -1,0 +1,9 @@
+{
+  "module_name": "coco.h",
+  "hash_id": "121de45f249b6d5774647cae185c39c3ac6b47ef36d241186b9cc8bfac7900a4",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/include/asm/coco.h",
+  "human_readable_source": " \n#ifndef _ASM_X86_COCO_H\n#define _ASM_X86_COCO_H\n\n#include <asm/types.h>\n\nenum cc_vendor {\n\tCC_VENDOR_NONE,\n\tCC_VENDOR_AMD,\n\tCC_VENDOR_INTEL,\n};\n\nextern enum cc_vendor cc_vendor;\n\n#ifdef CONFIG_ARCH_HAS_CC_PLATFORM\nvoid cc_set_mask(u64 mask);\nu64 cc_mkenc(u64 val);\nu64 cc_mkdec(u64 val);\n#else\nstatic inline u64 cc_mkenc(u64 val)\n{\n\treturn val;\n}\n\nstatic inline u64 cc_mkdec(u64 val)\n{\n\treturn val;\n}\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

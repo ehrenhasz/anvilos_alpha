@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "a2bf1e98a8316adad05f080f5c48a2dab12c4c4d676a2dc17096724005e22a54",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/olpc_dcon/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nconfig FB_OLPC_DCON\n\ttristate \"One Laptop Per Child Display CONtroller support\"\n\tdepends on OLPC && FB && BROKEN\n\tdepends on I2C\n\tdepends on GPIO_CS5535 && ACPI\n\tselect BACKLIGHT_CLASS_DEVICE\n\thelp\n\t  In order to support very low power operation, the XO laptop uses a\n\t  secondary Display CONtroller, or DCON.  This secondary controller\n\t  is present in the video pipeline between the primary display\n\t  controller (integrate into the processor or chipset) and the LCD\n\t  panel.  It allows the main processor/display controller to be\n\t  completely powered off while still retaining an image on the display.\n\t  This controller is only available on OLPC platforms.  Unless you have\n\t  one of these platforms, you will want to say 'N'.\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

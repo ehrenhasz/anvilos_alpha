@@ -1,0 +1,9 @@
+{
+  "module_name": "dlg,da9121-regulator.h",
+  "hash_id": "71c2334a34ae63b7c47be52be3710af7ab226b87837ebbed1ff1c447e7dbf96a",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/regulator/dlg,da9121-regulator.h",
+  "human_readable_source": " \n\n#ifndef _DT_BINDINGS_REGULATOR_DLG_DA9121_H\n#define _DT_BINDINGS_REGULATOR_DLG_DA9121_H\n\n \n\n#define DA9121_BUCK_MODE_FORCE_PFM\t\t0\n#define DA9121_BUCK_MODE_FORCE_PWM\t\t1\n#define DA9121_BUCK_MODE_FORCE_PWM_SHEDDING\t2\n#define DA9121_BUCK_MODE_AUTO\t\t\t3\n\n#define DA9121_BUCK_RIPPLE_CANCEL_NONE\t\t0\n#define DA9121_BUCK_RIPPLE_CANCEL_SMALL\t\t1\n#define DA9121_BUCK_RIPPLE_CANCEL_MID\t\t2\n#define DA9121_BUCK_RIPPLE_CANCEL_LARGE\t\t3\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

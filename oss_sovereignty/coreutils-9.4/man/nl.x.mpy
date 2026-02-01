@@ -1,0 +1,9 @@
+{
+  "module_name": "nl.x",
+  "hash_id": "75df37f5d12fcf337b2821c7aef6359b20c5a5846187792854edbf9b456d9440",
+  "original_prompt": "Ingested from coreutils-9.4/man/nl.x",
+  "human_readable_source": "[NAME]\nnl \\- number lines of files\n[DESCRIPTION]\n.\\\" Add any additional description here\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

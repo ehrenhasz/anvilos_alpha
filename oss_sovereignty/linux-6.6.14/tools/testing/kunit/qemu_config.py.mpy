@@ -1,0 +1,9 @@
+{
+  "module_name": "qemu_config.py",
+  "hash_id": "a7a4ecdee3ab39aa1db97cb480948e7b2c895e28dc824bf99449b86b79c0304d",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/kunit/qemu_config.py",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Collection of configs for building non-UML kernels and running them on QEMU.\n#\n# Copyright (C) 2021, Google LLC.\n# Author: Brendan Higgins <brendanhiggins@google.com>\n\nfrom dataclasses import dataclass\nfrom typing import List\n\n\n@dataclass(frozen=True)\nclass QemuArchParams:\n  linux_arch: str\n  kconfig: str\n  qemu_arch: str\n  kernel_path: str\n  kernel_command_line: str\n  extra_qemu_params: List[str]\n  serial: str = 'stdio'\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "g92.c",
+  "hash_id": "8da401352bfa71189ee4122f12222efbe2c89e06af4ececa0c799049af5357c6",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/subdev/pci/g92.c",
+  "human_readable_source": " \n#include \"priv.h\"\n\nint\ng92_pcie_version_supported(struct nvkm_pci *pci)\n{\n\tif ((nvkm_pci_rd32(pci, 0x460) & 0x200) == 0x200)\n\t\treturn 2;\n\treturn 1;\n}\n\nstatic const struct nvkm_pci_func\ng92_pci_func = {\n\t.init = g84_pci_init,\n\t.rd32 = nv40_pci_rd32,\n\t.wr08 = nv40_pci_wr08,\n\t.wr32 = nv40_pci_wr32,\n\t.msi_rearm = nv46_pci_msi_rearm,\n\n\t.pcie.init = g84_pcie_init,\n\t.pcie.set_link = g84_pcie_set_link,\n\n\t.pcie.max_speed = g84_pcie_max_speed,\n\t.pcie.cur_speed = g84_pcie_cur_speed,\n\n\t.pcie.set_version = g84_pcie_set_version,\n\t.pcie.version = g84_pcie_version,\n\t.pcie.version_supported = g92_pcie_version_supported,\n};\n\nint\ng92_pci_new(struct nvkm_device *device, enum nvkm_subdev_type type, int inst,\n\t    struct nvkm_pci **ppci)\n{\n\treturn nvkm_pci_new_(&g92_pci_func, device, type, inst, ppci);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

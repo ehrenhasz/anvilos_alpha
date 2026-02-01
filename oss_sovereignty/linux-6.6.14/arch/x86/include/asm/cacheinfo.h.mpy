@@ -1,0 +1,9 @@
+{
+  "module_name": "cacheinfo.h",
+  "hash_id": "15d91c3ac34069344688fafad7bdf3170da8e5c36b405abb78f3918562d013d2",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/include/asm/cacheinfo.h",
+  "human_readable_source": " \n#ifndef _ASM_X86_CACHEINFO_H\n#define _ASM_X86_CACHEINFO_H\n\n \nextern unsigned int memory_caching_control;\n#define CACHE_MTRR 0x01\n#define CACHE_PAT  0x02\n\nvoid cacheinfo_amd_init_llc_id(struct cpuinfo_x86 *c, int cpu);\nvoid cacheinfo_hygon_init_llc_id(struct cpuinfo_x86 *c, int cpu);\n\nvoid cache_disable(void);\nvoid cache_enable(void);\nvoid set_cache_aps_delayed_init(bool val);\nbool get_cache_aps_delayed_init(void);\nvoid cache_bp_init(void);\nvoid cache_bp_restore(void);\nvoid cache_aps_init(void);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

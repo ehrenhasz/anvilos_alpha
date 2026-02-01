@@ -1,0 +1,9 @@
+{
+  "module_name": "exceptions.h",
+  "hash_id": "ff04eae31e40c67993597aa3b5f31749669d4ff6d35902533d9883047ad48682",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/include/asm/trace/exceptions.h",
+  "human_readable_source": " \n#undef TRACE_SYSTEM\n#define TRACE_SYSTEM exceptions\n\n#if !defined(_TRACE_PAGE_FAULT_H) || defined(TRACE_HEADER_MULTI_READ)\n#define _TRACE_PAGE_FAULT_H\n\n#include <linux/tracepoint.h>\n#include <asm/trace/common.h>\n\nextern int trace_pagefault_reg(void);\nextern void trace_pagefault_unreg(void);\n\nDECLARE_EVENT_CLASS(x86_exceptions,\n\n\tTP_PROTO(unsigned long address, struct pt_regs *regs,\n\t\t unsigned long error_code),\n\n\tTP_ARGS(address, regs, error_code),\n\n\tTP_STRUCT__entry(\n\t\t__field(\t\tunsigned long, address\t)\n\t\t__field(\t\tunsigned long, ip\t)\n\t\t__field(\t\tunsigned long, error_code )\n\t),\n\n\tTP_fast_assign(\n\t\t__entry->address = address;\n\t\t__entry->ip = regs->ip;\n\t\t__entry->error_code = error_code;\n\t),\n\n\tTP_printk(\"address=%ps ip=%ps error_code=0x%lx\",\n\t\t  (void *)__entry->address, (void *)__entry->ip,\n\t\t  __entry->error_code) );\n\n#define DEFINE_PAGE_FAULT_EVENT(name)\t\t\t\t\\\nDEFINE_EVENT_FN(x86_exceptions, name,\t\t\t\t\\\n\tTP_PROTO(unsigned long address,\tstruct pt_regs *regs,\t\\\n\t\t unsigned long error_code),\t\t\t\\\n\tTP_ARGS(address, regs, error_code),\t\t\t\\\n\ttrace_pagefault_reg, trace_pagefault_unreg);\n\nDEFINE_PAGE_FAULT_EVENT(page_fault_user);\nDEFINE_PAGE_FAULT_EVENT(page_fault_kernel);\n\n#undef TRACE_INCLUDE_PATH\n#undef TRACE_INCLUDE_FILE\n#define TRACE_INCLUDE_PATH .\n#define TRACE_INCLUDE_FILE exceptions\n#endif  \n\n \n#include <trace/define_trace.h>\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "8efd7d4a0b045610b8b48e7e020db3f9cef54b59493bd0368222aeb033d5320c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/aquantia/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Makefile for the aQuantia device drivers.\n#\n\nobj-$(CONFIG_AQTION) += atlantic/\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

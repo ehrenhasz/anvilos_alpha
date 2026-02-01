@@ -1,0 +1,9 @@
+{
+  "module_name": "systimes.h",
+  "hash_id": "dfc4e6e8282fac76e456941f88e11487abc11da3e3d1b399f95569a5a4f90098",
+  "original_prompt": "Ingested from bash-5.2.21/include/systimes.h",
+  "human_readable_source": " \n\n \n\n \n\n#ifndef\t_BASH_SYSTIMES_H\n#define _BASH_SYSTIMES_H\t1\n\n#if defined (HAVE_SYS_TIMES_H)\n#  include <sys/times.h>\n#else  \n\n#include <stdc.h>\n\n \nstruct tms\n  {\n    clock_t tms_utime;\t\t \n    clock_t tms_stime;\t\t \n\n    clock_t tms_cutime;\t\t \n    clock_t tms_cstime;\t\t \n  };\n\n \nextern clock_t times PARAMS((struct tms *buffer));\n\n#endif  \n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

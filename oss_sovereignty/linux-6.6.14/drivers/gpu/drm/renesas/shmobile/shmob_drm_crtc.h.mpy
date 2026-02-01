@@ -1,0 +1,9 @@
+{
+  "module_name": "shmob_drm_crtc.h",
+  "hash_id": "bfe236771caaffeb5bc0cc0126e852ce78194035b3c5bc7d808d3c1623d7c745",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/renesas/shmobile/shmob_drm_crtc.h",
+  "human_readable_source": " \n \n\n#ifndef __SHMOB_DRM_CRTC_H__\n#define __SHMOB_DRM_CRTC_H__\n\n#include <drm/drm_crtc.h>\n#include <drm/drm_connector.h>\n#include <drm/drm_encoder.h>\n\nstruct backlight_device;\nstruct drm_pending_vblank_event;\nstruct shmob_drm_device;\nstruct shmob_drm_format_info;\n\nstruct shmob_drm_crtc {\n\tstruct drm_crtc crtc;\n\n\tstruct drm_pending_vblank_event *event;\n\tint dpms;\n\n\tconst struct shmob_drm_format_info *format;\n\tunsigned long dma[2];\n\tunsigned int line_size;\n\tbool started;\n};\n\nstruct shmob_drm_encoder {\n\tstruct drm_encoder encoder;\n\tint dpms;\n};\n\nstruct shmob_drm_connector {\n\tstruct drm_connector connector;\n\tstruct drm_encoder *encoder;\n\n\tstruct backlight_device *backlight;\n};\n\nint shmob_drm_crtc_create(struct shmob_drm_device *sdev);\nvoid shmob_drm_crtc_finish_page_flip(struct shmob_drm_crtc *scrtc);\nvoid shmob_drm_crtc_suspend(struct shmob_drm_crtc *scrtc);\nvoid shmob_drm_crtc_resume(struct shmob_drm_crtc *scrtc);\n\nint shmob_drm_encoder_create(struct shmob_drm_device *sdev);\nint shmob_drm_connector_create(struct shmob_drm_device *sdev,\n\t\t\t       struct drm_encoder *encoder);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

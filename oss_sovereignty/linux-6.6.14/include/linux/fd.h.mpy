@@ -1,0 +1,9 @@
+{
+  "module_name": "fd.h",
+  "hash_id": "8869340ade463642d9d7d9893a57e670d3e3d26ad5fcb1be7dac2e51f1d49411",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/fd.h",
+  "human_readable_source": " \n#ifndef _LINUX_FD_H\n#define _LINUX_FD_H\n\n#include <uapi/linux/fd.h>\n\n#ifdef CONFIG_COMPAT\n#include <linux/compat.h>\n\nstruct compat_floppy_struct {\n\tcompat_uint_t\tsize;\n\tcompat_uint_t\tsect;\n\tcompat_uint_t\thead;\n\tcompat_uint_t\ttrack;\n\tcompat_uint_t\tstretch;\n\tunsigned char\tgap;\n\tunsigned char\trate;\n\tunsigned char\tspec1;\n\tunsigned char\tfmt_gap;\n\tconst compat_caddr_t name;\n};\n\n#define FDGETPRM32 _IOR(2, 0x04, struct compat_floppy_struct)\n#endif\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

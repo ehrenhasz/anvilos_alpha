@@ -1,0 +1,9 @@
+{
+  "module_name": "mpnimbleport.c",
+  "hash_id": "632c0e152fed1caaeff78359c91ef2ad0a4b8f167f9b4cb23c971d903534ddd9",
+  "original_prompt": "Ingested from sys_09_Anvil/source/ports/unix/mpnimbleport.c",
+  "human_readable_source": " \n\n#include \"py/runtime.h\"\n#include \"py/mperrno.h\"\n#include \"py/mphal.h\"\n\n#if MICROPY_PY_BLUETOOTH && MICROPY_BLUETOOTH_NIMBLE\n\n#include \"nimble/nimble_npl.h\"\n\n#include \"extmod/nimble/modbluetooth_nimble.h\"\n#include \"extmod/nimble/hal/hal_uart.h\"\n\n#define DEBUG_printf(...) \n\n\nbool mp_bluetooth_hci_poll(void) {\n    \n\n    if (mp_bluetooth_nimble_ble_state == MP_BLUETOOTH_NIMBLE_BLE_STATE_OFF) {\n        DEBUG_printf(\"mp_bluetooth_hci_poll (unix nimble) -- shutdown\\n\");\n        return false;\n    }\n\n    if (mp_bluetooth_nimble_ble_state >= MP_BLUETOOTH_NIMBLE_BLE_STATE_WAITING_FOR_SYNC) {\n        \n        mp_bluetooth_nimble_os_callout_process();\n\n        \n        mp_bluetooth_nimble_hci_uart_process(true);\n\n        \n        mp_bluetooth_nimble_os_eventq_run_all();\n    }\n\n    return true;\n}\n\nbool mp_bluetooth_hci_active(void) {\n    return mp_bluetooth_nimble_ble_state != MP_BLUETOOTH_NIMBLE_BLE_STATE_OFF;\n}\n\n\nvoid mp_bluetooth_nimble_hci_uart_wfi(void) {\n    \n    \n    mp_bluetooth_nimble_hci_uart_process(false);\n}\n\n#endif \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

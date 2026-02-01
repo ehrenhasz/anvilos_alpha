@@ -1,0 +1,9 @@
+{
+  "module_name": "atomic.h",
+  "hash_id": "d859567cc24e376fa2c39c24763e60f2c0a3cb4fba76eb1e761c272056748dc3",
+  "original_prompt": "Ingested from linux-6.6.14/include/asm-generic/bitops/atomic.h",
+  "human_readable_source": " \n#ifndef _ASM_GENERIC_BITOPS_ATOMIC_H_\n#define _ASM_GENERIC_BITOPS_ATOMIC_H_\n\n#include <linux/atomic.h>\n#include <linux/compiler.h>\n#include <asm/barrier.h>\n\n \n\nstatic __always_inline void\narch_set_bit(unsigned int nr, volatile unsigned long *p)\n{\n\tp += BIT_WORD(nr);\n\traw_atomic_long_or(BIT_MASK(nr), (atomic_long_t *)p);\n}\n\nstatic __always_inline void\narch_clear_bit(unsigned int nr, volatile unsigned long *p)\n{\n\tp += BIT_WORD(nr);\n\traw_atomic_long_andnot(BIT_MASK(nr), (atomic_long_t *)p);\n}\n\nstatic __always_inline void\narch_change_bit(unsigned int nr, volatile unsigned long *p)\n{\n\tp += BIT_WORD(nr);\n\traw_atomic_long_xor(BIT_MASK(nr), (atomic_long_t *)p);\n}\n\nstatic __always_inline int\narch_test_and_set_bit(unsigned int nr, volatile unsigned long *p)\n{\n\tlong old;\n\tunsigned long mask = BIT_MASK(nr);\n\n\tp += BIT_WORD(nr);\n\told = raw_atomic_long_fetch_or(mask, (atomic_long_t *)p);\n\treturn !!(old & mask);\n}\n\nstatic __always_inline int\narch_test_and_clear_bit(unsigned int nr, volatile unsigned long *p)\n{\n\tlong old;\n\tunsigned long mask = BIT_MASK(nr);\n\n\tp += BIT_WORD(nr);\n\told = raw_atomic_long_fetch_andnot(mask, (atomic_long_t *)p);\n\treturn !!(old & mask);\n}\n\nstatic __always_inline int\narch_test_and_change_bit(unsigned int nr, volatile unsigned long *p)\n{\n\tlong old;\n\tunsigned long mask = BIT_MASK(nr);\n\n\tp += BIT_WORD(nr);\n\told = raw_atomic_long_fetch_xor(mask, (atomic_long_t *)p);\n\treturn !!(old & mask);\n}\n\n#include <asm-generic/bitops/instrumented-atomic.h>\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

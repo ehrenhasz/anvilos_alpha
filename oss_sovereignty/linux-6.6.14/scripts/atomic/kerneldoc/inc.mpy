@@ -1,0 +1,9 @@
+{
+  "module_name": "inc",
+  "hash_id": "8f424a0d0f1e08d5a255c9cb52d72850a3762b8d0a1a3ef1ad9554967ffa5c77",
+  "original_prompt": "Ingested from linux-6.6.14/scripts/atomic/kerneldoc/inc",
+  "human_readable_source": "cat <<EOF\n/**\n * ${class}${atomicname}() - atomic increment with ${desc_order} ordering\n * @v: pointer to ${atomic}_t\n *\n * Atomically updates @v to (@v + 1) with ${desc_order} ordering.\n *\n * ${desc_noinstr}\n *\n * ${desc_return}\n */\nEOF\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

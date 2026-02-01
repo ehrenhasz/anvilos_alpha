@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "72a6c5e2eec6d8d40d2377da669efc51b95d0f92389c01e8fbaaa215a0dfd332",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/usb/stk1160/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig VIDEO_STK1160\n\ttristate \"STK1160 USB video capture support\"\n\tdepends on VIDEO_DEV && I2C\n\tselect VIDEOBUF2_VMALLOC\n\tselect VIDEO_SAA711X\n\thelp\n\t  This is a video4linux driver for STK1160 based video capture devices.\n\n\t  To compile this driver as a module, choose M here: the\n\t  module will be called stk1160.\n\n\t  This driver only provides support for video capture. For audio\n\t  capture, you need to select the snd-usb-audio driver (i.e.\n\t  CONFIG_SND_USB_AUDIO).\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

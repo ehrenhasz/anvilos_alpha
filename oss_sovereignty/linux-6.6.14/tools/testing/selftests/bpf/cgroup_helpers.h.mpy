@@ -1,0 +1,9 @@
+{
+  "module_name": "cgroup_helpers.h",
+  "hash_id": "2c9b14b345073626f205a501a5ff19b1776eed0547ffa9634c09337dede5039d",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/cgroup_helpers.h",
+  "human_readable_source": " \n#ifndef __CGROUP_HELPERS_H\n#define __CGROUP_HELPERS_H\n\n#include <errno.h>\n#include <string.h>\n\n#define clean_errno() (errno == 0 ? \"None\" : strerror(errno))\n#define log_err(MSG, ...) fprintf(stderr, \"(%s:%d: errno: %s) \" MSG \"\\n\", \\\n\t__FILE__, __LINE__, clean_errno(), ##__VA_ARGS__)\n\n \nint enable_controllers(const char *relative_path, const char *controllers);\nint write_cgroup_file(const char *relative_path, const char *file,\n\t\t      const char *buf);\nint write_cgroup_file_parent(const char *relative_path, const char *file,\n\t\t\t     const char *buf);\nint cgroup_setup_and_join(const char *relative_path);\nint get_root_cgroup(void);\nint create_and_get_cgroup(const char *relative_path);\nvoid remove_cgroup(const char *relative_path);\nunsigned long long get_cgroup_id(const char *relative_path);\n\nint join_cgroup(const char *relative_path);\nint join_root_cgroup(void);\nint join_parent_cgroup(const char *relative_path);\n\nint setup_cgroup_environment(void);\nvoid cleanup_cgroup_environment(void);\n\n \nint set_classid(unsigned int id);\nint join_classid(void);\n\nint setup_classid_environment(void);\nvoid cleanup_classid_environment(void);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "posixdir.h",
+  "hash_id": "907df8534f040191de1eee1f58d946474f2be8fb317a23efe38484815d69bba7",
+  "original_prompt": "Ingested from bash-5.2.21/include/posixdir.h",
+  "human_readable_source": " \n\n \n\n \n\n#if !defined (_POSIXDIR_H_)\n#define _POSIXDIR_H_\n\n#if defined (HAVE_DIRENT_H)\n#  include <dirent.h>\n#  if defined (HAVE_STRUCT_DIRENT_D_NAMLEN)\n#    define D_NAMLEN(d)\t((d)->d_namlen)\n#  else\n#    define D_NAMLEN(d)   (strlen ((d)->d_name))\n#  endif  \n#else\n#  if defined (HAVE_SYS_NDIR_H)\n#    include <sys/ndir.h>\n#  endif\n#  if defined (HAVE_SYS_DIR_H)\n#    include <sys/dir.h>\n#  endif\n#  if defined (HAVE_NDIR_H)\n#    include <ndir.h>\n#  endif\n#  if !defined (dirent)\n#    define dirent direct\n#  endif  \n#  define D_NAMLEN(d)   ((d)->d_namlen)\n#endif  \n\n \n#if defined (HAVE_STRUCT_DIRENT_D_INO) && !defined (HAVE_STRUCT_DIRENT_D_FILENO)\n#  define d_fileno d_ino\n#endif\n\n \n#if !defined (HAVE_STRUCT_DIRENT_D_INO) || defined (BROKEN_DIRENT_D_INO)\n#  define REAL_DIR_ENTRY(dp) 1\n#else\n#  define REAL_DIR_ENTRY(dp) (dp->d_ino != 0)\n#endif  \n\n#if defined (HAVE_STRUCT_DIRENT_D_INO) && !defined (BROKEN_DIRENT_D_INO)\n#  define D_INO_AVAILABLE\n#endif\n\n \n#if defined (D_INO_AVAILABLE) || defined (HAVE_STRUCT_DIRENT_D_FILENO)\n#  define D_FILENO_AVAILABLE 1\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

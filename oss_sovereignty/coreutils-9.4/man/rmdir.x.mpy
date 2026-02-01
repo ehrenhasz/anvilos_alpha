@@ -1,0 +1,9 @@
+{
+  "module_name": "rmdir.x",
+  "hash_id": "96904c84c68b925065ac962dfbc3965e2fc2d2c60e454c561fe11ff02f79b0a7",
+  "original_prompt": "Ingested from coreutils-9.4/man/rmdir.x",
+  "human_readable_source": "[NAME]\nrmdir \\- remove empty directories\n[DESCRIPTION]\n.\\\" Add any additional description here\n[SEE ALSO]\nrmdir(2)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "10f0f027768883b73bb784e0ea5c264de5e5591ebcda411cd7382b98923e5cb7",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/soc/lantiq/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-y\t\t\t\t+= fpi-bus.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "fb19fc4ffca68a0c4516c8972078324cb73a0884c5a8df3f8d1818181bc9404e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/rapidio/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for RapidIO interconnect services\n#\nobj-$(CONFIG_RAPIDIO) += rapidio.o\nrapidio-y := rio.o rio-access.o rio-driver.o rio-sysfs.o\n\nobj-$(CONFIG_RAPIDIO_ENUM_BASIC) += rio-scan.o\nobj-$(CONFIG_RAPIDIO_CHMAN)\t+= rio_cm.o\n\nobj-$(CONFIG_RAPIDIO)\t\t+= switches/\nobj-$(CONFIG_RAPIDIO)\t\t+= devices/\n\nsubdir-ccflags-$(CONFIG_RAPIDIO_DEBUG) := -DDEBUG\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

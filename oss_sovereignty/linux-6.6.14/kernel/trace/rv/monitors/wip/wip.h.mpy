@@ -1,0 +1,9 @@
+{
+  "module_name": "wip.h",
+  "hash_id": "67e6e84b928cf8209cc5b83081ac88f8960ef0ebc37523fc0c26170858b6ab1b",
+  "original_prompt": "Ingested from linux-6.6.14/kernel/trace/rv/monitors/wip/wip.h",
+  "human_readable_source": " \n\nenum states_wip {\n\tpreemptive_wip = 0,\n\tnon_preemptive_wip,\n\tstate_max_wip\n};\n\n#define INVALID_STATE state_max_wip\n\nenum events_wip {\n\tpreempt_disable_wip = 0,\n\tpreempt_enable_wip,\n\tsched_waking_wip,\n\tevent_max_wip\n};\n\nstruct automaton_wip {\n\tchar *state_names[state_max_wip];\n\tchar *event_names[event_max_wip];\n\tunsigned char function[state_max_wip][event_max_wip];\n\tunsigned char initial_state;\n\tbool final_states[state_max_wip];\n};\n\nstatic const struct automaton_wip automaton_wip = {\n\t.state_names = {\n\t\t\"preemptive\",\n\t\t\"non_preemptive\"\n\t},\n\t.event_names = {\n\t\t\"preempt_disable\",\n\t\t\"preempt_enable\",\n\t\t\"sched_waking\"\n\t},\n\t.function = {\n\t\t{ non_preemptive_wip,      INVALID_STATE,      INVALID_STATE },\n\t\t{      INVALID_STATE,     preemptive_wip, non_preemptive_wip },\n\t},\n\t.initial_state = preemptive_wip,\n\t.final_states = { 1, 0 },\n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

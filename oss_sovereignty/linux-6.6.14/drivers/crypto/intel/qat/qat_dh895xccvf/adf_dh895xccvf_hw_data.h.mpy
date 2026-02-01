@@ -1,0 +1,9 @@
+{
+  "module_name": "adf_dh895xccvf_hw_data.h",
+  "hash_id": "1b10ebce88403a4a258946c5002c7efd95f4e486c9c6fbb37cae17b7104fb82f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/crypto/intel/qat/qat_dh895xccvf/adf_dh895xccvf_hw_data.h",
+  "human_readable_source": " \n \n#ifndef ADF_DH895XVF_HW_DATA_H_\n#define ADF_DH895XVF_HW_DATA_H_\n\n#define ADF_DH895XCCIOV_PMISC_BAR 1\n#define ADF_DH895XCCIOV_ACCELERATORS_MASK 0x1\n#define ADF_DH895XCCIOV_ACCELENGINES_MASK 0x1\n#define ADF_DH895XCCIOV_MAX_ACCELERATORS 1\n#define ADF_DH895XCCIOV_MAX_ACCELENGINES 1\n#define ADF_DH895XCCIOV_RX_RINGS_OFFSET 8\n#define ADF_DH895XCCIOV_TX_RINGS_MASK 0xFF\n#define ADF_DH895XCCIOV_ETR_BAR 0\n#define ADF_DH895XCCIOV_ETR_MAX_BANKS 1\n\nvoid adf_init_hw_data_dh895xcciov(struct adf_hw_device_data *hw_data);\nvoid adf_clean_hw_data_dh895xcciov(struct adf_hw_device_data *hw_data);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

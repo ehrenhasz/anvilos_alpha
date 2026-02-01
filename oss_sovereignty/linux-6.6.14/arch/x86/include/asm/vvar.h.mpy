@@ -1,0 +1,9 @@
+{
+  "module_name": "vvar.h",
+  "hash_id": "1a074eed3573f10b4a48f0b694b5ee5f79df50b9403a75321a1b328fb84864aa",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/include/asm/vvar.h",
+  "human_readable_source": " \n \n\n#ifndef _ASM_X86_VVAR_H\n#define _ASM_X86_VVAR_H\n\n#ifdef EMIT_VVAR\n \n#define DECLARE_VVAR(offset, type, name) \\\n\tEMIT_VVAR(name, offset)\n\n#else\n\nextern char __vvar_page;\n\n#define DECLARE_VVAR(offset, type, name)\t\t\t\t\\\n\textern type vvar_ ## name[CS_BASES]\t\t\t\t\\\n\t__attribute__((visibility(\"hidden\")));\t\t\t\t\\\n\textern type timens_ ## name[CS_BASES]\t\t\t\t\\\n\t__attribute__((visibility(\"hidden\")));\t\t\t\t\\\n\n#define VVAR(name) (vvar_ ## name)\n#define TIMENS(name) (timens_ ## name)\n\n#define DEFINE_VVAR(type, name)\t\t\t\t\t\t\\\n\ttype name[CS_BASES]\t\t\t\t\t\t\\\n\t__attribute__((section(\".vvar_\" #name), aligned(16))) __visible\n\n#endif\n\n \n\nDECLARE_VVAR(128, struct vdso_data, _vdso_data)\n\n#undef DECLARE_VVAR\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

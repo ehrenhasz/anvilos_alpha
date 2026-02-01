@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "0996136bc89245fb0ef3f4e4bacae2f0dede7aec4da8d55cbd9b421de6607ec2",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/reset/starfive/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n\nconfig RESET_STARFIVE_JH71X0\n\tbool\n\nconfig RESET_STARFIVE_JH7100\n\tbool \"StarFive JH7100 Reset Driver\"\n\tdepends on ARCH_STARFIVE || COMPILE_TEST\n\tselect RESET_STARFIVE_JH71X0\n\tdefault ARCH_STARFIVE\n\thelp\n\t  This enables the reset controller driver for the StarFive JH7100 SoC.\n\nconfig RESET_STARFIVE_JH7110\n\tbool \"StarFive JH7110 Reset Driver\"\n\tdepends on CLK_STARFIVE_JH7110_SYS\n\tselect AUXILIARY_BUS\n\tselect RESET_STARFIVE_JH71X0\n\tdefault ARCH_STARFIVE\n\thelp\n\t  This enables the reset controller driver for the StarFive JH7110 SoC.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

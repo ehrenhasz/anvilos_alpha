@@ -1,0 +1,9 @@
+{
+  "module_name": "set_len_on_drop.rs",
+  "hash_id": "1e0652d9aef5e4a4d19efb937bf85b7b6e1cbf6595552a8b19812d1910bd90a3",
+  "original_prompt": "Ingested from linux-6.6.14/rust/alloc/vec/set_len_on_drop.rs",
+  "human_readable_source": "// SPDX-License-Identifier: Apache-2.0 OR MIT\n\n// Set the length of the vec when the `SetLenOnDrop` value goes out of scope.\n//\n// The idea is: The length field in SetLenOnDrop is a local variable\n// that the optimizer will see does not alias with any stores through the Vec's data\n// pointer. This is a workaround for alias analysis issue #32155\npub(super) struct SetLenOnDrop<'a> {\n    len: &'a mut usize,\n    local_len: usize,\n}\n\nimpl<'a> SetLenOnDrop<'a> {\n    #[inline]\n    pub(super) fn new(len: &'a mut usize) -> Self {\n        SetLenOnDrop { local_len: *len, len }\n    }\n\n    #[inline]\n    pub(super) fn increment_len(&mut self, increment: usize) {\n        self.local_len += increment;\n    }\n\n    #[inline]\n    pub(super) fn current_len(&self) -> usize {\n        self.local_len\n    }\n}\n\nimpl Drop for SetLenOnDrop<'_> {\n    #[inline]\n    fn drop(&mut self) {\n        *self.len = self.local_len;\n    }\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

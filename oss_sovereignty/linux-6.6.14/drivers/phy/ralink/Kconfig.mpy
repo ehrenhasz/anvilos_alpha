@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "203d14f49002776cdce3f851921d5a309b5cc8e52549f826355b4398f14f7f11",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/phy/ralink/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# PHY drivers for Ralink platforms.\n#\nconfig PHY_MT7621_PCI\n\ttristate \"MediaTek MT7621 PCI PHY Driver\"\n\tdepends on (RALINK && OF) || COMPILE_TEST\n\tselect GENERIC_PHY\n\tselect REGMAP_MMIO\n\thelp\n\t  Say 'Y' here to add support for MediaTek MT7621 PCI PHY driver,\n\nconfig PHY_RALINK_USB\n\ttristate \"Ralink USB PHY driver\"\n\tdepends on RALINK || COMPILE_TEST\n\tdepends on HAS_IOMEM\n\tselect GENERIC_PHY\n\tselect MFD_SYSCON\n\thelp\n\t  This option enables support for the Ralink USB PHY found inside\n\t  RT3352, MT7620, MT7628 and MT7688.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "exynos_drm_crtc.h",
+  "hash_id": "25aaa5f24ec32464e79f03f0ddf1a8c2e95240f16d5790ce7e76e1596e945160",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/exynos/exynos_drm_crtc.h",
+  "human_readable_source": " \n \n\n#ifndef _EXYNOS_DRM_CRTC_H_\n#define _EXYNOS_DRM_CRTC_H_\n\n\n#include \"exynos_drm_drv.h\"\n\nstruct exynos_drm_crtc *exynos_drm_crtc_create(struct drm_device *drm_dev,\n\t\t\t\t\tstruct drm_plane *plane,\n\t\t\t\t\tenum exynos_drm_output_type out_type,\n\t\t\t\t\tconst struct exynos_drm_crtc_ops *ops,\n\t\t\t\t\tvoid *context);\nvoid exynos_drm_crtc_wait_pending_update(struct exynos_drm_crtc *exynos_crtc);\nvoid exynos_drm_crtc_finish_update(struct exynos_drm_crtc *exynos_crtc,\n\t\t\t\t   struct exynos_drm_plane *exynos_plane);\n\n \nstruct exynos_drm_crtc *exynos_drm_crtc_get_by_type(struct drm_device *drm_dev,\n\t\t\t\t       enum exynos_drm_output_type out_type);\n\nint exynos_drm_set_possible_crtcs(struct drm_encoder *encoder,\n\t\tenum exynos_drm_output_type out_type);\n\n \nvoid exynos_drm_crtc_te_handler(struct drm_crtc *crtc);\n\nvoid exynos_crtc_handle_event(struct exynos_drm_crtc *exynos_crtc);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

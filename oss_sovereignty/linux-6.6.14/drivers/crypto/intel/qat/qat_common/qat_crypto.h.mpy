@@ -1,0 +1,9 @@
+{
+  "module_name": "qat_crypto.h",
+  "hash_id": "70218d7dab83a00592cf2abf62ab5c6c2f93b0879d7564f63c9a861032890603",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/crypto/intel/qat/qat_common/qat_crypto.h",
+  "human_readable_source": " \n \n#ifndef _QAT_CRYPTO_INSTANCE_H_\n#define _QAT_CRYPTO_INSTANCE_H_\n\n#include <crypto/aes.h>\n#include <linux/list.h>\n#include <linux/slab.h>\n#include \"adf_accel_devices.h\"\n#include \"icp_qat_fw_la.h\"\n#include \"qat_algs_send.h\"\n#include \"qat_bl.h\"\n\nstruct qat_crypto_instance {\n\tstruct adf_etr_ring_data *sym_tx;\n\tstruct adf_etr_ring_data *sym_rx;\n\tstruct adf_etr_ring_data *pke_tx;\n\tstruct adf_etr_ring_data *pke_rx;\n\tstruct adf_accel_dev *accel_dev;\n\tstruct list_head list;\n\tunsigned long state;\n\tint id;\n\tatomic_t refctr;\n\tstruct qat_instance_backlog backlog;\n};\n\nstruct qat_crypto_request;\n\nstruct qat_crypto_request {\n\tstruct icp_qat_fw_la_bulk_req req;\n\tunion {\n\t\tstruct qat_alg_aead_ctx *aead_ctx;\n\t\tstruct qat_alg_skcipher_ctx *skcipher_ctx;\n\t};\n\tunion {\n\t\tstruct aead_request *aead_req;\n\t\tstruct skcipher_request *skcipher_req;\n\t};\n\tstruct qat_request_buffs buf;\n\tvoid (*cb)(struct icp_qat_fw_la_resp *resp,\n\t\t   struct qat_crypto_request *req);\n\tunion {\n\t\tstruct {\n\t\t\t__be64 iv_hi;\n\t\t\t__be64 iv_lo;\n\t\t};\n\t\tu8 iv[AES_BLOCK_SIZE];\n\t};\n\tbool encryption;\n\tstruct qat_alg_req alg_req;\n};\n\nstatic inline bool adf_hw_dev_has_crypto(struct adf_accel_dev *accel_dev)\n{\n\tstruct adf_hw_device_data *hw_device = accel_dev->hw_device;\n\tu32 mask = ~hw_device->accel_capabilities_mask;\n\n\tif (mask & ADF_ACCEL_CAPABILITIES_CRYPTO_SYMMETRIC)\n\t\treturn false;\n\tif (mask & ADF_ACCEL_CAPABILITIES_CRYPTO_ASYMMETRIC)\n\t\treturn false;\n\tif (mask & ADF_ACCEL_CAPABILITIES_AUTHENTICATION)\n\t\treturn false;\n\n\treturn true;\n}\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

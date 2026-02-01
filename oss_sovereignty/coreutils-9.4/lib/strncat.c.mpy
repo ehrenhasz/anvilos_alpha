@@ -1,0 +1,9 @@
+{
+  "module_name": "strncat.c",
+  "hash_id": "a9d21319220c5198a8f167cbbcefb6a57b81ada16cbb0fd2e26c7e2194fa320e",
+  "original_prompt": "Ingested from coreutils-9.4/lib/strncat.c",
+  "human_readable_source": " \n#include <string.h>\n\nchar *\nstrncat (char *dest, const char *src, size_t n)\n{\n  char *destptr = dest + strlen (dest);\n\n  for (; n > 0 && (*destptr = *src) != '\\0'; src++, destptr++, n--)\n    ;\n  if (n == 0)\n    *destptr = '\\0';\n  return dest;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

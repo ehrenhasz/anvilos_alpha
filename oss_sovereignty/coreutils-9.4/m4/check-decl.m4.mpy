@@ -1,0 +1,9 @@
+{
+  "module_name": "check-decl.m4",
+  "hash_id": "df17dddda6cbe451debfd2b473933625f87c0b1b7f62fc6de944d4d5e0786f9a",
+  "original_prompt": "Ingested from coreutils-9.4/m4/check-decl.m4",
+  "human_readable_source": "#serial 27\n# Check declarations for this package.\n\ndnl Copyright (C) 1997-2023 Free Software Foundation, Inc.\n\ndnl This file is free software; the Free Software Foundation\ndnl gives unlimited permission to copy and/or distribute it,\ndnl with or without modifications, as long as this notice is preserved.\n\n\ndnl This is just a wrapper function to encapsulate this kludge.\ndnl Putting it in a separate file like this helps share it between\ndnl different packages.\nAC_DEFUN([gl_CHECK_DECLS],\n[\n  AC_CHECK_HEADERS_ONCE([grp.h pwd.h])\n  headers='\n#include <sys/types.h>\n\n#include <unistd.h>\n\n#if HAVE_GRP_H\n# include <grp.h>\n#endif\n\n#if HAVE_PWD_H\n# include <pwd.h>\n#endif\n'\n  AC_CHECK_DECLS([\n    getgrgid,\n    getpwuid,\n    ttyname], , , $headers)\n\n  AC_CHECK_DECLS_ONCE([geteuid])\n  AC_CHECK_DECLS_ONCE([getlogin])\n  AC_CHECK_DECLS_ONCE([getuid])\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "036991fe5beb0509ca92a8cb391d1eb205967d7e1783da78646f16c031ead0bf",
+  "original_prompt": "Ingested from linux-6.6.14/net/dcb/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig DCB\n\tbool \"Data Center Bridging support\"\n\tdefault n\n\thelp\n\t  This enables support for configuring Data Center Bridging (DCB)\n\t  features on DCB capable Ethernet adapters via rtnetlink.  Say 'Y'\n\t  if you have a DCB capable Ethernet adapter which supports this\n\t  interface and you are connected to a DCB capable switch.\n\n\t  DCB is a collection of Ethernet enhancements which allow DCB capable\n\t  NICs and switches to support network traffic with differing\n\t  requirements (highly reliable, no drops vs. best effort vs. low\n\t  latency) to co-exist on Ethernet.\n\n\t  DCB features include:\n\t    Enhanced Transmission Selection (aka Priority Grouping) - provides a\n\t      framework for assigning bandwidth guarantees to traffic classes.\n\t    Priority-based Flow Control (PFC) - a MAC control pause frame which\n\t      works at the granularity of the 802.1p priority instead of the\n\t      link (802.3x).\n\n\t  If unsure, say N.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

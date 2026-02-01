@@ -1,0 +1,9 @@
+{
+  "module_name": "test_hash_large_key.c",
+  "hash_id": "70383b0bbe1c30c3e25122c3dbf0413b98dd9b95add63ee85cff67bdc7d9936b",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/test_hash_large_key.c",
+  "human_readable_source": "\n\n#include <linux/bpf.h>\n#include <bpf/bpf_helpers.h>\n\nchar _license[] SEC(\"license\") = \"GPL\";\n\nstruct {\n\t__uint(type, BPF_MAP_TYPE_HASH);\n\t__uint(max_entries, 2);\n\t__type(key, struct bigelement);\n\t__type(value, __u32);\n} hash_map SEC(\".maps\");\n\nstruct {\n\t__uint(type, BPF_MAP_TYPE_PERCPU_ARRAY);\n\t__uint(max_entries, 1);\n\t__type(key, __u32);\n\t__type(value, struct bigelement);\n} key_map SEC(\".maps\");\n\nstruct bigelement {\n\tint a;\n\tchar b[4096];\n\tlong long c;\n};\n\nSEC(\"raw_tracepoint/sys_enter\")\nint bpf_hash_large_key_test(void *ctx)\n{\n\tint zero = 0, value = 42;\n\tstruct bigelement *key;\n\n\tkey = bpf_map_lookup_elem(&key_map, &zero);\n\tif (!key)\n\t\treturn 0;\n\n\tkey->c = 1;\n\tif (bpf_map_update_elem(&hash_map, key, &value, BPF_ANY))\n\t\treturn 0;\n\n\treturn 0;\n}\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

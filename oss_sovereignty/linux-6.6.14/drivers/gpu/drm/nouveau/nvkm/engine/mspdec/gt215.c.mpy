@@ -1,0 +1,9 @@
+{
+  "module_name": "gt215.c",
+  "hash_id": "8098114cc5566e6d285d41281510434dc6a63738942f0b9ff95d933e4750a674",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/engine/mspdec/gt215.c",
+  "human_readable_source": " \n#include \"priv.h\"\n\n#include <nvif/class.h>\n\nstatic const struct nvkm_falcon_func\ngt215_mspdec = {\n\t.init = g98_mspdec_init,\n\t.sclass = {\n\t\t{ -1, -1, GT212_MSPDEC },\n\t\t{}\n\t}\n};\n\nint\ngt215_mspdec_new(struct nvkm_device *device, enum nvkm_subdev_type type, int inst,\n\t\t struct nvkm_engine **pengine)\n{\n\treturn nvkm_mspdec_new_(&gt215_mspdec, device, type, inst, pengine);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

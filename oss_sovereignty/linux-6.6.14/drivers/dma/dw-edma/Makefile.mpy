@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "93589d5bd15253b82d807fa9bcf34e81550c264b4bdea8de14b8254135ac5ece",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/dma/dw-edma/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n\nobj-$(CONFIG_DW_EDMA)\t\t+= dw-edma.o\ndw-edma-$(CONFIG_DEBUG_FS)\t:= dw-edma-v0-debugfs.o\t\\\n\t\t\t\t   dw-hdma-v0-debugfs.o\ndw-edma-objs\t\t\t:= dw-edma-core.o\t\\\n\t\t\t\t   dw-edma-v0-core.o\t\\\n\t\t\t\t   dw-hdma-v0-core.o $(dw-edma-y)\nobj-$(CONFIG_DW_EDMA_PCIE)\t+= dw-edma-pcie.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

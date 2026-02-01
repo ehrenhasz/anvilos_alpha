@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "b450d6819c81d26ae61b386cd47e0ed551ad750ee08b0ada7bdde89d78f16863",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/char/tpm/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for the kernel tpm device drivers.\n#\nobj-$(CONFIG_TCG_TPM) += tpm.o\ntpm-y := tpm-chip.o\ntpm-y += tpm-dev-common.o\ntpm-y += tpm-dev.o\ntpm-y += tpm-interface.o\ntpm-y += tpm1-cmd.o\ntpm-y += tpm2-cmd.o\ntpm-y += tpmrm-dev.o\ntpm-y += tpm2-space.o\ntpm-y += tpm-sysfs.o\ntpm-y += eventlog/common.o\ntpm-y += eventlog/tpm1.o\ntpm-y += eventlog/tpm2.o\n\ntpm-$(CONFIG_ACPI) += tpm_ppi.o eventlog/acpi.o\ntpm-$(CONFIG_EFI) += eventlog/efi.o\ntpm-$(CONFIG_OF) += eventlog/of.o\nobj-$(CONFIG_TCG_TIS_CORE) += tpm_tis_core.o\nobj-$(CONFIG_TCG_TIS) += tpm_tis.o\nobj-$(CONFIG_TCG_TIS_SYNQUACER) += tpm_tis_synquacer.o\n\nobj-$(CONFIG_TCG_TIS_SPI) += tpm_tis_spi.o\ntpm_tis_spi-y := tpm_tis_spi_main.o\ntpm_tis_spi-$(CONFIG_TCG_TIS_SPI_CR50) += tpm_tis_spi_cr50.o\n\nobj-$(CONFIG_TCG_TIS_I2C_CR50) += tpm_tis_i2c_cr50.o\n\nobj-$(CONFIG_TCG_TIS_I2C) += tpm_tis_i2c.o\nobj-$(CONFIG_TCG_TIS_I2C_ATMEL) += tpm_i2c_atmel.o\nobj-$(CONFIG_TCG_TIS_I2C_INFINEON) += tpm_i2c_infineon.o\nobj-$(CONFIG_TCG_TIS_I2C_NUVOTON) += tpm_i2c_nuvoton.o\nobj-$(CONFIG_TCG_NSC) += tpm_nsc.o\nobj-$(CONFIG_TCG_ATMEL) += tpm_atmel.o\nobj-$(CONFIG_TCG_INFINEON) += tpm_infineon.o\nobj-$(CONFIG_TCG_IBMVTPM) += tpm_ibmvtpm.o\nobj-$(CONFIG_TCG_TIS_ST33ZP24) += st33zp24/\nobj-$(CONFIG_TCG_XEN) += xen-tpmfront.o\nobj-$(CONFIG_TCG_CRB) += tpm_crb.o\nobj-$(CONFIG_TCG_VTPM_PROXY) += tpm_vtpm_proxy.o\nobj-$(CONFIG_TCG_FTPM_TEE) += tpm_ftpm_tee.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

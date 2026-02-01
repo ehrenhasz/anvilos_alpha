@@ -1,0 +1,9 @@
+{
+  "module_name": "hw_factory_dcn21.h",
+  "hash_id": "580a9283d0952c1dae01b0151cd3706d97bb8aee20cd71353ae08e45bde929ad",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/dc/gpio/dcn21/hw_factory_dcn21.h",
+  "human_readable_source": " \n#ifndef __DAL_HW_FACTORY_DCN21_H__\n#define __DAL_HW_FACTORY_DCN21_H__\n\n \nvoid dal_hw_factory_dcn21_init(struct hw_factory *factory);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

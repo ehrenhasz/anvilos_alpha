@@ -1,0 +1,9 @@
+{
+  "module_name": "clk-bcm63xx.c",
+  "hash_id": "4e5243dac3f3d371b820fa20efc66bc03ed4ecd2b19056e00ca489a7905941bb",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/clk/bcm/clk-bcm63xx.c",
+  "human_readable_source": "\n\n#include <linux/init.h>\n#include <linux/clk-provider.h>\n#include <linux/of.h>\n#include \"clk-iproc.h\"\n\nstatic void __init bcm63138_armpll_init(struct device_node *node)\n{\n\tiproc_armpll_setup(node);\n}\nCLK_OF_DECLARE(bcm63138_armpll, \"brcm,bcm63138-armpll\", bcm63138_armpll_init);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

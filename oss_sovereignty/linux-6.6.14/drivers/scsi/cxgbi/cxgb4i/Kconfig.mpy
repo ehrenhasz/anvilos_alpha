@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "2a72872fc2edc7a4d2cc1fc08105c003ecd22f2e328e55921b8898eb4529df06",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/scsi/cxgbi/cxgb4i/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig SCSI_CXGB4_ISCSI\n\ttristate \"Chelsio T4 iSCSI support\"\n\tdepends on PCI && INET && (IPV6 || IPV6=n)\n\tdepends on PTP_1588_CLOCK_OPTIONAL\n\tdepends on THERMAL || !THERMAL\n\tdepends on ETHERNET\n\tdepends on TLS || TLS=n\n\tselect NET_VENDOR_CHELSIO\n\tselect CHELSIO_T4\n\tselect CHELSIO_LIB\n\tselect SCSI_ISCSI_ATTRS\n\thelp\n\t  This driver supports iSCSI offload for the Chelsio T4 devices.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

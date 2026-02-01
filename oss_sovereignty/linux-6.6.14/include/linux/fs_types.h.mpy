@@ -1,0 +1,9 @@
+{
+  "module_name": "fs_types.h",
+  "hash_id": "670e2dab3225c24f4901cd62c0288df6a69b40c35d667bafabd79a8643676d49",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/fs_types.h",
+  "human_readable_source": " \n#ifndef _LINUX_FS_TYPES_H\n#define _LINUX_FS_TYPES_H\n\n \n\n \n#define S_DT_SHIFT\t12\n#define S_DT(mode)\t(((mode) & S_IFMT) >> S_DT_SHIFT)\n#define S_DT_MASK\t(S_IFMT >> S_DT_SHIFT)\n\n \n#define DT_UNKNOWN\t0\n#define DT_FIFO\t\t1\n#define DT_CHR\t\t2\n#define DT_DIR\t\t4\n#define DT_BLK\t\t6\n#define DT_REG\t\t8\n#define DT_LNK\t\t10\n#define DT_SOCK\t\t12\n#define DT_WHT\t\t14\n\n#define DT_MAX\t\t(S_DT_MASK + 1)  \n\n \n#define FT_UNKNOWN\t0\n#define FT_REG_FILE\t1\n#define FT_DIR\t\t2\n#define FT_CHRDEV\t3\n#define FT_BLKDEV\t4\n#define FT_FIFO\t\t5\n#define FT_SOCK\t\t6\n#define FT_SYMLINK\t7\n\n#define FT_MAX\t\t8\n\n \nextern unsigned char fs_ftype_to_dtype(unsigned int filetype);\nextern unsigned char fs_umode_to_ftype(umode_t mode);\nextern unsigned char fs_umode_to_dtype(umode_t mode);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "striper.h",
+  "hash_id": "7a1023f69ef6b5d23a3d924569cae767ec9bf624ba9b1aa68135847c9159085e",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/ceph/striper.h",
+  "human_readable_source": " \n#ifndef _LINUX_CEPH_STRIPER_H\n#define _LINUX_CEPH_STRIPER_H\n\n#include <linux/list.h>\n#include <linux/types.h>\n\nstruct ceph_file_layout;\n\nvoid ceph_calc_file_object_mapping(struct ceph_file_layout *l,\n\t\t\t\t   u64 off, u64 len,\n\t\t\t\t   u64 *objno, u64 *objoff, u32 *xlen);\n\nstruct ceph_object_extent {\n\tstruct list_head oe_item;\n\tu64 oe_objno;\n\tu64 oe_off;\n\tu64 oe_len;\n};\n\nstatic inline void ceph_object_extent_init(struct ceph_object_extent *ex)\n{\n\tINIT_LIST_HEAD(&ex->oe_item);\n}\n\n \ntypedef void (*ceph_object_extent_fn_t)(struct ceph_object_extent *ex,\n\t\t\t\t\tu32 bytes, void *arg);\n\nint ceph_file_to_extents(struct ceph_file_layout *l, u64 off, u64 len,\n\t\t\t struct list_head *object_extents,\n\t\t\t struct ceph_object_extent *alloc_fn(void *arg),\n\t\t\t void *alloc_arg,\n\t\t\t ceph_object_extent_fn_t action_fn,\n\t\t\t void *action_arg);\nint ceph_iterate_extents(struct ceph_file_layout *l, u64 off, u64 len,\n\t\t\t struct list_head *object_extents,\n\t\t\t ceph_object_extent_fn_t action_fn,\n\t\t\t void *action_arg);\n\nstruct ceph_file_extent {\n\tu64 fe_off;\n\tu64 fe_len;\n};\n\nstatic inline u64 ceph_file_extents_bytes(struct ceph_file_extent *file_extents,\n\t\t\t\t\t  u32 num_file_extents)\n{\n\tu64 bytes = 0;\n\tu32 i;\n\n\tfor (i = 0; i < num_file_extents; i++)\n\t\tbytes += file_extents[i].fe_len;\n\n\treturn bytes;\n}\n\nint ceph_extent_to_file(struct ceph_file_layout *l,\n\t\t\tu64 objno, u64 objoff, u64 objlen,\n\t\t\tstruct ceph_file_extent **file_extents,\n\t\t\tu32 *num_file_extents);\n\nu64 ceph_get_num_objects(struct ceph_file_layout *l, u64 size);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

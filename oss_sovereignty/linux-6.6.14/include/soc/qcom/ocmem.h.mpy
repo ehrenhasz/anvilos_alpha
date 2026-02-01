@@ -1,0 +1,9 @@
+{
+  "module_name": "ocmem.h",
+  "hash_id": "37f20903663446002eae45fbe7f1a2c2280e871529a8eb12859b1d982faf2a0c",
+  "original_prompt": "Ingested from linux-6.6.14/include/soc/qcom/ocmem.h",
+  "human_readable_source": " \n \n\n#include <linux/device.h>\n#include <linux/err.h>\n\n#ifndef __OCMEM_H__\n#define __OCMEM_H__\n\nenum ocmem_client {\n\t \n\tOCMEM_GRAPHICS = 0x0,\n\t \n\tOCMEM_CLIENT_MAX,\n};\n\nstruct ocmem;\n\nstruct ocmem_buf {\n\tunsigned long offset;\n\tunsigned long addr;\n\tunsigned long len;\n};\n\n#if IS_ENABLED(CONFIG_QCOM_OCMEM)\n\nstruct ocmem *of_get_ocmem(struct device *dev);\nstruct ocmem_buf *ocmem_allocate(struct ocmem *ocmem, enum ocmem_client client,\n\t\t\t\t unsigned long size);\nvoid ocmem_free(struct ocmem *ocmem, enum ocmem_client client,\n\t\tstruct ocmem_buf *buf);\n\n#else  \n\nstatic inline struct ocmem *of_get_ocmem(struct device *dev)\n{\n\treturn ERR_PTR(-ENODEV);\n}\n\nstatic inline struct ocmem_buf *ocmem_allocate(struct ocmem *ocmem,\n\t\t\t\t\t       enum ocmem_client client,\n\t\t\t\t\t       unsigned long size)\n{\n\treturn ERR_PTR(-ENODEV);\n}\n\nstatic inline void ocmem_free(struct ocmem *ocmem, enum ocmem_client client,\n\t\t\t      struct ocmem_buf *buf)\n{\n}\n\n#endif  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

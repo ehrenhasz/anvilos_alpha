@@ -1,0 +1,9 @@
+{
+  "module_name": "hostname.x",
+  "hash_id": "da96ad581b336f11ef27ff09e2b668a1c2e8a71d631e2e3cc7d37e4732062914",
+  "original_prompt": "Ingested from coreutils-9.4/man/hostname.x",
+  "human_readable_source": "[NAME]\nhostname \\- set or print the name of the current host system\n[DESCRIPTION]\n.\\\" Add any additional description here\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

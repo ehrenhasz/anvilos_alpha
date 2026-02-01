@@ -1,0 +1,9 @@
+{
+  "module_name": "wl.h",
+  "hash_id": "5e03e76da8b2ca04d5353ef5b0264a651bc51371457fe5229737d907a995e57d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/mtd/ubi/wl.h",
+  "human_readable_source": " \n#ifndef UBI_WL_H\n#define UBI_WL_H\n#ifdef CONFIG_MTD_UBI_FASTMAP\nstatic void update_fastmap_work_fn(struct work_struct *wrk);\nstatic struct ubi_wl_entry *find_anchor_wl_entry(struct rb_root *root);\nstatic struct ubi_wl_entry *get_peb_for_wl(struct ubi_device *ubi);\nstatic struct ubi_wl_entry *next_peb_for_wl(struct ubi_device *ubi);\nstatic bool need_wear_leveling(struct ubi_device *ubi);\nstatic void ubi_fastmap_close(struct ubi_device *ubi);\nstatic inline void ubi_fastmap_init(struct ubi_device *ubi, int *count)\n{\n\t \n\t*count += (ubi->fm_size / ubi->leb_size) * 2;\n\tINIT_WORK(&ubi->fm_work, update_fastmap_work_fn);\n}\nstatic struct ubi_wl_entry *may_reserve_for_fm(struct ubi_device *ubi,\n\t\t\t\t\t       struct ubi_wl_entry *e,\n\t\t\t\t\t       struct rb_root *root);\n#else  \nstatic struct ubi_wl_entry *get_peb_for_wl(struct ubi_device *ubi);\nstatic inline void ubi_fastmap_close(struct ubi_device *ubi) { }\nstatic inline void ubi_fastmap_init(struct ubi_device *ubi, int *count) { }\nstatic struct ubi_wl_entry *may_reserve_for_fm(struct ubi_device *ubi,\n\t\t\t\t\t       struct ubi_wl_entry *e,\n\t\t\t\t\t       struct rb_root *root) {\n\treturn e;\n}\n#endif  \n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "test-llvm.cpp",
+  "hash_id": "ea703277f72688d717f8e0c8b6efc371b4fbc8cffd67c150665089f2ab224843",
+  "original_prompt": "Ingested from linux-6.6.14/tools/build/feature/test-llvm.cpp",
+  "human_readable_source": "\n#include \"llvm/Support/ManagedStatic.h\"\n#include \"llvm/Support/raw_ostream.h\"\n#define NUM_VERSION (((LLVM_VERSION_MAJOR) << 16) + (LLVM_VERSION_MINOR << 8) + LLVM_VERSION_PATCH)\n\n#if NUM_VERSION < 0x030900\n# error \"LLVM version too low\"\n#endif\nint main()\n{\n\tllvm::errs() << \"Hello World!\\n\";\n\tllvm::llvm_shutdown();\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

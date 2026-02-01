@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "855e6e7a06dda53909c0b58447f44fc80e1bfeed9b101c02846df956c0198222",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/synopsys/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for the Synopsys network device drivers.\n#\n\nobj-$(CONFIG_DWC_XLGMAC) += dwc-xlgmac.o\ndwc-xlgmac-objs := dwc-xlgmac-net.o dwc-xlgmac-desc.o \\\n\t\t   dwc-xlgmac-hw.o dwc-xlgmac-common.o \\\n\t\t   dwc-xlgmac-ethtool.o\n\ndwc-xlgmac-$(CONFIG_DWC_XLGMAC_PCI) += dwc-xlgmac-pci.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

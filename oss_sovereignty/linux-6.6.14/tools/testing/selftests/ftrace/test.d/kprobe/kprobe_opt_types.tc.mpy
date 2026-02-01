@@ -1,0 +1,9 @@
+{
+  "module_name": "kprobe_opt_types.tc",
+  "hash_id": "061dc9f1223b917a5657b23c6b610c0303fe13feeb380dfb2f77b89c726c0c66",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/ftrace/test.d/kprobe/kprobe_opt_types.tc",
+  "human_readable_source": "#!/bin/sh\n# SPDX-License-Identifier: GPL-2.0-or-later\n# Copyright (C) 2023 Akanksha J N, IBM corporation\n# description: Register/unregister optimized probe\n# requires: kprobe_events\n\ncase `uname -m` in\nx86_64)\n;;\narm*)\n;;\nppc*)\n;;\n*)\n  echo \"Please implement other architecture here\"\n  exit_unsupported\nesac\n\nDEFAULT=$(cat /proc/sys/debug/kprobes-optimization)\necho 1 > /proc/sys/debug/kprobes-optimization\nfor i in `seq 0 255`; do\n        echo  \"p:testprobe $FUNCTION_FORK+${i}\" > kprobe_events || continue\n        echo 1 > events/kprobes/enable || continue\n        (echo \"forked\")\n\tPROBE=$(grep $FUNCTION_FORK /sys/kernel/debug/kprobes/list)\n        echo 0 > events/kprobes/enable\n        echo > kprobe_events\n\tif echo $PROBE | grep -q OPTIMIZED; then\n                echo \"$DEFAULT\" >  /proc/sys/debug/kprobes-optimization\n                exit_pass\n        fi\ndone\necho \"$DEFAULT\" >  /proc/sys/debug/kprobes-optimization\nexit_unresolved\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

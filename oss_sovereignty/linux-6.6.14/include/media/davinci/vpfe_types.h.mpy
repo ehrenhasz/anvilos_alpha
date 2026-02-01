@@ -1,0 +1,9 @@
+{
+  "module_name": "vpfe_types.h",
+  "hash_id": "640221d0949f495d767261e28ca87da7e1f5cf244596b4d6f7393482a7f06397",
+  "original_prompt": "Ingested from linux-6.6.14/include/media/davinci/vpfe_types.h",
+  "human_readable_source": " \n \n#ifndef _VPFE_TYPES_H\n#define _VPFE_TYPES_H\n\n#ifdef __KERNEL__\n\nenum vpfe_pin_pol {\n\tVPFE_PINPOL_POSITIVE,\n\tVPFE_PINPOL_NEGATIVE\n};\n\nenum vpfe_hw_if_type {\n\t \n\tVPFE_BT656,\n\t \n\tVPFE_BT1120,\n\t \n\tVPFE_RAW_BAYER,\n\t \n\tVPFE_YCBCR_SYNC_8,\n\t \n\tVPFE_YCBCR_SYNC_16,\n\t \n\tVPFE_BT656_10BIT\n};\n\n \nstruct vpfe_hw_if_param {\n\tenum vpfe_hw_if_type if_type;\n\tenum vpfe_pin_pol hdpol;\n\tenum vpfe_pin_pol vdpol;\n};\n\n#endif\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

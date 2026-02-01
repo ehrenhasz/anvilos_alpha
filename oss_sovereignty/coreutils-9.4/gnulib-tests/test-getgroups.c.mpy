@@ -1,0 +1,9 @@
+{
+  "module_name": "test-getgroups.c",
+  "hash_id": "01f87935e3aeabc1d39cee0bf8eb28b82a213f0b23d3d7e88526e88cf590a03a",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-getgroups.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#include <unistd.h>\n\n#include \"signature.h\"\nSIGNATURE_CHECK (getgroups, int, (int, gid_t[]));\n\n#include <errno.h>\n#include <stdio.h>\n#include <stdlib.h>\n#include <stdint.h>\n\n#include \"macros.h\"\n\n \n#if __GNUC__ >= 7\n# pragma GCC diagnostic ignored \"-Wstringop-overflow\"\n#endif\n\nint\nmain (int argc, _GL_UNUSED char **argv)\n{\n  int result;\n  gid_t *groups;\n\n  errno = 0;\n  result = getgroups (0, NULL);\n  if (result == -1 && errno == ENOSYS)\n    {\n      fputs (\"skipping test: no support for groups\\n\", stderr);\n      return 77;\n    }\n  ASSERT (0 <= result);\n  ASSERT (result + 1 < SIZE_MAX / sizeof *groups);\n  groups = malloc ((result + 1) * sizeof *groups);\n  ASSERT (groups);\n  groups[result] = -1;\n   \n  if (1 < result)\n    {\n      errno = 0;\n      ASSERT (getgroups (result - 1, groups) == -1);\n      ASSERT (errno == EINVAL);\n    }\n  ASSERT (getgroups (result, groups) == result);\n  ASSERT (getgroups (result + 1, groups) == result);\n  ASSERT (groups[result] == -1);\n  errno = 0;\n  ASSERT (getgroups (-1, NULL) == -1);\n  ASSERT (errno == EINVAL);\n\n   \n  if (1 < argc)\n    {\n      int i;\n      for (i = 0; i < result; i++)\n        printf (\"%d\\n\", (int) groups[i]);\n    }\n  free (groups);\n  return 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

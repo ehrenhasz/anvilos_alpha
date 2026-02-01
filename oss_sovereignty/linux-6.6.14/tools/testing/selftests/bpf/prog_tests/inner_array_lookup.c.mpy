@@ -1,0 +1,9 @@
+{
+  "module_name": "inner_array_lookup.c",
+  "hash_id": "7716f844d4228276955ceadee8689b3e6f799283e4c49953dd74139debbd8caa",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/prog_tests/inner_array_lookup.c",
+  "human_readable_source": "\n\n#include <test_progs.h>\n\n#include \"inner_array_lookup.skel.h\"\n\nvoid test_inner_array_lookup(void)\n{\n\tint map1_fd, err;\n\tint key = 3;\n\tint val = 1;\n\tstruct inner_array_lookup *skel;\n\n\tskel = inner_array_lookup__open_and_load();\n\tif (!ASSERT_OK_PTR(skel, \"open_load_skeleton\"))\n\t\treturn;\n\n\terr = inner_array_lookup__attach(skel);\n\tif (!ASSERT_OK(err, \"skeleton_attach\"))\n\t\tgoto cleanup;\n\n\tmap1_fd = bpf_map__fd(skel->maps.inner_map1);\n\tbpf_map_update_elem(map1_fd, &key, &val, 0);\n\n\t \n\tbpf_map_lookup_elem(map1_fd, &key, &val);\n\tASSERT_EQ(val, 2, \"value_is_2\");\n\ncleanup:\n\tinner_array_lookup__destroy(skel);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

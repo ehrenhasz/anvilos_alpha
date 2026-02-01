@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "e2b22a92156720360a5d4740d1cb98bdfca3104ca94f5ef765c27c939b4d607d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/imx/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n\nobj-$(CONFIG_DRM_IMX_DCSS) += dcss/\nobj-$(CONFIG_DRM_IMX) += ipuv3/\nobj-$(CONFIG_DRM_IMX_LCDC) += lcdc/\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "um.config",
+  "hash_id": "942b0f215a5513476e6d0c2fc04f2b9d4b9fa3bf2eaeadd4b41650443e73d2a3",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/wireguard/qemu/arch/um.config",
+  "human_readable_source": "CONFIG_64BIT=y\nCONFIG_CMDLINE=\"wg.success=tty1 panic_on_warn=1\"\nCONFIG_FRAME_WARN=1280\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

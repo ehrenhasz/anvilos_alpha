@@ -1,0 +1,9 @@
+{
+  "module_name": "static_assert.rs",
+  "hash_id": "9e96ecf715e170bb7977d6fc30168339d3ee23dc87a7119773dfd9c0a352c093",
+  "original_prompt": "Ingested from linux-6.6.14/rust/kernel/static_assert.rs",
+  "human_readable_source": "// SPDX-License-Identifier: GPL-2.0\n\n//! Static assert.\n\n/// Static assert (i.e. compile-time assert).\n///\n/// Similar to C11 [`_Static_assert`] and C++11 [`static_assert`].\n///\n/// The feature may be added to Rust in the future: see [RFC 2790].\n///\n/// [`_Static_assert`]: https://en.cppreference.com/w/c/language/_Static_assert\n/// [`static_assert`]: https://en.cppreference.com/w/cpp/language/static_assert\n/// [RFC 2790]: https://github.com/rust-lang/rfcs/issues/2790\n///\n/// # Examples\n///\n/// ```\n/// static_assert!(42 > 24);\n/// static_assert!(core::mem::size_of::<u8>() == 1);\n///\n/// const X: &[u8] = b\"bar\";\n/// static_assert!(X[1] == b'a');\n///\n/// const fn f(x: i32) -> i32 {\n///     x + 2\n/// }\n/// static_assert!(f(40) == 42);\n/// ```\n#[macro_export]\nmacro_rules! static_assert {\n    ($condition:expr) => {\n        const _: () = core::assert!($condition);\n    };\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

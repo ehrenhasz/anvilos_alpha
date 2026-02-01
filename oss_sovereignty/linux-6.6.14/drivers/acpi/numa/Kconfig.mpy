@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "1e67eb15f5ee60ede4821ce3956898c5e1185ec592da7a68ebaadc1f6fb9c0f5",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/acpi/numa/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nconfig ACPI_NUMA\n\tbool \"NUMA support\"\n\tdepends on NUMA\n\tdepends on (X86 || IA64 || ARM64 || LOONGARCH)\n\tdefault y if IA64 || ARM64\n\nconfig ACPI_HMAT\n\tbool \"ACPI Heterogeneous Memory Attribute Table Support\"\n\tdepends on ACPI_NUMA\n\tselect HMEM_REPORTING\n\tselect MEMREGION\n\thelp\n\t If set, this option has the kernel parse and report the\n\t platform's ACPI HMAT (Heterogeneous Memory Attributes Table),\n\t register memory initiators with their targets, and export\n\t performance attributes through the node's sysfs device if\n\t provided.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

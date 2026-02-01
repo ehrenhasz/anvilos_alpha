@@ -1,0 +1,9 @@
+{
+  "module_name": "si2168_priv.h",
+  "hash_id": "4c760648e223a1c6f23b3ee6063021c89bd24befeee0069c2cbbe403258c3adc",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/dvb-frontends/si2168_priv.h",
+  "human_readable_source": " \n \n\n#ifndef SI2168_PRIV_H\n#define SI2168_PRIV_H\n\n#include \"si2168.h\"\n#include <media/dvb_frontend.h>\n#include <linux/firmware.h>\n#include <linux/i2c-mux.h>\n#include <linux/kernel.h>\n\n#define SI2168_A20_FIRMWARE \"dvb-demod-si2168-a20-01.fw\"\n#define SI2168_A30_FIRMWARE \"dvb-demod-si2168-a30-01.fw\"\n#define SI2168_B40_FIRMWARE \"dvb-demod-si2168-b40-01.fw\"\n#define SI2168_D60_FIRMWARE \"dvb-demod-si2168-d60-01.fw\"\n\n \nstruct si2168_dev {\n\tstruct mutex i2c_mutex;\n\tstruct i2c_mux_core *muxc;\n\tstruct dvb_frontend fe;\n\tenum fe_delivery_system delivery_system;\n\tenum fe_status fe_status;\n\t#define SI2168_CHIP_ID_A20 ('A' << 24 | 68 << 16 | '2' << 8 | '0' << 0)\n\t#define SI2168_CHIP_ID_A30 ('A' << 24 | 68 << 16 | '3' << 8 | '0' << 0)\n\t#define SI2168_CHIP_ID_B40 ('B' << 24 | 68 << 16 | '4' << 8 | '0' << 0)\n\t#define SI2168_CHIP_ID_D60 ('D' << 24 | 68 << 16 | '6' << 8 | '0' << 0)\n\tunsigned int chip_id;\n\tunsigned int version;\n\tconst char *firmware_name;\n\tu8 ts_mode;\n\tunsigned int active:1;\n\tunsigned int warm:1;\n\tunsigned int initialized:1;\n\tunsigned int ts_clock_inv:1;\n\tunsigned int ts_clock_gapped:1;\n\tunsigned int spectral_inversion:1;\n};\n\n \n#define SI2168_ARGLEN      30\nstruct si2168_cmd {\n\tu8 args[SI2168_ARGLEN];\n\tunsigned wlen;\n\tunsigned rlen;\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

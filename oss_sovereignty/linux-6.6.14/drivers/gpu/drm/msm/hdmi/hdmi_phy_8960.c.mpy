@@ -1,0 +1,9 @@
+{
+  "module_name": "hdmi_phy_8960.c",
+  "hash_id": "18787d8eac52554e740ce0688e6999b7878d264e9e1624d5c1fce3abc32914cc",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/msm/hdmi/hdmi_phy_8960.c",
+  "human_readable_source": "\n \n\n#include \"hdmi.h\"\n\nstatic void hdmi_phy_8960_powerup(struct hdmi_phy *phy,\n\t\t\t\t  unsigned long int pixclock)\n{\n\tDBG(\"pixclock: %lu\", pixclock);\n\n\thdmi_phy_write(phy, REG_HDMI_8960_PHY_REG2, 0x00);\n\thdmi_phy_write(phy, REG_HDMI_8960_PHY_REG0, 0x1b);\n\thdmi_phy_write(phy, REG_HDMI_8960_PHY_REG1, 0xf2);\n\thdmi_phy_write(phy, REG_HDMI_8960_PHY_REG4, 0x00);\n\thdmi_phy_write(phy, REG_HDMI_8960_PHY_REG5, 0x00);\n\thdmi_phy_write(phy, REG_HDMI_8960_PHY_REG6, 0x00);\n\thdmi_phy_write(phy, REG_HDMI_8960_PHY_REG7, 0x00);\n\thdmi_phy_write(phy, REG_HDMI_8960_PHY_REG8, 0x00);\n\thdmi_phy_write(phy, REG_HDMI_8960_PHY_REG9, 0x00);\n\thdmi_phy_write(phy, REG_HDMI_8960_PHY_REG10, 0x00);\n\thdmi_phy_write(phy, REG_HDMI_8960_PHY_REG11, 0x00);\n\thdmi_phy_write(phy, REG_HDMI_8960_PHY_REG3, 0x20);\n}\n\nstatic void hdmi_phy_8960_powerdown(struct hdmi_phy *phy)\n{\n\tDBG(\"\");\n\n\thdmi_phy_write(phy, REG_HDMI_8960_PHY_REG2, 0x7f);\n}\n\nstatic const char * const hdmi_phy_8960_reg_names[] = {\n\t\"core-vdda\",\n};\n\nstatic const char * const hdmi_phy_8960_clk_names[] = {\n\t\"slave_iface\",\n};\n\nconst struct hdmi_phy_cfg msm_hdmi_phy_8960_cfg = {\n\t.type = MSM_HDMI_PHY_8960,\n\t.powerup = hdmi_phy_8960_powerup,\n\t.powerdown = hdmi_phy_8960_powerdown,\n\t.reg_names = hdmi_phy_8960_reg_names,\n\t.num_regs = ARRAY_SIZE(hdmi_phy_8960_reg_names),\n\t.clk_names = hdmi_phy_8960_clk_names,\n\t.num_clks = ARRAY_SIZE(hdmi_phy_8960_clk_names),\n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

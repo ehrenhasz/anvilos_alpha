@@ -1,0 +1,9 @@
+{
+  "module_name": "platform_profile.h",
+  "hash_id": "9aa9ce5ecdcbe8c2ec8233ad4c7c87d8028deb0c7160e3a1a6aa33bde7d12720",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/platform_profile.h",
+  "human_readable_source": " \n \n\n#ifndef _PLATFORM_PROFILE_H_\n#define _PLATFORM_PROFILE_H_\n\n#include <linux/bitops.h>\n\n \n\nenum platform_profile_option {\n\tPLATFORM_PROFILE_LOW_POWER,\n\tPLATFORM_PROFILE_COOL,\n\tPLATFORM_PROFILE_QUIET,\n\tPLATFORM_PROFILE_BALANCED,\n\tPLATFORM_PROFILE_BALANCED_PERFORMANCE,\n\tPLATFORM_PROFILE_PERFORMANCE,\n\tPLATFORM_PROFILE_LAST,  \n};\n\nstruct platform_profile_handler {\n\tunsigned long choices[BITS_TO_LONGS(PLATFORM_PROFILE_LAST)];\n\tint (*profile_get)(struct platform_profile_handler *pprof,\n\t\t\t\tenum platform_profile_option *profile);\n\tint (*profile_set)(struct platform_profile_handler *pprof,\n\t\t\t\tenum platform_profile_option profile);\n};\n\nint platform_profile_register(struct platform_profile_handler *pprof);\nint platform_profile_remove(void);\nvoid platform_profile_notify(void);\n\n#endif   \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

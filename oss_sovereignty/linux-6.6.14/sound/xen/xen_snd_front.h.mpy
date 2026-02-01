@@ -1,0 +1,9 @@
+{
+  "module_name": "xen_snd_front.h",
+  "hash_id": "15f1611ca308628ccb108fc5b88e8474d23ed3f03c7c884d1ae3554a58665da4",
+  "original_prompt": "Ingested from linux-6.6.14/sound/xen/xen_snd_front.h",
+  "human_readable_source": " \n\n \n\n#ifndef __XEN_SND_FRONT_H\n#define __XEN_SND_FRONT_H\n\n#include \"xen_snd_front_cfg.h\"\n\nstruct xen_snd_front_card_info;\nstruct xen_snd_front_evtchnl;\nstruct xen_snd_front_evtchnl_pair;\nstruct xen_front_pgdir_shbuf;\nstruct xensnd_query_hw_param;\n\nstruct xen_snd_front_info {\n\tstruct xenbus_device *xb_dev;\n\n\tstruct xen_snd_front_card_info *card_info;\n\n\tint num_evt_pairs;\n\tstruct xen_snd_front_evtchnl_pair *evt_pairs;\n\n\tstruct xen_front_cfg_card cfg;\n};\n\nint xen_snd_front_stream_query_hw_param(struct xen_snd_front_evtchnl *evtchnl,\n\t\t\t\t\tstruct xensnd_query_hw_param *hw_param_req,\n\t\t\t\t\tstruct xensnd_query_hw_param *hw_param_resp);\n\nint xen_snd_front_stream_prepare(struct xen_snd_front_evtchnl *evtchnl,\n\t\t\t\t struct xen_front_pgdir_shbuf *shbuf,\n\t\t\t\t u8 format, unsigned int channels,\n\t\t\t\t unsigned int rate, u32 buffer_sz,\n\t\t\t\t u32 period_sz);\n\nint xen_snd_front_stream_close(struct xen_snd_front_evtchnl *evtchnl);\n\nint xen_snd_front_stream_write(struct xen_snd_front_evtchnl *evtchnl,\n\t\t\t       unsigned long pos, unsigned long count);\n\nint xen_snd_front_stream_read(struct xen_snd_front_evtchnl *evtchnl,\n\t\t\t      unsigned long pos, unsigned long count);\n\nint xen_snd_front_stream_trigger(struct xen_snd_front_evtchnl *evtchnl,\n\t\t\t\t int type);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

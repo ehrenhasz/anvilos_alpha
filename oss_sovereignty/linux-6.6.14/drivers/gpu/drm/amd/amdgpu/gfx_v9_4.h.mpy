@@ -1,0 +1,9 @@
+{
+  "module_name": "gfx_v9_4.h",
+  "hash_id": "20d2dfdd333923c841f794e4977c7596cb8848f18347bbcdddd1dc05bac70c01",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/amdgpu/gfx_v9_4.h",
+  "human_readable_source": " \n\n#ifndef __GFX_V9_4_H__\n#define __GFX_V9_4_H__\n\nextern struct amdgpu_gfx_ras gfx_v9_4_ras;\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

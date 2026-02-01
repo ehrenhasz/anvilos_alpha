@@ -1,0 +1,9 @@
+{
+  "module_name": "off_t.m4",
+  "hash_id": "8592b9940e5d8d2bac9d6225a4588a1f99b61dc33079a09c7ad1dabae99260bc",
+  "original_prompt": "Ingested from coreutils-9.4/m4/off_t.m4",
+  "human_readable_source": "# off_t.m4 serial 1\ndnl Copyright (C) 2012-2023 Free Software Foundation, Inc.\ndnl This file is free software; the Free Software Foundation\ndnl gives unlimited permission to copy and/or distribute it,\ndnl with or without modifications, as long as this notice is preserved.\n\ndnl Check whether to override the 'off_t' type.\ndnl Set WINDOWS_64_BIT_OFF_T.\n\nAC_DEFUN([gl_TYPE_OFF_T],\n[\n  m4_ifdef([gl_LARGEFILE], [\n    AC_REQUIRE([gl_LARGEFILE])\n  ], [\n    WINDOWS_64_BIT_OFF_T=0\n  ])\n  AC_SUBST([WINDOWS_64_BIT_OFF_T])\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "BUSTED-BOOST.boot",
+  "hash_id": "bac23a93977a748831165d9d6e1d1d4d56053beb18851e9fcaab86791108c91f",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/rcutorture/configs/rcu/BUSTED-BOOST.boot",
+  "human_readable_source": "rcutorture.test_boost=2\nrcutorture.stutter=0\nrcutree.gp_preinit_delay=12\nrcutree.gp_init_delay=3\nrcutree.gp_cleanup_delay=3\nrcutree.kthread_prio=2\nthreadirqs\nrcutree.use_softirq=0\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

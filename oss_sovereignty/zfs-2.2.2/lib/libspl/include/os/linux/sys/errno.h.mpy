@@ -1,0 +1,9 @@
+{
+  "module_name": "errno.h",
+  "hash_id": "e4ab64084045d775b6bcb4e2b31675073ef69e8c3e1de63377198419f4d3d11c",
+  "original_prompt": "Ingested from zfs-2.2.2/lib/libspl/include/os/linux/sys/errno.h",
+  "human_readable_source": " \n \n\n \n#ifndef _LIBSPL_SYS_ERRNO_H\n#define\t_LIBSPL_SYS_ERRNO_H\n\n#include <errno.h>\n \n#define\tECKSUM\tEBADE\n#define\tEFRAGS\tEBADR\n\n \n#define\tENOTACTIVE\tENOANO\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

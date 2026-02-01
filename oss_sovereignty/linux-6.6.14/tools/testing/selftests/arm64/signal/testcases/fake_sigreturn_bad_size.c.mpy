@@ -1,0 +1,9 @@
+{
+  "module_name": "fake_sigreturn_bad_size.c",
+  "hash_id": "68df5bb1240805acfe1ead4d76d1a7fd5cf7126e9f0cab9870b3cd31b3fe06c7",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/arm64/signal/testcases/fake_sigreturn_bad_size.c",
+  "human_readable_source": "\n \n\n#include <signal.h>\n#include <ucontext.h>\n\n#include \"test_signals_utils.h\"\n#include \"testcases.h\"\n\nstruct fake_sigframe sf;\n\n#define MIN_SZ_ALIGN\t16\n\nstatic int fake_sigreturn_bad_size_run(struct tdescr *td,\n\t\t\t\t       siginfo_t *si, ucontext_t *uc)\n{\n\tsize_t resv_sz, need_sz, offset;\n\tstruct _aarch64_ctx *shead = GET_SF_RESV_HEAD(sf), *head;\n\n\t \n\tif (!get_current_context(td, &sf.uc, sizeof(sf.uc)))\n\t\treturn 1;\n\n\tresv_sz = GET_SF_RESV_SIZE(sf);\n\t \n\tneed_sz = sizeof(struct esr_context) + HDR_SZ;\n\thead = get_starting_head(shead, need_sz, resv_sz, &offset);\n\tif (!head)\n\t\treturn 0;\n\n\t \n\thead->magic = ESR_MAGIC;\n\thead->size = sizeof(struct esr_context);\n\t \n\twrite_terminator_record(GET_RESV_NEXT_HEAD(head));\n\tASSERT_GOOD_CONTEXT(&sf.uc);\n\n\t \n\t \n\thead->size = (resv_sz - offset - need_sz + MIN_SZ_ALIGN) & ~0xfUL;\n\t \n\thead->size += MIN_SZ_ALIGN;\n\t \n\twrite_terminator_record(GET_RESV_NEXT_HEAD(head));\n\tASSERT_BAD_CONTEXT(&sf.uc);\n\tfake_sigreturn(&sf, sizeof(sf), 0);\n\n\treturn 1;\n}\n\nstruct tdescr tde = {\n\t\t.name = \"FAKE_SIGRETURN_BAD_SIZE\",\n\t\t.descr = \"Triggers a sigreturn with a overrun __reserved area\",\n\t\t.sig_ok = SIGSEGV,\n\t\t.timeout = 3,\n\t\t.run = fake_sigreturn_bad_size_run,\n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

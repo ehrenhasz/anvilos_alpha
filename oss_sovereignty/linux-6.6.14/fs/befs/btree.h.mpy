@@ -1,0 +1,9 @@
+{
+  "module_name": "btree.h",
+  "hash_id": "cab323bc802d00fa869469486db25087f72605c1a4fc6418e4efa6e503499402",
+  "original_prompt": "Ingested from linux-6.6.14/fs/befs/btree.h",
+  "human_readable_source": " \n \n\nint befs_btree_find(struct super_block *sb, const befs_data_stream *ds,\n\t\t    const char *key, befs_off_t *value);\n\nint befs_btree_read(struct super_block *sb, const befs_data_stream *ds,\n\t\t    loff_t key_no, size_t bufsize, char *keybuf,\n\t\t    size_t *keysize, befs_off_t *value);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

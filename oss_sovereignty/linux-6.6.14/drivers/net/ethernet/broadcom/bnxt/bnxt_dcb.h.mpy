@@ -1,0 +1,9 @@
+{
+  "module_name": "bnxt_dcb.h",
+  "hash_id": "b5fa20c379ab5716a374b53cbc17b7b3b9a804c808c915c907f058069701e3fd",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/broadcom/bnxt/bnxt_dcb.h",
+  "human_readable_source": " \n\n#ifndef BNXT_DCB_H\n#define BNXT_DCB_H\n\n#include <net/dcbnl.h>\n\nstruct bnxt_dcb {\n\tu8\t\t\tmax_tc;\n\tstruct ieee_pfc\t\t*ieee_pfc;\n\tstruct ieee_ets\t\t*ieee_ets;\n\tu8\t\t\tdcbx_cap;\n\tu8\t\t\tdefault_pri;\n};\n\nstruct bnxt_cos2bw_cfg {\n\tu8\t\t\tpad[3];\n\tstruct_group_attr(cfg, __packed,\n\t\tu8\t\tqueue_id;\n\t\t__le32\t\tmin_bw;\n\t\t__le32\t\tmax_bw;\n\t\tu8\t\ttsa;\n\t\tu8\t\tpri_lvl;\n\t\tu8\t\tbw_weight;\n\t);\n \n#define BW_VALUE_UNIT_PERCENT1_100\t\t(0x1UL << 29)\n\tu8\t\t\tunused;\n};\n\nstruct bnxt_dscp2pri_entry {\n\tu8\tdscp;\n\tu8\tmask;\n\tu8\tpri;\n};\n\n#define BNXT_LLQ(q_profile)\t\\\n\t((q_profile) ==\t\t\\\n\t QUEUE_QPORTCFG_RESP_QUEUE_ID0_SERVICE_PROFILE_LOSSLESS_ROCE)\n\n#define BNXT_CNPQ(q_profile)\t\\\n\t((q_profile) ==\t\t\\\n\t QUEUE_QPORTCFG_RESP_QUEUE_ID0_SERVICE_PROFILE_LOSSY_ROCE_CNP)\n\n#define HWRM_STRUCT_DATA_SUBTYPE_HOST_OPERATIONAL\t0x0300\n\nvoid bnxt_dcb_init(struct bnxt *bp);\nvoid bnxt_dcb_free(struct bnxt *bp);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

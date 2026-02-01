@@ -1,0 +1,9 @@
+{
+  "module_name": "rpmsg_types.h",
+  "hash_id": "65721517f8e013734fbd97edeac8bb7109c9ba00ebb8590ad8700d1872eb22d3",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/rpmsg_types.h",
+  "human_readable_source": " \n#ifndef _UAPI_LINUX_RPMSG_TYPES_H\n#define _UAPI_LINUX_RPMSG_TYPES_H\n\n#include <linux/types.h>\n\ntypedef __u16 __bitwise __rpmsg16;\ntypedef __u32 __bitwise __rpmsg32;\ntypedef __u64 __bitwise __rpmsg64;\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "connect_ping.c",
+  "hash_id": "c80ed95e3626b63f5927d0af94b53580a0447f0c9285d00e0d1d4e9334b1cac0",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/connect_ping.c",
+  "human_readable_source": "\n\n \n\n#include <linux/bpf.h>\n#include <bpf/bpf_helpers.h>\n#include <bpf/bpf_endian.h>\n#include <netinet/in.h>\n#include <sys/socket.h>\n\n \n#define BINDADDR_V6 { { { 0x20,0x01,0x0d,0xb8,0,0,0,0,0,0,0,0,0,0,0,1 } } }\n\n__u32 do_bind = 0;\n__u32 has_error = 0;\n__u32 invocations_v4 = 0;\n__u32 invocations_v6 = 0;\n\nSEC(\"cgroup/connect4\")\nint connect_v4_prog(struct bpf_sock_addr *ctx)\n{\n\tstruct sockaddr_in sa = {\n\t\t.sin_family = AF_INET,\n\t\t.sin_addr.s_addr = bpf_htonl(0x01010101),\n\t};\n\n\t__sync_fetch_and_add(&invocations_v4, 1);\n\n\tif (do_bind && bpf_bind(ctx, (struct sockaddr *)&sa, sizeof(sa)))\n\t\thas_error = 1;\n\n\treturn 1;\n}\n\nSEC(\"cgroup/connect6\")\nint connect_v6_prog(struct bpf_sock_addr *ctx)\n{\n\tstruct sockaddr_in6 sa = {\n\t\t.sin6_family = AF_INET6,\n\t\t.sin6_addr = BINDADDR_V6,\n\t};\n\n\t__sync_fetch_and_add(&invocations_v6, 1);\n\n\tif (do_bind && bpf_bind(ctx, (struct sockaddr *)&sa, sizeof(sa)))\n\t\thas_error = 1;\n\n\treturn 1;\n}\n\nchar _license[] SEC(\"license\") = \"GPL\";\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

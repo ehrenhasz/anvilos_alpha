@@ -1,0 +1,9 @@
+{
+  "module_name": "utuuid.c",
+  "hash_id": "757df012b5b900cbd9468860d9d6d472f81200347bc3b51eeb698f7b3611b792",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/acpi/acpica/utuuid.c",
+  "human_readable_source": "\n \n\n#include <acpi/acpi.h>\n#include \"accommon.h\"\n\n#define _COMPONENT          ACPI_COMPILER\nACPI_MODULE_NAME(\"utuuid\")\n\n#if (defined ACPI_ASL_COMPILER || defined ACPI_EXEC_APP || defined ACPI_HELP_APP)\n \nconst u8 acpi_gbl_map_to_uuid_offset[UUID_BUFFER_LENGTH] = {\n\t6, 4, 2, 0, 11, 9, 16, 14, 19, 21, 24, 26, 28, 30, 32, 34\n};\n\n \n\nvoid acpi_ut_convert_string_to_uuid(char *in_string, u8 *uuid_buffer)\n{\n\tu32 i;\n\n\tfor (i = 0; i < UUID_BUFFER_LENGTH; i++) {\n\t\tuuid_buffer[i] =\n\t\t    (acpi_ut_ascii_char_to_hex\n\t\t     (in_string[acpi_gbl_map_to_uuid_offset[i]]) << 4);\n\n\t\tuuid_buffer[i] |=\n\t\t    acpi_ut_ascii_char_to_hex(in_string\n\t\t\t\t\t      [acpi_gbl_map_to_uuid_offset[i] +\n\t\t\t\t\t       1]);\n\t}\n}\n\n \n\nacpi_status acpi_ut_convert_uuid_to_string(char *uuid_buffer, char *out_string)\n{\n\tu32 i;\n\n\tif (!uuid_buffer || !out_string) {\n\t\treturn (AE_BAD_PARAMETER);\n\t}\n\n\tfor (i = 0; i < UUID_BUFFER_LENGTH; i++) {\n\t\tout_string[acpi_gbl_map_to_uuid_offset[i]] =\n\t\t    acpi_ut_hex_to_ascii_char(uuid_buffer[i], 4);\n\n\t\tout_string[acpi_gbl_map_to_uuid_offset[i] + 1] =\n\t\t    acpi_ut_hex_to_ascii_char(uuid_buffer[i], 0);\n\t}\n\n\t \n\n\tout_string[UUID_HYPHEN1_OFFSET] =\n\t    out_string[UUID_HYPHEN2_OFFSET] =\n\t    out_string[UUID_HYPHEN3_OFFSET] =\n\t    out_string[UUID_HYPHEN4_OFFSET] = '-';\n\n\tout_string[UUID_STRING_LENGTH] = 0;\t \n\treturn (AE_OK);\n}\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

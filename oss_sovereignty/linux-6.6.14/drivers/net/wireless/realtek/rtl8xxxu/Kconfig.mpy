@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "5633031e07bc317104ae7e7021ee106956b0673dbcad50841d3f845202ace555",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/realtek/rtl8xxxu/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# RTL8XXXU Wireless LAN device configuration\n#\nconfig RTL8XXXU\n\ttristate \"Realtek 802.11n USB wireless chips support\"\n\tdepends on MAC80211 && USB\n\tdepends on LEDS_CLASS\n\thelp\n\t  This is an alternative driver for various Realtek RTL8XXX\n\t  parts written to utilize the Linux mac80211 stack.\n\t  The driver is known to work with a number of RTL8723AU,\n\t  RL8188CU, RTL8188RU, RTL8191CU, RTL8192CU, RTL8723BU, RTL8192EU,\n\t  RTL8188FU, RTL8188EU, RTL8710BU (aka RTL8188GU), and RTL8192FU\n\t  devices.\n\n\t  This driver is under development and has a limited feature\n\t  set. In particular it does not yet support 40MHz channels\n\t  and power management. However it should have a smaller\n\t  memory footprint than the vendor drivers and benefits\n\t  from the in kernel mac80211 stack.\n\n\t  It can coexist with drivers from drivers/staging/rtl8723au,\n\t  drivers/staging/rtl8192u, and drivers/net/wireless/rtlwifi,\n\t  but you will need to control which module you wish to load.\n\n\t  To compile this driver as a module, choose M here: the module will\n\t  be called rtl8xxxu.  If unsure, say N.\n\nconfig RTL8XXXU_UNTESTED\n\tbool \"Include support for untested Realtek 8xxx USB devices (EXPERIMENTAL)\"\n\tdepends on RTL8XXXU\n\thelp\n\t  This option enables detection of Realtek 8723/8188/8191/8192 WiFi\n\t  USB devices which have not been tested directly by the driver\n\t  author or reported to be working by third parties.\n\n\t  Please report your results!\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

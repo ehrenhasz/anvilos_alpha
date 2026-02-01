@@ -1,0 +1,9 @@
+{
+  "module_name": "test-libelf.c",
+  "hash_id": "f25e19a858bced33a7fe2d423ec5e1c7f6ec6a97366ea75d8e1272a3b8bfbed1",
+  "original_prompt": "Ingested from linux-6.6.14/tools/build/feature/test-libelf.c",
+  "human_readable_source": "\n#include <libelf.h>\n\nint main(void)\n{\n\tElf *elf = elf_begin(0, ELF_C_READ, 0);\n\n\treturn (long)elf;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

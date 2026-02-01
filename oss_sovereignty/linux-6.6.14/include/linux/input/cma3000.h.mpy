@@ -1,0 +1,9 @@
+{
+  "module_name": "cma3000.h",
+  "hash_id": "09653bfe8dc813c88c1abb15b8f98448277767bdb0e4e07390c473811577a8ec",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/input/cma3000.h",
+  "human_readable_source": " \n \n\n#ifndef _LINUX_CMA3000_H\n#define _LINUX_CMA3000_H\n\n#define CMAMODE_DEFAULT    0\n#define CMAMODE_MEAS100    1\n#define CMAMODE_MEAS400    2\n#define CMAMODE_MEAS40     3\n#define CMAMODE_MOTDET     4\n#define CMAMODE_FF100      5\n#define CMAMODE_FF400      6\n#define CMAMODE_POFF       7\n\n#define CMARANGE_2G   2000\n#define CMARANGE_8G   8000\n\n \n\nstruct cma3000_platform_data {\n\tint fuzz_x;\n\tint fuzz_y;\n\tint fuzz_z;\n\tint g_range;\n\tuint8_t mode;\n\tuint8_t mdthr;\n\tuint8_t mdfftmr;\n\tuint8_t ffthr;\n\tunsigned long irqflags;\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

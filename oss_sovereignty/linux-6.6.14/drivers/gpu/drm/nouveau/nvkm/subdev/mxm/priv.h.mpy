@@ -1,0 +1,9 @@
+{
+  "module_name": "priv.h",
+  "hash_id": "c39cec8df79b425fcad2c6b15846595b4a4913064f446a5c561595de2a17cd86",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/subdev/mxm/priv.h",
+  "human_readable_source": " \n#ifndef __NVKM_MXM_PRIV_H__\n#define __NVKM_MXM_PRIV_H__\n#define nvkm_mxm(p) container_of((p), struct nvkm_mxm, subdev)\n#include <subdev/mxm.h>\n\n#define MXM_SANITISE_DCB 0x00000001\n\nstruct nvkm_mxm {\n\tstruct nvkm_subdev subdev;\n\tu32 action;\n\tu8 *mxms;\n};\n\nint nvkm_mxm_new_(struct nvkm_device *, enum nvkm_subdev_type, int, struct nvkm_mxm **);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

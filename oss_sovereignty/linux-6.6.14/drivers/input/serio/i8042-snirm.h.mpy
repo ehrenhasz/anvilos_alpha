@@ -1,0 +1,9 @@
+{
+  "module_name": "i8042-snirm.h",
+  "hash_id": "83223de334159d08093cbe08079552bb6e50c7ecaba0f440c62551f8738858a9",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/input/serio/i8042-snirm.h",
+  "human_readable_source": " \n#ifndef _I8042_SNIRM_H\n#define _I8042_SNIRM_H\n\n#include <asm/sni.h>\n\n\n \n\n#define I8042_KBD_PHYS_DESC \"onboard/serio0\"\n#define I8042_AUX_PHYS_DESC \"onboard/serio1\"\n#define I8042_MUX_PHYS_DESC \"onboard/serio%d\"\n\n \nstatic int i8042_kbd_irq;\nstatic int i8042_aux_irq;\n#define I8042_KBD_IRQ i8042_kbd_irq\n#define I8042_AUX_IRQ i8042_aux_irq\n\nstatic void __iomem *kbd_iobase;\n\n#define I8042_COMMAND_REG\t(kbd_iobase + 0x64UL)\n#define I8042_DATA_REG\t\t(kbd_iobase + 0x60UL)\n\nstatic inline int i8042_read_data(void)\n{\n\treturn readb(kbd_iobase + 0x60UL);\n}\n\nstatic inline int i8042_read_status(void)\n{\n\treturn readb(kbd_iobase + 0x64UL);\n}\n\nstatic inline void i8042_write_data(int val)\n{\n\twriteb(val, kbd_iobase + 0x60UL);\n}\n\nstatic inline void i8042_write_command(int val)\n{\n\twriteb(val, kbd_iobase + 0x64UL);\n}\nstatic inline int i8042_platform_init(void)\n{\n\t \n\tif (sni_brd_type == SNI_BRD_RM200) {\n\t\tkbd_iobase = ioremap(0x16000000, 4);\n\t\ti8042_kbd_irq = 33;\n\t\ti8042_aux_irq = 44;\n\t} else {\n\t\tkbd_iobase = ioremap(0x14000000, 4);\n\t\ti8042_kbd_irq = 1;\n\t\ti8042_aux_irq = 12;\n\t}\n\tif (!kbd_iobase)\n\t\treturn -ENOMEM;\n\n\treturn 0;\n}\n\nstatic inline void i8042_platform_exit(void)\n{\n\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

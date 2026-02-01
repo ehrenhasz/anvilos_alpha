@@ -1,0 +1,9 @@
+{
+  "module_name": "imx93-src.c",
+  "hash_id": "ef0b06da32345c66685dc0cea10b2f79548c2d84a6b7a956aaceb40d798dd9b1",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/soc/imx/imx93-src.c",
+  "human_readable_source": "\n \n\n#include <linux/module.h>\n#include <linux/of_platform.h>\n#include <linux/platform_device.h>\n\nstatic int imx93_src_probe(struct platform_device *pdev)\n{\n\treturn devm_of_platform_populate(&pdev->dev);\n}\n\nstatic const struct of_device_id imx93_src_ids[] = {\n\t{ .compatible = \"fsl,imx93-src\" },\n\t{ }\n};\nMODULE_DEVICE_TABLE(of, imx93_src_ids);\n\nstatic struct platform_driver imx93_src_driver = {\n\t.driver = {\n\t\t.name\t= \"imx93_src\",\n\t\t.of_match_table = imx93_src_ids,\n\t},\n\t.probe = imx93_src_probe,\n};\nmodule_platform_driver(imx93_src_driver);\n\nMODULE_AUTHOR(\"Peng Fan <peng.fan@nxp.com>\");\nMODULE_DESCRIPTION(\"NXP i.MX93 src driver\");\nMODULE_LICENSE(\"GPL\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

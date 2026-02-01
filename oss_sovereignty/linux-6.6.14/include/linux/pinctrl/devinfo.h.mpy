@@ -1,0 +1,9 @@
+{
+  "module_name": "devinfo.h",
+  "hash_id": "d5a8c12cac77e52c21a3259bf730feac6e82809e4ab34684531af961be7c70cd",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/pinctrl/devinfo.h",
+  "human_readable_source": " \n \n\n#ifndef PINCTRL_DEVINFO_H\n#define PINCTRL_DEVINFO_H\n\nstruct device;\n\n#ifdef CONFIG_PINCTRL\n\n#include <linux/device.h>\n\n \n#include <linux/pinctrl/consumer.h>\n\nstruct pinctrl;\n\n \nstruct dev_pin_info {\n\tstruct pinctrl *p;\n\tstruct pinctrl_state *default_state;\n\tstruct pinctrl_state *init_state;\n#ifdef CONFIG_PM\n\tstruct pinctrl_state *sleep_state;\n\tstruct pinctrl_state *idle_state;\n#endif\n};\n\nextern int pinctrl_bind_pins(struct device *dev);\nextern int pinctrl_init_done(struct device *dev);\n\nstatic inline struct pinctrl *dev_pinctrl(struct device *dev)\n{\n\tif (!dev->pins)\n\t\treturn NULL;\n\n\treturn dev->pins->p;\n}\n\n#else\n\n \n\nstatic inline int pinctrl_bind_pins(struct device *dev)\n{\n\treturn 0;\n}\n\nstatic inline int pinctrl_init_done(struct device *dev)\n{\n\treturn 0;\n}\n\nstatic inline struct pinctrl *dev_pinctrl(struct device *dev)\n{\n\treturn NULL;\n}\n\n#endif  \n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

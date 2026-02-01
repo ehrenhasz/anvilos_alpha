@@ -1,0 +1,9 @@
+{
+  "module_name": "v4l2-image-sizes.h",
+  "hash_id": "115162b2f097e9e1130b554efacc5e025321d003738438cd96528f388c931f03",
+  "original_prompt": "Ingested from linux-6.6.14/include/media/v4l2-image-sizes.h",
+  "human_readable_source": " \n \n#ifndef _IMAGE_SIZES_H\n#define _IMAGE_SIZES_H\n\n#define CIF_WIDTH\t352\n#define CIF_HEIGHT\t288\n\n#define HD_720_WIDTH\t1280\n#define HD_720_HEIGHT\t720\n\n#define HD_1080_WIDTH\t1920\n#define HD_1080_HEIGHT\t1080\n\n#define QCIF_WIDTH\t176\n#define QCIF_HEIGHT\t144\n\n#define QQCIF_WIDTH\t88\n#define QQCIF_HEIGHT\t72\n\n#define QQVGA_WIDTH\t160\n#define QQVGA_HEIGHT\t120\n\n#define QVGA_WIDTH\t320\n#define QVGA_HEIGHT\t240\n\n#define SVGA_WIDTH\t800\n#define SVGA_HEIGHT\t600\n\n#define SXGA_WIDTH\t1280\n#define SXGA_HEIGHT\t1024\n\n#define VGA_WIDTH\t640\n#define VGA_HEIGHT\t480\n\n#define UXGA_WIDTH\t1600\n#define UXGA_HEIGHT\t1200\n\n#define XGA_WIDTH\t1024\n#define XGA_HEIGHT\t768\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

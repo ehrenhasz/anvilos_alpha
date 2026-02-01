@@ -1,0 +1,9 @@
+{
+  "module_name": "save-cwd.m4",
+  "hash_id": "153b366ba40299ed4a3ef06c820722bf2c0eefe4382f00a1694ba40c20fd224a",
+  "original_prompt": "Ingested from coreutils-9.4/m4/save-cwd.m4",
+  "human_readable_source": "# serial 10\ndnl Copyright (C) 2002-2006, 2009-2023 Free Software Foundation, Inc.\ndnl This file is free software; the Free Software Foundation\ndnl gives unlimited permission to copy and/or distribute it,\ndnl with or without modifications, as long as this notice is preserved.\n\ndnl Prerequisites for lib/save-cwd.c.\nAC_DEFUN([gl_SAVE_CWD],\n[\n  AC_CHECK_FUNCS_ONCE([fchdir])\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

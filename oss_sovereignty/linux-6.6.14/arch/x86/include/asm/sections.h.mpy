@@ -1,0 +1,9 @@
+{
+  "module_name": "sections.h",
+  "hash_id": "43c9613fe688d7544bb082d7e80c83547ad2378f836c0896765e8ddc4f8be16e",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/include/asm/sections.h",
+  "human_readable_source": " \n#ifndef _ASM_X86_SECTIONS_H\n#define _ASM_X86_SECTIONS_H\n\n#include <asm-generic/sections.h>\n#include <asm/extable.h>\n\nextern char __brk_base[], __brk_limit[];\nextern char __end_rodata_aligned[];\n\n#if defined(CONFIG_X86_64)\nextern char __end_rodata_hpage_align[];\n#endif\n\nextern char __end_of_kernel_reserve[];\n\nextern unsigned long _brk_start, _brk_end;\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

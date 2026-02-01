@@ -1,0 +1,9 @@
+{
+  "module_name": "dqblk_v2.h",
+  "hash_id": "e4efaa311c29c2f2cfc5017e3edc3d2ed17db51c9593a63426601a93a75048c5",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/dqblk_v2.h",
+  "human_readable_source": " \n \n\n#ifndef _LINUX_DQBLK_V2_H\n#define _LINUX_DQBLK_V2_H\n\n#include <linux/dqblk_qtree.h>\n\n \n#define V2_INIT_ALLOC QTREE_INIT_ALLOC\n#define V2_INIT_REWRITE QTREE_INIT_REWRITE\n#define V2_DEL_ALLOC QTREE_DEL_ALLOC\n#define V2_DEL_REWRITE QTREE_DEL_REWRITE\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

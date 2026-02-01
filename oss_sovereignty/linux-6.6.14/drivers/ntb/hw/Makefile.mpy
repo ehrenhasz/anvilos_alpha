@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "fe2ab3b7ff08ec013a3f908201cada42d5055d053d7426dc225b5c0e3917b861",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/ntb/hw/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-$(CONFIG_NTB_AMD)\t+= amd/\nobj-$(CONFIG_NTB_IDT)\t+= idt/\nobj-$(CONFIG_NTB_INTEL)\t+= intel/\nobj-$(CONFIG_NTB_EPF)\t+= epf/\nobj-$(CONFIG_NTB_SWITCHTEC) += mscc/\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

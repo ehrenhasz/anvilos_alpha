@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "3813d80a80fda5dadc3fa121c357bb4eb311b0d34cde49eeeff3fec1244dc14f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/crypto/allwinner/sun4i-ss/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-$(CONFIG_CRYPTO_DEV_SUN4I_SS) += sun4i-ss.o\nsun4i-ss-y += sun4i-ss-core.o sun4i-ss-hash.o sun4i-ss-cipher.o\nsun4i-ss-$(CONFIG_CRYPTO_DEV_SUN4I_SS_PRNG) += sun4i-ss-prng.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

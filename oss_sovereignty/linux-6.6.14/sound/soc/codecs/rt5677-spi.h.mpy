@@ -1,0 +1,9 @@
+{
+  "module_name": "rt5677-spi.h",
+  "hash_id": "473bcb8209a6804bcee7ae11ab175df722b27221784bf4c7258735a901adffa6",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/codecs/rt5677-spi.h",
+  "human_readable_source": " \n \n\n#ifndef __RT5677_SPI_H__\n#define __RT5677_SPI_H__\n\n#if IS_ENABLED(CONFIG_SND_SOC_RT5677_SPI)\nint rt5677_spi_read(u32 addr, void *rxbuf, size_t len);\nint rt5677_spi_write(u32 addr, const void *txbuf, size_t len);\nint rt5677_spi_write_firmware(u32 addr, const struct firmware *fw);\nvoid rt5677_spi_hotword_detected(void);\n#else\nstatic inline int rt5677_spi_read(u32 addr, void *rxbuf, size_t len)\n{\n\treturn -EINVAL;\n}\nstatic inline int rt5677_spi_write(u32 addr, const void *txbuf, size_t len)\n{\n\treturn -EINVAL;\n}\nstatic inline int rt5677_spi_write_firmware(u32 addr, const struct firmware *fw)\n{\n\treturn -EINVAL;\n}\nstatic inline void rt5677_spi_hotword_detected(void){}\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

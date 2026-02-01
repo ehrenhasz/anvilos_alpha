@@ -1,0 +1,9 @@
+{
+  "module_name": "extcon-adc-jack.h",
+  "hash_id": "8e2f4ba5f252a59c665333fc9be3582f978aa50455f6708ab507278e53f65dcc",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/extcon/extcon-adc-jack.h",
+  "human_readable_source": " \n \n\n#ifndef _EXTCON_ADC_JACK_H_\n#define _EXTCON_ADC_JACK_H_ __FILE__\n\n#include <linux/module.h>\n#include <linux/extcon.h>\n\n \nstruct adc_jack_cond {\n\tunsigned int id;\n\tu32 min_adc;\n\tu32 max_adc;\n};\n\n \nstruct adc_jack_pdata {\n\tconst char *name;\n\tconst char *consumer_channel;\n\n\tconst unsigned int *cable_names;\n\n\t \n\tstruct adc_jack_cond *adc_conditions;\n\n\tunsigned long irq_flags;\n\tunsigned long handling_delay_ms;  \n\tbool wakeup_source;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

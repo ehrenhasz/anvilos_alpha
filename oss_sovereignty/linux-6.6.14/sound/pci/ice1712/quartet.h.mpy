@@ -1,0 +1,9 @@
+{
+  "module_name": "quartet.h",
+  "hash_id": "0a6f438d223db0eb0d0d999153ad65889b646142f37a2f84f02873c54b7ee502",
+  "original_prompt": "Ingested from linux-6.6.14/sound/pci/ice1712/quartet.h",
+  "human_readable_source": " \n#ifndef __SOUND_QTET_H\n#define __SOUND_QTET_H\n\n#define QTET_DEVICE_DESC\t\t\"{Infrasonic,Quartet},\"\n\n#define VT1724_SUBDEVICE_QTET\t\t0x30305349\t \n\nextern struct snd_ice1712_card_info  snd_vt1724_qtet_cards[];\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

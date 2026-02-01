@@ -1,0 +1,9 @@
+{
+  "module_name": "odm_interface.h",
+  "hash_id": "61669982855a3246cb2139e0223a504ec621e14bfccf700c8e7525dcdcc00c00",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/rtl8723bs/hal/odm_interface.h",
+  "human_readable_source": " \n \n\n\n#ifndef\t__ODM_INTERFACE_H__\n#define __ODM_INTERFACE_H__\n\n\n\n \n\n#define _reg_all(_name)\t\t\tODM_##_name\n#define _reg_ic(_name, _ic)\t\tODM_##_name##_ic\n#define _bit_all(_name)\t\t\tBIT_##_name\n#define _bit_ic(_name, _ic)\t\tBIT_##_name##_ic\n\n \n\n#define _reg_11N(_name)\t\t\tODM_REG_##_name##_11N\n#define _bit_11N(_name)\t\t\tODM_BIT_##_name##_11N\n\n#define _cat(_name, _ic_type, _func) _func##_11N(_name)\n\n \n \n \n#define ODM_REG(_name, _pDM_Odm)\t_cat(_name, _pDM_Odm->SupportICType, _reg)\n#define ODM_BIT(_name, _pDM_Odm)\t_cat(_name, _pDM_Odm->SupportICType, _bit)\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

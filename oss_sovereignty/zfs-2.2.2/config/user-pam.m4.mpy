@@ -1,0 +1,9 @@
+{
+  "module_name": "user-pam.m4",
+  "hash_id": "3fe819f6b68d19430f8d1bae34b571452cc6b9a9c120e96c2804c684375945c1",
+  "original_prompt": "Ingested from zfs-2.2.2/config/user-pam.m4",
+  "human_readable_source": "AC_DEFUN([ZFS_AC_CONFIG_USER_PAM], [\n\tAC_ARG_ENABLE([pam],\n\t\tAS_HELP_STRING([--enable-pam],\n\t\t[install pam_zfs_key module [[default: check]]]),\n\t\t[enable_pam=$enableval],\n\t\t[enable_pam=check])\n\n\tAC_ARG_WITH(pammoduledir,\n\t\tAS_HELP_STRING([--with-pammoduledir=DIR],\n\t\t[install pam module in dir [[$libdir/security]]]),\n\t\t[pammoduledir=\"$withval\"],[pammoduledir=$libdir/security])\n\n\tAC_ARG_WITH(pamconfigsdir,\n\t\tAS_HELP_STRING([--with-pamconfigsdir=DIR],\n\t\t[install pam-config files in dir [DATADIR/pam-configs]]),\n\t\t[pamconfigsdir=\"$withval\"],\n\t\t[pamconfigsdir='${datadir}/pam-configs'])\n\n\tAS_IF([test \"x$enable_pam\" != \"xno\"], [\n\t\tAC_CHECK_HEADERS([security/pam_modules.h], [\n\t\t\tenable_pam=yes\n\t\t], [\n\t\t\tAS_IF([test \"x$enable_pam\" = \"xyes\"], [\n\t\t\t\tAC_MSG_FAILURE([\n\t*** security/pam_modules.h missing, libpam0g-dev package required\n\t\t\t\t])\n\t\t\t],[\n\t\t\t\tenable_pam=no\n\t\t\t])\n\t\t])\n\t])\n\tAS_IF([test \"x$enable_pam\" = \"xyes\"], [\n\t\tDEFINE_PAM='--with pam'\n\t])\n\tAC_SUBST(DEFINE_PAM)\n\tAC_SUBST(pammoduledir)\n\tAC_SUBST(pamconfigsdir)\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

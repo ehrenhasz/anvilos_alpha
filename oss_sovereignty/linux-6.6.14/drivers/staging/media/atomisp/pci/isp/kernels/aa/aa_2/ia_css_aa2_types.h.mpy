@@ -1,0 +1,9 @@
+{
+  "module_name": "ia_css_aa2_types.h",
+  "hash_id": "761fa2330e44cb712f7e90fff24878f264f3ca0d9e4b9258798429e26304bb69",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/isp/kernels/aa/aa_2/ia_css_aa2_types.h",
+  "human_readable_source": " \n \n\n#ifndef __IA_CSS_AA2_TYPES_H\n#define __IA_CSS_AA2_TYPES_H\n\n \n\n \nstruct ia_css_aa_config {\n\tu16 strength;\t \n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

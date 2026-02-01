@@ -1,0 +1,9 @@
+{
+  "module_name": "sysfs_engines.h",
+  "hash_id": "58a8a7c4065fedc6e64a2fafa005af927b16e3c27e52e16486921d4fac4ec021",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/gt/sysfs_engines.h",
+  "human_readable_source": " \n \n\n#ifndef INTEL_ENGINE_SYSFS_H\n#define INTEL_ENGINE_SYSFS_H\n\nstruct drm_i915_private;\n\nvoid intel_engines_add_sysfs(struct drm_i915_private *i915);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

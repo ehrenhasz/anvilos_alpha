@@ -1,0 +1,9 @@
+{
+  "module_name": "getlogin.m4",
+  "hash_id": "eb2a4d8b1718de3c868e7ec497d560683aa2dc162b222d752a175c1b2cffba2e",
+  "original_prompt": "Ingested from coreutils-9.4/m4/getlogin.m4",
+  "human_readable_source": "# getlogin.m4 serial 7\ndnl Copyright (C) 2010-2023 Free Software Foundation, Inc.\ndnl This file is free software; the Free Software Foundation\ndnl gives unlimited permission to copy and/or distribute it,\ndnl with or without modifications, as long as this notice is preserved.\n\nAC_DEFUN([gl_FUNC_GETLOGIN],\n[\n  AC_REQUIRE([gl_UNISTD_H_DEFAULTS])\n  AC_CHECK_DECLS_ONCE([getlogin])\n  if test $ac_cv_have_decl_getlogin = no; then\n    HAVE_DECL_GETLOGIN=0\n  fi\n  AC_CHECK_FUNCS_ONCE([getlogin])\n  if test $ac_cv_func_getlogin = no; then\n    HAVE_GETLOGIN=0\n  fi\n])\n\ndnl Determines the library needed by the implementation of the\ndnl getlogin and getlogin_r functions.\nAC_DEFUN([gl_LIB_GETLOGIN],\n[\n  AC_REQUIRE([AC_CANONICAL_HOST])\n  case $host_os in\n    mingw* | windows*)\n      GETLOGIN_LIB='-ladvapi32' ;;\n    *)\n      GETLOGIN_LIB= ;;\n  esac\n  AC_SUBST([GETLOGIN_LIB])\n  dnl For backward compatibility.\n  LIB_GETLOGIN=\"$GETLOGIN_LIB\"\n  AC_SUBST([LIB_GETLOGIN])\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "bme680_i2c.c",
+  "hash_id": "19ae0dd65b5a582fcd19cccf483b836914e2a3e6537b92baae4bd54fc5b86d5c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/iio/chemical/bme680_i2c.c",
+  "human_readable_source": "\n \n#include <linux/i2c.h>\n#include <linux/module.h>\n#include <linux/regmap.h>\n\n#include \"bme680.h\"\n\nstatic int bme680_i2c_probe(struct i2c_client *client)\n{\n\tconst struct i2c_device_id *id = i2c_client_get_device_id(client);\n\tstruct regmap *regmap;\n\tconst char *name = NULL;\n\n\tregmap = devm_regmap_init_i2c(client, &bme680_regmap_config);\n\tif (IS_ERR(regmap)) {\n\t\tdev_err(&client->dev, \"Failed to register i2c regmap %ld\\n\", PTR_ERR(regmap));\n\t\treturn PTR_ERR(regmap);\n\t}\n\n\tif (id)\n\t\tname = id->name;\n\n\treturn bme680_core_probe(&client->dev, regmap, name);\n}\n\nstatic const struct i2c_device_id bme680_i2c_id[] = {\n\t{\"bme680\", 0},\n\t{},\n};\nMODULE_DEVICE_TABLE(i2c, bme680_i2c_id);\n\nstatic const struct of_device_id bme680_of_i2c_match[] = {\n\t{ .compatible = \"bosch,bme680\", },\n\t{},\n};\nMODULE_DEVICE_TABLE(of, bme680_of_i2c_match);\n\nstatic struct i2c_driver bme680_i2c_driver = {\n\t.driver = {\n\t\t.name\t\t\t= \"bme680_i2c\",\n\t\t.of_match_table\t\t= bme680_of_i2c_match,\n\t},\n\t.probe = bme680_i2c_probe,\n\t.id_table = bme680_i2c_id,\n};\nmodule_i2c_driver(bme680_i2c_driver);\n\nMODULE_AUTHOR(\"Himanshu Jha <himanshujha199640@gmail.com>\");\nMODULE_DESCRIPTION(\"BME680 I2C driver\");\nMODULE_LICENSE(\"GPL v2\");\nMODULE_IMPORT_NS(IIO_BME680);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

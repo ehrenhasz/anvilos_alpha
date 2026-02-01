@@ -1,0 +1,9 @@
+{
+  "module_name": "dpu_hw_merge3d.h",
+  "hash_id": "f146946424c56b809e97df2e74fc5bf3878a52298e18d71025158333425c7014",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_merge3d.h",
+  "human_readable_source": " \n \n\n#ifndef _DPU_HW_MERGE3D_H\n#define _DPU_HW_MERGE3D_H\n\n#include \"dpu_hw_catalog.h\"\n#include \"dpu_hw_mdss.h\"\n#include \"dpu_hw_util.h\"\n\nstruct dpu_hw_merge_3d;\n\n \nstruct dpu_hw_merge_3d_ops {\n\tvoid (*setup_3d_mode)(struct dpu_hw_merge_3d *merge_3d,\n\t\t\tenum dpu_3d_blend_mode mode_3d);\n\n};\n\nstruct dpu_hw_merge_3d {\n\tstruct dpu_hw_blk base;\n\tstruct dpu_hw_blk_reg_map hw;\n\n\t \n\tenum dpu_merge_3d idx;\n\tconst struct dpu_merge_3d_cfg *caps;\n\n\t \n\tstruct dpu_hw_merge_3d_ops ops;\n};\n\n \nstatic inline struct dpu_hw_merge_3d *to_dpu_hw_merge_3d(struct dpu_hw_blk *hw)\n{\n\treturn container_of(hw, struct dpu_hw_merge_3d, base);\n}\n\n \nstruct dpu_hw_merge_3d *dpu_hw_merge_3d_init(const struct dpu_merge_3d_cfg *cfg,\n\t\tvoid __iomem *addr);\n\n \nvoid dpu_hw_merge_3d_destroy(struct dpu_hw_merge_3d *pp);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "zfs_agents.h",
+  "hash_id": "fd4bcc7420343bfc3932814c684233498806d83df6834f6d3ec1781d6788f1bd",
+  "original_prompt": "Ingested from zfs-2.2.2/cmd/zed/agents/zfs_agents.h",
+  "human_readable_source": " \n\n \n\n#ifndef\tZFS_AGENTS_H\n#define\tZFS_AGENTS_H\n\n#include <libzfs.h>\n#include <libnvpair.h>\n\n\n#ifdef\t__cplusplus\nextern \"C\" {\n#endif\n\n \nextern void zfs_agent_init(libzfs_handle_t *);\nextern void zfs_agent_fini(void);\nextern void zfs_agent_post_event(const char *, const char *, nvlist_t *);\n\n \nextern int zfs_slm_init(void);\nextern void zfs_slm_fini(void);\nextern void zfs_slm_event(const char *, const char *, nvlist_t *);\n\n#ifdef\t__cplusplus\n}\n#endif\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

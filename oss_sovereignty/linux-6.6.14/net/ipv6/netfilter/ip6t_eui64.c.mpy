@@ -1,0 +1,9 @@
+{
+  "module_name": "ip6t_eui64.c",
+  "hash_id": "2840cb862fa84ceb9553f928e0cd2413a67d03598e92ed536f3ad4ad609d0dc0",
+  "original_prompt": "Ingested from linux-6.6.14/net/ipv6/netfilter/ip6t_eui64.c",
+  "human_readable_source": "\n \n\n \n\n#include <linux/module.h>\n#include <linux/skbuff.h>\n#include <linux/ipv6.h>\n#include <linux/if_ether.h>\n\n#include <linux/netfilter/x_tables.h>\n#include <linux/netfilter_ipv6/ip6_tables.h>\n\nMODULE_DESCRIPTION(\"Xtables: IPv6 EUI64 address match\");\nMODULE_LICENSE(\"GPL\");\nMODULE_AUTHOR(\"Andras Kis-Szabo <kisza@sch.bme.hu>\");\n\nstatic bool\neui64_mt6(const struct sk_buff *skb, struct xt_action_param *par)\n{\n\tunsigned char eui64[8];\n\n\tif (!(skb_mac_header(skb) >= skb->head &&\n\t      skb_mac_header(skb) + ETH_HLEN <= skb->data) &&\n\t    par->fragoff != 0) {\n\t\tpar->hotdrop = true;\n\t\treturn false;\n\t}\n\n\tmemset(eui64, 0, sizeof(eui64));\n\n\tif (eth_hdr(skb)->h_proto == htons(ETH_P_IPV6)) {\n\t\tif (ipv6_hdr(skb)->version == 0x6) {\n\t\t\tmemcpy(eui64, eth_hdr(skb)->h_source, 3);\n\t\t\tmemcpy(eui64 + 5, eth_hdr(skb)->h_source + 3, 3);\n\t\t\teui64[3] = 0xff;\n\t\t\teui64[4] = 0xfe;\n\t\t\teui64[0] ^= 0x02;\n\n\t\t\tif (!memcmp(ipv6_hdr(skb)->saddr.s6_addr + 8, eui64,\n\t\t\t\t    sizeof(eui64)))\n\t\t\t\treturn true;\n\t\t}\n\t}\n\n\treturn false;\n}\n\nstatic struct xt_match eui64_mt6_reg __read_mostly = {\n\t.name\t\t= \"eui64\",\n\t.family\t\t= NFPROTO_IPV6,\n\t.match\t\t= eui64_mt6,\n\t.matchsize\t= sizeof(int),\n\t.hooks\t\t= (1 << NF_INET_PRE_ROUTING) | (1 << NF_INET_LOCAL_IN) |\n\t\t\t  (1 << NF_INET_FORWARD),\n\t.me\t\t= THIS_MODULE,\n};\n\nstatic int __init eui64_mt6_init(void)\n{\n\treturn xt_register_match(&eui64_mt6_reg);\n}\n\nstatic void __exit eui64_mt6_exit(void)\n{\n\txt_unregister_match(&eui64_mt6_reg);\n}\n\nmodule_init(eui64_mt6_init);\nmodule_exit(eui64_mt6_exit);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

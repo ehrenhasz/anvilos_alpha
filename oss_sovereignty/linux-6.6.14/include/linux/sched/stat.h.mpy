@@ -1,0 +1,9 @@
+{
+  "module_name": "stat.h",
+  "hash_id": "84f7095306cc715c6319f02dbf7e33fc658579bc0052a7cf440ecb0ec71db978",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/sched/stat.h",
+  "human_readable_source": " \n#ifndef _LINUX_SCHED_STAT_H\n#define _LINUX_SCHED_STAT_H\n\n#include <linux/percpu.h>\n#include <linux/kconfig.h>\n\n \n\nextern unsigned long total_forks;\nextern int nr_threads;\nDECLARE_PER_CPU(unsigned long, process_counts);\nextern int nr_processes(void);\nextern unsigned int nr_running(void);\nextern bool single_task_running(void);\nextern unsigned int nr_iowait(void);\nextern unsigned int nr_iowait_cpu(int cpu);\n\nstatic inline int sched_info_on(void)\n{\n\treturn IS_ENABLED(CONFIG_SCHED_INFO);\n}\n\n#ifdef CONFIG_SCHEDSTATS\nvoid force_schedstat_enabled(void);\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

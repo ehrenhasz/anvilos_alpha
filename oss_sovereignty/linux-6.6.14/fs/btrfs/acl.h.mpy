@@ -1,0 +1,9 @@
+{
+  "module_name": "acl.h",
+  "hash_id": "1187b81b19c92bcafa42650edef63982abeac2e2a95ac1c712349ffa6b64fbf9",
+  "original_prompt": "Ingested from linux-6.6.14/fs/btrfs/acl.h",
+  "human_readable_source": " \n\n#ifndef BTRFS_ACL_H\n#define BTRFS_ACL_H\n\n#ifdef CONFIG_BTRFS_FS_POSIX_ACL\n\nstruct posix_acl *btrfs_get_acl(struct inode *inode, int type, bool rcu);\nint btrfs_set_acl(struct mnt_idmap *idmap, struct dentry *dentry,\n\t\t  struct posix_acl *acl, int type);\nint __btrfs_set_acl(struct btrfs_trans_handle *trans, struct inode *inode,\n\t\t    struct posix_acl *acl, int type);\n\n#else\n\n#define btrfs_get_acl NULL\n#define btrfs_set_acl NULL\nstatic inline int __btrfs_set_acl(struct btrfs_trans_handle *trans,\n\t\t\t\t  struct inode *inode, struct posix_acl *acl,\n\t\t\t\t  int type)\n{\n\treturn -EOPNOTSUPP;\n}\n\n#endif\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

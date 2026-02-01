@@ -1,0 +1,9 @@
+{
+  "module_name": "sample-filter.h",
+  "hash_id": "3d98a5e30b667c00cd7a38d94eb587fc4d574247e31a1053de6a50ca13699b06",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/util/bpf_skel/sample-filter.h",
+  "human_readable_source": "#ifndef PERF_UTIL_BPF_SKEL_SAMPLE_FILTER_H\n#define PERF_UTIL_BPF_SKEL_SAMPLE_FILTER_H\n\n#define MAX_FILTERS  64\n\n \nenum perf_bpf_filter_op {\n\tPBF_OP_EQ,\n\tPBF_OP_NEQ,\n\tPBF_OP_GT,\n\tPBF_OP_GE,\n\tPBF_OP_LT,\n\tPBF_OP_LE,\n\tPBF_OP_AND,\n\tPBF_OP_GROUP_BEGIN,\n\tPBF_OP_GROUP_END,\n};\n\n \nstruct perf_bpf_filter_entry {\n\tenum perf_bpf_filter_op op;\n\t__u32 part;  \n\t__u64 flags;  \n\t__u64 value;\n};\n\n#endif  ",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

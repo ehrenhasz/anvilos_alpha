@@ -1,0 +1,9 @@
+{
+  "module_name": "comedi_8255.h",
+  "hash_id": "119142f19fecf00d76dacebc426c7c40e182550de67f84c95e454342b04e1897",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/comedi/comedi_8255.h",
+  "human_readable_source": " \n \n\n#ifndef _COMEDI_8255_H\n#define _COMEDI_8255_H\n\n#define I8255_SIZE\t\t0x04\n\n#define I8255_DATA_A_REG\t0x00\n#define I8255_DATA_B_REG\t0x01\n#define I8255_DATA_C_REG\t0x02\n#define I8255_CTRL_REG\t\t0x03\n#define I8255_CTRL_C_LO_IO\tBIT(0)\n#define I8255_CTRL_B_IO\t\tBIT(1)\n#define I8255_CTRL_B_MODE\tBIT(2)\n#define I8255_CTRL_C_HI_IO\tBIT(3)\n#define I8255_CTRL_A_IO\t\tBIT(4)\n#define I8255_CTRL_A_MODE(x)\t((x) << 5)\n#define I8255_CTRL_CW\t\tBIT(7)\n\nstruct comedi_device;\nstruct comedi_subdevice;\n\nint subdev_8255_init(struct comedi_device *dev, struct comedi_subdevice *s,\n\t\t     int (*io)(struct comedi_device *dev, int dir, int port,\n\t\t\t       int data, unsigned long regbase),\n\t\t     unsigned long regbase);\n\nint subdev_8255_mm_init(struct comedi_device *dev, struct comedi_subdevice *s,\n\t\t\tint (*io)(struct comedi_device *dev, int dir, int port,\n\t\t\t\t  int data, unsigned long regbase),\n\t\t\tunsigned long regbase);\n\nunsigned long subdev_8255_regbase(struct comedi_subdevice *s);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "xgetgroups.c",
+  "hash_id": "5bbaf620862a6ddda6d0e24b827cd62d98f31b044e217893870da7124d251e00",
+  "original_prompt": "Ingested from coreutils-9.4/lib/xgetgroups.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#include \"mgetgroups.h\"\n\n#include <errno.h>\n\n#include \"xalloc.h\"\n\n \n\nint\nxgetgroups (char const *username, gid_t gid, gid_t **groups)\n{\n  int result = mgetgroups (username, gid, groups);\n  if (result == -1 && errno == ENOMEM)\n    xalloc_die ();\n  return result;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

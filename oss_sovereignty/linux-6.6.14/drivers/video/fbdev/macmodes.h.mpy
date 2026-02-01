@@ -1,0 +1,9 @@
+{
+  "module_name": "macmodes.h",
+  "hash_id": "7ffe0cf0bf6614307548d8746be5d3694f7f94f08a93f8ff61c08c816e2f1276",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/video/fbdev/macmodes.h",
+  "human_readable_source": " \n\n#ifndef _VIDEO_MACMODES_H\n#define _VIDEO_MACMODES_H\n\n     \n\n#define VMODE_NVRAM\t\t0\n#define VMODE_512_384_60I\t1\t \n#define VMODE_512_384_60\t2\t \n#define VMODE_640_480_50I\t3\t \n#define VMODE_640_480_60I\t4\t \n#define VMODE_640_480_60\t5\t \n#define VMODE_640_480_67\t6\t \n#define VMODE_640_870_75P\t7\t \n#define VMODE_768_576_50I\t8\t \n#define VMODE_800_600_56\t9\t \n#define VMODE_800_600_60\t10\t \n#define VMODE_800_600_72\t11\t \n#define VMODE_800_600_75\t12\t \n#define VMODE_832_624_75\t13\t \n#define VMODE_1024_768_60\t14\t \n#define VMODE_1024_768_70\t15\t \n#define VMODE_1024_768_75V\t16\t \n#define VMODE_1024_768_75\t17\t \n#define VMODE_1152_870_75\t18\t \n#define VMODE_1280_960_75\t19\t \n#define VMODE_1280_1024_75\t20\t \n#define VMODE_1152_768_60\t21\t \n#define VMODE_1600_1024_60\t22\t \n#define VMODE_MAX\t\t22\n#define VMODE_CHOOSE\t\t99\n\n#define CMODE_NVRAM\t\t-1\n#define CMODE_CHOOSE\t\t-2\n#define CMODE_8\t\t\t0\t \n#define CMODE_16\t\t1\t \n#define CMODE_32\t\t2\t \n\n\nextern int mac_vmode_to_var(int vmode, int cmode,\n\t\t\t    struct fb_var_screeninfo *var);\nextern int mac_var_to_vmode(const struct fb_var_screeninfo *var, int *vmode,\n\t\t\t    int *cmode);\nextern int mac_map_monitor_sense(int sense);\nextern int mac_find_mode(struct fb_var_screeninfo *var,\n\t\t\t struct fb_info *info,\n\t\t\t const char *mode_option,\n\t\t\t unsigned int default_bpp);\n\n\n     \n\n#define NV_VMODE\t\t0x140f\n#define NV_CMODE\t\t0x1410\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

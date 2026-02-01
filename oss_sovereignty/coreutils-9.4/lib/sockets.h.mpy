@@ -1,0 +1,9 @@
+{
+  "module_name": "sockets.h",
+  "hash_id": "60ada8d2b3d78e635ae3dffaf53e041baac81369de788d5929d6269aff6533ae",
+  "original_prompt": "Ingested from coreutils-9.4/lib/sockets.h",
+  "human_readable_source": " \n\n#ifndef SOCKETS_H\n#define SOCKETS_H 1\n\n \n#if !_GL_CONFIG_H_INCLUDED\n #error \"Please include config.h first.\"\n#endif\n\n#define SOCKETS_1_0 0x0001\n#define SOCKETS_1_1 0x0101\n#define SOCKETS_2_0 0x0002\n#define SOCKETS_2_1 0x0102\n#define SOCKETS_2_2 0x0202\n\nint gl_sockets_startup (int version)\n#ifndef WINDOWS_SOCKETS\n  _GL_ATTRIBUTE_CONST\n#endif\n  ;\n\nint gl_sockets_cleanup (void)\n#ifndef WINDOWS_SOCKETS\n  _GL_ATTRIBUTE_CONST\n#endif\n  ;\n\n \n#ifdef WINDOWS_SOCKETS\n\n# include <sys/socket.h>\n\n# if GNULIB_MSVC_NOTHROW\n#  include \"msvc-nothrow.h\"\n# else\n#  include <io.h>\n# endif\n\nstatic inline SOCKET\ngl_fd_to_handle (int fd)\n{\n  return _get_osfhandle (fd);\n}\n\n#else\n\n# define gl_fd_to_handle(x) (x)\n\n#endif  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

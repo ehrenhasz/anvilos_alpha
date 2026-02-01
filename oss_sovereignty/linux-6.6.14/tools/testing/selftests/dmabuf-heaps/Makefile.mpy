@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "e17948bb4c5db47c0ca75d66af3700c4ebb572ead6942f2e2197b54992075a4e",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/dmabuf-heaps/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nCFLAGS += -static -O3 -Wl,-no-as-needed -Wall $(KHDR_INCLUDES)\n\nTEST_GEN_PROGS = dmabuf-heap\n\ninclude ../lib.mk\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "tpm_ftpm_tee.h",
+  "hash_id": "597adae5a4a9e43809def996a45c74263a3bebfd2e46246962c8042a2a65ac84",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/char/tpm/tpm_ftpm_tee.h",
+  "human_readable_source": " \n \n\n#ifndef __TPM_FTPM_TEE_H__\n#define __TPM_FTPM_TEE_H__\n\n#include <linux/tee_drv.h>\n#include <linux/tpm.h>\n#include <linux/uuid.h>\n\n \n#define FTPM_OPTEE_TA_SUBMIT_COMMAND  (0)\n#define FTPM_OPTEE_TA_EMULATE_PPI     (1)\n\n \n#define MAX_COMMAND_SIZE       4096\n#define MAX_RESPONSE_SIZE      4096\n\n \nstruct ftpm_tee_private {\n\tstruct tpm_chip *chip;\n\tu32 session;\n\tsize_t resp_len;\n\tu8 resp_buf[MAX_RESPONSE_SIZE];\n\tstruct tee_context *ctx;\n\tstruct tee_shm *shm;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

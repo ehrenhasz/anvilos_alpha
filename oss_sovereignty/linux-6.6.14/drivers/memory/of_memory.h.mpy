@@ -1,0 +1,9 @@
+{
+  "module_name": "of_memory.h",
+  "hash_id": "df3696a446835a7bf3cb76a858a8598b8f776d3cc45a2ed3ad2cafac4a9d9506",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/memory/of_memory.h",
+  "human_readable_source": " \n \n\n#ifndef __LINUX_MEMORY_OF_REG_H\n#define __LINUX_MEMORY_OF_REG_H\n\n#if defined(CONFIG_OF) && defined(CONFIG_DDR)\nconst struct lpddr2_min_tck *of_get_min_tck(struct device_node *np,\n\t\t\t\t\t    struct device *dev);\nconst struct lpddr2_timings *of_get_ddr_timings(struct device_node *np_ddr,\n\t\t\t\t\t\tstruct device *dev,\n\t\t\t\t\t\tu32 device_type, u32 *nr_frequencies);\nconst struct lpddr3_min_tck *of_lpddr3_get_min_tck(struct device_node *np,\n\t\t\t\t\t\t   struct device *dev);\nconst struct lpddr3_timings *\nof_lpddr3_get_ddr_timings(struct device_node *np_ddr,\n\t\t\t  struct device *dev, u32 device_type, u32 *nr_frequencies);\n\nconst struct lpddr2_info *of_lpddr2_get_info(struct device_node *np,\n\t\t\t\t\t     struct device *dev);\n#else\nstatic inline const struct lpddr2_min_tck\n\t*of_get_min_tck(struct device_node *np, struct device *dev)\n{\n\treturn NULL;\n}\n\nstatic inline const struct lpddr2_timings\n\t*of_get_ddr_timings(struct device_node *np_ddr, struct device *dev,\n\tu32 device_type, u32 *nr_frequencies)\n{\n\treturn NULL;\n}\n\nstatic inline const struct lpddr3_min_tck\n\t*of_lpddr3_get_min_tck(struct device_node *np, struct device *dev)\n{\n\treturn NULL;\n}\n\nstatic inline const struct lpddr3_timings\n\t*of_lpddr3_get_ddr_timings(struct device_node *np_ddr,\n\tstruct device *dev, u32 device_type, u32 *nr_frequencies)\n{\n\treturn NULL;\n}\n\nstatic inline const struct lpddr2_info\n\t*of_lpddr2_get_info(struct device_node *np, struct device *dev)\n{\n\treturn NULL;\n}\n#endif  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

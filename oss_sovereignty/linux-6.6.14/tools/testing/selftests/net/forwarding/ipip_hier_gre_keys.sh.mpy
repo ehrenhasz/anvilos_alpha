@@ -1,0 +1,9 @@
+{
+  "module_name": "ipip_hier_gre_keys.sh",
+  "hash_id": "e8d6dc458c94a5275a4b22d54e463d24042de335c5c75cd0c2f611de842e4453",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/net/forwarding/ipip_hier_gre_keys.sh",
+  "human_readable_source": "#!/bin/bash\n# SPDX-License-Identifier: GPL-2.0\n\n# Test IP-in-IP GRE tunnels without key.\n# This test uses hierarchical topology for IP tunneling tests. See\n# ipip_lib.sh for more details.\n\nALL_TESTS=\"gre_hier4 gre_mtu_change\"\n\nNUM_NETIFS=6\nsource lib.sh\nsource ipip_lib.sh\n\nsetup_prepare()\n{\n\th1=${NETIFS[p1]}\n\tol1=${NETIFS[p2]}\n\n\tul1=${NETIFS[p3]}\n\tul2=${NETIFS[p4]}\n\n\tol2=${NETIFS[p5]}\n\th2=${NETIFS[p6]}\n\n\tforwarding_enable\n\tvrf_prepare\n\th1_create\n\th2_create\n\tsw1_hierarchical_create gre $ol1 $ul1 ikey 111 okey 222\n\tsw2_hierarchical_create gre $ol2 $ul2 ikey 222 okey 111\n}\n\ngre_hier4()\n{\n\tRET=0\n\n\tping_test $h1 192.0.2.18 \" gre hierarchical with ikey/okey\"\n}\n\ngre_mtu_change()\n{\n\ttest_mtu_change gre\n}\n\ncleanup()\n{\n\tpre_cleanup\n\n\tsw2_hierarchical_destroy $ol2 $ul2\n\tsw1_hierarchical_destroy $ol1 $ul1\n\th2_destroy\n\th1_destroy\n\tvrf_cleanup\n\tforwarding_restore\n}\n\ntrap cleanup EXIT\n\nsetup_prepare\nsetup_wait\ntests_run\n\nexit $EXIT_STATUS\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "sig.h",
+  "hash_id": "2ea38bee12477d26e4fbd0206ea0cf9b17b7084a4a37fadc5738d8ee6ea6df74",
+  "original_prompt": "Ingested from linux-6.6.14/include/crypto/internal/sig.h",
+  "human_readable_source": " \n \n#ifndef _CRYPTO_INTERNAL_SIG_H\n#define _CRYPTO_INTERNAL_SIG_H\n\n#include <crypto/algapi.h>\n#include <crypto/sig.h>\n\nstatic inline void *crypto_sig_ctx(struct crypto_sig *tfm)\n{\n\treturn crypto_tfm_ctx(&tfm->base);\n}\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

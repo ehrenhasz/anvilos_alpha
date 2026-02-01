@@ -1,0 +1,9 @@
+{
+  "module_name": "test_stack_var_off.c",
+  "hash_id": "f930ad2635aa06a1d101ece4bf04fa5e3bba442462463da02698aaff344a5860",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/test_stack_var_off.c",
+  "human_readable_source": "\n\n#include <linux/bpf.h>\n#include <bpf/bpf_helpers.h>\n\nint probe_res;\n\nchar input[4] = {};\nint test_pid;\n\nSEC(\"tracepoint/syscalls/sys_enter_nanosleep\")\nint probe(void *ctx)\n{\n\t \n\tchar stack_buf[16];\n\tunsigned long len;\n\tunsigned long last;\n\n\tif ((bpf_get_current_pid_tgid() >> 32) != test_pid)\n\t\treturn 0;\n\n\t \n\t__builtin_memcpy(stack_buf, input, 4);\n\n\t \n\tlen = stack_buf[0] & 0xf;\n\tlast = (len - 1) & 0xf;\n\n\t \n\tstack_buf[len] = 42;\n\n\t \n\tprobe_res = stack_buf[last];\n\treturn 0;\n}\n\nchar _license[] SEC(\"license\") = \"GPL\";\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

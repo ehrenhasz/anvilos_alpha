@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "3ebcbcc60463dd7d6fc3245c7e0fdd3b12780174418ca65db01dbbe40c949e61",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/platform/st/sti/delta/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig VIDEO_STI_DELTA\n\ttristate \"STMicroelectronics DELTA multi-format video decoder V4L2 driver\"\n\tdepends on V4L_MEM2MEM_DRIVERS\n\tdepends on VIDEO_DEV\n\tdepends on ARCH_STI || COMPILE_TEST\n\thelp\n\t\tThis V4L2 driver enables DELTA multi-format video decoder\n\t\tof STMicroelectronics STiH4xx SoC series allowing hardware\n\t\tdecoding of various compressed video bitstream format in\n\t\traw uncompressed format.\n\n\t\tUse this option to see the decoders available for such\n\t\thardware.\n\n\t\tPlease notice that the driver will only be built if\n\t\tat least one of the DELTA decoder below is selected.\n\nconfig VIDEO_STI_DELTA_MJPEG\n\tbool \"STMicroelectronics DELTA MJPEG support\"\n\tdefault y\n\tdepends on VIDEO_STI_DELTA\n\thelp\n\t\tEnables DELTA MJPEG hardware support.\n\n\t\tTo compile this driver as a module, choose M here:\n\t\tthe module will be called st-delta.\n\nconfig VIDEO_STI_DELTA_DRIVER\n\ttristate\n\tdepends on VIDEO_STI_DELTA\n\tdepends on VIDEO_STI_DELTA_MJPEG\n\tdefault VIDEO_STI_DELTA_MJPEG\n\tselect VIDEOBUF2_DMA_CONTIG\n\tselect V4L2_MEM2MEM_DEV\n\tselect RPMSG\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

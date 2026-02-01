@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "8ca109b780ca70e4892729c30dbfe0f1d3f94727056ad6a0e10165b51725203f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/char/mwave/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Makefile for ACP Modem (Mwave).\n#\n# See the README file in this directory for more info. <paulsch@us.ibm.com>\n#\n\nobj-$(CONFIG_MWAVE) += mwave.o\n\nmwave-y := mwavedd.o smapi.o tp3780i.o 3780i.o\n\n# To have the mwave driver disable other uarts if necessary\n# ccflags-y := -DMWAVE_FUTZ_WITH_OTHER_DEVICES\n\n# To compile in lots (~20 KiB) of run-time enablable printk()s for debugging:\nccflags-y += -DMW_TRACE\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

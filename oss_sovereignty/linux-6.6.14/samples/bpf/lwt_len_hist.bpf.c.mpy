@@ -1,0 +1,9 @@
+{
+  "module_name": "lwt_len_hist.bpf.c",
+  "hash_id": "6994f42753b42fe81fb510d440fcf1bb6a186b34cb729fb21142fc9e2f71acb3",
+  "original_prompt": "Ingested from linux-6.6.14/samples/bpf/lwt_len_hist.bpf.c",
+  "human_readable_source": " \n\n#include \"vmlinux.h\"\n#include <bpf/bpf_helpers.h>\n\nstruct {\n\t__uint(type, BPF_MAP_TYPE_PERCPU_HASH);\n\t__type(key, u64);\n\t__type(value, u64);\n\t__uint(pinning, LIBBPF_PIN_BY_NAME);\n\t__uint(max_entries, 1024);\n} lwt_len_hist_map SEC(\".maps\");\n\nstatic unsigned int log2(unsigned int v)\n{\n\tunsigned int r;\n\tunsigned int shift;\n\n\tr = (v > 0xFFFF) << 4; v >>= r;\n\tshift = (v > 0xFF) << 3; v >>= shift; r |= shift;\n\tshift = (v > 0xF) << 2; v >>= shift; r |= shift;\n\tshift = (v > 0x3) << 1; v >>= shift; r |= shift;\n\tr |= (v >> 1);\n\treturn r;\n}\n\nstatic unsigned int log2l(unsigned long v)\n{\n\tunsigned int hi = v >> 32;\n\tif (hi)\n\t\treturn log2(hi) + 32;\n\telse\n\t\treturn log2(v);\n}\n\nSEC(\"len_hist\")\nint do_len_hist(struct __sk_buff *skb)\n{\n\t__u64 *value, key, init_val = 1;\n\n\tkey = log2l(skb->len);\n\n\tvalue = bpf_map_lookup_elem(&lwt_len_hist_map, &key);\n\tif (value)\n\t\t__sync_fetch_and_add(value, 1);\n\telse\n\t\tbpf_map_update_elem(&lwt_len_hist_map, &key, &init_val, BPF_ANY);\n\n\treturn BPF_OK;\n}\n\nchar _license[] SEC(\"license\") = \"GPL\";\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

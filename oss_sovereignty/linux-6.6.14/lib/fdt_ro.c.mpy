@@ -1,0 +1,9 @@
+{
+  "module_name": "fdt_ro.c",
+  "hash_id": "1ab375b992eb00af16644f12072a18ee2812b4fc82eaaaf3b76c1e2d5001c50e",
+  "original_prompt": "Ingested from linux-6.6.14/lib/fdt_ro.c",
+  "human_readable_source": "#include <linux/libfdt_env.h>\n#include \"../scripts/dtc/libfdt/fdt_ro.c\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}
